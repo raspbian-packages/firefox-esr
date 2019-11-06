@@ -187,16 +187,13 @@ def update_sources(topsrcdir):
 
 def try_run(name, command, cwd=None, **kwargs):
     try:
-        with tempfile.NamedTemporaryFile(prefix=name, delete=False) as f:
-            subprocess.check_call(command, cwd=cwd, stdout=f,
-                                  stderr=subprocess.STDOUT, **kwargs)
+        subprocess.check_call(command, cwd=cwd,
+                              stderr=subprocess.STDOUT, **kwargs)
     except subprocess.CalledProcessError:
-        print('''Error running "{}" in directory {}
-    See output in {}'''.format(' '.join(command), cwd, f.name),
+        print('''Error running "{}" in directory {}'''.format(' '.join(command), cwd),
               file=sys.stderr)
         return False
     else:
-        os.unlink(f.name)
         return True
 
 
