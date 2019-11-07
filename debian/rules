@@ -125,7 +125,7 @@ endif
 ifneq (,$(filter i386 amd64 armel armhf,$(DEB_HOST_ARCH)))
 	CRASH_REPORTER = 1
 endif
-ifneq (,$(filter mips%,$(DEB_HOST_ARCH)))
+ifneq (,$(filter armhf mips%,$(DEB_HOST_ARCH)))
 	CONFIGURE_FLAGS += --disable-webrtc
 endif
 

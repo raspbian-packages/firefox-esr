@@ -8,6 +8,9 @@ firefox-esr (68.2.0esr-1+rpi1) bullseye-staging; urgency=medium
   [changes introduce in 60.8.0esr-1+rpi1 by Peter Michael Green]
   * Use a fake homedir for build (Closes: 933757).
 
+  [changes introduced in 68.2.0esr-1+rpi1 by Peter Michael Green]
+  * Disable webrtc, it seems to fail to build on raspbian.
+
  -- Peter Michael Green <plugwash@raspbian.org>  Tue, 05 Nov 2019 19:37:30 +0000
 
 firefox-esr (68.2.0esr-1) unstable; urgency=medium
