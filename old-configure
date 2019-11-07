@@ -12320,7 +12320,9 @@ if test -n "$USE_ICU"; then
     # TODO: the l is actually endian-dependent
     # We could make this set as 'l' or 'b' for little or big, respectively,
     # but we'd need to check in a big-endian version of the file.
-    ICU_DATA_FILE="icudt${version}l.dat"
+    if test -z "$ICU_DATA_FILE"; then
+        ICU_DATA_FILE="icudt${version}l.dat"
+    fi
 fi
 
 
@@ -12462,12 +12464,12 @@ if test -n "$COMPILE_ENVIRONMENT"; then
 for ac_func in posix_fadvise posix_fallocate
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:12466: checking for $ac_func" >&5
+echo "configure:12468: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 12471 "configure"
+#line 12473 "configure"
 #define $ac_func innocuous_$ac_func
 #include "confdefs.h"
 #undef $ac_func
@@ -12494,7 +12496,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:12498: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:12500: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -12526,7 +12528,7 @@ if test "$MOZ_X11"; then
                 _SAVE_CFLAGS=$CFLAGS
     CFLAGS="$CFLAGS $XCFLAGS"
     cat > conftest.$ac_ext <<EOF
-#line 12530 "configure"
+#line 12532 "configure"
 #include "confdefs.h"
 
         #include <stdio.h>
@@ -12545,7 +12547,7 @@ int main() {
     
 ; return 0; }
 EOF
-if { (eval echo configure:12549: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:12551: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   :
 else
   echo "configure: failed program was:" >&5
