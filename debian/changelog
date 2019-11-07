@@ -10,6 +10,7 @@ firefox-esr (68.2.0esr-1+rpi1) bullseye-staging; urgency=medium
 
   [changes introduced in 68.2.0esr-1+rpi1 by Peter Michael Green]
   * Disable webrtc, it seems to fail to build on raspbian.
+  * Try to disable Neon
 
  -- Peter Michael Green <plugwash@raspbian.org>  Tue, 05 Nov 2019 19:37:30 +0000
 
