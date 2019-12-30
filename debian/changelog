@@ -1,4 +1,4 @@
-firefox-esr (68.2.0esr-1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (68.3.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -12,9 +12,25 @@ firefox-esr (68.2.0esr-1+rpi1) bullseye-staging; urgency=medium
   * Disable webrtc, it seems to fail to build on raspbian.
   * Try to disable Neon
 
- -- Peter Michael Green <plugwash@raspbian.org>  Tue, 05 Nov 2019 19:37:30 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 30 Dec 2019 10:56:44 +0000
 
-firefox-esr (68.2.0esr-1) unstable; urgency=medium
+firefox-esr (68.3.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-37, also known as:
+    CVE-2019-17008, CVE-2019-11745, CVE-2019-17010, CVE-2019-17005,
+    CVE-2019-17011, CVE-2019-17012.
+
+  * debian/control*: Bump nss build dependencies.
+  * debian/rules, debian/control.in:
+    - Build with nodejs-mozilla on jessie and stretch.
+    - Build with nasm-mozilla on jessie and stretch.
+    - Don't build with system libvpx on stretch.
+    (Thanks Emilio Pozuelo Monfort)
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 04 Dec 2019 08:56:07 +0900
+
+firefox-esr (68.2.0esr-1~deb10u1) buster-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2019-33, also known as:

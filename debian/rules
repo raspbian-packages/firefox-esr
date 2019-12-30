@@ -29,7 +29,7 @@ endif
 ifeq (,$(filter jessie stretch,$(DIST)))
 SYSTEM_LIBS += libevent
 endif
-ifeq (,$(filter jessie bullseye,$(DIST)))
+ifeq (,$(filter jessie stretch bullseye,$(DIST)))
 SYSTEM_LIBS += vpx
 endif
 
@@ -85,6 +85,11 @@ SHARE_DIR := /usr/share/$($(PRODUCT))
 
 # Work around https://github.com/rust-lang/cargo/issues/7147
 export CARGO_HOME=$(CURDIR)/debian/.cargo
+
+ifneq (,$(filter jessie stretch,$(DIST)))
+export NODEJS=/usr/lib/nodejs-mozilla/bin/node
+export NASM=/usr/lib/nasm-mozilla/bin/nasm
+endif
 
 LDFLAGS += -Wl,--as-needed
 # Make the linker generate compressed debug sections. dh_strip would do
