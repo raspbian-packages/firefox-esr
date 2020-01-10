@@ -1,4 +1,4 @@
-firefox-esr (68.3.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
+firefox-esr (68.4.1esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -12,7 +12,31 @@ firefox-esr (68.3.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
   * Disable webrtc, it seems to fail to build on raspbian.
   * Try to disable Neon
 
- -- Raspbian forward porter <root@raspbian.org>  Mon, 30 Dec 2019 10:56:44 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 10 Jan 2020 21:47:36 +0000
+
+firefox-esr (68.4.1esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release.
+  * Fix for mfsa2020-03, also known as CVE-2019-17026.
+
+ -- Mike Hommey <glandium@debian.org>  Thu, 09 Jan 2020 06:40:28 +0900
+
+firefox-esr (68.4.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-02, also known as:
+    CVE-2019-17016, CVE-2019-17017, CVE-2019-17022, CVE-2019-17024.
+
+  * debian/rules: Don't build with --compress-debug-sections on jessie.
+  * debian/rules: Use sourcestamp.txt for MOZ_BUILD_DATE. Closes: #946193.
+
+  * sourcestamp.txt: Fill with the missing info.
+  * intl/icu_sources_data.py: Don't build ICU in parallel.
+  * gfx/skia/skia/third_party/skcms/src/Transform_inl.h: Work around older
+    GCC ICEs on arm.
+    (Thanks Emilio Pozuelo Monfort)
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 08 Jan 2020 08:54:04 +0900
 
 firefox-esr (68.3.0esr-1~deb10u1) buster-security; urgency=medium
 
