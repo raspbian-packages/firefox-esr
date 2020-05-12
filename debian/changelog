@@ -1,4 +1,4 @@
-firefox-esr (68.7.0esr-1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (68.8.0esr-1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -12,7 +12,15 @@ firefox-esr (68.7.0esr-1+rpi1) bullseye-staging; urgency=medium
   * Disable webrtc, it seems to fail to build on raspbian.
   * Try to disable Neon
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 24 Apr 2020 16:11:51 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Tue, 12 May 2020 23:22:00 +0000
+
+firefox-esr (68.8.0esr-1) unstable; urgency=medium
+
+  * New upstream release
+  * Fixes for mfsa2020-17, also known as:
+    CVE-2020-12387, CVE-2020-6831, CVE-2020-12392, CVE-2020-12395.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 06 May 2020 05:29:30 +0900
 
 firefox-esr (68.7.0esr-1) unstable; urgency=medium
 
