@@ -1,4 +1,4 @@
-firefox-esr (68.8.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
+firefox-esr (68.9.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -12,7 +12,19 @@ firefox-esr (68.8.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
   * Disable webrtc, it seems to fail to build on raspbian.
   * Try to disable Neon
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 07 May 2020 17:03:28 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 05 Jun 2020 22:56:34 +0000
+
+firefox-esr (68.9.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release
+  * Fixes for mfsa2020-21, also known as:
+    CVE-2020-12399, CVE-2020-12405, CVE-2020-12406, CVE-2020-12410.
+
+  * debian/rules: Force using old PKCS11 API when building against newer NSS
+    releases. Closes: #961762.
+  * debian/control*: Bump nss build dependencies.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 03 Jun 2020 06:11:28 +0900
 
 firefox-esr (68.8.0esr-1~deb10u1) buster-security; urgency=medium
 
