@@ -12,7 +12,7 @@ firefox-esr (68.9.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
   * Disable webrtc, it seems to fail to build on raspbian.
   * Try to disable Neon
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 05 Jun 2020 22:56:34 +0000
+ -- Peter Michael Green <plugwash@raspbian.org>  Fri, 05 Jun 2020 22:56:34 +0000
 
 firefox-esr (68.9.0esr-1~deb10u1) buster-security; urgency=medium
 

@@ -1,31 +1,23 @@
 Description:  Hack broken rust target selection so it produces the right target on raspbian.
 Author: Peter Michael Green <plugwash@raspbian.org>
-diff --git a/build/moz.configure/rust.configure b/build/moz.configure/rust.configure
-index 9647cbc40e..0645c1e53a 100644
---- a/build/moz.configure/rust.configure
-+++ b/build/moz.configure/rust.configure
-@@ -185,6 +185,8 @@ def rust_compiler(rustc_info, cargo_info, build_project):
+--- firefox-esr-68.9.0esr.orig/build/moz.configure/rust.configure
++++ firefox-esr-68.9.0esr/build/moz.configure/rust.configure
+@@ -185,9 +185,14 @@ def rust_compiler(rustc_info, cargo_info
  
  
  @depends(rustc, when=rust_compiler)
 +@imports('sys')
 +@imports(_from='__builtin__', _import='repr')
+ @imports(_from='__builtin__', _import='ValueError')
  def rust_supported_targets(rustc):
      out = check_cmd_output(rustc, '--print', 'target-list').splitlines()
-     # The os in the triplets used by rust may match the same OSes, in which
-@@ -192,7 +194,11 @@ def rust_supported_targets(rustc):
-     per_os = {}
-     ambiguous = set()
-     per_raw_os = {}
 +    #HACK: if there are multiple matches the algorithm uses the last one
 +    #put arm-unknown-linux-gnuebihf on the end of the list so it gets preffered
 +    out.append('arm-unknown-linux-gnueabihf')
+     data = {}
      for t in out:
-+        traw = t
-         t = split_triplet(t, allow_unknown=True)
-         endianness = t.endianness
-         if t.cpu.startswith('thumb') and endianness not in ('big', 'little'):
-@@ -232,11 +238,13 @@ def rust_triple_alias(host_or_target):
+         try:
+@@ -225,11 +230,13 @@ def rust_triple_alias(host_or_target):
               arm_target, when=rust_compiler)
      @checking('for rust %s triplet' % host_or_target_str)
      @imports('os')
