@@ -1,0 +1,27 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!-- File menu items -->
+<!ENTITY openFileCmd.label "Apertura de un file…">
+<!ENTITY openFileCmd.accesskey "A">
+<!ENTITY openFileCmd.key "A">
+<!ENTITY fileRecentMenu.label "Paginas recente">
+<!ENTITY fileRecentMenu.accesskey "R">
+<!ENTITY saveCmd.label "Salvar">
+<!ENTITY saveCmd.accesskey "S">
+<!ENTITY saveAsCmd.label "Salvar como…">
+<!ENTITY saveAsCmd.accesskey "C">
+<!ENTITY publishCmd.label "Publicar">
+<!ENTITY publishCmd.accesskey "b">
+<!ENTITY publishCmd.key "S">
+<!ENTITY publishAsCmd.label "Publicar como…">
+<!ENTITY publishAsCmd.accesskey "c">
+<!ENTITY fileRevert.label "Reverter">
+<!ENTITY fileRevert.accesskey "t">
+
+<!-- Edit menu items -->
+
+<!-- Toolbar buttons/items -->
+<!ENTITY newToolbarCmd.label "Nove">
+<!ENTITY openToolbarCmd.label "Aperir">
