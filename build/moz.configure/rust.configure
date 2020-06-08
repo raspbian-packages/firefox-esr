@@ -346,6 +346,8 @@ def rust_triple_alias(host_or_target):
             return None
 
         rustc_target = find_candidate(candidates)
+        if rustc_target.startswith('i586'):
+            rustc_target = rustc_target.replace('i586', 'i686')
 
         if rustc_target is None:
             die("Don't know how to translate {} for rustc".format(
