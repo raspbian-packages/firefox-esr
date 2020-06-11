@@ -1,4 +1,4 @@
-firefox-esr (68.9.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
+firefox-esr (68.9.0esr-1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -12,9 +12,9 @@ firefox-esr (68.9.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
   * Disable webrtc, it seems to fail to build on raspbian.
   * Try to disable Neon
 
- -- Peter Michael Green <plugwash@raspbian.org>  Fri, 05 Jun 2020 22:56:34 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 11 Jun 2020 06:11:29 +0000
 
-firefox-esr (68.9.0esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.9.0esr-1) unstable; urgency=medium
 
   * New upstream release
   * Fixes for mfsa2020-21, also known as:
@@ -26,7 +26,7 @@ firefox-esr (68.9.0esr-1~deb10u1) buster-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 03 Jun 2020 06:11:28 +0900
 
-firefox-esr (68.8.0esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.8.0esr-1) unstable; urgency=medium
 
   * New upstream release
   * Fixes for mfsa2020-17, also known as:
@@ -34,7 +34,7 @@ firefox-esr (68.8.0esr-1~deb10u1) buster-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 06 May 2020 05:29:30 +0900
 
-firefox-esr (68.7.0esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.7.0esr-1) unstable; urgency=medium
 
   * New upstream release
   * Fixes for mfsa2020-13, also known as:
@@ -42,14 +42,14 @@ firefox-esr (68.7.0esr-1~deb10u1) buster-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 08 Apr 2020 07:54:16 +0900
 
-firefox-esr (68.6.1esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.6.1esr-1) unstable; urgency=medium
 
   * New upstream release
   * Fixes for mfsa2020-11, also known as: CVE-2020-6819, CVE-2020-6820.
 
  -- Mike Hommey <glandium@debian.org>  Sat, 04 Apr 2020 06:41:17 +0900
 
-firefox-esr (68.6.0esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.6.0esr-1) unstable; urgency=medium
 
   * New upstream release
   * Fixes for mfsa2020-09, also known as:
@@ -58,7 +58,7 @@ firefox-esr (68.6.0esr-1~deb10u1) buster-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 11 Mar 2020 06:59:57 +0900
 
-firefox-esr (68.5.0esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.5.0esr-1) unstable; urgency=medium
 
   * New upstream release
   * Fixes for mfsa2020-06, also known as:
@@ -66,14 +66,20 @@ firefox-esr (68.5.0esr-1~deb10u1) buster-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 12 Feb 2020 06:50:33 +0900
 
-firefox-esr (68.4.1esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.4.2esr-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 22 Jan 2020 12:02:13 +0900
+
+firefox-esr (68.4.1esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fix for mfsa2020-03, also known as CVE-2019-17026.
 
  -- Mike Hommey <glandium@debian.org>  Thu, 09 Jan 2020 06:40:28 +0900
 
-firefox-esr (68.4.0esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.4.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2020-02, also known as:
@@ -90,7 +96,7 @@ firefox-esr (68.4.0esr-1~deb10u1) buster-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 08 Jan 2020 08:54:04 +0900
 
-firefox-esr (68.3.0esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.3.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2019-37, also known as:
@@ -106,7 +112,7 @@ firefox-esr (68.3.0esr-1~deb10u1) buster-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 04 Dec 2019 08:56:07 +0900
 
-firefox-esr (68.2.0esr-1~deb10u1) buster-security; urgency=medium
+firefox-esr (68.2.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2019-33, also known as:
