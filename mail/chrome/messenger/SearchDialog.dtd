@@ -1,0 +1,80 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!-- for SearchDialog.xul -->
+<!ENTITY searchHeading.label         "මෙතුළ වන ලිපි සඳහා සොයන්න:">
+<!ENTITY searchHeading.accesskey     "h">
+<!ENTITY searchSubfolders.label      "සොයන උප-ෆෝල්ඩරය">
+<!ENTITY searchSubfolders.accesskey  "e">
+<!ENTITY searchOnServer.label        "සේවාදායකය තුළ සෙවුම කරන්න">
+<!ENTITY searchOnServer.accesskey    "u">
+<!ENTITY resetButton.label           "හිස් කරන්න">
+<!ENTITY resetButton.accesskey       "C">
+<!ENTITY openButton.label            "විවෘත කරන්න">
+<!ENTITY openButton.accesskey        "n">
+<!ENTITY deleteButton.label          "මකන්න">
+<!ENTITY deleteButton.accesskey      "D">
+<!ENTITY searchDialogTitle.label     "ලිපි සෙවීම">
+<!ENTITY results.label               "ප්‍රතිඵල">
+<!ENTITY moveButton.label            "Move To">
+<!ENTITY moveButton.accesskey        "T">
+<!ENTITY closeCmd.key                "W"> 
+<!ENTITY openInFolder.label          "ෆෝල්ඩරය තුළ විවෘත කරන්න">
+<!ENTITY openInFolder.accesskey      "r">
+<!ENTITY saveAsVFButton.label        "සෙවුම් ෆෝල්ඩරයක් සේ සුරකින්න">
+<!ENTITY saveAsVFButton.accesskey    "v">
+
+<!-- for ABSearchDialog.xul -->
+<!ENTITY abSearchHeading.label       "සොයන්නේ මෙතුළ:">
+<!ENTITY abSearchHeading.accesskey   "h">
+<!ENTITY propertiesButton.label      "ලක්ෂණ">
+<!ENTITY propertiesButton.accesskey  "P">
+<!ENTITY composeButton.label         "ලිපියක් ලියන්න">
+<!ENTITY composeButton.accesskey     "W">
+<!ENTITY deleteCardButton.label      "මකන්න">
+<!ENTITY deleteCardButton.accesskey  "D">
+<!ENTITY abSearchDialogTitle.label   "ලිපින පොතේ වැඩිමනත් සවීම්">
+
+<!-- Thread Pane -->
+<!ENTITY threadColumn.label "සබැඳි">
+<!ENTITY fromColumn.label "වෙතින්">
+<!ENTITY recipientColumn.label "ලබන්නා">
+<!ENTITY correspondentColumn.label "සාමාජිකයන්">
+<!ENTITY subjectColumn.label "විෂයය">
+<!ENTITY dateColumn.label "දිනය">
+<!ENTITY priorityColumn.label "ප්‍රමුඛතාවය">
+<!ENTITY tagsColumn.label "ටැග">
+<!ENTITY accountColumn.label "ගිණුම">
+<!ENTITY statusColumn.label "තත්ත්වය">
+<!ENTITY sizeColumn.label "විශාලත්වය">
+<!ENTITY junkStatusColumn.label "නිසරු තත්ත්වය">
+<!ENTITY unreadColumn.label "නොකියවූ">
+<!ENTITY totalColumn.label "එකතුව">
+<!ENTITY readColumn.label "කියවූ">
+<!ENTITY receivedColumn.label "ලැබුණු">
+<!ENTITY starredColumn.label "තරු යෙදූ">
+<!ENTITY locationColumn.label "ස්ථානය">
+<!ENTITY idColumn.label "ලැබුණු පිළිටවළ">
+
+<!-- Thread Pane Tooltips -->
+<!ENTITY columnChooser2.tooltip "දර්ශනය වන තීරු තෝරන්න">
+<!ENTITY threadColumn2.tooltip "පණිවුඩ දාම පෙන්වන්න">
+<!ENTITY fromColumn2.tooltip "වෙතින් මගින් පෙළ ගසන්න">
+<!ENTITY recipientColumn2.tooltip "ලබන්නා මගින් පෙළ ගසන්න">
+<!ENTITY correspondentColumn2.tooltip "සාමාජිකයන් මගින් පෙළ ගසන්න">
+<!ENTITY subjectColumn2.tooltip "මාතෘකාව මගින් පෙළ ගසන්න">
+<!ENTITY dateColumn2.tooltip "දිනය මගින් පෙළ ගසන්න">
+<!ENTITY priorityColumn2.tooltip "ප්‍රමුඛතාව මගින් පෙළ ගසන්න">
+<!ENTITY tagsColumn2.tooltip "ටැග මගින් පෙළගසන්න">
+<!ENTITY accountColumn2.tooltip "ගිනුම මගින් පෙළ ගසන්න">
+<!ENTITY statusColumn2.tooltip "තත්වය මගින් පෙළ ගසන්න">
+<!ENTITY sizeColumn2.tooltip "ප්‍රමාණය මගින් පෙළ ගසන්න">
+<!ENTITY junkStatusColumn2.tooltip "කසළ තත්වය මගින් පෙළ ගසන්න">
+<!ENTITY unreadColumn2.tooltip "දාමය තුළ නොකියවූ පණිවුඩ ගණන">
+<!ENTITY totalColumn2.tooltip "දාමය තුළ ඇති මුළු පණිවුඩ ගණන">
+<!ENTITY readColumn2.tooltip "කියවුම මගින් පෙළ ගසන්න">
+<!ENTITY receivedColumn2.tooltip "ලැබූ දිනය මගින් පෙළ ගසන්න">
+<!ENTITY starredColumn2.tooltip "තාරුකාව මගින් පෙළ ගසන්න">
+<!ENTITY locationColumn2.tooltip "ස්ථානය මගින් පෙළ ගසන්න">
+<!ENTITY idColumn2.tooltip "ලැබූ පිළිවෙල මගින් පෙළ ගසන්න">
