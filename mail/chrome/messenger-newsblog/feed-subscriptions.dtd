@@ -1,0 +1,27 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!-- Subscription Dialog -->
+<!ENTITY feedSubscriptions.label     "Nguồn cấp đã đăng kí">
+<!ENTITY learnMore.label             "Tìm hiểu thêm về nguồn cấp dữ liệu">
+
+<!ENTITY feedTitle.label             "Tiêu đề:">
+
+
+
+<!-- Account Settings and Subscription Dialog -->
+
+
+
+<!-- Subscription Dialog -->
+<!ENTITY button.addFeed.label        "Thêm">
+<!ENTITY button.addFeed.accesskey    "T">
+<!ENTITY button.removeFeed.label     "Xóa">
+<!ENTITY button.removeFeed.accesskey "a">
+<!ENTITY button.importOPML.label     "Nhập">
+<!ENTITY button.importOPML.accesskey "N">
+<!ENTITY button.exportOPML.label     "Xuất">
+<!ENTITY button.exportOPML.accesskey "X">
+
+<!ENTITY cmd.close.commandKey        "w">
