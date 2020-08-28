@@ -1,0 +1,50 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!-- Help Menu -->
+<!ENTITY helpMenu.label "Trợ giúp">
+<!ENTITY helpMenu.accesskey "H">
+<!-- LOCALIZATION NOTE some localizations of Windows use "?"
+                       for the help button in the menubar but Gnome does not.   -->
+<!ENTITY helpMenuWin.label "Trợ giúp">
+<!ENTITY helpMenuWin.accesskey "H">
+<!ENTITY aboutProduct2.label "Thông tin về &brandShorterName;">
+<!ENTITY aboutProduct2.accesskey "A">
+<!ENTITY helpTroubleshootingInfo.label     "Thông tin gỡ rối vấn đề">
+<!ENTITY helpTroubleshootingInfo.accesskey "T">
+<!ENTITY helpSafeMode.label     "Khởi động lại và vô hiệu hóa các tiện ích…">
+<!ENTITY helpSafeMode.accesskey "R">
+<!ENTITY releaseCmd2.label "Ghi chú phát hành">
+<!ENTITY releaseCmd2.accesskey "N">
+<!ENTITY whatsNewCmd.label "Có gì mới">
+<!ENTITY whatsNewCmd.accesskey "W">
+<!ENTITY openHelp.label "Nội dung trợ giúp">
+<!ENTITY openHelp.accesskey "H">
+<!ENTITY openHelp.commandkey "VK_F1">
+<!ENTITY openHelpMac2.label "Trợ giúp &brandFullName;">
+<!ENTITY openHelpMac2.commandkey   "?">
+<!ENTITY openHelpMac2.modifiers    "accel">
+
+<!ENTITY aboutMenuCmd2.label "Thông tin về &brandFullName;">
+<!ENTITY aboutMenuCmd2.accesskey "A">
+<!ENTITY productHelp.label "Trợ giúp &brandShortName;">
+<!ENTITY productHelp.accesskey "H">
+<!ENTITY productHelp.commandkey "VK_F1">
+<!ENTITY productHelpMac.commandkey "?">
+<!ENTITY productHelpMac.modifiers "accel">
+
+<!ENTITY helpKeyboardShortcuts.label "Các phím tắt bàn phím">
+<!ENTITY helpKeyboardShortcuts.accesskey "K">
+
+<!ENTITY helpFeedbackPage.label "Gửi phản hồi…">
+<!ENTITY helpFeedbackPage.accesskey "S">
+
+<!ENTITY helpShowTour2.label "Các tính năng cơ bản của &brandShorterName;">
+<!ENTITY helpShowTour2.accesskey "o">
+
+<!ENTITY helpGetInvolvedPage.label "Tham gia đóng góp">
+<!ENTITY helpGetInvolvedPage.accesskey "I">
+
+<!ENTITY helpDonationsPage.label "Quyên góp tài chính">
+<!ENTITY helpDonationsPage.accesskey "M">
