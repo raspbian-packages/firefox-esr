@@ -1,0 +1,34 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!-- for SearchDialog.xul -->
+<!ENTITY searchHeading.label         "Cari pesan dari:">
+<!ENTITY searchHeading.accesskey     "p">
+<!ENTITY searchSubfolders.label      "Cari subfolder">
+<!ENTITY searchSubfolders.accesskey  "e">
+<!ENTITY searchOnServer.label        "Jalankan pencarian pada server">
+<!ENTITY searchOnServer.accesskey    "s">
+<!ENTITY resetButton.label           "Bersihkan">
+<!ENTITY resetButton.accesskey       "B">
+<!ENTITY openButton.label            "Buka">
+<!ENTITY openButton.accesskey        "B">
+<!ENTITY deleteButton.label          "Hapus">
+<!ENTITY searchDialogTitle.label     "Cari Pesan">
+<!ENTITY results.label               "Hasil">
+<!ENTITY closeCmd.key                "W">
+<!ENTITY openInFolder.label          "Buka dalam Folder">
+<!ENTITY openInFolder.accesskey      "r">
+<!ENTITY saveAsVFButton.label        "Simpan sebagai Folder Pencarian">
+<!ENTITY saveAsVFButton.accesskey    "F">
+
+<!-- for ABSearchDialog.xul -->
+<!ENTITY abSearchHeading.label       "Cari di:">
+<!ENTITY abSearchHeading.accesskey   "C">
+<!ENTITY propertiesButton.label      "Properti">
+<!ENTITY propertiesButton.accesskey  "P">
+<!ENTITY composeButton.label         "Tulis">
+<!ENTITY composeButton.accesskey     "T">
+<!ENTITY deleteCardButton.label      "Hapus">
+<!ENTITY abSearchDialogTitle.label   "Pencarian Canggih Daftar Alamat">
+
