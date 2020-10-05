@@ -1,8 +1,8 @@
 Description:  Hack broken rust target selection so it produces the right target on raspbian.
 Author: Peter Michael Green <plugwash@raspbian.org>
---- firefox-esr-68.9.0esr.orig/build/moz.configure/rust.configure
-+++ firefox-esr-68.9.0esr/build/moz.configure/rust.configure
-@@ -185,9 +185,14 @@ def rust_compiler(rustc_info, cargo_info
+--- firefox-esr-78.3.0esr.orig/build/moz.configure/rust.configure
++++ firefox-esr-78.3.0esr/build/moz.configure/rust.configure
+@@ -192,9 +192,14 @@ def rust_compiler(rustc_info, cargo_info
  
  
  @depends(rustc, when=rust_compiler)
@@ -17,14 +17,14 @@ Author: Peter Michael Green <plugwash@raspbian.org>
      data = {}
      for t in out:
          try:
-@@ -225,11 +230,13 @@ def rust_triple_alias(host_or_target):
-              arm_target, when=rust_compiler)
+@@ -232,11 +237,13 @@ def rust_triple_alias(host_or_target, ho
+              rust_supported_targets, arm_target, when=rust_compiler)
      @checking('for rust %s triplet' % host_or_target_str)
      @imports('os')
 +    @imports('sys')
-     @imports('subprocess')
      @imports(_from='mozbuild.configure.util', _import='LineIO')
      @imports(_from='mozbuild.shellutil', _import='quote')
+     @imports(_from='six', _import='ensure_binary')
      @imports(_from='tempfile', _import='mkstemp')
      @imports(_from='textwrap', _import='dedent')
 +    @imports(_from='__builtin__', _import='repr')
