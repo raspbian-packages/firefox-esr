@@ -42,8 +42,10 @@
 <!ENTITY  newMessageCmd.accesskey "W">
 <!ENTITY  newContactCmd.label "Wizytówkę…">
 <!ENTITY  newContactCmd.accesskey "z">
-<!ENTITY openMessageFileCmd.label "Otwórz zapisaną wiadomość">
-<!ENTITY openMessageFileCmd.accesskey "O">
+<!ENTITY openMenuCmd.label "Otwórz">
+<!ENTITY openMenuCmd.accesskey "O">
+<!ENTITY openMessageFileCmd.label "Zapisana wiadomość…">
+<!ENTITY openMessageFileCmd.accesskey "w">
 <!ENTITY saveAsMenu.label "Zapisz jako">
 <!ENTITY saveAsMenu.accesskey "a">
 <!ENTITY saveAsFileCmd.label "Plik">
@@ -70,7 +72,7 @@
 <!ENTITY renameFolder.key "VK_F2">
 <!ENTITY compactFolders.label "Porządkuj foldery">
 <!ENTITY compactFolders.accesskey "f">
-<!ENTITY emptyTrashCmd.label "Opróżnij Kosz">
+<!ENTITY emptyTrashCmd.label "Opróżnij kosz">
 <!ENTITY emptyTrashCmd.accesskey "r">
 <!ENTITY offlineMenu.label "Tryb offline">
 <!ENTITY offlineMenu.accesskey "l">
@@ -80,7 +82,7 @@
 <!ENTITY synchronizeOfflineCmd.accesskey "s">
 <!ENTITY settingsOfflineCmd2.label "Ustawienia trybu offline">
 <!ENTITY settingsOfflineCmd2.accesskey "U">
-<!ENTITY downloadSelectedCmd.label "Pobierz wybrane wiadomości">
+<!ENTITY downloadSelectedCmd.label "Pobierz zaznaczone wiadomości">
 <!ENTITY downloadSelectedCmd.accesskey "w">
 <!ENTITY downloadStarredCmd.label "Pobierz wiadomości oznaczone gwiazdką">
 <!ENTITY downloadStarredCmd.accesskey "o">
@@ -97,7 +99,7 @@
 <!ENTITY deleteMsgCmd.accesskey "U">
 <!ENTITY undeleteMsgCmd.label "Przywróć wiadomość">
 <!ENTITY undeleteMsgCmd.accesskey "d">
-<!ENTITY deleteMsgsCmd.label "Usuń wybrane wiadomości">
+<!ENTITY deleteMsgsCmd.label "Usuń zaznaczone wiadomości">
 <!ENTITY deleteMsgsCmd.accesskey "w">
 <!ENTITY undeleteMsgsCmd.label "Przywróć zaznaczone wiadomości">
 <!ENTITY undeleteMsgsCmd.accesskey "d">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "k">
 <!ENTITY folderPaneBar.label "Pasek panelu folderów">
 <!ENTITY folderPaneBar.accesskey "f">
-<!ENTITY folderModeSelector.label "Widoki folderów">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Sortowanie według">
@@ -193,7 +194,7 @@
 <!ENTITY sortByStatusCmd.accesskey "S">
 <!ENTITY sortByTagsCmd.label "Etykiety">
 <!ENTITY sortByTagsCmd.accesskey "E">
-<!ENTITY sortByJunkStatusCmd.label "Stan niechcianej poczty">
+<!ENTITY sortByJunkStatusCmd.label "Stanu niechcianej poczty">
 <!ENTITY sortByJunkStatusCmd.accesskey "u">
 <!ENTITY sortBySubjectCmd.label "Tematu">
 <!ENTITY sortBySubjectCmd.accesskey "T">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Wyszukaj wiadomości…">
 <!ENTITY searchMailCmd.accesskey "m">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Wyszukaj…">
+<!ENTITY glodaSearchCmd.accesskey "W">
 <!ENTITY searchAddressesCmd.label "Wyszukaj wizytówki…">
 <!ENTITY searchAddressesCmd.accesskey "a">
 
@@ -489,7 +492,7 @@
 <!ENTITY filtersCmd2.accesskey "F">
 <!ENTITY filtersApply.label "Zastosuj filtry w bieżącym folderze">
 <!ENTITY filtersApply.accesskey "b">
-<!ENTITY filtersApplyToSelection.label "Zastosuj filtry do wybranych wiadomości">
+<!ENTITY filtersApplyToSelection.label "Zastosuj filtry do zaznaczonych wiadomości">
 <!ENTITY filtersApplyToSelection.accesskey "w">
 <!ENTITY filtersApplyToMessage.label "Zastosuj filtry do wiadomości">
 <!ENTITY filtersApplyToMessage.accesskey "w">
@@ -581,31 +584,31 @@
 <!ENTITY replyButton.tooltip "Odpowiedz na wiadomość">
 <!ENTITY replyAllButton.tooltip "Odpowiedz nadawcy i wszystkim adresatom">
 <!ENTITY replyListButton.tooltip "Odpowiedz liście dyskusyjnej">
-<!ENTITY forwardButton.tooltip "Przekaż wybraną wiadomość">
+<!ENTITY forwardButton.tooltip "Przekaż zaznaczoną wiadomość">
 <!ENTITY forwardAsInline.tooltip "Przekaż zaznaczoną wiadomość bezpośrednio, jako tekst treści">
 <!ENTITY forwardAsAttachment.tooltip "Przekaż zaznaczoną wiadomość jako załącznik">
 <!ENTITY fileButton.tooltip "Przenieś zaznaczoną wiadomość">
 <!ENTITY archiveButton.tooltip "Archiwizuj zaznaczone wiadomości">
 <!ENTITY openConversationButton.tooltip "Wyświetl wątek zaznaczonej wiadomości">
+<!ENTITY openMsgConversationButton.tooltip "Wyświetl wątek zaznaczonej wiadomości">
 <!ENTITY nextButton.tooltip "Przejdź do następnej nieprzeczytanej wiadomości">
 <!ENTITY nextMsgButton.tooltip "Przejdź do następnej wiadomości">
 <!ENTITY previousButton.tooltip "Przejdź do poprzedniej nieprzeczytanej wiadomości">
 <!ENTITY previousMsgButton.tooltip "Przejdź do poprzedniej wiadomości">
 <!ENTITY goForwardButton.tooltip "Przejdź o jedną wiadomość do przodu">
 <!ENTITY goBackButton.tooltip "Przejdź o jedną wiadomość wstecz">
-<!ENTITY deleteButton.tooltip "Usuń wybraną wiadomość albo folder">
+<!ENTITY deleteButton.tooltip "Usuń zaznaczoną wiadomość albo folder">
 <!ENTITY undeleteButton.tooltip "Przywróć usuniętą wiadomość">
 <!ENTITY markButton.tooltip "Oznacz wiadomości">
 <!ENTITY printButton.tooltip "Drukuj wiadomość">
 <!ENTITY stopButton.tooltip "Zatrzymaj bieżący transfer">
-<!ENTITY junkButton.tooltip "Oznacz wybraną wiadomość jako niechcianą">
-<!ENTITY notJunkButton.tooltip "Oznacz wybraną wiadomość jako pożądaną">
+<!ENTITY junkButton.tooltip "Oznacz zaznaczoną wiadomość jako niechcianą">
+<!ENTITY notJunkButton.tooltip "Oznacz zaznaczoną wiadomość jako pożądaną">
 <!ENTITY addressBookButton.tooltip "Wyświetl Książkę adresową">
 <!ENTITY chatButton.tooltip "Wyświetl kartę komunikatora">
 <!ENTITY tagButton.tooltip "Oznacz wiadomości etykietą">
 <!ENTITY compactButton.tooltip "Porządkuj folder, aby wyczyścić pozostałości po usuniętych wiadomościach">
 <!ENTITY appmenuButton1.tooltip "Wyświetl menu programu &brandShortName;">
-
 <!ENTITY addonsButton.tooltip "Zarządzaj dodatkami">
 
 <!-- Toolbar Button Popup -->
@@ -667,7 +670,7 @@
 <!ENTITY folderContextRemove.accesskey "U">
 <!ENTITY folderContextCompact.label "Porządkuj">
 <!ENTITY folderContextCompact.accesskey "d">
-<!ENTITY folderContextEmptyTrash.label "Opróżnij Kosz">
+<!ENTITY folderContextEmptyTrash.label "Opróżnij kosz">
 <!ENTITY folderContextEmptyTrash.accesskey "r">
 <!ENTITY folderContextEmptyJunk.label "Opróżnij Niechciane">
 <!ENTITY folderContextEmptyJunk.accesskey "e">
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Zapisz ustawienia wyszukiwania jako folder…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Zaznacz wiadomości">
 <!ENTITY threadColumn.label "Wątek">
 <!ENTITY fromColumn.label "Nadawca">
 <!ENTITY recipientColumn.label "Adresat">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Kolejność otrzymania">
 <!ENTITY attachmentColumn.label "Załączniki">
 
+<!ENTITY deleteColumn.label "Usuń">
+
 <!-- Thread Pane Tooltips -->
-<!ENTITY columnChooser2.tooltip "Zaznacz, które kolumny zostaną wyświetlone">
+<!ENTITY columnChooser2.tooltip "Zaznacz, które kolumny będą wyświetlane">
+<!ENTITY selectColumn.tooltip "Przełącz zaznaczenie wszystkich wiadomości">
 <!ENTITY threadColumn2.tooltip "Sortowanie według wątków">
 <!ENTITY fromColumn2.tooltip "Sortowanie według nadawcy">
 <!ENTITY recipientColumn2.tooltip "Sortowanie według adresata">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Sortowanie według adresu">
 <!ENTITY idColumn2.tooltip "Sortowanie według kolejności otrzymania">
 <!ENTITY attachmentColumn2.tooltip "Sortowanie według załącznika">
+
+<!ENTITY deleteColumn.tooltip "Usuń wiadomość">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Nowa wiadomość z szablonu">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Opcje ikony aplikacji…">
 <!ENTITY writeNewMessageDock.label      "Nowa wiadomość">
 <!ENTITY openAddressBookDock.label      "Książka adresowa">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Przejdź do poprzedniej strony">
+<!ENTITY browseForwardButton.tooltip "Przejdź do następnej strony">

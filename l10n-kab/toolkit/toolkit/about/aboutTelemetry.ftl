@@ -4,6 +4,7 @@
 
 about-telemetry-ping-data-source = Aɣbalu n isefka n Ping:
 about-telemetry-show-current-ping-data = Isefkan Ping amiran
+about-telemetry-show-current-data = Isefka imiranen
 about-telemetry-show-archived-ping-data = Isefka n Ping ittwaɣebṛen
 about-telemetry-show-subsession-data = Sken isefka n adtiɣimit
 about-telemetry-choose-ping = Fren ping:
@@ -15,9 +16,10 @@ about-telemetry-option-group-older = Iqbuṛen
 about-telemetry-previous-ping = <<
 about-telemetry-next-ping = >>
 about-telemetry-page-title = Isefka n tilisɣelt
+about-telemetry-current-store = Tahanut tamirant:
 about-telemetry-more-information = Tettnadiḍ ugar n telγut?
 about-telemetry-firefox-data-doc = <a data-l10n-name="data-doc-link">Tisemlit n isefka Firefox</a> tegber imniren γef amek ad nseqdec s ifecka n isefka.
-about-telemetry-telemetry-client-doc = <a data-l10n-name="client-doc-link">Tisemlit n umsaγ tilisγelt</a>tegber tabadut yef tiktiwin, API tisemlit akked isefka ittwamlen.
+about-telemetry-telemetry-client-doc = <a data-l10n-name="client-doc-link">Tisemlit n umsaγ tilisγelt</a>tegber tabadutin yef tiktiwin, API tisemlit akked isefka ittwamlen.
 about-telemetry-telemetry-dashboard = <a data-l10n-name="dashboard-link">Tafelwit n tilisγelt</a> ad k-tsireg akken ad twaliḍ isefka ittwaznen i Mozilla s ttawil n tilispyelt.
 about-telemetry-telemetry-probe-dictionary = <a data-l10n-name="probe-dictionary-link">Amawal n usenqed</a> ittmuddu-d talqayt akked uglam i isenqaden id-telqeḍ tilisɣelt.
 about-telemetry-show-in-Firefox-json-viewer = Ldi deg umeskan JSON
@@ -56,6 +58,16 @@ about-telemetry-upload-type =
         [enabled] irmed
        *[disabled] yensa
     }
+# Example Output: 1 sample, average = 0, sum = 0
+# Variables:
+#   $sampleCount (Integer): amount of histogram samples
+#   $prettyAverage (Integer): average of histogram samples
+#   $sum (Integer): sum of histogram samples
+about-telemetry-histogram-stats =
+    { $sampleCount ->
+        [one] { $sampleCount } n umedya, alemmas = { $prettyAverage }, amatu = { $sum }
+       *[other] { $sampleCount } n yimedyaten, alemmas= { $prettyAverage }, amatu= { $sum }
+    }
 # Variables:
 #   $telemetryServerOwner (String): the value of the toolkit.telemetry.server_owner preference. Typically "Mozilla"
 about-telemetry-page-subtitle = Asebter-agi iskan-d talɣut n tmellit, arrum, aseqdec d waggan id d-lqeḍ tilisɣelt. Talɣut-agi tettwazen i { $telemetryServerOwner } i wusnerni n { -brand-full-name }.
@@ -65,6 +77,7 @@ about-telemetry-settings-explanation = Tilisγelt tettalqqaḍ { about-telemetry
 #   $timeStamp (String): ping localized timestamp, e.g. “2017/07/08 10:40:46”
 about-telemetry-ping-details = Yal aḥric seg iḥricen n telɣut ad ittwazen γer <a data-l10n-name="ping-link">ipingen</a>. Aql-ak tettwaliḍ aping { $name }, { $timestamp }.
 about-telemetry-ping-details-current = Yal aḥric seg iḥricen n telγut ad ittwazen γer <a data-l10n-name="ping-link">ipingen</a>. Aql-ak tettwaliḍ aping amiran.
+about-telemetry-data-details-current = Yal aḥric seg iḥricen n telγut ad ittwazen γer “<a data-l10n-name="ping-link">ipingen</a>“. Aql-ak tettwaliḍ ɣer yisefka imiranen.
 # string used as a placeholder for the search field
 # More info about it can be found here:
 # https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/data/main-ping.html
@@ -91,6 +104,8 @@ about-telemetry-no-search-results-all = Nesḥasef! Ulac igemmaḍ ula d yiwet n
 about-telemetry-no-data-to-display = Nesḥasef! Ulac akka tura isefka i “{ $sectionName }”
 # used as a tooltip for the “current” ping title in the sidebar
 about-telemetry-current-ping-sidebar = aping amiran
+# used as a tooltip for the “current” ping title in the sidebar
+about-telemetry-current-data-sidebar = Isefka imiranen
 # used in the “Ping Type” select
 about-telemetry-telemetry-ping-type-all = akk
 # button label to copy the histogram
@@ -125,8 +140,12 @@ about-telemetry-category-header = Taggayt
 about-telemetry-method-header = tarrayt
 about-telemetry-object-header = Taɣawsa
 about-telemetry-extra-header = asemmadan
+about-telemetry-origin-section = Tilisɣelt taɣbalut
 about-telemetry-origin-origin = aɣbalu
 about-telemetry-origin-count = Amḍan
+# Variables:
+#   $telemetryServerOwner (String): the value of the toolkit.telemetry.server_owner preference. Typically "Mozilla"
+about-telemetry-origins-explanation = <a data-l10n-name="origin-doc-link">Firefox Origin Telemetry</a> yestengal isefka send ad ttwaznen akken { $telemetryServerOwner } ad yizmir ad isiḍen tiɣawsiwin, maca ur ittizmir ara ad iẓer ma yella { -brand-product-name } ittekka neɣ ala deg usiden-a. (<a data-l10n-name="prio-blog-link">Issin ugar</a>)
 # Variables:
 #  $process (String): type of process in subsection headers ( e.g. "content", "parent" )
 about-telemetry-process = Akala { $process }

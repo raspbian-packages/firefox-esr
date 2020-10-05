@@ -61,9 +61,9 @@
 <!-- Edit Menu -->
 <!ENTITY editMenu.label "Uredi">
 <!ENTITY editMenu.accesskey "e">
-<!ENTITY undoCmd.label "Vrati">
+<!ENTITY undoCmd.label "Poništi">
 <!ENTITY undoCmd.key "Z">
-<!ENTITY undoCmd.accesskey "V">
+<!ENTITY undoCmd.accesskey "p">
 <!ENTITY redoCmd.label "Ponovi">
 <!ENTITY redoCmd.key "Y">
 <!ENTITY redoCmd.accesskey "P">
@@ -89,14 +89,7 @@
 <!ENTITY reorderAttachmentsCmd.accesskey "s">
 <!ENTITY reorderAttachmentsCmd.key "x">
 <!ENTITY toggleAttachmentPaneCmd.label "Okno privitka">
-<!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.accesskey):
-     For better mnemonics, toggleAttachmentPaneCmd.accesskey should be the same
-     as attachments.accesskey. -->
 <!ENTITY toggleAttachmentPaneCmd.accesskey "o">
-<!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.key):
-     As Mac does not have access keys, this key defines a Mac-only, cross-l10n
-     shortcut key (Ctrl+M). Typically, this key should not be translated unless
-     otherwise required by specific needs of the localization. -->
 <!ENTITY toggleAttachmentPaneCmd.key "m">
 <!ENTITY selectAllCmd.label "Označi sve">
 <!ENTITY selectAllCmd.accesskey "a">
@@ -166,7 +159,7 @@
 <!ENTITY checkSpellingCmd2.key "p">
 <!ENTITY checkSpellingCmd2.key2 "VK_F7">
 <!ENTITY checkSpellingCmd2.accesskey "r">
-<!ENTITY enableInlineSpellChecker.label "Provjeravaj pravopis tijekom tipkanja">
+<!ENTITY enableInlineSpellChecker.label "Provjeri pravopis tijekom tipkanja">
 <!ENTITY enableInlineSpellChecker.accesskey "s">
 <!ENTITY quoteCmd.label "Citiraj poruku">
 <!ENTITY quoteCmd.accesskey "C">
@@ -229,7 +222,7 @@
 <!ENTITY minimizeWindow.key "m">
 <!ENTITY minimizeWindow.label "Minimiziraj">
 <!ENTITY bringAllToFront.label "Postavi sve na vrh">
-<!ENTITY zoomWindow.label "Uvećanje">
+<!ENTITY zoomWindow.label "Zumiraj">
 <!ENTITY windowMenu.label "Prozor">
 
 <!-- Mail Toolbar -->
@@ -259,6 +252,11 @@
     Subject: rows. It should be larger than the largest Header label  -->
 <!ENTITY headersSpace.style "width: 9em;">
 <!ENTITY fromAddr.label "Šalje:">
+<!--LOCALIZATION NOTE headersSpaces.style is for aligning  the From:, To: and
+    Subject: rows. It should be larger than the largest Header label  -->
+<!ENTITY headersSpace2.style "width: 8em;">
+<!ENTITY extraRecipients.tooltip "Druge vrste polja za adresiranje">
+<!ENTITY fromAddr2.label "Šalje">
 <!ENTITY fromAddr.accesskey "a">
 <!ENTITY toAddr.label "Prima:">
 <!ENTITY ccAddr.label "Cc:">
@@ -267,6 +265,13 @@
 <!ENTITY newsgroupsAddr.label "Interesna grupa:">
 <!ENTITY followupAddr.label "Nastavak - za:">
 <!ENTITY subject.label "Naslov:">
+<!ENTITY toAddr2.label "Prima">
+<!ENTITY ccAddr2.label "Cc">
+<!ENTITY bccAddr2.label "Bcc">
+<!ENTITY replyAddr2.label "Odgovori na">
+<!ENTITY newsgroupsAddr2.label "Interesna grupe">
+<!ENTITY followupAddr2.label "Nastavak - za">
+<!ENTITY subject2.label "Naslov">
 <!ENTITY subject.accesskey "s">
 <!-- LOCALIZATION NOTE (attachments.accesskey) This access key character should
      be taken from the strings of attachmentCount in composeMsgs.properties.
@@ -278,7 +283,7 @@
 <!ENTITY attachmentBucketHeader.tooltip "Okno privitka">
 <!ENTITY attachmentBucketCloseButton.tooltip "Sakrij okno privitka">
 
-<!-- Format Toolbar, imported from editorAppShell.xul -->
+<!-- Format Toolbar, imported from editorAppShell.xhtml -->
 <!ENTITY SmileButton.tooltip "Umetni smješka">
 <!ENTITY smiley1Cmd.label "Smiješak">
 <!ENTITY smiley2Cmd.label "Mrštenje">
@@ -303,8 +308,8 @@
 <!ENTITY spellCheckIgnoreWord.accesskey "I">
 <!ENTITY spellCheckAddToDictionary.label "Dodaj u riječnik">
 <!ENTITY spellCheckAddToDictionary.accesskey "n">
-<!ENTITY undo.label "Vrati">
-<!ENTITY undo.accesskey "V">
+<!ENTITY undo.label "Poništi">
+<!ENTITY undo.accesskey "P">
 <!ENTITY cut.label "Izreži">
 <!ENTITY cut.accesskey "I">
 <!ENTITY copy.label "Kopiraj">
@@ -335,7 +340,7 @@
 <!ENTITY attachCloud.accesskey "i">
 <!ENTITY convertCloud.label "Pretvori u…">
 <!ENTITY convertCloud.accesskey "e">
-<!ENTITY cancelUpload.label "Otkaži prijenos">
+<!ENTITY cancelUpload.label "Prekini prijenos">
 <!ENTITY cancelUpload.accesskey "n">
 <!ENTITY convertRegularAttachment.label "Normalni privitak">
 <!ENTITY convertRegularAttachment.accesskey "m">

@@ -4,6 +4,7 @@
 
 addons-window =
     .title = Διαχείριση προσθέτων
+addons-page-title = Διαχείριση προσθέτων
 search-header =
     .placeholder = Αναζήτηση στο addons.mozilla.org
     .searchbuttonlabel = Αναζήτηση
@@ -25,6 +26,8 @@ install-addon-from-file =
     .label = Εγκατάσταση πρόσθετου από αρχείο…
     .accesskey = γ
 help-button = Υποστήριξη προσθέτων
+sidebar-help-button-title =
+    .title = Υποστήριξη προσθέτων
 preferences =
     { PLATFORM() ->
         [windows] Επιλογές { -brand-short-name }
@@ -32,6 +35,12 @@ preferences =
     }
 tools-menu =
     .tooltiptext = Εργαλεία για όλα τα πρόσθετα
+sidebar-preferences-button-title =
+    .title =
+        { PLATFORM() ->
+            [windows] Επιλογές { -brand-short-name }
+           *[other] Προτιμήσεις { -brand-short-name }
+        }
 show-unsigned-extensions-button =
     .label = Δεν ήταν δυνατή η επαλήθευση ορισμένων πρόσθετων
 show-all-extensions-button =
@@ -103,9 +112,11 @@ detail-private-browsing-description2 = Αν της επιτραπεί, αυτή 
 # cannot be overridden by the user.
 detail-private-disallowed-label = Δεν επιτρέπεται στα ιδιωτικά παράθυρα
 detail-private-disallowed-description = Αυτή η επέκταση δεν εκτελείται κατά την ιδιωτική περιήγηση. <label data-l10n-name="detail-private-browsing-learn-more">Μάθετε περισσότερα</label>
+detail-private-disallowed-description2 = Αυτή η επέκταση δεν εκτελείται κατά την ιδιωτική περιήγηση. <a data-l10n-name="learn-more">Μάθετε περισσότερα</a>
 # Some special add-ons are privileged, run in private windows automatically, and this permission can't be revoked
 detail-private-required-label = Απαιτεί πρόσβαση στα ιδιωτικά παράθυρα
 detail-private-required-description = Αυτή η επέκταση έχει πρόσβαση στις διαδικτυακές σας δραστηριότητες κατά την ιδιωτική περιήγηση. <label data-l10n-name="detail-private-browsing-learn-more">Μάθετε περισσότερα</label>
+detail-private-required-description2 = Αυτή η επέκταση έχει πρόσβαση στις διαδικτυακές σας δραστηριότητες κατά την ιδιωτική περιήγηση. <a data-l10n-name="learn-more">Μάθετε περισσότερα</a>
 detail-private-browsing-on =
     .label = Αποδοχή
     .tooltiptext = Ενεργοποίηση στην ιδιωτική περιήγηση
@@ -159,9 +170,6 @@ private-browsing-description2 =
     { -brand-short-name } δεν θα εκτελούνται από προεπιλογή στα ιδιωτικά παράθυρα. Αν δεν το επιτρέψετε στις ρυθμίσεις, η
     επέκταση δεν θα λειτουργεί κατά την ιδιωτική περιήγηση και δεν θα έχει πρόσβαση στις διαδικτυακές σας δραστηριότητες εκεί. Έχουμε κάνει αυτή την αλλαγή για να παραμείνει η ιδιωτική σας περιήγηση ιδιωτική.
     <label data-l10n-name="private-browsing-learn-more">Μάθετε πώς να διαχειριστείτε τις ρυθμίσεις επεκτάσεων</label>
-extensions-view-discover =
-    .name = Λήψη προσθέτων
-    .tooltiptext = { extensions-view-discover.name }
 extensions-view-discopane =
     .name = Προτάσεις
     .tooltiptext = { extensions-view-discopane.name }
@@ -171,6 +179,30 @@ extensions-view-recent-updates =
 extensions-view-available-updates =
     .name = Διαθέσιμες ενημερώσεις
     .tooltiptext = { extensions-view-available-updates.name }
+addon-category-discover = Προτάσεις
+addon-category-discover-title =
+    .title = Προτάσεις
+addon-category-extension = Επεκτάσεις
+addon-category-extension-title =
+    .title = Επεκτάσεις
+addon-category-theme = Θέματα
+addon-category-theme-title =
+    .title = Θέματα
+addon-category-plugin = Αρθρώματα
+addon-category-plugin-title =
+    .title = Αρθρώματα
+addon-category-dictionary = Λεξικά
+addon-category-dictionary-title =
+    .title = Λεξικά
+addon-category-locale = Γλώσσες
+addon-category-locale-title =
+    .title = Γλώσσες
+addon-category-available-updates = Διαθέσιμες ενημερώσεις
+addon-category-available-updates-title =
+    .title = Διαθέσιμες ενημερώσεις
+addon-category-recent-updates = Πρόσφατες ενημερώσεις
+addon-category-recent-updates-title =
+    .title = Πρόσφατες ενημερώσεις
 
 ## These are global warnings
 
@@ -192,6 +224,13 @@ extensions-warning-update-security-container =
 extensions-warning-update-security-enable =
     .label = Ενεργοποίηση
     .tooltiptext = Ενεργοποίηση ελέγχου ασφαλείας ενημερώσεων προσθέτων
+extensions-warning-safe-mode = Όλα τα πρόσθετα έχουν απενεργοποιηθεί στην ασφαλή λειτουργία.
+extensions-warning-check-compatibility = Ο έλεγχος συμβατότητας προσθέτων είναι ανενεργός. Μπορεί να έχετε ασύμβατα πρόσθετα.
+extensions-warning-check-compatibility-button = Ενεργοποίηση
+    .title = Ενεργοποίηση ελέγχου συμβατότητας προσθέτων
+extensions-warning-update-security = Ο έλεγχος ασφαλείας ενημερώσεων  προσθέτων είναι ανενεργός. Μπορεί να κινδυνέψετε.
+extensions-warning-update-security-button = Ενεργοποίηση
+    .title = Ενεργοποίηση ελέγχου ασφαλείας ενημερώσεων προσθέτων
 
 ## Strings connected to add-on updates
 
@@ -201,12 +240,18 @@ extensions-updates-check-for-updates =
 extensions-updates-view-updates =
     .label = Εμφάνιση πρόσφατων ενημερώσεων
     .accesskey = φ
+addon-updates-check-for-updates = Έλεγχος για ενημερώσεις
+    .accesskey = χ
+addon-updates-view-updates = Εμφάνιση πρόσφατων ενημερώσεων
+    .accesskey = φ
 
 # This menu item is a checkbox that toggles the default global behavior for
 # add-on update checking.
 
 extensions-updates-update-addons-automatically =
     .label = Αυτόματη ενημέρωση προσθέτων
+    .accesskey = Α
+addon-updates-update-addons-automatically = Αυτόματη ενημέρωση προσθέτων
     .accesskey = Α
 
 ## Specific add-ons can have custom update checking behaviors ("Manually",
@@ -220,6 +265,10 @@ extensions-updates-reset-updates-to-automatic =
     .accesskey = Ρ
 extensions-updates-reset-updates-to-manual =
     .label = Ρύθμιση όλων των προσθέτων σε χειροκίνητη ενημέρωση
+    .accesskey = χ
+addon-updates-reset-updates-to-automatic = Ρύθμιση όλων των προσθέτων σε αυτόματη ενημέρωση
+    .accesskey = Ρ
+addon-updates-reset-updates-to-manual = Ρύθμιση όλων των προσθέτων σε χειροκίνητη ενημέρωση
     .accesskey = χ
 
 ## Status messages displayed when updating add-ons
@@ -239,17 +288,34 @@ extensions-updates-manual-updates-found =
 extensions-updates-update-selected =
     .label = Εγκατάσταση ενημερώσεων
     .tooltiptext = Εγκατάσταση των διαθέσιμων ενημερώσεων σε αυτή τη λίστα
+addon-updates-updating = Γίνεται ενημέρωση προσθέτων
+addon-updates-installed = Τα πρόσθετα σας ενημερώθηκαν.
+addon-updates-none-found = Δεν βρέθηκαν ενημερώσεις
+addon-updates-manual-updates-found = Εμφάνιση διαθέσιμων ενημερώσεων
+
+## Add-on install/debug strings for page options menu
+
+addon-install-from-file = Εγκατάσταση πρόσθετου από αρχείο…
+    .accesskey = γ
+addon-install-from-file-dialog-title = Επιλέξτε πρόσθετο για εγκατάσταση
+addon-install-from-file-filter-name = Πρόσθετα
+addon-open-about-debugging = Αποσφαλμάτωση πρόσθετων
+    .accesskey = θ
 
 ## Extension shortcut management
 
 manage-extensions-shortcuts =
     .label = Διαχείριση συντομεύσεων επέκτασης
     .accesskey = σ
+# This is displayed in the page options menu
+addon-manage-extensions-shortcuts = Διαχείριση συντομεύσεων επέκτασης
+    .accesskey = σ
 shortcuts-no-addons = Δεν έχετε ενεργοποιήσει καμία επέκταση.
 shortcuts-no-commands = Οι εξής επεκτάσεις δεν έχουν συντομεύσεις:
 shortcuts-input =
     .placeholder = Πληκτρολογήστε μια συντόμευση
 shortcuts-browserAction = Ενεργοποίηση επέκτασης
+shortcuts-browserAction2 = Κουμπί ενεργοποίησης γραμμής εργαλείων
 shortcuts-pageAction = Ενεργοποίηση ενέργειας σελίδας
 shortcuts-sidebarAction = (Απ)ενεργοποίηση πλευρικής γραμμής
 shortcuts-modifier-mac = Συμπεριλάβετε Ctrl, Alt, ή ⌘
@@ -257,6 +323,12 @@ shortcuts-modifier-other = Συμπεριλάβετε Ctrl ή Alt
 shortcuts-invalid = Άκυρος συνδυασμός
 shortcuts-letter = Πληκτρολογήστε ένα γράμμα
 shortcuts-system = Αδυναμία αντικατάστασης συντόμευσης του { -brand-short-name }
+# String displayed in warning label when there is a duplicate shortcut
+shortcuts-duplicate = Διπλή συντόμευση
+# String displayed when a keyboard shortcut is already assigned to more than one add-on
+# Variables:
+#   $shortcut (string) - Shortcut string for the add-on
+shortcuts-duplicate-warning-message = Το { $shortcut } χρησιμοποιείται ως συντόμευση σε περισσότερες από μία περιπτώσεις. Οι διπλές συντομεύσεις ίσως προκαλέσουν απροσδόκητη συμπεριφορά.
 # String displayed when a keyboard shortcut is already used by another add-on
 # Variables:
 #   $addon (string) - Name of the add-on
@@ -269,6 +341,8 @@ shortcuts-card-expand-button =
 shortcuts-card-collapse-button = Εμφάνιση λιγότερων
 go-back-button =
     .tooltiptext = Επιστροφή
+header-back-button =
+    .title = Επιστροφή
 
 ## Recommended add-ons page
 
@@ -301,14 +375,24 @@ install-theme-button = Εγκατάσταση θέματος
 # the detailed add-on view is opened, from where the add-on can be managed.
 manage-addon-button = Διαχείριση
 find-more-addons = Εύρεση περισσότερων προσθέτων
+# This is a label for the button to open the "more options" menu, it is only
+# used for screen readers.
+addon-options-button =
+    .aria-label = Περισσότερες επιλογές
 
 ## Add-on actions
 
 report-addon-button = Αναφορά
 remove-addon-button = Αφαίρεση
+# The link will always be shown after the other text.
+remove-addon-disabled-button = Δεν μπορεί να αφαιρεθεί <a data-l10n-name="link">Γιατί;</a>
 disable-addon-button = Απενεργοποίηση
 enable-addon-button = Ενεργοποίηση
 expand-addon-button = Περισσότερες επιλογές
+# This is used for the toggle on the extension card, it's a checkbox and this
+# is always its label.
+extension-enable-addon-button-label =
+    .aria-label = Ενεργοποίηση
 preferences-addon-button =
     { PLATFORM() ->
         [windows] Επιλογές
@@ -319,6 +403,16 @@ release-notes-addon-button = Σημειώσεις έκδοσης
 permissions-addon-button = Δικαιώματα
 addons-enabled-heading = Ενεργό
 addons-disabled-heading = Ανενεργό
+extension-enabled-heading = Ενεργό
+extension-disabled-heading = Ανενεργό
+theme-enabled-heading = Ενεργό
+theme-disabled-heading = Ανενεργό
+plugin-enabled-heading = Ενεργό
+plugin-disabled-heading = Ανενεργό
+dictionary-enabled-heading = Ενεργό
+dictionary-disabled-heading = Ανενεργό
+locale-enabled-heading = Ενεργό
+locale-disabled-heading = Ανενεργό
 ask-to-activate-button = Ερώτηση για ενεργοποίηση
 always-activate-button = Πάντα ενεργοποιημένο
 never-activate-button = Ποτέ ενεργοποιημένο
@@ -361,6 +455,11 @@ install-update-button = Ενημέρωση
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed =
     .title = Επιτρέπεται σε ιδιωτικά παράθυρα
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed2 =
+    .title = Επιτρέπεται σε ιδιωτικά παράθυρα
+    .aria-label = { addon-badge-private-browsing-allowed2.title }
 addon-detail-private-browsing-help = Όταν επιτρέπεται, η επέκταση θα έχει πρόσβαση στις δραστηριότητές σας στο διαδίκτυο κατά την ιδιωτική περιήγηση. <a data-l10n-name="learn-more">Μάθετε περισσότερα</a>
 addon-detail-private-browsing-allow = Αποδοχή
 addon-detail-private-browsing-disallow = Απόρριψη
@@ -369,6 +468,11 @@ addon-detail-private-browsing-disallow = Απόρριψη
 addon-badge-recommended =
     .title = Προτείνεται
     .alt = Προτείνεται
+# This is the tooltip text for the recommended badge for an extension in about:addons. The
+# badge is a small icon displayed next to an extension when it is recommended on AMO.
+addon-badge-recommended2 =
+    .title = Το { -brand-product-name } προτείνει μόνο επεκτάσεις που πληρούν τα πρότυπα ασφαλείας και επιδόσεών μας
+    .aria-label = { addon-badge-recommended2.title }
 available-updates-heading = Διαθέσιμες ενημερώσεις
 recent-updates-heading = Πρόσφατες ενημερώσεις
 release-notes-loading = Φόρτωση...
@@ -379,3 +483,19 @@ recommended-themes-heading = Προτεινόμενα θέματα
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Αισθάνεστε δημιουργικοί; <a data-l10n-name="link">Δημιουργήστε το δικό σας θέμα με το Firefox Color.</a>
+
+## Page headings
+
+extension-heading = Διαχείριση των επεκτάσεών σας
+theme-heading = Διαχείριση των θεμάτων σας
+plugin-heading = Διαχείριση των αρθρωμάτων σας
+dictionary-heading = Διαχείριση των λεξικών σας
+locale-heading = Διαχείριση των γλωσσών σας
+updates-heading = Διαχείριση των ενημερώσεών σας
+discover-heading = Εξατομικεύστε το { -brand-short-name } σας
+shortcuts-heading = Διαχείριση συντομεύσεων επέκτασης
+default-heading-search-label = Βρείτε περισσότερα πρόσθετα
+addons-heading-search-input =
+    .placeholder = Αναζήτηση στο addons.mozilla.org
+addon-page-options-button =
+    .title = Εργαλεία για όλα τα πρόσθετα

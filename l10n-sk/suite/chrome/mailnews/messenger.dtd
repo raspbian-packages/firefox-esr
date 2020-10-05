@@ -58,9 +58,9 @@
 <!ENTITY renameFolder.label "Premenovať priečinok…">
 <!ENTITY renameFolder.accesskey "m">
 <!ENTITY compactFolders.label "Vykonať údržbu priečinkov">
-<!ENTITY compactFolders.accesskey		"V">
+<!ENTITY compactFolders.accesskey "V">
 <!ENTITY emptyTrashCmd.label "Vyprázdniť kôš">
-<!ENTITY emptyTrashCmd.accesskey		"i">
+<!ENTITY emptyTrashCmd.accesskey "i">
 <!ENTITY offlineMenu.label "Režim offline">
 <!ENTITY offlineMenu.accesskey "f">
 <!ENTITY synchronizeOfflineCmd.label "Prijať/Synchronizovať…">
@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "Správy označené vlajkou">
 <!ENTITY selectFlaggedCmd.accesskey "S">
+<!ENTITY menuFavoriteFolder.label "Priečinok Obľúbené">
+<!ENTITY menuFavoriteFolder.accesskey "b">
 <!ENTITY folderPropsCmd.label "Vlastnosti…">
 <!ENTITY folderPropsFolderCmd.label "Vlastnosti priečinka…">
 <!ENTITY folderPropsNewsgroupCmd.label "Vlastnosti diskusnej skupiny…">
@@ -133,6 +135,10 @@
 <!ENTITY showThreadPaneCmd.accesskey "v">
 <!ENTITY showFolderPaneCmd.label "Panel priečinkov">
 <!ENTITY showFolderPaneCmd.accesskey "a">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "Usporiadať podľa">
@@ -272,6 +278,8 @@
 <!ENTITY goForwardCmd.commandKey "]">
 <!ENTITY prevFlaggedMsgCmd.label "Správu označenú vlajkou">
 <!ENTITY prevFlaggedMsgCmd.accesskey "v">
+<!ENTITY folderMenu.label "Priečinok">
+<!ENTITY folderMenu.accesskey "o">
 <!ENTITY startPageCmd.label "Úvodná stránka">
 <!ENTITY startPageCmd.accesskey "v">
 
@@ -284,23 +292,23 @@
 <!ENTITY newNewMsgCmd.accesskey "S">
 <!ENTITY replyMsgCmd.label "Odpovedať">
 <!ENTITY replyMsgCmd.accesskey "d">
-<!ENTITY replyMsgCmd.key	"r">
+<!ENTITY replyMsgCmd.key "r">
 <!ENTITY replyListCmd.label "Odpovedať zoznamu">
 <!ENTITY replyListCmd.accesskey "O">
 <!ENTITY replyNewsgroupCmd.label "Odpovedať do diskusnej skupiny">
-<!ENTITY replyNewsgroupCmd.accesskey	"O">
+<!ENTITY replyNewsgroupCmd.accesskey "O">
 <!ENTITY replySenderCmd.label "Odpovedať odosielateľovi">
 <!ENTITY replySenderCmd.accesskey "d">
 <!ENTITY replyToAllMsgCmd.label "Odpovedať všetkým">
-<!ENTITY replyToAllMsgCmd.accesskey	"m">
-<!ENTITY replyToAllMsgCmd.key	"r">
+<!ENTITY replyToAllMsgCmd.accesskey "m">
+<!ENTITY replyToAllMsgCmd.key "r">
 <!ENTITY replyToSenderAndNewsgroupCmd.label "Odpovedať odosielateľovi a do diskusnej skupiny">
 <!ENTITY replyToSenderAndNewsgroupCmd.accesskey "e">
 <!ENTITY replyToAllRecipientsCmd.label "Odpovedať všetkým príjemcom">
 <!ENTITY replyToAllRecipientsCmd.accesskey "m">
 <!ENTITY forwardMsgCmd.label "Odoslať ďalej">
 <!ENTITY forwardMsgCmd.accesskey "l">
-<!ENTITY forwardMsgCmd.key	"l">
+<!ENTITY forwardMsgCmd.key "l">
 <!ENTITY forwardAsMenu.label "Odoslať ďalej ako">
 <!ENTITY forwardAsMenu.accesskey "a">
 <!ENTITY forwardAsInline.label "Súčasť textu">
@@ -417,6 +425,7 @@
 <!ENTITY deleteButton.label "Odstrániť">
 <!ENTITY undeleteButton.label "Zrušiť odstránenie">
 <!ENTITY markButton.label "Označiť">
+<!ENTITY printButton.label "Tlačiť">
 <!ENTITY stopButton.label "Zastaviť">
 <!ENTITY junkButton.label "Spam">
 <!ENTITY notJunkButton.label "Nie Spam">
@@ -440,8 +449,10 @@
 <!ENTITY deleteButton.tooltip "Odstrániť označenú správu alebo priečinok">
 <!ENTITY undeleteButton.tooltip "Zrušiť odstránenie označenej správy">
 <!ENTITY markButton.tooltip "Označiť správy">
+<!ENTITY printButton.tooltip "Vytlačiť túto správu">
 <!ENTITY stopButton.tooltip "Zastaviť aktuálny prenos">
 <!ENTITY throbber.tooltip "Prejsť na domovskú stránku &vendorShortName;">
+<!ENTITY throbber.tooltip2 "Prejsť na domovskú stránku &brandShortName;">
 <!ENTITY junkButton.tooltip "Označiť vybrané správy ako nevyžiadané (SPAM)">
 <!ENTITY notJunkButton.tooltip "Označiť vybrané správy ako Nie Spam">
 
@@ -495,6 +506,8 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Prijať správy">
 <!ENTITY folderContextGetMessages.accesskey "a">
+<!ENTITY folderContextMarkAllFoldersRead.label "Označiť všetky priečinky ako prečítané">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "p">
 <!ENTITY folderContextOpenNewWindow.label "Otvoriť">
 <!ENTITY folderContextOpenNewWindow.accesskey "O">
 <!ENTITY folderContextOpenNewTab.label "Otvoriť na novej karte">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "H">
 <!ENTITY folderContextProperties.label "Vlastnosti…">
 <!ENTITY folderContextProperties.accesskey "l">
+<!ENTITY folderContextFavoriteFolder.label "Priečinok Obľúbené">
+<!ENTITY folderContextFavoriteFolder.accesskey "b">
 <!ENTITY folderContextSettings.label "Nastavenie…">
 <!ENTITY folderContextSettings.accesskey "s">
 

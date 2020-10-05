@@ -31,7 +31,10 @@ app-basics-title = Zakłady nałoženja
 app-basics-name = Mjeno
 app-basics-version = Wersija
 app-basics-build-id = Wersijowy ID
+app-basics-distribution-id = ID distribucije
 app-basics-update-channel = Aktualizowanski kanal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Aktualizowanski zapis
@@ -56,12 +59,11 @@ app-basics-service-workers = Zregistrowane service workers
 app-basics-profiles = Profile
 app-basics-launcher-process-status = Startowanski proces
 app-basics-multi-process-support = Multiprocesowe wokna
-app-basics-process-count = Webwobsahowe procesy
 app-basics-remote-processes-count = Zdalene procesy
 app-basics-enterprise-policies = Předewzaćelske prawidła
-app-basics-location-service-key-google = Kluč stejišćoweje słužby Google
+app-basics-location-service-key-google = Kluč stejnišćoweje słužby Google
 app-basics-safebrowsing-key-google = Kluč Safebrowsing Google
-app-basics-key-mozilla = Kluč słužby postajenja stejnišća Mozilla
+app-basics-key-mozilla = Kluč stejnišćoweje słužby Mozilla
 app-basics-safe-mode = Wěsty modus
 show-dir-label =
     { PLATFORM() ->
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Funkcije, kotrež su so wot spadoweho stražnika z
 graphics-workarounds-title = Nuzowe rozrisanja
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Woknowy protokol
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Desktopowa wokolina
 place-database-title = Datowa banka historije a zapołožkow
 place-database-integrity = Integrita
 place-database-verify-integrity = Integritu přepruwować
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumenty
 safe-mode-title = Wěsty modus spytać
 restart-in-safe-mode-label = Ze znjemóžnjenymi přidatkami startować…
+clear-startup-cache-title = Spytajće startowy pufrowak wuprózdnić
+clear-startup-cache-label = Startowy pufrowak wuprózdnić…
+startup-cache-dialog-title = Startowy pufrowak wuprózdnić
+startup-cache-dialog-body = Startujće { -brand-short-name } znowa, zo byšće startowy pufrowak wuprózdnił. To waše nastajenja njezměni abo rozšěrjenja njewotstroni, kotrež sće { -brand-short-name } přidał.
+restart-button-label = Znowa startować
+
+## Media titles
+
+audio-backend = Awdiobackend
+max-audio-channels = Maksimalna ličba kanalow
+channel-layout = Preferowane kanalowe wuhotowanje
+sample-rate = Preferowana wottasowanska rata
+roundtrip-latency = Wobběhowa latenca (standardne wotchilenje)
 media-title = Medije
 media-output-devices-title = Wudawanske graty
 media-input-devices-title = Zapodawanske graty
@@ -124,6 +141,12 @@ media-device-format = Format
 media-device-channels = Kanale
 media-device-rate = Rata
 media-device-latency = Latenca
+media-capabilities-title = Medijowe móžnosće
+# List all the entries of the database.
+media-capabilities-enumerate = Datowu banku naličić
+
+##
+
 intl-title = Internacionalizacija a lokalizacija
 intl-app-title = Nastajenja nałoženja
 intl-locales-requested = Požadane rěče
@@ -133,6 +156,22 @@ intl-locales-default = Standardna rěč
 intl-os-title = Dźěłowy system
 intl-os-prefs-system-locales = Systemowe rěče
 intl-regional-prefs = Regionalne nastajenja
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Zdalene pytanje zmylkow (protokol Chromium)
+remote-debugging-accepting-connections = Zwiski so přijimaja
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -239,7 +278,9 @@ unknown-failure = W blokowanskej lisćinje; zmylkowy kod { $failureCode }
 d3d11layers-crash-guard = D3D11 Compositor
 d3d11video-crash-guard = D3D11 Video Decoder
 d3d9video-crash-buard = D3D9 Video Decoder
+d3d9video-crash-guard = D3D9 Video Decoder
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Widejodekoder WMF VPX
 reset-on-next-restart = Při přichodnym nowym starće wróćo stajić
 gpu-process-kill-button = GPU-proces skónčić
 gpu-device-reset = Grat wróćo stajić
@@ -248,12 +289,7 @@ uses-tiling = Wužiwa kachlički
 content-uses-tiling = Wužiwa kachlicowanje (wobsah)
 off-main-thread-paint-enabled = Off Main Thread Painting zmóžnjeny
 off-main-thread-paint-worker-count = Ličba workerow Off Main Thread Painting
-low-end-machine = Mjenje wukonliwa mašina namakana
 target-frame-rate = Cilowa wobłukowa hustosć
-audio-backend = Awdiobackend
-max-audio-channels = Maksimalna ličba kanalow
-channel-layout = Preferowane kanalowe wuhotowanje
-sample-rate = Preferowana wottasowanska rata
 min-lib-versions = Wočakowana minimalna wersija
 loaded-lib-versions = Wužita wersija
 has-seccomp-bpf = Seccomp-BPF (Filtrowanje systemowych zawołanjow)
@@ -268,6 +304,11 @@ sandbox-proc-type-content = wobsah
 sandbox-proc-type-file = datajowy wobsah
 sandbox-proc-type-media-plugin = medijowy tykač
 sandbox-proc-type-data-decoder = dekodowak datow
+startup-cache-title = Startowy pufrowak
+startup-cache-disk-cache-path = Šćežka tačeloweho pufrowaka
+startup-cache-ignore-disk-cache = Tačelowy pufrowak ignorować
+startup-cache-found-disk-cache-on-init = Tačelowy pufrowak je so namakał při inicializowanju
+startup-cache-wrote-to-disk-cache = Je so do tačeloweho pufrowaka napisało
 launcher-process-status-0 = Zmóžnjeny
 launcher-process-status-1 = Zmylka dla znjemóžnjeny
 launcher-process-status-2 = Namócnje znjemóžnjeny
@@ -291,6 +332,7 @@ touch-enabled = zapodaće přez podótknjenje zmóžnjene
 drag-enabled = ćahanje suwanskeje lajsty zmóžnjene
 keyboard-enabled = tastatura zmóžnjena
 autoscroll-enabled = awtomatiske kulenje zmóžnjene
+zooming-enabled = łahodne šćipate skalowanje zmóžnjene
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

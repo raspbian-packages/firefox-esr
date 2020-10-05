@@ -5,6 +5,9 @@
 <!-- Don't localize these. They're here until they have
      a better place to live. -->
 <!ENTITY syncBrand.fullName.label "Firefox Sync">
+
+<!-- Don't localize these. They're here until they have
+     a better place to live. -->
 <!ENTITY syncBrand.shortName.label "Sync">
 
 <!-- Main titles. -->
@@ -35,7 +38,7 @@
 <!ENTITY bookmarks.folder.toolbar.label 'Alatna traka zabilješki'>
 <!ENTITY bookmarks.folder.other.label 'Druge zabilješke'>
 <!ENTITY bookmarks.folder.desktop.label 'Desktop zabilješke'>
-<!ENTITY bookmarks.folder.mobile.label 'Mobilne zabilješke'>
+<!ENTITY bookmarks.folder.mobile.label 'Zabilješke mobitela'>
 <!-- Pinned sites on about:home. This folder should never be shown to the user, but we have to give it a string name -->
 <!ENTITY bookmarks.folder.pinned.label 'Zakačeno'>
 
@@ -59,14 +62,14 @@
 <!ENTITY fxaccount_status_needs_verification2 'Vaš račun treba biti potvrđen. Pritisnite za ponovno slanje e-pošte za potvrdu.'>
 <!ENTITY fxaccount_status_needs_credentials 'Nije se moguće povezati. Pritisnite za prijavu.'>
 <!ENTITY fxaccount_status_needs_upgrade 'Trebate ažurirati &brandShortName; kako biste se prijavili.'>
-<!ENTITY fxaccount_status_needs_master_sync_automatically_enabled '&syncBrand.shortName.label; je postavljen, ali se ne sinkronizira automatski. Uključite “Automatska sinkronizacija” u Android postavke &gt; Korištenje podataka.'>
-<!ENTITY fxaccount_status_needs_master_sync_automatically_enabled_v21 '&syncBrand.shortName.label; je postavljen, ali se ne sinkronizira automatski. Uključite “Automatska sinkronizacija” u izborniku Android postavke &gt; Računi.'>
+<!ENTITY fxaccount_status_needs_master_sync_automatically_enabled '&syncBrand.shortName.label; je postavljen, ali se ne sinkronizira automatski. Uključi „Automatska sinkronizacija” u Android postavke &gt; Korištenje podataka.'>
+<!ENTITY fxaccount_status_needs_master_sync_automatically_enabled_v21 '&syncBrand.shortName.label; je postavljen, ali se ne sinkronizira automatski. Uključi „Automatska sinkronizacija” u izbroniku za Android postavke &gt; Korištenje podataka.'>
 <!ENTITY fxaccount_status_needs_finish_migrating 'Pritisnite za prijavu u vaš novi Firefox račun.'>
 <!ENTITY fxaccount_status_choose_what 'Odaberite što ćete sinkronizirati'>
 <!ENTITY fxaccount_status_bookmarks 'Zabilješke'>
 <!ENTITY fxaccount_status_history 'Povijest'>
 <!ENTITY fxaccount_status_passwords2 'Prijave'>
-<!ENTITY fxaccount_status_tabs 'Otvori kartice'>
+<!ENTITY fxaccount_status_tabs 'Otvorene kartice'>
 <!ENTITY fxaccount_status_additional_settings 'Dodatne postavke'>
 <!ENTITY fxaccount_pref_sync_use_metered2 'Sinkroniziraj samo preko Wi-Fi'>
 <!-- Localization note: Only affects background syncing, user initiated

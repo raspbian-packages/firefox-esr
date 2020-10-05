@@ -13,6 +13,10 @@
 <!ENTITY importFromIE.accesskey         "M">
 <!ENTITY importFromEdge.label           "Microsoft Edge">
 <!ENTITY importFromEdge.accesskey       "E">
+<!ENTITY importFromEdgeLegacy.label     "Microsoft Edge ਪੁਰਾਣਾ">
+<!ENTITY importFromEdgeLegacy.accesskey "L">
+<!ENTITY importFromEdgeBeta.label       "Microsoft Edge Beta">
+<!ENTITY importFromEdgeBeta.accesskey   "d">
 <!ENTITY importFromNothing.label        "ਕੁਝ ਵੀ ਇੰਪੋਰਟ ਨਾ ਕਰੋ">
 <!ENTITY importFromNothing.accesskey    "D">
 <!ENTITY importFromSafari.label         "ਸਫ਼ਾਰੀ">
@@ -27,7 +31,7 @@
 <!ENTITY importFromChromeDev.accesskey  "D">
 <!ENTITY importFromChromium.label       "Chromium">
 <!ENTITY importFromChromium.accesskey   "u">
-<!ENTITY importFromFirefox.label        "ਫਾਇਰਫਾਕਸ">
+<!ENTITY importFromFirefox.label        "Firefox">
 <!ENTITY importFromFirefox.accesskey    "X">
 <!ENTITY importFrom360se.label          "360 ਸੁਰੱਖਿਆ ਬਰਾਊਜ਼ਰ">
 <!ENTITY importFrom360se.accesskey      "3">

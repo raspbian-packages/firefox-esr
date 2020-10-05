@@ -10,6 +10,7 @@ with Files("**"):
 DIRS += ['input']
 
 MOCHITEST_MANIFESTS += [
+    'test/dialog/mochitest.ini',
     'test/forms/mochitest.ini',
     'test/mochitest.ini',
 ]
@@ -23,7 +24,6 @@ BROWSER_CHROME_MANIFESTS += ['test/browser.ini']
 
 XPIDL_SOURCES += [
     'nsIFormSubmitObserver.idl',
-    'nsIImageDocument.idl',
     'nsIMenuBuilder.idl',
 ]
 
@@ -37,20 +37,19 @@ EXPORTS += [
     'nsIConstraintValidation.h',
     'nsIForm.h',
     'nsIFormControl.h',
-    'nsIFormProcessor.h',
     'nsIHTMLCollection.h',
-    'nsIHTMLDocument.h',
     'nsIRadioGroupContainer.h',
     'nsIRadioVisitor.h',
-    'nsITextControlElement.h',
-    'nsTextEditorState.h',
 ]
 
 EXPORTS.mozilla += [
+    'TextControlElement.h',
+    'TextControlState.h',
     'TextInputListener.h',
 ]
 
 EXPORTS.mozilla.dom += [
+    'ElementInternals.h',
     'HTMLAllCollection.h',
     'HTMLAnchorElement.h',
     'HTMLAreaElement.h',
@@ -131,6 +130,7 @@ EXPORTS.mozilla.dom += [
 ]
 
 UNIFIED_SOURCES += [
+    'ElementInternals.cpp',
     'HTMLAllCollection.cpp',
     'HTMLAnchorElement.cpp',
     'HTMLAreaElement.cpp',
@@ -213,9 +213,9 @@ UNIFIED_SOURCES += [
     'nsHTMLDocument.cpp',
     'nsIConstraintValidation.cpp',
     'nsRadioVisitor.cpp',
-    'nsTextEditorState.cpp',
     'PlayPromise.cpp',
     'RadioNodeList.cpp',
+    'TextControlState.cpp',
     'TextTrackManager.cpp',
     'TimeRanges.cpp',
     'ValidityState.cpp',
@@ -245,7 +245,6 @@ LOCAL_INCLUDES += [
     '/dom/html/input',
     '/dom/media',
     '/dom/security',
-    '/dom/xbl',
     '/dom/xul',
     '/image',
     '/layout/forms',

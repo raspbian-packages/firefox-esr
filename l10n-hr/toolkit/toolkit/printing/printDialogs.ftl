@@ -5,7 +5,7 @@
 print-setup =
     .title = Postava stranice
 custom-prompt-title = Prilagođeno...
-custom-prompt-prompt = Upišite tekst vašeg zaglavlja/podnožja
+custom-prompt-prompt = Upiši tvoj standardni tekst zaglavlja/podnožja
 basic-tab =
     .label = Format i opcije
 advanced-tab =
@@ -26,8 +26,8 @@ scale =
 scale-percent =
     .value = %
 shrink-to-fit =
-    .label = Smanji da pristaje širini stranice
-    .accesskey = š
+    .label = Smanji na širinu prozora
+    .accesskey = S
 options-group-label =
     .value = Mogućnosti
 print-bg =
@@ -103,6 +103,7 @@ print-window =
     .title = Ispisivanje
 print-complete =
     .value = Ispisivanje je dovršeno.
+
 # Variables
 # $percent (integer) - Number of printed percentage
 print-percent =

@@ -7,8 +7,8 @@ page-subtitle = Ko kuatiarogue oguereko marandu aporekoguáva ikatúva eipuru em
 crashes-title = Marandu jejavyguáva
 crashes-id = ID momarandu
 crashes-send-date = Mondopyre
-crashes-all-reports = Opaite marandu'i jejavy rehegua
-crashes-no-config = Ko tembipuru'i oñembohekopyahu ohechauka hag̃ua marandu jejavy rehegua.
+crashes-all-reports = Opaite marandu’i jejavy rehegua
+crashes-no-config = Ko tembipuru’i oñembohekopyahu ohechauka hag̃ua marandu jejavy rehegua.
 extensions-title = Mba'ejoapyrã
 extensions-name = Téra
 extensions-enabled = Myandypyre
@@ -27,11 +27,14 @@ features-id = ID
 processes-title = Tapereko okayguáva
 processes-type = Peteĩchagua
 processes-count = Papa
-app-basics-title = Tembipuru'i ñemboheko ypy
+app-basics-title = Tembipuru’i ñemboheko ypy
 app-basics-name = Téra
 app-basics-version = Peteĩchagua
 app-basics-build-id = ID jejapo
+app-basics-distribution-id = Ñemyasãi ID
 app-basics-update-channel = Ñembohekopyahu mbohapeha
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Embohekopyahu Marandurenda'aty
@@ -50,13 +53,12 @@ app-basics-enabled-plugins = Mba'ejoajurã myendypyre
 app-basics-build-config = Mbyatypy ñemboheko
 app-basics-user-agent = Puruhára pytyvõha
 app-basics-os = OS
-app-basics-memory-use = Mandu'arenda jepuru
+app-basics-memory-use = Mandu’arenda jepuru
 app-basics-performance = Mba'eaporã
 app-basics-service-workers = Mba'apohára mba'epytyvõrã mboguapyréva
 app-basics-profiles = Mba'etekuéra
 app-basics-launcher-process-status = Momboha jepuru
 app-basics-multi-process-support = Windows rembiapoita
-app-basics-process-count = Ñanduti Retepy Rembiapo
 app-basics-remote-processes-count = Tapereko okayguáva
 app-basics-enterprise-policies = Purureko mba'apoha rehegua
 app-basics-location-service-key-google = Google ñemoñe’ẽasa ñe’ẽñemi
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Hesegua ojokóva Apopyvusu je'a Ñangarekoha
 graphics-workarounds-title = Ñemyatyrõ sapy'agua
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Ovetã raperekoite
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Mohendaha jeregua
 place-database-title = Mba'ekuaarã renda
 place-database-integrity = Tekoite
 place-database-verify-integrity = Tekoporã Jehechajey
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Ñehenói pumbyrýpe
 sandbox-sys-call-args = Je'ekuaaite
 safe-mode-title = Eipuru teko jerovia
 restart-in-safe-mode-label = Moĩmbaha oguepyréva moñepyrũjey…
+clear-startup-cache-title = Emohenda kache ñepyrũha ñembogue
+clear-startup-cache-label = Embogue kache ñepyrũha…
+startup-cache-dialog-title = Embogue kache ñepyrũha
+startup-cache-dialog-body = Emoñepyrũjey { -brand-short-name } embogue hag̃ua kache ñepyrũha. Kóva nomoambuéi ñemboheko ha jepysokue oñembojuajúva { -brand-short-name } rehe.
+restart-button-label = Ñepyrũjey
+
+## Media titles
+
+audio-backend = Mba'epu ñangarekoha huguapeguáva
+max-audio-channels = Max mbohapeha
+channel-layout = Mbohapeha ñemoĩ ojererohorýva
+sample-rate = Techaukarã py'ỹigua ojererohorýva
+roundtrip-latency = Latencia ou ha ohóva (ojeréva ypykuete)
 media-title = Marandu myasãiha
 media-output-devices-title = Mba'e'oka osẽha
 media-input-devices-title = Mba'e'oka oikeha
@@ -124,21 +141,43 @@ media-device-format = Ysaja
 media-device-channels = Mbohapeha
 media-device-rate = Mba'erepy
 media-device-latency = Tekoteete
+media-capabilities-title = Hupytyha pyrusukue
+# List all the entries of the database.
+media-capabilities-enumerate = Embopapapy mba’ekuaarã guapyha
+
+##
+
 intl-title = Mongakuaa & ñemohenda
-intl-app-title = Tembipuru'i ñemboheko
+intl-app-title = Tembipuru’i ñemboheko
 intl-locales-requested = Ñe'ẽnguéra jerurepyre
 intl-locales-available = Ñe'ẽnguéra ojepurukuaáva
-intl-locales-supported = Ñe'ẽnguéra tembipuru'i rehegua
+intl-locales-supported = Ñe’ẽnguéra tembipuru’i rehegua
 intl-locales-default = Ñe'ẽnguéra ijypykuéva
-intl-os-title = Apopyvusu oku'éva
+intl-os-title = Apopyvusu oku’éva
 intl-os-prefs-system-locales = Ñe'ẽnguéra apopyvusu rehegua
 intl-regional-prefs = Jerohoryvéva tendaguáva
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Ñemopotĩ okayguáva (Chromium raperekoite)
+remote-debugging-accepting-connections = Emoneĩ jeike
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
     { $days ->
-        [one] Marandu'i jejavy rehegua ko { $days } ára peguáva
-       *[other] Marandu'i jejavy rehegua ohasaramóva { $days } ára peguáva
+        [one] Marandu’i jejavy rehegua ko { $days } ára peguáva
+       *[other] Marandu’i jejavy rehegua ohasaramóva { $days } ára peguáva
     }
 # Variables
 # $minutes (integer) - Number of minutes since crash
@@ -175,7 +214,7 @@ text-copied = Moñe'ẽrã oñembohasáma kuatiajokohápe
 
 blocked-driver = Ojejokóva peteĩchaguápe g̃uarã ta'ãnga ñangarekohárape.
 blocked-gfx-card = Ojejoko ikuatia'atã ha'ãngávape g̃uarã oguereko rupi apañuãi ñangarekoha omoĩporã'ỹva.
-blocked-os-version = Ojejokóva peteĩchaguápe g̃uarã nde apopyvusu oku'éva pegua.
+blocked-os-version = Ojejokóva peteĩchaguápe g̃uarã nde apopyvusu oku’éva pegua.
 blocked-mismatched-version = Ojoko ha'ãnga ñangarekoha peteĩchagua oĩporã'ỹva jehaipy ha DLL pa'ũme.
 # Variables
 # $driverVersion - The graphics driver version string
@@ -229,7 +268,9 @@ unknown-failure = Tysýi vai; ayvu jejavy { $failureCode }
 d3d11layers-crash-guard = D3D11 Compositor
 d3d11video-crash-guard = D3D11 Ta'ãngamýi Mbopapapy'oha
 d3d9video-crash-buard = D3D9 Ta'ãngamýi Mbopapapy'oha
+d3d9video-crash-guard = D3D9 Ta'ãngamýi Mbopapapy'oha
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Ta'ãngamýi Mbopapapy'oha WMF VPX
 reset-on-next-restart = Embojevy moñepyrũjey uperire
 gpu-process-kill-button = GPU raperekogua mohu'ã
 gpu-device-reset = Emoñepyrũjey mba’e’oka
@@ -238,12 +279,7 @@ uses-tiling = Eipuru mosáiko
 content-uses-tiling = Eipuru mosáiko (tetepy)
 off-main-thread-paint-enabled = Opyta okápe inimbo tuichavéva mbosa'yha ijurujáva
 off-main-thread-paint-worker-count = Ñemoha'anga resa'ỹijo téma tuichavéva opyta okápe
-low-end-machine = Ojehechakuaa peteĩ mohendaha hembiapo’ivéva
 target-frame-rate = Ta’anga py’ỹi hupytyrã
-audio-backend = Mba'epu ñangarekoha huguapeguáva
-max-audio-channels = Max mbohapeha
-channel-layout = Mbohapeha ñemoĩ ojererohorýva
-sample-rate = Techaukarã py'ỹigua ojererohorýva
 min-lib-versions = Peteĩchagua michĩmíva ha'arõpy
 loaded-lib-versions = Peteĩchagua ojepurúva
 has-seccomp-bpf = Seccomp-BPF (Ñehenói mboguaha rehegua)
@@ -258,8 +294,13 @@ sandbox-proc-type-content = tetepy
 sandbox-proc-type-file = Marandurenda rechapyrã
 sandbox-proc-type-media-plugin = plugin maranduguáva
 sandbox-proc-type-data-decoder = Mba’ekuaarã papapy'o
+startup-cache-title = Kache ñepyrũgua
+startup-cache-disk-cache-path = Disco Kache Rape
+startup-cache-ignore-disk-cache = Ehejarei Disco Kache
+startup-cache-found-disk-cache-on-init = Ojejuhu disco kache Init-pe
+startup-cache-wrote-to-disk-cache = Ehai Disco Kachépe
 launcher-process-status-0 = Jurujapyre
-launcher-process-status-1 = Ojepe'apyre ojavy rupi
+launcher-process-status-1 = Ojepe’apyre ojavy rupi
 launcher-process-status-2 = Mbaretépe jepe’apyre
 launcher-process-status-unknown = Tekotee ojekuaa’ỹva
 # Variables
@@ -270,7 +311,7 @@ multi-process-status-0 = Puruhára myandypyre
 multi-process-status-1 = Myendypyre ijypykue rupi
 multi-process-status-2 = Oĩmbaporã'ỹva
 multi-process-status-4 = Oguémava tembirpuru jeikekuaahágui
-multi-process-status-6 = Oñemomba'apo'ỹva oguereko rupi jehai ndojehaiva'erãi
+multi-process-status-6 = Oñemomba’apo’ỹva oreko rupi jehai ndojehaiva’erãi
 multi-process-status-7 = Oñemomba'apo'ỹ moĩmbaha rupive
 multi-process-status-8 = Oñemongepyre mbaretépe
 multi-process-status-unknown = Jeiko ojekuaa'ỹva
@@ -278,9 +319,10 @@ async-pan-zoom = Ojuehe'ỹva Pan/Zoom
 apz-none = Avave
 wheel-enabled = omoneĩ jereha jeike
 touch-enabled = jeikeha jepokóva jurujapyre
-drag-enabled = embosyryry oku'éva renda myendypyre
+drag-enabled = embosyryry oku’éva renda myendypyre
 keyboard-enabled = tairenda myandypyre
-autoscroll-enabled = ñemongu'e ijeheguíva ijurujáma
+autoscroll-enabled = ñemongu’e ijeheguíva ijurujáma
+zooming-enabled = zoom ñepichã’i myandypyre
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

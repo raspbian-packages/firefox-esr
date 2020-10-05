@@ -34,7 +34,10 @@ app-basics-title = Applikaasjebasis
 app-basics-name = Namme
 app-basics-version = Ferzje
 app-basics-build-id = Build-ID
+app-basics-distribution-id = Distribúsje-ID
 app-basics-update-channel = Fernijingskanaal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Map fernije
@@ -59,7 +62,6 @@ app-basics-service-workers = Registrearre Service Workers
 app-basics-profiles = Profilen
 app-basics-launcher-process-status = Launcher-proses
 app-basics-multi-process-support = Multiproses-finsters
-app-basics-process-count = Webynhâldsproses
 app-basics-remote-processes-count = Eksterne prosessen
 app-basics-enterprise-policies = Bedriuwsbelied
 app-basics-location-service-key-google = Google-lokaasjetsjinstkaai
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Utskeakele funksjes fan ûngelokbeskerming
 graphics-workarounds-title = Workarounds
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Finsterprotokol
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Desktopomjouwing
 place-database-title = Places-database
 place-database-integrity = Yntegriteit
 place-database-verify-integrity = Yntegriteit ferifearje
@@ -115,6 +119,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Arguminten
 safe-mode-title = Probearje de feilige modus
 restart-in-safe-mode-label = Werstart mei útskeakele add-ons…
+clear-startup-cache-title = Opstartbuffer probearje te wiskjen
+clear-startup-cache-label = Opstartbuffer wiskje…
+startup-cache-dialog-title = Opstartbuffer wiskje
+startup-cache-dialog-body = Start { -brand-short-name } opnij om de opstartbuffer te wiskjen. Dit wiziget jo ynstellingen net en smyt gjin oan { -brand-short-name } tafoege útwreidingen fuort.
+restart-button-label = Opnij starte
+
+## Media titles
+
+audio-backend = Audio-backend
+max-audio-channels = Maks kanalen
+channel-layout = Oanrekommandearre kanaalmodus
+sample-rate = Oanrekommandearre foarbyldfrekwinsje
+roundtrip-latency = Retinsjelatinsje (standertdeviaasje)
 media-title = Media
 media-output-devices-title = Utfierapparaten
 media-input-devices-title = Ynfierapparaten
@@ -127,6 +144,12 @@ media-device-format = Formaat
 media-device-channels = Kanalen
 media-device-rate = Wurdearrring
 media-device-latency = Latintens
+media-capabilities-title = Mediamooglikheden
+# List all the entries of the database.
+media-capabilities-enumerate = Database ynventarisearje
+
+##
+
 intl-title = Ynternasjonalisaasje & lokalisaasje
 intl-app-title = Applikaasjeynstellingen
 intl-locales-requested = Fersochte talen
@@ -136,6 +159,22 @@ intl-locales-default = Standerttaal
 intl-os-title = Bestjoeringssysteem
 intl-os-prefs-system-locales = Systeemtalen
 intl-regional-prefs = Regionale foarkarren
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Remote debugging (Chromium-protokol)
+remote-debugging-accepting-connections = Akseptearret ferbiningen
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -154,8 +193,8 @@ crashes-time-minutes =
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
     { $hours ->
-        [one] { $hours } oere lyn
-       *[other] { $hours } oeren lyn
+        [one] { $hours } oer lyn
+       *[other] { $hours } oer lyn
     }
 # Variables
 # $days (integer) - Number of days since crash
@@ -232,7 +271,9 @@ unknown-failure = Op blokkearlist; flaterkoade { $failureCode }
 d3d11layers-crash-guard = D3D11-compositor
 d3d11video-crash-guard = D3D11-fideodecoder
 d3d9video-crash-buard = D3D9-fideodecoder
+d3d9video-crash-guard = D3D9-fideodecoder
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX-fideodecoder
 reset-on-next-restart = Opnij ynstelle nij werstart
 gpu-process-kill-button = GPU-proses beëinigje
 gpu-device-reset = Apparaatwerinisjalisaasje
@@ -241,12 +282,7 @@ uses-tiling = Brûkt tegels
 content-uses-tiling = Brûkt Tiling (Ynhâld)
 off-main-thread-paint-enabled = Off Main Thread Painting ynskeakele
 off-main-thread-paint-worker-count = Off Main Thread Painting Worker Count
-low-end-machine = Minder krêftige masine detektearre
 target-frame-rate = Doelframerate
-audio-backend = Audio-backend
-max-audio-channels = Maks kanalen
-channel-layout = Oanrekommandearre kanaalmodus
-sample-rate = Oanrekommandearre foarbyldfrekwinsje
 min-lib-versions = Minimale ferzje ferwachte
 loaded-lib-versions = Brûkte ferzje
 has-seccomp-bpf = Seccomp-BPF (Systeemoanropfiltering)
@@ -261,6 +297,11 @@ sandbox-proc-type-content = ynhâld
 sandbox-proc-type-file = bestânsynhâld
 sandbox-proc-type-media-plugin = mediaynstekker
 sandbox-proc-type-data-decoder = gegevensdecoder
+startup-cache-title = Opstartbuffer
+startup-cache-disk-cache-path = Paad nei skiifbuffer
+startup-cache-ignore-disk-cache = Skiifbuffer negearje
+startup-cache-found-disk-cache-on-init = Skiifbuffer by Init fûn
+startup-cache-wrote-to-disk-cache = Nei skiifbuffer skreaun
 launcher-process-status-0 = Ynskeakele
 launcher-process-status-1 = Utskeakele fanwegen flater
 launcher-process-status-2 = Forsearre útskeakele
@@ -284,6 +325,7 @@ touch-enabled = oanraakynfier ynskeakele
 drag-enabled = sleep fia skowbalke ynskeakele
 keyboard-enabled = toetseboerd ynskeakele
 autoscroll-enabled = automatysk skowe ynskeakele
+zooming-enabled = soepele knyp-zoom ynskeakele
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

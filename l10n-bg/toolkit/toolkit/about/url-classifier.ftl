@@ -3,6 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 url-classifier-title = Информация за класификатора на URL
+url-classifier-search-title = Търсене
+url-classifier-search-result-title = Резултати
+url-classifier-search-result-uri = Адрес: { $uri }
+url-classifier-search-result-list = Списък на таблици: { $list }
+url-classifier-search-input = Адрес
+url-classifier-search-error-invalid-url = Неправилен адрес
+url-classifier-search-error-no-features = Няма избрани възможности
+url-classifier-search-btn = Започнете да търсите
+url-classifier-search-features = Възможности
+url-classifier-search-listType = Вид на списъка
 url-classifier-provider-title = Доставчик
 url-classifier-provider = Доставчик
 url-classifier-provider-last-update-time = Последно обновяване
@@ -30,6 +40,7 @@ url-classifier-debug-sb-modules = Модули за журнала при без
 url-classifier-debug-modules = Текущи модули за журнала
 url-classifier-debug-sbjs-modules = Журнал на JS при безопасно разглеждане
 url-classifier-debug-file = Текущ файл на журнала
+
 url-classifier-trigger-update = Пускане на обновяване
 url-classifier-not-available = липсва
 url-classifier-disable-sbjs-log = Изключване на журнала на JS при безопасно разглеждане

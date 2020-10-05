@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Код памылкі: <a data-l10n-name="error-co
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Вэб-сайты пацвярджаюць сваю ідэнтычнасць з дапамогай сертыфікатаў, выдадзеных сертыфікацыйнымі ўстановамі. Большасць браўзераў больш не давяраюць сертыфікатам, выдадзеным GeoTrust, RapidSSL, Symantec, Thawte і VeriSign. { $hostname } выкарыстоўвае сертыфікат ад адной з гэтых устаноў, таму ідэнтычнасць сайта не можа быць пацверджана.
 cert-error-symantec-distrust-admin = Вы можаце паведаміць адміністратару вэб-сайта аб гэтай праблеме.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = Фарсіраванае абароненае злучэнне HTTP: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = Прывязка адкрытага ключа HTTP: { $hasHPKP }
+cert-error-details-cert-chain-label = Ланцужок сертыфіката:
+open-in-new-window-for-csp-or-xfo-error = Адкрыць сайт у новым акне
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Каб захаваць вашу бяспеку, { $hostname } не дазволіць { -brand-short-name } паказаць старонку, калі яна ўбудавана ў іншы сайт. Каб убачыць гэтую старонку, трэба адкрыць яе ў новым акне.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Нельга злучыцца
+deniedPortAccess-title = Гэты адрас абмежаваны
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Хм. Ніяк не выходзіць знайсці гэты сайт.
+fileNotFound-title = Файл не знойдзены
+fileAccessDenied-title = Доступ да файла забаронены
+generic-title = Ух?!
+captivePortal-title = Злучыцца з сеткай
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Хм. Гэты адрас не выглядае сапраўдным.
+netInterrupt-title = Злучэнне перарвана
+notCached-title = Дакумент састарэў
+netOffline-title = Пазасеткавы рэжым
+contentEncodingError-title = Памылка кадавання змесціва
+unsafeContentType-title = Небяспечны тып файла
+netReset-title = Злучэнне скінута
+netTimeout-title = Час чакання злучэння выйшаў
+unknownProtocolFound-title = Немагчыма распазнаць адрас
+proxyConnectFailure-title = Проксі-сервер адмовіўся злучацца
+proxyResolveFailure-title = Немагчыма знайсці проксі-сервер
+redirectLoop-title = Старонка няправільна перанакіроўваецца
+unknownSocketType-title = Нечаканы адказ сервера
+nssFailure2-title = Няўдача бяспечнага злучэння
+cspBlocked-title = Заблакавана палітыкай бяспекі змесціва
+xfoBlocked-title = Заблакавана палітыкай X-Frame-Options
+csp-xfo-error-title = { -brand-short-name } не можа адкрыць гэту старонку
+corruptedContentError-title = Памылка пашкоджанага змесціва
+remoteXUL-title = Аддалены XUL
+sslv3Used-title = Немагчыма злучыцца бяспечна
+inadequateSecurityError-title = Ваша злучэнне не бяспечнае
+blockedByPolicy-title = Заблакаваная старонка
+clockSkewError-title = Гадзіннік вашага камп'ютара ідзе няправільна
+networkProtocolError-title = Памылка сеткавага пратаколу
+nssBadCert-title = Папярэджанне: наперадзе патэнцыяльная пагроза бяспецы
+nssBadCert-sts-title = Не злучаны: Патэнцыяльная праблема бяспекі
+certerror-mitm-title = Праграмнае забеспячэнне не дазваляе { -brand-short-name } бяспечна злучыцца з гэтым сайтам

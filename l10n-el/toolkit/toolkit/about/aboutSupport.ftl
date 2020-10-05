@@ -34,11 +34,14 @@ app-basics-title = Βασικά εφαρμογής
 app-basics-name = Όνομα
 app-basics-version = Έκδοση
 app-basics-build-id = ID έκδοσης
+app-basics-distribution-id = ID διανομής
 app-basics-update-channel = Κανάλι ενημερώσεων
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
-        [linux] Ενημέρωση καταλόγου
-       *[other] Ενημέρωση φακέλου
+        [linux] Κατάλογος ενημέρωσης
+       *[other] Φάκελος ενημέρωσης
     }
 app-basics-update-history = Ιστορικό ενημερώσεων
 app-basics-show-update-history = Προβολή ιστορικού ενημερώσεων
@@ -59,7 +62,6 @@ app-basics-service-workers = Εγγεγραμμένα Service Workers
 app-basics-profiles = Προφίλ
 app-basics-launcher-process-status = Διαδικασία προγράμματος εκκίνησης
 app-basics-multi-process-support = Παράθυρα πολυδιεργασιών
-app-basics-process-count = Διεργασίες διαδικτυακού περιεχομένου
 app-basics-remote-processes-count = Απομακρυσμένες διεργασίες
 app-basics-enterprise-policies = Πολιτικές επιχειρήσεων
 app-basics-location-service-key-google = Κλειδί υπηρεσίας τοποθεσίας Google
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Απενεργοποιημένες λειτουρ�
 graphics-workarounds-title = Λύσεις
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Πρωτόκολλο παραθύρου
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Περιβάλλον επιφάνειας εργασίας
 place-database-title = Βάση δεδομένων τοποθεσιών
 place-database-integrity = Ακεραιότητα
 place-database-verify-integrity = Επαλήθευση ακεραιότητας
@@ -115,6 +119,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Επιχειρήματα
 safe-mode-title = Δοκιμή ασφαλούς λειτουργίας
 restart-in-safe-mode-label = Επανεκκίνηση με τα πρόσθετα απενεργοποιημένα…
+clear-startup-cache-title = Δοκιμάστε να εκκαθαρίσετε την προσωρινή μνήμη εκκίνησης
+clear-startup-cache-label = Εκκαθάριση προσωρινής μνήμης εκκίνησης…
+startup-cache-dialog-title = Εκκαθάριση προσωρινής μνήμης εκκίνησης
+startup-cache-dialog-body = Επανεκκινήστε το { -brand-short-name } για να εκκαθαρίσετε την προσωρινή μνήμη εκκίνησης. Αυτό δεν θα αλλάξει τις ρυθμίσεις σας, ούτε θα καταργήσει τις επεκτάσεις που έχετε προσθέσει στο { -brand-short-name }.
+restart-button-label = Επανεκκίνηση
+
+## Media titles
+
+audio-backend = Υποσύστημα ήχου
+max-audio-channels = Μέγιστος αριθμός καναλιών
+channel-layout = Επιθυμητή διάταξη καναλιών
+sample-rate = Επιθυμητός ρυθμός δειγματοληψίας
+roundtrip-latency = Καθυστέρηση μετ' επιστροφής (τυπική απόκλιση)
 media-title = Πολυμέσα
 media-output-devices-title = Συσκευές εξόδου
 media-input-devices-title = Συσκευές εισόδου
@@ -127,6 +144,12 @@ media-device-format = Τύπος
 media-device-channels = Κανάλια
 media-device-rate = Ρυθμός
 media-device-latency = Καθυστέρηση
+media-capabilities-title = Δυνατότητες μέσων
+# List all the entries of the database.
+media-capabilities-enumerate = Απαρίθμηση βάσης δεδομένων
+
+##
+
 intl-title = Διεθνοποίηση & μετάφραση
 intl-app-title = Ρυθμίσεις εφαρμογής
 intl-locales-requested = Ζητούμενες γλώσσες
@@ -136,6 +159,22 @@ intl-locales-default = Προεπιλεγμένη γλώσσα
 intl-os-title = Λειτουργικό σύστημα
 intl-os-prefs-system-locales = Γλώσσες συστήματος
 intl-regional-prefs = Προτιμήσεις περιοχής
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Απομακρυσμένο debugging (Πρωτόκολλο Chromium)
+remote-debugging-accepting-connections = Αποδεκτές συνδέσεις
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -232,7 +271,9 @@ unknown-failure = Μπλοκαρίστηκε, κωδικός αποτυχίας 
 d3d11layers-crash-guard = Συνθέτης D3D11
 d3d11video-crash-guard = Αποκωδικοποιητής βίντεο D3D11
 d3d9video-crash-buard = Αποκωδικοποιητής βίντεο D3D9
+d3d9video-crash-guard = Αποκωδικοποιητής βίντεο D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Αποκωδικοποιητής βίντεο WMF VPX
 reset-on-next-restart = Επαναφορά στην επόμενη επανεκκίνηση
 gpu-process-kill-button = Τερματισμός διεργασίας GPU
 gpu-device-reset = Επαναφορά συσκευής
@@ -241,12 +282,7 @@ uses-tiling = Χρησιμοποιεί παράθεση
 content-uses-tiling = Χρησιμοποιεί παράθεση (περιεχόμενο)
 off-main-thread-paint-enabled = Η απόδοση γραφικών εκτός κύριου νήματος ενεργοποιήθηκε
 off-main-thread-paint-worker-count = Πλήθος workers ζωγραφικής εκτός κυρίου νήματος
-low-end-machine = Ανιχνεύθηκε μη αποδοτικό μηχάνημα
 target-frame-rate = Ρυθμός καρέ στόχου
-audio-backend = Υποσύστημα ήχου
-max-audio-channels = Μέγιστος αριθμός καναλιών
-channel-layout = Επιθυμητή διάταξη καναλιών
-sample-rate = Επιθυμητός ρυθμός δειγματοληψίας
 min-lib-versions = Αναμενόμενη ελάχιστη έκδοση
 loaded-lib-versions = Έκδοση σε χρήση
 has-seccomp-bpf = Seccomp-BPF (Φιλτράρισμα κλήσεων συστήματος)
@@ -261,6 +297,11 @@ sandbox-proc-type-content = περιεχόμενο
 sandbox-proc-type-file = περιεχόμενο αρχείου
 sandbox-proc-type-media-plugin = άρθρωμα πολυμέσων
 sandbox-proc-type-data-decoder = αποκωδικοποιητής δεδομένων
+startup-cache-title = Προσωρινή μνήμη εκκίνησης
+startup-cache-disk-cache-path = Διαδρομή προσωρινής μνήμης δίσκου
+startup-cache-ignore-disk-cache = Παράβλεψη προσωρινής μνήμης δίσκου
+startup-cache-found-disk-cache-on-init = Εύρεση προσωρινής μνήμης δίσκου στο Init
+startup-cache-wrote-to-disk-cache = Εγγράφηκε στην προσωρινή μνήμη δίσκου
 launcher-process-status-0 = Ενεργό
 launcher-process-status-1 = Ανενεργό λόγω αποτυχίας
 launcher-process-status-2 = Ανενεργό εξαναγκαστικά
@@ -284,6 +325,7 @@ touch-enabled = είσοδος αφής ενεργοποιημένη
 drag-enabled = σύρσιμο γραμμής κύλισης ενεργοποιημένο
 keyboard-enabled = πληκτρολόγιο ενεργό
 autoscroll-enabled = αυτόματη κύλιση ενεργή
+zooming-enabled = ομαλό ζουμ ενεργό
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

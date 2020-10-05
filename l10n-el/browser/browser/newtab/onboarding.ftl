@@ -3,9 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-## UI strings for the simplified onboarding modal
-
-
 ### UI strings for the simplified onboarding modal / about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -25,13 +22,46 @@ onboarding-welcome-header = Καλώς ήλθατε στο { -brand-short-name }
 onboarding-welcome-body = Έχετε το πρόγραμμα περιήγησης.<br/>Γνωρίστε τα υπόλοιπα προϊόντα του { -brand-product-name }.
 onboarding-welcome-learn-more = Μάθετε περισσότερα σχετικά με τα οφέλη.
 onboarding-join-form-header = Γίνετε μέλος του { -brand-product-name }
+onboarding-welcome-modal-get-body = Έχετε το πρόγραμμα περιήγησης.<br/>Αξιοποιήστε στο έπακρο το { -brand-product-name }.
+onboarding-welcome-modal-supercharge-body = Εξασφαλίστε την προστασία του απορρήτου σας.
+onboarding-welcome-modal-privacy-body = Έχετε το πρόγραμμα περιήγησης. Ας προστατεύσουμε περισσότερο το απόρρητό σας.
+onboarding-welcome-modal-family-learn-more = Μάθετε περισσότερα για την οικογένεια προϊόντων { -brand-product-name }.
+onboarding-welcome-form-header = Έναρξη εδώ
 onboarding-join-form-body = Εισάγετε τη διεύθυνση email σας για να ξεκινήσετε.
 onboarding-join-form-email =
     .placeholder = Εισάγετε το email σας
 onboarding-join-form-email-error = Απαιτείται έγκυρο email
 onboarding-join-form-legal = Συνεχίζοντας, συμφωνείτε με τους <a data-l10n-name="terms">όρους υπηρεσίας</a> και τη <a data-l10n-name="privacy">σημείωση απορρήτου</a>.
 onboarding-join-form-continue = Συνέχεια
+# This message is followed by a link using onboarding-join-form-signin ("Sign In") as text.
+onboarding-join-form-signin-label = Έχετε ήδη λογαριασμό;
+# Text for link to submit the sign in form
+onboarding-join-form-signin = Σύνδεση
 onboarding-start-browsing-button-label = Έναρξη περιήγησης
+onboarding-cards-dismiss =
+    .title = Απόρριψη
+    .aria-label = Απόρριψη
+
+## Welcome full page string
+
+onboarding-fullpage-welcome-subheader = Ας αρχίσουμε να εξερευνούμε ό,τι μπορείτε να κάνετε.
+onboarding-fullpage-form-email =
+    .placeholder = Η διεύθυνση email σας…
+
+## Firefox Sync modal dialog strings.
+
+onboarding-sync-welcome-header = Πάρτε το { -brand-product-name } μαζί σας
+onboarding-sync-welcome-content = Κρατήστε τα αγαπημένα, το ιστορικό, τους κωδικούς πρόσβασης και άλλες ρυθμίσεις σας σε όλες σας τις συσκευές.
+onboarding-sync-welcome-learn-more-link = Μάθετε περισσότερα για τους Λογαριασμούς Firefox
+onboarding-sync-form-input =
+    .placeholder = Email
+onboarding-sync-form-continue-button = Συνέχεια
+onboarding-sync-form-skip-login-button = Παράλειψη βήματος
+
+## This is part of the line "Enter your email to continue to Firefox Sync"
+
+onboarding-sync-form-header = Εισάγετε το email σας
+onboarding-sync-form-sub-header = για να συνεχίσετε στο { -sync-brand-name }.
 
 ## These are individual benefit messages shown with an image, title and
 ## description.
@@ -47,6 +77,12 @@ onboarding-benefit-privacy-title = Πραγματική ιδιωτικότητα
 # make and do. We take less data. We keep it safe. And we make sure that we are
 # transparent about how we use it."
 onboarding-benefit-privacy-text = Όλα όσα κάνουμε τιμούν την υπόσχεση μας σχετικά με τα προσωπικά δεδομένα: Λιγότερα δεδομένα. Με ασφάλεια. Χωρίς μυστικά.
+onboarding-benefit-sync-title = { -sync-brand-short-name }
+onboarding-benefit-sync-text = Πάρτε τους σελιδοδείκτες, τους κωδικούς πρόσβασης, το ιστορικό σας και πολλά άλλα σε κάθε συσκευή με { -brand-product-name }.
+onboarding-benefit-monitor-title = { -monitor-brand-short-name }
+onboarding-benefit-monitor-text = Λάβετε ειδοποίηση όταν διαρρεύσουν τα προσωπικά στοιχεία σας.
+onboarding-benefit-lockwise-title = { -lockwise-brand-short-name }
+onboarding-benefit-lockwise-text = Διαχειριστείτε κωδικούς πρόσβασης που είναι ασφαλείς και φορητοί.
 
 ## These strings belong to the individual onboarding messages.
 
@@ -66,33 +102,21 @@ onboarding-ghostery-text = Περιηγηθείτε ταχύτερα, εξυπν
 # Note: "Sync" in this case is a generic verb, as in "to synchronize"
 onboarding-fxa-title = Συγχρονισμός
 onboarding-fxa-text = Δημιουργήστε ένα { -fxaccount-brand-name } και συγχρονίστε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και τις ανοικτές σας καρτέλες, οπουδήποτε χρησιμοποιείτε το { -brand-short-name }.
-onboarding-tracking-protection-title = Ελέγξτε πώς καταγράφεστε
-onboarding-tracking-protection-text = Δεν θέλετε να σας ακολουθούν οι διαφημίσεις; Το { -brand-short-name } σας βοηθά να ελέγχετε τον τρόπο με τον οποίο οι διαφημιστές καταγράφουν τη δραστηριότητά σας στο διαδίκτυο.
-# "Update" is a verb, as in "Update the existing settings", not "Options about
-# updates".
-onboarding-tracking-protection-button =
-    { PLATFORM() ->
-        [windows] Ενημέρωση επιλογών
-       *[other] Ενημέρωση προτιμήσεων
-    }
 onboarding-tracking-protection-title2 = Προστασία από καταγραφή
 onboarding-tracking-protection-text2 = Το { -brand-short-name } βοηθά να σταματήσουν οι ιστοσελίδες να σας καταγράφουν στο διαδίκτυο, καθιστώντας πιο δύσκολη την παρακολούθησή σας από διαφημίσεις στον ιστό.
 onboarding-tracking-protection-button2 = Πώς λειτουργεί
 onboarding-data-sync-title = Πάρτε μαζί σας τις ρυθμίσεις σας
 # "Sync" is short for synchronize.
-onboarding-data-sync-text = Συγχρονίστε τους σελιδοδείκτες και τους κωδικούς πρόσβασής σας όπου χρησιμοποιείτε το { -brand-product-name }.
-onboarding-data-sync-button = Ενεργοποίηση { -sync-brand-short-name }
-# "Sync" is short for synchronize.
 onboarding-data-sync-text2 = Συγχρονίστε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα όπου χρησιμοποιείτε το { -brand-product-name }.
 onboarding-data-sync-button2 = Σύνδεση στο { -sync-brand-short-name }
 onboarding-firefox-monitor-title = Ενημερωθείτε για παραβιάσεις δεδομένων
 onboarding-firefox-monitor-text = Το { -monitor-brand-name } διαπιστώνει αν το email σας έχει εμφανιστεί σε παραβίαση δεδομένων και σας ειδοποιεί αν εμφανιστεί σε νέα παράβαση.
+onboarding-firefox-monitor-text2 = Το { -monitor-brand-name } ελέγχει αν το email σας έχει εμφανιστεί σε κάποια παραβίαση δεδομένων και σας ειδοποιεί αν εμφανιστεί σε νέα παράβαση.
 onboarding-firefox-monitor-button = Εγγραφή για ειδοποιήσεις
 onboarding-browse-privately-title = Ιδιωτική περιήγηση
 onboarding-browse-privately-text = Η ιδιωτική περιήγηση διαγράφει το ιστορικό αναζήτησης και περιήγησής σας για να διατηρούνται κρυφά από άλλους χρήστες του υπολογιστή σας.
 onboarding-browse-privately-button = Άνοιγμα ιδιωτικού παραθύρου
 onboarding-firefox-send-title = Διατηρήστε τα κοινόχρηστα αρχεία σας ιδιωτικά
-onboarding-firefox-send-text = Το { -send-brand-name } προστατεύει τα αρχεία που μοιράζεστε με κρυπτογράφηση από άκρο σε άκρο και ένα σύνδεσμο που λήγει αυτόματα.
 onboarding-firefox-send-text2 = Μεταφορτώστε τα αρχεία σας στο { -send-brand-name } για να τα μοιραστείτε με κρυπτογράφηση από άκρο σε άκρο και έναν σύνδεσμο που λήγει αυτόματα.
 onboarding-firefox-send-button = Δοκιμή του { -send-brand-name }
 onboarding-mobile-phone-title = Λήψη του { -brand-product-name } στο τηλέφωνό σας
@@ -104,21 +128,28 @@ onboarding-send-tabs-title = Άμεση αποστολή καρτελών στι
 # "Send Tabs" refers to "Send Tab to Device" feature that appears when opening a
 # tab's context menu.
 onboarding-send-tabs-text = Η λειτουργία αποστολής καρτελών μοιράζεται άμεσα τις σελίδες σας με τις συσκευές σας χωρίς αντιγραφή-επικόλληση και χωρίς να φύγετε από το πρόγραμμα περιήγησης.
+# "Send Tabs" refers to "Send Tab to Device" feature that appears when opening a
+# tab's context menu.
+onboarding-send-tabs-text2 = Μοιραστείτε εύκολα σελίδες με τις συσκευές σας χωρίς αντιγραφή συνδέσμων και χωρίς να φύγετε από το πρόγραμμα περιήγησης.
 onboarding-send-tabs-button = Έναρξη χρήσης της αποστολής καρτελών
 onboarding-pocket-anywhere-title = Διαβάστε και ακούστε οπουδήποτε
-# "downtime" refers to the user's free/spare time.
-onboarding-pocket-anywhere-text = Το { -pocket-brand-name } αποθηκεύει αγαπημένες ιστορίες για να τις διαβάζετε, ακούτε και να παρακολουθείτε στον ελεύθερό σας χρόνο, ακόμη και χωρίς σύνδεση στο διαδίκτυο.
 onboarding-pocket-anywhere-text2 = Αποθηκεύστε το αγαπημένο σας περιεχόμενο εκτός σύνδεσης με την εφαρμογή { -pocket-brand-name } και διαβάστε, ακούστε και παρακολουθήστε όποτε σας βολεύει.
 onboarding-pocket-anywhere-button = Δοκιμή του { -pocket-brand-name }
 onboarding-lockwise-passwords-title = Πάρτε τους κωδικούς πρόσβασής σας παντού
-onboarding-lockwise-passwords-text = Το { -lockwise-brand-name } αποθηκεύει τους κωδικούς πρόσβασής σας σε ασφαλές μέρος, ώστε να μπορείτε εύκολα να συνδεθείτε στους λογαριασμούς σας.
-onboarding-lockwise-passwords-button = Λήψη του { -lockwise-brand-name }
 onboarding-lockwise-passwords-text2 = Προστατέψτε τους αποθηκευμένους κωδικούς πρόσβασής σας και συνδεθείτε εύκολα στους λογαριασμούς σας με το { -lockwise-brand-name }.
 onboarding-lockwise-passwords-button2 = Λήψη εφαρμογής
+onboarding-lockwise-strong-passwords-title = Δημιουργία και αποθήκευση ισχυρών κωδικών πρόσβασης
+onboarding-lockwise-strong-passwords-text = Το { -lockwise-brand-name } δημιουργεί ισχυρούς κωδικούς πρόσβασης επί τόπου και τους αποθηκεύει όλους σε ένα μέρος.
+onboarding-lockwise-strong-passwords-button = Διαχείριση συνδέσεων
 onboarding-facebook-container-title = Θέστε όρια με το Facebook
-onboarding-facebook-container-text = Το { -facebook-container-brand-name } διατηρεί ξεχωριστά την ταυτότητά σας στο Facebook από όλα τα άλλα, κάνοντας πιο δύσκολη την καταγραφή σας στο διαδίκτυο.
 onboarding-facebook-container-text2 = Το { -facebook-container-brand-name } διατηρεί ξεχωριστά το προφίλ σας από όλα τα άλλα, εμποδίζοντας τις στοχευμένες διαφημίσεις του Facebook.
 onboarding-facebook-container-button = Προσθήκη επέκτασης
+onboarding-import-browser-settings-title = Εισάγετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης σας και άλλα
+onboarding-import-browser-settings-text = Ξεκινήστε αμέσως—εισάγετε εύκολα τις ιστοσελίδες και τις ρυθμίσεις του Chrome.
+onboarding-import-browser-settings-button = Εισαγωγή δεδομένων Chrome
+onboarding-personal-data-promise-title = Ιδιωτικό εκ κατασκευής
+onboarding-personal-data-promise-text = Το { -brand-product-name } αντιμετωπίζει τα δεδομένα σας με σεβασμό, συλλέγοντας όσο το δυνατό λιγότερα, προστατεύοντάς τα και είναι ξεκάθαρο πώς τα χρησιμοποιούμε.
+onboarding-personal-data-promise-button = Διαβάστε την υπόσχεσή μας
 
 ## Message strings belonging to the Return to AMO flow
 

@@ -9,12 +9,9 @@ findbar-next =
     .tooltiptext = Find den næste forekomst
 findbar-previous =
     .tooltiptext = Find den forrige forekomst
+
 findbar-find-button-close =
     .tooltiptext = Luk søgebjælke
-findbar-highlight-all =
-    .label = Fremhæv alle
-    .accesskey = a
-    .tooltiptext = Fremhæv alle forekomster
 
 findbar-highlight-all2 =
     .label = fremhæv alle
@@ -28,6 +25,12 @@ findbar-case-sensitive =
     .label = Forskel på store og små bogstaver
     .accesskey = o
     .tooltiptext = Søg med forskel på store og små bogstaver
+
+findbar-match-diacritics =
+    .label = Diakritiske tegn
+    .accesskey = k
+    .tooltiptext = Skeln mellem bogstaver med og uden accenttegn (når du fx søger efter "allé", bliver "alle" ikke fremhævet)
+
 findbar-entire-word =
     .label = Hele ord
     .accesskey = e

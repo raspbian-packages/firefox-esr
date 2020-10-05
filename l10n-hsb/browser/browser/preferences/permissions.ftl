@@ -5,50 +5,66 @@
 permissions-window =
     .title = Wuwzaća
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adresa websydła
     .accesskey = A
+
 permissions-block =
     .label = Blokować
     .accesskey = B
+
 permissions-session =
     .label = Za posedźenje dowolić
     .accesskey = p
+
 permissions-allow =
     .label = Dowolić
     .accesskey = D
+
 permissions-site-name =
     .label = Websydło
+
 permissions-status =
     .label = Status
+
 permissions-remove =
     .label = Websydło wotstronić
     .accesskey = t
+
 permissions-remove-all =
-    .label = Wšě sydła wotstronić
+    .label = Wšě websydła wotstronić
     .accesskey = y
+
 permissions-button-cancel =
     .label = Přetorhnyć
     .accesskey = P
+
 permissions-button-ok =
     .label = Změny składować
     .accesskey = s
+
 permissions-autoplay-menu = Standard za wšě websydła:
+
 permissions-searchbox =
     .placeholder = Websydło pytać
+
 permissions-capabilities-autoplay-allow =
     .label = Awdio a widejo dowolić
 permissions-capabilities-autoplay-block =
     .label = Awdio blokować
 permissions-capabilities-autoplay-blockall =
     .label = Awdio a widejo blokować
+
 permissions-capabilities-allow =
     .label = Dowolić
 permissions-capabilities-block =
     .label = Blokować
 permissions-capabilities-prompt =
     .label = Přeco so prašeć
+
 permissions-capabilities-listitem-allow =
     .value = Dowolić
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Wuwzaća - Blokowanje wobsaha
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Sće blokowanje wobsaha na tutych websydłach znjemóžnił.
+
+permissions-exceptions-etp-window =
+    .title = Wuwzaća za polěpšeny slědowanski škit
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Sće škit na tutych websydłach znjemóžnił.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Slědowace websydła su přistup na waše stejn
 permissions-site-location-disable-label =
     .label = Nowe žadanja za přistupom na waše stejnišćo blokować
 permissions-site-location-disable-desc = To budźe websydła, kotrež horjeka w lisćinje podate njejsu, při žadanju za přistupom na waše stejnišćo haćić. Hdyž přistup na waše stejnišćo blokujeće, móže so stać, zo někotre funkcije websydła njefunguja.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Nastajenja - prawa za wirtualnu realitu
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Slědowace websydła su přistup k wašim gratam wirtualneje reality požadali. Móžeće podać, kotre websydła maja přistup k wašim gratam wirtualneje reality. Móžeće tež nowe žadanja za přistupom k wašim gratam wirtualneje reality blokować.
+permissions-site-xr-disable-label =
+    .label = Nowe žadanja za přistupom k wašim gratam wirtualneje reality
+permissions-site-xr-disable-desc = To budźe websydła, kotrež horjeka w lisćinje podate njejsu, při žadanju za přistupom k wašim gratam wirtualneje reality haćić. Hdyž přistup k swojim gratam wirtualneje reality blokujeće, móže so stać, zo někotre funkcije websydła njefunguja.
 
 ## Site Permissions - Camera
 

@@ -33,6 +33,7 @@ printpreview-of =
     .value = /
 printpreview-custom-prompt =
     .value = Egyéni méretezés…
+printpreview-custom-scale-prompt-title = Egyéni méretezés
 printpreview-page-setup =
     .label = Oldalbeállítás…
     .accesskey = O
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Utolsó oldal
+

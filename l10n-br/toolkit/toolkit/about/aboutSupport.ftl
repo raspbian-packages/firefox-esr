@@ -4,6 +4,7 @@
 
 page-title = Titouroù disac'hañ
 page-subtitle = Ar bajenn-mañ a endalc'h stlennoù teknikel hag a c'hallfe bezañ talvoudus pa glaskit  dirouestlañ ur gudenn. Mar klaskit respontoù da c'houlennoù boutin a-zivout  { -brand-short-name }, e c'hallit klask war hol <a data-l10n-name="support-link">lec'hienn skoazell</a>.
+
 crashes-title = Danevelloù sac'hadenn
 crashes-id = Naoudi an danevell
 crashes-send-date = Kaset
@@ -32,6 +33,13 @@ app-basics-name = Anv
 app-basics-version = Handelv
 app-basics-build-id = Naoudi ar c'hempunañ
 app-basics-update-channel = Sanell hizivadur
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Kavlec'h an hizivadennoù
+       *[other] Teuliad an hizivadennoù
+    }
 app-basics-update-history = Roll istor an hizivadurioù
 app-basics-show-update-history = Diskouez roll istor an hizivadurioù
 app-basics-profile-dir =
@@ -49,7 +57,6 @@ app-basics-service-workers = Labourerien gwazerezh marilhet
 app-basics-profiles = Aeladoù
 app-basics-launcher-process-status = Araezad al lañser
 app-basics-multi-process-support = Prenestroù liesargerzh
-app-basics-process-count = Araezadoù endalc'hadoù web
 app-basics-remote-processes-count = Araezadoù a-bell
 app-basics-enterprise-policies = Reolennoù embregerezh
 app-basics-location-service-key-google = Alc'hwez gwazerezh Google Loation
@@ -79,6 +86,8 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Kerzhlevr divizoù
 graphics-crash-guards-title = Keweriusterioù diweredekaet gant ar gwarez e-enep d'ar sac'hadennoù
 graphics-workarounds-title = Tremen e-biou
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = Protokol ar prenestrañ
 place-database-title = Stlennvon "Places"
 place-database-integrity = Kevanded
 place-database-verify-integrity = Gwiriañ ar gevanded
@@ -103,6 +112,14 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Arguzennoù
 safe-mode-title = Klask ar mod diarvar
 restart-in-safe-mode-label = Adloc'hañ gant an askouezhioù diweredekaet…
+
+## Media titles
+
+audio-backend = Drekva aodio
+max-audio-channels = Niver a sanelloù uc'hek
+channel-layout = Mod sanell gwellañ karet
+sample-rate = Feur standilhon gwellañ karet
+
 media-title = Media
 media-output-devices-title = Trevnadoù ec'hankañ
 media-input-devices-title = Trevnadoù enankañ
@@ -115,6 +132,9 @@ media-device-format = Mentrezh
 media-device-channels = Sanell
 media-device-rate = Feur
 media-device-latency = Dale
+
+##
+
 intl-title = Etrevoradeladur & lec'hiadur
 intl-app-title = Arventennoù an arload
 intl-locales-requested = Yezhoù goulennet
@@ -124,6 +144,20 @@ intl-locales-default = Yezh dre ziouer
 intl-os-title = Reizhiad korvoiñ
 intl-os-prefs-system-locales = Yezhoù ar reizhiad
 intl-regional-prefs = Gwellvezioù rannvroel
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -134,6 +168,7 @@ report-crash-for-days =
         [many] Danevelloù sac'hadenn evit ar { $days } a zeizioù diwezhañ
        *[other] Danevelloù sac'hadenn evit an { $days } devezh diwezhañ
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -144,6 +179,7 @@ crashes-time-minutes =
         [many] { $minutes } a vunutennoù zo
        *[other] { $minutes } munutenn zo
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -154,6 +190,7 @@ crashes-time-hours =
         [many] { $hours } a eurioù zo
        *[other] { $hours } eur zo
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -164,6 +201,7 @@ crashes-time-days =
         [many] { $days } a zeizioù zo
        *[other] { $days } deiz zo
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -174,6 +212,7 @@ pending-reports =
         [many] An holl zanevelloù sac'hadenn (enno { $reports } a zanevelloù war c'hortoz evit sac'hadennoù bet degouezhet e-pad ar pennad)
        *[other] An holl zanevelloù sac'hadenn (enno { $reports } danevell war c'hortoz evit ur sac'hadenn bet degouezhet e-pad ar pennad)
     }
+
 raw-data-copied = Eilet eo bet ar roadenn diaoz er golver
 text-copied = Eilet eo bet an destenn er golver
 
@@ -186,9 +225,11 @@ blocked-mismatched-version = Stanket eo bet dre ma ne glot ket handelv marilh ha
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = Harzet evit handelv ho stur kevregat. Klaskit hizivaat ho stur kevregat gant an handelv { $driverVersion } pe nevesoc'h.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Arventennoù ClearType
+
 compositing = Kenaozadur
 hardware-h264 = Ezvonegañ periant H264
 main-thread-no-omtc = neudenn bennañ, OMTC ebet
@@ -203,6 +244,7 @@ virtual-monitor-disp = Diskouez Skrammad galloudel
 
 found = Kavet
 missing = A vank
+
 gpu-process-pid = GPUProcessPid
 gpu-process = GPUProcess
 gpu-description = Deskrivadur
@@ -225,16 +267,21 @@ webgl2-version = Handelv WebGL 2 Driver
 webgl2-driver-extensions = Askouezhioù WebGL 2 Driver
 webgl2-extensions = Askouezhioù WebGL 2
 blocklisted-bug = Er roll stanket abalamour da gudennoù anavezet
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = beug { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = Er roll stanket; boneg c'hwitadenn { $failureCode }
+
 d3d11layers-crash-guard = Kenaozer D3D11
 d3d11video-crash-guard = Ezvoneger Video D3D11
 d3d9video-crash-buard = Ezvoneger Video D3D9
+d3d9video-crash-guard = Ezvoneger Video D3D9
 glcontext-crash-guard = OpenGL
+
 reset-on-next-restart = Adderaouekaat en adloc'hañ a zeu
 gpu-process-kill-button = Herzel ar araezad kevregad
 gpu-device-reset = Adderaouekaat an trevnad
@@ -243,14 +290,11 @@ uses-tiling = Arver an teolioù
 content-uses-tiling = Ober gant an teolioù (endalc'had)
 off-main-thread-paint-enabled = Pentañ e diavaez an neudenn erounezadur pennañ gweredekaet
 off-main-thread-paint-worker-count = Niver a worker o pentañ e diavaez an neudenn erounezadur pennañ
-low-end-machine = Dinoet eo bet ur mekanik nebeutoc'h digonus
 target-frame-rate = Bukenn feur skeudennoù
-audio-backend = Drekva aodio
-max-audio-channels = Niver a sanelloù uc'hek
-channel-layout = Mod sanell gwellañ karet
-sample-rate = Feur standilhon gwellañ karet
+
 min-lib-versions = Handelv izek gortozet
 loaded-lib-versions = Handelv en arver
+
 has-seccomp-bpf = Seccomp-BPF (Silañ ar galvoù reizhiad)
 has-seccomp-tsync = Goubredañ neudennoù seccomp
 has-user-namespaces = Egor anvioù an arveriad
@@ -263,10 +307,12 @@ sandbox-proc-type-content = endalc'had
 sandbox-proc-type-file = endalc'had ar restr
 sandbox-proc-type-media-plugin = enlugellad media
 sandbox-proc-type-data-decoder = ezvoneger roadennoù
+
 launcher-process-status-0 = Gweredekaet
 launcher-process-status-1 = Diweredekaet abalamour d'ur c'hwitadenn
 launcher-process-status-2 = Rediet da ziweredekaat
 launcher-process-status-unknown = Stad dianav
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -279,6 +325,7 @@ multi-process-status-6 = Diweredekaet gant an enankad destenn anskor
 multi-process-status-7 = Diweredekaet gant an askouezhioù
 multi-process-status-8 = Rediet da ziweredekaat
 multi-process-status-unknown = Stad dianav
+
 async-pan-zoom = Zoum ec'houbred
 apz-none = netra
 wheel-enabled = enankad rod gweredekaet

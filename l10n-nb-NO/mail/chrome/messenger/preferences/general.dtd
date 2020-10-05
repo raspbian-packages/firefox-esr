@@ -38,3 +38,10 @@
 <!ENTITY browse.accesskey                 "B">
 
 <!ENTITY defaultSearchEngine.label        "Standard søkemotor">
+<!ENTITY addSearchEngine.label            "Legg til fra fil">
+<!ENTITY addSearchEngine.accesskey        "e">
+<!ENTITY removeSearchEngine.label         "Fjern">
+<!ENTITY removeSearchEngine.accesskey     "e">
+
+<!ENTITY minimizeToTray.label             "Når &brandShortName; er minimert, flytt den til systemstatusfeltet">
+<!ENTITY minimizeToTray.accesskey         "m">

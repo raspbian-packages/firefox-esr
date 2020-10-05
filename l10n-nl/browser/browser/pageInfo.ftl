@@ -17,8 +17,8 @@ menu-select-all =
     .label = Alles selecteren
     .accesskey = A
 
-close-window =
-    .key = A
+close-dialog =
+    .key = w
 
 general-tab =
     .label = Algemeen
@@ -124,6 +124,7 @@ help-button =
 ## Variables:
 ##   $value (number) - Amount of data being stored
 ##   $unit (string) - The unit of data being stored (Usually KB)
+
 security-site-data-cookies = Ja, cookies en { $value } { $unit } aan websitegegevens
 security-site-data-only = Ja, { $value } { $unit } aan websitegegevens
 
@@ -132,6 +133,8 @@ security-site-data-no = Nee
 
 image-size-unknown = Onbekend
 not-set-verified-by = Niet gespecificeerd
+page-info-not-specified =
+    .value = Niet gespecificeerd
 not-set-alternative-text = Niet gespecificeerd
 not-set-date = Niet gespecificeerd
 media-img = Afbeelding
@@ -155,6 +158,8 @@ general-quirks-mode =
 general-strict-mode =
     .value = Standaardenmodus
 security-no-owner = Deze website verstrekt geen eigendomsinformatie.
+page-info-security-no-owner =
+    .value = Deze website verstrekt geen eigendomsinformatie.
 media-select-folder = Selecteer een map voor het opslaan van de afbeeldingen
 media-unknown-not-cached =
     .value = Onbekend (niet gebufferd)
@@ -169,8 +174,8 @@ security-no-visits = Nee
 general-meta-tags =
     .value =
         { $tags ->
-             [one] Meta (1 tag)
-            *[other] Meta ({ $tags } tags)
+            [one] Meta (1 tag)
+           *[other] Meta ({ $tags } tags)
         }
 
 # This string is used to display the number of times
@@ -179,9 +184,9 @@ general-meta-tags =
 #   $visits (number) - The number of previous visits
 security-visits-number =
     { $visits ->
-         [0] Nee
-         [one] Ja, eenmaal
-        *[other] Ja, { $visits } maal
+        [0] Nee
+        [one] Ja, eenmaal
+       *[other] Ja, { $visits } maal
     }
 
 # This string is used to display the size of a media file
@@ -189,10 +194,11 @@ security-visits-number =
 #   $kb (number) - The size of an image in Kilobytes
 #   $bytes (number) - The size of an image in Bytes
 properties-general-size =
-    .value = { $bytes ->
-         [one] { $kb } KB ({ $bytes } byte)
-        *[other] { $kb } KB ({ $bytes } bytes)
-    }
+    .value =
+        { $bytes ->
+            [one] { $kb } KB ({ $bytes } byte)
+           *[other] { $kb } KB ({ $bytes } bytes)
+        }
 
 # This string is used to display the type and number
 # of frames of a animated image
@@ -200,10 +206,11 @@ properties-general-size =
 #   $type (string) - The type of a animated image
 #   $frames (number) - The number of frames in an animated image
 media-animated-image-type =
-    .value = { $frames ->
-         [one] { $type }-afbeelding (geanimeerd, { $frames } frame)
-        *[other] { $type }-afbeelding (geanimeerd, { $frames } frames)
-    }
+    .value =
+        { $frames ->
+            [one] { $type }-afbeelding (geanimeerd, { $frames } frame)
+           *[other] { $type }-afbeelding (geanimeerd, { $frames } frames)
+        }
 
 # This string is used to display the type of
 # an image

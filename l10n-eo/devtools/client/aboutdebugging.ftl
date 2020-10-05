@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = Rulanalizo de efikeco
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = La agordo de via retumilo ne kongruas kun Service Workers. <a>Pli da informo</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = La konektita retumilo havas malnovan version ({ $runtimeVersion }). La minimuma subtenata versio estas ({ $minVersion }). Tiu ĉi estas nesubtenata situacio, kiu povus misfunkciigi la ilojn por programistoj. Bonvolu ĝisdatigi la konektitan retumilon. <a>Solvado de problemoj</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = La konektita retumilo havas malnovan v
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = La panelo de la erarserĉilo povus ne funkcii kun la konektita retumilo. Bonvolu uzi Firefox { $runtimeVersion } se vi bezonas uzi la erarserĉilon kun tiu ĉi retumilo.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Tiu ĉi versio de Firefox ne povas senerarigi  Firefox for Android (68). Ni rekomendas instalon de Firefox for Android Nightly en vi telefono por testado. <a>Pli da informo</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Push
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Komenci
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Push
+    .disabledTitle = "Push" en service worker estas malaktiva por plurproceza { -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Komenci
+    .disabledTitle = Komenco de service worker estas malaktiva por plurproceza { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Malregistri
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -287,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Servo 'Push'
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Inspekto de service worker estas malaktiva por plurproceza { -brand-shorter-name }
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = La langeto ne estas tute ŝargita kaj do ne eblas inspekti ĝin
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Ĉefa procezo
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Ĉefa procezo por la cela retumilo
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Ilaro de plurprocezo
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Ĉefa procezo kaj enhavaj procezoj por la celata retumilo
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Fermi mesaĝon

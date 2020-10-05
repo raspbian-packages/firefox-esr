@@ -6,3 +6,7 @@
 <!ENTITY  paneAlarms.title        "Upozornenia">
 <!ENTITY  paneCategories.title    "Kategórie">
 <!ENTITY  paneViews.title         "Pohľady">
+<!ENTITY  panelHeader.title       "Kalendár">
+<!ENTITY  panelReminder.title     "Pripomienky">
+<!ENTITY  panelCatecory.title     "Kategórie">
+<!ENTITY  panelCategory.title     "Kategórie">

@@ -9,7 +9,7 @@
 #include "mozilla/dom/FeaturePolicy.h"
 #include "mozilla/MappedDeclarations.h"
 #include "mozilla/NullPrincipal.h"
-#include "mozilla/StaticPrefs.h"
+#include "mozilla/StaticPrefs_dom.h"
 #include "nsMappedAttributes.h"
 #include "nsAttrValueInlines.h"
 #include "nsError.h"
@@ -28,11 +28,13 @@ NS_IMPL_CYCLE_COLLECTION_CLASS(HTMLIFrameElement)
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN_INHERITED(HTMLIFrameElement,
                                                   nsGenericHTMLFrameElement)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mFeaturePolicy)
+  NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mSandbox)
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
 NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN_INHERITED(HTMLIFrameElement,
                                                 nsGenericHTMLFrameElement)
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mFeaturePolicy)
+  NS_IMPL_CYCLE_COLLECTION_UNLINK(mSandbox)
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 
 NS_IMPL_ADDREF_INHERITED(HTMLIFrameElement, nsGenericHTMLFrameElement)
@@ -54,29 +56,21 @@ HTMLIFrameElement::HTMLIFrameElement(
     FromParser aFromParser)
     : nsGenericHTMLFrameElement(std::move(aNodeInfo), aFromParser) {
   // We always need a featurePolicy, even if not exposed.
-  mFeaturePolicy = new FeaturePolicy(this);
-
+  mFeaturePolicy = new mozilla::dom::FeaturePolicy(this);
   nsCOMPtr<nsIPrincipal> origin = GetFeaturePolicyDefaultOrigin();
   MOZ_ASSERT(origin);
   mFeaturePolicy->SetDefaultOrigin(origin);
 }
 
-HTMLIFrameElement::~HTMLIFrameElement() {}
+HTMLIFrameElement::~HTMLIFrameElement() = default;
 
 NS_IMPL_ELEMENT_CLONE(HTMLIFrameElement)
 
-nsresult HTMLIFrameElement::BindToTree(Document* aDocument, nsIContent* aParent,
-                                       nsIContent* aBindingParent) {
-  nsresult rv =
-      nsGenericHTMLFrameElement::BindToTree(aDocument, aParent, aBindingParent);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
+void HTMLIFrameElement::BindToBrowsingContext(
+    BrowsingContext* aBrowsingContext) {
   if (StaticPrefs::dom_security_featurePolicy_enabled()) {
     RefreshFeaturePolicy(true /* parse the feature policy attribute */);
   }
-  return NS_OK;
 }
 
 bool HTMLIFrameElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
@@ -85,16 +79,16 @@ bool HTMLIFrameElement::ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                                        nsAttrValue& aResult) {
   if (aNamespaceID == kNameSpaceID_None) {
     if (aAttribute == nsGkAtoms::marginwidth) {
-      return aResult.ParseSpecialIntValue(aValue);
+      return aResult.ParseNonNegativeIntValue(aValue);
     }
     if (aAttribute == nsGkAtoms::marginheight) {
-      return aResult.ParseSpecialIntValue(aValue);
+      return aResult.ParseNonNegativeIntValue(aValue);
     }
     if (aAttribute == nsGkAtoms::width) {
-      return aResult.ParseSpecialIntValue(aValue);
+      return aResult.ParseHTMLDimension(aValue);
     }
     if (aAttribute == nsGkAtoms::height) {
-      return aResult.ParseSpecialIntValue(aValue);
+      return aResult.ParseHTMLDimension(aValue);
     }
     if (aAttribute == nsGkAtoms::frameborder) {
       return ParseFrameborderValue(aValue, aResult);
@@ -225,7 +219,45 @@ JSObject* HTMLIFrameElement::WrapNode(JSContext* aCx,
   return HTMLIFrameElement_Binding::Wrap(aCx, this, aGivenProto);
 }
 
-FeaturePolicy* HTMLIFrameElement::Policy() const { return mFeaturePolicy; }
+mozilla::dom::FeaturePolicy* HTMLIFrameElement::FeaturePolicy() const {
+  return mFeaturePolicy;
+}
+
+void HTMLIFrameElement::MaybeStoreCrossOriginFeaturePolicy() {
+  if (!mFrameLoader) {
+    return;
+  }
+
+  // If the browsingContext is not ready (because docshell is dead), don't try
+  // to create one.
+  if (!mFrameLoader->IsRemoteFrame() && !mFrameLoader->GetExistingDocShell()) {
+    return;
+  }
+
+  RefPtr<BrowsingContext> browsingContext = mFrameLoader->GetBrowsingContext();
+
+  if (!browsingContext || !browsingContext->IsContentSubframe()) {
+    return;
+  }
+
+  // If we are in subframe cross origin, store the featurePolicy to
+  // browsingContext
+  nsPIDOMWindowOuter* topWindow = browsingContext->Top()->GetDOMWindow();
+  if (NS_WARN_IF(!topWindow)) {
+    return;
+  }
+
+  Document* topLevelDocument = topWindow->GetExtantDoc();
+  if (NS_WARN_IF(!topLevelDocument)) {
+    return;
+  }
+
+  if (!NS_SUCCEEDED(nsContentUtils::CheckSameOrigin(topLevelDocument, this))) {
+    return;
+  }
+
+  browsingContext->SetFeaturePolicy(mFeaturePolicy);
+}
 
 already_AddRefed<nsIPrincipal>
 HTMLIFrameElement::GetFeaturePolicyDefaultOrigin() const {
@@ -238,7 +270,7 @@ HTMLIFrameElement::GetFeaturePolicyDefaultOrigin() const {
 
   nsCOMPtr<nsIURI> nodeURI;
   if (GetURIAttr(nsGkAtoms::src, nullptr, getter_AddRefs(nodeURI)) && nodeURI) {
-    principal = BasePrincipal::CreateCodebasePrincipal(
+    principal = BasePrincipal::CreateContentPrincipal(
         nodeURI, BasePrincipal::Cast(NodePrincipal())->OriginAttributesRef());
   }
 
@@ -268,8 +300,6 @@ void HTMLIFrameElement::RefreshFeaturePolicy(bool aParseAllowAttribute) {
       mFeaturePolicy->SetDeclaredPolicy(OwnerDoc(), allow, NodePrincipal(),
                                         origin);
     }
-
-    mFeaturePolicy->InheritPolicy(OwnerDoc()->Policy());
   }
 
   if (AllowPaymentRequest()) {
@@ -279,6 +309,9 @@ void HTMLIFrameElement::RefreshFeaturePolicy(bool aParseAllowAttribute) {
   if (AllowFullscreen()) {
     mFeaturePolicy->MaybeSetAllowedPolicy(NS_LITERAL_STRING("fullscreen"));
   }
+
+  mFeaturePolicy->InheritPolicy(OwnerDoc()->FeaturePolicy());
+  MaybeStoreCrossOriginFeaturePolicy();
 }
 
 }  // namespace dom

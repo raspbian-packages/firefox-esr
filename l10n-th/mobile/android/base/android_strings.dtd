@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "ใช้ข้อมูลน้อยลง ประหยัดมากขึ้น">
 <!ENTITY firstrun_data_subtext2 "ปิดภาพเพื่อลดการใช้ข้อมูลในทุกไซต์ที่คุณเยี่ยมชม">
 <!ENTITY firstrun_sync_title "ซิงค์">
-<!ENTITY updatednewfirstrun_sync_title "บัญชี">
-<!ENTITY firstrun_sync_message2 "หยิบจากที่ที่คุณทำค้างไว้">
+<!ENTITY firstrun_sync_message3 "ซิงค์ที่คั่นหน้า ประวัติ และรหัสผ่านไปยังโทรศัพท์ของคุณ">
 <!ENTITY firstrun_sync_subtext2 "ใช้ Sync เพื่อค้นหาที่คั่นหน้า, รหัสผ่าน และสิ่งอื่น ๆ ที่คุณบันทึกไปยัง &brandShortName; ในอุปกรณ์ทั้งหมดของคุณ">
 <!ENTITY newfirstrun_sync_subtext "ซิงค์สิ่งที่คุณบันทึกบนมือถือไปยัง Firefox บนเดสก์ท็อป ได้อย่างเป็นส่วนตัวและปลอดภัย">
-<!ENTITY updatednewfirstrun_sync_subtext "ลงชื่อเข้าบัญชีของคุณเพื่อรับประโยชน์สูงสุดจาก &brandShortName;">
+<!ENTITY firstrun_sendtab_title "ส่งแท็บ">
+<!ENTITY firstrun_sendtab_message "แบ่งปันแท็บจากมือถือไปยังเดสก์ท็อป — ทันที">
 <!ENTITY firstrun_signin_message "รับการเชื่อมต่อ เริ่มต้นใช้งาน">
-<!ENTITY firstrun_signin_button "ลงชื่อเข้า Sync">
-<!ENTITY newfirstrun_signin_button "เปิดใช้ Sync">
-<!ENTITY updatednewfirstrun_signin_button "ลงชื่อเข้า &brandShortName;">
-<!ENTITY  onboard_start_button_browser "เริ่มการเรียกดู">
+<!ENTITY onboard_start_button_browser "เริ่มการเรียกดู">
 <!ENTITY firstrun_button_notnow "ไม่ใช่ตอนนี้">
 <!ENTITY firstrun_button_next "ถัดไป">
+<!ENTITY firstrun_signup_button "ลงทะเบียน">
 
 <!ENTITY firstrun_tabqueue_title "ลิงก์">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "กำลังส่งรายงานข้อขัดข้อง\u2026">
 <!ENTITY  crash_close_label "ปิด">
 <!ENTITY  crash_restart_label "เริ่มการทำงาน &brandShortName; ใหม่">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; ได้ขัดข้อง">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "อัปเดตโฟลเดอร์แล้ว">
 <!ENTITY bookmark_parent_folder "โฟลเดอร์หลัก">
 <!ENTITY bookmark_add_folder "เพิ่มโฟลเดอร์ใหม่">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(ไม่มีชื่อเรื่อง)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "คุกกี้">
 <!ENTITY pref_cookies_accept_all "เปิดใช้งานอยู่">
 <!ENTITY pref_cookies_not_accept_foreign "เปิดใช้งานอยู่ ยกเว้นจากบุคคลที่สาม">
+<!ENTITY pref_cookies_not_accept_trackers "เปิดใช้งานอยู่ ยกเว้นคุกกี้ติดตาม">
 <!ENTITY pref_cookies_disabled "ปิดใช้งานอยู่">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Progressive Web Apps">
 <!ENTITY pref_pwa_summary "อนุญาตให้เพิ่มเว็บแอปไปยังหน้าจอหลัก">
-
-<!ENTITY tracking_protection_prompt_title "ขณะนี้มาพร้อมการป้องกันการติดตาม">
-<!ENTITY tracking_protection_prompt_text "ปิดกั้นองค์ประกอบที่ติดตามอย่างต่อเนื่อง คุณจึงไม่จำเป็นต้องกังวล">
-<!ENTITY tracking_protection_prompt_tip_text "เยี่ยมชมการตั้งค่าความเป็นส่วนตัวเพื่อเรียนรู้เพิ่มเติม">
-<!ENTITY tracking_protection_prompt_action_button "เข้าใจแล้ว!">
 
 <!ENTITY tab_queue_toast_message3 "บันทึกแท็บใน &brandShortName; แล้ว">
 <!ENTITY tab_queue_toast_action "เปิดตอนนี้">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "แตะแอปเบราว์เซอร์และเลือก &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "เยี่ยมชมการสนับสนุนจาก Mozilla">
 <!ENTITY pref_about_firefox "เกี่ยวกับ &brandShortName;">
 <!ENTITY pref_vendor_faqs "คำถามที่พบบ่อย">
 <!ENTITY pref_vendor_feedback "เสนอข้อคิดเห็น">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "บริการตำแหน่งที่ตั้งของ &vendorShortName; กำลังทำงาน">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "การอัปเดตอัตโนมัติ">
-<!ENTITY pref_update_autodownload_wifi "เฉพาะผ่าน Wi-Fi">
-<!ENTITY pref_update_autodownload_never "ไม่เลย">
-<!ENTITY pref_update_autodownload_always "เสมอ">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "ช่วยเหลือ">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "แบ่งปัน">
 <!ENTITY share_title "แบ่งปันผ่าน">
 <!ENTITY share_image_failed "ไม่สามารถแบ่งปันภาพนี้">
+<!ENTITY share_error_toast_message "ไม่สามารถแบ่งปันไปยังแอปที่ระบุ">
 <!ENTITY save_as_pdf "บันทึกเป็น PDF">
 <!ENTITY print "พิมพ์">
 <!ENTITY view_page_source "ดูต้นฉบับหน้า">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "ตำแหน่งที่ตั้ง">
 <!ENTITY bookmark_edit_keyword "คำสำคัญ">
 <!ENTITY bookmark_select_folder "เลือกโฟลเดอร์">
-
 <!ENTITY bookmark_edit_undo "เลิกทำ">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "เลือกหรืออัดเสียง">
 <!ENTITY filepicker_image_title "เลือกหรือถ่ายรูป">
 <!ENTITY filepicker_video_title "เลือกหรือถ่ายวิดีโอ">
-
 <!ENTITY filepicker_permission_denied "ไม่ได้รับสิทธิอนุญาตที่จำเป็น กำลังเปลี่ยนกลับเป็นตัวเลือกไฟล์ของระบบ">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "ค้นหา &formatS1; สำหรับ &formatS2;">
 
 <!ENTITY searchable_description "ที่คั่นหน้าและประวัติ">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "มีการอัปเดตสำหรับ &brandShortName;">
-<!ENTITY updater_start_select2 "สัมผัสเพื่อดาวน์โหลด">
-
-<!ENTITY updater_downloading_title2 "กำลังดาวน์โหลด &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "การดาวน์โหลดล้มเหลว">
-<!ENTITY updater_downloading_select2 "สัมผัสเพื่อใช้การอัปเดตเมื่อดาวน์โหลดเสร็จ">
-<!ENTITY updater_downloading_retry2 "สัมผัสเพื่อลองใหม่">
-
-<!ENTITY updater_apply_title3 "ดาวน์โหลดการอัปเดตสำหรับ &brandShortName; แล้ว">
-<!ENTITY updater_apply_select3 "สัมผัสเพื่อติดตั้ง">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "เพื่อดาวน์โหลดไฟล์และการอัปเดต อนุญาตสิทธิอนุญาตให้ &brandShortName; เข้าถึงที่เก็บข้อมูล">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "อนุญาต">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "วาระผู้มาเยือนใหม่">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "เพิ่มที่คั่นหน้าสำหรับรายการมุมมองผู้อ่านเพื่ออ่านแบบออฟไลน์">
 <!ENTITY helper_triple_readerview_open_button "เพิ่มไปยังที่คั่นหน้า">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "ยินดีต้อนรับสู่ &brandShortName;">
+<!ENTITY activity_stream_signin_description "เริ่มซิงค์ที่คั่นหน้า, รหัสผ่าน และอื่น ๆ ด้วยบัญชี Firefox ของคุณ">
+<!ENTITY activity_stream_signup_button "ลงทะเบียน">
+<!ENTITY activity_stream_signin_prompt "มีบัญชีอยู่แล้ว?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "ลงชื่อเข้า">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Firefox แบบใหม่เอี่ยมอ่อง กำลังจะมาในปี 2020">
+<!ENTITY activity_stream_firefox_promo_description "เร็ว ๆ นี้: ปรับปรุงประสิทธิภาพ การป้องกันการติดตามที่มากขึ้น และคุณสมบัติที่ถูกออกแบบมาเพื่อช่วยคุณหา บันทึก และแบ่งปันสิ่งที่คุณสนใจทางออนไลน์ได้">
+<!ENTITY activity_stream_firefox_promo_button "ลองใช้งานก่อน">
+
 <!ENTITY activity_stream_topsites "ไซต์เด่น">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "แนะนำโดย &brandPocket;">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "เสียงและวิดีโอ">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "เคล็ดลับและเทคนิคของ &vendorShortName;">
-<!ENTITY updater_notification_channel "การอัปเดตแอป">
 <!ENTITY synced_tabs_notification_channel "แท็บที่ซิงค์">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

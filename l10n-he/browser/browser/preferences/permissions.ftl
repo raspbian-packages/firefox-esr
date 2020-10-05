@@ -5,49 +5,70 @@
 permissions-window =
     .title = חריגות
     .style = width: 36em
+
 permissions-close-key =
     .key = w
+
 permissions-address = כתובת אתר
     .accesskey = ת
+
 permissions-block =
     .label = חסום
     .accesskey = ח
+
 permissions-session =
     .label = הרשה למשך ההפעלה
     .accesskey = מ
+
 permissions-allow =
     .label = הרשה
     .accesskey = ש
+
 permissions-site-name =
     .label = אתר
+
 permissions-status =
     .label = מצב
+
 permissions-remove =
     .label = הסרת אתר
     .accesskey = ה
+
 permissions-remove-all =
     .label = הסרת כל האתרים
     .accesskey = ס
+
 permissions-button-cancel =
     .label = ביטול
     .accesskey = ב
+
 permissions-button-ok =
     .label = שמירת שינויים
     .accesskey = ש
+
+permissions-autoplay-menu = ברירת מחדל עבור כל האתרים:
+
 permissions-searchbox =
     .placeholder = חיפוש אתר
+
+permissions-capabilities-autoplay-allow =
+    .label = הפעלת שמע ווידאו
+permissions-capabilities-autoplay-block =
+    .label = חסימת שמע
+permissions-capabilities-autoplay-blockall =
+    .label = חסימת שמע ווידאו
+
 permissions-capabilities-allow =
     .label = הרשה
 permissions-capabilities-block =
     .label = חסום
 permissions-capabilities-prompt =
     .label = לשאול תמיד
+
 permissions-capabilities-listitem-allow =
     .value = הרשה
 permissions-capabilities-listitem-block =
     .value = חסום
-permissions-capabilities-listitem-allow-first-party =
-    .value = הרשאה לצד ראשון בלבד
 permissions-capabilities-listitem-allow-session =
     .value = הרשה למשך ההפעלה
 
@@ -58,14 +79,15 @@ permissions-invalid-uri-label = אנא הכנס שם מארח חוקי
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = חריגות - הגנת מעקב
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = ביטלת את הגנת המעקב באתרים אלו.
 permissions-exceptions-content-blocking-window =
     .title = חריגות - חסימת תוכן
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = ביטלת את חסימת התוכן באתרים אלו.
+
+permissions-exceptions-etp-window =
+    .title = חריגות עבור הגנת מעקב מתקדמת
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = ביטלת את ההגנות באתרים אלו.
 
 ## Exceptions - Cookies
 
@@ -102,6 +124,12 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = באפשרותך לציין לאלו אתרים תמיד מותר או אסור לנגן באופן אוטומטי מדיה עם קול. נא להקליד את כתובת האתר שברצונך לנהל ואז ללחוץ על חסום או הרשה.
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = הגדרות - ניגון אוטומטי
+    .style = { permissions-window.style }
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -121,6 +149,16 @@ permissions-site-location-desc = האתרים הבאים ביקשו לגשת ל�
 permissions-site-location-disable-label =
     .label = חסימת בקשות חדשות לגישה למיקום שלך
 permissions-site-location-disable-desc = הגדרה זו תמנע מאתרים שלא מופיעים להלן מהגשת בקשה לקבלת הרשאה לגשת למיקום שלך. חסימת הגישה למיקום שלך עשויה להפריע לפעולה של מגוון תכונות באתרים.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = הגדרות - הרשאות מציאות מדומה
+    .style = { permissions-window.style }
+permissions-site-xr-desc = האתרים הבאים ביקשו לגשת למכשירי המציאות המדומה שלך. באפשרותך לציין לאילו אתרים מותר לגשת למכשירי המציאות המדומה שלך. ניתן גם לחסום בקשות חדשות לגשת למכשירי המציאות המדומה שלך.
+permissions-site-xr-disable-label =
+    .label = חסימת בקשות חדשות לגישה למכשירי המציאות המדומה שלך
+permissions-site-xr-disable-desc = הגדרה זו תמנע מאתרים שלא מופיעים להלן מהגשת בקשה לקבלת הרשאה לגשת למכשירי המציאות המדומה שלך. חסימת הגישה למכשירי המציאות המדומה שלך עשויה להפריע לפעולה של מגוון תכונות באתרים.
 
 ## Site Permissions - Camera
 

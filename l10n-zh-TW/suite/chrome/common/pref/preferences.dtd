@@ -10,6 +10,9 @@
 
 <!--LOCALIZATION NOTE (.label): Preferences categories that appear on the left of the preferences dialog -->
 <!ENTITY prefWindow.title "偏好設定">
+<!ENTITY prefWindow.size "width: 102ch; height: 44em;">
+<!ENTITY prefWindowMac.size "width: 62em; height: 41em;">
+<!ENTITY prefWindowWin.size "width: 115ch; height: 43em;">
 <!ENTITY categoryHeader "類別">
 
 <!ENTITY appear.label "外觀設定">
@@ -22,7 +25,7 @@
 <!ENTITY navigator.label "網頁瀏覽器">
 <!ENTITY history.label "歷史">
 <!ENTITY languages.label "語言">
-<!ENTITY applications.label "應用程式">
+<!ENTITY applications.label "輔助應用程式">
 <!ENTITY locationBar.label "網址列">
 <!ENTITY search.label "網際網路搜尋">
 <!ENTITY tabWindows.label "分頁瀏覽">
@@ -30,7 +33,7 @@
 <!ENTITY download.label "下載">
 
 <!ENTITY security.label "隱私權與安全性">
-<!ENTITY privatedata.label "隱私資料">
+<!ENTITY privatedata.label "私人資料">
 <!ENTITY cookies.label "Cookie">
 <!ENTITY images.label "圖片">
 <!ENTITY popups.label "彈出型視窗 (Popup)">

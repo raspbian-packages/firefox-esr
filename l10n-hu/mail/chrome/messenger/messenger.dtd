@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "z">
 <!ENTITY  newContactCmd.label "Névjegy…">
 <!ENTITY  newContactCmd.accesskey "N">
+<!ENTITY openMenuCmd.label "Megnyitás">
+<!ENTITY openMenuCmd.accesskey "M">
 <!ENTITY openMessageFileCmd.label "Mentett üzenet megnyitása…">
 <!ENTITY openMessageFileCmd.accesskey "e">
 <!ENTITY saveAsMenu.label "Mentés másként">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "T">
 <!ENTITY folderPaneBar.label "Mappa ablaktábla eszköztár">
 <!ENTITY folderPaneBar.accesskey "a">
-<!ENTITY folderModeSelector.label "Mappanézetek">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Rendezés">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Üzenetek keresése…">
 <!ENTITY searchMailCmd.accesskey "e">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Globális keresés…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Címek keresése…">
 <!ENTITY searchAddressesCmd.accesskey "C">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "A kijelölt üzenet áthelyezése">
 <!ENTITY archiveButton.tooltip "Kijelölt üzenetek archiválása">
 <!ENTITY openConversationButton.tooltip "A kijelölt üzenet beszélgetésének megjelenítése">
+<!ENTITY openMsgConversationButton.tooltip "A kijelölt üzenet beszélgetésének megjelenítése">
 <!ENTITY nextButton.tooltip "Ugrás a következő olvasatlan üzenetre">
 <!ENTITY nextMsgButton.tooltip "Ugrás a következő üzenetre">
 <!ENTITY previousButton.tooltip "Ugrás az előző olvasatlan üzenetre">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Üzenetek címkézése">
 <!ENTITY compactButton.tooltip "Törölt üzenetek eltávolítása a kijelölt mappából">
 <!ENTITY appmenuButton1.tooltip "A &brandShortName; menü megjelenítése">
-
 <!ENTITY addonsButton.tooltip "Kiegészítők kezelése">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Keresés mentése mappaként…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Válasszon üzeneteket">
 <!ENTITY threadColumn.label "Témacsoport">
 <!ENTITY fromColumn.label "Feladó">
 <!ENTITY recipientColumn.label "Címzett">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Érkezési sorrend">
 <!ENTITY attachmentColumn.label "Mellékletek">
 
+<!ENTITY deleteColumn.label "Törlés">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Jelölje ki a megjelenítendő oszlopokat">
+<!ENTITY selectColumn.tooltip "Összes üzenet kiválasztása be/ki">
 <!ENTITY threadColumn2.tooltip "Témacsoportok megjelenítése">
 <!ENTITY fromColumn2.tooltip "Rendezés feladó szerint">
 <!ENTITY recipientColumn2.tooltip "Rendezés címzett szerint">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Rendezés hely szerint">
 <!ENTITY idColumn2.tooltip "Rendezés beérkezés szerint">
 <!ENTITY attachmentColumn2.tooltip "Rendezés mellékletek szerint">
+
+<!ENTITY deleteColumn.tooltip "Üzenet törlése">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Új üzenet sablonból">
@@ -807,7 +816,7 @@
      In the en-US locale we ran out of access keys, so there is an empty access key for
      Watch Thread. Localizers can pick a suitable key
   -->
-<!ENTITY contextWatchThreadMenu.accesskey "k">
+<!ENTITY contextWatchThreadMenu.accesskey "">
 <!ENTITY contextSaveAs.label "Mentés másként…">
 <!ENTITY contextSaveAs.accesskey "e">
 <!ENTITY contextPrint.label "Nyomtatás…">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Appikon beállításai…">
 <!ENTITY writeNewMessageDock.label      "Új üzenet írása">
 <!ENTITY openAddressBookDock.label      "Címjegyzék megnyitása">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Ugrás az előző oldalra">
+<!ENTITY browseForwardButton.tooltip "Ugrás a következő oldalra">

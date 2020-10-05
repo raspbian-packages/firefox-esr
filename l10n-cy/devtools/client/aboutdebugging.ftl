@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = Perfformiad proffil
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Nid yw ffurfweddiad eich porwr yn cydweddu â Service Workers. <a>Dysgu rhagor</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Mae gan y porwr cysylltiedig hen fersiwn ({ $runtimeVersion }). Y fersiwn lleiaf sy'n cael ei gynnal yw ({ $minVersion }). Mae hwn yn osodiad sydd dim yn cael ei gynnal a gall achosi i DevTools fethu. Diweddarwch y porwr cysylltiedig. <a>Datrys problemau</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = Mae gan y porwr cysylltiedig hen fersi
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Efallai na fydd panel y Dafygiwr yn gweithio gyda'r porwr cysylltiedig. Defnyddiwch Firefox { $runtimeVersion } os oes angen i chi ddefnyddio'r Dadfygiwr gyda'r porwr hwn.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Nid oes modd i'r fersiwn yma o Firefox ddadfygio Firefox ar gyfer Android (68). Rydym yn argymell gosod Firefox ar gyfer Android Nightly ar eich ffôn i'w brofi. <a> Rhagor o fanylion </a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Gwthio
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Cychwyn
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Gwthio
+    .disabledTitle = Mae Gweithiwr Gwasanaeth gwthio wedi ei analluogi ar hyn o bryd ar gyfer amlbroses { -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Cychwyn
+    .disabledTitle = Mae Gweithiwr Gwasanaeth gwthio wedi ei analluogi ar hyn o bryd ar gyfer amlbroses { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Dadgofrestru
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -287,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Gwasanaeth Gwthio
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Mae Gweithiwr Gwasanaeth gwthio wedi ei analluogi ar hyn o bryd ar gyfer amlbroses { -brand-shorter-name }
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Nid yw'r tab wedi'i lwytho'n llawn ac nid oes modd ei archwilio
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Prif Broses
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Prif Broses y porwr targed
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Blwch Offer Amlbroses
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Prif Broses a Phrosesau Cynnwys ar gyfer y porwr targed
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Cau neges

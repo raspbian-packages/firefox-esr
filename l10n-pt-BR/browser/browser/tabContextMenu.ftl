@@ -36,13 +36,13 @@ unpin-selected-tabs =
     .label = Desafixar abas
     .accesskey = b
 bookmark-selected-tabs =
-    .label = Adicionar abas a favoritos…
+    .label = Adicionar abas aos favoritos…
     .accesskey = f
 bookmark-tab =
-    .label = Adicionar aba
+    .label = Adicionar aba aos favoritos
     .accesskey = A
 reopen-in-container =
-    .label = Reabrir em contêiner
+    .label = Reabrir em um contêiner
     .accesskey = e
 move-to-start =
     .label = Mover para o início
@@ -55,6 +55,17 @@ move-to-new-window =
     .accesskey = v
 undo-close-tab =
     .label = Reabrir aba
+    .accesskey = b
+tab-context-close-multiple-tabs =
+    .label = Fechar várias abas
+    .accesskey = v
+tab-context-undo-close-tabs =
+    .label =
+        { $tabCount ->
+            [1] Reabrir aba
+            [one] Reabrir aba
+           *[other] Reabrir abas
+        }
     .accesskey = b
 close-tab =
     .label = Fechar aba

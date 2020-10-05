@@ -103,9 +103,10 @@ print-window =
     .title = Tulostetaan
 print-complete =
     .value = Tulostus valmis.
+
 # Variables
 # $percent (integer) - Number of printed percentage
 print-percent =
-    .value = { $percent }%
+    .value = { $percent } %
 dialog-cancel-label = Peruuta
 dialog-close-label = Sulje

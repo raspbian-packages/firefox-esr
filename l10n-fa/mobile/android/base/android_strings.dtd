@@ -21,17 +21,16 @@
 <!ENTITY firstrun_data_message "دادهٔ کمتر، صرفه‌جویی بیشتر">
 <!ENTITY firstrun_data_subtext2 "تصاویر را خاموش کنید تا داده کمتری در هنگام مشاهده هر سایت صرف کنید.">
 <!ENTITY firstrun_sync_title "هم‌گام‌سازی">
-<!ENTITY firstrun_sync_message2 "از جایی که مانده بود ادامه دهید.">
+<!ENTITY firstrun_sync_message3 "نشانک‌ها،‌ تاریخچه و گذرواژه‌های را با تلفنِ خود به‌هنگام کنید.">
 <!ENTITY firstrun_sync_subtext2 "برای پیدا کردن نشانک‌ها، گذرواژه‌ها و چیزهای دیگری که در &brandShortName; ذخیره کرده‌اید روی همه دستگاه‌هایتان، از همگام‌ساز استفاده کنید.">
 <!ENTITY newfirstrun_sync_subtext "همگام‌سازی تمام چیزهایی که روی دستگاه موبایل خود ذخیره می‌کنید بر روی مرورگر رومیزی شما به صورت خصوصی و امن.">
-<!ENTITY updatednewfirstrun_sync_subtext "وارد حساب کاربری خود شوید تا از &brandShortName; بیشتر دریافت کنید">
+<!ENTITY firstrun_sendtab_title "ارسال زبانه">
+<!ENTITY firstrun_sendtab_message "اشتراک‌گذاری زبانه‌ها از موبایل به رومیزی — فوری.">
 <!ENTITY firstrun_signin_message "متصل شوید،‌ شروع کنید">
-<!ENTITY firstrun_signin_button "برای همگام‌سازی وارد شوید">
-<!ENTITY newfirstrun_signin_button "روشن کردن همگام سازی">
-<!ENTITY updatednewfirstrun_signin_button "وارد شدن به &brandShortName;">
-<!ENTITY  onboard_start_button_browser "شروع وب‌گردی">
+<!ENTITY onboard_start_button_browser "شروع وب‌گردی">
 <!ENTITY firstrun_button_notnow "هم‌اکنون نه">
 <!ENTITY firstrun_button_next "بعدی">
+<!ENTITY firstrun_signup_button "ثبت نام کردن">
 
 <!ENTITY firstrun_tabqueue_title "پیوندها">
 
@@ -68,6 +67,11 @@
 <!ENTITY  sending_crash_report "درحال گزارش درهم شکستن\u2026">
 <!ENTITY  crash_close_label "بستن">
 <!ENTITY  crash_restart_label "راه‌اندازی مجدد &brandShortName;">
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; با مشکل مواجه شد">
+<!ENTITY  crash_notification_message "برای گزارش به &vendorShortName; ضربه بزنید">
+<!ENTITY  crash_notification_negative_button_text "نادیده گرفتن">
 
 <!ENTITY url_bar_default_text2 "جستجو کنید یا آدرسی را وارد کنید">
 
@@ -110,6 +114,9 @@
 <!ENTITY bookmark_folder_updated "پوشه بروزرسانی شد">
 <!ENTITY bookmark_parent_folder "پوشهٔ والد">
 <!ENTITY bookmark_add_folder "اضافه کردن پوشه جدید">
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(بدون عنوان)">
 
 <!ENTITY reader_saved_offline "ذخیره به صورت آفلاین">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -191,12 +198,12 @@
 <!-- Localization note (overlay_no_synced_devices) : Used when the menu option
      to send a tab to a synced device is pressed and no other synced devices
      are found. -->
-<!ENTITY overlay_no_synced_devices "هیچ حساب فایرفاکس متصل شده به این دستگاه پیدا نشد">
+<!ENTITY overlay_no_synced_devices "هیچ دستگاهی که به حساب فایرفاکس متصل باشد پیدا نشد">
 
 <!ENTITY pref_category_search3 "جستجو">
-<!ENTITY pref_category_search_summary2 "اضافه، تنظیمِ پیش‌فرض، نمایش پیشنهادات">
+<!ENTITY pref_category_search_summary2 "افزودن، تنظیم پیش‌فرض، نمایش پیشنهادها">
 <!ENTITY pref_category_accessibility "دسترسی‌پذیری">
-<!ENTITY pref_category_accessibility_summary2 "اندازه متن، بزرگنمایی، ورودی صوتی">
+<!ENTITY pref_category_accessibility_summary2 "اندازه متن، بزرگ‌نمایی، ورودی صوتی">
 <!ENTITY pref_category_privacy_short "حریم‌خصوصی">
 <!ENTITY pref_category_privacy_summary4 "ردیابی، ورود‌ها، انتخاب داده‌ها">
 <!ENTITY pref_category_vendor2 "&vendorShortName; &brandShortName;">
@@ -204,9 +211,9 @@
 <!ENTITY pref_category_datareporting "انتخاب داده‌ها">
 <!ENTITY pref_category_logins "ورودها">
 <!ENTITY pref_learn_more "اطلاعات بیشتر">
-<!ENTITY pref_category_installed_search_engines "موتورهای جستجو نصب شده">
-<!ENTITY pref_category_add_search_providers "اضافه کردن تامین‌کننده‌های جستجو">
-<!ENTITY pref_category_search_restore_defaults "بازآوری موتورهای جستجو">
+<!ENTITY pref_category_installed_search_engines "موتورهای جستجوی نصب شده">
+<!ENTITY pref_category_add_search_providers "افزودن جستجوگرهای بیشتر">
+<!ENTITY pref_category_search_restore_defaults "بازگرداندن موتورهای جست‌وجو">
 <!ENTITY pref_search_restore_defaults "بازگرداندن پیش‌فرض‌ها">
 <!ENTITY pref_search_restore_defaults_summary "بازگرداندن پیش‌فرض‌ها">
 <!-- Localization note (pref_search_hint) : "TIP" as in "hint", "clue" etc. Displayed as an
@@ -214,22 +221,22 @@
      search providers.
      The &formatI; in the string will be replaced by a small image of the icon described, and can be moved to wherever
      it is applicable. -->
-<!ENTITY pref_search_hint2 "نکته: هر وب سایتی را با فشردن طولانی بر روی فیلد جستجو و تپ بر روی شمایل &formatI; به فهرست تامین کننده‌های جستجو اضافه کنید.">
+<!ENTITY pref_search_hint2 "نکته: با لمس طولانی روی فیلد جست‌وجوی هر وب‌سایت و سپس لمس نماد &formatI;، آن وب‌سایت را به جست‌وجوگرهای خود بیفزایید.">
 <!ENTITY pref_category_advanced "پیشرفته">
 <!-- Localization note (pref_category_advanced_summary3): “data saver” in this
      context means consuming less data, e.g. by not loading images, not
      “storing data”. -->
-<!ENTITY pref_category_advanced_summary3 "بازآوری زبانه‌ها، ذخیره‌کننده اطلاعات، ابزارهای توسعه">
+<!ENTITY pref_category_advanced_summary3 "بازگردانی زبانه‌ها، صرفه‌جوی داده، ابزارهای توسعه‌دهندگان">
 <!ENTITY pref_category_notifications "اعلان‌ها">
 <!ENTITY pref_category_notifications_summary2 "امکانات جدید، نکاتِ محصول">
-<!ENTITY pref_developer_remotedebugging_usb "رفع اشکال از راه دور به واسطه‌ی USB">
-<!ENTITY pref_developer_remotedebugging_wifi "رفع اشکال از راه دور به وسیله Wi-Fi">
-<!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "رفع اشکال زدایی توسط Wi-Fi نیازمند نصب برنامه ‌تشخیص کد QR بر روی دستگاه شما می باشد.">
-<!ENTITY pref_remember_signons2 "بخاطر سپردن ورودها">
+<!ENTITY pref_developer_remotedebugging_usb "اشکال‌زدایی از راه دور به‌وسیله USB">
+<!ENTITY pref_developer_remotedebugging_wifi "اشکال‌زدایی از راه دور به‌وسیله Wi-Fi">
+<!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "برای اشکال‌زدایی با Wi-Fi باید یک برنامهٔ ‌تشخیص کد QR روی دستگاه شما نصب باشد.">
+<!ENTITY pref_remember_signons2 "به‌یادسپاری ورودها">
 <!ENTITY pref_manage_logins "مدیریت ورود">
 
 <!ENTITY pref_category_home "خانه">
-<!ENTITY pref_category_home_summary "صفحه‌آغازین خود را شخصی سازی کنید">
+<!ENTITY pref_category_home_summary "صفحه آغازین خود را شخصی‌سازی کنید">
 <!ENTITY pref_category_home_panels "قطعه‌ها">
 <!ENTITY pref_category_home_add_ons "افزودنی‌ها">
 <!ENTITY pref_home_updates2 "بروزرسانی‌های محتوا">
@@ -243,12 +250,12 @@
 <!-- Localization note (home_homepage_radio_user_address): The user will see a series of radio
      buttons to choose the homepage they'd like to start on. When they click the radio
      button for this string, they will use the built-in default Firefox homepage (about:home). -->
-<!ENTITY home_homepage_radio_default "خانه &brandShortName;">
+<!ENTITY home_homepage_radio_default "صفحه خانگی &brandShortName;">
 <!-- Localization note (home_homepage_radio_user_address): The user will see a series of radio
      buttons to choose the homepage they'd like to start on. When they click the radio
      button for this string, a text field will appear below the radio button and allow the
      user to insert an address of their choice. -->
-<!ENTITY home_homepage_radio_user_address "سفارشی">
+<!ENTITY home_homepage_radio_user_address "دلخواه">
 <!-- Localization note (home_homepage_hint_user_address): The user will see a series of
      radio buttons to choose the homepage they'd like to start on. When they click a
      particular radio button, a text field will appear below the radio button and allow the
@@ -269,12 +276,13 @@
 <!ENTITY pref_cookies_menu "کوکی‌ها">
 <!ENTITY pref_cookies_accept_all "فعال شد">
 <!ENTITY pref_cookies_not_accept_foreign "فعال شده، بدون شخص ثالث">
+<!ENTITY pref_cookies_not_accept_trackers "فعال شد، به جز برای کوکی‌های ردیابی">
 <!ENTITY pref_cookies_disabled "غیرفعال شد">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
      context means consuming less data, e.g. by not loading images, not
      “storing data”. -->
-<!ENTITY pref_category_data_saver "صرفه‌جویی‌کننده اطلاعات">
+<!ENTITY pref_category_data_saver "صرفه‌جویی در داده‌ها">
 <!ENTITY pref_category_media "رسانه">
 <!ENTITY pref_category_developer_tools "ابزارهای توسعه‌دهندگان">
 
@@ -329,11 +337,6 @@
 
 <!ENTITY pref_pwa "برنامه‌های پیشرفته وب">
 <!ENTITY pref_pwa_summary "به برنامه‌های وب اجازه بده تا به صفحه خانگی اضافه شوند">
-
-<!ENTITY tracking_protection_prompt_title "هم‌اکنون با قابلیت محافظت در برابر ردگیری">
-<!ENTITY tracking_protection_prompt_text "عناصری که ممکن است شما را ردگیری کنند مسدود خواهند شد، تا شما هیچ نگرانی‌ای نداشته باشید.">
-<!ENTITY tracking_protection_prompt_tip_text "برای اطلاعات بیشتر تنظیمات حریم خصوصی را ببنید">
-<!ENTITY tracking_protection_prompt_action_button "گرفتم!">
 
 <!ENTITY tab_queue_toast_message3 "زبانه در &brandShortName; ذخیره شد">
 <!ENTITY tab_queue_toast_action "هم‌اکنون باز کن">
@@ -420,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "لمس بر روی برنامه مرورگر&amp; انتخاب &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "بازدید از پشتیبانی موزیلا">
 <!ENTITY pref_about_firefox "درباره &brandShortName;">
 <!ENTITY pref_vendor_faqs "پرسش‌های متداول">
 <!ENTITY pref_vendor_feedback "دادن بازخورد">
@@ -470,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; سرویس مکان‌یابی در حال اجراست">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "بروزرسانی‌های خودکار">
-<!ENTITY pref_update_autodownload_wifi "فقط با Wi-Fi">
-<!ENTITY pref_update_autodownload_never "هرگز">
-<!ENTITY pref_update_autodownload_always "همیشه">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "راهنما">
 
@@ -491,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "اشتراک‌گذاری">
 <!ENTITY share_title "بوسیله‌ی اشتراک‌گذاری">
 <!ENTITY share_image_failed "نمی‌تواند این تصویر را به اشتراک بگذارد">
+<!ENTITY share_error_toast_message "عدم توانایی در اشتراک‌گذاری برنامه اشاره شده">
 <!ENTITY save_as_pdf "ذخیره به صورت PDF">
 <!ENTITY print "چاپ">
 <!ENTITY view_page_source "نمایش منبع صفحه">
@@ -591,6 +586,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "مکان">
 <!ENTITY bookmark_edit_keyword "کلیدواژه">
 <!ENTITY bookmark_select_folder "انتخاب پوشه">
+<!ENTITY bookmark_edit_undo "واگرد">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -679,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "انتخاب یا ضبط یک صدا">
 <!ENTITY filepicker_image_title "انتخاب یا عکس گرفتن">
 <!ENTITY filepicker_video_title "انتخاب یا ضبط یک ویدیو">
-
 <!ENTITY filepicker_permission_denied "مجوز درخواستی ارائه نشد،‌ بازگشت به سیستم انتخاب پرونده.">
 
 <!-- Site identity popup -->
@@ -741,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "جست‌وجو &formatS1; برای &formatS2;">
 
 <!ENTITY searchable_description "نشانک‌ها و تاریخچه">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "بروزرسانی برای &brandShortName; موجود است">
-<!ENTITY updater_start_select2 "برای بارگیری لمس کنید">
-
-<!ENTITY updater_downloading_title2 "در حال بارگیری &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "بارگیری‌ شکست خورد">
-<!ENTITY updater_downloading_select2 "برای اعمال بروزرسانی پس از بارگیری، لمس کنید">
-<!ENTITY updater_downloading_retry2 "برای تلاش مجدد لمس کنید">
-
-<!ENTITY updater_apply_title3 "بروزرسانی برای &brandShortName; دریافت شده است">
-<!ENTITY updater_apply_select3 "برای نصب کردن لمس کنید">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "برای دریافت فایل ها و بروز‌رسانی ها ،‌به &brandShortName; اجازه دسترسی به فضای ‌ذخیره‌سازی را بدهید.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "اجازه دادن">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "نشست جدید مهمان">
@@ -871,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "نمایش موارد نشانک های مطالعه جهت مطالعه آن ها به صورت آفلاین.">
 <!ENTITY helper_triple_readerview_open_button "اضافه کردن به نشانک‌ها">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "به &brandShortName; خوش آمدید">
+<!ENTITY activity_stream_signin_description "شروع به همگام سازی نشانک‌ها،‌ گذرواژه ها و چیزهای بیشتر با حساب فایرفاکس شما.">
+<!ENTITY activity_stream_signup_button "ثبت نام کردن">
+<!ENTITY activity_stream_signin_prompt "شما در حال حاضر حساب کاربری دارید؟">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "وارد شدن.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "تمام فایرفاکس های جدید شما در سال 2020 به دست شما می‌ رسد">
+<!ENTITY activity_stream_firefox_promo_description "به زودی:‌ بازدهی بهتر،‌ جلوگیری از دنبال شدن قوی تر و ویژیگی های طراحی شده برای پیدا کردن و به اشتراک گذاشتن،‌ ذخیره کردن مواردی که به صورت آنلاین بهشون علاقه دارید.">
+<!ENTITY activity_stream_firefox_promo_button "یک نگاه ریزی داشته باشید">
+
 <!ENTITY activity_stream_topsites "سایت‌های برتر">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "توصیه شده توسط &brandPocket;">
@@ -928,8 +921,8 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "صدا و تصویر">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; نکات و ترفندها">
-<!ENTITY updater_notification_channel "بروزرسانی برنامه">
 <!ENTITY synced_tabs_notification_channel "زبانه‌های همگام‌سازی شده">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->
 <!ENTITY site_notifications_channel "هشدارهای پایگاه‌های اینترنتی">
+<!ENTITY crash_handler_notifications_channel "گزارش خطای &brandShortName;">

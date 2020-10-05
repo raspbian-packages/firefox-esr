@@ -11,6 +11,7 @@
 ## in the documentation section in about:policies.
 
 policy-3rdparty = Caktoni rregulla të cilat WebExtensions mund t’i shohin përmes chrome.storage.managed.
+policy-AppAutoUpdate = Aktivizoni ose çaktivizoni përditësime të vetvetishme aplikacionesh.
 policy-AppUpdateURL = Caktoni URL vetjake përditësimi aplikacioni.
 policy-Authentication = Formësoni mirëfilltësim të integruar për sajte që e mbulojnë atë.
 policy-BlockAboutAddons = Bllokoni hyrje te Përgjegjësi i Shtesave (about:addons).
@@ -18,12 +19,14 @@ policy-BlockAboutConfig = Bllokoni hyrje te faqja about:config.
 policy-BlockAboutProfiles = Bllokoni hyrje te faqja about:profiles.
 policy-BlockAboutSupport = Bllokoni hyrje te faqja about:support.
 policy-Bookmarks = Krijoni faqerojtës te paneli Faqerojtës, menuja Faqerojtës, ose te një dosje e caktuar brenda tyre.
-policy-CaptivePortal = Aktivizoni ose çaktivizoni mbulim për <em>captive portal</em>.
+policy-CaptivePortal = Aktivizoni ose çaktivizoni mbulim për captive portal.
 policy-CertificatesDescription = Shtoni dëshmi ose përdorni dëshmi të brendshme të programit.
-policy-Cookies = Lejoni ose jo që sajte të depozitojnë <em>cookies</em>.
+policy-Cookies = Lejoni ose jo që sajte të depozitojnë cookies.
+policy-DisabledCiphers = Çaktivizo shifra.
 policy-DefaultDownloadDirectory = Caktoni drejtori parazgjedhje shkarkimesh.
 policy-DisableAppUpdate = Pengoje shfletuesin të përditësohet.
 policy-DisableBuiltinPDFViewer = Çaktivizoni PDF.js, parësin e brendshëm të PDF-ve në { -brand-short-name }.
+policy-DisableDefaultBrowserAgent = Pengo agjent shfletuesi parazgjedhje të ndërmarrë ndonjë veprim. E zbatueshme vetëm për Windows; platformat e tjera s’e kanë agjentin.
 policy-DisableDeveloperTools = Bllokoni hyrje te mjetet për zhvillues.
 policy-DisableFeedbackCommands = Çaktivizoni te menuja Ndihmë urdhra për dërgim përshtypjesh (Parashtroni Përshtypje dhe  Raportoni Sajt të Rrejshëm).
 policy-DisableFirefoxAccounts = Çaktivizoni shërbime me bazë { -fxaccount-brand-name }, përfshi Sync-un.
@@ -32,7 +35,8 @@ policy-DisableFirefoxScreenshots = Çaktivizoni veçorinë Foto Ekrani Firefox.
 policy-DisableFirefoxStudies = Pengojani { -brand-short-name }-it xhirimin e studimeve.
 policy-DisableForgetButton = Pengoni përdorimin e butoni Harroje.
 policy-DisableFormHistory = Mos mba mend historik kërkimesh dhe plotësimi formularësh.
-policy-DisableMasterPasswordCreation = Nëse zgjidhet <em>true</e>, s’mund të krijohet fjalëkalim i përgjithshëm.
+policy-DisableMasterPasswordCreation = Nëse caktohet <em>true</e>, s’mund të krijohet fjalëkalim i përgjithshëm.
+policy-DisablePasswordReveal = Mos lejo të shfaqen fjalëkalime te kredenciale hyrjesh të ruajtura.
 policy-DisablePocket = Çaktivizoni veçorinë e ruajtjes së faqeve web në Pocket.
 policy-DisablePrivateBrowsing = Çaktivizoni Shfletimin Privat.
 policy-DisableProfileImport = Çaktivizoni te menuja urdhrin për Importim të dhënash nga një tjetër shfletues.
@@ -49,6 +53,8 @@ policy-DontCheckDefaultBrowser = Çaktivizoni kontrollin gjatë nisjes për shfl
 policy-DownloadDirectory = Caktoni dhe kyçni drejtorinë e shkarkimeve.
 # “lock” means that the user won’t be able to change this setting
 policy-EnableTrackingProtection = Aktivizoni ose çaktivizoni Bllokim Lënde, dhe kyçeni, në daçi.
+# “lock” means that the user won’t be able to change this setting
+policy-EncryptedMediaExtensions = Aktivizoni ose çaktivizoni Zgjerime Mediash të Fshehtëzuara, dhe kyçeni, në daçi.
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
@@ -57,25 +63,40 @@ policy-ExtensionSettings = Administroni krejt anët e instalimit të zgjerimeve.
 policy-ExtensionUpdate = Aktivizoni ose çaktivizoni përditësime të vetvetishme të zgjerimeve.
 policy-FirefoxHome = Formësoni Kreun e Firefox-it
 policy-FlashPlugin = Lejoni ose jo përdorimin e shtojcës Flash.
-policy-HardwareAcceleration = Nëse false, çaktivizohet përshpejtimi përmes hardware-it.
+policy-Handlers = Formësoni trajtues parazgjedhje aplikacionesh.
+policy-HardwareAcceleration = Në u caktoftë "false", çaktivizohet përshpejtimi përmes hardware-it.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Caktoni faqen hyrëse, dhe kyçeni në daçi.
 policy-InstallAddonsPermission = Lejojuni disa sajteve të caktuar të instalojnë shtesa.
+policy-LegacyProfiles = Çaktivizo veçorinë e zbatimit me detyrim të një profili veçmas për çdo instalim
+
+## Do not translate "SameSite", it's the name of a cookie attribute.
+
+policy-LegacySameSiteCookieBehaviorEnabled = Aktivizoni rregullimin parazgjedhje të dikurshëm për sjelljen e cookie-t SameSite.
+policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Rikthe sjelljen e dikurshme për SameSite, për cookie-t në sajtet e specifikuar.
+
+##
+
 policy-LocalFileLinks = Lejo sajte specifikë të krijojnë lidhje te kartela vendore.
+policy-MasterPassword = Kërko doemos ose pengo përdorimin e një fjalëkalimi të përgjithshëm.
 policy-NetworkPrediction = Aktivizoni ose çaktivizoni parashikim rrjeti (<em>DNS prefetching</em>).
 policy-NewTabPage = Aktivizoni ose çaktivizoni faqen Skedë e Re.
 policy-NoDefaultBookmarks = Çaktivizoni krijimin e faqerojtësve parazgjedhje të paketuar me { -brand-short-name }-in, dhe Faqerojtës të Mençur (Më të Vizituarit, Etiketa Së Fundi). Shënim: ky rregull ka efekt vetëm nëse përdoret përpara xhirimit për herë të parë nën profilin përkatës.
 policy-OfferToSaveLogins = Bëjeni të detyrueshëm rregullimin për lejimin e { -brand-short-name }-it të ofrojë të mbajë mend kredenciale hyrjesh dhe fjalëkalime. Pranohet që të dyja vlerat, <em>true</em> dhe <em>false</em>.
+policy-OfferToSaveLoginsDefault = Caktoni vlerën parazgjedhje për lejim të { -brand-short-name }-it të ofrojë mbajtjen mend të kredencialeve të hyrjes dhe fjalëkalimeve të ruajtur. Pranohet si vlera <em>true</em>,  ashtu edhe ajo <em>false</em>.
 policy-OverrideFirstRunPage = Anashkaloni faqen e xhirimit për herë të parë. Lëreni të zbrazët, nëse doni të çaktivizohet faqja e xhirimit për herë të parë.
 policy-OverridePostUpdatePage = Anashkaloni faqen “Ç’ka të Re” që shfaqet pas përditësimesh. Lëreni të zbrazët, nëse doni të çaktivizohet faqja pas-përditësim.
-policy-Permissions = Formësoni lejet për kamerën, mikrofonin, vendndodhjen dhe njoftimet.
+policy-PasswordManagerEnabled = Aktivizoni ruajtjen e fjalëkalimeve te përgjegjësi i fjalëkalimeve.
+# PDF.js and PDF should not be translated
+policy-PDFjs = Çaktivizoni pse formësoni PDF.js, parësin e brendshëm të PDF-ve në { -brand-short-name }.
+policy-Permissions2 = Formësoni lejet për kamerën, mikrofonin, vendndodhjen, njoftimet dhe vetëluajtjen.
+policy-PictureInPicture = Aktivizoni ose çaktivizoni veçorinë “Picture-in-Picture”.
 policy-PopupBlocking = Lejojuni, si parazgjedhje, disa sajteve të shfaqin flluska.
 policy-Preferences = Caktoni dhe kyçni vlerën për një nëngrup parapëlqimesh.
 policy-PromptForDownloadLocation = Pyet ku të ruhen kartelat kur shkarkohen.
 policy-Proxy = Formësoni rregullime ndërmjetësi
 policy-RequestedLocales = Caktoni për aplikacionin listën e gjuhëve të kërkuara, renditur sipas parapëlqimit.
-policy-SanitizeOnShutdown = Gjatë fikjes, pastroni krejt të dhënat e lëvizjeve.
-policy-SanitizeOnShutdown2 = Gjatë fikjes, pastro të dhëna lëvizjeje.
+policy-SanitizeOnShutdown2 = Gjatë fikjes, spastro të dhëna lëvizjeje.
 policy-SearchBar = Caktoni vendin parazgjedhje për shtyllën e kërkimeve. Përdoruesit ende i lejohet ta përshtatë si të dojë.
 policy-SearchEngines = Formësoni rregullime motori kërkimesh. Ky rregull tani është i përdorshëm vetëm në versionin Extended Support Release (ESR).
 policy-SearchSuggestEnabled = Aktivizoni ose çaktivizoni sugjerime kërkimi.
@@ -84,5 +105,6 @@ policy-SecurityDevices = Instaloni module PKCS #11.
 policy-SSLVersionMax = Caktoni version maksimum SSL-je.
 policy-SSLVersionMin = Caktoni version minimum SSL-je.
 policy-SupportMenu = Shtoni te menuja e ndihmës një element vetjak menuje asistence.
+policy-UserMessaging = Mos i shfaq përdoruesit disa mesazhe të caktuara
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Bllokoni vizita në sajte. Për më tepër hollësi mbi këtë format, shihni dokumentimin.

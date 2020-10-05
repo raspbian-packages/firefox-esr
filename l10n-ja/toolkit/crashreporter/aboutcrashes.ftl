@@ -1,8 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
-# License, v- 2-0- If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla-org/MPL/2-0/-
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 crash-reports-title = クラッシュレポート
+
+submit-all-button-label = すべて送信
 delete-button-label = すべて消去
 delete-confirm-title = 本当によろしいですか？
 delete-unsubmitted-description = これは未送信のクラッシュレポートをすべて削除します。この操作は元に戻せません。

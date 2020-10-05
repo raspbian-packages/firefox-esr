@@ -31,7 +31,10 @@ app-basics-title = Cơ bản về ứng dụng
 app-basics-name = Tên
 app-basics-version = Phiên bản
 app-basics-build-id = ID bản dựng
+app-basics-distribution-id = ID phát hành
 app-basics-update-channel = Kênh cập nhật
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Cập nhật thư mục
@@ -56,7 +59,6 @@ app-basics-service-workers = Các Service Worker đã đăng ký
 app-basics-profiles = Tiểu sử
 app-basics-launcher-process-status = Quá trình khởi chạy
 app-basics-multi-process-support = Các cửa sổ đa tiến trình
-app-basics-process-count = Quy trình nội dung web
 app-basics-remote-processes-count = Tiến trình từ xa
 app-basics-enterprise-policies = Chính sách doanh nghiệp
 app-basics-location-service-key-google = Khóa dịch vụ định vị Google
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Vô hiệu hóa tính năng bảo vệ sự cố
 graphics-workarounds-title = Cách giải quyết
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Giao thức cửa sổ
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Môi trường máy tính để bàn
 place-database-title = Cơ sở dữ liệu địa điểm
 place-database-integrity = Tính toàn vẹn
 place-database-verify-integrity = Xác nhận tính toàn vẹn
@@ -112,6 +116,18 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Tham số
 safe-mode-title = Thử dùng chế độ an toàn
 restart-in-safe-mode-label = Khởi động lại và vô hiệu hóa các tiện ích…
+clear-startup-cache-title = Hãy thử xóa bộ nhớ đệm khởi động
+clear-startup-cache-label = Xóa bộ nhớ đệm khởi động…
+startup-cache-dialog-title = Xóa bộ nhớ đệm khởi động
+startup-cache-dialog-body = Khởi động lại { -brand-short-name } để xóa bộ nhớ đệm khởi động. Điều này sẽ không thay đổi cài đặt của bạn hoặc xóa các tiện ích mở rộng mà bạn đã thêm vào { -brand-short-name }.
+restart-button-label = Khởi động lại
+
+## Media titles
+
+audio-backend = Âm thanh đầu cuối
+max-audio-channels = Kênh tối đa
+channel-layout = Bố cục kênh ưu tiên
+sample-rate = Tỷ lệ mẫu ưu tiên
 media-title = Đa phương tiện
 media-output-devices-title = Các thiết bị đầu ra
 media-input-devices-title = Thiết bị đầu vào
@@ -124,6 +140,12 @@ media-device-format = Định dạng
 media-device-channels = Kênh
 media-device-rate = Tỉ lệ
 media-device-latency = Độ trễ
+media-capabilities-title = Khả năng truyền thông
+# List all the entries of the database.
+media-capabilities-enumerate = Liệt kê cơ sở dữ liệu
+
+##
+
 intl-title = Quốc tế hóa & bản địa hóa
 intl-app-title = Cài đặt ứng dụng
 intl-locales-requested = Yêu cầu ngôn ngữ
@@ -133,6 +155,22 @@ intl-locales-default = Ngôn ngữ mặc định
 intl-os-title = Hệ điều hành
 intl-os-prefs-system-locales = Ngôn ngữ hệ thống
 intl-regional-prefs = Cài đặt khu vực
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Gỡ lỗi từ xa (Giao thức Chromium)
+remote-debugging-accepting-connections = Cho phép kết nối
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days = Báo cáo lỗi trong { $days } ngày gần đây
@@ -209,7 +247,9 @@ unknown-failure = Danh sách chặn; mã lỗi { $failureCode }
 d3d11layers-crash-guard = Bộ soạn nhạc D3D11
 d3d11video-crash-guard = Bộ giải mã video D3D11
 d3d9video-crash-buard = Bộ giải mã video D3D9
+d3d9video-crash-guard = Bộ giải mã video D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Bộ giải mã video WMF VPX
 reset-on-next-restart = Đặt lại vào lần khởi động lại tiếp theo
 gpu-process-kill-button = Buộc dừng quá trình GPU
 gpu-device-reset = Đặt lại thiết bị
@@ -218,12 +258,7 @@ uses-tiling = Sử dụng ốp lát
 content-uses-tiling = Sử dụng ốp lát (Nội dung)
 off-main-thread-paint-enabled = Off Main Thread Painting được kích hoạt
 off-main-thread-paint-worker-count = Bộ đếm Off Main Thread Painting Worker
-low-end-machine = Đã phát hiện máy ít hiệu suất
 target-frame-rate = Tỷ lệ khung mục tiêu
-audio-backend = Âm thanh đầu cuối
-max-audio-channels = Kênh tối đa
-channel-layout = Bố cục kênh ưu tiên
-sample-rate = Tỷ lệ mẫu ưu tiên
 min-lib-versions = Phiên bản tối thiểu dự kiến
 loaded-lib-versions = Phiên bản đang dùng
 has-seccomp-bpf = Seccomp-BPF (Lọc cuộc gọi hệ thống)
@@ -238,6 +273,11 @@ sandbox-proc-type-content = nội dung
 sandbox-proc-type-file = nội dung tập tin
 sandbox-proc-type-media-plugin = phần bổ trợ phương tiện
 sandbox-proc-type-data-decoder = bộ giải mã dữ liệu
+startup-cache-title = Bộ nhớ đệm khởi động
+startup-cache-disk-cache-path = Đường dẫn bộ nhớ đệm trên đĩa
+startup-cache-ignore-disk-cache = Bỏ qua bộ nhớ đệm trên đĩa
+startup-cache-found-disk-cache-on-init = Tìm thấy bộ nhớ đệm trên đĩa khi khởi tạo
+startup-cache-wrote-to-disk-cache = Ghi vào bộ nhớ đệm trên đĩa
 launcher-process-status-0 = Đã bật
 launcher-process-status-1 = Vô hiệu hóa do thất bại
 launcher-process-status-2 = Bắt buộc vô hiệu hóa
@@ -261,6 +301,7 @@ touch-enabled = cảm ứng đã bật
 drag-enabled = thanh cuộn kéo đã bật
 keyboard-enabled = bàn phím đã bật
 autoscroll-enabled = tự động cuộn đã bật
+zooming-enabled = pinch-zoom mượt được kích hoạt
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

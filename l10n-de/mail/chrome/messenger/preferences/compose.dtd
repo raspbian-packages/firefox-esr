@@ -18,8 +18,10 @@
 <!ENTITY htmlComposeHeader.label              "HTML-Optionen">
 <!ENTITY font.label                           "Schriftart:">
 <!ENTITY font.accesskey                       "c">
-<!ENTITY size.label                           "Größe:">
-<!ENTITY size.accesskey                       "G">
+<!ENTITY fontSize.label                       "Größe:">
+<!ENTITY fontSize.accesskey                   "G">
+<!ENTITY useReaderDefaults.label              "Standardfarben des Programms verwenden">
+<!ENTITY useReaderDefaults.accesskey          "P">
 <!ENTITY fontColor.label                      "Text:">
 <!ENTITY fontColor.accesskey                  "T">
 <!ENTITY bgColor.label                        "Hintergrund:">

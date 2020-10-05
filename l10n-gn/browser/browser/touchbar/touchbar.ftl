@@ -8,7 +8,8 @@ back = Atukupe
 forward = Tenonde
 reload = Myanyhẽjey
 home = Óga
-fullscreen = Mba'erechaha tuichakue
+fullscreen = Mba’erechaha tuichakue
+touchbar-fullscreen-exit = Esẽ mba’erechaha tuichavévagui
 find = Juhu
 new-tab = Tendayke pyahu
 add-bookmark = Embojuaju techaukaha
@@ -18,3 +19,21 @@ reader-view = Moñe'ẽrã rechaha
 open-location = Eheka térã emoinge kundaharape
 share = Moherakuã
 close-window = Emboty ovetã
+open-sidebar = Tenda yke
+
+# This string describes shortcuts for search.
+search-popover = Eheka jeike pya’eha
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Eheka amo:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Techaukaha
+search-history = Tembiasakue
+search-opentabs = Tendayke ijurujáva
+search-tags = Teramoĩ
+search-titles = Teratee
+
+##
+

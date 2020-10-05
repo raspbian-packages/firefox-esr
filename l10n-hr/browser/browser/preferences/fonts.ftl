@@ -4,6 +4,7 @@
 
 fonts-window =
     .title = Fontovi
+
 fonts-window-close =
     .key = w
 
@@ -11,6 +12,7 @@ fonts-window-close =
 
 fonts-langgroup-header = Fontovi za
     .accesskey = F
+
 fonts-langgroup-arabic =
     .label = Arapski
 fonts-langgroup-armenian =
@@ -44,12 +46,12 @@ fonts-langgroup-hebrew =
 fonts-langgroup-kannada =
     .label = Kannada
 fonts-langgroup-khmer =
-    .label = Khmer
+    .label = Khmerski
 fonts-langgroup-korean =
     .label = Korejski
 # Translate "Latin" as the name of Latin (Roman) script, not as the name of the Latin language.
 fonts-langgroup-latin =
-    .label = Latinski
+    .label = Latinica
 fonts-langgroup-malayalam =
     .label = Malezijski
 fonts-langgroup-math =
@@ -73,28 +75,37 @@ fonts-langgroup-other =
 
 ## Default fonts and their sizes
 
-fonts-proportional-header = Proporcionalno
+fonts-proportional-header = Proporcionalni
     .accesskey = l
+
 fonts-default-serif =
-    .label = Serif
+    .label = Serifni
 fonts-default-sans-serif =
-    .label = Sans Serif
+    .label = Bezserifni
+
 fonts-proportional-size = Veličina
     .accesskey = V
-fonts-serif = Serif
+
+fonts-serif = Serifni
     .accesskey = S
-fonts-sans-serif = Sans-serif
-    .accesskey = n
-fonts-monospace = Monospace
-    .accesskey = M
+
+fonts-sans-serif = Bezserifni
+    .accesskey = B
+
+fonts-monospace = Fiksne širine
+    .accesskey = F
+
 fonts-monospace-size = Veličina
     .accesskey = e
+
 fonts-minsize = Minimalna veličina fonta
     .accesskey = i
+
 fonts-minsize-none =
     .label = Ništa
+
 fonts-allow-own =
-    .label = Dopusti stranicama da koriste vlastiti font umjesto mojeg odabira
+    .label = Dozvoli stranicama odabrati vlastiti font, umjesto mojeg gornjeg odabira
     .accesskey = a
 
 ## Text Encodings
@@ -102,48 +113,48 @@ fonts-allow-own =
 ## Translate the encoding names as adjectives for an encoding, not as the name
 ## of the language.
 
-fonts-languages-fallback-header = Kôdna stranica za zastarjeli sadržaj
-fonts-languages-fallback-desc = Ova kôdna stranica se koristi za zastarjeli sadržaj, koji ne može definirati vlastitu kôdnu stranicu.
-fonts-languages-fallback-label = Pomoćna kôdna stranica
+fonts-languages-fallback-header = Kodiranje za zastarjeli sadržaj
+fonts-languages-fallback-desc = Ovo kodiranje se koristi za zastarjeli sadržaj, koji ne definira vlastito kodiranje.
+
+fonts-languages-fallback-label = Pomoćno kodiranje
     .accesskey = k
+
 fonts-languages-fallback-name-auto =
-    .label = Zadano za trenutni jezik
+    .label = Standardno kodiranje za trenutačni jezik
 fonts-languages-fallback-name-arabic =
-    .label = Arapski
+    .label = Arapsko
 fonts-languages-fallback-name-baltic =
-    .label = Baltički
+    .label = Baltičko
 fonts-languages-fallback-name-ceiso =
-    .label = Centralno-europski, ISO
+    .label = Centralno-europsko, ISO
 fonts-languages-fallback-name-cewindows =
-    .label = Centralno-europski, Microsoft
+    .label = Centralno-europsko, Microsoft
 fonts-languages-fallback-name-simplified =
-    .label = Pojednostavljeni kineski
+    .label = Kinesko, pojednostavljeno
 fonts-languages-fallback-name-traditional =
-    .label = Kineski tradicionalni
+    .label = Kinesko, tradicionalno
 fonts-languages-fallback-name-cyrillic =
-    .label = Ćirilica
+    .label = Ćirilićno
 fonts-languages-fallback-name-greek =
-    .label = Grčki
+    .label = Grčko
 fonts-languages-fallback-name-hebrew =
-    .label = Hebrejski
+    .label = Hebrejsko
 fonts-languages-fallback-name-japanese =
-    .label = Japanski
+    .label = Japansko
 fonts-languages-fallback-name-korean =
-    .label = Korejski
+    .label = Korejsko
 fonts-languages-fallback-name-thai =
-    .label = Tajlandski
+    .label = Tajlandsko
 fonts-languages-fallback-name-turkish =
-    .label = Turski
+    .label = Tursko
 fonts-languages-fallback-name-vietnamese =
-    .label = Vijetnamski
+    .label = Vijetnamsko
 fonts-languages-fallback-name-other =
-    .label = Ostali (uključujući zapadni europski)
-fonts-very-large-warning-title = Velika vrijednost za najmanji font
-fonts-very-large-warning-message = Postavili ste veliku vrijednost za najmanju veličinu fonta (više od 24 piksela). Ovo može uzrokovati poteškoće i ozbiljne probleme kod korištenja važnih konfiguracijskih stranica, poput ove.
-fonts-very-large-warning-accept = Svejedno zadrži moje promjene
+    .label = Ostalo (uključujući zapadno europsko)
+
 # Variables:
 #   $name {string, "Arial"} - Name of the default font
 fonts-label-default =
-    .label = Uobičajeno ({ $name })
+    .label = Standardno ({ $name })
 fonts-label-default-unnamed =
-    .label = Zadano
+    .label = Standardno

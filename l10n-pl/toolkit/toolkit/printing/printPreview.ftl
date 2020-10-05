@@ -33,6 +33,7 @@ printpreview-of =
     .value = z
 printpreview-custom-prompt =
     .value = Skalowanie…
+printpreview-custom-scale-prompt-title = Skalowanie
 printpreview-page-setup =
     .label = Ustawienia strony…
     .accesskey = u
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Ostatnia strona
+

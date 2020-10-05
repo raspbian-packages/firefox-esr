@@ -3,19 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/. --
 
 page-info-window =
-    .style = width: 435px; min-height: 480px;
+    .style = width: 690px; min-height: 610px;
+
 copy =
     .key = C
 menu-copy =
     .label = Копіювати
     .accesskey = о
+
 select-all =
     .key = A
 menu-select-all =
     .label = Вибрати все
     .accesskey = и
-close-window =
-    .key = A
+
+close-dialog =
+    .key = w
+
 general-tab =
     .label = Основна
     .accesskey = с
@@ -34,11 +38,12 @@ general-referrer =
 general-modified =
     .value = Остання зміна:
 general-encoding =
-    .value = Кодування:
+    .value = Кодування тексту:
 general-meta-name =
     .label = Назва
 general-meta-content =
     .label = Вміст
+
 media-tab =
     .label = Мультимедіа
     .accesskey = М
@@ -68,11 +73,13 @@ media-save-image-as =
     .accesskey = з
 media-preview =
     .value = Попередній перегляд мультимедіа:
+
 perm-tab =
     .label = Дозволи
     .accesskey = Д
 permissions-for =
     .value = Дозволи для:
+
 security-tab =
     .label = Безпека
     .accesskey = з
@@ -93,17 +100,22 @@ security-view-identity-validity =
     .value = Завершується:
 security-view-privacy =
     .value = Конфіденційність та історія
+
 security-view-privacy-history-value = Чи відвідувався цей сайт раніше?
-security-view-privacy-sitedata-value = Чи зберігає цей веб-сайт інформацію на моєму комп’ютері?
+security-view-privacy-sitedata-value = Чи зберігає цей вебсайт інформацію на моєму комп’ютері?
+
 security-view-privacy-clearsitedata =
     .label = Стерти куки і дані сайтів
     .accesskey = т
+
 security-view-privacy-passwords-value = Чи зберігаю я паролі для цього сайту?
+
 security-view-privacy-viewpasswords =
     .label = Переглянути збережені паролі
     .accesskey = п
 security-view-technical =
     .value = Технічні подробиці
+
 help-button =
     .label = Допомога
 
@@ -115,10 +127,14 @@ help-button =
 
 security-site-data-cookies = Так, куки і { $value } { $unit } даних сайтів
 security-site-data-only = Так, { $value } { $unit } даних сайтів
+
 security-site-data-cookies-only = Так, куки
 security-site-data-no = Ні
+
 image-size-unknown = Невідомо
 not-set-verified-by = Не вказано
+page-info-not-specified =
+    .value = Не вказано
 not-set-alternative-text = Не вказано
 not-set-date = Не вказано
 media-img = Зображення
@@ -134,19 +150,23 @@ media-video = Відео
 media-audio = Аудіо
 saved-passwords-yes = Так
 saved-passwords-no = Ні
+
 no-page-title =
     .value = Сторінка без назви:
 general-quirks-mode =
     .value = Режим сумісності
 general-strict-mode =
     .value = Режим дотримання стандартів
-security-no-owner = Цей веб-сайт не надає інформації про власника.
+security-no-owner = Цей вебсайт не надає інформації про власника.
+page-info-security-no-owner =
+    .value = Цей вебсайт не надає інформації про власника.
 media-select-folder = Оберіть теку для збереження зображень
 media-unknown-not-cached =
     .value = Невідомо (не закешовано)
 permissions-use-default =
     .label = Типово
 security-no-visits = Ні
+
 # This string is used to display the number of meta tags
 # in the General Tab
 # Variables:
@@ -158,6 +178,7 @@ general-meta-tags =
             [few] Мета ({ $tags } мітки)
            *[many] Мета ({ $tags } міток)
         }
+
 # This string is used to display the number of times
 # the user has visited the website prior
 # Variables:
@@ -169,6 +190,7 @@ security-visits-number =
         [few] Так, { $visits } рази
        *[many] Так, { $visits } разів
     }
+
 # This string is used to display the size of a media file
 # Variables:
 #   $kb (number) - The size of an image in Kilobytes
@@ -180,6 +202,7 @@ properties-general-size =
             [few] { $kb } КБ ({ $bytes } байти)
            *[many] { $kb } КБ ({ $bytes } байтів)
         }
+
 # This string is used to display the type and number
 # of frames of a animated image
 # Variables:
@@ -192,12 +215,14 @@ media-animated-image-type =
             [few] Зображення { $type } (анімація, { $frames } кадри)
            *[many] Зображення { $type } (анімація, { $frames } кадрів)
         }
+
 # This string is used to display the type of
 # an image
 # Variables:
 #   $type (string) - The type of an image
 media-image-type =
     .value = { $type } Зображення
+
 # This string is used to display the size of a scaled image
 # in both scaled and unscaled pixels
 # Variables:
@@ -207,17 +232,20 @@ media-image-type =
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
     .value = { $dimx }px × { $dimy }px (масштабовано до { $scaledx }px × { $scaledy }px)
+
 # This string is used to display the size of an image in pixels
 # Variables:
 #   $dimx (number) - The horizontal size of an image
 #   $dimy (number) - The vertical size of an image
 media-dimensions =
     .value = { $dimx }px × { $dimy }px
+
 # This string is used to display the size of a media
 # file in kilobytes
 # Variables:
 #   $size (number) - The size of the media file in kilobytes
 media-file-size = { $size } КБ
+
 # This string is used to display the website name next to the
 # "Block Images" checkbox in the media tab
 # Variables:
@@ -225,6 +253,7 @@ media-file-size = { $size } КБ
 media-block-image =
     .label = Заблокувати зображення з { $website }
     .accesskey = Р
+
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:

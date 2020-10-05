@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Gesynchroniseerde tabbladen
 synced-tabs-sidebar-noclients-subtitle = Wilt u hier uw tabbladen van andere apparaten zien?
 synced-tabs-sidebar-notsignedin = Meld u aan om een lijst van tabbladen van uw andere apparaten weer te geven.
+synced-tabs-sidebar-intro = Bekijk een lijst met tabbladen van uw overige apparaten.
 synced-tabs-sidebar-unverified = Uw account moet worden geverifieerd.
 synced-tabs-sidebar-notabs = Geen open tabbladen
 synced-tabs-sidebar-openprefs = { -sync-brand-short-name }-voorkeuren openen
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Apparaten beheren…
     .accesskey = A
+synced-tabs-context-sync-now =
+    .label = Nu synchroniseren
+    .accesskey = N
 fxa-sign-in = Aanmelden bij { -sync-brand-short-name }
+turn-on-sync = { -sync-brand-short-name } inschakelen

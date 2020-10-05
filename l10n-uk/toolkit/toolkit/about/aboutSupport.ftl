@@ -34,7 +34,10 @@ app-basics-title = Інформація про програму
 app-basics-name = Назва
 app-basics-version = Версія
 app-basics-build-id = ID збірки
+app-basics-distribution-id = ID дистрибутиву
 app-basics-update-channel = Канал оновлення
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Тека оновлення
@@ -59,7 +62,6 @@ app-basics-service-workers = Зареєстровані Service Workers
 app-basics-profiles = Профілі
 app-basics-launcher-process-status = Процес запуску
 app-basics-multi-process-support = Багатопроцесні вікна
-app-basics-process-count = Процеси веб-вмісту
 app-basics-remote-processes-count = Віддалені процеси
 app-basics-enterprise-policies = Корпоративні правила
 app-basics-location-service-key-google = Ключ служби Google Location
@@ -68,7 +70,7 @@ app-basics-key-mozilla = Ключ Служби визначення розташ
 app-basics-safe-mode = Безпечний режим
 show-dir-label =
     { PLATFORM() ->
-        [macos] Відкрити відповідну теку
+        [macos] Показати у Finder
         [windows] Відкрити теку
        *[other] Відкрити каталог
     }
@@ -91,12 +93,14 @@ graphics-crash-guards-title = Можливості, вимкнені захис�
 graphics-workarounds-title = Способи обходу
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Віконний протокол
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Середовище робочого столу
 place-database-title = База даних Places
 place-database-integrity = Цілісність
 place-database-verify-integrity = Перевірити цілісність
 js-title = JavaScript
 js-incremental-gc = Інкрементний GC
-a11y-title = Можливості доступності
+a11y-title = Доступність
 a11y-activated = Активовано
 a11y-force-disabled = Блокувати можливості доступності
 a11y-handler-used = Використовується обробник доступності
@@ -115,6 +119,19 @@ sandbox-sys-call-number = Системний виклик
 sandbox-sys-call-args = Аргументи
 safe-mode-title = Спробувати безпечний режим
 restart-in-safe-mode-label = Перезапустити з вимкненими додатками…
+clear-startup-cache-title = Спробуйте очистити кеш запуску
+clear-startup-cache-label = Очистити кеш запуску…
+startup-cache-dialog-title = Очистити кеш запуску
+startup-cache-dialog-body = Перезапустіть { -brand-short-name } для очищення кешу запуску. Ця дія не змінить ваших налаштувань та не вилучить розширень, які ви встановили в { -brand-short-name }.
+restart-button-label = Перезапустити
+
+## Media titles
+
+audio-backend = Обробка аудіо
+max-audio-channels = Максимальне число каналів
+channel-layout = Основний формат каналів
+sample-rate = Основна частота
+roundtrip-latency = Затримка в обох напрямках (стандартне відхилення)
 media-title = Медіа
 media-output-devices-title = Пристрої відтворення
 media-input-devices-title = Пристрої введення
@@ -127,6 +144,12 @@ media-device-format = Формат
 media-device-channels = Канали
 media-device-rate = Частота
 media-device-latency = Затримка
+media-capabilities-title = Медіа-можливості
+# List all the entries of the database.
+media-capabilities-enumerate = Перерахувати базу даних
+
+##
+
 intl-title = Інтернаціоналізація та локалізація
 intl-app-title = Налаштування програми
 intl-locales-requested = Запитані локалі
@@ -136,6 +159,22 @@ intl-locales-default = Типова локаль
 intl-os-title = Операційна система
 intl-os-prefs-system-locales = Системні локалі
 intl-regional-prefs = Регіональні налаштування
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Віддалене зневадження (Протокол Chromium)
+remote-debugging-accepting-connections = Вхідні з'єднання
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -237,7 +276,9 @@ unknown-failure = Заблоковано; код помилки { $failureCode }
 d3d11layers-crash-guard = Композитор D3D11
 d3d11video-crash-guard = Відео декодер D3D11
 d3d9video-crash-buard = Відео декодер D3D9
+d3d9video-crash-guard = Відео декодер D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Відео декодер WMF VPX
 reset-on-next-restart = Скинути при наступному перезавантаженні
 gpu-process-kill-button = Завершити GPU процес
 gpu-device-reset = Скидання пристрою
@@ -246,12 +287,7 @@ uses-tiling = Використовує тайлинг
 content-uses-tiling = Використовує тайлінг (вміст)
 off-main-thread-paint-enabled = Вимальовування поза основним потоком увімкнено
 off-main-thread-paint-worker-count = Число воркерів вимальовування поза основним потоком
-low-end-machine = Виявлено менш продуктивну машину
 target-frame-rate = Цільова частота кадрів
-audio-backend = Обробка аудіо
-max-audio-channels = Максимальне число каналів
-channel-layout = Основний формат каналів
-sample-rate = Основна частота
 min-lib-versions = Очікувана мінімальна версія
 loaded-lib-versions = Поточна версія
 has-seccomp-bpf = Seccomp-BPF (Фільтрування системних викликів)
@@ -266,6 +302,11 @@ sandbox-proc-type-content = вміст
 sandbox-proc-type-file = вміст файлу
 sandbox-proc-type-media-plugin = медіаплагін
 sandbox-proc-type-data-decoder = декодер даних
+startup-cache-title = Кеш запуску
+startup-cache-disk-cache-path = Шлях дискового кешу
+startup-cache-ignore-disk-cache = Ігнорувати дисковий кеш
+startup-cache-found-disk-cache-on-init = Знайдено дисковий кеш в Init
+startup-cache-wrote-to-disk-cache = Записано в дисковий кеш
 launcher-process-status-0 = Увімкнено
 launcher-process-status-1 = Вимкнено через збій
 launcher-process-status-2 = Примусово вимкнено
@@ -275,7 +316,7 @@ launcher-process-status-unknown = Невідомий стан
 # $totalWindows (integer) - Number of total windows
 multi-process-windows = { $remoteWindows }/{ $totalWindows }
 multi-process-status-0 = Увімкнено користувачем
-multi-process-status-1 = Увімкнено типово
+multi-process-status-1 = Типово увімкнено
 multi-process-status-2 = Вимкнено
 multi-process-status-4 = Вимкнено інструментами доступності
 multi-process-status-6 = Вимкнено через непідтримуване введення тексту
@@ -289,6 +330,7 @@ touch-enabled = сенсорне введення увімкнено
 drag-enabled = перетягування смуги прокручування увімкнено
 keyboard-enabled = клавіатура увімкнена
 autoscroll-enabled = авто-прокручування увімкнено
+zooming-enabled = smooth pinch-zoom увімкнено
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

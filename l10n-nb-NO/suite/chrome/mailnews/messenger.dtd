@@ -58,9 +58,9 @@
 <!ENTITY renameFolder.label "Endre mappenavn …">
 <!ENTITY renameFolder.accesskey "m">
 <!ENTITY compactFolders.label "Komprimer mapper">
-<!ENTITY compactFolders.accesskey		"K">
+<!ENTITY compactFolders.accesskey "K">
 <!ENTITY emptyTrashCmd.label "Tøm søppelkasse">
-<!ENTITY emptyTrashCmd.accesskey		"T">
+<!ENTITY emptyTrashCmd.accesskey "T">
 <!ENTITY offlineMenu.label "Frakoblet">
 <!ENTITY offlineMenu.accesskey "l">
 <!ENTITY synchronizeOfflineCmd.label "Last ned/synkroniser nå …">
@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "Flaggede meldinger">
 <!ENTITY selectFlaggedCmd.accesskey "F">
+<!ENTITY menuFavoriteFolder.label "Favorittmappe">
+<!ENTITY menuFavoriteFolder.accesskey "m">
 <!ENTITY folderPropsCmd.label "Egenskaper …">
 <!ENTITY folderPropsFolderCmd.label "Mappeegenskaper …">
 <!ENTITY folderPropsNewsgroupCmd.label "Innstillinger for nyhetsgrupper">
@@ -133,6 +135,10 @@
 <!ENTITY showThreadPaneCmd.accesskey "T">
 <!ENTITY showFolderPaneCmd.label "Mappevisning">
 <!ENTITY showFolderPaneCmd.accesskey "a">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "Sorter etter">
@@ -272,6 +278,8 @@
 <!ENTITY goForwardCmd.commandKey "]">
 <!ENTITY prevFlaggedMsgCmd.label "Flaggede melding">
 <!ENTITY prevFlaggedMsgCmd.accesskey "F">
+<!ENTITY folderMenu.label "Mappe">
+<!ENTITY folderMenu.accesskey "a">
 <!ENTITY startPageCmd.label "Startside">
 <!ENTITY startPageCmd.accesskey "S">
 
@@ -284,23 +292,23 @@
 <!ENTITY newNewMsgCmd.accesskey "M">
 <!ENTITY replyMsgCmd.label "Svar">
 <!ENTITY replyMsgCmd.accesskey "S">
-<!ENTITY replyMsgCmd.key	"r">
+<!ENTITY replyMsgCmd.key "r">
 <!ENTITY replyListCmd.label "Svar til listen">
 <!ENTITY replyListCmd.accesskey "s">
 <!ENTITY replyNewsgroupCmd.label "Svar til nyhetsgruppe">
-<!ENTITY replyNewsgroupCmd.accesskey	"y">
+<!ENTITY replyNewsgroupCmd.accesskey "y">
 <!ENTITY replySenderCmd.label "Svar bare til avsender">
 <!ENTITY replySenderCmd.accesskey "R">
 <!ENTITY replyToAllMsgCmd.label "Svar til alle">
-<!ENTITY replyToAllMsgCmd.accesskey	"a">
-<!ENTITY replyToAllMsgCmd.key	"r">
+<!ENTITY replyToAllMsgCmd.accesskey "a">
+<!ENTITY replyToAllMsgCmd.key "r">
 <!ENTITY replyToSenderAndNewsgroupCmd.label "Svar til avsender og nyhetsgruppe">
 <!ENTITY replyToSenderAndNewsgroupCmd.accesskey "p">
 <!ENTITY replyToAllRecipientsCmd.label "Svar til alle mottakere">
 <!ENTITY replyToAllRecipientsCmd.accesskey "a">
 <!ENTITY forwardMsgCmd.label "Videresend">
 <!ENTITY forwardMsgCmd.accesskey "V">
-<!ENTITY forwardMsgCmd.key	"l">
+<!ENTITY forwardMsgCmd.key "l">
 <!ENTITY forwardAsMenu.label "Videresend som">
 <!ENTITY forwardAsMenu.accesskey "d">
 <!ENTITY forwardAsInline.label "Innbundet">
@@ -417,6 +425,7 @@
 <!ENTITY deleteButton.label "Slett">
 <!ENTITY undeleteButton.label "Angre sletting">
 <!ENTITY markButton.label "Merk">
+<!ENTITY printButton.label "Skriv ut">
 <!ENTITY stopButton.label "Stopp">
 <!ENTITY junkButton.label "Uønsket">
 <!ENTITY notJunkButton.label "Denne er ønsket">
@@ -440,8 +449,10 @@
 <!ENTITY deleteButton.tooltip "Slett valgt melding eller mappe">
 <!ENTITY undeleteButton.tooltip "Angre sletting av valgt melding">
 <!ENTITY markButton.tooltip "Merk meldinger">
+<!ENTITY printButton.tooltip "Skriv ut denne meldingen">
 <!ENTITY stopButton.tooltip "Stopp denne overføringen">
 <!ENTITY throbber.tooltip "Gå til hjemmesiden til &vendorShortName;">
+<!ENTITY throbber.tooltip2 "Gå til hjemmesiden til &brandShortName;">
 <!ENTITY junkButton.tooltip "Merk de valgte meldingene som uønskede">
 <!ENTITY notJunkButton.tooltip "Merk valgt melding som ønskede">
 
@@ -495,6 +506,8 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Hent meldinger for konto">
 <!ENTITY folderContextGetMessages.accesskey "m">
+<!ENTITY folderContextMarkAllFoldersRead.label "Merk alle mapper som lest">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "M">
 <!ENTITY folderContextOpenNewWindow.label "Åpne i nytt e-postvindu">
 <!ENTITY folderContextOpenNewWindow.accesskey "Å">
 <!ENTITY folderContextOpenNewTab.label "Åpne i ny fane">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "S">
 <!ENTITY folderContextProperties.label "Egenskaper…">
 <!ENTITY folderContextProperties.accesskey "I">
+<!ENTITY folderContextFavoriteFolder.label "Favorittmappe">
+<!ENTITY folderContextFavoriteFolder.accesskey "m">
 <!ENTITY folderContextSettings.label "Innstillinger …">
 <!ENTITY folderContextSettings.accesskey "e">
 

@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Errore-kodea: <a data-l10n-name="error-code-link">
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Ziurtagiri-autoritateek jaulkitako ziurtagirien bidez frogatzen duten euren identitatea webguneek. Nabigatzaileen gehiengoak hemendik aurrera ez dituzte fidagarritzat ematen GeoTrust, RapidSSL, Symantec, Thawte eta VeriSign-ek jaulkitako ziurtagiriak.Autoritate hauetakoren batetik datorren ziurtagiria darabil { $hostname } domeinuak eta beraz ezin da egiaztatu webgunearen identitatea.
 cert-error-symantec-distrust-admin = Webgunearen kudeatzaileari arazo honen berri eman nahiko diozu agian.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP gako publikoen ainguratzea: { $hasHPKP }
+cert-error-details-cert-chain-label = Ziurtagiri-katea:
+open-in-new-window-for-csp-or-xfo-error = Ireki gunea leiho berrian
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Zure segurtasuna babesteko, { $hostname } ostalariak ez du { -brand-short-name } baimenduko orria bistaratzea, beste gune batek hau kapsulatu badu. Orri hau ikusteko, leiho berri batean ireki behar duzu.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Ezin da konektatu
+deniedPortAccess-title = Helbide hau murriztuta dago
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hara. Arazoak izaten ari gara gune hori aurkitzen.
+fileNotFound-title = Fitxategia ez da aurkitu
+fileAccessDenied-title = Fitxategi-atzipena ukatu egin da
+generic-title = Iepa.
+captivePortal-title = Hasi saioa sarean
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hara. Helbide horrek ez dirudi zuzena.
+netInterrupt-title = Konexioa eten egin da
+notCached-title = Dokumentua iraungita
+netOffline-title = Lineaz kanpo
+contentEncodingError-title = Edukien kodeketa-errorea
+unsafeContentType-title = Fitxategi mota EZ-segurua
+netReset-title = Konexioa berrezarri egin da
+netTimeout-title = Konexioaren denbora-muga gainditu da
+unknownProtocolFound-title = Ez da helbidea ulertu
+proxyConnectFailure-title = Proxy-zerbitzaria konexioak ukatzen ari da
+proxyResolveFailure-title = Ezin da proxy-zerbitzaria aurkitu
+redirectLoop-title = Orriak ez du birbideraketa ondo egiten
+unknownSocketType-title = Zerbitzariaren erantzuna ez zen espero
+nssFailure2-title = Konexio seguruak huts egin du
+cspBlocked-title = Edukien segurtasun-politikak blokeatuta
+xfoBlocked-title = X-Frame-Options politikak blokeatuta
+csp-xfo-error-title = { -brand-short-name }(e)k ezin du orri hau ireki
+corruptedContentError-title = Hondatutako edukien errorea
+remoteXUL-title = Urruneko XUL
+sslv3Used-title = Ezin da modu seguruan konektatu
+inadequateSecurityError-title = Zure konexioa ez da segurua
+blockedByPolicy-title = Blokeatutako orria
+clockSkewError-title = Zure ordenagailuaren erlojua gaizki dago
+networkProtocolError-title = Sare-protokoloaren errorea
+nssBadCert-title = Abisua: balizko segurtasun arriskua
+nssBadCert-sts-title = Ez da konektatu: balizko segurtasun-arazoa
+certerror-mitm-title = Softwareak { -brand-short-name }(r)i gune honetara modu seguruan konektatzea eragozten dio

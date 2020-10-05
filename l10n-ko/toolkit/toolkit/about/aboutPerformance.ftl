@@ -8,7 +8,7 @@ about-performance-title = 작업 관리자
 ## Column headers
 
 column-name = 이름
-column-type = 형식
+column-type = 유형
 column-energy-impact = 에너지 영향
 column-memory = 메모리
 
@@ -26,7 +26,7 @@ type-subframe = 서브 프레임
 type-tracker = 추적기
 type-addon = 부가 기능
 type-browser = 브라우저
-type-worker = 워커
+type-worker = Worker
 type-other = 기타
 
 ## Values for the Energy Impact column
@@ -54,11 +54,12 @@ close-tab =
     .title = 탭 닫기
 show-addon =
     .title = 부가 기능 관리자에서 보기
+
 # Tooltip when hovering an item of the about:performance table
 # Variables:
-#   $totalDispatches (Number) - how many dispatches occured for this page since it loaded
+#   $totalDispatches (Number) - how many dispatches occurred for this page since it loaded
 #   $totalDuration (Number) - how much CPU time was used by this page since it loaded
-#   $dispatchesSincePrevious (Number) - how many dispatches occured in the last 2 seconds
+#   $dispatchesSincePrevious (Number) - how many dispatches occurred in the last 2 seconds
 #   $durationSincePrevious (Number) - how much CPU time was used in the last 2 seconds
 item =
     .title =

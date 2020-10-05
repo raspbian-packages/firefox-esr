@@ -11,7 +11,7 @@
 
 <!ENTITY subjectField4.label "Emne">
 <!ENTITY ccField4.label "Kopi">
-<!ENTITY bccField4.label "Blind kopi">
+<!ENTITY bccField4.label "Blindkopi">
 <!ENTITY newsgroupsField4.label "Gruppe">
 <!ENTITY followupToField4.label "Oppfølging">
 <!ENTITY tagsHdr4.label "Etiketter">
@@ -94,6 +94,11 @@
 <!ENTITY deleteAllAttachmentsCmd.accesskey    "e">
 
 <!ENTITY openAttachment.tooltip "Åpne vedlagt fil">
+
+<!ENTITY detachedAttachmentFolder.show.label        "Åpne mappen med filen">
+<!ENTITY detachedAttachmentFolder.show.accesskey    "f">
+<!ENTITY detachedAttachmentFolder.showMac.label     "Vis i Finder">
+<!ENTITY detachedAttachmentFolder.showMac.accesskey "F">
 
 <!-- Attachment toolbar items -->
 <!ENTITY saveAttachmentButton1.label       "Lagre">

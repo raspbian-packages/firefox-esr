@@ -3,6 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 url-classifier-title = URL ਵਰਗੀਕਰਤਾ ਜਾਣਕਾਰੀ
+url-classifier-search-title = ਖੋਜੋ
+url-classifier-search-result-title = ਨਤੀਜੇ
+url-classifier-search-result-uri = URI: { $uri }
+url-classifier-search-result-list = ਸਾਰਣੀਆਂ ਦੀ ਸੂਚੀ: { $list }
+url-classifier-search-input = URL
+url-classifier-search-error-invalid-url = ਗਲਤ URL
+url-classifier-search-error-no-features = ਕੋਈ ਫ਼ੀਚਰ ਨਹੀਂ ਚੁਣਿਆ
+url-classifier-search-btn = ਖੋਜਣਾ ਸ਼ੁਰੂ ਕਰੋ
+url-classifier-search-features = ਫ਼ੀਚਰ
+url-classifier-search-listType = ਸੂਚੀ ਕਿਸਮ
 url-classifier-provider-title = ਪੂਰਕ
 url-classifier-provider = ਪੂਰਕ
 url-classifier-provider-last-update-time = ਆਖਰੀ ਅੱਪਡੇਟ ਸਮਾਂ
@@ -30,6 +40,7 @@ url-classifier-debug-sb-modules = ਸੁਰੱਖਿਅਤ ਬਰਾਊਜ਼ਿੰ
 url-classifier-debug-modules = ਮੌਜੂਦਾ ਲਾਗ ਮੋਡੀਊਲ
 url-classifier-debug-sbjs-modules = ਸੁਰੱਖਿਅਟ ਬਰਾਊਜ਼ਿੰਗ JS ਲਾਗ
 url-classifier-debug-file = ਮੌਜੂਦਾ ਲਾਗ ਫਾਇਲ
+
 url-classifier-trigger-update = ਅੱਪਡੇਟ ਚਾਲੂ ਕਰੋ
 url-classifier-not-available = N/A
 url-classifier-disable-sbjs-log = ਸੁਰੱਖਿਅਤ ਬਰਾਊਜ਼ਿੰਗ JS ਲਾਗ ਅਸਮਰੱਥ ਕਰੋ

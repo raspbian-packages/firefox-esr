@@ -5,50 +5,66 @@
 permissions-window =
     .title = Ngoại trừ
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Địa chỉ của trang web
     .accesskey = d
+
 permissions-block =
     .label = Chặn
     .accesskey = C
+
 permissions-session =
     .label = Cho phép theo phiên
     .accesskey = S
+
 permissions-allow =
     .label = Cho phép
     .accesskey = h
+
 permissions-site-name =
     .label = Trang web
+
 permissions-status =
     .label = Trạng thái
+
 permissions-remove =
     .label = Xóa trang web
     .accesskey = R
+
 permissions-remove-all =
     .label = Xóa tất cả các trang web
     .accesskey = e
+
 permissions-button-cancel =
     .label = Hủy bỏ
     .accesskey = H
+
 permissions-button-ok =
     .label = Lưu thay đổi
     .accesskey = L
+
 permissions-autoplay-menu = Mặc định cho tất cả các trang web:
+
 permissions-searchbox =
     .placeholder = Tìm kiếm trang web
+
 permissions-capabilities-autoplay-allow =
     .label = Cho phép âm thanh và video
 permissions-capabilities-autoplay-block =
     .label = Chặn âm thanh
 permissions-capabilities-autoplay-blockall =
     .label = Chặn âm thanh và video
+
 permissions-capabilities-allow =
     .label = Cho phép
 permissions-capabilities-block =
     .label = Chặn
 permissions-capabilities-prompt =
     .label = Luôn hỏi
+
 permissions-capabilities-listitem-allow =
     .value = Cho phép
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Ngoại lệ - Chặn nội dung
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Bạn đã tắt tính năng chặn nội dung trên các trang web này.
+
+permissions-exceptions-etp-window =
+    .title = Các ngoại lệ cho trình chống theo dõi nâng cao
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Bạn đã tắt bảo vệ trên các trang web này.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Các trang web dưới đây đã yêu cầu qu
 permissions-site-location-disable-label =
     .label = Chặn các yêu cầu mới về việc cho phép tru cập vị trí của bạn
 permissions-site-location-disable-desc = Điều này sẽ ngăn chặn bất cứ trang web nào không được liệt kê ở trên gửi yêu cầu cho phép việc truy cập vị trí của bạn. Chặn thông báo có thể ảnh hưởng đến một số tính năng trang web.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Cài đặt - Quyền thực tế ảo
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Các trang web sau đây đã yêu cầu truy cập các thiết bị thực tế ảo của bạn. Bạn có thể chỉ định trang web nào được phép truy cập các thiết bị thực tế ảo của mình. Bạn cũng có thể chặn các yêu cầu mới mà nó yêu cầu truy cập các thiết bị thực tế ảo của mình.
+permissions-site-xr-disable-label =
+    .label = Chặn các yêu cầu mới mà nó yêu cầu truy cập các thiết bị thực tế ảo của bạn
+permissions-site-xr-disable-desc = Điều này sẽ ngăn mọi trang web không được liệt kê ở trên yêu cầu quyền truy cập vào các thiết bị thực tế ảo của bạn. Chặn quyền truy cập vào các thiết bị thực tế ảo của bạn có thể phá vỡ một số tính năng của trang web.
 
 ## Site Permissions - Camera
 

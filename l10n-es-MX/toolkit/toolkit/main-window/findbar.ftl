@@ -9,25 +9,30 @@ findbar-next =
     .tooltiptext = Ir a la siguiente frase encontrada
 findbar-previous =
     .tooltiptext = Ir a la anterior frase encontrada
+
 findbar-find-button-close =
     .tooltiptext = Cerrar la barra de búsqueda
-findbar-highlight-all =
-    .label = Marcar todo
-    .accesskey = t
-    .tooltiptext = Marcar todas las frases encontradas
+
 findbar-highlight-all2 =
     .label = Remarcar todo
     .accesskey =
         { PLATFORM() ->
-            [macos] l
+            [macos] m
            *[other] a
         }
     .tooltiptext = Resaltar todas las apariciones de la frase
+
 findbar-case-sensitive =
     .label = Sensible a mayúsculas
     .accesskey = m
     .tooltiptext = Buscar distinguiendo mayúsculas y minúsculas
+
+findbar-match-diacritics =
+    .label = Coincidir diacríticos
+    .accesskey = o
+    .tooltiptext = Distingue entre letras con acentos y sus letras base (por ejemplo, al buscar por "como", "cómo" no coincidirá  y por lo tanto no aparecerá)
+
 findbar-entire-word =
     .label = Palabras completas
-    .accesskey = w
+    .accesskey = P
     .tooltiptext = Buscar solo palabras completas

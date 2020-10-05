@@ -2,23 +2,30 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!ENTITY autoconfigWizard2.title         "Ρύθμιση υπάρχοντος λογαριασμού e-mail">
+<!ENTITY autoconfigWizard2.title         "Ρύθμιση υπάρχοντος λογαριασμού email">
+
+<!ENTITY emailWizard.title               "Ρύθμιση της υπάρχουσας διεύθυνσης email">
+<!ENTITY emailWizard.caption             "Χρήση της τρέχουσας διεύθυνσης email">
 <!ENTITY name.label                      "Το όνομά σας:">
 <!ENTITY name.accesskey                  "ν">
 <!ENTITY name.placeholder                "Όνομα Επίθετο">
+<!ENTITY fullname.placeholder            "Το πλήρες όνομά σας">
 <!ENTITY name.text                       "Το όνομά σας, όπως θα εμφανίζεται σε τρίτους">
-<!ENTITY email.label                     "Διεύθυνση e-mail:">
+<!ENTITY name.error                      "Παρακαλούμε εισάγετε το όνομά σας">
+<!ENTITY email.label                     "Διεύθυνση email:">
 <!ENTITY email.accesskey                 "ε">
 <!-- LOCALIZATION NOTE(email.placeholder): Domain @example.com must stay in English -->
 <!ENTITY email2.placeholder              "you@example.com">
-<!ENTITY email.text                      "Η υπάρχουσα διεύθυνση e-mail σας">
+<!ENTITY email3.placeholder              "Η διεύθυνση email σας">
+<!ENTITY email.text                      "Η υπάρχουσα διεύθυνση email σας">
+<!ENTITY email.error                     "Μη έγκυρη διεύθυνση email">
 <!ENTITY password.label                  "Κωδικός πρόσβασης:">
 <!ENTITY password.accesskey              "δ">
 <!ENTITY password.placeholder            "Κωδικός πρόσβασης">
 <!ENTITY password.text                   "Προαιρετικός, θα χρησιμοποιηθεί μόνο για την επαλήθευση του ονόματος χρήστη">
+<!ENTITY password.toggle                 "Εμφάνιση/Απόκρυψη κωδικού πρόσβασης">
 <!ENTITY rememberPassword.label          "Απομνημόνευση κωδικού πρόσβασης">
 <!ENTITY rememberPassword.accesskey      "μ">
-
 <!ENTITY usernameEx.label                "Η σύνδεσή σας:">
 <!ENTITY usernameEx.accesskey            "σ">
 <!-- LOCALIZATION NOTE(usernameEx.placeholder): YOURDOMAIN refers to the Windows domain in ActiveDirectory. yourusername refers to the user's account name in Windows. -->
@@ -26,15 +33,22 @@
 <!-- LOCALIZATION NOTE(usernameEx.text): Domain refers to the Windows domain in ActiveDirectory. We mean the user's login in Windows at the local corporate network. -->
 <!ENTITY usernameEx.text                 "Σύνδεση τομέα">
 
+<!ENTITY protocol.label                  "Πρωτόκολλο:">
 <!ENTITY imapLong.label                  "IMAP (απομακρυσμένοι φάκελοι)">
-<!ENTITY pop3Long.label                  "POP3 (διατήρηση των e-mails στον υπολογιστή σας)">
+<!ENTITY pop3Long.label                  "POP3 (διατήρηση των email στον υπολογιστή σας)">
 
+<!ENTITY manualConfigTable.summary       "Ρυθμίσεις διακομιστή">
 <!ENTITY incoming.label                  "Εισερχόμενα:">
+<!ENTITY incomingColumn.label            "Εισερχόμενα">
 <!ENTITY outgoing.label                  "Εξερχόμενα:">
+<!ENTITY outgoingColumn.label            "Εξερχόμενα">
 <!ENTITY username.label                  "Όνομα χρήστη:">
 <!ENTITY hostname.label                  "Όνομα συστήματος διακομιστή">
 <!ENTITY port.label                      "Θύρα">
 <!ENTITY ssl.label                       "SSL">
+<!ENTITY serverRow.label                 "Διακομιστής:">
+<!ENTITY portRow.label                   "Θύρα:">
+<!ENTITY sslRow.label                    "SSL:">
 <!ENTITY auth.label                      "Πιστοποίηση">
 <!ENTITY imap.label                      "IMAP">
 <!ENTITY pop3.label                      "POP3">
@@ -60,15 +74,21 @@
 <!ENTITY stop.label                      "Διακοπή">
 <!ENTITY stop.accesskey                  "κ">
 <!-- LOCALIZATION NOTE (half-manual-test.label): This is the text that is
-     displayed on the button in manual edit mode which will re-guess
+     displayed on the button in manual config mode which will re-guess
      the account configuration, taking into account the settings that
      the user has manually changed. -->
 <!ENTITY half-manual-test.label          "Δοκιμή ξανά">
 <!ENTITY half-manual-test.accesskey      "ξ">
 <!ENTITY manual-edit.label               "Χειροκίνητη ρύθμιση">
 <!ENTITY manual-edit.accesskey           "ρ">
-<!ENTITY open-provisioner.label          "Απόκτηση νέας διεύθυνσης e-mail…">
+<!ENTITY manual-config.label             "Χειροκίνητη ρύθμιση…">
+<!ENTITY manual-config.accesskey         "Χ">
+<!ENTITY open-provisioner.label          "Απόκτηση νέας διεύθυνσης email…">
 <!ENTITY open-provisioner.accesskey      "α">
+
+
+<!ENTITY get-help.label                  "Λήψη βοήθειας">
+<!ENTITY get-help.accesskey              "β">
 
 
 <!ENTITY warning.label                   "Προειδοποίηση!">
@@ -92,11 +112,11 @@
 <!ENTITY changeSettings.label            "Αλλαγή ρυθμίσεων">
 <!ENTITY changeSettings.accesskey        "ρ">
 
-<!ENTITY contactYourProvider.description "Το &brandShortName; μπορεί να σάς επιτρέψει να κάνετε λήψη των email σας με τις παρεχόμενες ρυθμίσεις. Ωστόσο, θα πρέπει να επικοινωνήσετε με το διαχειριστή του συστήματος ή τον πάροχο ηλεκτρονικού ταχυδρομείου σας σχετικά με αυτές τις ασυνήθιστες συνδέσεις. Δείτε τις συχνές ερωτήσεις του Thunderbird για περισσότερες πληροφορίες.">
+<!ENTITY contactYourProvider.description "Το &brandShortName; μπορεί να σας επιτρέψει να κάνετε λήψη των email σας με τις παρεχόμενες ρυθμίσεις. Ωστόσο, θα πρέπει να επικοινωνήσετε με το διαχειριστή του συστήματος ή τον πάροχο ηλεκτρονικού ταχυδρομείου σας σχετικά με αυτές τις ασυνήθιστες συνδέσεις. Δείτε τις συχνές ερωτήσεις του Thunderbird για περισσότερες πληροφορίες.">
 
 <!ENTITY insecureServer.tooltip.title    "Προειδοποίηση! Αυτός δεν είναι ένας ασφαλής διακομιστής.">
 <!ENTITY insecureServer.tooltip.details  "Κάντε κλικ στον κύκλο για περισσότερες λεπτομέρειες.">
 
-<!ENTITY insecureUnencrypted.description "Το email και η πιστοποίησή σας αποστέλλονται χωρίς κρυπτογράφηση, επομένως είναι εύκολη η ανάγνωση του κωδικού πρόσβασης (και του μηνύματός σας) από τρίτους. Το &brandShortName; θα σάς επιτρέψει να κάνετε λήψη των emails σας, αλλά θα πρέπει να επικοινωνήσετε με τον πάροχο ηλεκτρονικού ταχυδρομείου σας σχετικά με τη ρύθμιση του διακομιστή για ασφαλή σύνδεση.">
+<!ENTITY insecureUnencrypted.description "Το email και η πιστοποίησή σας αποστέλλονται χωρίς κρυπτογράφηση, επομένως είναι εύκολη η ανάγνωση του κωδικού πρόσβασης (και του μηνύματός σας) από τρίτους. Το &brandShortName; θα σας επιτρέψει να κάνετε λήψη των emails σας, αλλά θα πρέπει να επικοινωνήσετε με τον πάροχο ηλεκτρονικού ταχυδρομείου σας σχετικά με τη ρύθμιση του διακομιστή για ασφαλή σύνδεση.">
 <!ENTITY insecureSelfSigned.description  "Ο διακομιστής χρησιμοποιεί ένα πιστοποιητικό που δεν είναι έμπιστο, και δεν έτσι δεν είναι δυνατόν να είστε σίγουροι ότι κάποιος δεν παρεμβάλλετε στην επικοινωνία του &brandShortName; και του διακομιστή. Ο &brandShortName;θα σας επιτρέψει να κάνετε λήψη της αλληλογραφίας σας, αλλά θα πρέπει να ρυθμίσετε τον διακομιστή σας  να χρησιμοποιεί ασφαλή σύνδεση.">
 <!ENTITY secureServer.description        "Συγχαρητήρια! Αυτός είναι ένας ασφαλής διακομιστής.">

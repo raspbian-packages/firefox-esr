@@ -5,49 +5,70 @@
 permissions-window =
     .title = Ma kiweko woko
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Kanonge me kakube
     .accesskey = d
+
 permissions-block =
     .label = Geng
     .accesskey = G
+
 permissions-session =
     .label = Ye pi Kare
     .accesskey = K
+
 permissions-allow =
     .label = Ye
     .accesskey = Y
+
 permissions-site-name =
     .label = Kakube
+
 permissions-status =
     .label = Kit ma tye kwede
+
 permissions-remove =
     .label = Kwany kakube
     .accesskey = K
+
 permissions-remove-all =
     .label = Kwany kakube weng
     .accesskey = w
+
 permissions-button-cancel =
     .label = Juki
     .accesskey = J
+
 permissions-button-ok =
     .label = Gwok alokaloka
     .accesskey = G
+
+permissions-autoplay-menu = Makwongo pi kakube weng:
+
 permissions-searchbox =
     .placeholder = Yeny kakube
+
+permissions-capabilities-autoplay-allow =
+    .label = Yer Dwon ki Video
+permissions-capabilities-autoplay-block =
+    .label = Geng Dwon
+permissions-capabilities-autoplay-blockall =
+    .label = Geng Dwon ki Video
+
 permissions-capabilities-allow =
     .label = Ye
 permissions-capabilities-block =
     .label = Geng
 permissions-capabilities-prompt =
     .label = Peny jwijwi
+
 permissions-capabilities-listitem-allow =
     .value = Ye
 permissions-capabilities-listitem-block =
     .value = Geng
-permissions-capabilities-listitem-allow-first-party =
-    .value = Ye dul mukwongo keken
 permissions-capabilities-listitem-allow-session =
     .value = Ye pi kare
 
@@ -58,6 +79,7 @@ permissions-invalid-uri-label = Tim ber iket nying lami kube matye atir
 
 ## Exceptions - Tracking Protection
 
+permissions-exceptions-etp-desc = Ijuko woko gwokke ki i kakube magi.
 
 ## Exceptions - Cookies
 
@@ -84,6 +106,9 @@ permissions-exceptions-addons-desc = I twero cimo kakube mene ma kiye me keto me
 ## Exceptions - Autoplay Media
 
 
+## Site Permissions - Autoplay
+
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -103,6 +128,8 @@ permissions-site-location-desc = Kakube magi okwayo me nongo kabedo mamegi. Itwe
 permissions-site-location-disable-label =
     .label = Geng kwac manyen ma penyo pi nongo kabedo mamegi
 permissions-site-location-disable-desc = Man bi gengo kakube mo keken ma pe ki coyo malo me penyo pi twero me nongo kabedo mamegi. Gengo nongo kabedo mamegi romo balo jami mogo me kakube.
+
+## Site Permissions - Virtual Reality
 
 ## Site Permissions - Camera
 

@@ -14,8 +14,9 @@
                        for the help button in the menubar but Gnome does not.   -->
 <!ENTITY helpMenuWin.label        "Ajuda"> 
 <!ENTITY helpMenuWin.accesskey    "j">
+
 <!ENTITY aboutProduct2.label      "A prepaus de &brandShorterName;">
-<!ENTITY aboutProduct2.accesskey  "p">
+<!ENTITY aboutProduct2.accesskey  "A">
 <!ENTITY productHelp2.label       "Ajuda de &brandShorterName;">
 <!ENTITY productHelp2.accesskey   "j">
 <!ENTITY helpMac.commandkey       "?">
@@ -28,10 +29,7 @@
 <!ENTITY helpSafeMode.stop.label       "Reaviar, moduls activats…">
 <!ENTITY helpSafeMode.stop.accesskey   "R">
 
-<!ENTITY healthReport2.label      "Bilanç de santat de &brandShorterName;">
-<!ENTITY healthReport2.accesskey  "B">
-
-<!ENTITY helpTroubleshootingInfo.label      "Entresenhas de depanatge">
+<!ENTITY helpTroubleshootingInfo.label      "Informacions de depanatge">
 <!ENTITY helpTroubleshootingInfo.accesskey  "d">
 
 <!ENTITY helpFeedbackPage.label      "Balhar vòstre vejaire…">
@@ -52,3 +50,5 @@
 <!ENTITY hideOtherAppsCmdMac.commandkey "H">
 
 <!ENTITY showAllAppsCmdMac.label        "Afichar tot">
+
+<!ENTITY touchBarCmdMac.label           "Personalizar la Touch Bar…">

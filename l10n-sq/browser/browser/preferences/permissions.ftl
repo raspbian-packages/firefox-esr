@@ -67,6 +67,10 @@ permissions-exceptions-content-blocking-window =
     .title = Përjashtime - Bllokim Lënde
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = E keni çaktivizuar bllokimin e lëndës në këto sajte.
+permissions-exceptions-etp-window =
+    .title = Përjashtime për Mbrojtje të Thelluar Nga Gjurmimet
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = I keni çaktivizuar mbrojtjet në këto sajte.
 
 ## Exceptions - Cookies
 
@@ -106,7 +110,7 @@ permissions-exceptions-autoplay-media-desc2 = Mund të caktoni cilëve sajte u l
 ## Site Permissions - Autoplay
 
 permissions-site-autoplay-window =
-    .title = Rregullime - Vetëluajtje{ permissions-window.style }
+    .title = Rregullime - Vetëluajtje
     .style = { permissions-window.style }
 permissions-site-autoplay-desc = Këtu mund të trajtoni sajtet që nuk ndjekin rregullimet tuaja parazgjedhje për vetëluajtjen.
 
@@ -129,6 +133,16 @@ permissions-site-location-desc = Sajtet vijues kanë kërkuar të dinë vendndod
 permissions-site-location-disable-label =
     .label = Blloko kërkesa të reja për njohje vendndodhjesh
 permissions-site-location-disable-desc = Kjo do të pengojë çfarëdo sajti jo të pranishëm më sipër të kërkojë leje të njohë vendndodhjen tuaj. Bllokimi i njohjes së vendndodhjes tuaj mund të prishë punimin e ndonjë veçorie të sajtit.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Rregullime - Leje Realiteti Virtual
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Sajtet vijues kanë kërkuar të hyjnë në pajisje tuajat për realitet virtual. Mund të specifikoni cilët sajte lejohen të hyjnë në pajisjet tuaja të realitetit virtual. Mundeni edhe të bllokoni kërkesa të reja për hyrje në pajisjet tuaja të realitetit virtual.
+permissions-site-xr-disable-label =
+    .label = Blloko kërkesa të reja për hyrje në pajisjet tuaja të realitetit virtual
+permissions-site-xr-disable-desc = Kjo do të pengojë çfarëdo sajti jo të pranishëm më sipër të kërkojë leje të hyjë në pajisje tuaja të realitetit virtual. Bllokimi i hyrjes në pajisjet tuaja të realitetit virtual mund të prishë punimin e ca anëve të sajtit.
 
 ## Site Permissions - Camera
 

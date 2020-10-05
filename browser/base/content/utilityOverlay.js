@@ -13,6 +13,7 @@ var { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  AboutNewTab: "resource:///modules/AboutNewTab.jsm",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.jsm",
   ContextualIdentityService:
     "resource://gre/modules/ContextualIdentityService.jsm",
@@ -20,13 +21,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.jsm",
   ShellService: "resource:///modules/ShellService.jsm",
 });
-
-XPCOMUtils.defineLazyServiceGetter(
-  this,
-  "aboutNewTabService",
-  "@mozilla.org/browser/aboutnewtab-service;1",
-  "nsIAboutNewTabService"
-);
 
 XPCOMUtils.defineLazyGetter(this, "ReferrerInfo", () =>
   Components.Constructor(
@@ -42,7 +36,7 @@ Object.defineProperty(this, "BROWSER_NEW_TAB_URL", {
     if (PrivateBrowsingUtils.isWindowPrivate(window)) {
       if (
         !PrivateBrowsingUtils.permanentPrivateBrowsing &&
-        !aboutNewTabService.overridden
+        !AboutNewTab.newTabURLOverridden
       ) {
         return "about:privatebrowsing";
       }
@@ -61,12 +55,12 @@ Object.defineProperty(this, "BROWSER_NEW_TAB_URL", {
       if (
         !privateAllowed &&
         (extensionControlled ||
-          aboutNewTabService.newTabURL.startsWith("moz-extension://"))
+          AboutNewTab.newTabURL.startsWith("moz-extension://"))
       ) {
         return "about:privatebrowsing";
       }
     }
-    return aboutNewTabService.newTabURL;
+    return AboutNewTab.newTabURL;
   },
 });
 
@@ -117,13 +111,12 @@ function doGetProtocolFlags(aURI) {
 /**
  * openUILink handles clicks on UI elements that cause URLs to load.
  *
- * As the third argument, you may pass an object with the same properties as
- * accepted by openUILinkIn, plus "ignoreButton" and "ignoreAlt".
- *
- * @param url {string}
- * @param event {Event | Object} Event or JSON object representing an Event
+ * @param {string} url
+ * @param {Event | Object} event Event or JSON object representing an Event
  * @param {Boolean | Object} aIgnoreButton
- * @param {Boolean} aIgnoreButton
+ *                           Boolean or object with the same properties as
+ *                           accepted by openUILinkIn, plus "ignoreButton"
+ *                           and "ignoreAlt".
  * @param {Boolean} aIgnoreAlt
  * @param {Boolean} aAllowThirdPartyFixup
  * @param {Object} aPostData
@@ -229,10 +222,14 @@ function whereToOpenLink(e, ignoreButton, ignoreAlt) {
   var alt = e.altKey && !ignoreAlt;
 
   // ignoreButton allows "middle-click paste" to use function without always opening in a new window.
-  var middle = !ignoreButton && e.button == 1;
-  var middleUsesTabs = Services.prefs.getBoolPref(
+  let middle = !ignoreButton && e.button == 1;
+  let middleUsesTabs = Services.prefs.getBoolPref(
     "browser.tabs.opentabfor.middleclick",
     true
+  );
+  let middleUsesNewWindow = Services.prefs.getBoolPref(
+    "middlemouse.openNewWindow",
+    false
   );
 
   // Don't do anything special with right-mouse clicks.  They're probably clicks on context menu items.
@@ -246,7 +243,7 @@ function whereToOpenLink(e, ignoreButton, ignoreAlt) {
     return "save";
   }
 
-  if (shift || (middle && !middleUsesTabs)) {
+  if (shift || (middle && !middleUsesTabs && middleUsesNewWindow)) {
     return "window";
   }
 
@@ -366,7 +363,7 @@ function openLinkIn(url, where, params) {
   var aCharset = params.charset;
   var aReferrerInfo = params.referrerInfo
     ? params.referrerInfo
-    : new ReferrerInfo(Ci.nsIHttpChannel.REFERRER_POLICY_UNSET, true, null);
+    : new ReferrerInfo(Ci.nsIReferrerInfo.EMPTY, true, null);
   var aRelatedToCurrent = params.relatedToCurrent;
   var aAllowInheritPrincipal = !!params.allowInheritPrincipal;
   var aAllowMixedContent = params.allowMixedContent;
@@ -380,6 +377,7 @@ function openLinkIn(url, where, params) {
   var aUserContextId = params.userContextId;
   var aIndicateErrorPageLoad = params.indicateErrorPageLoad;
   var aPrincipal = params.originPrincipal;
+  var aStoragePrincipal = params.originStoragePrincipal;
   var aTriggeringPrincipal = params.triggeringPrincipal;
   var aCsp = params.csp;
   var aForceAboutBlankViewerInCurrent = params.forceAboutBlankViewerInCurrent;
@@ -390,8 +388,6 @@ function openLinkIn(url, where, params) {
   }
 
   if (where == "save") {
-    // TODO(1073187): propagate referrerPolicy.
-    // ContentClick.jsm passes isContentWindowPrivate for saveURL instead of passing a CPOW initiatingDoc
     if ("isContentWindowPrivate" in params) {
       saveURL(
         url,
@@ -399,7 +395,7 @@ function openLinkIn(url, where, params) {
         null,
         true,
         true,
-        aReferrerInfo.sendReferrer ? aReferrerInfo.originalReferrer : null,
+        aReferrerInfo,
         null,
         params.isContentWindowPrivate,
         aPrincipal
@@ -412,15 +408,7 @@ function openLinkIn(url, where, params) {
         );
         return;
       }
-      saveURL(
-        url,
-        null,
-        null,
-        true,
-        true,
-        aReferrerInfo.sendReferrer ? aReferrerInfo.originalReferrer : null,
-        aInitiatingDoc
-      );
+      saveURL(url, null, null, true, true, aReferrerInfo, aInitiatingDoc);
     }
     return;
   }
@@ -445,17 +433,19 @@ function openLinkIn(url, where, params) {
   // can not do it for NullPrincipals since NullPrincipals are only
   // identical if they actually are the same object (See Bug: 1346759)
   function useOAForPrincipal(principal) {
-    if (principal && principal.isCodebasePrincipal) {
+    if (principal && principal.isContentPrincipal) {
       let attrs = {
         userContextId: aUserContextId,
         privateBrowsingId:
           aIsPrivate || (w && PrivateBrowsingUtils.isWindowPrivate(w)),
+        firstPartyDomain: principal.originAttributes.firstPartyDomain,
       };
       return Services.scriptSecurityManager.principalWithOA(principal, attrs);
     }
     return principal;
   }
   aPrincipal = useOAForPrincipal(aPrincipal);
+  aStoragePrincipal = useOAForPrincipal(aStoragePrincipal);
   aTriggeringPrincipal = useOAForPrincipal(aTriggeringPrincipal);
 
   if (!w || where == "window") {
@@ -504,6 +494,7 @@ function openLinkIn(url, where, params) {
     sa.appendElement(allowThirdPartyFixupSupports);
     sa.appendElement(userContextIdSupports);
     sa.appendElement(aPrincipal);
+    sa.appendElement(aStoragePrincipal);
     sa.appendElement(aTriggeringPrincipal);
     sa.appendElement(null); // allowInheritPrincipal
     sa.appendElement(aCsp);
@@ -631,20 +622,10 @@ function openLinkIn(url, where, params) {
       ) {
         // Unless we know for sure we're not inheriting principals,
         // force the about:blank viewer to have the right principal:
-        targetBrowser.createAboutBlankContentViewer(aPrincipal);
-      }
-
-      // When navigating a recording tab, use a new content process in order to
-      // start a new recording.
-      if (
-        targetBrowser.hasAttribute("recordExecution") &&
-        targetBrowser.currentURI.spec != "about:blank"
-      ) {
-        w.gBrowser.updateBrowserRemoteness(targetBrowser, {
-          recordExecution: "*",
-          newFrameloader: true,
-          remoteType: E10SUtils.DEFAULT_REMOTE_TYPE,
-        });
+        targetBrowser.createAboutBlankContentViewer(
+          aPrincipal,
+          aStoragePrincipal
+        );
       }
 
       targetBrowser.loadURI(url, {
@@ -669,7 +650,7 @@ function openLinkIn(url, where, params) {
       focusUrlBar =
         !loadInBackground &&
         w.isBlankPageURL(url) &&
-        !aboutNewTabService.willNotifyUser;
+        !AboutNewTab.willNotifyUser;
 
       let tabUsedForLoad = w.gBrowser.loadOneTab(url, {
         referrerInfo: aReferrerInfo,
@@ -682,10 +663,12 @@ function openLinkIn(url, where, params) {
         allowMixedContent: aAllowMixedContent,
         userContextId: aUserContextId,
         originPrincipal: aPrincipal,
+        originStoragePrincipal: aStoragePrincipal,
         triggeringPrincipal: aTriggeringPrincipal,
         allowInheritPrincipal: aAllowInheritPrincipal,
         csp: aCsp,
         focusUrlBar,
+        openerBrowser: params.openerBrowser,
       });
       targetBrowser = tabUsedForLoad.linkedBrowser;
 
@@ -888,7 +871,7 @@ function eventMatchesKey(aEvent, aKey) {
     aEvent.getModifierState(modifier)
   );
   // Check if aEvent has a modifier and aKey doesn't
-  if (eventModifiers.length > 0 && keyModifiers.length == 0) {
+  if (eventModifiers.length && !keyModifiers.length) {
     return false;
   }
   // Check whether aKey's modifiers match aEvent's modifiers
@@ -991,7 +974,7 @@ function openAboutDialog() {
     features += "centerscreen,dependent,dialog=no";
   }
 
-  window.openDialog("chrome://browser/content/aboutDialog.xul", "", features);
+  window.openDialog("chrome://browser/content/aboutDialog.xhtml", "", features);
 }
 
 function openPreferences(paneID, extraArgs) {
@@ -1110,6 +1093,8 @@ function buildHelpMenu() {
   if (typeof gSafeBrowsing != "undefined") {
     gSafeBrowsing.setReportPhishingMenu();
   }
+
+  updateImportCommandEnabledState();
 }
 
 function isElementVisible(aElement) {
@@ -1126,45 +1111,6 @@ function isElementVisible(aElement) {
 function makeURLAbsolute(aBase, aUrl) {
   // Note:  makeURI() will throw if aUri is not a valid URI
   return makeURI(aUrl, null, makeURI(aBase)).spec;
-}
-
-/**
- * openNewTabWith: opens a new tab with the given URL.
- *
- * @param aURL
- *        The URL to open (as a string).
- * @param aShiftKey
- *        True if shift key is held.  This value is used for the purpose of
- *        determining whether to open in the background.
- * @param aParams
- *        parameters passed to openLinkIn
- */
-function openNewTabWith(aURL, aShiftKey, aParams = {}) {
-  // As in openNewWindowWith(), we want to pass the charset of the
-  // current document over to a new tab.
-  if (
-    document.documentElement.getAttribute("windowtype") == "navigator:browser"
-  ) {
-    aParams.charset = gBrowser.selectedBrowser.characterSet;
-  }
-
-  openLinkIn(aURL, aShiftKey ? "tabshifted" : "tab", aParams);
-}
-
-/**
- * openNewWindowWith: opens a new window with the given URL.
- * See openNewTabWith for parameters.
- */
-function openNewWindowWith(aURL, aParams = {}) {
-  // Extract the current charset menu setting from the current document and
-  // use it to initialize the new browser window...
-  if (
-    document.documentElement.getAttribute("windowtype") == "navigator:browser"
-  ) {
-    aParams.charset = gBrowser.selectedBrowser.characterSet;
-  }
-
-  openLinkIn(aURL, "window", aParams);
 }
 
 function getHelpLinkURL(aHelpTopic) {
@@ -1189,12 +1135,16 @@ function openPrefsHelp(aEvent) {
 }
 
 /**
- * Updates visibility of "Import From Another Browser" command depending on
- * the DisableProfileImport policy.
+ * Updates the enabled state of the "Import From Another Browser" command
+ * depending on the DisableProfileImport policy.
  */
-function updateFileMenuImportUIVisibility(id) {
+function updateImportCommandEnabledState() {
   if (!Services.policies.isAllowed("profileImport")) {
-    let command = document.getElementById(id);
-    command.setAttribute("disabled", "true");
+    document
+      .getElementById("cmd_file_importFromAnotherBrowser")
+      .setAttribute("disabled", "true");
+    document
+      .getElementById("cmd_help_importFromAnotherBrowser")
+      .setAttribute("disabled", "true");
   }
 }

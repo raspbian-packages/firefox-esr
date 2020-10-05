@@ -35,7 +35,10 @@ app-basics-title = Informacje o programie
 app-basics-name = Nazwa
 app-basics-version = Wersja
 app-basics-build-id = ID kompilacji
+app-basics-distribution-id = ID dystrybucji
 app-basics-update-channel = Kanał aktualizacji
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Katalog aktualizacji
@@ -60,7 +63,6 @@ app-basics-service-workers = Zarejestrowane wątki usługowe
 app-basics-profiles = Profile
 app-basics-launcher-process-status = Proces uruchamiający
 app-basics-multi-process-support = Okna wieloprocesowe
-app-basics-process-count = Procesy treści sieciowych
 app-basics-remote-processes-count = Zdalne procesy
 app-basics-enterprise-policies = Zasady organizacji
 app-basics-location-service-key-google = Klucz usługi lokalizacji Google
@@ -92,6 +94,8 @@ graphics-crash-guards-title = Funkcje wyłączone dla ochrony przed awariami
 graphics-workarounds-title = Obejścia problemów
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protokół okien
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Środowisko pulpitu
 place-database-title = Baza danych „Places”
 place-database-integrity = Integralność
 place-database-verify-integrity = Sprawdź integralność
@@ -116,6 +120,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Parametry
 safe-mode-title = Tryb awaryjny
 restart-in-safe-mode-label = Uruchom ponownie z wyłączonymi dodatkami…
+clear-startup-cache-title = Spróbuj wyczyścić pamięć podręczną uruchamiania
+clear-startup-cache-label = Wyczyść pamięć podręczną uruchamiania…
+startup-cache-dialog-title = Wyczyść pamięć podręczną uruchamiania
+startup-cache-dialog-body = Uruchom program { -brand-short-name } ponownie, aby wyczyścić pamięć podręczną uruchamiania. Nie spowoduje to zmiany ustawień ani usunięcia rozszerzeń dodanych do programu.
+restart-button-label = Uruchom ponownie
+
+## Media titles
+
+audio-backend = Mechanizm dźwięku
+max-audio-channels = Maksymalna liczba kanałów
+channel-layout = Preferowany układ kanałów
+sample-rate = Preferowana częstotliwość próbkowania
+roundtrip-latency = Opóźnienie w obie strony (odchylenie standardowe)
 media-title = Media
 media-output-devices-title = Urządzenia wyjściowe
 media-input-devices-title = Urządzenia wejściowe
@@ -128,6 +145,12 @@ media-device-format = Format
 media-device-channels = Kanały
 media-device-rate = Częstotliwość próbkowania
 media-device-latency = Opóźnienie
+media-capabilities-title = Możliwości medialne
+# List all the entries of the database.
+media-capabilities-enumerate = Wyświetl zawartość bazy danych
+
+##
+
 intl-title = Umiędzynaradawianie i lokalizacja
 intl-app-title = Ustawienia programu
 intl-locales-requested = Żądane ustawienia regionalne
@@ -137,6 +160,22 @@ intl-locales-default = Domyślne ustawienia regionalne
 intl-os-title = System operacyjny
 intl-os-prefs-system-locales = Ustawienia regionalne systemu
 intl-regional-prefs = Preferencje regionalne
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Zdalne debugowanie (protokół Chromium)
+remote-debugging-accepting-connections = Przyjmuje połączenia
+remote-debugging-url = Adres URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -238,7 +277,9 @@ unknown-failure = Zablokowano. Kod błędu: { $failureCode }
 d3d11layers-crash-guard = Kompozytor D3D11
 d3d11video-crash-guard = Dekoder wideo D3D11
 d3d9video-crash-buard = Dekoder wideo D3D9
+d3d9video-crash-guard = Dekoder wideo D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Dekoder wideo WMF VPX
 reset-on-next-restart = Spróbuj włączyć przy następnym uruchomieniu
 gpu-process-kill-button = Zakończ proces GPU
 gpu-device-reset = Reset urządzenia
@@ -247,12 +288,7 @@ uses-tiling = Używa kafelkowania
 content-uses-tiling = Używa kafelkowania (treść)
 off-main-thread-paint-enabled = Rysowanie poza głównym wątkiem
 off-main-thread-paint-worker-count = Wątki rysujące poza głównym
-low-end-machine = Wykryto mniej wydajny komputer
 target-frame-rate = Docelowa liczba klatek na sekundę
-audio-backend = Mechanizm dźwięku
-max-audio-channels = Maksymalna liczba kanałów
-channel-layout = Preferowany układ kanałów
-sample-rate = Preferowana częstotliwość próbkowania
 min-lib-versions = Oczekiwana wersja minimalna
 loaded-lib-versions = Wersja w użyciu
 has-seccomp-bpf = Seccomp-BPF (filtrowanie wywołań systemowych)
@@ -267,6 +303,11 @@ sandbox-proc-type-content = zawartość
 sandbox-proc-type-file = zawartość pliku
 sandbox-proc-type-media-plugin = wtyczka
 sandbox-proc-type-data-decoder = dekoder danych
+startup-cache-title = Pamięć podręczna uruchamiania
+startup-cache-disk-cache-path = Ścieżka do pamięci podręcznej na dysku
+startup-cache-ignore-disk-cache = Ignorowanie pamięci podręcznej na dysku
+startup-cache-found-disk-cache-on-init = Odnaleziono pamięć podręczną na dysku podczas inicjacji
+startup-cache-wrote-to-disk-cache = Zapisano do pamięci podręcznej na dysku
 launcher-process-status-0 = włączony
 launcher-process-status-1 = wyłączony z powodu awarii
 launcher-process-status-2 = wymuszone wyłączenie
@@ -290,6 +331,7 @@ touch-enabled = dotyk
 drag-enabled = pasek przewijania
 keyboard-enabled = klawiatura
 autoscroll-enabled = automatyczne przewijanie
+zooming-enabled = płynne powiększanie gestem
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

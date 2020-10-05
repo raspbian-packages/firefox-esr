@@ -5,6 +5,7 @@
 url-classifier-title = URL Classifier معلومات
 url-classifier-search-title = تلاش کریں
 url-classifier-search-result-title = نتائج
+url-classifier-search-result-uri = URI: { $uri }
 url-classifier-search-input = URL
 url-classifier-search-error-invalid-url = غلط یو آر ایل
 url-classifier-search-error-no-features = خصوصیات منتخب نہیں کی گئیں
@@ -38,10 +39,13 @@ url-classifier-debug-sb-modules = محفوظ براؤزانگ لاگ ماڈیو�
 url-classifier-debug-modules = موجودہ لاگ ماڈیول
 url-classifier-debug-sbjs-modules = محفوظ براوزنگ JS لاگ
 url-classifier-debug-file = موجودہ لاگ مسل
+
 url-classifier-not-available = N/A
+url-classifier-disable-sbjs-log = محفوظ براؤزنگ جے ایس لاگ کو غیر فعال بنائیں
 url-classifier-enabled = اہل بنایا گیا
 url-classifier-disabled = نااہل
 url-classifier-updating = تازہ کاری کر رہا ہے
 url-classifier-cannot-update = تازہ کاری نہیں کر سکتا
-url-classifier-success = کاميابى
+url-classifier-success = کامیاب
 url-classifier-update-error = اپ ڈیٹ نقص { $error }
+url-classifier-download-error = ڈاؤن لوڈ نقص({ $error })

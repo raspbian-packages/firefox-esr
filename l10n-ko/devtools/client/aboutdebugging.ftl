@@ -26,10 +26,10 @@ about-debugging-sidebar-this-firefox =
 about-debugging-sidebar-setup =
     .name = 설정
 # Text displayed in the about:debugging sidebar when USB devices discovery is enabled.
-about-debugging-sidebar-usb-enabled = USB 활성화됨
+about-debugging-sidebar-usb-enabled = USB 사용함
 # Text displayed in the about:debugging sidebar when USB devices discovery is disabled
 # (for instance because the mandatory ADB extension is not installed).
-about-debugging-sidebar-usb-disabled = USB 비활성화됨
+about-debugging-sidebar-usb-disabled = USB 사용 안 함
 # Connection status (connected) for runtime items in the sidebar
 aboutdebugging-sidebar-runtime-connection-status-connected = 연결됨
 # Connection status (disconnected) for runtime items in the sidebar
@@ -45,19 +45,19 @@ about-debugging-sidebar-item-connect-button-connecting = 연결 중…
 about-debugging-sidebar-item-connect-button-connection-failed = 연결 실패
 # Text displayed in connection warning on sidebar item of the runtime when connecting to
 # the runtime is taking too much time.
-about-debugging-sidebar-item-connect-button-connection-not-responding = 연결이 아직 대기 중입니다. 대상 브라우저에서 메시지를 확인하십시오.
+about-debugging-sidebar-item-connect-button-connection-not-responding = 연결이 아직 대기 중입니다. 대상 브라우저에서 메시지를 확인하세요
 # Text displayed as connection error in sidebar item when the connection has timed out.
 about-debugging-sidebar-item-connect-button-connection-timeout = 연결 시간 초과
 # Temporary text displayed in sidebar items representing remote runtimes after
 # successfully connecting to them. Temporary UI, do not localize.
-about-debugging-sidebar-item-connected-label = Connected
+about-debugging-sidebar-item-connected-label = 연결됨
 # Text displayed in sidebar items for remote devices where a compatible browser (eg
 # Firefox) has not been detected yet. Typically, Android phones connected via USB with
 # USB debugging enabled, but where Firefox is not started.
 about-debugging-sidebar-runtime-item-waiting-for-browser = 브라우저를 기다리는 중…
 # Text displayed in sidebar items for remote devices that have been disconnected from the
 # computer.
-about-debugging-sidebar-runtime-item-unplugged = 연결되지 않음
+about-debugging-sidebar-runtime-item-unplugged = 분리됨
 # Title for runtime sidebar items that are related to a specific device (USB, WiFi).
 about-debugging-sidebar-runtime-item-name =
     .title = { $displayName } ({ $deviceName })
@@ -74,18 +74,18 @@ about-debugging-sidebar-support-icon =
     .alt = 도움말 아이콘
 # Text displayed in a sidebar button to refresh the list of USB devices. Clicking on it
 # will attempt to update the list of devices displayed in the sidebar.
-about-debugging-refresh-usb-devices-button = 기기 새로고침
+about-debugging-refresh-usb-devices-button = 기기 새로 고침
 
 # Setup Page strings
 
 # Title of the Setup page.
 about-debugging-setup-title = 설정
 # Introduction text in the Setup page to explain how to configure remote debugging.
-about-debugging-setup-intro = 장치를 원격으로 디버깅할 연결 방법을 구성합니다.
+about-debugging-setup-intro = 기기를 원격으로 디버깅할 연결 방법을 구성합니다.
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
-about-debugging-setup-this-firefox = 이 버전의 { -brand-shorter-name }에서 탭, 확장기능 및 서비스 워커를 디버그하려면 <a>{ about-debugging-this-firefox-runtime-name }</a>를 사용하십시오.
+about-debugging-setup-this-firefox = 이 버전의 { -brand-shorter-name }에서 탭, 확장 기능 및 Service Worker를 디버그하려면 <a>{ about-debugging-this-firefox-runtime-name }</a>를 사용하세요.
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
-about-debugging-setup-this-firefox2 = 이 버전의 { -brand-shorter-name }에서 확장 기능 및 서비스 워커를 디버그하려면 <a>{ about-debugging-this-firefox-runtime-name }</a>을 사용하십시오.
+about-debugging-setup-this-firefox2 = 이 버전의 { -brand-shorter-name }에서 확장 기능 및 Service Worker를 디버그하려면 <a>{ about-debugging-this-firefox-runtime-name }</a>를 사용하세요.
 # Title of the heading Connect section of the Setup page.
 about-debugging-setup-connect-heading = 기기 연결
 # USB section of the Setup page
@@ -94,9 +94,9 @@ about-debugging-setup-usb-title = USB
 about-debugging-setup-usb-disabled = 이것을 사용하면 필요한 Android USB 디버깅 구성 요소를 다운로드하여 { -brand-shorter-name }에 추가합니다.
 # Text of the button displayed in the USB section of the setup page when USB debugging is disabled.
 # Clicking on it will download components needed to debug USB Devices remotely.
-about-debugging-setup-usb-enable-button = USB 기기 활성화
+about-debugging-setup-usb-enable-button = USB 기기 사용함
 # Text of the button displayed in the USB section of the setup page when USB debugging is enabled.
-about-debugging-setup-usb-disable-button = USB 기기 비활성화
+about-debugging-setup-usb-disable-button = USB 기기 사용 안 함
 # Text of the button displayed in the USB section of the setup page while USB debugging
 # components are downloaded and installed.
 about-debugging-setup-usb-updating-button = 업데이트 중…
@@ -148,7 +148,7 @@ about-debugging-network-location-form-duplicate = “{ $host-value }” 호스�
 # on "runtime" pages of about:debugging.
 # Title of the temporary extensions category (only available for "This Firefox" runtime).
 about-debugging-runtime-temporary-extensions =
-    .name = 임시 확장기능
+    .name = 임시 확장 기능
 # Title of the extensions category.
 about-debugging-runtime-extensions =
     .name = 확장 기능
@@ -157,13 +157,13 @@ about-debugging-runtime-tabs =
     .name = 탭
 # Title of the service workers category.
 about-debugging-runtime-service-workers =
-    .name = 서비스 워커
+    .name = Service Worker
 # Title of the shared workers category.
 about-debugging-runtime-shared-workers =
-    .name = 공유된 워커
+    .name = 공유된 Worker
 # Title of the other workers category.
 about-debugging-runtime-other-workers =
-    .name = 다른 워커
+    .name = 다른 Worker
 # Title of the processes category.
 about-debugging-runtime-processes =
     .name = 프로세스
@@ -173,26 +173,29 @@ about-debugging-runtime-profile-button2 = 성능 프로파일
 # This string is displayed in the runtime page if the current configuration of the
 # target runtime is incompatible with service workers. "Learn more" points to MDN.
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
-about-debugging-runtime-service-workers-not-compatible = 브라우저 구성이 서비스 워커와 호환되지 않습니다. <a>자세히 알아보기</a>
+about-debugging-runtime-service-workers-not-compatible = 브라우저 구성이 Service Worker와 호환되지 않습니다. <a>더 알아보기</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
-about-debugging-browser-version-too-old = 연결된 브라우저에는 이전 버전 ({ $runtimeVersion })이 있습니다. 지원되는 최소 버전은 ({ $minVersion }) 입니다. 이것은 지원되지 않는 설정이며 DevTools가 실패 할 수 있습니다. 연결된 브라우저를 업데이트하십시오. <a>문제 해결</a>
+about-debugging-browser-version-too-old = 연결된 브라우저에는 이전 버전 ({ $runtimeVersion })이 있습니다. 지원되는 최소 버전은 ({ $minVersion }) 입니다. 이것은 지원되지 않는 설정이며 DevTools가 실패할 수 있습니다. 연결된 브라우저를 업데이트하세요. <a>문제 해결</a>
 # Dedicated message for a backward compatibility issue that occurs when connecting:
 # - from Fx 67 to 66 or to 65
 # - from Fx 68 to 66
 # Those are normally in range for DevTools compatibility policy, but specific non
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
-about-debugging-browser-version-too-old-67-debugger = 디버거 패널이 연결된 브라우저와 작동하지 않을 수 있습니다. 이 브라우저에 디버거를 사용해야 하는 경우 Firefox { $runtimeVersion }를 사용하십시오.
+about-debugging-browser-version-too-old-67-debugger = 디버거 패널이 연결된 브라우저와 작동하지 않을 수 있습니다. 이 브라우저에 디버거를 사용해야 하는 경우 Firefox { $runtimeVersion }를 사용하세요.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = 이 Firefox 버전은 Android용 Firefox (68)를 디버깅 할 수 없습니다. 테스트를 위해 휴대폰에 Android Nightly용 Firefox를 설치하는 것이 좋습니다. <a>추가 정보</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $localVersion } is the version of your current browser (same format)
-about-debugging-browser-version-too-recent = 연결된 브라우저가 { -brand-shorter-name } ({ $localVersion }, buildID { $localID })보다 최근 버전({ $runtimeVersion }, buildID { $runtimeID })입니다. 이것은 지원되지 않는 설정이며 DevTools가 실패 할 수 있습니다. Firefox를 업데이트하십시오. <a>문제 해결</a>
+about-debugging-browser-version-too-recent = 연결된 브라우저가 { -brand-shorter-name } ({ $localVersion }, buildID { $localID })보다 최근 버전({ $runtimeVersion }, buildID { $runtimeID })입니다. 이것은 지원되지 않는 설정이며 DevTools가 실패할 수 있습니다. Firefox를 업데이트하세요. <a>문제 해결</a>
 # Displayed for runtime info in runtime pages.
 # { $name } is brand name such as "Firefox Nightly"
 # { $version } is version such as "64.0a1"
@@ -205,7 +208,7 @@ about-debugging-runtime-disconnect-button = 연결 끊기
 about-debugging-connection-prompt-enable-button = 연결 프롬프트 사용
 # Text of the connection prompt button displayed in Runtime pages, when the preference
 # "devtools.debugger.prompt-connection" is true on the target runtime.
-about-debugging-connection-prompt-disable-button = 연결 프롬프트 사용안함
+about-debugging-connection-prompt-disable-button = 연결 프롬프트 사용 안 함
 # Title of a modal dialog displayed on remote runtime pages after clicking on the Profile Runtime button.
 about-debugging-profiler-dialog-title2 = 프로파일러
 # Clicking on the header of a debug target category will expand or collapse the debug
@@ -224,7 +227,7 @@ about-debugging-debug-target-list-empty = 아직 없습니다.
 about-debugging-debug-target-inspect-button = 검사
 # Text of a button displayed in the "This Firefox" page, in the Temporary Extension
 # section. Clicking on the button will open a file picker to load a temporary extension
-about-debugging-tmp-extension-install-button = 임시 부가기능 로드…
+about-debugging-tmp-extension-install-button = 임시 부가 기능 로드…
 # Text displayed when trying to install a temporary extension in the "This Firefox" page.
 about-debugging-tmp-extension-install-error = 임시 부가 기능을 설치하는 동안 오류가 발생했습니다.
 # Text of a button displayed for a temporary extension loaded in the "This Firefox" page.
@@ -237,7 +240,7 @@ about-debugging-tmp-extension-remove-button = 제거
 # (triggered by the button using "about-debugging-tmp-extension-install-button")
 # manifest.json .xpi and .zip should not be localized.
 # Note: this message is only displayed in Windows and Linux platforms.
-about-debugging-tmp-extension-install-message = manifest.json 파일 또는 .xpi/.zip 아카이브를 선택하세요
+about-debugging-tmp-extension-install-message = manifest.json 파일 또는 .xpi/.zip 보관 파일을 선택하세요
 # This string is displayed as a message about the add-on having a temporaryID.
 about-debugging-tmp-extension-temporary-id = 이 WebExtension에는 임시 ID가 있습니다. <a>더 알아보기</a>
 # Text displayed for extensions in "runtime" pages, before displaying a link the extension's
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Push
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = 시작
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Push
+    .disabledTitle = Service Worker 푸시가 현재 다중 프로세스 { -brand-shorter-name }에 대해 비활성화되어 있습니다.
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = 시작
+    .disabledTitle = Service Worker 시작이 현재 다중 프로세스 { -brand-shorter-name }에 대해 비활성화되어 있습니다
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = 등록해제
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -275,11 +287,11 @@ about-debugging-worker-fetch-not-listening =
     .value = fetch 이벤트를 기다리지 않습니다
 # Displayed for service workers in runtime pages that are currently running (service
 # worker instance is active).
-about-debugging-worker-status-running = 실행중
+about-debugging-worker-status-running = 실행 중
 # Displayed for service workers in runtime pages that are registered but stopped.
-about-debugging-worker-status-stopped = 정지됨
+about-debugging-worker-status-stopped = 중지됨
 # Displayed for service workers in runtime pages that are registering.
-about-debugging-worker-status-registering = 등록중
+about-debugging-worker-status-registering = 등록 중
 # Displayed for service workers in runtime pages, to label the scope of a worker
 about-debugging-worker-scope =
     .label = 범위
@@ -287,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Push 서비스
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Service Worker 검사가 현재 다중 프로세스 { -brand-shorter-name }에 대해 비활성화되어 있습니다.
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = 탭이 완전히 로드되지 않아 검사할 수 없습니다.
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = 메인 프로세스
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = 대상 브라우저의 메인 프로세스
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = 다중 프로세스 도구상자
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = 대상 브라우저의 메인 프로세스 및 콘텐츠 프로세스
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = 메시지 닫기

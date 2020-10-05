@@ -34,11 +34,14 @@ app-basics-title = Toepassingsbasics
 app-basics-name = Naam
 app-basics-version = Versie
 app-basics-build-id = Build-ID
+app-basics-distribution-id = Distributie-ID
 app-basics-update-channel = Updatekanaal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
-        [linux] Map bijwerken
-       *[other] Map bijwerken
+        [linux] Updatemap
+       *[other] Updatemap
     }
 app-basics-update-history = Updategeschiedenis
 app-basics-show-update-history = Updategeschiedenis tonen
@@ -59,7 +62,6 @@ app-basics-service-workers = Geregistreerde Service Workers
 app-basics-profiles = Profielen
 app-basics-launcher-process-status = Launcher-proces
 app-basics-multi-process-support = Multiprocess-vensters
-app-basics-process-count = Webinhoudsprocessen
 app-basics-remote-processes-count = Externe processen
 app-basics-enterprise-policies = Bedrijfsbeleidsregels
 app-basics-location-service-key-google = Google-locatieservicesleutel
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Door crashbeveiliging uitgeschakelde functies
 graphics-workarounds-title = Workarounds
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Vensterprotocol
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Desktopomgeving
 place-database-title = Places-database
 place-database-integrity = Integriteit
 place-database-verify-integrity = Integriteit verifiëren
@@ -115,6 +119,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumenten
 safe-mode-title = Veilige modus proberen
 restart-in-safe-mode-label = Herstarten met uitgeschakelde add-ons…
+clear-startup-cache-title = Opstartbuffer proberen te wissen
+clear-startup-cache-label = Opstartbuffer wissen…
+startup-cache-dialog-title = Opstartbuffer wissen
+startup-cache-dialog-body = Herstart { -brand-short-name } om de opstartbuffer te wissen. Dit wijzigt uw instellingen niet en verwijdert geen aan { -brand-short-name } toegevoegde extensies.
+restart-button-label = Herstarten
+
+## Media titles
+
+audio-backend = Audio-backend
+max-audio-channels = Max. kanalen
+channel-layout = Kanaalindeling van voorkeur
+sample-rate = Samplefrequentie van voorkeur
+roundtrip-latency = Retentielatentie (standaarddeviatie)
 media-title = Media
 media-output-devices-title = Uitvoerapparaten
 media-input-devices-title = Invoerapparaten
@@ -127,6 +144,12 @@ media-device-format = Indeling
 media-device-channels = Kanalen
 media-device-rate = Frequentie
 media-device-latency = Latentie
+media-capabilities-title = Mediamogelijkheden
+# List all the entries of the database.
+media-capabilities-enumerate = Database inventariseren
+
+##
+
 intl-title = Internationalisatie & lokalisatie
 intl-app-title = Toepassingsinstellingen
 intl-locales-requested = Gevraagde locales
@@ -136,6 +159,22 @@ intl-locales-default = Standaardlocale
 intl-os-title = Besturingssysteem
 intl-os-prefs-system-locales = Systeemlocales
 intl-regional-prefs = Regionale voorkeuren
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Remote debugging (Chromium-protocol)
+remote-debugging-accepting-connections = Accepteert verbindingen
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -232,7 +271,9 @@ unknown-failure = Op blokkeerlijst; foutcode { $failureCode }
 d3d11layers-crash-guard = D3D11-compositor
 d3d11video-crash-guard = D3D11-videodecoder
 d3d9video-crash-buard = D3D9-videodecoder
+d3d9video-crash-guard = D3D9-videodecoder
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX-videodecoder
 reset-on-next-restart = Herinitialiseren bij volgende herstart
 gpu-process-kill-button = GPU-proces beëindigen
 gpu-device-reset = Apparaatherinitialisatie
@@ -241,12 +282,7 @@ uses-tiling = Gebruikt Tiling
 content-uses-tiling = Gebruikt Tiling (Inhoud)
 off-main-thread-paint-enabled = Off Main Thread Painting ingeschakeld
 off-main-thread-paint-worker-count = Aantal Off Main Thread Painting-workers
-low-end-machine = Minder krachtige machine gedetecteerd
 target-frame-rate = Doelframerate
-audio-backend = Audio-backend
-max-audio-channels = Max. kanalen
-channel-layout = Kanaalindeling van voorkeur
-sample-rate = Samplefrequentie van voorkeur
 min-lib-versions = Verwachte minimale versie
 loaded-lib-versions = Gebruikte versie
 has-seccomp-bpf = Seccomp-BPF (Systeemaanroepfiltering)
@@ -261,6 +297,11 @@ sandbox-proc-type-content = inhoud
 sandbox-proc-type-file = bestandsinhoud
 sandbox-proc-type-media-plugin = mediaplug-in
 sandbox-proc-type-data-decoder = gegevensdecoder
+startup-cache-title = Opstartbuffer
+startup-cache-disk-cache-path = Pad naar schijfbuffer
+startup-cache-ignore-disk-cache = Schijfbuffer negeren
+startup-cache-found-disk-cache-on-init = Schijfbuffer bij Init gevonden
+startup-cache-wrote-to-disk-cache = Naar schijfbuffer geschreven
 launcher-process-status-0 = Ingeschakeld
 launcher-process-status-1 = Uitgeschakeld vanwege fout
 launcher-process-status-2 = Geforceerd uitgeschakeld
@@ -284,6 +325,7 @@ touch-enabled = aanraakinvoer ingeschakeld
 drag-enabled = slepen via scrollbalk ingeschakeld
 keyboard-enabled = toetsenbord ingeschakeld
 autoscroll-enabled = automatisch scrollen ingeschakeld
+zooming-enabled = soepele knijp-zoom ingeschakeld
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

@@ -4,6 +4,7 @@
 
 about-private-browsing-learn-more = Lue lisää <a data-l10n-name="learn-more">yksityisestä selauksesta</a>.
 about-private-browsing-info-visited = vierailtuja sivuja
+
 privatebrowsingpage-open-private-window-label = Avaa yksityinen ikkuna
     .accesskey = A
 about-private-browsing-info-notsaved = Kun selaat yksityisessä ikkunassa, { -brand-short-name } <strong>ei tallenna</strong>
@@ -26,3 +27,12 @@ about-private-browsing-not-private = Tämä ei ole yksityinen selausikkuna.
 content-blocking-title = Sisällön esto
 content-blocking-description = Jotkin sivustot käyttävät seuraimia, jotka tarkkailevat tekemisiäsi ympäri internetiä. Kun käytät yksityistä ikkunaa, { -brand-short-name }in sisällön esto estää automaattisesti monia seuraimia, jotka keräävät tietoja selaamisestasi.
 about-private-browsing-info-description = { -brand-short-name } poistaa haku- ja selaushistorian, kun ohjelma suljetaan tai kaikki yksityisen selauksen välilehdet ja ikkunat suljetaan. Tämä ei tee sinusta anonyymiä sivustoille tai internetpalveluntarjoajallesi, mutta helpottaa pitämään verkossa tekemäsi asiat yksityisinä muilta, jotka käyttävät tätä tietokonetta.
+
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = { $engineName } on oletushakukone yksityisissä ikkunoissa
+about-private-browsing-search-banner-description = Eri hakukoneen voi valita <a data-l10n-name="link-options">asetuksista</a>
+about-private-browsing-search-banner-close-button =
+    .aria-label = Sulje

@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Manj kot je podatkov, več je prihrankov">
 <!ENTITY firstrun_data_subtext2 "Izključite slike in porabite manj podatkov med obiskovanjem strani.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Račun">
-<!ENTITY firstrun_sync_message2 "Nadaljujte, kjer ste končali.">
+<!ENTITY firstrun_sync_message3 "Sinhronizirajte zaznamke, zgodovino in gesla na vaš telefon.">
 <!ENTITY firstrun_sync_subtext2 "Uporabite Sync za prenos zaznamkov, gesel in drugih shranjenih &brandShortName;ovih podatkov med vsemi svojimi napravami.">
 <!ENTITY newfirstrun_sync_subtext "Sinhronizirajte podatke, ki jih shranite na mobilnem telefonu, s Firefoxom za namizje – zasebno in varno.">
-<!ENTITY updatednewfirstrun_sync_subtext "Prijavite se v svoj račun, da boste kar najbolje izkoristili &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Pošlji zavihek">
+<!ENTITY firstrun_sendtab_message "Pošljite zavihke z mobilne naprave na računalnik – v trenutku.">
 <!ENTITY firstrun_signin_message "Povežite se in začnite">
-<!ENTITY firstrun_signin_button "Prijava v Sync">
-<!ENTITY newfirstrun_signin_button "Vklopi Sync">
-<!ENTITY updatednewfirstrun_signin_button "Prijava v &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Začnite brskati">
+<!ENTITY onboard_start_button_browser "Začnite brskati">
 <!ENTITY firstrun_button_notnow "Ne zdaj">
 <!ENTITY firstrun_button_next "Naprej">
+<!ENTITY firstrun_signup_button "Registracija">
 
 <!ENTITY firstrun_tabqueue_title "Povezave">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Pošiljanje poročila o sesutju \u2026">
 <!ENTITY  crash_close_label "Zapri">
 <!ENTITY  crash_restart_label "Ponovno zaženi &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; se je sesul">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Mapa posodobljena">
 <!ENTITY bookmark_parent_folder "Nadrejena mapa">
 <!ENTITY bookmark_add_folder "Dodaj novo mapo">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(brez naslova)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Piškotki">
 <!ENTITY pref_cookies_accept_all "Omogočeno">
 <!ENTITY pref_cookies_not_accept_foreign "Omogočeno, brez tretjih strani">
+<!ENTITY pref_cookies_not_accept_trackers "Omogočeno, brez sledilnih piškotkov">
 <!ENTITY pref_cookies_disabled "Onemogočeno">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Progresivne spletne aplikacije">
 <!ENTITY pref_pwa_summary "Dovoli dodajanje spletnih aplikacij na domač zaslon">
-
-<!ENTITY tracking_protection_prompt_title "Zdaj z zaščito pred sledenjem">
-<!ENTITY tracking_protection_prompt_text "Aktivno zavračanje elementov sledenja, da vam ni potrebno skrbeti.">
-<!ENTITY tracking_protection_prompt_tip_text "Za več informacij obiščite nastavitve zasebnosti">
-<!ENTITY tracking_protection_prompt_action_button "Razumem!">
 
 <!ENTITY tab_queue_toast_message3 "Zavihek shranjen v &brandShortName;">
 <!ENTITY tab_queue_toast_action "Odpri zdaj">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Tapnite Aplikacija za brskanje in izberite &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Obišičite Mozillino podporo">
 <!ENTITY pref_about_firefox "O aplikaciji &brandShortName;">
 <!ENTITY pref_vendor_faqs "Pogosta vprašanja">
 <!ENTITY pref_vendor_feedback "Sporočite nam svoje mnenje">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Lokacijske storitve &vendorShortName; so zagnane">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Samodejne posodobitve">
-<!ENTITY pref_update_autodownload_wifi "Samo preko Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Onemogočeno">
-<!ENTITY pref_update_autodownload_always "Omogočeno">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Pomoč">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Deli">
 <!ENTITY share_title "Deli preko">
 <!ENTITY share_image_failed "Slike ni mogoče deliti">
+<!ENTITY share_error_toast_message "Ni mogoče deliti z izbrano aplikacijo">
 <!ENTITY save_as_pdf "Shrani kot PDF">
 <!ENTITY print "Natisni">
 <!ENTITY view_page_source "Pokaži izvorno kodo strani">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Naslov">
 <!ENTITY bookmark_edit_keyword "Ključna beseda">
 <!ENTITY bookmark_select_folder "Izberite mapo">
-
 <!ENTITY bookmark_edit_undo "Razveljavi">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Izberi ali posnemi zvok">
 <!ENTITY filepicker_image_title "Izberi ali posnemi sliko">
 <!ENTITY filepicker_video_title "Izberi ali posnemi video">
-
 <!ENTITY filepicker_permission_denied "Zahtevana dovoljenja niso dodeljena, vračanje na sistemski izbirnik datotek.">
 
 <!-- Site identity popup -->
@@ -757,25 +739,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Išči &formatS2; z iskalnikom &formatS1;">
 
 <!ENTITY searchable_description "Zaznamki in zgodovina">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Na voljo je posodobitev za &brandShortName;">
-<!ENTITY updater_start_select2 "Tapnite za prenos">
-
-<!ENTITY updater_downloading_title2 "Prenašanje &brandShortName;a">
-<!ENTITY updater_downloading_title_failed2 "Prenos neuspešen">
-<!ENTITY updater_downloading_select2 "Tapnite za uveljavitev posodobitve, ko se prenese">
-<!ENTITY updater_downloading_retry2 "Tapnite za ponovni poskus">
-
-<!ENTITY updater_apply_title3 "Prenesena posodobitev za &brandShortName;">
-<!ENTITY updater_apply_select3 "Tapnite za namestitev">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Za prenos datotek in posodobitev &brandShortName;u omogočite dovoljenje za dostop do shrambe.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Dovoli">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Nova gostujoča seja">
@@ -887,6 +850,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Dodajte predmete bralnega pogleda med zaznamke za branje brez povezave.">
 <!ENTITY helper_triple_readerview_open_button "Dodaj med zaznamke">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Dobrodošli v &brandShortName;u">
+<!ENTITY activity_stream_signin_description "Začnite sinhronizirati zaznamke, gesla in ostalo s Firefox Računom.">
+<!ENTITY activity_stream_signup_button "Registracija">
+<!ENTITY activity_stream_signin_prompt "Že imate račun?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Prijava.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Vaš povsem nov Firefox prihaja leta 2020">
+<!ENTITY activity_stream_firefox_promo_description "Kmalu: izboljšana zmogljivost. Nadgrajena zaščita pred sledenjem. In zmogljivosti za iskanje, shranjevanje ter skupno rabo spletnih vsebin, ki jih imate radi.">
+<!ENTITY activity_stream_firefox_promo_button "Pokukajte">
+
 <!ENTITY activity_stream_topsites "Glavne strani">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Priporoča &brandPocket;">
@@ -944,7 +924,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Zvok in video">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Nasveti in triki &vendorShortName;a">
-<!ENTITY updater_notification_channel "Posodobitve aplikacije">
 <!ENTITY synced_tabs_notification_channel "Sinhronizirani zavihki">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

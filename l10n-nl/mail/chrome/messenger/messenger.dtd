@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "B">
 <!ENTITY  newContactCmd.label "Adresboekcontact…">
 <!ENTITY  newContactCmd.accesskey "s">
+<!ENTITY openMenuCmd.label "Openen">
+<!ENTITY openMenuCmd.accesskey "O">
 <!ENTITY openMessageFileCmd.label "Opgeslagen bericht openen…">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "Opslaan als">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "C">
 <!ENTITY folderPaneBar.label "Mappenvensterwerkbalk">
 <!ENTITY folderPaneBar.accesskey "v">
-<!ENTITY folderModeSelector.label "Mappenweergaven">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Sorteren op">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Berichten zoeken…">
 <!ENTITY searchMailCmd.accesskey "B">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Globaal zoeken…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Adressen zoeken…">
 <!ENTITY searchAddressesCmd.accesskey "A">
 
@@ -351,7 +354,7 @@
 <!ENTITY replySenderCmd.label "Afzender beantwoorden">
 <!ENTITY replySenderCmd.accesskey "z">
 <!ENTITY replyNewsgroupCmd2.label "Reageren naar nieuwsgroep">
-<!ENTITY replyNewsgroupCmd2.accesskey  "R">
+<!ENTITY replyNewsgroupCmd2.accesskey "R">
 <!ENTITY replyToAllMsgCmd.label "Allen beantwoorden">
 <!ENTITY replyToAllMsgCmd.accesskey "d">
 <!ENTITY replyToAllMsgCmd.key "r">
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Geselecteerde bericht verplaatsen">
 <!ENTITY archiveButton.tooltip "Geselecteerde berichten archiveren">
 <!ENTITY openConversationButton.tooltip "Conversatie van geselecteerde bericht tonen">
+<!ENTITY openMsgConversationButton.tooltip "Conversatie van geselecteerde bericht tonen">
 <!ENTITY nextButton.tooltip "Naar het volgende ongelezen bericht gaan">
 <!ENTITY nextMsgButton.tooltip "Naar het volgende bericht gaan">
 <!ENTITY previousButton.tooltip "Naar het vorige ongelezen bericht gaan">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Berichten labelen">
 <!ENTITY compactButton.tooltip "Verwijderde berichten uit geselecteerde map verwijderen">
 <!ENTITY appmenuButton1.tooltip "Het &brandShortName;-menu weergeven">
-
 <!ENTITY addonsButton.tooltip "Uw add-ons beheren">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Zoekopdracht als een map bewaren…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Berichten selecteren">
 <!ENTITY threadColumn.label "Conversatie">
 <!ENTITY fromColumn.label "Van">
 <!ENTITY recipientColumn.label "Ontvanger">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Volgorde van ontvangst">
 <!ENTITY attachmentColumn.label "Bijlagen">
 
+<!ENTITY deleteColumn.label "Verwijderen">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Weer te geven kolommen selecteren">
+<!ENTITY selectColumn.tooltip "Alle berichten selecteren/deselecteren">
 <!ENTITY threadColumn2.tooltip "Berichtconversaties weergeven">
 <!ENTITY fromColumn2.tooltip "Sorteren op van">
 <!ENTITY recipientColumn2.tooltip "Sorteren op ontvanger">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Sorteren op locatie">
 <!ENTITY idColumn2.tooltip "Sorteren op volgorde van ontvangst">
 <!ENTITY attachmentColumn2.tooltip "Sorteren op bijlagen">
+
+<!ENTITY deleteColumn.tooltip "Een bericht verwijderen">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Nieuw bericht op basis van sjabloon">
@@ -957,8 +966,8 @@
 <!ENTITY preferencesCmdMac2.label       "Voorkeuren">
 <!ENTITY preferencesCmdMac.commandkey   ",">
 <!ENTITY preferencesCmdMac.modifiers    "accel">
-<!ENTITY servicesMenuMac.label          "Voorzieningen">
-<!ENTITY hideThisAppCmdMac.label        "Verberg &brandShortName;">
+<!ENTITY servicesMenuMac.label          "Services">
+<!ENTITY hideThisAppCmdMac.label        "&brandShortName; verbergen">
 <!ENTITY hideThisAppCmdMac.commandkey   "H">
 <!ENTITY hideThisAppCmdMac.modifiers    "accel">
 <!ENTITY hideOtherAppsCmdMac.label      "Verberg andere">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Programmasymboolopties…">
 <!ENTITY writeNewMessageDock.label      "Nieuw bericht opstellen">
 <!ENTITY openAddressBookDock.label      "Adresboek openen">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Een pagina terug gaan">
+<!ENTITY browseForwardButton.tooltip "Een pagina vooruit gaan">

@@ -19,11 +19,12 @@
 <!ENTITY paneAttachments.title    "Privici">
 <!ENTITY panePrivacy.title        "Privatnost">
 <!ENTITY paneSecurity.title       "Sigurnost">
+<!ENTITY panePrivacySecurity.title "Privatnost i sigurnost">
 <!ENTITY paneLightning.title      "Kalendar">
 <!ENTITY paneAdvanced.title       "Napredno">
 <!ENTITY paneAccount.title        "Računi">
 
-<!ENTITY addonsButton.label       "Proširenja &amp; Teme">
+<!ENTITY addonsButton.label       "Proširenja i motivi">
 
 <!ENTITY okButton.title           "U redu">
 <!ENTITY okButton.accesskey       "U">

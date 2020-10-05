@@ -67,6 +67,10 @@ permissions-exceptions-content-blocking-window =
     .title = Kivételek – Tartalomblokkolás
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Letiltotta a tartalomblokkolást ezeken az oldalakon.
+permissions-exceptions-etp-window =
+    .title = Kivételek a fokozott követés elleni védelemhez
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Ezeken a webhelyeken kikapcsolta a védelmeket.
 
 ## Exceptions - Cookies
 
@@ -129,6 +133,16 @@ permissions-site-location-desc = A következő weboldalak a helyadatait kérték
 permissions-site-location-disable-label =
     .label = Új tartózkodási hely kérések blokkolása
 permissions-site-location-disable-desc = Ez megakadályozza, hogy a fent fel nem sorolt weboldalak helyadatokat kérjenek. A helyadatok blokkolása működésképtelenné tehet néhány weboldal-funkciót.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Beállítások – Virtuális valóság engedélyek
+    .style = { permissions-window.style }
+permissions-site-xr-desc = A következő weboldalak hozzáférést kértek a virtuális valóság eszközeihez. Megadhatja, hogy mely weboldalak érhetik el a virtuális valóság eszközeit. Az új virtuális valóság eszközkéréseket is blokkolhatja.
+permissions-site-xr-disable-label =
+    .label = Új virtuális valóság eszközkérések blokkolása
+permissions-site-xr-disable-desc = Ez megakadályozza, hogy a fent fel nem sorolt weboldalak engedélyt kérjenek a virtuális valóság eszközeihez. A virtuális valóság eszközök blokkolása működésképtelenné tehet néhány weboldal-funkciót.
 
 ## Site Permissions - Camera
 

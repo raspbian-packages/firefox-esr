@@ -14,6 +14,11 @@ pref-page =
             [windows] Opciones
            *[other] Preferencias
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Opciones
+       *[other] Preferencias
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -29,11 +34,7 @@ search-input-box =
             [windows] Encontrar en opciones
            *[other] Encontrar en configuraciones
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Tu organización ha deshabilitado la posibilidad de cambiar algunas opciones.
-       *[other] Tu organización ha deshabilitado la posibilidad de cambiar algunas preferencias.
-    }
+managed-notice = Tu organización gestiona el navegador.
 pane-general-title = General
 category-general =
     .tooltiptext = { pane-general-title }
@@ -46,10 +47,6 @@ category-search =
 pane-privacy-title = Privacidad y seguridad
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Cuenta de Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
 pane-sync-title2 = { -sync-brand-short-name }
 category-sync2 =
     .tooltiptext = { pane-sync-title2 }
@@ -206,6 +203,15 @@ advanced-fonts =
 colors-settings =
     .label = Colores…
     .accesskey = C
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Zoom
+preferences-default-zoom = Zoom predeterminado
+    .accesskey = Z
+preferences-default-zoom-value =
+    .label = { $percentage }%
+preferences-zoom-text-only =
+    .label = Hacer zoom en el texto solamente
+    .accesskey = t
 language-header = Idioma
 choose-language-description = Elegir el idioma preferido para mostrar las páginas web
 choose-button =
@@ -226,6 +232,10 @@ translate-attribution = Traducciones por <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Excepciones…
     .accesskey = x
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Usar la configuración de tu sistema operativo para “{ $localeName }” para dar formato a fechas, horas, números y medidas.
 check-user-spelling =
     .label = Verificar la ortografía mientras escribes
     .accesskey = t
@@ -261,6 +271,75 @@ applications-type-column =
 applications-action-column =
     .label = Acción
     .accesskey = A
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = archivo { $extension }
+applications-action-save =
+    .label = Guardar archivo
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = Usar { $app-name }
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = Usar { $app-name } (predeterminado)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Usar la aplicación predeterminada de macOS
+            [windows] Usar la aplicación predeterminada de Windows
+           *[other] Usar la aplicación predeterminada del sistema
+        }
+applications-use-other =
+    .label = Usar otro…
+applications-select-helper = Selecciona una aplicación auxiliar
+applications-manage-app =
+    .label = Detalles de la aplicación…
+applications-always-ask =
+    .label = Preguntar siempre
+applications-type-pdf = Formato de Documento Portátil (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = Usar { $plugin-name } (en { -brand-short-name })
+applications-open-inapp =
+    .label = Abrir en { -brand-short-name }
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Contenido DRM (Digital Rights Management - Administración de Derechos Digitales)
 play-drm-content =
     .label = Reproducir contenido controlado por DRM
@@ -277,11 +356,12 @@ update-application-auto =
     .label = Instale actualizaciones automáticamente (recomendado)
     .accesskey = I
 update-application-check-choose =
-    .label = Busque actualizaciones pero me permita elegir si instalarlas o no
+    .label = Buscar actualizaciones, pero permitirle elegir si instalarlas
     .accesskey = B
 update-application-manual =
     .label = Nunca busque actualizaciones (no recomendado)
     .accesskey = N
+update-application-warning-cross-user-setting = Este ajuste se aplicará a todas las cuentas de Windows y perfiles de { -brand-short-name } usando esta instalación de { -brand-short-name }.
 update-application-use-service =
     .label = Utilizar un servicio en segundo plano para instalar las actualizaciones
     .accesskey = s
@@ -292,6 +372,21 @@ update-pref-write-failure-title = Error de escritura
 # Variables:
 #   $path (String) - Path to the configuration file
 update-pref-write-failure-message = No se pudo guardar la preferencia. No se pudo escribir al archivo: { $path }
+update-setting-write-failure-title = Error al guardar las preferencias de actualizaciones
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } encontró un error y no guardó esta modificación. Observa que establecer esta preferencia de actualización requiere de permiso para escribir el archivo mostrado más abajo. Si no eres capaz, pide a un administrador que conceda al grupo Usuarios control total para este archivo.
+    
+    No se pudo escribir en el archivo: { $path }
+update-in-progress-title = Actualización en curso
+update-in-progress-message = ¿Quieres que { -brand-short-name } continúe con esta actualización?
+update-in-progress-ok-button = &Descartar
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Continuar
 
 ## General Section - Performance
 
@@ -331,8 +426,15 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Buscar el texto cuando empiezas a escribir
     .accesskey = x
+browsing-picture-in-picture-toggle-enabled =
+    .label = Habilitar controles de video picture-in-picture
+    .accesskey = A
+browsing-picture-in-picture-learn-more = Saber más
 browsing-cfr-recommendations =
     .label = Recomendar extensiones mientras se navega
+    .accesskey = R
+browsing-cfr-features =
+    .label = Recomendar funciones mientras navegas
     .accesskey = R
 browsing-cfr-recommendations-learn-more = Aprender más
 
@@ -382,6 +484,54 @@ choose-bookmark =
     .label = Usar marcador…
     .accesskey = m
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Contenido de la página de inicio de Firefox
+home-prefs-content-description = Selecciona el contenido que desea en la pantalla de inicio de Firefox.
+home-prefs-search-header =
+    .label = Búsqueda web
+home-prefs-topsites-header =
+    .label = Sitios populares
+home-prefs-topsites-description = Los sitios que más visitas
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = Recomendado por { $provider }
+home-prefs-recommended-by-description = El mejor contenido de la web, personalizado para ti
+home-prefs-recommended-by-description-update = Contenido excepcional de toda la web, seleccionado por { $provider }
+
+##
+
+home-prefs-recommended-by-learn-more = Cómo funciona
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Artículos patrocinados
+home-prefs-highlights-header =
+    .label = Destacados
+home-prefs-highlights-description = Una selección de sitios que has guardado o visitado
+home-prefs-highlights-option-visited-pages =
+    .label = Páginas visitadas
+home-prefs-highlights-options-bookmarks =
+    .label = Marcadores
+home-prefs-highlights-option-most-recent-download =
+    .label = Descargado recientemente
+home-prefs-highlights-option-saved-to-pocket =
+    .label = Páginas guardadas en { -pocket-brand-name }
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Fragmentos
+home-prefs-snippets-description = Actualizaciones de { -vendor-short-name } y { -brand-product-name }
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } fila
+           *[other] { $num } filas
+        }
+
 ## Search Section
 
 search-bar-header = Barra de búsqueda
@@ -391,6 +541,13 @@ search-bar-shown =
     .label = Agregar barra de búsqueda en la barra de herramientas
 search-engine-default-header = Buscador predeterminado
 search-engine-default-desc = Elegir el motor de búsqueda predeterminado para usar en la barra de direcciones y en la barra de búsqueda.
+search-engine-default-desc-2 = Este es tu motor de búsqueda predeterminado en la barra de direcciones y en la barra de búsqueda. Puedes cambiarlo en cualquier momento.
+search-engine-default-private-desc-2 = Elige un diferente motor de búsqueda predeterminado solamente para ventanas privadas
+search-separate-default-engine =
+    .label = Usar este motor de búsqueda en ventanas privadas
+    .accesskey = U
+search-suggestions-header = Buscar sugerencias
+search-suggestions-desc = Seleccionar como las sugerencias del motor búsqueda aparecen.
 search-suggestions-option =
     .label = Proporcionar sugerencias de búsqueda
     .accesskey = s
@@ -404,6 +561,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Mostrar sugerencias de búsqueda antes del historial de navegación en los resultados de la barra de direcciones
+search-show-suggestions-private-windows =
+    .label = Mostrar sugerencias de búsqueda en ventanas privadas
+suggestions-addressbar-settings = Cambiar preferencias para el historial de navegación, marcadores y sugerencias de pestañas
+suggestions-addressbar-settings-generic = Cambia las preferencias para otras sugerencias de la barra de direcciones
 search-suggestions-cant-show = Las sugerencias de búsqueda no se mostrarán en los resultados de la barra de direcciones porque has configurado { -brand-short-name } para que nunca recuerde el historial.
 search-one-click-header = Buscadores con un clic
 search-one-click-desc = Elegir los motores de búsqueda alternativos que aparecen debajo de la barra de direcciones y en la barra de búsqueda cuando comienzas a escribir una palabra.
@@ -429,16 +590,29 @@ search-keyword-warning-bookmark = Seleccionaste una palabra clave usada por un m
 ## Containers Section
 
 containers-back-link = « Ir atrás
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Volver a Opciones
+           *[other] Volver a Preferencias
+        }
 containers-header = Pestañas contenedoras
 containers-add-button =
     .label = Agregar un nuevo contenedor
     .accesskey = A
+containers-new-tab-check =
+    .label = Seleccionar un contenedor para cada nueva pestaña
+    .accesskey = S
 containers-preferences-button =
     .label = Preferencias
 containers-remove-button =
     .label = Eliminar
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Lleva la Web contigo
 sync-signedout-description = Sincroniza tus marcadores, historial, pestañas, contraseñas, complementos y preferencias entre todos tus dispositivos.
@@ -448,6 +622,9 @@ sync-signedout-account-create = ¿No tienes una cuenta? Comienza
 sync-signedout-account-signin =
     .label = Iniciar sesión…
     .accesskey = I
+sync-signedout-account-signin2 =
+    .label = Iniciar sesión en { -sync-brand-short-name }
+    .accesskey = i
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
 #   `<a data-l10n-name="android-link">` - Link to Android Download
@@ -460,11 +637,17 @@ sync-mobile-promo = Descargar Firefox para <img data-l10n-name="android-icon"/> 
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Cambiar imagen de perfil
 sync-disconnect =
     .label = Desconectar…
     .accesskey = D
+sync-sign-out =
+    .label = Salir…
+    .accesskey = g
 sync-manage-account = Administrar cuenta
     .accesskey = o
 sync-signedin-unverified = Determinando el estado de tu cuenta... { $email } no está verificado.
@@ -480,6 +663,48 @@ sync-sign-in =
     .accesskey = g
 sync-signedin-settings-header = Configuración de Sync
 sync-signedin-settings-desc = Usa { -brand-short-name } para escoger lo que quiere sincronizar en tu dispositivos.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Sincronización: ACTIVADA
+prefs-syncing-off = Sincronización: DESACTIVADA
+prefs-sync-setup =
+    .label = Configurar { -sync-brand-short-name }…
+    .accesskey = S
+prefs-sync-offer-setup-label = Sincroniza tus marcadores, historial, pestañas, contraseñas, complementos y preferencias en todos sus dispositivos.
+prefs-sync-now =
+    .labelnotsyncing = Sincronizar ahora
+    .accesskeynotsyncing = N
+    .labelsyncing = Sincronizando…
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Actualmente estás sincronizando estos elementos:
+sync-currently-syncing-bookmarks = Marcadores
+sync-currently-syncing-history = Historial
+sync-currently-syncing-tabs = Abrir pestañas
+sync-currently-syncing-logins-passwords = Inicios de sesión y contraseñas
+sync-currently-syncing-addresses = Direcciones
+sync-currently-syncing-creditcards = Tarjetas de crédito
+sync-currently-syncing-addons = Complementos
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Opciones
+       *[other] Preferencias
+    }
+sync-change-options =
+    .label = Cambiar
+    .accesskey = C
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Elegir que sincronizar
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Guardar cambios
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Cerrar sesión…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Marcadores
     .accesskey = M
@@ -493,6 +718,10 @@ sync-engine-tabs =
 sync-engine-logins =
     .label = Inicios de sesión
     .tooltiptext = Usuarios y contraseñas que has guardado
+    .accesskey = L
+sync-engine-logins-passwords =
+    .label = Inicios de sesión y contraseñas
+    .tooltiptext = Nombres de usuario y contraseñas guardadas
     .accesskey = L
 sync-engine-addresses =
     .label = Direcciones
@@ -514,6 +743,9 @@ sync-engine-prefs =
         }
     .tooltiptext = Configuraciones generales, de privacidad y de seguridad que has cambiado
     .accesskey = s
+
+## The device name controls.
+
 sync-device-name-header = Nombre del dispositivo
 sync-device-name-change =
     .label = Cambiar el nombre del dispositivo…
@@ -524,8 +756,6 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Guardar
     .accesskey = v
-sync-mobilepromo-single = Conectar otro dispositivo
-sync-mobilepromo-multi = Administrar dispositivos
 sync-connect-another-device = Conectar otro dispositivo
 sync-manage-devices = Administrar dispositivos
 sync-fxa-begin-pairing = Asociar un dispositivo
@@ -539,12 +769,30 @@ privacy-header = Navegación privada
 ## Privacy Section - Forms
 
 logins-header = Inicios de sesión y contraseñas
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Inicios de sesión y contraseñas
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Preguntar para guardar inicios de sesión y contraseñas para los sitios web
     .accesskey = r
 forms-exceptions =
     .label = Excepciones…
     .accesskey = x
+forms-generate-passwords =
+    .label = Sugiere y genera contraseñas fuertes
+    .accesskey = u
+forms-breach-alerts =
+    .label = Mostrar alertas sobre contraseñas para sitios web comprometidos
+    .accesskey = b
+forms-breach-alerts-learn-more-link = Saber más
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Autollenar inicios de sesión y contraseñas
+    .accesskey = i
 forms-saved-logins =
     .label = Inicios de sesión guardados…
     .accesskey = I
@@ -554,6 +802,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Cambiar…
     .accesskey = m
+forms-master-pw-fips-title = En este momento está en modo FIPS. FIPS requiere una contraseña maestra no vacía.
+forms-master-pw-fips-desc = Error al cambiar la contraseña
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Para crear una contraseña maestra, ingresa tus credenciales de inicio de sesión de Windows. Esto ayuda a proteger la seguridad de tus cuentas.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = crear una contraseña maestra
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -608,6 +869,7 @@ sitedata-learn-more = Aprender más
 sitedata-delete-on-close =
     .label = Eliminar cookies y datos del sitio cuando se cierra { -brand-short-name }
     .accesskey = c
+sitedata-delete-on-close-private-browsing = En el modo de navegación privada permanente, las cookies y los datos del sitio se borrarán siempre cuando se cierre { -brand-short-name }.
 sitedata-allow-cookies-option =
     .label = Aceptar cookies y datos del sitio
     .accesskey = A
@@ -620,6 +882,12 @@ sitedata-block-desc = Tipo de contenido bloqueado
     .accesskey = T
 sitedata-option-block-trackers =
     .label = Rastreadores de terceros
+sitedata-option-block-cross-site-trackers =
+    .label = Rastreadores multisitio
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Rastreadores multisitio y de red social
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Rastreadores de sitios cruzados y redes sociales, y aislación del resto de las cookies
 sitedata-option-block-unvisited =
     .label = Cookies de sitios web no visitados
 sitedata-option-block-all-third-party =
@@ -635,6 +903,9 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = Administrar permisos...
     .accesskey = p
+sitedata-cookies-exceptions =
+    .label = Administrar excepciones...
+    .accesskey = x
 
 ## Privacy Section - Address Bar
 
@@ -649,12 +920,17 @@ addressbar-locbar-bookmarks-option =
 addressbar-locbar-openpage-option =
     .label = Abrir pestañas
     .accesskey = O
+addressbar-locbar-topsites-option =
+    .label = Sitios frecuentes
+    .accesskey = t
 addressbar-suggestions-settings = Cambiar las preferencias para las sugerencias del motor de navegación
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Bloqueo de contenido
-content-blocking-description = Bloquear el contenido de terceros que te rastrea en la web. Controla cuánto de tu actividad en línea se almacena y compartes entre sitios web.
+content-blocking-section-description = Protege tu privacidad mientras navegas. Bloquea el contenido invisible que rastrea los sitios que visitas. Bloquear parte de este contenido puede hacer que las páginas se carguen más rápido.
+content-blocking-enhanced-tracking-protection = Protección antirrastreo mejorada
+content-blocking-section-top-level-description = Los rastreadores le siguen en línea para recopilar información sobre sus hábitos e intereses de navegación. { -brand-short-name } bloquea muchos de estos rastreadores y otros scripts maliciosos.
 content-blocking-learn-more = Saber más
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
@@ -667,25 +943,57 @@ content-blocking-setting-strict =
 content-blocking-setting-custom =
     .label = Personalizar
     .accesskey = P
-content-blocking-standard-description = Sólo bloquea rastreadores conocidos en pestañas privadas.
 content-blocking-standard-desc = Balanceado para protección y rendimiento. Permite algunos rastreadores, así lo sitios web funcionan adecuadamente.
-content-blocking-strict-desc = Bloquear todos los rastreadores que { -brand-short-name } detecte. Puede causar errores en algunos sitios web.
+content-blocking-strict-description = Protección más fuerte; puede interferir con el funcionamiento de algunos sitios.
 content-blocking-custom-desc = Elegir que bloquear
 content-blocking-private-trackers = Rastreadores conocidos solo en ventanas privadas
 content-blocking-third-party-cookies = Cookies de rastreadores de terceros
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Estándar
+    .accesskey = E
+enhanced-tracking-protection-setting-strict =
+    .label = Estricto
+    .accesskey = r
+enhanced-tracking-protection-setting-custom =
+    .label = Personalizar
+    .accesskey = P
+
+##
+
+content-blocking-etp-standard-desc = Equilibrada entre protección y rendimiento. Las páginas se cargarán con normalidad.
+content-blocking-etp-strict-desc = Protección más elevada, pero puede causar que algunos sitios o contenidos fallen.
+content-blocking-etp-custom-desc = Elige cuáles rastreadores y scripts quieres bloquear.
+content-blocking-private-windows = Contenido de rastreo en ventanas privadas
+content-blocking-cross-site-tracking-cookies = Cookies de rastreo multisitio
+content-blocking-cross-site-tracking-cookies-plus-isolate = Cookies de rastreo de sitios cruzados, y aislación del resto de las cookies
+content-blocking-social-media-trackers = Rastreadores de red social
 content-blocking-all-cookies = Todas las cookies
 content-blocking-unvisited-cookies = Cookies de sitios no visitados
 content-blocking-all-windows-trackers = Rastreadores conocidos en todas las ventanas
+content-blocking-all-windows-tracking-content = Contenido de rastreo en todas las ventanas
 content-blocking-all-third-party-cookies = Todas las cookies de terceros
+content-blocking-cryptominers = Criptomineros
+content-blocking-fingerprinters = Huellas dactilares
 content-blocking-warning-title = ¡Atención!
-content-blocking-warning-desc = Bloquear cookies y rastreadores puede causar que algunos sitios web fallen. Es fácil de deshabilitar el bloqueo en sitios en lo que confías.
+content-blocking-warning-description = Bloquear el contenido puede hacer que algunos sitios dejen de funcionar. Es fácil desactivar el bloqueo para los sitios en los que confías.
 content-blocking-learn-how = Saber cómo
+content-blocking-and-isolating-etp-warning-description = Bloquear los rastreadores y aislar las cookies puede impactar en la funcionalidad de algunos sitios. Recarga una página con rastreadores para cargar todo el contenido.
+content-blocking-warning-learn-how = Aprende cómo
+content-blocking-reload-description = Tendrás que volver a cargar tus pestañas para aplicar estos cambios.
 content-blocking-reload-tabs-button =
     .label = Recargar todas las pestañas
     .accesskey = R
 content-blocking-trackers-label =
     .label = Rastreadores
     .accesskey = T
+content-blocking-tracking-content-label =
+    .label = Contenido de rastreo
+    .accesskey = C
 content-blocking-tracking-protection-option-all-windows =
     .label = En todas las ventanas
     .accesskey = A
@@ -702,6 +1010,11 @@ content-blocking-expand-section =
 content-blocking-cryptominers-label =
     .label = Criptomineros
     .accesskey = y
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Fingerprinters
+    .accesskey = F
 
 ## Privacy Section - Tracking
 
@@ -716,6 +1029,10 @@ permissions-location = Ubicación
 permissions-location-settings =
     .label = Ajustes…
     .accesskey = l
+permissions-xr = Realidad virtual
+permissions-xr-settings =
+    .label = Ajustes…
+    .accesskey = t
 permissions-camera = Cámara
 permissions-camera-settings =
     .label = Ajustes…
@@ -732,9 +1049,16 @@ permissions-notification-link = Saber más
 permissions-notification-pause =
     .label = Pausar las notificaciones hasta que { -brand-short-name } reinicie
     .accesskey = n
+permissions-block-autoplay-media2 =
+    .label = Bloquear la reproducción automática de sonido en los sitios web
+    .accesskey = B
 permissions-block-autoplay-media-exceptions =
     .label = Excepciones...
     .accesskey = E
+permissions-autoplay = Reproducción automática
+permissions-autoplay-settings =
+    .label = Configuración…
+    .accesskey = C
 permissions-block-popups =
     .label = Bloquear ventanas emergentes
     .accesskey = B
@@ -757,6 +1081,8 @@ permissions-a11y-privacy-link = Saber más
 collection-header = Recolección de datos y uso de { -brand-short-name }
 collection-description = Nos esforzamos en proporcionar opciones y recolectar solamente lo que necesitamos para proveer y mejorar { -brand-short-name } para todo el mundo. Siempre pedimos permiso antes de recibir información personal.
 collection-privacy-notice = Política de privacidad
+collection-health-report-telemetry-disabled = Ya no permites que { -vendor-short-name } capture datos técnicos y de interacción. Todos los datos anteriores se eliminarán en 30 días.
+collection-health-report-telemetry-disabled-link = Saber más
 collection-health-report =
     .label = Permitir que { -brand-short-name } envíe información técnica y de interacción a { -vendor-short-name }
     .accesskey = r

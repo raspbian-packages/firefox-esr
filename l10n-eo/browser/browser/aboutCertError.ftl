@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Erarkodo: <a data-l10n-name="error-code-link">{ $e
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Retejoj legitimas sin per sekurecaj atestiloj, kiuj estas eldonitaj de atestilaj aŭtoritatoj. La plimulto de la retumiloj ne plu fidas sekurecajn atestilojn eldonitajn de GeoTrust, RapidSSL, Symantec, Thawte, and VeriSign. { $hostname } uzas atestilon de unu el tiuj aŭtoritatoj kaj do oni ne povas kontroli la identon de la retejo.
 cert-error-symantec-distrust-admin = Vi povas sciigi la administraton de la retejo pri tiu ĉi problemo.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
+cert-error-details-cert-chain-label = Atestila ĉeno:
+open-in-new-window-for-csp-or-xfo-error = Malfermi retejon en nova fenestro
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Por protekti vian sekurecon, { $hostname } ne permesas al { -brand-short-name } montri la paĝon se ĝi estis enmetita en alian retejon. Por vidi tiun ĉi paĝon, vi devas malfermi ĝin en nova fenestro.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Ne eblas konektiĝi
+deniedPortAccess-title = Aliro al tiu ĉi adreso estas limigata
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm, ni ne sukcesas trovi tiun retejon.
+fileNotFound-title = Dosiero ne trovita
+fileAccessDenied-title = Rifuzita aliro al dosiero
+generic-title = Fuŝ’.
+captivePortal-title = Komenci seancon en tiu ĉi reto
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm, tiu adreso ne aspektas ĝuste.
+netInterrupt-title = La konekto estis ĉesigita
+notCached-title = Dokumento malaktuala
+netOffline-title = Malkonektita reĝimo
+contentEncodingError-title = Eraro de enkodigo de enhavo
+unsafeContentType-title = Nesekura tipo de dosiero
+netReset-title = La konekto estis haltigita
+netTimeout-title = Limtempo por konekto atingita
+unknownProtocolFound-title = La adreso ne estis komprenita
+proxyConnectFailure-title = La retperanto rifuzas konektojn
+proxyResolveFailure-title = Ne eblas trovi la retperanton
+redirectLoop-title = La paĝo ne redirektiĝas bone
+unknownSocketType-title = Neatendita respondo el servilo
+nssFailure2-title = Malsukcesa sekura konekto
+cspBlocked-title = Blokita de la sekureca politiko pri enhavo
+xfoBlocked-title = Blokita de politiko X-Frame-Options
+csp-xfo-error-title = { -brand-short-name } ne povas malfermi tiun ĉi paĝon
+corruptedContentError-title = Eraro pro difektita enhavo
+remoteXUL-title = Fora XUL
+sslv3Used-title = Ne eblas sekure konektiĝi
+inadequateSecurityError-title = Via konekto ne estas sekura
+blockedByPolicy-title = Blokita paĝo
+clockSkewError-title = La horloĝo de via komputilo estas malĝusta
+networkProtocolError-title = Eraro en reta protokolo
+nssBadCert-title = Averto: Ebla sekureca risko antaŭ vi
+nssBadCert-sts-title = Malsukcesa konekto: ebla sekureca problemo
+certerror-mitm-title = Programaro malpermesas al { -brand-short-name } sekure konekti tiun ĉi retejon

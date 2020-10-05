@@ -8,7 +8,7 @@ url-classifier-search-result-title = Rezultate
 url-classifier-search-result-uri = URI: { $uri }
 url-classifier-search-result-list = Listă de tabele: { $list }
 url-classifier-search-input = URL
-url-classifier-search-error-invalid-url = URL invalid
+url-classifier-search-error-invalid-url = URL nevalid
 url-classifier-search-error-no-features = Nicio funcționalitate selectată
 url-classifier-search-btn = Începe căutarea
 url-classifier-search-features = Funcționalități
@@ -40,6 +40,7 @@ url-classifier-debug-sb-modules = Module de jurnalizare pentru navigarea sigură
 url-classifier-debug-modules = Modulele actuale de înregistrare în jurnal
 url-classifier-debug-sbjs-modules = Jurnalizare JS pentru navigarea sigură
 url-classifier-debug-file = Fișierul actual pentru jurnal
+
 url-classifier-trigger-update = Declanșează actualizarea
 url-classifier-not-available = Indisponibil
 url-classifier-disable-sbjs-log = Dezactivează jurnalizarea JS pentru navigarea sigură

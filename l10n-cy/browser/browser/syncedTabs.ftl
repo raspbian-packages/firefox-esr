@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Tabiau wedi'u Cydweddu
 synced-tabs-sidebar-noclients-subtitle = Hoffech chi weld eich tabiau o ddyfeisiau eraill yma?
 synced-tabs-sidebar-notsignedin = Mewngofnodwch i weld rhestr o dabiau o'ch dyfeisiau eraill.
+synced-tabs-sidebar-intro = Gweld rhestr o dabiau o'ch dyfeisiau eraill.
 synced-tabs-sidebar-unverified = Mae angen i'ch cyfrif cael ei gwirio.
 synced-tabs-sidebar-notabs = Dim tabiau agored
 synced-tabs-sidebar-openprefs = Agor Dewisiadau { -sync-brand-short-name }
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Rheoli Dyfeisiadau…
     .accesskey = D
+synced-tabs-context-sync-now =
+    .label = Cydweddu Nawr
+    .accesskey = y
 fxa-sign-in = Mewngofnodi i { -sync-brand-short-name }
+turn-on-sync = Cychwyn { -sync-brand-short-name }

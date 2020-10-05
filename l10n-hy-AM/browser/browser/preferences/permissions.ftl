@@ -5,43 +5,66 @@
 permissions-window =
     .title = Բացառումներ
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Կայքի հասցեն
     .accesskey = d
+
 permissions-block =
     .label = Արգելել
     .accesskey = Ա
+
 permissions-session =
     .label = Թույլատրել աշխատաշրջանում
     .accesskey = ա
+
 permissions-allow =
     .label = Թույլատրել
     .accesskey = Թ
+
 permissions-site-name =
     .label = Կայք
+
 permissions-status =
     .label = Կարգավիճակը
+
 permissions-remove =
     .label = Հեռացնել կայքը
     .accesskey = R
+
 permissions-remove-all =
     .label = Հեռացնել բոլոր կայքերը
     .accesskey = e
+
 permissions-button-cancel =
     .label = Չեղարկել
     .accesskey = Չ
+
 permissions-button-ok =
     .label = Պահել փոփոխությունները
     .accesskey = Պ
+
+permissions-autoplay-menu = Սկզբնադիր բոլոր կայքերի համար.
+
 permissions-searchbox =
     .placeholder = Որոնել կայք
+
+permissions-capabilities-autoplay-allow =
+    .label = Թույլատրել Ձայն և Տեսանյութ
+permissions-capabilities-autoplay-block =
+    .label = Կողպել ձայնը
+permissions-capabilities-autoplay-blockall =
+    .label = Կողպել Ձայնը և Տեսանյութը
+
 permissions-capabilities-allow =
     .label = Թույլատրել
 permissions-capabilities-block =
     .label = Արգելել
 permissions-capabilities-prompt =
     .label = Միշտ հարցնել
+
 permissions-capabilities-listitem-allow =
     .value = Թույլատրել
 permissions-capabilities-listitem-block =
@@ -60,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Բացառություններ՝ բովանդակության արգելափակում
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Դուք անջատել եք բովանդակության արգելափակումը այս կայքերի համար:
+
+permissions-exceptions-etp-window =
+    .title = Բացառություններ հաետագծման պաշտապանությունը կատարելագրծելու համար։
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Դուք անջատել եք այս կայքերի պաշտպանությունը։
 
 ## Exceptions - Cookies
 
@@ -94,6 +122,14 @@ permissions-exceptions-addons-desc = Դուք կարող էք նշել այն վ
 permissions-exceptions-autoplay-media-window2 =
     .title = Բացառություններ՝  Ինքնանվագարկում
     .style = { permissions-window.style }
+permissions-exceptions-autoplay-media-desc2 = Դուք կարող եք բնորոշել, թե որ վեբ կայքերն են միշտ կամ երբևէ թույլատրել ձայնով ինքնանվագարկման միջավայր։ Գրե՛ք այն էջի հասցեն որը դուք ուզում եք կառավարել և հետո սեղմե՛ք Արգելափակել կամ Թույլատրել։
+
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = Կարգավորումներ - Ինքնանվագարկում
+    .style = { permissions-window.style }
+permissions-site-autoplay-desc = Կարող եք կառավարել էջերը, որոնք չեն հետևում ձեր լռելյայն ինքնանվագարկման կարգավորումներին։
 
 ## Site Permissions - Notifications
 
@@ -114,6 +150,16 @@ permissions-site-location-desc = Հետևյալ կայքերը հայցել են
 permissions-site-location-disable-label =
     .label = Արգելափակել ձեր տեղադրությունը մատչելու նոր հարցումները
 permissions-site-location-disable-desc = Սա կկանխի ցանկում չնշված ցանկացած կայքի կողմից ձեր տեղադրությունը մատչելու հարցումը: Ձեր տեղադրության հարցման արգելփակաումը կարող է ընդհատել կայքի որոշ յուրահատկությունները:
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Կարգավորումներ - թվացյալ իրականության թույլտվություններ
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Հետևյալ կայքերը հայցել են ձեր տեղադրությունը: Դուք կարող եք հատկորոշել, թե որ կայքերը կարող են մատչել ձեր տեղադրությանը: Նաև՝ կարող եք արգելափակել ձեր տեղադրությունը մատչելու նոր հարցումները:
+permissions-site-xr-disable-label =
+    .label = Արգելափակել նոր հարցումները, որոնք ցանկանում են մատչել ձեր վիրտուալ իրականության սարքերը
+permissions-site-xr-disable-desc = Սա կկանխի ցանկում չնշված ցանկացած կայքի կողմից ձեր տեղադրությունը մատչելու հարցումը: Ձեր տեղադրության հարցման արգելփակաումը կարող է ընդհատել կայքի որոշ յուրահատկությունները:
 
 ## Site Permissions - Camera
 

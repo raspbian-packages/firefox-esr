@@ -88,10 +88,12 @@ class ResizeObserver final : public nsISupports, public nsWrapperCache {
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(ResizeObserver)
 
-  ResizeObserver(already_AddRefed<nsPIDOMWindowInner>&& aOwner,
+  ResizeObserver(nsCOMPtr<nsPIDOMWindowInner>&& aOwner, Document* aDocument,
                  ResizeObserverCallback& aCb)
-      : mOwner(aOwner), mCallback(&aCb) {
+      : mOwner(std::move(aOwner)), mDocument(aDocument), mCallback(&aCb) {
     MOZ_ASSERT(mOwner, "Need a non-null owner window");
+    MOZ_ASSERT(mDocument, "Need a non-null doc");
+    MOZ_ASSERT(mDocument == mOwner->GetExtantDoc());
   }
 
   nsISupports* GetParentObject() const { return mOwner; }
@@ -147,6 +149,8 @@ class ResizeObserver final : public nsISupports, public nsWrapperCache {
   ~ResizeObserver() { mObservationList.clear(); }
 
   nsCOMPtr<nsPIDOMWindowInner> mOwner;
+  // The window's document at the time of ResizeObserver creation.
+  RefPtr<Document> mDocument;
   RefPtr<ResizeObserverCallback> mCallback;
   nsTArray<RefPtr<ResizeObservation>> mActiveTargets;
   // The spec uses a list to store the skipped targets. However, it seems what
@@ -175,10 +179,15 @@ class ResizeObserverEntry final : public nsISupports, public nsWrapperCache {
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(ResizeObserverEntry)
 
-  ResizeObserverEntry(nsISupports* aOwner, Element& aTarget)
+  ResizeObserverEntry(nsISupports* aOwner, Element& aTarget,
+                      const nsSize& aBorderBoxSize,
+                      const nsSize& aContentBoxSize)
       : mOwner(aOwner), mTarget(&aTarget) {
     MOZ_ASSERT(mOwner, "Need a non-null owner");
     MOZ_ASSERT(mTarget, "Need a non-null target element");
+
+    SetBorderBoxSize(aBorderBoxSize);
+    SetContentRectAndSize(aContentBoxSize);
   }
 
   nsISupports* GetParentObject() const { return mOwner; }
@@ -187,9 +196,6 @@ class ResizeObserverEntry final : public nsISupports, public nsWrapperCache {
                        JS::Handle<JSObject*> aGivenProto) override {
     return ResizeObserverEntry_Binding::Wrap(aCx, this, aGivenProto);
   }
-
-  static already_AddRefed<ResizeObserverEntry> Constructor(
-      const GlobalObject& global, Element& target, ErrorResult& aRv);
 
   Element* Target() const { return mTarget; }
 
@@ -206,13 +212,13 @@ class ResizeObserverEntry final : public nsISupports, public nsWrapperCache {
   ResizeObserverSize* BorderBoxSize() const { return mBorderBoxSize; }
   ResizeObserverSize* ContentBoxSize() const { return mContentBoxSize; }
 
+ private:
+  ~ResizeObserverEntry() = default;
+
   // Set borderBoxSize.
   void SetBorderBoxSize(const nsSize& aSize);
   // Set contentRect and contentBoxSize.
   void SetContentRectAndSize(const nsSize& aSize);
-
- protected:
-  ~ResizeObserverEntry() = default;
 
   nsCOMPtr<nsISupports> mOwner;
   nsCOMPtr<Element> mTarget;

@@ -259,6 +259,11 @@
     Subject: rows. It should be larger than the largest Header label  -->
 <!ENTITY headersSpace.style "width: 9em;">
 <!ENTITY fromAddr.label "Od:">
+<!--LOCALIZATION NOTE headersSpaces.style is for aligning  the From:, To: and
+    Subject: rows. It should be larger than the largest Header label  -->
+<!ENTITY headersSpace2.style "width: 8em;">
+<!ENTITY extraRecipients.tooltip "Druge vrste polj za naslavljanje">
+<!ENTITY fromAddr2.label "Od">
 <!ENTITY fromAddr.accesskey "d">
 <!ENTITY toAddr.label "Za:">
 <!ENTITY ccAddr.label "Kp:">
@@ -267,6 +272,13 @@
 <!ENTITY newsgroupsAddr.label "Novičarska skupina:">
 <!ENTITY followupAddr.label "Nadaljuj za:">
 <!ENTITY subject.label "Zadeva:">
+<!ENTITY toAddr2.label "Za">
+<!ENTITY ccAddr2.label "Kp">
+<!ENTITY bccAddr2.label "Skp">
+<!ENTITY replyAddr2.label "Odgovori na">
+<!ENTITY newsgroupsAddr2.label "Novičarska skupina">
+<!ENTITY followupAddr2.label "Nadaljuj za">
+<!ENTITY subject2.label "Zadeva">
 <!ENTITY subject.accesskey "Z">
 <!-- LOCALIZATION NOTE (attachments.accesskey) This access key character should
      be taken from the strings of attachmentCount in composeMsgs.properties.
@@ -278,7 +290,7 @@
 <!ENTITY attachmentBucketHeader.tooltip "Podokno za priponke">
 <!ENTITY attachmentBucketCloseButton.tooltip "Skrij podokno za priponke">
 
-<!-- Format Toolbar, imported from editorAppShell.xul -->
+<!-- Format Toolbar, imported from editorAppShell.xhtml -->
 <!ENTITY SmileButton.tooltip "Vstavi smeška">
 <!ENTITY smiley1Cmd.label "Nasmeh">
 <!ENTITY smiley2Cmd.label "Grd pogled">

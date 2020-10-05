@@ -5,49 +5,70 @@
 permissions-window =
     .title = Excepziuns
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adressa da la website
     .accesskey = d
+
 permissions-block =
     .label = Bloccar
     .accesskey = B
+
 permissions-session =
     .label = Permetter per questa sesida
     .accesskey = P
+
 permissions-allow =
     .label = Permetter
     .accesskey = e
+
 permissions-site-name =
     .label = Website
+
 permissions-status =
     .label = Status
+
 permissions-remove =
     .label = Allontanar la website
     .accesskey = A
+
 permissions-remove-all =
     .label = Allontanar tut las websites
     .accesskey = t
+
 permissions-button-cancel =
     .label = Interrumper
     .accesskey = r
+
 permissions-button-ok =
     .label = Memorisar las midadas
     .accesskey = M
+
+permissions-autoplay-menu = Standard per tuttas websites:
+
 permissions-searchbox =
     .placeholder = Tschertgar ina website
+
+permissions-capabilities-autoplay-allow =
+    .label = Permetter audio e video
+permissions-capabilities-autoplay-block =
+    .label = Bloccar l'audio
+permissions-capabilities-autoplay-blockall =
+    .label = Bloccar audio e video
+
 permissions-capabilities-allow =
     .label = Permetter
 permissions-capabilities-block =
     .label = Bloccar
 permissions-capabilities-prompt =
     .label = Adina dumandar
+
 permissions-capabilities-listitem-allow =
     .value = Permetter
 permissions-capabilities-listitem-block =
     .value = Bloccar
-permissions-capabilities-listitem-allow-first-party =
-    .value = Mo permetter per la domena principala
 permissions-capabilities-listitem-allow-session =
     .value = Permetter per questa sesida
 
@@ -58,14 +79,15 @@ permissions-invalid-uri-label = Endatescha per plaschair in num da host valid
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = Excepziuns - Protecziun cunter il fastizar
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = Ti has deactivà la protecziun cunter il fastizar sin questas websites.
 permissions-exceptions-content-blocking-window =
     .title = Excepziuns - Bloccada da cuntegn
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Ti has deactivà la bloccada da cuntegn sin questas websites.
+
+permissions-exceptions-etp-window =
+    .title = Excepziuns per la protecziun avanzada cunter il fastizar
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Ti has deactivà las protecziuns sin questas websites.
 
 ## Exceptions - Cookies
 
@@ -102,6 +124,13 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = Ti pos definir a tge websites che ti permettas adina u mai da reproducir automaticamain multimedia cun tun. Inditgescha l'adressa exacta da la website che ti vuls administrar e clicca lura sin «Bloccar» u «Permetter».
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = Preferenzas - Reproducziun automatica
+    .style = { permissions-window.style }
+permissions-site-autoplay-desc = Ti pos administrar qua las websites che na resguardan betg tias preferenzas per la reproducziun automatica.
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -121,6 +150,16 @@ permissions-site-location-desc = Las suandantas websites han dumandà l'access a
 permissions-site-location-disable-label =
     .label = Bloccar novas dumondas d'access a tia posiziun
 permissions-site-location-disable-desc = Qua tras vegn impedì ch'ina pagina betg menziunada survart ta dumondia la permissiun da pudair acceder a tia posiziun geografica. Cun bloccar l'access a tia posiziun vegnan eventualmain tangadas tschertas funcziuns da paginas d'internet.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Parameters - permissiuns per la realitad virtuala
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Las suandantas websites han dumandà l'access a tes apparats da realitad virtuala. Ti pos definir per mintga website schebain ella dastga acceder a tes apparats da realitad virtuala. Ti pos era bloccar novas dumondas da pudair acceder a tes apparats da realitad virtuala.
+permissions-site-xr-disable-label =
+    .label = Bloccar novas dumondas d'access a tes apparats da realitad virtuala
+permissions-site-xr-disable-desc = Qua tras vegn impedì ch'ina pagina betg menziunada survart ta dumondia la permissiun da pudair acceder a tes apparats da realitad virtuala. Cun bloccar l'access a tes apparats da realitad virtuala vegnan eventualmain tangadas tschertas funcziuns da paginas d'internet.
 
 ## Site Permissions - Camera
 

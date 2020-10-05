@@ -9,10 +9,10 @@ select-all-tabs =
     .label = Seleccionar todas las pestañas
     .accesskey = S
 duplicate-tab =
-    .label = Pestaña duplicada
+    .label = Duplicar pestaña
     .accesskey = D
 duplicate-tabs =
-    .label = Pestañas duplicadas
+    .label = Duplicar pestañas
     .accesskey = D
 close-tabs-to-the-end =
     .label = Cerrar pestañas a la derecha
@@ -56,6 +56,17 @@ move-to-new-window =
 undo-close-tab =
     .label = Deshacer cierre de pestaña
     .accesskey = h
+tab-context-close-multiple-tabs =
+    .label = Cerrar múltiples pestañas
+    .accesskey = M
+tab-context-undo-close-tabs =
+    .label =
+        { $tabCount ->
+            [1] Deshacer cierre de pestañas
+            [one] Deshacer cierre de pestaña
+           *[other] Deshacer cierre de pestañas
+        }
+    .accesskey = U
 close-tab =
     .label = Cerrar pestaña
     .accesskey = c

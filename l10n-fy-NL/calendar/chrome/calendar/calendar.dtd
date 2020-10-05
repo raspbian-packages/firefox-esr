@@ -10,6 +10,7 @@
 <!ENTITY calendar.newtask.button.tooltip          "In nije taak meitsje" >
 
 <!ENTITY calendar.unifinder.todoitems.label       "Taken" >
+
 <!ENTITY calendar.unifinder.showcompletedtodos.label "Foltôge taken toane">
 
 <!ENTITY calendar.today.button.label          "Hjoed">
@@ -178,8 +179,6 @@
 <!ENTITY calendar.context.attendance.menu.label                 "Oanwêzichheid">
 <!ENTITY calendar.context.attendance.menu.accesskey             "O">
 <!ENTITY calendar.context.attendance.occurrence.label           "Dit barren">
-<!ENTITY calendar.context.attendance.all.label        "Alle barren" >
-
 <!ENTITY calendar.context.attendance.all2.label                 "Folsleine searje">
 <!ENTITY calendar.context.attendance.send.label                 "No in notifikaasje ferstjoere">
 <!ENTITY calendar.context.attendance.send.accesskey             "N">
@@ -249,7 +248,7 @@
 <!ENTITY priority.level.high                "Heech">
 <!ENTITY priority.level.high.accesskey      "H">
 
-<!ENTITY calendar.context.postpone.1hour.label      "1 oere">
+<!ENTITY calendar.context.postpone.1hour.label      "1 oer">
 <!ENTITY calendar.context.postpone.1hour.accesskey  "o">
 <!ENTITY calendar.context.postpone.1day.label       "1 dei">
 <!ENTITY calendar.context.postpone.1day.accesskey   "d">
@@ -338,8 +337,8 @@
 <!ENTITY calendar.alarm.snooze.15minutes.label      "15 minuten" >
 <!ENTITY calendar.alarm.snooze.30minutes.label      "30 minuten" >
 <!ENTITY calendar.alarm.snooze.45minutes.label      "45 minuten" >
-<!ENTITY calendar.alarm.snooze.1hour.label          "1 oere" >
-<!ENTITY calendar.alarm.snooze.2hours.label         "2 oeren" >
+<!ENTITY calendar.alarm.snooze.1hour.label          "1 oer" >
+<!ENTITY calendar.alarm.snooze.2hours.label         "2 oer" >
 <!ENTITY calendar.alarm.snooze.1day.label           "1 dei" >
 
 <!-- LOCALIZATION NOTE (calendar.alarm.snooze.cancel)
@@ -366,6 +365,7 @@
 <!ENTITY calendarproperties.firealarms.label               "Alarmen toane">
 <!ENTITY calendarproperties.cache3.label                   "Offline stipe">
 <!ENTITY calendarproperties.enabled.label                  "Dizze aginda ynskeakelje">
+<!ENTITY calendarproperties.enabled2.label                 "Dizze aginda ynskeakelje">
 <!ENTITY calendarproperties.forceDisabled.label            "De útjouwer foar dizze aginda koe net fûn wurde. Dit bart faak as jo bepaalde útwreidingen útskeakele of de-ynstallearre hawwe.">
 <!ENTITY calendarproperties.unsubscribe.label              "Utskriuwe">
 <!ENTITY calendarproperties.unsubscribe.accesskey          "U">

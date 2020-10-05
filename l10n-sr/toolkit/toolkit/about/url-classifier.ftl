@@ -3,6 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 url-classifier-title = URL класификатор информација
+url-classifier-search-title = Тражи
+url-classifier-search-result-title = Резултати
+url-classifier-search-result-uri = URI: { $uri }
+url-classifier-search-result-list = Листа табела: { $list }
+url-classifier-search-input = URL
+url-classifier-search-error-invalid-url = Неважећи URL
+url-classifier-search-error-no-features = Није изабрана ниједна функција
+url-classifier-search-btn = Започните претрагу
+url-classifier-search-features = Функције
+url-classifier-search-listType = Тип листе
 url-classifier-provider-title = Провајдер
 url-classifier-provider = Провајдер
 url-classifier-provider-last-update-time = Време последњег ажурирања
@@ -30,6 +40,7 @@ url-classifier-debug-sb-modules = Модули записника безбедн
 url-classifier-debug-modules = Тренутни модули записника
 url-classifier-debug-sbjs-modules = JS запис безбедног прегледања
 url-classifier-debug-file = Тренутни запис података
+
 url-classifier-trigger-update = Покрени ажурирање
 url-classifier-not-available = N/A
 url-classifier-disable-sbjs-log = Онемогући JS запис безбедног прегледања

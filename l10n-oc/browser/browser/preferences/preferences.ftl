@@ -2,12 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-do-not-track-description = Mandar als sites web lo senhal “Me pistar pas” per lor dire que volètz pas èsser pistat
+do-not-track-description = Mandar als sites web lo senhal « Me pistar pas » per lor dire que volètz pas èsser pistat
 do-not-track-learn-more = Ne saber mai
-do-not-track-option-default =
-    .label = Sonque en utilizar la proteccion contra lo seguiment
-do-not-track-option-default-content-blocking =
-    .label = Solament quand { -brand-short-name } es configurat per blocar los elements de seguiment detectats
 do-not-track-option-default-content-blocking-known =
     .label = Solament quand { -brand-short-name } es configurat per blocar los traçadors coneguts
 do-not-track-option-always =
@@ -18,6 +14,11 @@ pref-page =
             [windows] Opcions
            *[other] Preferéncias
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Opcions
+       *[other] Preferéncias
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -33,11 +34,7 @@ search-input-box =
             [windows] Recercar dins Opcions
            *[other] Recercar dins Preferéncias
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Vòstra organizacion a desactivat la possibilitat de cambiar unas opcions.
-       *[other] Vòstra organizacion a desactivat la possibilitat de cambiar unas preferéncias.
-    }
+managed-notice = Vòstra organizacion gerís vòstre navegador.
 pane-general-title = General
 category-general =
     .tooltiptext = { pane-general-title }
@@ -50,10 +47,9 @@ category-search =
 pane-privacy-title = Vida privada e seguretat
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Compte Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
+pane-sync-title2 = { -sync-brand-short-name }
+category-sync2 =
+    .tooltiptext = { pane-sync-title2 }
 help-button-label = Assisténcia de { -brand-short-name }
 addons-button-label = Extensions e tèmas
 focus-search =
@@ -95,9 +91,6 @@ extension-controlled-default-search = Una extension, <img data-l10n-name="icon"/
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
 extension-controlled-privacy-containers = Una extension, <img data-l10n-name="icon"/> { $name }, requerís los onglets isolats.
-# This string is shown to notify the user that their tracking protection preferences
-# are being controlled by an extension.
-extension-controlled-websites-tracking-protection-mode = Una extension, <img data-l10n-name="icon"/> { $name }, contraròtla la proteccion contra lo seguiment.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
 extension-controlled-websites-content-blocking-all-trackers = Una extension, <img data-l10n-name="icon"/> { $name }, contraròtla aqueste paramètre.
@@ -134,7 +127,7 @@ get-started-not-logged-in = Se connectar a { -sync-brand-short-name }…
 get-started-configured = Dobrir las preferéncias del { -sync-brand-short-name }
 always-check-default =
     .label = Totjorn verificar se { -brand-short-name } es vòstre navegador per defaut
-    .accesskey = y
+    .accesskey = T
 is-default = { -brand-short-name } es actualament vòstre navegador per defaut
 is-not-default = { -brand-short-name } es pas vòstre navegador per defaut
 set-as-my-default-browser =
@@ -161,8 +154,8 @@ warn-on-open-many-tabs =
     .label = Vos avisar quand dobrir d'onglets multiples pòt alentir { -brand-short-name }
     .accesskey = d
 switch-links-to-new-tabs =
-    .label = En dobrir un ligam dins un onglet novèl, i anar sul pic
-    .accesskey = h
+    .label = En dobrissent un ligam dins un onglet novèl, i anar sul pic
+    .accesskey = d
 show-tabs-in-taskbar =
     .label = Afichar los apercebuts d'onglets dins la barra dels prètzfaits de Windows
     .accesskey = c
@@ -203,13 +196,22 @@ fonts-and-colors-header = Poliças e colors
 default-font = Poliça per defaut
     .accesskey = D
 default-font-size = Talha
-    .accesskey = M
+    .accesskey = l
 advanced-fonts =
     .label = Avançat…
     .accesskey = A
 colors-settings =
     .label = Colors…
     .accesskey = C
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Zoom
+preferences-default-zoom = Zoom per defaut
+    .accesskey = Z
+preferences-default-zoom-value =
+    .label = { $percentage } %
+preferences-zoom-text-only =
+    .label = Zoom tèxte solament
+    .accesskey = t
 language-header = Lenga
 choose-language-description = Causissètz vòstra lenga preferida per l'afichatge de las paginas
 choose-button =
@@ -230,8 +232,12 @@ translate-attribution = Traduccions per <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Excepcions…
     .accesskey = x
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Utilizar los paramètres de vòstre sistèma operatiu en « { $localeName } » per formatar las datas, las oras, los nombres e las mesuras.
 check-user-spelling =
-    .label = Verificar l'ortografia en picar
+    .label = Verificar l'ortografia en picant
     .accesskey = t
 
 ## General Section - Files and Applications
@@ -239,7 +245,7 @@ check-user-spelling =
 files-and-applications-title = Fichièrs e aplicacions
 download-header = Telecargaments
 download-save-to =
-    .label = Enregistrar los fichièrs dins lo dorsièr
+    .label = Enregistrar los fichièrs dins lo dossièr
     .accesskey = n
 download-choose-folder =
     .label =
@@ -265,6 +271,75 @@ applications-type-column =
 applications-action-column =
     .label = Accion
     .accesskey = A
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = fichièr { $extension }
+applications-action-save =
+    .label = Enregistrar lo fichièr
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = Utilizar { $app-name }
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = Utilizar { $app-name } (per defaut)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Utilizar l’aplicacion macOS par defaut
+            [windows] Utilizar l’aplicacion Windows per defaut
+           *[other] Utilizar l’aplicacion sistèma per defaut
+        }
+applications-use-other =
+    .label = Utilizar un autre…
+applications-select-helper = Seleccionatz l'ajuda de l'aplicacion
+applications-manage-app =
+    .label = Detalhs de l'aplicacion…
+applications-always-ask =
+    .label = Totjorn demandar
+applications-type-pdf = Portable Document Format (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = Utilizar { $plugin-name } (dins { -brand-short-name })
+applications-open-inapp =
+    .label = Dobrir dins { -brand-short-name }
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Contengut amb Digital Rights Management (DRM)
 play-drm-content =
     .label = Legir lo contengut contrarotlat per DRM
@@ -286,6 +361,7 @@ update-application-check-choose =
 update-application-manual =
     .label = Verificar pas jamai las mesas a jorns (pas recomandat)
     .accesskey = N
+update-application-warning-cross-user-setting = Aqueste paramètres s’aplicarà a totes los comptes Windows e perfils { -brand-short-name } qu’utilizant aquesta installacion de { -brand-short-name }.
 update-application-use-service =
     .label = Utilizar un servici en rèireplan per installar las mesas a jorn
     .accesskey = z
@@ -296,6 +372,21 @@ update-pref-write-failure-title = Fracàs d’escritura
 # Variables:
 #   $path (String) - Path to the configuration file
 update-pref-write-failure-message = Enregistrament impossible de las preferéncias. Impossible d’escriure dins lo fichièr : { $path }
+update-setting-write-failure-title = Error en enregistrant las preferéncias de mesas a jorn
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } a rescontrat una error e pas enregistrat aquesta modificacion. Notatz que modificar aqueste preferéncia de mesa a jorn requerís la permission d’escriure sul fichièr çai-jos. Vosautres o un administrator sistèma podètz benlèu corregir aquò en donant al grop Users l’accès complet a aqueste fichièr.
+    
+    Escritura impossibla sul fichièr : { $path }
+update-in-progress-title = Actualizacion en cors
+update-in-progress-message = Volètz que { -brand-short-name } contunhe amb aquesta mesa a jorn ?
+update-in-progress-ok-button = &Ignorar
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Contunhar
 
 ## General Section - Performance
 
@@ -310,7 +401,7 @@ performance-allow-hw-accel =
     .accesskey = n
 performance-limit-content-process-option = Limita del procediment del contengut
     .accesskey = L
-performance-limit-content-process-enabled-desc = De procediments de contengut suplementaris pòdon melhorar las performanças en utiliazar d'onglets multiples, pasmens aquò utiliza mai de memòria.
+performance-limit-content-process-enabled-desc = De procediments de contengut suplementaris pòdon melhorar las performanças en utilizant d'onglets multiples, pasmens aquò utiliza mai de memòria.
 performance-limit-content-process-blocked-desc = Modificar lo nombre de procediments de contenguts es possible sonque amb la version multiprocediment de { -brand-short-name }. <a data-l10n-name="learn-more">Aprendre a verificar se de multiprocediments son activats</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -328,22 +419,32 @@ browsing-use-smooth-scrolling =
     .accesskey = d
 browsing-use-onscreen-keyboard =
     .label = Mostrar un clavièr tactil quand es necessari
-    .accesskey = k
+    .accesskey = t
 browsing-use-cursor-navigation =
     .label = Utilizar totjorn las tòcas de navegacion per se desplaçar a l'interior d'una pagina
     .accesskey = t
 browsing-search-on-start-typing =
-    .label = Començar la recèrca en picar lo tèxte
+    .label = Començar la recèrca en picant lo tèxte
     .accesskey = x
+browsing-picture-in-picture-toggle-enabled =
+    .label = Activar lo contraròtle per l’incrustacion vidèo
+    .accesskey = A
+browsing-picture-in-picture-learn-more = Ne saber mai
+browsing-cfr-recommendations =
+    .label = Recomandar d’extensions pendent la navegacion
+    .accesskey = R
+browsing-cfr-features =
+    .label = Recomandar de foncionalitats pendent la navegacion
+    .accesskey = R
 browsing-cfr-recommendations-learn-more = Ne saber mai
 
 ## General Section - Proxy
 
 network-settings-title = Paramètres ret
-network-proxy-connection-description = Configurar la biais de { -brand-short-name } de se connectar a Internet.
+network-proxy-connection-description = Configurar lo biais de { -brand-short-name } de se connectar a Internet.
 network-proxy-connection-learn-more = Ne saber mai
 network-proxy-connection-settings =
-    .label = Paramètres
+    .label = Paramètres…
     .accesskey = e
 
 ## Home Section
@@ -383,6 +484,54 @@ choose-bookmark =
     .label = Favorits…
     .accesskey = s
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Contengut de la pagina d’acuèlh de Firefox
+home-prefs-content-description = Causissètz lo contengut que volètz a la pagina d’acuèlh de Fireofx.
+home-prefs-search-header =
+    .label = Recèrca web
+home-prefs-topsites-header =
+    .label = Sites populars
+home-prefs-topsites-description = Los sites que visitatz mai sovent
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = Recomandat per { $provider }
+home-prefs-recommended-by-description = De contengut interessant de tot lo web, personalizat per vos
+home-prefs-recommended-by-description-update = Contengut excepcional de pertot del web, seleccionat per { $provider }
+
+##
+
+home-prefs-recommended-by-learn-more = Cossí fonciona
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Articles pairinejats
+home-prefs-highlights-header =
+    .label = Notables
+home-prefs-highlights-description = Una seleccion de sites qu’avètz enregistrats o visitats
+home-prefs-highlights-option-visited-pages =
+    .label = Paginas visitadas
+home-prefs-highlights-options-bookmarks =
+    .label = Marcapaginas
+home-prefs-highlights-option-most-recent-download =
+    .label = Telecargament mai recent
+home-prefs-highlights-option-saved-to-pocket =
+    .label = Paginas enregistradas dins { -pocket-brand-name }
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Extraches
+home-prefs-snippets-description = Actualitat de { -vendor-short-name } e { -brand-product-name }
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } linha
+           *[other] { $num } linhas
+        }
+
 ## Search Section
 
 search-bar-header = Barra de recèrca
@@ -391,12 +540,19 @@ search-bar-hidden =
 search-bar-shown =
     .label = Apondre la barre de recèrca a la barra d'aisinas
 search-engine-default-header = Motor de cerca per defaut
-search-engine-default-desc = Causir lo motor de recèrca per defaut per d'utilizar dins las barras d'adreça e de recèrca.
+search-engine-default-desc = Causissètz lo motor de recèrca per defaut per d'utilizar dins las barras d'adreça e de recèrca.
+search-engine-default-desc-2 = Aqueste es lo motor de recèrca per defaut de la barra d’adreça e de a barra de recèrca. Podètz lo cambiar quand volgatz.
+search-engine-default-private-desc-2 = Causissètz un motor de recèrca diferent solament per las fenèstras privadas
+search-separate-default-engine =
+    .label = Utilizar aqueste motor de recèrca en navegacion privada
+    .accesskey = U
+search-suggestions-header = Suggestions de recèrca
+search-suggestions-desc = Causissètz cossí apareisseràn las suggestions dels motors de recèrca.
 search-suggestions-option =
     .label = Afichar de suggestions de recèrca
     .accesskey = A
 search-show-suggestions-url-bar-option =
-    .label = Afichar las suggestions dins los resultats de la barra d'adreça
+    .label = Mostrar las suggestions dins los resultats de la barra d'adreça
     .accesskey = l
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
@@ -405,9 +561,13 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Mostrar las suggestions avant l’istoric dins la barra d’adreça
+search-show-suggestions-private-windows =
+    .label = Mostrar las suggestions de recèrca en navegacion privada
+suggestions-addressbar-settings = Modificar las preferéncias per las suggestions d’istoric de navegacion, dels marcapaginas e dels onglets
+suggestions-addressbar-settings-generic = Cambiar las preferéncias per las suggestions de la barra d’adreça
 search-suggestions-cant-show = Recercar las suggestions que son pas afichadas dins los resultats de la barra d'adreça qu'avètz configurat { -brand-short-name } per pas jamai servar l'istoric.
 search-one-click-header = Motor de recèrca en un clic
-search-one-click-desc = Causir de motors de recerca altenatius qu'apareisson jos las barras d'adreça e de recèrca quand sètz a picar un mot.
+search-one-click-desc = Causissètz de motors de recerca altenatius qu'apareisson jos las barras d'adreça e de recèrca quand començatz d’escriure un mot-clau.
 search-choose-engine-column =
     .label = Motor de recèrca
 search-choose-keyword-column =
@@ -418,7 +578,7 @@ search-restore-default =
 search-remove-engine =
     .label = Suprimir
     .accesskey = S
-search-find-more-link = Trapar mai motors de recèrcas
+search-find-more-link = Trobar mai de motors de recèrcas
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
 search-keyword-warning-title = Doblon de mot clau
@@ -430,16 +590,29 @@ search-keyword-warning-bookmark = Avètz causit un mot clau que ja es utilizat p
 ## Containers Section
 
 containers-back-link = « Tornar
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Tornar a las opcions
+           *[other] Tornar a las preferéncias
+        }
 containers-header = Onglets de contenidor
 containers-add-button =
     .label = Apondre un contenidor novèl
     .accesskey = A
+containers-new-tab-check =
+    .label = Seleccionar un contenidor diferent per cada onglet novèl
+    .accesskey = S
 containers-preferences-button =
     .label = Preferéncias
 containers-remove-button =
     .label = Suprimir
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Emportatz vòstre Web pertot
 sync-signedout-description = Sincronizatz vòstres marcapaginas, istoric, onglets, senhals, moduls, e preferéncias per totes vòstres periferics.
@@ -449,6 +622,9 @@ sync-signedout-account-create = Avètz pas cap de compte ? Marcatz-vos
 sync-signedout-account-signin =
     .label = Connexion…
     .accesskey = I
+sync-signedout-account-signin2 =
+    .label = Se connectar a { -sync-brand-short-name }…
+    .accesskey = c
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
 #   `<a data-l10n-name="android-link">` - Link to Android Download
@@ -461,11 +637,17 @@ sync-mobile-promo = Telecargatz Firefox per <img data-l10n-name="android-icon"/>
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Cambiar la fòto de perfil de l'utilizaire
 sync-disconnect =
     .label = Se desconectar…
     .accesskey = D
+sync-sign-out =
+    .label = Se desconnectar
+    .accesskey = d
 sync-manage-account = Gestion del compte
     .accesskey = o
 sync-signedin-unverified = { $email } es pas verificat.
@@ -481,6 +663,48 @@ sync-sign-in =
     .accesskey = x
 sync-signedin-settings-header = Paramètres de sincronizacion
 sync-signedin-settings-desc = Causir çò que cal sincronizar per vòstres periferics qu'utilizan { -brand-short-name }.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Sincronizacion : ACTIVADA
+prefs-syncing-off = Sincronizacion : DESACTIVADA
+prefs-sync-setup =
+    .label = Configurar { -sync-brand-short-name }…
+    .accesskey = C
+prefs-sync-offer-setup-label = Sincronizar vòstres marcapaginas, istoric, onglets, senhals, moduls, e preferéncias per totes vòstres periferics.
+prefs-sync-now =
+    .labelnotsyncing = Sincronizar ara
+    .accesskeynotsyncing = n
+    .labelsyncing = Sincronizacion…
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Los elements seguents son actualament sincronizats :
+sync-currently-syncing-bookmarks = Marcapaginas
+sync-currently-syncing-history = Istoric
+sync-currently-syncing-tabs = Onglets dobèrts
+sync-currently-syncing-logins-passwords = Identificants e senhals
+sync-currently-syncing-addresses = Adreças
+sync-currently-syncing-creditcards = Cartas de crèdit
+sync-currently-syncing-addons = Moduls complementaris
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Opcions
+       *[other] Preferéncias
+    }
+sync-change-options =
+    .label = Modificar…
+    .accesskey = M
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Causir qué sincronizar
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Enregistrar
+    .buttonaccesskeyaccept = E
+    .buttonlabelextra2 = Desconnectar…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Marcapaginas
     .accesskey = M
@@ -494,6 +718,10 @@ sync-engine-tabs =
 sync-engine-logins =
     .label = Identificants
     .tooltiptext = Los noms d’utilizaires e los senhales qu’avètz salvats
+    .accesskey = I
+sync-engine-logins-passwords =
+    .label = Identificants e senhals
+    .tooltiptext = Identificants e senhals que gardatz
     .accesskey = I
 sync-engine-addresses =
     .label = Adreças
@@ -511,10 +739,13 @@ sync-engine-prefs =
     .label =
         { PLATFORM() ->
             [windows] Opcions
-           *[other] las preferéncias
+           *[other] Preferéncias
         }
     .tooltiptext = Los paramètres qu’avètz cambiat dins General, Vida Privada e Seguretat
     .accesskey = s
+
+## The device name controls.
+
 sync-device-name-header = Nom de l'aparelh
 sync-device-name-change =
     .label = Cambiar lo nom del periferic…
@@ -525,8 +756,9 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Enregistrar
     .accesskey = g
-sync-mobilepromo-single = Connectar un periferic mai
-sync-mobilepromo-multi = Gerir los periferics
+sync-connect-another-device = Connectar un periferic de mai
+sync-manage-devices = Gerir los periferics
+sync-fxa-begin-pairing = Associar un periferic
 sync-tos-link = Condicions d'utilizacion
 sync-fxa-privacy-notice = Politica de confidencialitat
 
@@ -537,12 +769,30 @@ privacy-header = Confidencialitat del navegador
 ## Privacy Section - Forms
 
 logins-header = Identificants e senhals
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Identificants e senhals
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Demandar per salvar los identificants e senhals dels sites
     .accesskey = r
 forms-exceptions =
     .label = Excepcions…
     .accesskey = x
+forms-generate-passwords =
+    .label = Suggerir e generar de senhals fòrts
+    .accesskey = u
+forms-breach-alerts =
+    .label = Afichar las alèrtas pels senhals dels sites concernits per de pèrdas de donadas
+    .accesskey = A
+forms-breach-alerts-learn-more-link = Ne saber mai
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Emplenar automaticament los identificants e senhals
+    .accesskey = i
 forms-saved-logins =
     .label = Identificants salvats…
     .accesskey = S
@@ -552,6 +802,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Modificar lo senhal principal…
     .accesskey = M
+forms-master-pw-fips-title = Actualament, sètz en mòde FIPS. Lo mòde FIPS necessita un senhal principal pas void.
+forms-master-pw-fips-desc = La modificacion de senhal a pas capitat
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Per crear un senhal màger, picatz vòstras informacions de connexion Windows. Aquò permet de servar la seguretat dels comptes.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = crear un senhal principal
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -603,12 +866,10 @@ sitedata-total-size-calculating = Calcul del pès de las donadas dels sites e de
 #   $unit (String) - Name of the unit (for example: "bytes", "KB")
 sitedata-total-size = Los cookies, lo cache e las donadas dels sites utilizan actualament { $value } { $unit } d’espaci disc.
 sitedata-learn-more = Ne saber mai
-sitedata-keep-until = Las conservar fins a
-    .accesskey = f
-sitedata-keep-until-expire =
-    .label = Expiran
-sitedata-keep-until-closed =
-    .label = { -brand-short-name } es tampat
+sitedata-delete-on-close =
+    .label = Suprimir los cookies e donadas de sites en tampant { -brand-short-name }
+    .accesskey = c
+sitedata-delete-on-close-private-browsing = En mòde de navegacion privada permanent, los cookies e las donadas de sites son totjorn escafats a la tampadura de { -brand-short-name }.
 sitedata-allow-cookies-option =
     .label = Acceptar los cookies e dondas de site
     .accesskey = A
@@ -619,14 +880,14 @@ sitedata-disallow-cookies-option =
 # The list items are the strings named sitedata-block-*-option*.
 sitedata-block-desc = Tipe de contengut blocat
     .accesskey = T
-sitedata-block-trackers-option-recommended =
-    .label = Traçadors tèrces (recomandat)
-sitedata-block-trackers-option =
-    .label = Traçadors tèrces
-sitedata-block-unvisited-option =
-    .label = Cookies dels sites web pas visitats
 sitedata-option-block-trackers =
     .label = Traçadors tèrces
+sitedata-option-block-cross-site-trackers =
+    .label = Traçadors intersites
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Traçadors intersites e de malhums socials
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Los traçadors intersites e de malhums socials e isolar los cookies restants
 sitedata-option-block-unvisited =
     .label = Cookies de sites pas visitats
 sitedata-option-block-all-third-party =
@@ -634,17 +895,17 @@ sitedata-option-block-all-third-party =
 sitedata-option-block-all =
     .label = Totes los cookies (pòt arribar qu’unes sites quitan de foncionar)
 sitedata-clear =
-    .label = Escafar de las donadas…
+    .label = Escafar las donadas…
     .accesskey = s
 sitedata-settings =
     .label = Gerir las donadas…
     .accesskey = G
-sitedata-cookies-exceptions =
-    .label = Excepcions…
-    .accesskey = E
 sitedata-cookies-permissions =
     .label = Gerir las autorizacions…
     .accesskey = a
+sitedata-cookies-exceptions =
+    .label = Gerir las excepcions…
+    .accesskey = x
 
 ## Privacy Section - Address Bar
 
@@ -659,104 +920,104 @@ addressbar-locbar-bookmarks-option =
 addressbar-locbar-openpage-option =
     .label = Onglets dobèrts
     .accesskey = D
+addressbar-locbar-topsites-option =
+    .label = Mai visitats
+    .accesskey = M
 addressbar-suggestions-settings = Cambiar las preferéncias per las suggestions del motor de recèrca
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Blocatge de contengut
-content-blocking-desc = Blocatz de contengut tèrces, tal coma de còdis o de reclamas, que pòdon alentir vòstre navegacion e vos pistar sul Web. Configuratz los paramètres segon vòstra volontat entre proteccion e performancia.
+content-blocking-section-description = Protegissètz vòstra vida privada pendent vòstra navegacion. Blocatz los contenguts invisibles que vos pistan de site en site e dessenhan vòstre perfil. Lo blocatge d’aqueste contengut pòt far venir mai rapid lo cargament de las paginas.
+content-blocking-enhanced-tracking-protection = Proteccion contra lo seguiment renfortida
+content-blocking-section-top-level-description = Los traçadors vos pistan en linha per reculhir d’informacions sus vòstras abituds de navegacion e vòstres interèsses. { -brand-short-name } bloca fòrça d’aqueles elements de seguiment e scripts malvolents.
 content-blocking-learn-more = Ne saber mai
-content-blocking-restore-defaults =
-    .label = Restablir las valors per defaut
-    .accesskey = R
-content-blocking-toggle-on =
-    .tooltiptext = Desactivar lo blocatge de contengut
-content-blocking-toggle-off =
-    .tooltiptext = Activar lo blocatge de contengut
-content-blocking-toggle-label-on = ACTIU
-    .accesskey = A
-content-blocking-toggle-label-off = INACTIU
-    .accesskey = I
-content-blocking-category-label = Seleccionar lo contengut de blocar
-# "Slow" in this instance means "slow to load on the network".
-# FastBlock is a feature that blocks requests to tracking sites if they
-# have not finished loading after a certain threshold of seconds.
-content-blocking-fastblock-slow-loading-trackers-label =
-    .label = Traçadors lents
-    .accesskey = T
-content-blocking-tracking-protection-trackers-label =
-    .label = Traçadors
-    .accesskey = T
-content-blocking-tracking-protection-all-detected-trackers-label =
-    .label = Totes los traçadors detectats
-    .accesskey = T
-content-blocking-tracking-protection-option-always =
-    .label = Totjorn
-    .accesskey = T
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
 content-blocking-setting-standard =
     .label = Standard
     .accesskey = d
+content-blocking-setting-strict =
+    .label = Estricte
+    .accesskey = r
 content-blocking-setting-custom =
     .label = Personalizat
     .accesskey = P
+content-blocking-standard-desc = Equilibri entre proteccion e performança. Permet certans traçadors per que los sites web foncionen corrèctament.
+content-blocking-strict-description = Proteccion renfortida, pòt copar unes sites.
 content-blocking-custom-desc = Causissètz çò que volètz blocar.
 content-blocking-private-trackers = Los traçadors coneguts dins las fenèstras de navegacion privada solament
 content-blocking-third-party-cookies = Cookies de seguiment tèrces
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Estandard
+    .accesskey = d
+enhanced-tracking-protection-setting-strict =
+    .label = Estricte
+    .accesskey = r
+enhanced-tracking-protection-setting-custom =
+    .label = Personalizat
+    .accesskey = P
+
+##
+
+content-blocking-etp-standard-desc = Equilibri entre proteccion e performança. Las pagina cargaràn normalament.
+content-blocking-etp-strict-desc = Proteccion renfortida, pòt copar unes sites o contenguts.
+content-blocking-etp-custom-desc = Causissètz quins traçadors e scripts cal blocar.
+content-blocking-private-windows = Contengut utilizat per pistar dins las fenèstras de navegacion privada
+content-blocking-cross-site-tracking-cookies = Cookies de seguiment entre sites
+content-blocking-cross-site-tracking-cookies-plus-isolate = Los traçadors intersites, e isolar los cookies restants
+content-blocking-social-media-trackers = Traçadors de malhums socials
+content-blocking-all-cookies = Totes los cookies
+content-blocking-unvisited-cookies = Cookies dels sites pas visitats
 content-blocking-all-windows-trackers = Traçadors coneguts dins totas las fenèstras
+content-blocking-all-windows-tracking-content = Contengut utilizat per pistar totas las fenèstras
 content-blocking-all-third-party-cookies = Totes los cookies tèrces
+content-blocking-cryptominers = Minaires de criptomonedas
+content-blocking-fingerprinters = Generadors d’emprentas numericas
 content-blocking-warning-title = Atencion !
-content-blocking-learn-how = Ne saber mai
+content-blocking-warning-description = Lo blocatge del contengut pòt copar qualques sites. Es facil de desactivar lo blocatge pels sites que vos fisatz.
+content-blocking-learn-how = Descobrissètz cossí far
+content-blocking-and-isolating-etp-warning-description = Lo blocatge de traçadors e l’isolacion dels cookies pòdon aver una incidéncia sus las foncionalitats de certans sites. Tornatz cargar una pagina amb los traçadors per cargar tot lo contengut.
+content-blocking-warning-learn-how = M’ensenhar cossí far
+content-blocking-reload-description = Car tornar cargar los onglets per aplicar aquestas modificacions.
+content-blocking-reload-tabs-button =
+    .label = Tornar cargar totes los onglets
+    .accesskey = r
 content-blocking-trackers-label =
     .label = Traçadors
     .accesskey = T
+content-blocking-tracking-content-label =
+    .label = Contengut utilizat pel seguiment
+    .accesskey = t
 content-blocking-tracking-protection-option-all-windows =
     .label = Dins totas las fenèstras
     .accesskey = D
 content-blocking-option-private =
-    .label = Soque las fenèstras privadas
+    .label = Sonque dins las fenèstras privadas
     .accesskey = p
 content-blocking-tracking-protection-change-block-list = Cambiar la lista de blocatge
-content-blocking-third-party-cookies-label =
-    .label = Cookies tèrces
-    .accesskey = C
-content-blocking-change-cookie-settings =
-    .label = Cambiar los paramètres de cookies
-    .accesskey = C
-content-blocking-reject-trackers-block-trackers-option-recommended =
-    .label = Traçadors (recomandat)
-    .accesskey = d
-content-blocking-reject-trackers-block-trackers-option =
-    .label = Traçadors
-    .accesskey = d
-content-blocking-reject-trackers-all-third-parties-option =
-    .label = Totes los cookies tèrces (unes sites pòdon quitar de foncionar)
-    .accesskey = T
 content-blocking-cookies-label =
     .label = Cookies
     .accesskey = C
+content-blocking-expand-section =
+    .tooltiptext = Mai d’informacions
+# Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
+content-blocking-cryptominers-label =
+    .label = Minaires de criptomonedas
+    .accesskey = i
+# Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
+# that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
+content-blocking-fingerprinters-label =
+    .label = Generadors d’emprentas numericas
+    .accesskey = G
 
 ## Privacy Section - Tracking
 
-tracking-header = Proteccion contra lo seguiment
-tracking-desc = La proteccion contra lo seguiment bloca los traçadors en linha que collectan vòstras donadas de navegacion a partir de mantun sites web. <a data-l10n-name="learn-more">Ne saber mai sus la proteccion contra lo seguiment e la proteccion de vòstra privacitat</a>
-tracking-mode-label = Utilizar la proteccion contra lo seguiment per blocar los traçadors coneguts
-tracking-mode-always =
-    .label = Totjorn
-    .accesskey = T
-tracking-mode-private =
-    .label = Sonque las fenèstras privadas
-    .accesskey = q
-tracking-mode-never =
-    .label = Jamai
-    .accesskey = j
-tracking-exceptions =
-    .label = Excepcions…
-    .accesskey = E
-tracking-change-block-list =
-    .label = Cambiar la lista de blocatge…
-    .accesskey = C
 tracking-manage-exceptions =
     .label = Gerir las excepcions…
     .accesskey = x
@@ -767,37 +1028,37 @@ permissions-header = Permissions
 permissions-location = Localizacion
 permissions-location-settings =
     .label = Paramètres…
-    .accesskey = A
+    .accesskey = P
+permissions-xr = Realitat virtuala
+permissions-xr-settings =
+    .label = Paramètres…
+    .accesskey = P
 permissions-camera = Camèra
 permissions-camera-settings =
     .label = Paramètres…
-    .accesskey = c
+    .accesskey = P
 permissions-microphone = Microfòn
 permissions-microphone-settings =
     .label = Paramètres…
-    .accesskey = m
+    .accesskey = P
 permissions-notification = Notificacions
 permissions-notification-settings =
     .label = Paramètres…
-    .accesskey = n
+    .accesskey = P
 permissions-notification-link = Ne saber mai
 permissions-notification-pause =
     .label = Pausar las notificacions fins que { -brand-short-name } reavie
     .accesskey = n
-permissions-block-autoplay-media =
-    .label = Empachar los sites de lançar de mèdias amb lo son
-    .accesskey = E
-permissions-block-autoplay-media-menu = Pels sites que lançan automaticament de son
+permissions-block-autoplay-media2 =
+    .label = Empachar los site de lançar automaticament de sons
+    .accesskey = s
 permissions-block-autoplay-media-exceptions =
     .label = Excepcions…
     .accesskey = E
-autoplay-option-ask =
-    .label = Totjorn demandar
-autoplay-option-allow =
-    .label = Autorizar la lectura automatica
-autoplay-option-dont =
-    .label = Defendre la lectura automatica
-permissions-autoplay-link = Ne saber mai
+permissions-autoplay = Lectura automatica
+permissions-autoplay-settings =
+    .label = Paramètres…
+    .accesskey = P
 permissions-block-popups =
     .label = Blocar las fenèstras sorgissentas
     .accesskey = B
@@ -820,6 +1081,8 @@ permissions-a11y-privacy-link = Ne saber mai
 collection-header = Recuèlh de donadas e utilizacion per { -brand-short-name }
 collection-description = Nos esforçam de vos daissar causir e reculhir sonque las informacions qu'avèm besonh per provesir e melhorar { -brand-short-name } per tot lo mond. Sempre demandam vòstra permission abans de recebre de donadas personalas.
 collection-privacy-notice = Politica de confidencialitat
+collection-health-report-telemetry-disabled = Autorizatz pas mai { -vendor-short-name } a capturar de donadas tecnicas e d’interaccion. Totas las donadas passadas seràn suprimidas d’aquí 30 jorns.
+collection-health-report-telemetry-disabled-link = Ne saber mai
 collection-health-report =
     .label = Autorizar { -brand-short-name } a mandar de donadas tecnicas e d’interaccions a { -vendor-short-name }
     .accesskey = A
@@ -833,10 +1096,6 @@ addon-recommendations-link = Ne saber mai
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Lo rapòrt de donadas es desactivat per aquela configuracion de compilacion
-collection-browser-errors =
-    .label = Autorizar { -brand-short-name } a enviar los rapòrts d’error (inclús los messatges d’error) del navegador a { -vendor-short-name }
-    .accesskey = u
-collection-browser-errors-link = Ne saber mai
 collection-backlogged-crash-reports =
     .label = Permetre a { -brand-short-name } d’enviar los rapòrts de bugs en espèra
     .accesskey = P
@@ -855,7 +1114,7 @@ security-enable-safe-browsing =
 security-enable-safe-browsing-link = Ne saber mai
 security-block-downloads =
     .label = Blocar los telecargaments perilhoses
-    .accesskey = D
+    .accesskey = B
 security-block-uncommon-software =
     .label = Vos avisar dels logicials pas desirats e pauc coneguts
     .accesskey = C
@@ -893,6 +1152,11 @@ space-alert-over-5gb-pref-button =
             [windows] O
            *[other] D
         }
+space-alert-over-5gb-message =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } manca d’espaci disc. Lo contengut dels sites web poiriá s’afichar mal. Podètz escafar las donadas de site enregistradas dins Opcions > Vida privada e seguretat > Cookies e donadas de sites.
+       *[other] { -brand-short-name } manca d’espaci disc. Lo contengut dels sites web poiriá s’afichar mal. Podètz escafar las donadas de site enregistradas dins Preferéncias > Vida privada e seguretat > Cookies e donadas de sites.
+    }
 space-alert-under-5gb-ok-button =
     .label = Òc, plan comprés
     .accesskey = O
@@ -902,7 +1166,7 @@ space-alert-under-5gb-message = { -brand-short-name } a pas mai d'espaci disc. L
 
 desktop-folder-name = Burèu
 downloads-folder-name = Telecargaments
-choose-download-folder-title = Causissètz lo dorsièr de telecargament :
+choose-download-folder-title = Causissètz lo dossièr de telecargament :
 # Variables:
 #   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
 save-files-to-cloud-storage =

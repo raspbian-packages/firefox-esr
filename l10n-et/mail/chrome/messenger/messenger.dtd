@@ -172,7 +172,6 @@
 <!ENTITY compactVersion.accesskey "p">
 <!ENTITY folderPaneBar.label "Kaustade paneeli tööriistariba">
 <!ENTITY folderPaneBar.accesskey "p">
-<!ENTITY folderModeSelector.label "Kaustade vaated">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Sortimine">
@@ -587,6 +586,7 @@
 <!ENTITY fileButton.tooltip "Salvesta valitud kiri">
 <!ENTITY archiveButton.tooltip "Arhiveeri valitud kirjad">
 <!ENTITY openConversationButton.tooltip "Kuva valitud kirja vestlust">
+<!ENTITY openMsgConversationButton.tooltip "Kuva valitud kirja vestlust">
 <!ENTITY nextButton.tooltip "Kuva järgmist lugemata kirja">
 <!ENTITY nextMsgButton.tooltip "Kuva järgmist kirja">
 <!ENTITY previousButton.tooltip "Kuva eelmist lugemata kirja">
@@ -605,6 +605,7 @@
 <!ENTITY tagButton.tooltip "Sildista kirju">
 <!ENTITY compactButton.tooltip "Eemalda kustutatud kirjad valitud kaustast">
 <!ENTITY appmenuButton1.tooltip "Kuva rakenduse &brandShortName; menüüd">
+<!ENTITY addonsButton.tooltip "Halda oma lisasid">
 
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Edasta lihttekstina">
@@ -705,6 +706,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Salvesta otsing kaustana...">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Vali kõik kirjad">
 <!ENTITY threadColumn.label "Lõim">
 <!ENTITY fromColumn.label "Saatja">
 <!ENTITY recipientColumn.label "Saaja">
@@ -728,6 +730,7 @@
 
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Vali kuvatavad veerud">
+<!ENTITY selectColumn.tooltip "Lülita kõikide kirjade valimist">
 <!ENTITY threadColumn2.tooltip "Kuva kirju lõimedena">
 <!ENTITY fromColumn2.tooltip "Sordi saatja järgi">
 <!ENTITY recipientColumn2.tooltip "Sordi adressaadi järgi">
@@ -813,13 +816,6 @@
 <!ENTITY contextPrintPreview.label "Printimise eelvaade">
 <!ENTITY contextPrintPreview.accesskey "r">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Lähtesta tulbad">
-
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -859,7 +855,6 @@
      "File here" option for the move to/copy to widget.
   -->
 <!ENTITY columnPicker.thisFolder.label "See kaust">
-
 
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Esita">
@@ -976,3 +971,4 @@
 <!ENTITY dockOptions.label              "Rakenduse ikooni sätted…">
 <!ENTITY writeNewMessageDock.label      "Kirjuta uus kiri">
 <!ENTITY openAddressBookDock.label      "Ava aadressiraamat">
+

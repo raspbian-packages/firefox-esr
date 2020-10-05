@@ -5,49 +5,70 @@
 permissions-window =
     .title = Administrador de imágenes
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Dirección del sitio web
     .accesskey = d
+
 permissions-block =
     .label = Bloquear
     .accesskey = B
+
 permissions-session =
     .label = Permitir durante la sesión
     .accesskey = s
+
 permissions-allow =
     .label = Permitir
     .accesskey = P
+
 permissions-site-name =
     .label = Sitio web
+
 permissions-status =
     .label = Estado
+
 permissions-remove =
     .label = Eliminar sitio web
     .accesskey = R
+
 permissions-remove-all =
     .label = Eliminar todos los sitios web
     .accesskey = e
+
 permissions-button-cancel =
     .label = Cancelar
     .accesskey = C
+
 permissions-button-ok =
     .label = Guardar cambios
     .accesskey = G
+
+permissions-autoplay-menu = Predeterminado para todos los sitios web:
+
 permissions-searchbox =
     .placeholder = Buscar sitio web
+
+permissions-capabilities-autoplay-allow =
+    .label = Permitir audio y video
+permissions-capabilities-autoplay-block =
+    .label = Bloquear audio
+permissions-capabilities-autoplay-blockall =
+    .label = Bloquear audio y video
+
 permissions-capabilities-allow =
     .label = Permitir
 permissions-capabilities-block =
     .label = Bloquear
 permissions-capabilities-prompt =
     .label = Preguntar siempre
+
 permissions-capabilities-listitem-allow =
     .value = Permitir
 permissions-capabilities-listitem-block =
     .value = Bloquear
-permissions-capabilities-listitem-allow-first-party =
-    .value = Permitir sólo la primera parte
 permissions-capabilities-listitem-allow-session =
     .value = Permitir para la sesión
 
@@ -58,14 +79,15 @@ permissions-invalid-uri-label = Introduzca un nombre de servidor válido
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = Excepciones - Protección de rastreo
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = Tienes deshabilitada la protección de rastreo en estos sitios web.
 permissions-exceptions-content-blocking-window =
     .title = Excepciones - Bloqueo de contenido
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Has deshabilitado el bloqueo de contenido en estos sitios web.
+
+permissions-exceptions-etp-window =
+    .title = Excepciones a la protección antirrastreo mejorada
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Has desactivado las protecciones en estos sitios.
 
 ## Exceptions - Cookies
 
@@ -102,6 +124,13 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = Puedes especificar qué sitios tienen permitido o prohibido reproducir automáticamente contenido multimedia con sonido. Ingresa la dirección exacta del sitio que quieras administrar y después haz clic en Bloquear o Permitir.
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = Configuración. Reproducción automática
+    .style = { permissions-window.style }
+permissions-site-autoplay-desc = Puedes administrar aquí los sitios que no siguen la configuración predeterminada de reproducción automática.
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -121,6 +150,16 @@ permissions-site-location-desc = Los siguientes sitios web han solicitado acceso
 permissions-site-location-disable-label =
     .label = Bloquear nuevas solicitudes preguntando para acceder a tu ubicación
 permissions-site-location-disable-desc = Esto evitará que cualquier sitio web que no esté listado solicite permiso para acceder a tu ubicación. Bloqueando el acceso a tu ubicación pueden fallar algunas características de los sitios web.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Ajustes - Permisos de realidad virtual
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Los siguientes sitios web han solicitado acceder a tus dispositivos de realidad virtual. Puedes especificar qué sitios web tienen permitido acceder a tus dispositivos de realidad virtual. También puedes bloquear nuevas solicitudes que quieran acceder a tus dispositivos de realidad virtual.
+permissions-site-xr-disable-label =
+    .label = Bloquear nuevas solicitudes que quieran acceder a tus dispositivos de realidad virtual
+permissions-site-xr-disable-desc = Este prevendrá que cualquier sitio web que no esté en la lista solicite permiso para acceder a tus dispositivos de realidad virtual. Bloquear el accesos a tus dispositivos de realidad virtual puede estropear algunas características de los sitios web.
 
 ## Site Permissions - Camera
 

@@ -9,6 +9,7 @@ forward = Înainte
 reload = Reîncarcă
 home = Pagina de start
 fullscreen = Ecran complet
+touchbar-fullscreen-exit = Ieși din modul ecran complet
 find = Caută
 new-tab = Filă nouă
 add-bookmark = Adaugă marcaj
@@ -18,3 +19,21 @@ reader-view = Mod de lectură
 open-location = Caută sau introdu adresa
 share = Distribuie
 close-window = Închide fereastra
+open-sidebar = Bare laterale
+
+# This string describes shortcuts for search.
+search-popover = Comenzi rapide pentru căutări
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Caută în:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Marcaje
+search-history = Istoric
+search-opentabs = File deschise
+search-tags = Etichete
+search-titles = Titluri
+
+##
+

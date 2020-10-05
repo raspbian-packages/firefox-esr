@@ -17,17 +17,36 @@ extensions-name = ਨਾਂ
 extensions-enabled = ਚਾਲੂ ਹੈ
 extensions-version = ਵਰਜ਼ਨ
 extensions-id = ID
+security-software-title = ਸੁਰੱਖਿਆ ਸਾਫਟਵੇਅਰ
+security-software-type = ਕਿਸਮ
+security-software-name = ਨਾਂ
+security-software-antivirus = ਐਂਟੀਵਾਈਰਸ
+security-software-antispyware = ਐਂਟੀਸਪਾਈਵੇਅਰ
+security-software-firewall = ਫਾਇਰਵਾਲ
 features-title = { -brand-short-name } ਫ਼ੀਚਰ
 features-name = ਨਾਂ
 features-version = ਵਰਜ਼ਨ
 features-id = ID
+processes-title = ਰਿਮੋਟ ਪਰੋਸੈਸ
+processes-type = ਕਿਸਮ
+processes-count = ਗਿਣਤੀ
 app-basics-title = ਐਪਲੀਕੇਸ਼ਨ ਬੇਸਿਕ
 app-basics-name = ਨਾਂ
 app-basics-version = ਵਰਜ਼ਨ
 app-basics-build-id = ਬਿਲਡ ID
+app-basics-distribution-id = ਵੰਡ ਆਈ.ਡੀ.
 app-basics-update-channel = ਅੱਪਡੇਟ ਚੈਨਲ
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] ਅੱਪਡੇਟ ਫੋਲਡਰ
+       *[other] ਅੱਪਡੇਟ ਫੋਲਡਰ
+    }
 app-basics-update-history = ਅੱਪਡੇਟ ਅਤੀਤ
 app-basics-show-update-history = ਅੱਪਡੇਟ ਅਤੀਤ ਨੂੰ ਵੇਖਾਓ
+# Represents the path to the binary used to start the application.
+app-basics-binary = ਐਪਲੀਕੇਸ਼ਨ ਬਾਈਨਰੀ
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] ਪਰੋਫਾਈਲ ਡਾਇਰੈਕਟਰੀ
@@ -41,9 +60,12 @@ app-basics-memory-use = ਮੈਮੋਰੀ ਵਰਤੋਂ
 app-basics-performance = ਕਾਰਗੁਜ਼ਾਰੀ
 app-basics-service-workers = ਰਜਿਸਟਰ ਕੀਤੇ Service Workers
 app-basics-profiles = ਪਰੋਫਾਈਲ
+app-basics-launcher-process-status = ਲਾਂਚਰ ਪਰੋਸੈਸ
 app-basics-multi-process-support = ਬਹੁ-ਕਾਰਜ ਵਿੰਡੋਜ਼
-app-basics-process-count = ਵੈੱਬ ਸਮੱਗਰੀ ਕਾਰਵਾਈ
-app-basics-key-google = Google Key
+app-basics-remote-processes-count = ਰਿਮੋਟ ਪਰੋਸੈਸ
+app-basics-enterprise-policies = ਇੰਟਰਪ੍ਰਾਈਜ਼ ਨੀਤੀਆਂ
+app-basics-location-service-key-google = ਗੂਗਲ ਟਿਕਾਣਾ ਸੇਵਾ ਕੁੰਜੀ
+app-basics-safebrowsing-key-google = ਗੂਗਲ ਸੇਫ਼-ਬਰਾਊਜਿੰਗ ਕੁੰਜੀ
 app-basics-key-mozilla = Mozilla Location Service Key
 app-basics-safe-mode = ਸੁਰੱਖਿਅਤ ਮੋਡ
 show-dir-label =
@@ -69,6 +91,10 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = ਫ਼ੈਸਲਾ ਲਾਗ
 graphics-crash-guards-title = ਕਰੈਸ਼ ਗਾਰਡ ਆਯੋਗ ਫੀਚਰ
 graphics-workarounds-title = ਜੁਗਾੜ
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = ਵਿੰਡੋ ਪਰੋਟੋਕਾਲ
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = ਡੈਸਕਟਾਪ ਇੰਵਾਇਰਨਮੈਂਟ
 place-database-title = ਥਾਵਾਂ ਦਾ ਡਾਟਾਬੇਸ
 place-database-integrity = ਇਕਸਾਰਤਾ
 place-database-verify-integrity = ਇਕਸਾਰਤਾ ਨੂੰ ਤਸਦੀਕ ਕਰੋ
@@ -78,6 +104,7 @@ a11y-title = ਅਸੈਸਬਿਲਟੀ
 a11y-activated = ਸਰਗਰਮ ਹੈ
 a11y-force-disabled = ਅਸੈਸਬਿਲਟੀ ਰੋਕੋ
 a11y-handler-used = ਵਰਤੇ ਗਏ ਅਸੈਸਬਲ ਹੈਂਡਲਰ
+a11y-instantiator = ਅਸੈਸਬਿਲਟੀ ਇੰਸਟੈਂਟੀਏਟਰ
 library-version-title = ਲਾਇਬਰੇਰੀ ਵਰਜ਼ਨ
 copy-text-to-clipboard-label = ਟੈਕਸਟ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰੋ
 copy-raw-data-to-clipboard-label = ਰਾਅ ਡਾਟਾ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰੋ
@@ -92,6 +119,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Arguments
 safe-mode-title = ਸੁਰੱਖਿਅਤ ਮੋਡ ਵਰਤ ਕੇ ਦੇਖੋ
 restart-in-safe-mode-label = …ਐਡ-ਆਨ ਬੰਦ ਕਰਕੇ ਮੁੜ-ਚਾਲੂ ਕਰੋ
+clear-startup-cache-title = ਸ਼ੁਰੂਆਤੀ ਕੈਸ਼ ਨੂੰ ਸਾਫ਼ ਕਰਕੇ ਕੋਸ਼ਿਸ਼ ਕਰੋ
+clear-startup-cache-label = ਸ਼ੁਰੂਆਤੀ ਕੈਸ਼ ਸਾਫ਼ ਕਰੋ…
+startup-cache-dialog-title = ਸ਼ੁਰੂਆਤੀ ਕੈਸ਼ ਸਾਫ਼ ਕਰੋ
+startup-cache-dialog-body = ਸ਼ੁਰੂਆਤੀ ਕੈਸ਼ ਨੂੰ ਸਾਫ਼ ਕਰਨ ਲਈ { -brand-short-name } ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ। ਇਹ ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਨਹੀਂ ਬਦਲੇਗਾ ਜਾਂ ਤੁਹਾਡੇ ਵਲੋਂ { -brand-short-name } ਵਿੱਚ ਜੋੜੀਆਂ ਇਕਸਟੈਨਸ਼ਨਾਂ ਨੂੰ ਨਹੀਂ ਹਟਾਏਗਾ।
+restart-button-label = ਮੁੜ-ਚਾਲੂ ਕਰੋ
+
+## Media titles
+
+audio-backend = ਆਡੀਓ ਬੈਕਐਂਡ
+max-audio-channels = ਵੱਧ ਤੋਂ ਵੱਧ ਚੈਨਲ
+channel-layout = ਤਰਜੀਹੀ ਚੈਨਲ ਲੇਆਉਟ
+sample-rate = ਤਰਜੀਹੀ ਸੈਂਪਲ ਰੇਟ
+roundtrip-latency = ਰਾਊਂਡ-ਟਰਿੱਪ ਦੇਰੀ (ਸਟੈਂਡਰ ਡੇਵੀਏਸ਼ਨ)
 media-title = ਮੀਡੀਆ
 media-output-devices-title = ਆਉਟਪੁ਼ਟ ਡਿਵਾਈਸ
 media-input-devices-title = ਇਨਪੁਟ ਡਿਵਾਈਸ
@@ -104,6 +144,34 @@ media-device-format = ਫਾਰਮੈਟ
 media-device-channels = ਚੈਨਲ
 media-device-rate = ਰੇਟ
 media-device-latency = ਦੇਰੀ
+media-capabilities-title = ਮੀਡਿਆ ਸਮਰੱਥਾਵਾਂ
+
+##
+
+intl-title = ਕੌਮਾਂਤਰੀਕਰਨ ਤੇ ਇਲਾਕਾਈਕਰਨ
+intl-app-title = ਐਪਲੀਕੇਸ਼ਨ ਸੈਟਿੰਗਾਂ
+intl-locales-requested = ਮੰਗ ਕੀਤੀ ਬੋਲੀ
+intl-locales-available = ਉਪਲਬਧ ਬੋਲੀਆਂ
+intl-locales-supported = ਐਪ ਬੋਲੀਆਂ
+intl-locales-default = ਮੂਲ ਬੋਲੀ
+intl-os-title = ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ
+intl-os-prefs-system-locales = ਸਿਸਟਮ ਬੋਲੀਆਂ
+intl-regional-prefs = ਖੇਤਰੀ ਪਸੰਦਾਂ
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-accepting-connections = ਮਨਜ਼ੂਰ ਕੀਤੇ ਕਨੈਕਸ਼ਨ
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -159,6 +227,8 @@ hardware-h264 = ਹਾਰਡਵੇਅਰ H264 ਡੀਕੋਡਿੰਗ
 main-thread-no-omtc = ਮੁੱਖ ਥਰਿੱਡ, OMTC ਨਹੀਂ
 yes = ਹਾਂ
 no = ਨਹੀਂ
+unknown = ਅਣਪਛਾਤਾ
+virtual-monitor-disp = ਵਰਚੁਅਲ ਮਾਨੀਟਰ ਡਿਸਪਲੇਅ
 
 ## The following strings indicate if an API key has been found.
 ## In some development versions, it's expected for some API keys that they are
@@ -166,12 +236,15 @@ no = ਨਹੀਂ
 
 found = ਲੱਭਾ
 missing = ਗੁੰਮ
+gpu-process-pid = GPUProcessPid
+gpu-process = GPUProcess
 gpu-description = ਵਰਣਨ
 gpu-vendor-id = ਵੇਂਡਰ ID
 gpu-device-id = ਜੰਤਰ ID
 gpu-subsys-id = ਸਬ-ਸਿਸਟਮ ID
 gpu-drivers = ਡਰਾਇਵਰ
 gpu-ram = ਰੈਮ
+gpu-driver-vendor = ਡਰਾਇਵਰ ਵੇਂਡਰ
 gpu-driver-version = ਡਰਾਇਵਰ ਵਰਜ਼ਨ
 gpu-driver-date = ਡਰਾਇਵਰ ਮਿਤੀ
 gpu-active = ਸਰਗਰਮ
@@ -195,17 +268,17 @@ unknown-failure = ਪਾਬੰਦੀਸ਼ੁਦਾ; ਅਸਫ਼ਲਤਾ ਕੋਡ {
 d3d11layers-crash-guard = D3D11 ਕੰਪੋਜ਼ਿਟਰ
 d3d11video-crash-guard = D3D11 ਵੀਡੀਓ ਡੀਕੋਡਰ
 d3d9video-crash-buard = D3D9 ਵੀਡੀਓ ਡੀਕੋਡਰ
+d3d9video-crash-guard = D3D9 ਵੀਡੀਓ ਡੀਕੋਡਰ
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX ਵੀਡਿਓ ਡੀਕੋਡਰ
 reset-on-next-restart = ਅਗਲੀ ਵਾਰ ਮੁੜ-ਚਲਾਉਣ ਉੱਤੇ ਮੁੜ-ਸੈੱਟ ਕਰੋ
 gpu-process-kill-button = Terminate GPU Process
+gpu-device-reset = ਡਿਵਾਈਸ ਮੁੜ-ਸੈੱਟ ਕਰੋ
 gpu-device-reset-button = ਡਿਵਾਈਸ ਮੁੜ-ਸੈੱਟ ਲਈ ਪਲਟੋ
 uses-tiling = ਟਿਲਿੰਗ ਵਰਤਦਾ ਹੈ
 off-main-thread-paint-enabled = ਮੁੱਖ ਥਰਿੱਡ ਪੇਂਟਿੰਗ ਸਮਰੱਥ ਨੂੰ ਬੰਦ ਕਰੋ
 off-main-thread-paint-worker-count = ਮੁੱਖ ਥਰਿੱਡ ਪੇਂਟਿੰਗ ਵਰਕਰ ਗਿਣਤੀ ਬੰਦ ਕਰੋ
-audio-backend = ਆਡੀਓ ਬੈਕਐਂਡ
-max-audio-channels = ਵੱਧ ਤੋਂ ਵੱਧ ਚੈਨਲ
-channel-layout = ਤਰਜੀਹੀ ਚੈਨਲ ਲੇਆਉਟ
-sample-rate = ਤਰਜੀਹੀ ਸੈਂਪਲ ਰੇਟ
+target-frame-rate = ਟੀਚਾ ਫਰੇਮ ਦਰ
 min-lib-versions = ਮੰਗਿਆ ਗਿਆ ਘੱਟੋ-ਘੱਟ ਵਰਜਨ
 loaded-lib-versions = ਵਰਤੋਂ ਵਿੱਚ ਵਰਜਨ
 has-seccomp-bpf = Seccomp-BPF (ਸਿਸਟਮ ਕਾਲ ਫਿਲਟਰ ਕਰਨਾ)
@@ -219,6 +292,15 @@ effective-content-sandbox-level = ਪ੍ਰਭਾਵੀ ਸਮੱਗਰੀ ਕ�
 sandbox-proc-type-content = ਸਮੱਗਰੀ
 sandbox-proc-type-file = ਫ਼ਾਇਲ ਸਮੱਗਰੀ
 sandbox-proc-type-media-plugin = ਮੀਡੀਆ ਪਲੱਗਇਨ
+sandbox-proc-type-data-decoder = ਡਾਟਾ ਡੀਕੋਡਰ
+startup-cache-title = ਸ਼ੁਰੂਆਤੀ ਕੈਸ਼
+startup-cache-disk-cache-path = ਡਿਸਕ ਕੈਸ਼ ਮਾਰਗ
+startup-cache-ignore-disk-cache = ਡਿਸਕ ਕੈਸ਼ ਅਣਡਿੱਠਾ ਕਰੋ
+startup-cache-wrote-to-disk-cache = ਡਿਸਕ ਕੈਸ਼ ਉੱਤੇ ਲਿਖੋ
+launcher-process-status-0 = ਸਮਰੱਥ ਹੈ
+launcher-process-status-1 = ਅਸਫ਼ਲਤਾ ਕਰਕੇ ਅਸਮਰੱਥ ਹੈ
+launcher-process-status-2 = ਧੱਕੇ ਨਾਲ ਅਸਮਰੱਥ ਕੀਤਾ
+launcher-process-status-unknown = ਅਣਪਛਾਤੀ ਹਾਲਤ
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -247,3 +329,6 @@ touch-warning = ਗ਼ੈਰ-ਸਹਾਇਕ ਪਸੰਦ ਕਰਕੇ ਅਸਿ
 
 ## Strings representing the status of the Enterprise Policies engine.
 
+policies-inactive = ਨਾ-ਸਰਗਰਮ
+policies-active = ਸਰਗਰਮ
+policies-error = ਗ਼ਲਤੀ

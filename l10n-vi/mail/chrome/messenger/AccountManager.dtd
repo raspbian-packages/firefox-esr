@@ -4,7 +4,11 @@
 
 <!-- extracted from AccountManager.xul -->
 
+<!-- extracted from AccountManager.xhtml -->
+
 <!ENTITY accountManagerTitle.label "Cài đặt tài khoản">
+
+<!ENTITY  accountManagerCloseButton.label "Đóng">
 
 <!ENTITY accountActionsButton.label "Hành động tài khoản">
 <!ENTITY accountActionsButton.accesskey "A">
@@ -18,10 +22,12 @@
 <!ENTITY addOtherAccountButton.accesskey "O">
 <!ENTITY setDefaultButton.label "Đặt làm mặc định">
 <!ENTITY setDefaultButton.accesskey "D">
-<!ENTITY removeButton.label "Xoá tài khoản">
+<!ENTITY removeButton.label "Xóa tài khoản">
 <!ENTITY removeButton.accesskey "R">
 
 <!-- AccountManager.xul -->
+
+<!-- AccountManager.xhtml -->
 <!-- LOCALIZATION NOTE : this is part of an inline-style attribute on the account
      setting dialog, which specifies the width and height in em units of the dialog.
      Localizers ONLY can increase these widths if they are having difficulty getting

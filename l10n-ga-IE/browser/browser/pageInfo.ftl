@@ -4,18 +4,22 @@
 
 page-info-window =
     .style = width: 600px; min-height: 550px;
+
 copy =
     .key = C
 menu-copy =
     .label = Cóipeáil
     .accesskey = C
+
 select-all =
     .key = A
 menu-select-all =
     .label = Roghnaigh Uile
     .accesskey = U
-close-window =
-    .key = A
+
+close-dialog =
+    .key = w
+
 general-tab =
     .label = Ginearálta
     .accesskey = G
@@ -39,6 +43,7 @@ general-meta-name =
     .label = Ainm
 general-meta-content =
     .label = Ábhar
+
 media-tab =
     .label = Meáin
     .accesskey = M
@@ -68,11 +73,13 @@ media-save-image-as =
     .accesskey = l
 media-preview =
     .value = Réamhamharc na Meán:
+
 perm-tab =
     .label = Ceadanna
     .accesskey = C
 permissions-for =
     .value = Ceadanna le haghaidh:
+
 security-tab =
     .label = Slándáil
     .accesskey = S
@@ -93,13 +100,22 @@ security-view-identity-validity =
     .value = In éag ar:
 security-view-privacy =
     .value = Príobháideachas agus Stair
+
 security-view-privacy-history-value = Ar thug mé cuairt ar an suíomh seo roimh inniu?
+security-view-privacy-sitedata-value = An bhfuil an suíomh seo ag stóráil faisnéise ar mo ríomhaire?
+
+security-view-privacy-clearsitedata =
+    .label = Glan na Fianáin agus Sonraí Suímh
+    .accesskey = G
+
 security-view-privacy-passwords-value = An bhfuil focail fhaire sábháilte agam le haghaidh an tsuímh seo?
+
 security-view-privacy-viewpasswords =
     .label = Taispeáin Focail Fhaire a Sábháladh
     .accesskey = S
 security-view-technical =
     .value = Mionsonraí Teicniúla
+
 help-button =
     .label = Cabhair
 
@@ -109,8 +125,16 @@ help-button =
 ##   $value (number) - Amount of data being stored
 ##   $unit (string) - The unit of data being stored (Usually KB)
 
+security-site-data-cookies = Tá, fianáin agus { $value }{ $unit } de shonraí suímh
+security-site-data-only = Tá, { $value }{ $unit } de shonraí suímh
+
+security-site-data-cookies-only = Tá, fianáin
+security-site-data-no = Níl
+
 image-size-unknown = Anaithnid
 not-set-verified-by = Gan sonrú
+page-info-not-specified =
+    .value = Gan sonrú
 not-set-alternative-text = Gan sonrú
 not-set-date = Gan sonrú
 media-img = Íomhá
@@ -126,6 +150,7 @@ media-video = Fís
 media-audio = Fuaim
 saved-passwords-yes = Tá
 saved-passwords-no = Níl
+
 no-page-title =
     .value = Leathanach gan Teideal:
 general-quirks-mode =
@@ -133,18 +158,79 @@ general-quirks-mode =
 general-strict-mode =
     .value = Mód oiriúna le caighdeáin
 security-no-owner = Ní sholáthraíonn an suíomh seo faisnéis maidir lena úinéirí.
+page-info-security-no-owner =
+    .value = Ní sholáthraíonn an suíomh seo faisnéis maidir lena úinéirí.
 media-select-folder = Roghnaigh Fillteán a Sábhálfar na hÍomhánna Ann
 media-unknown-not-cached =
     .value = Anaithnid (gan taisceadh)
 permissions-use-default =
     .label = Úsáid Réamhshocrú
 security-no-visits = Níl
+
+# This string is used to display the number of meta tags
+# in the General Tab
+# Variables:
+#   $tags (number) - The number of meta tags
+general-meta-tags =
+    .value =
+        { $tags ->
+            [one] Meta (clib amháin)
+            [two] Meta ({ $tags } chlib)
+            [few] Meta ({ $tags } chlib)
+            [many] Meta ({ $tags } gclib)
+           *[other] Meta ({ $tags } clib)
+        }
+
+# This string is used to display the number of times
+# the user has visited the website prior
+# Variables:
+#   $visits (number) - The number of previous visits
+security-visits-number =
+    { $visits ->
+        [0] Níl
+        [one] Tá, uair amháin
+        [two] Tá, { $visits } uair
+        [few] Tá, { $visits } uaire
+        [many] Tá, { $visits } n-uaire
+       *[other] Tá, { $visits } uair
+    }
+
+# This string is used to display the size of a media file
+# Variables:
+#   $kb (number) - The size of an image in Kilobytes
+#   $bytes (number) - The size of an image in Bytes
+properties-general-size =
+    .value =
+        { $bytes ->
+            [one] { $kb } KB ({ $bytes } beart)
+            [two] { $kb } KB ({ $bytes } beart)
+            [few] { $kb } KB ({ $bytes } beart)
+            [many] { $kb } KB ({ $bytes } beart)
+           *[other] { $kb } KB ({ $bytes } beart)
+        }
+
+# This string is used to display the type and number
+# of frames of a animated image
+# Variables:
+#   $type (string) - The type of a animated image
+#   $frames (number) - The number of frames in an animated image
+media-animated-image-type =
+    .value =
+        { $frames ->
+            [one] Íomhá { $type } (beoite, { $frames } fhráma)
+            [two] Íomhá { $type } (beoite, { $frames } fhráma)
+            [few] Íomhá { $type } (beoite, { $frames } fhráma)
+            [many] Íomhá { $type } (beoite, { $frames } bhfráma)
+           *[other] Íomhá { $type } (beoite, { $frames } fráma)
+        }
+
 # This string is used to display the type of
 # an image
 # Variables:
 #   $type (string) - The type of an image
 media-image-type =
     .value = Íomhá { $type }
+
 # This string is used to display the size of a scaled image
 # in both scaled and unscaled pixels
 # Variables:
@@ -154,17 +240,20 @@ media-image-type =
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
     .value = { $dimx } picteilín × { $dimy } picteilín (scálaithe go { $scaledx } picteilín × { $scaledy } picteilín)
+
 # This string is used to display the size of an image in pixels
 # Variables:
 #   $dimx (number) - The horizontal size of an image
 #   $dimy (number) - The vertical size of an image
 media-dimensions =
     .value = { $dimx }pct × { $dimy }pct
+
 # This string is used to display the size of a media
 # file in kilobytes
 # Variables:
 #   $size (number) - The size of the media file in kilobytes
 media-file-size = { $size } kB
+
 # This string is used to display the website name next to the
 # "Block Images" checkbox in the media tab
 # Variables:
@@ -172,6 +261,7 @@ media-file-size = { $size } kB
 media-block-image =
     .label = Cuir Cosc ar Íomhánna ó { $website }
     .accesskey = B
+
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:

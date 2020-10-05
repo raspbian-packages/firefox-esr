@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Kode kesalahan: <a data-l10n-name="error-code-link
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Situs web membuktikan identitas mereka melalui sertifikat, yang diterbitkan oleh pewenang otoritas. Sebagian besar peramban tidak lagi memercayai sertifikat yang diterbitkan oleh GeoTrust, RapidSSL, Symantec, Thawte, dan VeriSign. { $hostname } menggunakan sertifikat dari salah satu pewenang ini sehingga identitas situs web tidak dapat dibuktikan.
 cert-error-symantec-distrust-admin = Anda mungkin dapat memberitahu administrator situs web tentang masalah ini.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
+cert-error-details-cert-chain-label = Rangkaian sertifikat:
+open-in-new-window-for-csp-or-xfo-error = Buka Situs di Jendela Baru
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Untuk melindungi keamanan Anda, { $hostname } tidak akan mengizinkan { -brand-short-name } untuk menampilkan laman jika situs lain telah menyematkannya. Untuk melihat laman ini, Anda harus membukanya di jendela baru.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Tidak dapat tersambung
+deniedPortAccess-title = Penggunaan alamat ini dibatasi
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm. Kami kesulitan menemukan situsnya.
+fileNotFound-title = Berkas tidak ditemukan
+fileAccessDenied-title = Akses terhadap berkas ditolak
+generic-title = Ups.
+captivePortal-title = Masuk ke jaringan
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm. Alamat tersebut tampaknya tidak benar.
+netInterrupt-title = Sambungan terputus
+notCached-title = Dokumen Kedaluwarsa
+netOffline-title = Mode luring
+contentEncodingError-title = Kesalahan Pengodean Isi (Content Encoding)
+unsafeContentType-title = Jenis Berkas Tidak Aman
+netReset-title = Sambungan diputus
+netTimeout-title = Tenggang waktu tersambung habis
+unknownProtocolFound-title = Alamat tidak dipahami
+proxyConnectFailure-title = Server proksi menolak sambungan
+proxyResolveFailure-title = Tidak dapat menemukan server proksi
+redirectLoop-title = Laman tidak teralihkan dengan benar
+unknownSocketType-title = Jawaban yang tidak diharapkan dari server
+nssFailure2-title = Sambungan Aman Gagal
+cspBlocked-title = Diblokir oleh Kebijakan Keamanan Konten
+xfoBlocked-title = Diblokir oleh Kebijakan X-Frame-Options
+csp-xfo-error-title = { -brand-short-name } Tidak Dapat Membuka Laman Ini
+corruptedContentError-title = Galat Konten Rusak
+remoteXUL-title = XUL Jarak Jauh
+sslv3Used-title = Gagal Tersambung dengan Aman
+inadequateSecurityError-title = Sambungan Anda tidak aman
+blockedByPolicy-title = Laman Diblokir
+clockSkewError-title = Jam komputer Anda salah
+networkProtocolError-title = Protokol Jaringan Bermasalah
+nssBadCert-title = Peringatan: Potensi Risiko Keamanan Menghadang
+nssBadCert-sts-title = Tidak Tersambung: Dugaan Masalah Keamanan
+certerror-mitm-title = Perangkat Lunak Menghalangi { -brand-short-name } untuk Tersambung dengan Aman ke Situs Ini

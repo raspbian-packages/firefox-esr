@@ -31,7 +31,10 @@ app-basics-title = Сведения о приложении
 app-basics-name = Имя
 app-basics-version = Версия
 app-basics-build-id = ID сборки
+app-basics-distribution-id = ID дистрибутива
 app-basics-update-channel = Канал обновления
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Каталог обновления
@@ -56,7 +59,6 @@ app-basics-service-workers = Зарегистрированные Service Worker
 app-basics-profiles = Профили
 app-basics-launcher-process-status = Запускающий процесс
 app-basics-multi-process-support = Многопроцессные окна
-app-basics-process-count = Процессы веб-контента
 app-basics-remote-processes-count = Удалённые процессы
 app-basics-enterprise-policies = Корпоративные политики
 app-basics-location-service-key-google = Ключ Службы определения местоположения от Google
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Возможности, отключённые з�
 graphics-workarounds-title = Способы обхода
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Протокол управления окнами
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Среда рабочего стола
 place-database-title = База данных Places
 place-database-integrity = Целостность
 place-database-verify-integrity = Проверить целостность
@@ -110,8 +114,21 @@ sandbox-sys-call-tid = TID
 sandbox-sys-call-proc-type = Тип процесса
 sandbox-sys-call-number = Системный вызов
 sandbox-sys-call-args = Параметры
-safe-mode-title = Попробовать безопасный режим
+safe-mode-title = Попробуйте безопасный режим
 restart-in-safe-mode-label = Перезапустить с отключёнными дополнениями…
+clear-startup-cache-title = Попробуйте очистить кэш запуска
+clear-startup-cache-label = Очистить кэш запуска…
+startup-cache-dialog-title = Очистка кэша запуска
+startup-cache-dialog-body = Перезапустите { -brand-short-name }, чтобы очистить кэш запуска. Это не изменит ваши настройки и не удалит расширения, которые вы добавили в { -brand-short-name }.
+restart-button-label = Перезапустить
+
+## Media titles
+
+audio-backend = Звуковая подсистема
+max-audio-channels = Максимальное число каналов
+channel-layout = Предпочтительный формат каналов
+sample-rate = Предпочтительная частота дискретизации
+roundtrip-latency = Круговая задержка (стандартное отклонение)
 media-title = Медиа
 media-output-devices-title = Устройства вывода
 media-input-devices-title = Устройства ввода
@@ -124,6 +141,12 @@ media-device-format = Формат
 media-device-channels = Каналы
 media-device-rate = Частота
 media-device-latency = Задержка
+media-capabilities-title = Возможности медиа
+# List all the entries of the database.
+media-capabilities-enumerate = Вывести записи из базы данных
+
+##
+
 intl-title = Интернационализация и Локализация
 intl-app-title = Настройки приложения
 intl-locales-requested = Запрошенные языки
@@ -133,6 +156,22 @@ intl-locales-default = Язык по умолчанию
 intl-os-title = Операционная система
 intl-os-prefs-system-locales = Языки системы
 intl-regional-prefs = Региональные настройки
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Удалённая отладка (Протокол Chromium)
+remote-debugging-accepting-connections = Входящие соединения
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -234,7 +273,9 @@ unknown-failure = Заблокировано; код ошибки { $failureCode
 d3d11layers-crash-guard = Композитор D3D11
 d3d11video-crash-guard = Видеодекодер D3D11
 d3d9video-crash-buard = Видеодекодер D3D9
+d3d9video-crash-guard = Видеодекодер D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Видеодекодер WMF VPX
 reset-on-next-restart = Сбросить при следующем перезапуске
 gpu-process-kill-button = Завершить процесс видеокарты
 gpu-device-reset = Сбросить устройство
@@ -243,12 +284,7 @@ uses-tiling = Использует тайлинг
 content-uses-tiling = Использует тайлинг (контент)
 off-main-thread-paint-enabled = Прорисовка вне основного потока активирована
 off-main-thread-paint-worker-count = Число воркеров отрисовки вне основного потока
-low-end-machine = Обнаружена менее производительная машина
 target-frame-rate = Целевая частота кадров
-audio-backend = Звуковая подсистема
-max-audio-channels = Максимальное число каналов
-channel-layout = Предпочтительный формат каналов
-sample-rate = Предпочтительная частота дискретизации
 min-lib-versions = Ожидаемая минимальная версия
 loaded-lib-versions = Используемая версия
 has-seccomp-bpf = Seccomp-BPF (Фильтрация системных вызовов)
@@ -263,6 +299,11 @@ sandbox-proc-type-content = контент
 sandbox-proc-type-file = содержимое файла
 sandbox-proc-type-media-plugin = медиаплагин
 sandbox-proc-type-data-decoder = декодер данных
+startup-cache-title = Кэш запуска
+startup-cache-disk-cache-path = Путь к дисковому кэшу
+startup-cache-ignore-disk-cache = Игнорировать дисковый кэш
+startup-cache-found-disk-cache-on-init = При инициализации обнаружен дисковый кэш
+startup-cache-wrote-to-disk-cache = Записано в дисковый кэш
 launcher-process-status-0 = Включён
 launcher-process-status-1 = Отключён из-за сбоя
 launcher-process-status-2 = Принудительно отключён
@@ -282,10 +323,11 @@ multi-process-status-unknown = Статус неизвестнен
 async-pan-zoom = Асинхронное панорамирование/зум
 apz-none = нет
 wheel-enabled = включён ввод колесиком
-touch-enabled = включён сенсорный ввод
-drag-enabled = включено перетаскивание полосы прокрутки
+touch-enabled = сенсорный ввод включён
+drag-enabled = перетаскивание полосы прокрутки включено
 keyboard-enabled = клавиатура включена
 autoscroll-enabled = автопрокрутка включена
+zooming-enabled = плавное масштабирование жестами включено
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

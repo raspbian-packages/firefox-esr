@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Koda napake: <a data-l10n-name="error-code-link">{
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Spletne strani svojo istovetnost dokazujejo z digitalnimi potrdili, ki jih izdajajo uradni overitelji. Večina brskalnikov ne zaupa več digitalnim potrdilom, ki so jih izdali GeoTrust, RapidSSL, Symantec, Thawte in VeriSign. Stran { $hostname } uporablja digitalno potrdilo enega od teh overiteljev, zato njene istovetnosti ni mogoče preveriti.
 cert-error-symantec-distrust-admin = O težavi lahko obvestite skrbnika spletne strani.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = Opredeljevanje javnih ključev HTTP: { $hasHPKP }
+cert-error-details-cert-chain-label = Veriga digitalnih potrdil:
+open-in-new-window-for-csp-or-xfo-error = Odpri stran v novem oknu
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Da bi zaščitil vašo varnost, { $hostname } { -brand-short-name }u ne bo dovolil prikazovanja strani, ki jo je druga stran vdelala. Če si želite ogledati to stran, jo odprite v novem oknu.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Povezava neuspešna
+deniedPortAccess-title = Ta naslov je omejen
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm, pri iskanju te strani imamo težave.
+fileNotFound-title = Datoteke ni mogoče najti
+fileAccessDenied-title = Dostop do datoteke je bil zavrnjen
+generic-title = Ups.
+captivePortal-title = Prijavite se v omrežje
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm, ta naslov ni videti pravilen.
+netInterrupt-title = Povezava je bila prekinjena
+notCached-title = Dokument je potekel
+netOffline-title = Nepovezan način
+contentEncodingError-title = Napaka pri kodiranju vsebine
+unsafeContentType-title = Nevarna vrsta datoteke
+netReset-title = Povezava je bila ponastavljena
+netTimeout-title = Dovoljeni čas pretekel
+unknownProtocolFound-title = Naslova ni bilo mogoče razumeti
+proxyConnectFailure-title = Posrednik zavrača povezave
+proxyResolveFailure-title = Posrednika ni mogoče najti
+redirectLoop-title = Stran ne preusmerja pravilno
+unknownSocketType-title = Nepričakovan odgovor strežnika
+nssFailure2-title = Varna povezava ni uspela
+cspBlocked-title = Zavrnjeno zaradi varnostne politike vsebine
+xfoBlocked-title = Zavrnjeno po pravilniku X-Frame-Options
+csp-xfo-error-title = { -brand-short-name } ne more odpreti te strani
+corruptedContentError-title = Napaka zaradi pokvarjene vsebine
+remoteXUL-title = Oddaljeni XUL
+sslv3Used-title = Varna povezava ni mogoča
+inadequateSecurityError-title = Vaša povezava ni varna
+blockedByPolicy-title = Zavrnjena stran
+clockSkewError-title = Nastavitev ure vašega računalnika je napačna
+networkProtocolError-title = Napaka omrežnega protokola
+nssBadCert-title = Pozor: možno varnostno tveganje
+nssBadCert-sts-title = Povezava ni bila vzpostavljena: morebitna varnostna težava
+certerror-mitm-title = Programska oprema { -brand-short-name }u preprečuje varno povezovanje s to stranjo

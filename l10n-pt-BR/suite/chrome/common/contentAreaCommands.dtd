@@ -53,6 +53,8 @@
 <!ENTITY reloadImageCmd.accesskey     "R">
 <!ENTITY viewImageCmd.label           "Ver imagem">
 <!ENTITY viewImageCmd.accesskey       "V">
+<!ENTITY viewImageInfoCmd.label       "Ver informações da imagem">
+<!ENTITY viewImageInfoCmd.accesskey   "f">
 <!ENTITY viewVideoCmd.label           "Exibir vídeo">
 <!ENTITY viewVideoCmd.accesskey       "i">
 <!ENTITY viewBGImageCmd.label         "Exibir plano de fundo">
@@ -153,6 +155,16 @@ items are mutually exclusive. -->
 <!ENTITY spellDictionaries.accesskey    "I">
 <!ENTITY spellAddDictionaries.label     "Baixar mais dicionários...">
 <!ENTITY spellAddDictionaries.accesskey "x">
+
+<!ENTITY fillLoginMenu.label          "Preencher conta de acesso">
+<!ENTITY fillLoginMenu.accesskey      "P">
+<!ENTITY fillPasswordMenu.label       "Preencher senha">
+<!ENTITY fillPasswordMenu.accesskey   "P">
+<!ENTITY fillUsernameMenu.label       "Preencher nome de usuário">
+<!ENTITY fillUsernameMenu.accesskey   "P">
+<!ENTITY noLoginSuggestions.label     "(nenhuma sugestão de conta de acesso)">
+<!ENTITY viewSavedLogins.label        "Ver contas de acesso salvas">
+
 <!-- Developer Tools -->
 <!ENTITY devtoolsInspect.label          "Inspecionar elemento">
 <!ENTITY devtoolsInspect.accesskey      "n">

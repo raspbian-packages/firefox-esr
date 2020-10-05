@@ -24,6 +24,7 @@
 
 <!ENTITY  generalTab            "Generale">
 <!ENTITY  generalTab.accesskey  "G">
+<!ENTITY  generalTitle          "Titolo:">
 <!ENTITY  generalURL            "Indirizzo:">
 <!ENTITY  generalType           "Tipo:">
 <!ENTITY  generalMode           "Modo rendering:">
@@ -62,6 +63,8 @@
 <!ENTITY  mediaTab.accesskey    "M">
 <!ENTITY  mediaURL              "Indirizzo:">
 <!ENTITY  mediaAlt              "Testo alternativo:">
+<!ENTITY  mediaLocation         "Luogo:">
+<!ENTITY  mediaText             "Testo associato:">
 <!ENTITY  mediaAltHeader        "Testo alternativo">
 <!ENTITY  mediaAddress          "Indirizzo">
 <!ENTITY  mediaType             "Tipo">
@@ -70,6 +73,7 @@
 <!ENTITY  mediaDimensions       "Dimensioni specificate:">
 <!ENTITY  mediaPhysDimensions   "Dimensioni attuali:">
 <!ENTITY  mediaTitle            "Titolo:">
+<!ENTITY  mediaDimension        "Dimensioni:">
 <!ENTITY  mediaLongdesc         "Descrizione estesa:">
 <!ENTITY  mediaBlockImage.accesskey "B">
 <!ENTITY  mediaSaveAs           "Salva con nome…">
@@ -109,6 +113,8 @@
 <!ENTITY  securityView.identity.owner    "Proprietario:">
 <!ENTITY  securityView.identity.domain   "Sito web:">
 <!ENTITY  securityView.identity.verifier "Verificata da:">
+
+<!ENTITY  securityView.identity.validity "Scade il:">
 
 <!ENTITY  securityView.privacy.header                   "Privacy e cronologia">
 <!ENTITY  securityView.privacy.history                  "Ha già visitato oggi questo sito web?">

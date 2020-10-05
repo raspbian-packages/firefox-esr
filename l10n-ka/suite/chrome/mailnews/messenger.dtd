@@ -7,11 +7,11 @@
 <!ENTITY titleSeparator.label " - ">
 
 <!-- tabmail -->
-<!ENTITY tabmailClose.label "დაფის დახურვა">
-<!ENTITY tabmailClose.tooltip "დაფის დახურვა">
-<!ENTITY tabmailNewButton.tooltip "მიდინარე დაფის დუბლირება">
-<!ENTITY tabmailCloseButton.tooltip "მიმდინარე დაფის დახურვა">
-<!ENTITY tabmailAllTabs.tooltip "ყველა დაფის სია">
+<!ENTITY tabmailClose.label "ჩანართის დახურვა">
+<!ENTITY tabmailClose.tooltip "ჩანართის დახურვა">
+<!ENTITY tabmailNewButton.tooltip "მიდინარე ჩანართის დუბლირება">
+<!ENTITY tabmailCloseButton.tooltip "მიმდინარე ჩანართის დახურვა">
+<!ENTITY tabmailAllTabs.tooltip "ყველა ჩანართის სია">
 
 <!-- menu items: the . means that the menu item isn't implemented yet -->
 
@@ -22,10 +22,10 @@
 <!ENTITY newFolderCmd.accesskey "ქ">
 <!ENTITY newVirtualFolderCmd.label "შენახული ძიება…">
 <!ENTITY newVirtualFolderCmd.accesskey "შ">
-<!ENTITY newTabCmd.label "დაფის გაორმაგება">
+<!ENTITY newTabCmd.label "ჩანართის გაორმაგება">
 <!ENTITY newTabCmd.accesskey "ო">
 <!ENTITY newTabCmd.key "t">
-<!ENTITY closeTabCmd.label "დაფის დახურვა">
+<!ENTITY closeTabCmd.label "ჩანართის დახურვა">
 <!ENTITY closeTabCmd.accesskey "დ">
 <!ENTITY newAccountCmd.label "ანგარიში…">
 <!ENTITY newAccountCmd.accesskey "ნ">
@@ -48,7 +48,7 @@
 <!ENTITY getAllNewMsgCmdPopupMenu.label "ყველა ანგარიში">
 <!ENTITY getAllNewMsgCmdPopupMenu.accesskey "ყ">
 <!ENTITY getAllNewMsgCmd.label "ყველა ახალი წერილის მიღება">
-<!ENTITY getAllNewMsgCmd2.key "მ">
+<!ENTITY getAllNewMsgCmd2.key "d">
 <!ENTITY getNextNMsgCmd.label "ჯგუფის შემდეგი 500 წერილის მიღება">
 <!ENTITY getNextNMsgCmd.accesskey "შ">
 <!ENTITY sendUnsentCmd.label "გასაგზავნი წერილების გაგზავნა">
@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "მონიშნული წერილები">
 <!ENTITY selectFlaggedCmd.accesskey "მ">
+<!ENTITY menuFavoriteFolder.label "რჩეული საქაღალდე">
+<!ENTITY menuFavoriteFolder.accesskey "რ">
 <!ENTITY folderPropsCmd.label "პარამეტრები…">
 <!ENTITY folderPropsFolderCmd.label "საქაღალდის პარამეტრები…">
 <!ENTITY folderPropsNewsgroupCmd.label "ჯგუფების პარამეტრები…">
@@ -116,7 +118,7 @@
 <!ENTITY showMessengerToolbarCmd.accesskey "მ">
 <!ENTITY showSearchToolbarCmd.label "საძიებო ზოლი">
 <!ENTITY showSearchToolbarCmd.accesskey "ზ">
-<!ENTITY showTabsToolbarCmd.label "დაფების სამართავი">
+<!ENTITY showTabsToolbarCmd.label "ჩანართების სამართავი">
 <!ENTITY showTabsToolbarCmd.accesskey "რ">
 
 <!ENTITY messagePaneLayoutStyle.label "განლაგება">
@@ -133,6 +135,10 @@
 <!ENTITY showThreadPaneCmd.accesskey "ს">
 <!ENTITY showFolderPaneCmd.label "საქაღალდის არე">
 <!ENTITY showFolderPaneCmd.accesskey "ქ">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "დალაგება">
@@ -264,14 +270,16 @@
 <!ENTITY prevUnreadMsgCmd.label "წასაკითხი წერილი">
 <!ENTITY prevUnreadMsgCmd.accesskey "ს">
 <!ENTITY prevUnreadMsgCmd.key "p">
-<!ENTITY goBackCmd.label "უკან">
-<!ENTITY goBackCmd.accesskey "უ">
+<!ENTITY goBackCmd.label "წინა">
+<!ENTITY goBackCmd.accesskey "წ">
 <!ENTITY goBackCmd.commandKey "[">
-<!ENTITY goForwardCmd.label "წინ">
-<!ENTITY goForwardCmd.accesskey "წ">
+<!ENTITY goForwardCmd.label "მომდევნო">
+<!ENTITY goForwardCmd.accesskey "მ">
 <!ENTITY goForwardCmd.commandKey "]">
 <!ENTITY prevFlaggedMsgCmd.label "ალმიანი წერილი">
 <!ENTITY prevFlaggedMsgCmd.accesskey "ა">
+<!ENTITY folderMenu.label "საქაღალდე">
+<!ENTITY folderMenu.accesskey "ქ">
 <!ENTITY startPageCmd.label "ფოსტის საწყისი გვერდი">
 <!ENTITY startPageCmd.accesskey "S">
 
@@ -412,11 +420,12 @@
 <!ENTITY forwardButton.label "გადაგზავნა">
 <!ENTITY fileButton.label "მოთავსება">
 <!ENTITY nextButton.label "შემდეგი">
-<!ENTITY goBackButton.label "უკან">
-<!ENTITY goForwardButton.label "წინ">
+<!ENTITY goBackButton.label "წინა">
+<!ENTITY goForwardButton.label "მომდევნო">
 <!ENTITY deleteButton.label "წაშლა">
 <!ENTITY undeleteButton.label "აღდგენა">
 <!ENTITY markButton.label "მონიშვნა">
+<!ENTITY printButton.label "ამობეჭდვა">
 <!ENTITY stopButton.label "შეჩერება">
 <!ENTITY junkButton.label "ჯართი">
 <!ENTITY notJunkButton.label "არა ჯართი">
@@ -435,13 +444,15 @@
 <!ENTITY forwardButton.tooltip "არჩეული წერილის გადაგზავნა">
 <!ENTITY fileButton.tooltip "არჩეული წერილის შენახვა">
 <!ENTITY nextButton.tooltip "გადასვლა შემდეგ წასაკითხ წერილზე">
-<!ENTITY goBackButton.tooltip "უკან ერთი წერილით">
-<!ENTITY goForwardButton.tooltip "წინ ერთი წერილით">
+<!ENTITY goBackButton.tooltip "წინა წერილზე დაბრუნება">
+<!ENTITY goForwardButton.tooltip "მომდევნო წერილზე გადასვლა">
 <!ENTITY deleteButton.tooltip "მონიშნული წერილის ან საქაღალდის წაშლა">
 <!ENTITY undeleteButton.tooltip "მონიშნული წერილის აღდგენა">
 <!ENTITY markButton.tooltip "წერილების მონიშვნა">
+<!ENTITY printButton.tooltip "ამ წერილის ამობეჭდვა">
 <!ENTITY stopButton.tooltip "მიმდინარე გაგზავნის შეჩერება">
 <!ENTITY throbber.tooltip "&vendorShortName; – საწყის გვერდზე გადასვლა">
+<!ENTITY throbber.tooltip2 "&brandShortName; – საწყის გვერდზე გადასვლა">
 <!ENTITY junkButton.tooltip "შერჩეული წერილების ჯართად მონიშვნა">
 <!ENTITY notJunkButton.tooltip "შერჩეული წერილების გამოსადეგად ჩათვლა">
 
@@ -457,7 +468,7 @@
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextOpenNewWindow.label "წერილის ახალ ფანჯარაში გახსნა">
 <!ENTITY contextOpenNewWindow.accesskey "ფ">
-<!ENTITY contextOpenNewTab.label "წერილის გახსნა ახალ დაფაზე">
+<!ENTITY contextOpenNewTab.label "წერილის გახსნა ახალ ჩანართიზე">
 <!ENTITY contextOpenNewTab.accesskey "გ">
 <!ENTITY contextEditAsNew.label "ჩასწორება როგორც ახლის…">
 <!ENTITY contextEditAsNew.accesskey "ჩ">
@@ -495,9 +506,11 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "წერილების მიღება ანგარიშისთვის">
 <!ENTITY folderContextGetMessages.accesskey "მ">
+<!ENTITY folderContextMarkAllFoldersRead.label "ყველა საქაღალდის წაკითხულად მონიშვნა">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "მ">
 <!ENTITY folderContextOpenNewWindow.label "გახსნა ახალ ფანჯარაში">
 <!ENTITY folderContextOpenNewWindow.accesskey "ფ">
-<!ENTITY folderContextOpenNewTab.label "გახსნა ახალ დაფაზე">
+<!ENTITY folderContextOpenNewTab.label "გახსნა ახალ ჩანართიზე">
 <!ENTITY folderContextOpenNewTab.accesskey "ა">
 <!ENTITY folderContextRename.label "გადარქმევა">
 <!ENTITY folderContextRename.accesskey "გ">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "ძ">
 <!ENTITY folderContextProperties.label "პარამეტრები…">
 <!ENTITY folderContextProperties.accesskey "პ">
+<!ENTITY folderContextFavoriteFolder.label "რჩეული საქაღალდე">
+<!ENTITY folderContextFavoriteFolder.accesskey "ა">
 <!ENTITY folderContextSettings.label "პარამეტრები…">
 <!ENTITY folderContextSettings.accesskey "რ">
 

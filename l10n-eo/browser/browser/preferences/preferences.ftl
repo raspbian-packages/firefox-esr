@@ -11,9 +11,14 @@ do-not-track-option-always =
 pref-page =
     .title =
         { PLATFORM() ->
-            [windows] Elektebloj
+            [windows] Preferoj
            *[other] Preferoj
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Preferoj
+       *[other] Preferoj
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -26,14 +31,9 @@ search-input-box =
     .style = width: 16.5em
     .placeholder =
         { PLATFORM() ->
-            [windows] Serĉi en elektebloj
+            [windows] Serĉi en preferoj
            *[other] Serĉi en preferoj
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Via organizaĵo malŝaltis la eblon ŝanĝi kelkajn elekteblojn.
-       *[other] Via organizaĵo malŝaltis la eblon ŝanĝi kelkajn preferojn.
-    }
 managed-notice = Via retumilo estas administrata de via organizo.
 pane-general-title = Ĉefaj
 category-general =
@@ -110,7 +110,7 @@ search-results-header = Serĉrezultoj
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
 search-results-empty-message =
     { PLATFORM() ->
-        [windows] Bedaŭrinde ne estis rezultoj por “<span data-l10n-name="query"></span>” en Elektebloj.
+        [windows] Bedaŭrinde ne estis rezultoj por “<span data-l10n-name="query"></span>” en Preferoj.
        *[other] Bedaŭrinde ne estis rezultoj por “<span data-l10n-name="query"></span>” en Preferoj.
     }
 search-results-help-link = Ĉu vi bezonas helpon? Vizitu <a data-l10n-name="url">Helpo por { -brand-short-name }</a>
@@ -203,6 +203,15 @@ advanced-fonts =
 colors-settings =
     .label = Koloroj…
     .accesskey = K
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Pligrandigilo
+preferences-default-zoom = Norma pligrandigo
+    .accesskey = N
+preferences-default-zoom-value =
+    .label = { $percentage }%
+preferences-zoom-text-only =
+    .label = Pligrandigi nur tekston
+    .accesskey = t
 language-header = Lingvo
 choose-language-description = Elektu vian preferatan lingvon por retpaĝoj
 choose-button =
@@ -223,6 +232,10 @@ translate-attribution = Tradukita de <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Esceptoj…
     .accesskey = s
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Uzi la agordojn de via mastruma sistemo por “{ $localeName }” por la formo de datoj, horoj, numeroj kaj mezuroj.
 check-user-spelling =
     .label = Kontroli literumadon dum tajpado
     .accesskey = t
@@ -258,6 +271,75 @@ applications-type-column =
 applications-action-column =
     .label = Ago
     .accesskey = A
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = { $extension } dosiero
+applications-action-save =
+    .label = Konservi dosieron
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = Uzi { $app-name }
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = Uzi { $app-name } (ĉefa)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Uzi la norman programon de macOS
+            [windows] Uzi la norman programan de Windows
+           *[other] Uzi la norman programon de la sistemo
+        }
+applications-use-other =
+    .label = Uzi alian…
+applications-select-helper = Elekti helpan programon
+applications-manage-app =
+    .label = Detaloj de programo…
+applications-always-ask =
+    .label = Ĉiam demandi
+applications-type-pdf = Portable Document Format (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = Uzi { $plugin-name } (en { -brand-short-name })
+applications-open-inapp =
+    .label = Malfermi per { -brand-short-name }
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Enhavo kun cifereca administrado de rajtoj (DRM)
 play-drm-content =
     .label = Ludi DRM-administritan enhavon
@@ -344,6 +426,10 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Serĉi tekston kiam vi ektajpas
     .accesskey = t
+browsing-picture-in-picture-toggle-enabled =
+    .label = Permesi regilojn por bildo en bildo
+    .accesskey = P
+browsing-picture-in-picture-learn-more = Pli da informo
 browsing-cfr-recommendations =
     .label = Sugesti etendaĵojn dum retumo
     .accesskey = S
@@ -398,6 +484,54 @@ choose-bookmark =
     .label = Uzi legosignon…
     .accesskey = s
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Enhavo de la hejmekrano de Firefox
+home-prefs-content-description = Elektu la enhavon, kiun vi volas en via hejmekrano de Firefox.
+home-prefs-search-header =
+    .label = Serĉo en la reto
+home-prefs-topsites-header =
+    .label = Plej vizitaj
+home-prefs-topsites-description = Viaj plej vizititaj retejoj
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = Rekomendita de { $provider }
+home-prefs-recommended-by-description = Bonega enhavo de la tuta Teksaĵo, personecigita por vi
+home-prefs-recommended-by-description-update = Eksterordinara enhavo el la reto, reviziita de { $provider }
+
+##
+
+home-prefs-recommended-by-learn-more = Kiel funkcias tio
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Patronitaj artikoloj
+home-prefs-highlights-header =
+    .label = Elstaraĵoj
+home-prefs-highlights-description = Retejoj elektitaj inter tiuj, kiun vi vizitis aŭ konservis
+home-prefs-highlights-option-visited-pages =
+    .label = Vizititaj paĝoj
+home-prefs-highlights-options-bookmarks =
+    .label = Legosignoj
+home-prefs-highlights-option-most-recent-download =
+    .label = Lasta elŝuto
+home-prefs-highlights-option-saved-to-pocket =
+    .label = Paĝoj konservitaj en { -pocket-brand-name }
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Fragmentoj
+home-prefs-snippets-description = Ĝisdatigoj de { -vendor-short-name } kaj { -brand-product-name }
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } vico
+           *[other] { $num } vicoj
+        }
+
 ## Search Section
 
 search-bar-header = Serĉa strio
@@ -407,6 +541,13 @@ search-bar-shown =
     .label = Aldoni serĉan strion al ilaro
 search-engine-default-header = Norma serĉilo
 search-engine-default-desc = Elekti la norman serĉilon por la adresa kaj serĉa strio.
+search-engine-default-desc-2 = Tiu ĉi estas via norma serĉilo en la adresa kaj serĉa strio. Vi povas ŝanĝi ĝin iam ajn.
+search-engine-default-private-desc-2 = Elektu alian normal serĉilon nur por privatajn fenestrojn
+search-separate-default-engine =
+    .label = Uzi tiun ĉi serĉilon en privataj fenestroj
+    .accesskey = U
+search-suggestions-header = Serĉaj sugestoj
+search-suggestions-desc = Elektu la manieron vidi sugestojn de serĉiloj.
 search-suggestions-option =
     .label = Montri serĉajn sugestojn
     .accesskey = s
@@ -420,6 +561,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Montri serĉajn sugestojn antaŭ ol retuman historion en la resultoj de la adresa strio
+search-show-suggestions-private-windows =
+    .label = Montri serĉajn sugestojn en privataj fenestroj
+suggestions-addressbar-settings = Ŝanĝi preferojn por retuma historio, legosignoj kaj langetaj sugestoj
+suggestions-addressbar-settings-generic = Ŝanĝi preferojn por la aliaj sugestoj de la adresa strio
 search-suggestions-cant-show = Sugestoj de serĉiloj ne aperos en la rezultoj de la adresa strio ĉar vi petis al { -brand-short-name } neniam memori la historion.
 search-one-click-header = Serĉiloj per unu alklako
 search-one-click-desc = Elekti la alternativajn serĉilojn, kiuj aperos sub la adresa kaj serĉa strio kiam vi ektajpas ŝlosilvorton.
@@ -445,16 +590,29 @@ search-keyword-warning-bookmark = Vi elektis kategorian vorton kiu estas nuntemp
 ## Containers Section
 
 containers-back-link = « Iri reen
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Reen al preferoj
+           *[other] Reen al preferoj
+        }
 containers-header = Ingaj langetoj
 containers-add-button =
     .label = Aldoni novan ingon
     .accesskey = A
+containers-new-tab-check =
+    .label = Elekti ingon por ĉiu nova langeto
+    .accesskey = i
 containers-preferences-button =
     .label = Preferoj
 containers-remove-button =
     .label = Forigi
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Kunporti vian Teksaĵon kun vi
 sync-signedout-description = Speguli viajn legosignojn, historion, langetojn, pasvortojn, aldonaĵojn kaj preferojn en ĉiuj viaj aparatoj.
@@ -463,6 +621,9 @@ sync-signedout-account-create = Ĉu vi ne havas konton? Enskribiĝu
     .accesskey = E
 sync-signedout-account-signin =
     .label = Komenci seancon…
+    .accesskey = K
+sync-signedout-account-signin2 =
+    .label = Komenci seancon en { -sync-brand-short-name }…
     .accesskey = K
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
@@ -476,11 +637,17 @@ sync-mobile-promo = Elŝuti Firefox por <img data-l10n-name="android-icon"/> <a 
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Ŝanĝi bildon de profilo
 sync-disconnect =
     .label = Malkonekti…
     .accesskey = M
+sync-sign-out =
+    .label = Fini seancon…
+    .accesskey = F
 sync-manage-account = Administri konton
     .accesskey = A
 sync-signedin-unverified = { $email } ne estas konfirmita.
@@ -496,6 +663,48 @@ sync-sign-in =
     .accesskey = K
 sync-signedin-settings-header = Agordoj de Spegulado
 sync-signedin-settings-desc = Elekti tion, kion vi volas speguli en la aparatoj viaj, kiuj uzas { -brand-short-name }.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Spegulado: ŝaltita
+prefs-syncing-off = Spegulado: malŝaltita
+prefs-sync-setup =
+    .label = Agordi { -sync-brand-short-name }…
+    .accesskey = A
+prefs-sync-offer-setup-label = Speguli viajn legosignojn, historion, langetojn, pasvortojn, aldonaĵojn kaj preferojn en ĉiuj viaj aparatoj.
+prefs-sync-now =
+    .labelnotsyncing = Speguli nun
+    .accesskeynotsyncing = n
+    .labelsyncing = Spegulado...
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Nuntempe vi spegulas la jenajn elementojn:
+sync-currently-syncing-bookmarks = legosignojn
+sync-currently-syncing-history = historion
+sync-currently-syncing-tabs = malfermitajn langetojn
+sync-currently-syncing-logins-passwords = legitimilojn
+sync-currently-syncing-addresses = adresojn
+sync-currently-syncing-creditcards = kreditkartojn
+sync-currently-syncing-addons = aldonaĵojn
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] preferojn
+       *[other] preferojn
+    }
+sync-change-options =
+    .label = Ŝanĝi…
+    .accesskey = a
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Elektu kion speguli
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Konservi ŝanĝojn
+    .buttonaccesskeyaccept = K
+    .buttonlabelextra2 = Malkonekti…
+    .buttonaccesskeyextra2 = M
 sync-engine-bookmarks =
     .label = legosignojn
     .accesskey = l
@@ -510,6 +719,10 @@ sync-engine-logins =
     .label = akreditilojn
     .tooltiptext = Nomoj de uzanto kaj pasvortoj konservitaj de vi
     .accesskey = A
+sync-engine-logins-passwords =
+    .label = legitimilojn
+    .tooltiptext = Nomoj de uzanto kaj pasvortoj, kiujn vi konservis
+    .accesskey = l
 sync-engine-addresses =
     .label = adresojn
     .tooltiptext = Poŝtaj adresoj konservitaj de vi (nur en komputilo)
@@ -525,11 +738,14 @@ sync-engine-addons =
 sync-engine-prefs =
     .label =
         { PLATFORM() ->
-            [windows] Elektebloj
+            [windows] preferojn
            *[other] preferojn
         }
     .tooltiptext = Ĝeneralaj, privatecaj kaj sekurecaj agordoj ŝanĝitaj de vi
     .accesskey = p
+
+## The device name controls.
+
 sync-device-name-header = Nomo de aparato
 sync-device-name-change =
     .label = Ŝanĝi nomon de aparato…
@@ -553,6 +769,13 @@ privacy-header = Retumila privateco
 ## Privacy Section - Forms
 
 logins-header = Akreditiloj kaj pasvortoj
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Akreditiloj kaj pasvortoj
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Demandi ĉu konservi akreditilojn kaj pasvortojn por retejoj
     .accesskey = D
@@ -562,6 +785,14 @@ forms-exceptions =
 forms-generate-passwords =
     .label = Sugesti kaj krei fortikajn pasvortojn
     .accesskey = S
+forms-breach-alerts =
+    .label = Montri atentigojn pri pasvortoj por retejoj kun datumfuĝoj
+    .accesskey = d
+forms-breach-alerts-learn-more-link = Pli da informo
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Aŭtomate plenigi akreditilojn kaj pasvortojn
+    .accesskey = A
 forms-saved-logins =
     .label = Konservitaj akreditiloj…
     .accesskey = a
@@ -571,6 +802,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Ŝanĝi ĉefan pasvorton…
     .accesskey = v
+forms-master-pw-fips-title = Vi estas nun en FIPSa reĝimo. FIPS postulas nemalplenan  ĉefan pasvorton.
+forms-master-pw-fips-desc = Pasvorto malsukcese ŝanĝita
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Por krei ĉefan pasvorton vi devas tajpi viajn legitimilojn de Windows . Tio ĉi helpas vin protekti la sekurecon de viaj kontoj.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = krei ĉefan pasvorton
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -638,6 +882,12 @@ sitedata-block-desc = Blokita tipo
     .accesskey = B
 sitedata-option-block-trackers =
     .label = Nerektaj spuriloj
+sitedata-option-block-cross-site-trackers =
+    .label = Interetejaj spuriloj
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Interretejaj kaj sociretaj spuriloj
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Interretejaj kaj sociretaj spuriloj, kaj izoli ceterajn kuketojn
 sitedata-option-block-unvisited =
     .label = Kuketoj el nevizititaj retejoj
 sitedata-option-block-all-third-party =
@@ -653,6 +903,9 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = Administri permesojn…
     .accesskey = A
+sitedata-cookies-exceptions =
+    .label = Administri esceptojn…
+    .accesskey = e
 
 ## Privacy Section - Address Bar
 
@@ -667,13 +920,17 @@ addressbar-locbar-bookmarks-option =
 addressbar-locbar-openpage-option =
     .label = malfermitaj langetoj
     .accesskey = m
+addressbar-locbar-topsites-option =
+    .label = Plej vizititaj
+    .accesskey = v
 addressbar-suggestions-settings = Ŝanĝi preferojn pri serĉilaj sugestoj
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Blokado de enhavo
-content-blocking-description = Bloku nerektan enhavon, kiu spuras vin tra la reto. Regu kiom multe de via retuma informo estas konservita kaj dividita inter retejoj.
 content-blocking-section-description = Protektu vian privatecon dum vi retumas. Bloku nevideblan enhavon, kiu registras la retejojn, kiujn vi vizitas por konstrui profilon pri vi. Bloki parton de tiu enhavo povas rapidigi la ŝargadon de paĝoj.
+content-blocking-enhanced-tracking-protection = Plibonigita protekto kontraŭ spurado
+content-blocking-section-top-level-description = Spuriloj sekvas vin en la reto por kolekti informon pri via kutima retumo kaj pri viaj interesoj. { -brand-short-name } blokas plurajn el tiuj spuriloj kaj aliajn malicajn skriptojn.
 content-blocking-learn-more = Pli da informo
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
@@ -686,28 +943,56 @@ content-blocking-setting-strict =
 content-blocking-setting-custom =
     .label = Personecigita
     .accesskey = P
-content-blocking-standard-description = Bloki nur konatajn spurilojn en privataj fenestroj.
 content-blocking-standard-desc = Ekvilibro inter protekto kaj efikeco. Kelkaj spuriloj estas permesataj, por ke retejoj funkciu bone.
-content-blocking-strict-desc = Ĉiuj spuriloj trovitaj de { -brand-short-name } estos blokitaj. Tio povas misfunkciigi kelkajn retejojn.
 content-blocking-strict-description = Pli severa protekto, kiu povus misfunkciigi kelkajn retejojn.
 content-blocking-custom-desc = Elektu kion bloki.
 content-blocking-private-trackers = Konataj spuriloj nur en fenestroj de privata retumo.
 content-blocking-third-party-cookies = Spurantaj nerektaj kuketoj
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Norma
+    .accesskey = N
+enhanced-tracking-protection-setting-strict =
+    .label = Strikta
+    .accesskey = S
+enhanced-tracking-protection-setting-custom =
+    .label = Personecigita
+    .accesskey = P
+
+##
+
+content-blocking-etp-standard-desc = Ekvilibrita por protekto kaj efikeco. Paĝoj ŝargiĝos normale.
+content-blocking-etp-strict-desc = Pli forta proteko, sed kelkaj retejoj aŭ enhavjo povus ne bone funkcii.
+content-blocking-etp-custom-desc = Elektu blokotajn spurilojn kaj skriptojn
+content-blocking-private-windows = Spurila enhavo en privataj fenestroj
+content-blocking-cross-site-tracking-cookies = Interretejaj spuriloj
+content-blocking-cross-site-tracking-cookies-plus-isolate = Interretejaj spurilaj kuketoj, kaj izoli ceterajn kuketojn
+content-blocking-social-media-trackers = Sociretaj spuriloj
 content-blocking-all-cookies = Ĉiuj kuketoj
 content-blocking-unvisited-cookies = Kuketoj el ne vizititaj retejoj
 content-blocking-all-windows-trackers = Konataj spuriloj en ĉiuj fenestroj
+content-blocking-all-windows-tracking-content = Spurila enhavo en ĉiuj fenestroj
 content-blocking-all-third-party-cookies = Ĉiuj nerektaj kuketoj
 content-blocking-cryptominers = Miniloj de ĉifromono
 content-blocking-fingerprinters = Identigiloj de ciferecaj spuroj
 content-blocking-warning-title = Atentu!
 content-blocking-warning-description = La blokado de enhavo povas misfunkciigi kelkajn retejojn. Estas facile malaktivigi la blokadon por retejoj, kiujn vi fidas.
 content-blocking-learn-how = Pli da informo
+content-blocking-and-isolating-etp-warning-description = Blokado de spuriloj kaj izolado de kuketoj povus influi la funkciadon de kelkaj retejoj. Reŝargu paĝon kun spuriloj por ŝargi la tutan enhavon.
+content-blocking-warning-learn-how = Pli da informo
 content-blocking-reload-description = Vi bezonos reŝargi viajn langetojn por apliki tiujn ĉi ŝanĝojn.
 content-blocking-reload-tabs-button =
     .label = Reŝargi ĉiujn langetojn
     .accesskey = R
 content-blocking-trackers-label =
     .label = Spuriloj
+    .accesskey = S
+content-blocking-tracking-content-label =
+    .label = Spurila enhavo
     .accesskey = S
 content-blocking-tracking-protection-option-all-windows =
     .label = En ĉiuj fenestroj
@@ -742,6 +1027,10 @@ tracking-manage-exceptions =
 permissions-header = Permesoj
 permissions-location = Loko
 permissions-location-settings =
+    .label = Agordoj…
+    .accesskey = A
+permissions-xr = Virtuala realo
+permissions-xr-settings =
     .label = Agordoj…
     .accesskey = A
 permissions-camera = Filmilo
@@ -792,6 +1081,8 @@ permissions-a11y-privacy-link = Pli da informo
 collection-header = Kolekto kaj uzo de datumojn de { -brand-short-name }
 collection-description = Ni penas doni al vi plurajn eblojn, kaj kolekti nur tion, kion ni bezonas por fari kaj plibonigi { -brand-short-name } por ĉiuj. Ni ĉiam petos permeson antaŭ ol ricevi personajn informojn.
 collection-privacy-notice = Rimarko pri privateco
+collection-health-report-telemetry-disabled = Vi ne plu permesas al { -vendor-short-name } kapti teĥnikajn kaj interagajn datumojn. Ĉiuj antaŭaj datumoj estos forigitaj dum la venontaj 30 tagoj.
+collection-health-report-telemetry-disabled-link = Pli da informo
 collection-health-report =
     .label = Permesi al { -brand-short-name } sendi teĥnikajn kaj interagajn datumojn al { -vendor-short-name }
     .accesskey = P
@@ -863,7 +1154,7 @@ space-alert-over-5gb-pref-button =
         }
 space-alert-over-5gb-message =
     { PLATFORM() ->
-        [windows] Elĉerpiĝas la diska spaco por { -brand-short-name }. Enhavo de retejoj povas aperi malĝuste. Vi povas viŝi konservitajn retejajn datumojn en Elektebloj > Privateco kaj sekureco > Kuketoj kaj retejaj datumoj.
+        [windows] Elĉerpiĝas la diska spaco por { -brand-short-name }. Enhavo de retejoj povas aperi malĝuste. Vi povas viŝi konservitajn retejajn datumojn en Preferoj > Privateco kaj sekureco > Kuketoj kaj retejaj datumoj.
        *[other] Elĉerpiĝas la diska spaco por { -brand-short-name }. Enhavo de retejoj povas aperi malĝuste. Vi povas viŝi konservitajn retejajn datumojn en Preferoj > Privateco kaj sekureco > Kuketoj kaj retejaj datumoj.
     }
 space-alert-under-5gb-ok-button =

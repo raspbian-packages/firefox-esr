@@ -5,6 +5,7 @@
 <!-- Don't localize these. They're here until they have
      a better place to live. -->
 <!ENTITY syncBrand.fullName.label "Firefox Sync">
+
 <!ENTITY syncBrand.shortName.label "Sync">
 
 <!-- Main titles. -->
@@ -82,7 +83,7 @@
 <!ENTITY fxaccount_remove_account 'Odpojit&ellipsis;'>
 
 <!ENTITY fxaccount_remove_account_dialog_title2 'Chcete se odpojit od služby Sync?'>
-<!ENTITY fxaccount_remove_account_dialog_message2 'Vaše data o prohlížení zůstanou v tomto zařízení, ale již nebudou synchronizována s vaším účtem.'>
+<!ENTITY fxaccount_remove_account_dialog_message2 'Vaše soukromá data zůstanou v tomto zařízení, ale již nebudou synchronizována s vaším účtem.'>
 <!-- Localization note: format string below will be replaced
      with the Firefox Account's email address. -->
 <!ENTITY fxaccount_remove_account_toast2 'Účet Firefoxu &formatS; byl odpojen.'>

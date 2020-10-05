@@ -6,15 +6,37 @@
 about-config-warning-title = மறைந்திருக்கும் பகுதி இதோ!
 about-config-warning-checkbox = மீண்டும் நினைவூட்டு!
 about-config-warning-button = நான் இடரை ஏற்கிறேன்
-about-config-title = about:config
-about-config-search =
-    .placeholder = தேடுக அல்லது அனைத்தையும் காட்ட ESC பொத்தானை அழுத்துங்கள்
+
+about-config2-title = மேம்பட்ட கட்டமைப்புகள்
+
+about-config-search-input =
+    .placeholder = தேடு
+
+## These strings appear on the warning you see when first visiting about:config.
+
+##
+
+about-config-show-all = அனைத்தையும் காட்டு
+
 about-config-pref-add = சேர்
 about-config-pref-toggle = நிலைமாற்று
 about-config-pref-edit = தொகு
 about-config-pref-save = சேமி
 about-config-pref-reset = மீட்டமை
 about-config-pref-delete = அழி
+
+about-config-pref-add-button =
+    .title = சேர்
+about-config-pref-toggle-button =
+    .title = நிலைமாற்று
+about-config-pref-edit-button =
+    .title = தொகு
+about-config-pref-save-button =
+    .title = சேமி
+about-config-pref-reset-button =
+    .title = மீட்டமை
+about-config-pref-delete-button =
+    .title = அழி
 
 ## Labels for the type selection radio buttons shown when adding preferences.
 

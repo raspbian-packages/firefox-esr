@@ -118,6 +118,9 @@ about-debugging-setup-usb-troubleshoot = Težave pri povezovanju z napravo USB? 
 # Network section of the Setup page
 about-debugging-setup-network =
     .title = Lokacija omrežja
+# Text shown in the Network section of the setup page with a link to troubleshoot connection errors.
+# The link goes to https://developer.mozilla.org/en-US/docs/Tools/Remote_Debugging/Debugging_over_a_network
+about-debugging-setup-network-troubleshoot = Težave pri povezovanju prek omrežne lokacije? <a>Odpravljanje težav</a>
 # Text of a button displayed after the network locations "Host" input.
 # Clicking on it will add the new network location to the list.
 about-debugging-network-locations-add-button = Dodaj
@@ -172,7 +175,7 @@ about-debugging-runtime-profile-button2 = Spremljajte učinkovitost
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Nastavitve brskalnika niso združljive s Service Workerji. <a>Več o tem</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Povezan brskalnik je starejše različice ({ $runtimeVersion }). Podprte so različice ({ $minVersion }) ali novejše. Takšna namestitev ni podprta in lahko privede do napačnega delovanja razvojnih orodij. Posodobite povezan brskalnik. <a>Odpravljanje težav</a>
@@ -183,8 +186,11 @@ about-debugging-browser-version-too-old = Povezan brskalnik je starejše različ
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Plošča razhroščevalnika morda ne bo delovala s povezanim brskalnikom. Uporabite Firefox { $runtimeVersion }, če želite uporabiti razhroščevanje s tem brskalnikom.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Ta različica Firefoxa ne more odpravljati napak za Firefox za Android (68). Za testiranje priporočamo, da na svoj telefon namestite Firefox za Android Nightly. <a>Več podrobnosti</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -260,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Potisni
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Začni
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Potisni
+    .disabledTitle = Potiskanje Service Workerjev je trenutno onemogočeno za večprocesni { -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Začni
+    .disabledTitle = Začenjanje Service Workerjev je trenutno onemogočeno za večprocesni { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Odstrani
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -284,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Potisna storitev
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Pregled service workerjev je trenutno onemogočen za večprocesni { -brand-shorter-name }
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Zavihek ni popolnoma naložen in ga ni mogoče pregledati
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Glavni proces
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Glavni proces za ciljni brskalnik
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Večprocesna razvojna orodja
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Glavni proces in procesi vsebine ciljnega brskalnika
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Zapri sporočilo

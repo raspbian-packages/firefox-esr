@@ -7,6 +7,7 @@ Support for running mach tasks (via run-task)
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+from six import text_type
 from taskgraph.transforms.job import run_job_using, configure_taskdesc_for_run
 from taskgraph.util.schema import (
     Schema,
@@ -22,14 +23,14 @@ mach_schema = Schema({
 
     # The sparse checkout profile to use. Value is the filename relative to the
     # directory where sparse profiles are defined (build/sparse-profiles/).
-    Optional('sparse-profile'): Any(basestring, None),
+    Optional('sparse-profile'): Any(text_type, None),
 
     # if true, perform a checkout of a comm-central based branch inside the
     # gecko checkout
     Required('comm-checkout'): bool,
 
     # Base work directory used to set up the task.
-    Required('workdir'): basestring,
+    Required('workdir'): text_type,
 })
 
 
@@ -50,7 +51,7 @@ def configure_mach(config, job, taskdesc):
             'LANG=en_US.UTF-8'
         ]
 
-    command_prefix = ' '.join(['cd $GECKO_PATH'] + additional_prefix + ['&& ./mach '])
+    command_prefix = ' '.join(additional_prefix + ['./mach '])
 
     mach = run['mach']
     if isinstance(mach, dict):
@@ -61,6 +62,7 @@ def configure_mach(config, job, taskdesc):
 
     # defer to the run_task implementation
     run['command'] = command
+    run['cwd'] = '{checkout}'
     run['using'] = 'run-task'
     del run['mach']
     configure_taskdesc_for_run(config, job, taskdesc, job['worker']['implementation'])

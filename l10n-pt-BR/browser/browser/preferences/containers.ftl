@@ -10,8 +10,10 @@ containers-window-new =
 containers-window-update =
     .title = Preferências do contêiner { $name }
     .style = width: 45em
+
 containers-window-close =
     .key = w
+
 # This is a term to store style to be applied
 # on the three labels in the containers add/edit dialog:
 #   - name
@@ -22,20 +24,26 @@ containers-window-close =
 # of the three messages ensures that all three labels
 # will be aligned correctly.
 -containers-labels-style = min-width: 4rem
+
 containers-name-label = Nome
     .accesskey = N
     .style = { -containers-labels-style }
+
 containers-name-text =
     .placeholder = Digite um nome para o contêiner
+
 containers-icon-label = Ícone
-    .accesskey = I
+    .accesskey = Í
     .style = { -containers-labels-style }
+
 containers-color-label = Cor
     .accesskey = o
     .style = { -containers-labels-style }
+
 containers-button-done =
     .label = Concluído
     .accesskey = C
+
 containers-color-blue =
     .label = Azul
 containers-color-turquoise =
@@ -54,12 +62,13 @@ containers-color-purple =
     .label = Púrpura
 containers-color-toolbar =
     .label = A mesma da barra de ferramentas
+
 containers-icon-fence =
     .label = Cerca
 containers-icon-fingerprint =
     .label = Impressão digital
 containers-icon-briefcase =
-    .label = Porta-arquivos
+    .label = Maleta
 # String represents a money sign but currently uses a dollar sign
 # so don't change to local currency. See Bug 1291672.
 containers-icon-dollar =

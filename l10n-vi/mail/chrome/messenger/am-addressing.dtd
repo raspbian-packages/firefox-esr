@@ -4,7 +4,10 @@
 
 <!-- extracted from am-addressing.xul -->
 
-<!ENTITY addressingGroupTitle.label "Xác định Địa chỉ">
+<!-- extracted from am-addressing.xhtml -->
+
+<!ENTITY addressing.label          "Soạn thảo &amp; xác định địa chỉ">
+<!ENTITY addressingGroupTitle.label "Địa chỉ">
 <!ENTITY addressingText.label      "Khi tìm địa chỉ:">
 <!-- LOCALIZATION NOTE (override.label) : do not translate "LDAP" in below line -->
 <!ENTITY useGlobal.label           "Dùng tùy chỉnh máy chủ LDAP bao trùm của tôi cho tài khoản này">
@@ -18,6 +21,8 @@
 
 <!-- am-addressing.xul -->
 
+<!-- am-addressing.xhtml -->
+
 <!ENTITY compositionGroupTitle.label          "Soạn thảo">
 <!-- LOCALIZATION NOTE (useHtml.label) : do not translate "html" in below line -->
 <!ENTITY useHtml.label                        "Soạn thư định dạng HTML">
@@ -25,6 +30,8 @@
 <!ENTITY autoQuote.label                      "Tự động trích dẫn thư gốc khi trả lời">
 <!ENTITY autoQuote.accesskey                  "n">
 <!-- LOCALIZATION NOTE (quoting.label): This will concatenate with the 4 strings that follow. -->
+<!ENTITY quoting.label                        "Khi trích dẫn,">
+<!ENTITY quoting.accesskey                    "q">
 <!ENTITY aboveQuote.label                     "bắt đầu viết trả lời trên đoạn trích dẫn">
 <!ENTITY belowQuote.label                     "bắt đầu viết trả lời dưới đoạn trích dẫn">
 <!ENTITY selectAndQuote.label                 "chọn trích dẫn">
@@ -37,4 +44,8 @@
 <!ENTITY includeSigOnForward.label            "Bao gồm chữ kí trong thư chuyển tiếp">
 <!ENTITY includeSigOnForward.accesskey        "y">
 
+<!ENTITY globalComposingPrefs.label           "Tùy chọn soạn thảo tổng quát…">
+<!ENTITY globalComposingPrefs.accesskey       "G">
 
+<!ENTITY globalAddressingPrefs.label          "Tùy chọn xác định địa chỉ tổng quát…">
+<!ENTITY globalAddressingPrefs.accesskey      "P">

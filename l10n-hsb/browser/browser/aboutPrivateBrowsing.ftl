@@ -4,6 +4,7 @@
 
 about-private-browsing-learn-more = Zhońće wjace wo <a data-l10n-name="learn-more">Priwatny modus</a>.
 about-private-browsing-info-visited = wopytane strony
+
 privatebrowsingpage-open-private-window-label = Priwatne wokno wočinić
     .accesskey = P
 about-private-browsing-info-notsaved = Jeli w priwatnym woknje přehladujeće, { -brand-short-name } <strong>njeskładuje</strong>:
@@ -26,3 +27,16 @@ about-private-browsing-not-private = Tuchwilu njejsće w priwatnym woknje.
 content-blocking-title = Blokowanje wobsaha
 content-blocking-description = Někotre websydła wužiwaja přescěhowaki, kotrež wašu aktiwitu přez internet wobkedźbuja. W priwatnych woknach blokowanje wobsaha { -brand-short-name } awtomatisce wjele přesćěhowakow blokuje, kotrež móža informacije wo wašim přehladowanskim zadźerženju nahromadźić.
 about-private-browsing-info-description = { -brand-short-name } wašu pytansku a přehladowansku historjiu wuprózdni, hdyž nałoženje wopušćiće abo wšě rajtarki a wokna priwatneho modus začiniće. Přez to so wosnadnja, před druhimi, kotřiž tutón ličak wužiwaja, schować, štož online činiće, hačrunjež to was za websydła abo wašeho poskićowarja internetneje słužby njeanonymizuje.
+
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = { $engineName } je waša standardna pytawa w priwatnych woknach
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] Zo byšće druhu pytawu wubrał, dźiće k <a data-l10n-name="link-options">nastajenjam</a>
+       *[other] Zo byšće druhu pytawu wubrał, dźiće k <a data-l10n-name="link-options">nastajenjam</a>
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Začinić

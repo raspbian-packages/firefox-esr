@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "Messages suivis">
 <!ENTITY selectFlaggedCmd.accesskey "u">
+<!ENTITY menuFavoriteFolder.label "Dossier préféré">
+<!ENTITY menuFavoriteFolder.accesskey "p">
 <!ENTITY folderPropsCmd.label "Propriétés du dossier">
 <!ENTITY folderPropsFolderCmd.label "Propriétés du dossier…">
 <!ENTITY folderPropsNewsgroupCmd.label "Propriétés du groupe…">
@@ -133,6 +135,10 @@
 <!ENTITY showThreadPaneCmd.accesskey "P">
 <!ENTITY showFolderPaneCmd.label "Dossiers">
 <!ENTITY showFolderPaneCmd.accesskey "D">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "Trier par">
@@ -272,6 +278,8 @@
 <!ENTITY goForwardCmd.commandKey "]">
 <!ENTITY prevFlaggedMsgCmd.label "Message coché">
 <!ENTITY prevFlaggedMsgCmd.accesskey "c">
+<!ENTITY folderMenu.label "Dossier">
+<!ENTITY folderMenu.accesskey "o">
 <!ENTITY startPageCmd.label "Page de démarrage du Courrier">
 <!ENTITY startPageCmd.accesskey "g">
 
@@ -417,6 +425,7 @@
 <!ENTITY deleteButton.label " Supprimer">
 <!ENTITY undeleteButton.label "Restaurer">
 <!ENTITY markButton.label "Marquer">
+<!ENTITY printButton.label "Imprimer">
 <!ENTITY stopButton.label "Arrêter">
 <!ENTITY junkButton.label "Indésirable">
 <!ENTITY notJunkButton.label "Acceptable">
@@ -440,8 +449,10 @@
 <!ENTITY deleteButton.tooltip "Supprimer le message ou le dossier sélectionné">
 <!ENTITY undeleteButton.tooltip "Restaurer le message sélectionné">
 <!ENTITY markButton.tooltip "Marquer les messages">
+<!ENTITY printButton.tooltip "Imprimer ce message">
 <!ENTITY stopButton.tooltip "Arrêter le transfert en cours">
 <!ENTITY throbber.tooltip "Visiter le site web de &vendorShortName;">
+<!ENTITY throbber.tooltip2 "Visiter le site web de &brandShortName;">
 <!ENTITY junkButton.tooltip "Marquer les messages sélectionnés comme indésirables">
 <!ENTITY notJunkButton.tooltip "Marquer les messages sélectionnés comme acceptables">
 
@@ -495,6 +506,8 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Relever les messages de ce compte">
 <!ENTITY folderContextGetMessages.accesskey "R">
+<!ENTITY folderContextMarkAllFoldersRead.label "Marquer tous les dossiers comme lus">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "M">
 <!ENTITY folderContextOpenNewWindow.label "Ouvrir dans une nouvelle fenêtre">
 <!ENTITY folderContextOpenNewWindow.accesskey "O">
 <!ENTITY folderContextOpenNewTab.label "Ouvrir dans un nouvel onglet">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "s">
 <!ENTITY folderContextProperties.label "Propriétés…">
 <!ENTITY folderContextProperties.accesskey "o">
+<!ENTITY folderContextFavoriteFolder.label "Dossier préféré">
+<!ENTITY folderContextFavoriteFolder.accesskey "p">
 <!ENTITY folderContextSettings.label "Paramètres…">
 <!ENTITY folderContextSettings.accesskey "a">
 

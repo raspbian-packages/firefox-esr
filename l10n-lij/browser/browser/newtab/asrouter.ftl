@@ -2,25 +2,40 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## These messages are used as headings in the recommendation doorhanger
+
 cfr-doorhanger-extension-heading = Estenscioin consegiæ
 cfr-doorhanger-pintab-heading = Prova quésto: aponta sto feuggio
+
+
+
+##
+
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Perché mi veddo questo?
+
 cfr-doorhanger-extension-cancel-button = Òua no
     .accesskey = O
+
 cfr-doorhanger-extension-ok-button = Azonzi òua
     .accesskey = A
 cfr-doorhanger-pintab-ok-button = Aponta sto feuggio
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = Gestisci inpostaçioin consegiæ
     .accesskey = G
+
 cfr-doorhanger-extension-never-show-recommendation = No mostrame sti conseggi
     .accesskey = N
+
 cfr-doorhanger-extension-learn-more-link = Atre informaçioin
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = da { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Conseggi
@@ -44,6 +59,7 @@ cfr-doorhanger-extension-total-users =
         [one] { $total } utente
        *[other] { $total } utenti
     }
+
 cfr-doorhanger-pintab-description = Acedi façilmente a-i sciti ciù uzæ.  Tegni i sciti averti inte 'n feuggio (anche dòppo 'n re-inandio).
 
 ## These messages are steps on how to use the feature and are shown together.
@@ -51,10 +67,68 @@ cfr-doorhanger-pintab-description = Acedi façilmente a-i sciti ciù uzæ.  Tegn
 cfr-doorhanger-pintab-step1 = <b>Sciacca drito</b> in sciô feuggio quade t'eu amugiâ.
 cfr-doorhanger-pintab-step2 = Seleçionn-a <b>Aponta sto feuggio</b> da-o menû.
 cfr-doorhanger-pintab-step3 = Se o scito o l'à 'n agiornamento ti vediæ 'n balin bleu in sciô feuggio apontou.
+
 cfr-doorhanger-pintab-animation-pause = Pösa
 cfr-doorhanger-pintab-animation-resume = Repiggia
+
 
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sincronizza i teu segnalibbri dapertùtto.
 cfr-doorhanger-bookmark-fxa-link-text = Sincronizza i segnalibbri òua…
+
+## Protections panel
+
+
+## What's New toolbar button and panel
+
+cfr-whatsnew-button =
+    .label = Cöse gh'é de neuvo
+    .tooltiptext = Cöse gh'é de neuvo
+
+cfr-whatsnew-panel-header = Cöse gh'é de neuvo
+
+cfr-whatsnew-release-notes-link-text = Lezi e nòtte de version
+
+## Search Bar
+
+## Picture-in-Picture
+
+## Permission Prompt
+
+## Fingerprinter Counter
+
+## Bookmark Sync
+
+
+## Login Sync
+
+cfr-doorhanger-sync-logins-ok-button = Ativa { -sync-brand-short-name }
+    .accesskey = A
+
+## Send Tab
+
+cfr-doorhanger-send-tab-header = Lezilo donde t'eu
+cfr-doorhanger-send-tab-recipe-header = Pòrtite sta riçetta in cuxinn-a
+
+## Firefox Send
+
+
+## Social Tracking Protection
+
+cfr-doorhanger-socialtracking-ok-button = Amia e proteçioin
+    .accesskey = p
+cfr-doorhanger-socialtracking-close-button = Særa
+    .accesskey = S
+cfr-doorhanger-socialtracking-heading = { -brand-short-name } o l'à inpedio a 'na ræ sociale de traciate
+
+## Enhanced Tracking Protection Milestones
+
+## What’s New Panel Content for Firefox 76
+
+## Lockwise message
+
+## Vulnerable Passwords message
+
+## Picture-in-Picture fullscreen message
+

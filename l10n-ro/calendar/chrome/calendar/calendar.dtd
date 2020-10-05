@@ -10,6 +10,7 @@
 <!ENTITY calendar.newtask.button.tooltip          "Creează o sarcină nouă" >
 
 <!ENTITY calendar.unifinder.todoitems.label       "Sarcini" >
+
 <!ENTITY calendar.unifinder.showcompletedtodos.label "Afișează sarcinile finalizate">
 
 <!ENTITY calendar.today.button.label          "Astăzi">
@@ -41,19 +42,19 @@
 <!ENTITY calendar.unifinder.tree.startdate.tooltip2        "Sortează după data de început">
 <!ENTITY calendar.unifinder.tree.enddate.label             "Sfârșit">
 <!ENTITY calendar.unifinder.tree.enddate.tooltip2          "Sortează după data de sfârșit">
-<!ENTITY calendar.unifinder.tree.duedate.label             "Scadent">
+<!ENTITY calendar.unifinder.tree.duedate.label             "Termen-limită">
 <!ENTITY calendar.unifinder.tree.duedate.tooltip2          "Sortează după termenul-limită">
 <!ENTITY calendar.unifinder.tree.completeddate.label       "Finalizată">
 <!ENTITY calendar.unifinder.tree.completeddate.tooltip2    "Sortează după data finalizării">
 <!ENTITY calendar.unifinder.tree.categories.label          "Categorie">
 <!ENTITY calendar.unifinder.tree.categories.tooltip2       "Sortează după categorie">
-<!ENTITY calendar.unifinder.tree.location.label            "Locație">
-<!ENTITY calendar.unifinder.tree.location.tooltip2         "Sortează după locație">
+<!ENTITY calendar.unifinder.tree.location.label            "Loc">
+<!ENTITY calendar.unifinder.tree.location.tooltip2         "Sortează după loc">
 <!ENTITY calendar.unifinder.tree.status.label              "Stare">
 <!ENTITY calendar.unifinder.tree.status.tooltip2           "Sortează după stare">
 <!ENTITY calendar.unifinder.tree.calendarname.label        "Denumire calendar">
 <!ENTITY calendar.unifinder.tree.calendarname.tooltip2     "Sortează după denumirea calendarului">
-<!ENTITY calendar.unifinder.tree.duration.label            "Scadență în">
+<!ENTITY calendar.unifinder.tree.duration.label            "Scadent la">
 <!ENTITY calendar.unifinder.tree.duration.tooltip2         "Sortează după timpul rămas până la scadență">
 <!ENTITY calendar.unifinder.close.tooltip                  "Închide căutarea și lista de evenimente">
 
@@ -129,7 +130,7 @@
      that is after today and after the selected date. If a task repeats, a
      separate entry will be shown for each of the occurrences that happen on or
      before today (or the selected date, whichever is later). -->
-<!ENTITY calendar.task.filter.current.label         "Sarcini curente">
+<!ENTITY calendar.task.filter.current.label         "Sarcini actuale">
 <!ENTITY calendar.task.filter.current.accesskey     "u">
 
 <!ENTITY calendar.task-details.title.label           "titlu">
@@ -177,7 +178,7 @@
 
 <!ENTITY calendar.context.attendance.menu.label                 "Participare">
 <!ENTITY calendar.context.attendance.menu.accesskey             "P">
-<!ENTITY calendar.context.attendance.occurrence.label           "Această ocurență">
+<!ENTITY calendar.context.attendance.occurrence.label           "Această apariție">
 <!ENTITY calendar.context.attendance.all2.label                 "Serii complete">
 <!ENTITY calendar.context.attendance.send.label                 "Trimite o notificare acum">
 <!ENTITY calendar.context.attendance.send.accesskey             "S">
@@ -347,7 +348,7 @@
 <!ENTITY calendar.alarm.snooze.cancel               "Anulează amânarea">
 
 <!-- Calendar Server Dialog -->
-<!ENTITY calendar.server.dialog.title.edit          "Editare calendar">
+<!ENTITY calendar.server.dialog.title.edit          "Editează calendarul">
 <!ENTITY calendar.server.dialog.name.label          "Denumire calendar:">
 
 <!-- Calendar Properties -->
@@ -364,6 +365,7 @@
 <!ENTITY calendarproperties.firealarms.label               "Afișează mementourile">
 <!ENTITY calendarproperties.cache3.label                   "Suport offline">
 <!ENTITY calendarproperties.enabled.label                  "Activează acest calendar">
+<!ENTITY calendarproperties.enabled2.label                 "Activează acest calendar">
 <!ENTITY calendarproperties.forceDisabled.label            "Nu s-a găsit furnizorul pentru acest calendar. Se întâmplă dacă ai dezactivat sau ai dezinstalat anumite suplimente.">
 <!ENTITY calendarproperties.unsubscribe.label              "Dezabonare">
 <!ENTITY calendarproperties.unsubscribe.accesskey          "D">

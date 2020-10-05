@@ -33,6 +33,7 @@ printpreview-of =
     .value = iš
 printpreview-custom-prompt =
     .value = Kitoks mastelis…
+printpreview-custom-scale-prompt-title = Kitoks mastelis
 printpreview-page-setup =
     .label = Puslapio nuostatos…
     .accesskey = n
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Paskutinis puslapis
+

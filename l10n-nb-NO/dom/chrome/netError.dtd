@@ -7,7 +7,7 @@
 
 <!-- Specific error messages -->
 
-<!ENTITY connectionFailure.title "Klarte ikke koble til nettstedet">
+<!ENTITY connectionFailure.title "Tilkoblingsfeil">
 <!ENTITY connectionFailure.longDesc "<p>Selv om adressen ser ut til å være gyldig, klarte ikke nettleseren å koble til det.</p><ul><li>Kan nettstedet midlertidig være utilgjengelig? Prøv igjen senere.</li><li>Klarer du å åpne andre nettsider?  Kontroller datamaskinens nettverksforbindelse.</li><li>Er datamaskinen eller nettverket ditt beskyttet av en brannmur eller proxy? Feil innstillinger kan forstyrre åpning av nettsider.</li></ul>">
 
 <!ENTITY deniedPortAccess.title "Porten er adgangsbegrenset av sikkerhetsårsaker">
@@ -55,7 +55,7 @@
 <!ENTITY proxyConnectFailure.title "Proxy avviste tilkoblingen">
 <!ENTITY proxyConnectFailure.longDesc "<p>Nettleseren er innstilt på å bruke en proxy, men proxy avviste tilkoblingen.</p><ul><li>Er nettleserens proxyinnstillinger korrekte? Kontroller innstillingene og prøv igjen.</li><li>Tillater proxyen tilkoblinger fra dette nettverket?</li><li>Har du fortsatt problem? Kontakt nettverksansvarlig eller Internett-tilbyderen din for mer hjelp.</li></ul>">
 
-<!ENTITY proxyResolveFailure.title "Proxy ikke funnet">
+<!ENTITY proxyResolveFailure.title "Proxy server ikke funnet">
 <!ENTITY proxyResolveFailure.longDesc "<p>Nettleseren er innstilt på å bruke en proxy, men nettleseren klarte ikke å finne proxyen.</p><ul><li>Er nettleserens proxyinnstillinger korrekte? Kontroller innstillingene og prøv igjen.</li><li>Er datamaskinen tilkoblet et aktivt nettverk?</li><li>Har du fortsatt problem? Kontakt nettverksansvarlig eller Internett-tilbyder for mer hjelp.</li></ul>">
 
 <!ENTITY redirectLoop.title "Omdirigeringsløkke">
@@ -75,6 +75,9 @@
 
 <!ENTITY cspBlocked.title "Blokkert av sikkerhetspolicy">
 <!ENTITY cspBlocked.longDesc "<p>Nettleseren forhindret denne siden fra å lastes inn på denne måten, fordi nettsiden har en sikkerhetspolicy som forbyr det.</p>">
+
+<!ENTITY xfoBlocked.title "Blokkert av X-Frame-Options-policy">
+<!ENTITY xfoBlocked.longDesc "<p>Nettleseren forhindret denne nettsiden i å laste i denne konteksten fordi nettsiden har en X-Frame-Options-policy som ikke tillater det.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Feil - ødelagt innhold">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>Siden du forsøker å vise kan ikke åpnes fordi en feil i dataoverføringen ble oppdaget.</p><ul><li>Kontakt nettstedseierne og informer dem om dette problemet.</li></ul>">

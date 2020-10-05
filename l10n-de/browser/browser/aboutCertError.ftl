@@ -34,6 +34,14 @@ cert-error-domain-mismatch-single-nolink = Websites bestätigen ihre Identität 
 # $subject-alt-names (String) - Alternate domain names for which the cert is valid.
 cert-error-domain-mismatch-multiple = Websites bestätigen ihre Identität mittels Zertifikaten. { -brand-short-name } vertraut dieser Website nicht, weil das von der Website verwendete Zertifikat nicht für { $hostname } gilt. Das Zertifikat gilt nur für folgende Namen: { $subject-alt-names }
 # Variables:
+# $hostname (String) - Hostname of the website with cert error.
+# $not-after-local-time (Date) - Certificate is not valid after this time.
+cert-error-expired-now = Websites bestätigen ihre Identität mittels Zertifikaten, welche für einen bestimmten Zeitraum gültig sind. Das Zertifikat für { $hostname } ist am { $not-after-local-time } abgelaufen.
+# Variables:
+# $hostname (String) - Hostname of the website with cert error.
+# $not-before-local-time (Date) - Certificate is not valid before this time.
+cert-error-not-yet-valid-now = Websites bestätigen ihre Identität mittels Zertifikaten, welche für einen bestimmten Zeitraum gültig sind. Das Zertifikat für { $hostname } wird erst am { $not-before-local-time } gültig.
+# Variables:
 # $error (String) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 cert-error-code-prefix-link = Fehlercode: <a data-l10n-name="error-code-link">{ $error }</a>
 # Variables:
@@ -47,3 +55,48 @@ cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
 # $hasHPKP (Boolean) - Indicates whether HPKP header is present.
 cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
 cert-error-details-cert-chain-label = Zertifikatskette:
+open-in-new-window-for-csp-or-xfo-error = Seite in neuem Tab öffnen
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Zu Ihrem Schutz erlaubt { $hostname } es { -brand-short-name } nicht, diese Seite anzuzeigen, wenn sie in eine andere Seite eingebettet ist. Zur Anzeige der Seite muss diese in einem neuen Tab geöffnet werden.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Fehler: Verbindung fehlgeschlagen
+deniedPortAccess-title = Fehler: Port aus Sicherheitsgründen blockiert
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Seite wurde nicht gefunden
+fileNotFound-title = Fehler: Datei nicht gefunden
+fileAccessDenied-title = Zugriff auf die Datei wurde verweigert
+generic-title = Fehler: Anfrage konnte nicht ausgeführt werden
+captivePortal-title = Anmeldung beim Netzwerk
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Diese Adresse scheint nicht korrekt zu sein.
+netInterrupt-title = Fehler: Datenübertragung unterbrochen
+notCached-title = Dokument erloschen
+netOffline-title = Fehler: Offline-Modus
+contentEncodingError-title = Content-Encoding-Fehler
+unsafeContentType-title = Unsicherer Dateityp
+netReset-title = Fehler: Verbindung unterbrochen
+netTimeout-title = Fehler: Netzwerk-Zeitüberschreitung
+unknownProtocolFound-title = Adresse nicht erkannt
+proxyConnectFailure-title = Fehler: Proxy-Server verweigert die Verbindung
+proxyResolveFailure-title = Fehler: Proxy-Server nicht gefunden
+redirectLoop-title = Fehler: Umleitungsfehler
+unknownSocketType-title = Fehler: Unerwartete Antwort
+nssFailure2-title = Fehler: Gesicherte Verbindung fehlgeschlagen
+cspBlocked-title = Blockiert von der Inhaltsicherheitsrichtlinie (CSP)
+xfoBlocked-title = Blockiert durch X-Frame-Options-Richtlinie
+csp-xfo-error-title = { -brand-short-name } darf diese eingebettete Seite nicht öffnen
+corruptedContentError-title = Fehler: Beschädigte Inhalte
+remoteXUL-title = Remote-XUL
+sslv3Used-title = Keine sichere Verbindung möglich
+inadequateSecurityError-title = Diese Verbindung ist nicht sicher
+blockedByPolicy-title = Blockierte Seite
+clockSkewError-title = Datum und/oder Uhrzeit Ihres Computers sind nicht korrekt
+networkProtocolError-title = Netzwerkprotokoll-Fehler
+nssBadCert-title = Warnung: Mögliches Sicherheitsrisiko erkannt
+nssBadCert-sts-title = Kein Verbindungsversuch unternommen: Mögliches Sicherheitsproblem
+certerror-mitm-title = Software hindert { -brand-short-name } am Aufbauen einer sicheren Verbindung mit dieser Website

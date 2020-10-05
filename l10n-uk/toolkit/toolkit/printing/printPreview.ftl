@@ -33,6 +33,7 @@ printpreview-of =
     .value = з
 printpreview-custom-prompt =
     .value = Нетипова шкала…
+printpreview-custom-scale-prompt-title = Власний масштаб
 printpreview-page-setup =
     .label = Параметри сторінки…
     .accesskey = П
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Остання сторінка
+

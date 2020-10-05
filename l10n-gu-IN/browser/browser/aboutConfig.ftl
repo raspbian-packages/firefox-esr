@@ -7,17 +7,51 @@ about-config-warning-title = અહીં ડ્રેગન છે!
 about-config-warning-text = આ અદ્યતન સેટિંગ્સને બદલવું આ એપ્લિકેશનની સ્થિરતા, સુરક્ષા અને પ્રદર્શન માટે નુકસાનકારક હોઈ શકે છે. તમે જે કરો છો તેના વિશે તમને ખાતરી છે કે તમારે ફક્ત ચાલુ રાખવું જોઈએ.
 about-config-warning-checkbox = ફરીથી મને હેરાન કરો, કૃપા કરીને!
 about-config-warning-button = હું જોખમ સ્વીકારું છું
-about-config-title = about:config
+
 about-config2-title = અદ્યતન રૂપરેખાંકન
+
 about-config-search-input =
     .placeholder = શોધો
+
+## These strings appear on the warning you see when first visiting about:config.
+
+about-config-intro-warning-title = સાવધાની સાથે આગળ વધો
+about-config-intro-warning-text = અદ્યતન ગોઠવણી પસંદગીઓ બદલવી { -brand-short-name } કામગીરી અથવા સુરક્ષાને અસર કરી શકે છે.
+about-config-intro-warning-checkbox = જ્યારે હું આ પસંદગીઓને ઍક્સેસ કરવાનો પ્રયત્ન કરું ત્યારે મને ચેતવણી આપો
+about-config-intro-warning-button = જોખમ સ્વીકારો અને ચાલુ રાખો
+
+
+
+##
+
+# This is shown on the page before searching but after the warning is accepted.
+about-config-caution-text = આ પસંદગીઓને બદલવાથી { -brand-short-name } કામગીરી અથવા સુરક્ષાને અસર થઈ શકે છે.
+
+about-config-page-title = અદ્યતન પસંદગીઓ
+
+about-config-search-input1 =
+    .placeholder = શોધ પસંદગી નામ
 about-config-show-all = બધું બતાવો
+
 about-config-pref-add = ઉમેરો
 about-config-pref-toggle = ટૉગલ કરો
 about-config-pref-edit = ફેરફાર કરો
 about-config-pref-save = સાચવો
 about-config-pref-reset = ફરીથી સેટ કરો
 about-config-pref-delete = કાઢી નાખો
+
+about-config-pref-add-button =
+    .title = ઉમેરો
+about-config-pref-toggle-button =
+    .title = ટૉગલ કરો
+about-config-pref-edit-button =
+    .title = ફેરફાર કરો
+about-config-pref-save-button =
+    .title = સાચવો
+about-config-pref-reset-button =
+    .title = ફરીથી સેટ કરો
+about-config-pref-delete-button =
+    .title = કાઢી નાખો
 
 ## Labels for the type selection radio buttons shown when adding preferences.
 

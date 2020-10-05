@@ -5,7 +5,7 @@
 <!ENTITY errorConsole.title "Konzola grešaka">
 
 <!ENTITY errFile.label   "Izvorna datoteka:">
-<!ENTITY errLine.label   "Linija:">
+<!ENTITY errLine.label   "Redak:">
 <!ENTITY errColumn.label "Stupac:">
 
 <!ENTITY all.label          "Sve">
@@ -16,9 +16,9 @@
 <!ENTITY warnings.accesskey "U">
 <!ENTITY messages.label     "Poruke">
 <!ENTITY messages.accesskey "P">
-<!ENTITY clear.label        "Očisti">
+<!ENTITY clear.label        "Obriši">
 <!ENTITY clear.accesskey    "O">
-<!ENTITY codeEval.label     "Kod:">
+<!ENTITY codeEval.label     "Kȏd:">
 <!ENTITY codeEval.accesskey "o">
 <!ENTITY evaluate.label     "Ocijeni">
 <!ENTITY evaluate.accesskey "c">
@@ -28,9 +28,9 @@
 <!ENTITY copyCmd.label       "Kopiraj">  
 <!ENTITY copyCmd.accesskey   "K"> 
 <!ENTITY copyCmd.commandkey  "C"> 
-<!ENTITY sortFirst.label     "Prvi > zadnji redoslijed sortiranja">
+<!ENTITY sortFirst.label     "Prvi > Zadnji poredak">
 <!ENTITY sortFirst.accesskey "P">
-<!ENTITY sortLast.label      "Zadnji > prvi redoslijed sortiranja">
+<!ENTITY sortLast.label      "Zadnji > Prvi poredak">
 <!ENTITY sortLast.accesskey  "Z">
 <!ENTITY closeCmd.commandkey "w">  
 <!ENTITY focus1.commandkey   "l">  

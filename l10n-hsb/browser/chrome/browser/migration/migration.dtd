@@ -3,7 +3,7 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 
-<!ENTITY migrationWizard.title          "Importowy zrjadowak">
+<!ENTITY migrationWizard.title          "Importowanski asistent">
 
 <!ENTITY importFrom.label               "Nastajenja, zapołožki, historiju, hesła a hinaše daty importować z:">
 <!ENTITY importFromUnix.label           "Nastajenja, zapołožki, historiju, hesła a hinaše daty importować z:">
@@ -13,6 +13,10 @@
 <!ENTITY importFromIE.accesskey         "M">
 <!ENTITY importFromEdge.label           "Microsoft Edge">
 <!ENTITY importFromEdge.accesskey       "E">
+<!ENTITY importFromEdgeLegacy.label     "Microsoft Edge Legacy">
+<!ENTITY importFromEdgeLegacy.accesskey "L">
+<!ENTITY importFromEdgeBeta.label       "Microsoft Edge Beta">
+<!ENTITY importFromEdgeBeta.accesskey   "d">
 <!ENTITY importFromNothing.label        "Ničo njeimportować">
 <!ENTITY importFromNothing.accesskey    "N">
 <!ENTITY importFromSafari.label         "Safari">

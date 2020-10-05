@@ -11,6 +11,7 @@
 ## in the documentation section in about:policies.
 
 policy-3rdparty = Beleidsregels instellen zodat WebExtensions via chrome.storage.managed toegang kunnen krijgen.
+policy-AppAutoUpdate = Automatische applicatie-update in- of uitschakelen.
 policy-AppUpdateURL = Aangepaste app-update-URL instellen.
 policy-Authentication = Geïntegreerde authenticatie configureren voor websites die dit ondersteunen.
 policy-BlockAboutAddons = Toegang tot de Add-onbeheerder (about:addons) blokkeren.
@@ -21,9 +22,11 @@ policy-Bookmarks = Bladwijzers maken in de Bladwijzerwerkbalk, het menu Bladwijz
 policy-CaptivePortal = Ondersteuning voor hotspot-aanmeldingspagina inschakelen of uitschakelen.
 policy-CertificatesDescription = Certificaten toevoegen of ingebouwde certificaten gebruiken.
 policy-Cookies = Toestaan of weigeren dat websites cookies instellen.
+policy-DisabledCiphers = Coderingssuites uitschakelen.
 policy-DefaultDownloadDirectory = Standaard downloadmap instellen.
 policy-DisableAppUpdate = Voorkomen dat de browser wordt bijgewerkt.
 policy-DisableBuiltinPDFViewer = PDF.js uitschakelen, de ingebouwde PDF-viewer in { -brand-short-name }.
+policy-DisableDefaultBrowserAgent = Voorkomen dat de standaard browseragent enige actie onderneemt. Alleen van toepassing op Windows; andere platformen beschikken niet over de agent.
 policy-DisableDeveloperTools = Toegang tot de ontwikkelaarshulpmiddelen blokkeren.
 policy-DisableFeedbackCommands = Opdrachten voor het verzenden van feedback vanuit het menu Help uitschakelen (Feedback verzenden en Misleidende website rapporteren).
 policy-DisableFirefoxAccounts = Op { -fxaccount-brand-name } gebaseerde services uitschakelen, waaronder Sync.
@@ -33,6 +36,7 @@ policy-DisableFirefoxStudies = Voorkomen dat { -brand-short-name } onderzoeken u
 policy-DisableForgetButton = Toegang tot de knop Vergeten voorkomen.
 policy-DisableFormHistory = Geen zoek- en formuliergeschiedenis onthouden.
 policy-DisableMasterPasswordCreation = Wanneer true, kan geen hoofdwachtwoord worden aangemaakt.
+policy-DisablePasswordReveal = Niet toestaan dat wachtwoorden worden onthuld in opgeslagen aanmeldingen.
 policy-DisablePocket = De functie voor het opslaan van webpagina’s naar Pocket uitschakelen.
 policy-DisablePrivateBrowsing = Privénavigatie uitschakelen.
 policy-DisableProfileImport = De menuopdracht voor het importeren van gegevens vanuit een andere browser uitschakelen.
@@ -49,6 +53,8 @@ policy-DontCheckDefaultBrowser = Controle op standaardbrowser bij opstarten uits
 policy-DownloadDirectory = De downloadmap instellen en vergrendelen.
 # “lock” means that the user won’t be able to change this setting
 policy-EnableTrackingProtection = Inhoudsblokkering inschakelen of uitschakelen en optioneel vergrendelen.
+# “lock” means that the user won’t be able to change this setting
+policy-EncryptedMediaExtensions = Versleutelde media-extensies in- of uitschakelen en optioneel vergrendelen.
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
@@ -57,24 +63,39 @@ policy-ExtensionSettings = Alle aspecten van installatie van extensies beheren.
 policy-ExtensionUpdate = Automatische extensie-updates inschakelen of uitschakelen.
 policy-FirefoxHome = De startpagina van Firefox instellen.
 policy-FlashPlugin = Gebruik van de Flash-plug-in toestaan of weigeren.
+policy-Handlers = Standaard toepassinghandlers configureren
 policy-HardwareAcceleration = Wanneer false, hardwareversnelling uitschakelen.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = De startpagina instellen en optioneel vergrendelen.
 policy-InstallAddonsPermission = Toestaan dat bepaalde websites add-ons installeren.
+policy-LegacyProfiles = Functie om een afzonderlijk profiel voor elke installatie af te dwingen uitschakelen
+
+## Do not translate "SameSite", it's the name of a cookie attribute.
+
+policy-LegacySameSiteCookieBehaviorEnabled = Standaardinstelling voor verouderd SameSite-cookiegedrag inschakelen.
+policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Op specifieke websites terugkeren naar verouderd SameSite-gedrag voor cookies.
+
+##
+
 policy-LocalFileLinks = Specifieke websites toestaan te koppelen naar lokale bestanden.
+policy-MasterPassword = Een hoofdwachtwoord vereisen of voorkomen.
 policy-NetworkPrediction = ‘Network prediction’ (DNS prefetching) inschakelen of uitschakelen.
 policy-NewTabPage = De nieuw-tabbladpagina inschakelen of uitschakelen.
 policy-NoDefaultBookmarks = Aanmaken van de standaardbladwijzers die met { -brand-short-name } worden meegeleverd uitschakelen, evenals de Slimme bladwijzers (Meest bezocht, Recente labels). Noot: deze beleidsregel is alleen van kracht bij gebruik ervan voordat het profiel voor het eerst wordt uitgevoerd.
 policy-OfferToSaveLogins = De instelling voor het toestaan dat { -brand-short-name } mag aanbieden opgeslagen aanmeldingen en wachtwoorden te onthouden afdwingen. Zowel de waarde true als false wordt geaccepteerd.
+policy-OfferToSaveLoginsDefault = De standaardwaarde instellen voor het toestaan dat { -brand-short-name } mag aanbieden opgeslagen aanmeldingen en wachtwoorden te onthouden. Zowel de waarde true als false wordt geaccepteerd.
 policy-OverrideFirstRunPage = De pagina voor eerste keer uitvoeren vervangen. Stel deze beleidsregel in op leeg als u de betreffende pagina wilt uitschakelen.
 policy-OverridePostUpdatePage = De pagina ‘Wat is er nieuw’ na een update vervangen. Stel deze beleidsregel in op leeg als u de betreffende pagina wilt uitschakelen.
-policy-Permissions = Toestemmingen voor camera, microfoon, locatie en notificaties configureren.
+policy-PasswordManagerEnabled = Opslaan van wachtwoorden in de wachtwoordenbeheerder inschakelen.
+# PDF.js and PDF should not be translated
+policy-PDFjs = PDF.js, de in { -brand-short-name } ingebouwde PDF-lezer, uitschakelen of instellen.
+policy-Permissions2 = Toestemmingen voor camera, microfoon, locatie, notificaties en automatisch afspelen configureren.
+policy-PictureInPicture = Picture-in-Picture in- of uitschakelen.
 policy-PopupBlocking = Toestaan dat bepaalde websites standaard pop-ups weergeven.
 policy-Preferences = De waarde voor een subset van voorkeuren instellen en vergrendelen.
 policy-PromptForDownloadLocation = Vragen waar gedownloade bestanden moeten worden opgeslagen.
 policy-Proxy = Proxyinstellingen configureren.
 policy-RequestedLocales = De lijst van gevraagde locales voor de toepassing instellen, op volgorde van voorkeur.
-policy-SanitizeOnShutdown = Alle navigatiegegevens wissen bij afsluiten.
 policy-SanitizeOnShutdown2 = Navigatiegegevens wissen bij afsluiten.
 policy-SearchBar = De standaardlocatie van de zoekbalk instellen. De gebruiker mag deze nog steeds aanpassen.
 policy-SearchEngines = Instellingen voor zoekmachines configureren. Deze beleidsregel is alleen beschikbaar in de Extended Support Release (ESR)-versie.
@@ -84,5 +105,6 @@ policy-SecurityDevices = PKCS #11-modules installeren.
 policy-SSLVersionMax = De maximale SSL-versie instellen.
 policy-SSLVersionMin = De minimale SSL-versie instellen.
 policy-SupportMenu = Een aangepast menu-item voor ondersteuning aan het menu Help toevoegen.
+policy-UserMessaging = Bepaalde berichten niet aan de gebruiker tonen.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Het bezoeken van websites blokkeren. Zie de documentatie voor meer informatie over de notatie.

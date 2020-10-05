@@ -38,7 +38,7 @@ aboutdebugging-sidebar-runtime-connection-status-disconnected = Deconectat
 about-debugging-sidebar-no-devices = Niciun dispozitiv descoperit
 # Text displayed in buttons found in sidebar items representing remote runtimes.
 # Clicking on the button will attempt to connect to the runtime.
-about-debugging-sidebar-item-connect-button = Conectează-te
+about-debugging-sidebar-item-connect-button = Conectare
 # Text displayed in buttons found in sidebar items when the runtime is connecting.
 about-debugging-sidebar-item-connect-button-connecting = Se conectează…
 # Text displayed in buttons found in sidebar items when the connection failed.
@@ -91,7 +91,7 @@ about-debugging-setup-connect-heading = Conectează un dispozitiv
 # USB section of the Setup page
 about-debugging-setup-usb-title = USB
 # Explanatory text displayed in the Setup page when USB debugging is disabled
-about-debugging-setup-usb-disabled = La activare, vor fi descărcate și adăugate componentele de depanare Android USB necesare pentru { -brand-shorter-name }
+about-debugging-setup-usb-disabled = La activare, vor fi descărcate și adăugate componentele de depanare Android USB necesare pentru { -brand-shorter-name }.
 # Text of the button displayed in the USB section of the setup page when USB debugging is disabled.
 # Clicking on it will download components needed to debug USB Devices remotely.
 about-debugging-setup-usb-enable-button = Activează dispozitivele USB
@@ -136,7 +136,7 @@ about-debugging-network-locations-remove-button = Elimină
 # Text used as error message if the format of the input value was invalid in the network locations form of the Setup page.
 # Variables:
 #   $host-value (string) - The input value submitted by the user in the network locations form
-about-debugging-network-location-form-invalid = Gazdă invalidă „{ $host-value }”. Formatul așteptat este „numele-gazdei:numărul-portului”.
+about-debugging-network-location-form-invalid = Gazdă nevalidă „{ $host-value }”. Formatul așteptat este „numele-gazdei:numărul-portului”.
 # Text used as error message if the input value was already registered in the network locations form of the Setup page.
 # Variables:
 #   $host-value (string) - The input value submitted by the user in the network locations form
@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = Profilează performanța
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Configurația browserului nu este compatibilă cu scripturile Service Worker. <a>Află mai multe</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Browserul conectat are o versiune veche ({ $runtimeVersion }). Versiunea minimă cu suport este ({ $minVersion }). Aceasta este o configurație fără suport și poate produce disfuncționalități DevTools. Te rugăm să actualizezi browserul conectat. <a>Depanare</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = Browserul conectat are o versiune vech
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Este posibil ca panoul de depanare să nu funcționeze în browserul conectat. Te rugăm să folosești Firefox { $runtimeVersion } dacă trebuie să folosești Depanatorul în acest browser.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Această versiune de Firefox nu poate depana Firefox pentru Android (68). Recomandăm instalarea pentru testare pe telefon a versiunii Nightly de Firefox pentru Android. <a>Mai multe detalii</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -199,7 +202,7 @@ about-debugging-browser-version-too-recent = Browserul conectat este mai recent 
 about-debugging-runtime-name = { $name } ({ $version })
 # Text of a button displayed in Runtime pages for remote runtimes.
 # Clicking on the button will close the connection to the runtime.
-about-debugging-runtime-disconnect-button = Deconectează-te
+about-debugging-runtime-disconnect-button = Deconectare
 # Text of the connection prompt button displayed in Runtime pages, when the preference
 # "devtools.debugger.prompt-connection" is false on the target runtime.
 about-debugging-connection-prompt-enable-button = Activează mesajul de conexiune
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Push
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Pornește
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Push
+    .disabledTitle = Serviciul Push pentru scriptul Service Worker este în prezent dezactivat pentru multiprocesul { -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Start
+    .disabledTitle = Inițializarea scriptului Service Worker este în prezent dezactivată pentru multiprocesul { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Dezînregistrează
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -287,12 +299,20 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Serviciu Push
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Inspecția scripturilor Service Worker este în prezent dezactivată pentru multiprocesul { -brand-shorter-name }
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Proces principal
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Procesul principal pentru browserul-țintă
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Cutie de unelte multiproces
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Proces principal și proces de conținut pentru browserul-țintă
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Închide mesajul

@@ -84,6 +84,8 @@ about-debugging-setup-title = Kurulum
 about-debugging-setup-intro = Cihazınızla uzaktan hata ayıklamak istediğiniz bağlantı yöntemini ayarlayın.
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
 about-debugging-setup-this-firefox = Bu { -brand-shorter-name } sürümünde sekmelerde, eklentilerde ve service worker’larda hata ayıklamak için <a>{ about-debugging-this-firefox-runtime-name }</a> bölümünü kullanabilirsiniz.
+# Explanatory text in the Setup page about what the 'This Firefox' page is for
+about-debugging-setup-this-firefox2 = Bu { -brand-shorter-name } sürümünde eklentilerde ve service worker’larda hata ayıklamak için <a>{ about-debugging-this-firefox-runtime-name }</a> bölümünü kullanabilirsiniz.
 # Title of the heading Connect section of the Setup page.
 about-debugging-setup-connect-heading = Cihaz bağlayın
 # USB section of the Setup page
@@ -103,10 +105,22 @@ about-debugging-setup-usb-status-enabled = Etkin
 about-debugging-setup-usb-status-disabled = Devre dışı
 about-debugging-setup-usb-status-updating = Güncelleniyor…
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-dev-menu2 = Android cihazınızda Geliştirici menüsünü etkinleştirin.
+# USB section step by step guide
+about-debugging-setup-usb-step-enable-debug2 = Android geliştirici menüsünden USB hata ayıklamayı etkinleştirin.
+# USB section step by step guide
+about-debugging-setup-usb-step-enable-debug-firefox2 = Android cihazınızdaki Firefox’ta USB hata ayıklamayı etkinleştirin.
+# USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Android cihazını bilgisayarınıza bağlayın.
+# Text shown in the USB section of the setup page with a link to troubleshoot connection errors.
+# The link goes to https://developer.mozilla.org/docs/Tools/Remote_Debugging/Debugging_over_USB
+about-debugging-setup-usb-troubleshoot = USB cihazınıza bağlanma sorunları mı yaşıyorsunuz? <a>Sorunları giderin</a>
 # Network section of the Setup page
 about-debugging-setup-network =
     .title = Ağ konumu
+# Text shown in the Network section of the setup page with a link to troubleshoot connection errors.
+# The link goes to https://developer.mozilla.org/en-US/docs/Tools/Remote_Debugging/Debugging_over_a_network
+about-debugging-setup-network-troubleshoot = Ağ konumuna bağlanma sorunları mı yaşıyorsunuz? <a>Sorunları giderin</a>
 # Text of a button displayed after the network locations "Host" input.
 # Clicking on it will add the new network location to the list.
 about-debugging-network-locations-add-button = Ekle
@@ -153,12 +167,15 @@ about-debugging-runtime-other-workers =
 # Title of the processes category.
 about-debugging-runtime-processes =
     .name = İşlemler
+# Label of the button opening the performance profiler panel in runtime pages for remote
+# runtimes.
+about-debugging-runtime-profile-button2 = Profil performansı
 # This string is displayed in the runtime page if the current configuration of the
 # target runtime is incompatible with service workers. "Learn more" points to MDN.
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Tarayıcı yapılandırmanız Service Worker’larla uyumlu değil. <a>Daha fazla bilgi alın</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Bağlı tarayıcının sürümü eski ({ $runtimeVersion }). Desteklenen en eski sürüm { $minVersion }. Bu kurulum desteklenmiyor ve Geliştirici Araçlarının düzgün çalışmasını engelleyebilir. Lütfen bağlı tarayıcıyı güncelleyin. <a>Sorun giderme</a>
@@ -169,8 +186,11 @@ about-debugging-browser-version-too-old = Bağlı tarayıcının sürümü eski 
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Hata ayıklayıcı paneli bağlı tarayıcıyla çalışmayabilir. Bu tarayıcıyla hata ayıklayıcıyı kullanmak istiyorsanız lütfen Firefox { $runtimeVersion } sürümünü kullanın.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Firefox'un bu sürümü Android için Firefox'ta (68) hata ayıklayamıyor. Test için Firefox'un Android Nightly sürümünü telefonunuza yüklemenizi öneririz. <a>Daha fazla bilgi</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -189,6 +209,8 @@ about-debugging-connection-prompt-enable-button = Bağlantı istemini etkinleşt
 # Text of the connection prompt button displayed in Runtime pages, when the preference
 # "devtools.debugger.prompt-connection" is true on the target runtime.
 about-debugging-connection-prompt-disable-button = Bağlantı istemini devre dışı bırak
+# Title of a modal dialog displayed on remote runtime pages after clicking on the Profile Runtime button.
+about-debugging-profiler-dialog-title2 = Profil oluşturucu
 # Clicking on the header of a debug target category will expand or collapse the debug
 # target items in the category. This text is used as ’title’ attribute of the header,
 # to describe this feature.
@@ -244,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Push
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Başlat
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Push
+    .disabledTitle = Çok işlemli { -brand-shorter-name } için Service Worker push özelliği şimdilik devre dışıdır
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Başlat
+    .disabledTitle = Çok işlemli { -brand-shorter-name } için Service Worker başlatma özelliği şimdilik devre dışıdır
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Kaydı sil
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -268,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Push hizmeti
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Çok işlemli { -brand-shorter-name } için Service Worker denetleme özelliği şimdilik devre dışıdır
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Sekme tam olarak yüklenmedi ve denetlenemiyor
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Ana işlem
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Hedef tarayıcının ana işlemi
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Çok işlemli araç kutusu
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Hedef tarayıcı için ana işlem ve içerik işlemleri
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Mesajı kapat

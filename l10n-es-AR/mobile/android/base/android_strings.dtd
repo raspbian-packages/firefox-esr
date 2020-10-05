@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Menos datos, más ahorro">
 <!ENTITY firstrun_data_subtext2 "Desactivá imágenes para perder menos tiempo en cada sitio que visitás.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Cuenta">
-<!ENTITY firstrun_sync_message2 "Continúá desde donde dejaste.">
+<!ENTITY firstrun_sync_message3 "Sincronizá tus marcadores, historial y contraseñas en tu teléfono.">
 <!ENTITY firstrun_sync_subtext2 "Usá Sync para encontrar los marcadores, contraseñas y otras cosas que guardás en &brandShortName; en todos tus dispositivos.">
 <!ENTITY newfirstrun_sync_subtext "Sincronice el contenido que guarda en el dispositivo móvil con Firefox para el escritorio, de forma privada y segura.">
-<!ENTITY updatednewfirstrun_sync_subtext "Iniciá sesión en tu cuenta para aprovechar &brandShortName; al máximo">
+<!ENTITY firstrun_sendtab_title "Enviar pestaña">
+<!ENTITY firstrun_sendtab_message "Compartí pestañas desde el móvil al escritorio, al instante.">
 <!ENTITY firstrun_signin_message "Conectate, empecemos">
-<!ENTITY firstrun_signin_button "Registrarse en Sync">
-<!ENTITY newfirstrun_signin_button "Activar la sincronización">
-<!ENTITY updatednewfirstrun_signin_button "Ingresá en &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Iniciar navegación">
+<!ENTITY onboard_start_button_browser "Iniciar navegación">
 <!ENTITY firstrun_button_notnow "No ahora">
 <!ENTITY firstrun_button_next "Siguiente">
+<!ENTITY firstrun_signup_button "Registrate">
 
 <!ENTITY firstrun_tabqueue_title "Enlaces">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Enviando informe de fallos\u2026">
 <!ENTITY  crash_close_label "Cerrar">
 <!ENTITY  crash_restart_label "Reiniciar &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; falló">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Carpeta actualizada">
 <!ENTITY bookmark_parent_folder "Carpeta superior">
 <!ENTITY bookmark_add_folder "Agregar nueva carpeta">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(sin título)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Cookies">
 <!ENTITY pref_cookies_accept_all "Habilitadas">
 <!ENTITY pref_cookies_not_accept_foreign "Habilitadas, excepto de terceros">
+<!ENTITY pref_cookies_not_accept_trackers "Habilitado excluyendo las cookies de rastreo">
 <!ENTITY pref_cookies_disabled "Deshabilitadas">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Aplicaciones web progresivas">
 <!ENTITY pref_pwa_summary "Permitir que las aplicaciones se agreguen a la pantalla de inicio">
-
-<!ENTITY tracking_protection_prompt_title "Ahora con protección de rastreo">
-<!ENTITY tracking_protection_prompt_text "Bloquear activamente elementos de rastreo para que no tengás que preocuparte.">
-<!ENTITY tracking_protection_prompt_tip_text "Visitá opciones de privacidad para conocer más">
-<!ENTITY tracking_protection_prompt_action_button "¡Lo tengo!">
 
 <!ENTITY tab_queue_toast_message3 "Pestaña guardada en &brandShortName;">
 <!ENTITY tab_queue_toast_action "Abrir ahora">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Toque la aplicación Navegador &amp; seleccione &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Visitar soporte de Mozilla">
 <!ENTITY pref_about_firefox "Acerca de &brandShortName;">
 <!ENTITY pref_vendor_faqs "FAQs">
 <!ENTITY pref_vendor_feedback "Dar opinión">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Servicio de ubicación de &vendorShortName; ejecutándose">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Actualizaciones automáticas">
-<!ENTITY pref_update_autodownload_wifi "Sólo sobre Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Nunca">
-<!ENTITY pref_update_autodownload_always "Siempre">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Ayuda">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Compartir">
 <!ENTITY share_title "Compartir vía">
 <!ENTITY share_image_failed "No se puede compartir esta imagen">
+<!ENTITY share_error_toast_message "No se puede compartir con la aplicación indicada">
 <!ENTITY save_as_pdf "Guardar como PDF">
 <!ENTITY print "Imprimir">
 <!ENTITY view_page_source "Ver código el fuente de la página">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Dirección">
 <!ENTITY bookmark_edit_keyword "Palabra clave">
 <!ENTITY bookmark_select_folder "Seleccionar carpeta">
-
 <!ENTITY bookmark_edit_undo "Deshacer">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Seleccionar o grabar un sonido">
 <!ENTITY filepicker_image_title "Seleccionar o tomar una foto">
 <!ENTITY filepicker_video_title "Seleccionar o grabar un video">
-
 <!ENTITY filepicker_permission_denied "Permisos requeridos no otorgados, volviendo al selector de archivos del sistema.">
 
 <!-- Site identity popup -->
@@ -713,8 +695,8 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY identity_connection_chromeui "Esta es una página de &brandShortName; segura">
 
 <!-- Mixed content notifications in site identity popup -->
-<!ENTITY mixed_content_blocked_all1 "&brandShortName; ha bloqueado el contenido inseguro en esta página.">
-<!ENTITY mixed_content_blocked_some1 "&brandShortName; ha bloqueado algún contenido inseguro en esta página.">
+<!ENTITY mixed_content_blocked_all1 "&brandShortName; bloqueó el contenido inseguro en esta página.">
+<!ENTITY mixed_content_blocked_some1 "&brandShortName; bloqueó parte del contenido inseguro en esta página.">
 <!ENTITY mixed_content_display_loaded1 "Partes de esta página no es segura (como las imágenes).">
 <!ENTITY mixed_content_protection_disabled1 "Ha deshabilitado la protección de contenido inseguro.">
 
@@ -722,7 +704,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY doorhanger_tracking_title2 "Protección de rastreo">
 <!ENTITY doorhanger_tracking_state_enabled "Habilitada">
 <!ENTITY doorhanger_tracking_state_disabled "Deshabilitada">
-<!ENTITY doorhanger_tracking_message_enabled1 "Se han bloqueado intentos de rastrear el comportamiento en línea.">
+<!ENTITY doorhanger_tracking_message_enabled1 "Se bloquearon los intentos de rastrear su comportamiento en línea.">
 <!ENTITY doorhanger_tracking_message_disabled2 "Esta página incluye elementos que pueden rastrear la navegación.">
 
 <!-- Common mixed and tracking content strings in site identity popup -->
@@ -757,25 +739,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Buscar &formatS2; en &formatS1;">
 
 <!ENTITY searchable_description "Marcadores e historial">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Actualización de &brandShortName; disponible">
-<!ENTITY updater_start_select2 "Tocar para descargar">
-
-<!ENTITY updater_downloading_title2 "Descargando &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Falló la descarga">
-<!ENTITY updater_downloading_select2 "Tocar para aplicar la descarga cuando se descargue">
-<!ENTITY updater_downloading_retry2 "Tocar para reintentar">
-
-<!ENTITY updater_apply_title3 "Actualización para &brandShortName; descargada">
-<!ENTITY updater_apply_select3 "Tocar para instalar">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Para decargar archivos y actualizaciones, permití que &brandShortName; tenga permiso para acceder al almacenamiento.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Permitir">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Nueva sesión de invitado">
@@ -887,6 +850,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Marcar ítems de vista de lectura para leerlos sin conexión.">
 <!ENTITY helper_triple_readerview_open_button "Agregar a marcadores">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Bienvenido a &brandShortName;">
+<!ENTITY activity_stream_signin_description "Empezá a sincronizar marcadores, contraseñas y más con tu Cuenta de Firefox.">
+<!ENTITY activity_stream_signup_button "Registrate">
+<!ENTITY activity_stream_signin_prompt "¿Ya tenés una cuenta?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Iniciá la sesión.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Tu nuevo Firefox va a llegar en 2020">
+<!ENTITY activity_stream_firefox_promo_description "Próximamente vas a ver un: mejor rendimiento y mejor protección de rastreo. Y además funciones diseñadas para ayudarte a encontrar, guardar y compartir más de lo que te gusta en línea.">
+<!ENTITY activity_stream_firefox_promo_button "Mirá un adelanto">
+
 <!ENTITY activity_stream_topsites "Más visitados">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Recomendado por &brandPocket;">
@@ -944,7 +924,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Sonido y video">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; consejos y trucos">
-<!ENTITY updater_notification_channel "Actualizaciones de la aplicación">
 <!ENTITY synced_tabs_notification_channel "Pestañas sincronizadas">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

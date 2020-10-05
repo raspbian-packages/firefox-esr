@@ -5,10 +5,10 @@
 <!-- addon actions -->
 <!ENTITY cmd.enableAddon.label                "Activar">
 <!ENTITY cmd.enableAddon.accesskey            "A">
-<!ENTITY cmd.disableAddon.label               "Inactivar">
+<!ENTITY cmd.disableAddon.label               "Disactivar">
 <!ENTITY cmd.disableAddon.accesskey           "I">
 
-<!ENTITY cmd.askToActivate.label              "Demandar pro activar">
+<!ENTITY cmd.askToActivate.label              "Demandar ante de activar">
 <!ENTITY cmd.askToActivate.tooltip            "Demandar cata vice si usar iste additivo">
 <!ENTITY cmd.alwaysActivate.label             "Sempre activar">
 <!ENTITY cmd.alwaysActivate.tooltip           "Sempre usar iste additivo">
@@ -59,13 +59,15 @@
 <!ENTITY addon.updateNow.label                "Actualisar ora">
 <!ENTITY addon.updateNow.tooltip              "Installar le actualisation pro iste additivo">
 <!ENTITY addon.includeUpdate.label            "Includer in le actualisation">
-<!ENTITY addon.updateAvailable.label          "Un actualisation es diponibile">
+<!ENTITY addon.updateAvailable.label          "Un actualisation es disponibile">
 <!ENTITY addon.checkingForUpdates.label       "Cercante actualisationes…">
 <!ENTITY addon.releaseNotes.label             "Notas de revision:">
 <!ENTITY addon.loadingReleaseNotes.label      "Cargante…">
-<!ENTITY addon.errorLoadingReleaseNotes.label "Pardono, ma il habeva un error cargante le notas de revision">
+<!ENTITY addon.errorLoadingReleaseNotes.label "Un error ha occurrite durante le cargamento del notas de version.">
 
 <!ENTITY addon.createdBy.label                "Per ">
 
 <!ENTITY settings.path.button.label           "Perquirer…">
+
+<!-- addon actions -->
 <!ENTITY setting.learnmore "Saper plus…">

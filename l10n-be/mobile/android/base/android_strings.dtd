@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Менш трафіку, больш эканоміі">
 <!ENTITY firstrun_data_subtext2 "Адключайце выявы, каб паменшыць расход трафіку на кожным наведаным сайце.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Уліковы запіс">
-<!ENTITY firstrun_sync_message2 "Працягвайце адтуль, дзе спыніліся.">
+<!ENTITY firstrun_sync_message3 "Сінхранізуйце свае закладкі, гісторыю і паролі з сваім тэлефонам.">
 <!ENTITY firstrun_sync_subtext2 "Выкарыстоўвайце Sync для доступу да закладак, пароляў і іншых дадзеных, якія вы захоўваеце ў &brandShortName; на ўсіх прыладах.">
 <!ENTITY newfirstrun_sync_subtext "Сінхранізуйце рэчы, захаваныя на тэлефоне, з Firefox на камп\&apos;ютары, прыватна і бяспечна.">
-<!ENTITY updatednewfirstrun_sync_subtext "Увайдзіце ў свой уліковы запіс, каб атрымаць максімальную аддачу ад &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Даслаць картку">
+<!ENTITY firstrun_sendtab_message "Дзяліцеся карткамі з тэлефона на камп\&apos;ютар — імгненна.">
 <!ENTITY firstrun_signin_message "Падключайцеся і пачынайце">
-<!ENTITY firstrun_signin_button "Увайсці ў Sync">
-<!ENTITY newfirstrun_signin_button "Уключыць Sync">
-<!ENTITY updatednewfirstrun_signin_button "Увайсці ў &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Пачаць агляданне">
+<!ENTITY onboard_start_button_browser "Пачаць агляданне">
 <!ENTITY firstrun_button_notnow "Не зараз">
 <!ENTITY firstrun_button_next "Далей">
+<!ENTITY firstrun_signup_button "Зарэгістравацца">
 
 <!ENTITY firstrun_tabqueue_title "Спасылкі">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Дасыланне справаздачы аб падзенні\u2026">
 <!ENTITY  crash_close_label "Зачыніць">
 <!ENTITY  crash_restart_label "Перазапусціць &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; упаў">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Папка абноўлена">
 <!ENTITY bookmark_parent_folder "Бацькоўская папка">
 <!ENTITY bookmark_add_folder "Дадаць новую папку">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(без назвы)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Кукі">
 <!ENTITY pref_cookies_accept_all "Дазволены">
 <!ENTITY pref_cookies_not_accept_foreign "Дазволены, акрамя пабочных">
+<!ENTITY pref_cookies_not_accept_trackers "Уключана, з выняткам файлаў кукі асочвання">
 <!ENTITY pref_cookies_disabled "Забаронены">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Прагрэсіўныя вэб-праграмы">
 <!ENTITY pref_pwa_summary "Дазволіць вэб-праграмам дадавацца на хатні экран">
-
-<!ENTITY tracking_protection_prompt_title "Цяпер з аховай ад сачэння">
-<!ENTITY tracking_protection_prompt_text "Актыўна блакіруйце элементы асочвання, каб не турбавацца аб сачэнні.">
-<!ENTITY tracking_protection_prompt_tip_text "Каб даведацца больш, наведайце налады прыватнасці">
-<!ENTITY tracking_protection_prompt_action_button "Зразумела!">
 
 <!ENTITY tab_queue_toast_message3 "Картка захавана ў &brandShortName;">
 <!ENTITY tab_queue_toast_action "Адкрыць зараз">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Націсніце Браўзер &amp; выберыце &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Наведаць Падтрымку Mozilla">
 <!ENTITY pref_about_firefox "Пра &brandShortName;">
 <!ENTITY pref_vendor_faqs "Пытанні і адказы">
 <!ENTITY pref_vendor_feedback "Даць водгук">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Служба месцазнаходжанняў &vendorShortName; запушчана">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Аўтаматычныя абнаўленні">
-<!ENTITY pref_update_autodownload_wifi "Толькі праз Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Ніколі">
-<!ENTITY pref_update_autodownload_always "Заўсёды">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Даведка">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Дзяліцца">
 <!ENTITY share_title "Падзеляецца праз">
 <!ENTITY share_image_failed "Немагчма падзяліцца гэтай выявай">
+<!ENTITY share_error_toast_message "Немагчыма падзяліцца з паказанай праграмай">
 <!ENTITY save_as_pdf "Захаваць як PDF">
 <!ENTITY print "Друкаваць">
 <!ENTITY view_page_source "Праглядзець зыходнік старонкі">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Месцазнаходжанне">
 <!ENTITY bookmark_edit_keyword "Ключавое слова">
 <!ENTITY bookmark_select_folder "Выбраць папку">
-
 <!ENTITY bookmark_edit_undo "Адмяніць">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Выбраць ці запісаць гук">
 <!ENTITY filepicker_image_title "Выбраць выяву ці зрабіць фота">
 <!ENTITY filepicker_video_title "Выбраць ці запісаць відэя">
-
 <!ENTITY filepicker_permission_denied "Запытаныя дазволы не прадстаўлены, вяртаемся да сістэмнага дыялогу выбару файлаў.">
 
 <!-- Site identity popup -->
@@ -757,25 +739,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Шукаць &formatS2; з дапамогаю &formatS1;">
 
 <!ENTITY searchable_description "Закладкі і гісторыя">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Існуе абнаўленне &brandShortName;">
-<!ENTITY updater_start_select2 "Дакраніцеся, каб сцягнуць">
-
-<!ENTITY updater_downloading_title2 "Сцягванне &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Няўдача сцягвання">
-<!ENTITY updater_downloading_select2 "Дакраніцеся, каб ужыць сцягнутае абнаўленне">
-<!ENTITY updater_downloading_retry2 "Дакраніцеся, каб паўтарыць">
-
-<!ENTITY updater_apply_title3 "Сцягнута абнаўленне для &brandShortName;">
-<!ENTITY updater_apply_select3 "Націсніце для ўсталявання">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Для загрузкі файлаў і абнаўленняў, дайце дазвол &brandShortName; на доступ да вашага сховішча.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Дазволіць">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Новая гасцявая сэсія">
@@ -887,6 +850,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Закласці элементы Рэжыму чытання для аўтаномнага доступу.">
 <!ENTITY helper_triple_readerview_open_button "Дадаць у закладкі">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Вітаем у &brandShortName;">
+<!ENTITY activity_stream_signin_description "Пачніце сінхранізаваць закладкі, паролі і шмат іншага з вашым уліковым запісам Firefox.">
+<!ENTITY activity_stream_signup_button "Зарэгістравацца">
+<!ENTITY activity_stream_signin_prompt "Ужо маеце ўліковы запіс?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Увайсці.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Зусім новы Firefox выйдзе ў 2020">
+<!ENTITY activity_stream_firefox_promo_description "Ужо хутка: Палепшаная прадукцыйнасць. Палепшаная абарона ад сачэння. А таксама функцыі, распрацаваныя, каб дапамагчы вам знаходзіць, захоўваць і дзяліцца тым, што вы любіце ў Інтэрнэце.">
+<!ENTITY activity_stream_firefox_promo_button "Азнаёміцца">
+
 <!ENTITY activity_stream_topsites "Папулярныя сайты">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Рэкамендавана &brandPocket;">
@@ -944,7 +924,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Гук і відэа">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Парады і падказкі ад &vendorShortName;">
-<!ENTITY updater_notification_channel "Абнаўленні праграмы">
 <!ENTITY synced_tabs_notification_channel "Сінхранізаваныя карткі">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

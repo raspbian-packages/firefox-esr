@@ -5,49 +5,70 @@
 permissions-window =
     .title = Изузеци
     .style = width: 46em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Адреса веб сајта
     .accesskey = д
+
 permissions-block =
     .label = Блокирај
     .accesskey = Б
+
 permissions-session =
     .label = Дозволи за ову сесију
     .accesskey = с
+
 permissions-allow =
     .label = Дозволи
     .accesskey = Д
+
 permissions-site-name =
     .label = Веб сајт
+
 permissions-status =
     .label = Стање
+
 permissions-remove =
     .label = Уклони сајт
     .accesskey = У
+
 permissions-remove-all =
     .label = Уклони све сајтове
     .accesskey = в
+
 permissions-button-cancel =
     .label = Откажи
     .accesskey = О
+
 permissions-button-ok =
     .label = Сачувај промене
     .accesskey = С
+
+permissions-autoplay-menu = Подразумевано за све веб странице:
+
 permissions-searchbox =
     .placeholder = Претражите веб сајт
+
+permissions-capabilities-autoplay-allow =
+    .label = Дозволи звук и видео
+permissions-capabilities-autoplay-block =
+    .label = Блокирај звук
+permissions-capabilities-autoplay-blockall =
+    .label = Блокирај звук и видео
+
 permissions-capabilities-allow =
     .label = Дозволи
 permissions-capabilities-block =
     .label = Блокирај
 permissions-capabilities-prompt =
     .label = Увек питај
+
 permissions-capabilities-listitem-allow =
     .value = Дозволи
 permissions-capabilities-listitem-block =
     .value = Блокирај
-permissions-capabilities-listitem-allow-first-party =
-    .value = Дозволи само првим лицима
 permissions-capabilities-listitem-allow-session =
     .value = Дозволи за ову сесију
 
@@ -62,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Изузеци - блокирање садржаја
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Онемогућили сте блокирање садржаја на овим веб сајтовима.
+
+permissions-exceptions-etp-window =
+    .title = Изузеци од побољшане заштите од праћења
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Искључили сте заштиту на овим веб сајтовима.
 
 ## Exceptions - Cookies
 
@@ -98,6 +124,13 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = Можете одредити који веб сајтови ће увек или никад омогућити аутоматско пуштање медија са звуком. Унесите адресу сајта којим желите да управљате и кликните Блокирај или Омогући.
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = Подешавања - самостално покретање
+    .style = { permissions-window.style }
+permissions-site-autoplay-desc = Овде можете да управљате веб страницама које не прате подразумеване поставке аутоматске репродукције.
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -117,6 +150,16 @@ permissions-site-location-desc = Следећи веб сајтови су по�
 permissions-site-location-disable-label =
     .label = Блокирај нове захтеве за приступ вашој локацији
 permissions-site-location-disable-desc = Ово ће спречити све веб сајтове који се не налазе на листи изнад да захтевају приступ вашој локацији. Блокирање приступа вашој локацији може лоше утицати на неке веб сајтове.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Подешавања - дозволе за виртуелну стварност
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Следеће странице затражиле су приступ вашим уређајима за виртуелну стварност. Можете одредити којим страницама је дозвољен приступ вашим уређајима за виртуелну стварност. Можете и блокирати нове захтеве за приступ вашим уређајима за виртуелну стварност.
+permissions-site-xr-disable-label =
+    .label = Блокирајте нове захтеве за приступ вашим уређајима за виртуелну стварност
+permissions-site-xr-disable-desc = Ово ће спречити све странице које нису горе наведене да затраже дозволу за приступ вашим уређајима за виртуалну стварност. Блокирање приступа вашим уређајима за виртуелну стварност може ограничити функционалност неких страница.
 
 ## Site Permissions - Camera
 

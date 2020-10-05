@@ -5,50 +5,66 @@
 permissions-window =
     .title = Utsûnderingen
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adres fan de website
     .accesskey = d
+
 permissions-block =
     .label = Blokkearje
     .accesskey = B
+
 permissions-session =
     .label = Tastean foar sesje
     .accesskey = s
+
 permissions-allow =
     .label = Tastean
     .accesskey = T
+
 permissions-site-name =
     .label = Website
+
 permissions-status =
     .label = Steat
+
 permissions-remove =
     .label = Website fuortsmite
     .accesskey = W
+
 permissions-remove-all =
     .label = Alle websites fuortsmite
     .accesskey = s
+
 permissions-button-cancel =
     .label = Annulearje
     .accesskey = n
+
 permissions-button-ok =
     .label = Wizigingen bewarje
     .accesskey = i
+
 permissions-autoplay-menu = Standert foar alle websites:
+
 permissions-searchbox =
     .placeholder = Websites trochsykje
+
 permissions-capabilities-autoplay-allow =
     .label = Audio en fideo tastean
 permissions-capabilities-autoplay-block =
     .label = Audio blokkearje
 permissions-capabilities-autoplay-blockall =
     .label = Audio en fideo blokkearje
+
 permissions-capabilities-allow =
     .label = Tastean
 permissions-capabilities-block =
     .label = Blokkearje
 permissions-capabilities-prompt =
     .label = Altyd freegje
+
 permissions-capabilities-listitem-allow =
     .value = Tastean
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Utsûnderingen - Ynhâldsblokkearring
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Jo hawwe ynhâldsblokkearring útskeakele op dizze websites.
+
+permissions-exceptions-etp-window =
+    .title = Utsûnderingen foar Ferbettere beskerming tsjin folgjen
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Jo hawwe beskermingen foar dizze websites útskeakele.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = De folgjende websites hawwe om tagong ta jo lok
 permissions-site-location-disable-label =
     .label = Nije fersiken om tagong ta jo lokaasje blokkearje
 permissions-site-location-disable-desc = Dit soarget derfoar dat websites dy't hjirboppe net fermeld wurde om tastimming foar tagong ta jo lokaasje freegje. It blokkearjen fan tagong ta jo lokaasje kin bepaalde funksjes fan websites fersteure.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Ynstellingen - Tastimmingen foar virtual reality
+    .style = { permissions-window.style }
+permissions-site-xr-desc = De folgjende websites hawwe om tagong ta jo virtual-reality-apparaten frege. Jo kinne opjaan hokker websites jo virtual-reality-apparaten benaderje meie. Jo kinne ek nije fersiken om tagong ta jo virtual-reality-apparaten blokkearje.
+permissions-site-xr-disable-label =
+    .label = Nije fersiken om tagong ta jo virtual-reality-apparaten blokkearje
+permissions-site-xr-disable-desc = Dit foarkomt dat websites dy't hjirboppe net fermeld wurde om tastimming foar tagong ta jo virtual-reality-apparaten freegje. It blokkearjen fan tagong ta jo virtual-reality-apparaten kin bepaalde funksjes fan websites fersteure.
 
 ## Site Permissions - Camera
 

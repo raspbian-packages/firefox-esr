@@ -31,6 +31,7 @@ app-basics-title = Informazioni di base
 app-basics-name = Nome
 app-basics-version = Versione
 app-basics-build-id = ID build
+app-basics-distribution-id = ID distribuzione
 app-basics-update-channel = Canale di aggiornamento
 app-basics-update-dir = Cartella aggiornamento
 app-basics-update-history = Cronologia aggiornamenti
@@ -38,7 +39,6 @@ app-basics-show-update-history = Mostra cronologia aggiornamenti
 app-basics-binary = File binario dell’applicazione
 app-basics-profile-dir = Cartella del profilo
 app-basics-enabled-plugins = Plugin attivi
-app-basics-launcher-process-status = Processo launcher
 app-basics-build-config = Configurazione build
 app-basics-user-agent = User agent
 app-basics-os = SO
@@ -46,8 +46,8 @@ app-basics-memory-use = Utilizzo memoria
 app-basics-performance = Prestazioni
 app-basics-service-workers = Service worker registrati
 app-basics-profiles = Profili
+app-basics-launcher-process-status = Processo launcher
 app-basics-multi-process-support = Finestre multiprocesso
-app-basics-process-count = Processi contenuti web
 app-basics-remote-processes-count = Processi remoti
 app-basics-enterprise-policies = Criteri a livello aziendale
 app-basics-location-service-key-google = Chiave servizio Google Location
@@ -78,6 +78,7 @@ graphics-decision-log-title = Registro decisioni
 graphics-crash-guards-title = Funzioni disattivate da Crash Guard
 graphics-workarounds-title = Soluzioni alternative
 graphics-window-protocol = Protocollo finestra
+graphics-desktop-environment = Ambiente desktop
 place-database-title = Database Places
 place-database-integrity = Integrità
 place-database-verify-integrity = Verifica integrità
@@ -102,6 +103,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argomenti
 safe-mode-title = Prova la modalità provvisoria
 restart-in-safe-mode-label = Riavvia disattivando i componenti aggiuntivi…
+clear-startup-cache-title = Prova a cancellare la cache di avvio
+clear-startup-cache-label = Cancella cache di avvio…
+startup-cache-dialog-title = Cancellazione cache di avvio
+startup-cache-dialog-body = Riavviare { -brand-short-name } per cancellare la cache di avvio. Questa operazione non modificherà le impostazioni esistenti né rimuoverà alcuna estensione installata in { -brand-short-name }.
+restart-button-label = Riavvia
+
+## Media titles
+
+audio-backend = Back-end audio
+max-audio-channels = Numero massimo di canali
+channel-layout = Layout preferito dei canali
+sample-rate = Frequenza di campionamento preferita
+roundtrip-latency = Latenza di andata e ritorno (deviazione standard)
 media-title = Media
 media-output-devices-title = Dispositivi di output
 media-input-devices-title = Dispositivi di input
@@ -114,6 +128,11 @@ media-device-format = Formato
 media-device-channels = Canali
 media-device-rate = Frequenza
 media-device-latency = Latenza
+media-capabilities-title = Funzionalità media
+media-capabilities-enumerate = Enumerazione database
+
+##
+
 intl-title = Internazionalizzazione e localizzazione
 intl-app-title = Impostazioni dell’applicazione
 intl-locales-requested = Lingue richieste
@@ -123,6 +142,21 @@ intl-locales-default = Lingua predefinita
 intl-os-title = Sistema operativo
 intl-os-prefs-system-locales = Lingue del sistema
 intl-regional-prefs = Impostazioni internazionali
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Debug remoto (protocollo Chromium)
+remote-debugging-accepting-connections = Connessioni accettate
+remote-debugging-url = URL
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -219,7 +253,9 @@ unknown-failure = Bloccato: codice non funzionante { $failureCode }
 d3d11layers-crash-guard = D3D11 - Compositore
 d3d11video-crash-guard = D3D11 - Decoder video
 d3d9video-crash-buard = D3D9 - Decoder video
+d3d9video-crash-guard = D3D9 - Decoder video
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX - Decoder video
 reset-on-next-restart = Reimposta al prossimo avvio
 gpu-process-kill-button = Termina processo GPU
 gpu-device-reset = Ripristino dispositivo
@@ -228,12 +264,7 @@ uses-tiling = Usa Tiling
 content-uses-tiling = Usa Tiling (contenuti)
 off-main-thread-paint-enabled = Off Main Thread Painting attivo
 off-main-thread-paint-worker-count = Conteggio worker Off Main Thread Painting
-low-end-machine = Rilevato hardware con scarse prestazioni
 target-frame-rate = Obiettivo per frequenza fotogrammi
-audio-backend = Back-end audio
-max-audio-channels = Numero massimo di canali
-channel-layout = Layout preferito dei canali
-sample-rate = Frequenza di campionamento preferita
 min-lib-versions = Versione minima prevista
 loaded-lib-versions = Versione in uso
 has-seccomp-bpf = Seccomp-BPF (filtro chiamate di sistema)
@@ -248,6 +279,11 @@ sandbox-proc-type-content = contenuti
 sandbox-proc-type-file = contenuto file
 sandbox-proc-type-media-plugin = plugin multimediale
 sandbox-proc-type-data-decoder = data decoder
+startup-cache-title = Cache di avvio (startup)
+startup-cache-disk-cache-path = Percorso su disco della cache
+startup-cache-ignore-disk-cache = Ignora cache su disco
+startup-cache-found-disk-cache-on-init = Trovata cache su disco durante inizializzazione
+startup-cache-wrote-to-disk-cache = Cache scritta su disco
 launcher-process-status-0 = Attivo
 launcher-process-status-1 = Disattivato a causa di errori
 launcher-process-status-2 = Disattivato in modo forzato
@@ -271,6 +307,7 @@ touch-enabled = input touch attivo
 drag-enabled = trascinamento barre di scorrimento attivo
 keyboard-enabled = tastiera attiva
 autoscroll-enabled = scorrimento automatico attivo
+zooming-enabled = smooth pinch-zoom attivo
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

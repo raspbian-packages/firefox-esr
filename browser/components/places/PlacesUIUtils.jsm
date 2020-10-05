@@ -258,7 +258,7 @@ var PlacesUIUtils = {
   },
 
   getFormattedString: function PUIU_getFormattedString(key, params) {
-    return bundle.formatStringFromName(key, params, params.length);
+    return bundle.formatStringFromName(key, params);
   },
 
   /**
@@ -293,16 +293,16 @@ var PlacesUIUtils = {
   /**
    * Shows the bookmark dialog corresponding to the specified info.
    *
-   * @param aInfo
+   * @param {object} aInfo
    *        Describes the item to be edited/added in the dialog.
    *        See documentation at the top of bookmarkProperties.js
-   * @param aWindow
+   * @param {DOMWindow} [aParentWindow]
    *        Owner window for the new dialog.
    *
    * @see documentation at the top of bookmarkProperties.js
    * @return The guid of the item that was created or edited, undefined otherwise.
    */
-  showBookmarkDialog(aInfo, aParentWindow) {
+  showBookmarkDialog(aInfo, aParentWindow = null) {
     // Preserve size attributes differently based on the fact the dialog has
     // a folder picker or not, since it needs more horizontal space than the
     // other controls.
@@ -310,8 +310,8 @@ var PlacesUIUtils = {
       !("hiddenRows" in aInfo) || !aInfo.hiddenRows.includes("folderPicker");
     // Use a different chrome url to persist different sizes.
     let dialogURL = hasFolderPicker
-      ? "chrome://browser/content/places/bookmarkProperties2.xul"
-      : "chrome://browser/content/places/bookmarkProperties.xul";
+      ? "chrome://browser/content/places/bookmarkProperties2.xhtml"
+      : "chrome://browser/content/places/bookmarkProperties.xhtml";
 
     let features = "centerscreen,chrome,modal,resizable=yes";
 
@@ -325,6 +325,10 @@ var PlacesUIUtils = {
       await batchBlockingDeferred.promise;
     });
 
+    if (!aParentWindow) {
+      aParentWindow = Services.wm.getMostRecentWindow(null);
+    }
+
     aParentWindow.openDialog(dialogURL, "", features, aInfo);
 
     let bookmarkGuid =
@@ -337,6 +341,35 @@ var PlacesUIUtils = {
     }
 
     return bookmarkGuid;
+  },
+
+  /**
+   * Bookmarks one or more pages. If there is more than one, this will create
+   * the bookmarks in a new folder.
+   *
+   * @param {array.<nsIURI>} URIList
+   *   The list of URIs to bookmark.
+   * @param {array.<string>} [hiddenRows]
+   *   An array of rows to be hidden.
+   * @param {DOMWindow} [window]
+   *   The window to use as the parent to display the bookmark dialog.
+   */
+  showBookmarkPagesDialog(URIList, hiddenRows = [], win = null) {
+    if (!URIList.length) {
+      return;
+    }
+
+    const bookmarkDialogInfo = { action: "add", hiddenRows };
+    if (URIList.length > 1) {
+      bookmarkDialogInfo.type = "folder";
+      bookmarkDialogInfo.URIList = URIList;
+    } else {
+      bookmarkDialogInfo.type = "bookmark";
+      bookmarkDialogInfo.title = URIList[0].title;
+      bookmarkDialogInfo.uri = URIList[0].uri;
+    }
+
+    PlacesUIUtils.showBookmarkDialog(bookmarkDialogInfo, win);
   },
 
   /**
@@ -378,6 +411,10 @@ var PlacesUIUtils = {
   getViewForNode: function PUIU_getViewForNode(aNode) {
     let node = aNode;
 
+    if (Cu.isDeadWrapper(node)) {
+      return null;
+    }
+
     if (node.localName == "panelview" && node._placesView) {
       return node._placesView;
     }
@@ -387,9 +424,9 @@ var PlacesUIUtils = {
     if (
       node.localName == "menu" &&
       !node._placesNode &&
-      node.lastChild._placesView
+      node.menupopup._placesView
     ) {
-      return node.lastChild._placesView;
+      return node.menupopup._placesView;
     }
 
     while (Element.isInstance(node)) {
@@ -916,7 +953,7 @@ var PlacesUIUtils = {
           return Ci.nsINavHistoryResultNode.RESULT_TYPE_FOLDER;
         }
 
-        if (this.uri.length == 0) {
+        if (!this.uri.length) {
           throw new Error("Unexpected item type");
         }
 
@@ -1125,7 +1162,7 @@ var PlacesUIUtils = {
     // unload event happens after the browser's one.  In this case
     // top.XULBrowserWindow has been nullified already.
     if (win.top.XULBrowserWindow) {
-      win.top.XULBrowserWindow.setOverLink(url, null);
+      win.top.XULBrowserWindow.setOverLink(url);
     }
   },
 };
@@ -1170,6 +1207,12 @@ XPCOMUtils.defineLazyPreferenceGetter(
   "browser.bookmarks.openInTabClosesMenu",
   false
 );
+XPCOMUtils.defineLazyPreferenceGetter(
+  PlacesUIUtils,
+  "maxRecentFolders",
+  "browser.bookmarks.editDialog.maxRecentFolders",
+  7
+);
 
 /**
  * Determines if an unwrapped node can be moved.
@@ -1188,9 +1231,7 @@ function canMoveUnwrappedNode(unwrappedNode) {
   }
 
   let parentGuid = unwrappedNode.parentGuid;
-  // If there's no parent Guid, this was likely a virtual query that returns
-  // bookmarks, such as a tags query.
-  if (!parentGuid || parentGuid == PlacesUtils.bookmarks.rootGuid) {
+  if (parentGuid == PlacesUtils.bookmarks.rootGuid) {
     return false;
   }
 

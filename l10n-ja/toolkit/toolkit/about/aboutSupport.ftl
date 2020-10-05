@@ -32,6 +32,7 @@ app-basics-title = アプリケーション基本情報
 app-basics-name = 名前
 app-basics-version = バージョン
 app-basics-build-id = ビルド ID
+app-basics-distribution-id = 区域 ID
 app-basics-update-channel = 更新チャンネル
 app-basics-update-dir =
     { PLATFORM() ->
@@ -57,7 +58,6 @@ app-basics-service-workers = 登録された Service Workers
 app-basics-profiles = プロファイル
 app-basics-launcher-process-status = 起動プロセス
 app-basics-multi-process-support = マルチプロセスウィンドウ
-app-basics-process-count = ウェブコンテンツプロセス
 app-basics-remote-processes-count = リモートプロセス
 app-basics-enterprise-policies = エンタープライズポリシー
 app-basics-location-service-key-google = Google Location Service キー
@@ -89,6 +89,8 @@ graphics-crash-guards-title = クラッシュガードが無効化した機能
 graphics-workarounds-title = 回避策
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = ウィンドウプロトコル
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = デスクトップ環境
 place-database-title = Places データベース
 place-database-integrity = 完全性
 place-database-verify-integrity = 完全性を検証
@@ -113,6 +115,21 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = 引数
 safe-mode-title = セーフモードを試す
 restart-in-safe-mode-label = アドオンを無効化して再起動...
+
+clear-startup-cache-title = 起動時キャッシュの消去を試行
+clear-startup-cache-label = 起動時キャッシュを消去...
+startup-cache-dialog-title = 起動時キャッシュの消去
+startup-cache-dialog-body = { -brand-short-name } を再起動して起動時キャッシュを消去します。この操作で { -brand-short-name } の設定が変更されたり、追加した拡張機能が削除されることはありません。
+restart-button-label = 再起動
+
+## Media titles
+
+audio-backend = 音声バックエンド
+max-audio-channels = 最大チャンネル数
+channel-layout = 優先チャンネルレイアウト
+sample-rate = 優先サンプルレート
+
+roundtrip-latency = 往復遅延時間 (標準偏差)
 media-title = メディア
 media-output-devices-title = 出力デバイス
 media-input-devices-title = 入力デバイス
@@ -125,6 +142,11 @@ media-device-format = 形式
 media-device-channels = チャンネル
 media-device-rate = レート
 media-device-latency = 遅延
+media-capabilities-title = メディア性能
+# List all the entries of the database.
+media-capabilities-enumerate = データベースを列挙
+##
+
 intl-title = 国際化とローカライズ
 intl-app-title = アプリケーションの設定
 intl-locales-requested = 要求されたロケール
@@ -135,26 +157,35 @@ intl-os-title = オペレーティングシステム
 intl-os-prefs-system-locales = システムのロケール
 intl-regional-prefs = 地域設定
 
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = リモートデバッグ (Chromium プロトコル)
+remote-debugging-accepting-connections = 接続の受け入れ
+remote-debugging-url = URL
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days = 過去 { $days } 日分のクラッシュレポート
-
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes = { $minutes } 分前
-
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours = { $hours } 時間前
-
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days = { $days } 日前
-
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports = すべてのクラッシュレポート ({ $reports } 件の未送信のクラッシュを含む)
-
 raw-data-copied = 生データをクリップボードにコピーしました
 text-copied = テキストをクリップボードにコピーしました
 
@@ -220,7 +251,10 @@ unknown-failure = ブロックリストに掲載。失敗コード { $failureCod
 d3d11layers-crash-guard = D3D11 コンポジター
 d3d11video-crash-guard = D3D11 動画デコーダー
 d3d9video-crash-buard = D3D9 動画デコーダー
+d3d9video-crash-guard = D3D9 動画デコーダー
 glcontext-crash-guard = OpenGL
+
+wmfvpxvideo-crash-guard = WMF VPX 動画デコーダー
 
 reset-on-next-restart = 次回起動時にリセット
 gpu-process-kill-button = GPU プロセスを終了
@@ -230,13 +264,7 @@ uses-tiling = タイリングの使用
 content-uses-tiling = タイリングの使用 (コンテンツ)
 off-main-thread-paint-enabled = メインスレッド外ペイント有効
 off-main-thread-paint-worker-count = メインスレッド外ペイントワーカー数
-low-end-machine = 性能の低い機種が検出されました
 target-frame-rate = ターゲットのフレームレート
-
-audio-backend = 音声バックエンド
-max-audio-channels = 最大チャンネル数
-channel-layout = 優先チャンネルレイアウト
-sample-rate = 優先サンプルレート
 
 min-lib-versions = 想定される最低バージョン
 loaded-lib-versions = 使用中のバージョン
@@ -253,6 +281,12 @@ sandbox-proc-type-content = コンテンツ
 sandbox-proc-type-file = ファイルコンテンツ
 sandbox-proc-type-media-plugin = メディアプラグイン
 sandbox-proc-type-data-decoder = データデコーダー
+
+startup-cache-title = 起動時キャッシュ
+startup-cache-disk-cache-path = ディスクキャッシュのパス
+startup-cache-ignore-disk-cache = ディスクキャッシュ無視
+startup-cache-found-disk-cache-on-init = 初期化時に見つけたディスクキャッシュ
+startup-cache-wrote-to-disk-cache = ディスクキャッシュへの書き込み
 
 launcher-process-status-0 = 有効
 launcher-process-status-1 = 失敗したため無効
@@ -279,6 +313,8 @@ touch-enabled = タッチ入力有効
 drag-enabled = スクロールバーのドラッグ有効
 keyboard-enabled = キーボード有効
 autoscroll-enabled = 自動スクロール有効
+
+zooming-enabled = スムーズなピンチズーム有効
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

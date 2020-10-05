@@ -5,50 +5,66 @@
 permissions-window =
     .title = Exceptions
     .style = width: 36em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Address of website
     .accesskey = d
+
 permissions-block =
     .label = Block
     .accesskey = B
+
 permissions-session =
     .label = Allow for Session
     .accesskey = S
+
 permissions-allow =
     .label = Allow
     .accesskey = A
+
 permissions-site-name =
     .label = Website
+
 permissions-status =
     .label = Status
+
 permissions-remove =
     .label = Remove Website
     .accesskey = R
+
 permissions-remove-all =
     .label = Remove All Websites
     .accesskey = e
+
 permissions-button-cancel =
     .label = Cancel
     .accesskey = C
+
 permissions-button-ok =
     .label = Save Changes
     .accesskey = S
+
 permissions-autoplay-menu = Default for all websites:
+
 permissions-searchbox =
     .placeholder = Search Website
+
 permissions-capabilities-autoplay-allow =
     .label = Allow Audio and Video
 permissions-capabilities-autoplay-block =
     .label = Block Audio
 permissions-capabilities-autoplay-blockall =
     .label = Block Audio and Video
+
 permissions-capabilities-allow =
     .label = Allow
 permissions-capabilities-block =
     .label = Block
 permissions-capabilities-prompt =
     .label = Always Ask
+
 permissions-capabilities-listitem-allow =
     .value = Allow
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Exceptions - Content Blocking
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = You have disabled content blocking on these websites.
+
+permissions-exceptions-etp-window =
+    .title = Exceptions for Enhanced Tracking Protection
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = You’ve turned off protections on these websites.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = The following websites have requested to access
 permissions-site-location-disable-label =
     .label = Block new requests asking to access your location
 permissions-site-location-disable-desc = This will prevent any websites not listed above from requesting permission to access your location. Blocking access to your location may break some website features.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Settings - Virtual Reality Permissions
+    .style = { permissions-window.style }
+permissions-site-xr-desc = The following websites have requested to access your virtual reality devices. You can specify which websites are allowed to access your virtual reality devices. You can also block new requests asking to access your virtual reality devices.
+permissions-site-xr-disable-label =
+    .label = Block new requests asking to access your virtual reality devices
+permissions-site-xr-disable-desc = This will prevent any websites not listed above from requesting permission to access your virtual reality devices. Blocking access to your virtual reality devices may break some website features.
 
 ## Site Permissions - Camera
 

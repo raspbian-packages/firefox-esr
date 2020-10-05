@@ -31,7 +31,10 @@ app-basics-title = Programinfo
 app-basics-name = Navn
 app-basics-version = Versjon
 app-basics-build-id = Bygg-ID
+app-basics-distribution-id = Distribusjons-ID
 app-basics-update-channel = Oppdateringskanal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Oppdateringsmappe
@@ -56,7 +59,6 @@ app-basics-service-workers = Registrerte tjenestearbeidere
 app-basics-profiles = Profiler
 app-basics-launcher-process-status = Oppstartsprosess
 app-basics-multi-process-support = Multiprosess-vinduer
-app-basics-process-count = Nettinnholdsprosesser
 app-basics-remote-processes-count = Fjernprosesser
 app-basics-enterprise-policies = Virksomhets-policy
 app-basics-location-service-key-google = Google Location Service-nøkkel
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Krasjvern avslåtte funksjoner
 graphics-workarounds-title = Midlertidige løsninger
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protokoll for vindusbehandler
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Skrivebordsmiljø
 place-database-title = Plasser-database
 place-database-integrity = Integritet
 place-database-verify-integrity = Verifiser integritet
@@ -112,7 +116,20 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argument
 safe-mode-title = Prøv sikker modus
 restart-in-safe-mode-label = Start på nytt uten utvidelser …
-media-title = Media
+clear-startup-cache-title = Prøv å tømme oppstartshurtiglageret
+clear-startup-cache-label = Tøm oppstartshurtiglageret…
+startup-cache-dialog-title = Tøm oppstartshurtiglageret
+startup-cache-dialog-body = Start { -brand-short-name } på nytt for å tømme oppstartshurtiglageret. Dette vil ikke endre innstillingene dine eller fjerne utvidelser du har lagt til i { -brand-short-name }.
+restart-button-label = Start på nytt
+
+## Media titles
+
+audio-backend = Lydgrensesnitt
+max-audio-channels = Maks kanaler
+channel-layout = Foretrukket kanaloppsett
+sample-rate = Foretrukket samplingshastighet
+roundtrip-latency = Tur-/retur-forsinkelse (standardavvik)
+media-title = Medier
 media-output-devices-title = Ut-enheter
 media-input-devices-title = Inn-enheter
 media-device-name = Navn
@@ -124,6 +141,12 @@ media-device-format = Format
 media-device-channels = Kanaler
 media-device-rate = Hastighet
 media-device-latency = Forsinkelse
+media-capabilities-title = Mediefunksjoner
+# List all the entries of the database.
+media-capabilities-enumerate = Telle opp databasen
+
+##
+
 intl-title = Internasjonalisering og lokalisering
 intl-app-title = Programinnstillinger
 intl-locales-requested = Forespurte språkversjoner
@@ -133,6 +156,22 @@ intl-locales-default = Standardspråk
 intl-os-title = Operativsystem
 intl-os-prefs-system-locales = System-språkversjoner
 intl-regional-prefs = Regionale innstillinger
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Ekstern feilsøking (Chromium-protokoll)
+remote-debugging-accepting-connections = Godta tilkoblinger
+remote-debugging-url = Nettadresse
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -229,7 +268,9 @@ unknown-failure = Svartelistet; feilkode { $failureCode }
 d3d11layers-crash-guard = D3D11-kompositør
 d3d11video-crash-guard = D3D11-videodekoder
 d3d9video-crash-buard = D3D9-videodekoder
+d3d9video-crash-guard = D3D9-videodekoder
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX-videodekoder
 reset-on-next-restart = Tilbakestill ved neste omstart
 gpu-process-kill-button = Avslutt GPU-prosess
 gpu-device-reset = Enhetstilbakestilling
@@ -238,12 +279,7 @@ uses-tiling = Bruker Tiling
 content-uses-tiling = Bruker Tiling (innhold)
 off-main-thread-paint-enabled = Opptegning utenfor hovedtråd aktivert
 off-main-thread-paint-worker-count = Opptegning utenfor hovedtråd workerantall
-low-end-machine = Oppdaget en maskin med lav ytelse
 target-frame-rate = Mål for framerate
-audio-backend = Lydgrensesnitt
-max-audio-channels = Maks kanaler
-channel-layout = Foretrukket kanaloppsett
-sample-rate = Foretrukket samplingshastighet
 min-lib-versions = Forventet minimumsversjon
 loaded-lib-versions = Versjon i bruk
 has-seccomp-bpf = Seccomp-BPF (systemkall-filtrering)
@@ -256,8 +292,13 @@ content-sandbox-level = Nivå for sandkasse for innholdsprosesser
 effective-content-sandbox-level = Effektiv sandbox-nivå for innholdsprosess
 sandbox-proc-type-content = innhold
 sandbox-proc-type-file = filinnhold
-sandbox-proc-type-media-plugin = programtillegg for media
+sandbox-proc-type-media-plugin = programtillegg for medier
 sandbox-proc-type-data-decoder = datadekoder
+startup-cache-title = Oppstartshurtiglager
+startup-cache-disk-cache-path = Sti for diskhurtiglager
+startup-cache-ignore-disk-cache = Ignorer diskhurtiglager
+startup-cache-found-disk-cache-on-init = Fant diskhurtiglager på Init
+startup-cache-wrote-to-disk-cache = Skrev til diskhurtiglager
 launcher-process-status-0 = Aktivert
 launcher-process-status-1 = Deaktivert på grunn av feil
 launcher-process-status-2 = Tvunget deaktivert
@@ -281,6 +322,7 @@ touch-enabled = touchinput påslått
 drag-enabled = dra og slipp av rullelinje påslått
 keyboard-enabled = tastatur aktivert
 autoscroll-enabled = automatisk rulling slått på
+zooming-enabled = glatt pinch-zoom aktivert
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

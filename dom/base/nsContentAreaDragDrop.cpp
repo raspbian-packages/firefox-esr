@@ -26,19 +26,15 @@
 #include "nsIFile.h"
 #include "nsFrameLoader.h"
 #include "nsFrameLoaderOwner.h"
-#include "nsIWebNavigation.h"
-#include "nsIDocShell.h"
 #include "nsIContent.h"
 #include "nsIContentInlines.h"
+#include "nsIContentPolicy.h"
 #include "nsIImageLoadingContent.h"
-#include "nsITextControlElement.h"
 #include "nsUnicharUtils.h"
 #include "nsIURL.h"
 #include "nsIURIMutator.h"
 #include "mozilla/dom/Document.h"
-#include "nsIScriptSecurityManager.h"
 #include "nsIPrincipal.h"
-#include "nsIDocShellTreeItem.h"
 #include "nsIWebBrowserPersist.h"
 #include "nsEscape.h"
 #include "nsContentUtils.h"
@@ -49,6 +45,8 @@
 #include "nsIMIMEInfo.h"
 #include "nsRange.h"
 #include "BrowserParent.h"
+#include "mozilla/TextControlElement.h"
+#include "mozilla/dom/BrowsingContext.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/HTMLAreaElement.h"
 #include "mozilla/dom/HTMLAnchorElement.h"
@@ -56,6 +54,7 @@
 #include "nsVariant.h"
 #include "nsQueryObject.h"
 
+using namespace mozilla;
 using namespace mozilla::dom;
 using mozilla::IgnoreErrors;
 
@@ -65,7 +64,7 @@ class MOZ_STACK_CLASS DragDataProducer {
                    nsIContent* aSelectionTargetNode, bool aIsAltKeyPressed);
   nsresult Produce(DataTransfer* aDataTransfer, bool* aCanDrag,
                    Selection** aSelection, nsIContent** aDragNode,
-                   nsIPrincipal** aPrincipal);
+                   nsIPrincipal** aPrincipal, nsIContentSecurityPolicy** aCsp);
 
  private:
   void AddString(DataTransfer* aDataTransfer, const nsAString& aFlavor,
@@ -110,7 +109,8 @@ nsresult nsContentAreaDragDrop::GetDragData(
     nsPIDOMWindowOuter* aWindow, nsIContent* aTarget,
     nsIContent* aSelectionTargetNode, bool aIsAltKeyPressed,
     DataTransfer* aDataTransfer, bool* aCanDrag, Selection** aSelection,
-    nsIContent** aDragNode, nsIPrincipal** aPrincipal) {
+    nsIContent** aDragNode, nsIPrincipal** aPrincipal,
+    nsIContentSecurityPolicy** aCsp) {
   NS_ENSURE_TRUE(aSelectionTargetNode, NS_ERROR_INVALID_ARG);
 
   *aCanDrag = true;
@@ -118,7 +118,7 @@ nsresult nsContentAreaDragDrop::GetDragData(
   DragDataProducer provider(aWindow, aTarget, aSelectionTargetNode,
                             aIsAltKeyPressed);
   return provider.Produce(aDataTransfer, aCanDrag, aSelection, aDragNode,
-                          aPrincipal);
+                          aPrincipal, aCsp);
 }
 
 NS_IMPL_ISUPPORTS(nsContentAreaDragDropDataProvider, nsIFlavorDataProvider)
@@ -128,7 +128,8 @@ NS_IMPL_ISUPPORTS(nsContentAreaDragDropDataProvider, nsIFlavorDataProvider)
 // into the file system
 nsresult nsContentAreaDragDropDataProvider::SaveURIToFile(
     nsIURI* inSourceURI, nsIPrincipal* inTriggeringPrincipal,
-    nsIFile* inDestFile, bool isPrivate) {
+    nsIFile* inDestFile, nsContentPolicyType inContentPolicyType,
+    bool isPrivate) {
   nsCOMPtr<nsIURL> sourceURL = do_QueryInterface(inSourceURI);
   if (!sourceURL) {
     return NS_ERROR_NO_INTERFACE;
@@ -148,8 +149,8 @@ nsresult nsContentAreaDragDropDataProvider::SaveURIToFile(
 
   // referrer policy can be anything since the referrer is nullptr
   return persist->SavePrivacyAwareURI(inSourceURI, inTriggeringPrincipal, 0,
-                                      nullptr, mozilla::net::RP_Unset, nullptr,
-                                      nullptr, inDestFile, isPrivate);
+                                      nullptr, nullptr, nullptr, inDestFile,
+                                      inContentPolicyType, isPrivate);
 }
 
 /*
@@ -180,8 +181,7 @@ nsresult CheckAndGetExtensionForMime(const nsCString& aExtension,
                                             getter_AddRefs(mimeInfo));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = mimeInfo->GetPrimaryExtension(*aPrimaryExtension);
-  NS_ENSURE_SUCCESS(rv, rv);
+  mimeInfo->GetPrimaryExtension(*aPrimaryExtension);
 
   if (aExtension.IsEmpty()) {
     *aIsValidExtension = false;
@@ -278,7 +278,7 @@ nsContentAreaDragDropDataProvider::GetFlavorData(nsITransferable* aTransferable,
                                          &isValidExtension, &primaryExtension);
         NS_ENSURE_SUCCESS(rv, rv);
 
-        if (!isValidExtension) {
+        if (!isValidExtension && !primaryExtension.IsEmpty()) {
           // The filename extension is missing or incompatible
           // with the MIME type, replace it with the primary
           // extension.
@@ -314,7 +314,10 @@ nsContentAreaDragDropDataProvider::GetFlavorData(nsITransferable* aTransferable,
     bool isPrivate = aTransferable->GetIsPrivateData();
 
     nsCOMPtr<nsIPrincipal> principal = aTransferable->GetRequestingPrincipal();
-    rv = SaveURIToFile(sourceURI, principal, file, isPrivate);
+    nsContentPolicyType contentPolicyType =
+        aTransferable->GetContentPolicyType();
+    rv =
+        SaveURIToFile(sourceURI, principal, file, contentPolicyType, isPrivate);
     // send back an nsIFile
     if (NS_SUCCEEDED(rv)) {
       CallQueryInterface(file, aData);
@@ -459,12 +462,13 @@ nsresult DragDataProducer::GetImageData(imgIContainer* aImage,
         // Fix the file extension in the URL
         nsAutoCString primaryExtension;
         mimeInfo->GetPrimaryExtension(primaryExtension);
-
-        rv = NS_MutateURI(imgUrl)
-                 .Apply(NS_MutatorMethod(&nsIURLMutator::SetFileExtension,
-                                         primaryExtension, nullptr))
-                 .Finalize(imgUrl);
-        NS_ENSURE_SUCCESS(rv, rv);
+        if (!primaryExtension.IsEmpty()) {
+          rv = NS_MutateURI(imgUrl)
+                   .Apply(NS_MutatorMethod(&nsIURLMutator::SetFileExtension,
+                                           primaryExtension, nullptr))
+                   .Finalize(imgUrl);
+          NS_ENSURE_SUCCESS(rv, rv);
+        }
       }
     }
 #endif /* defined(XP_MACOSX) */
@@ -491,7 +495,8 @@ nsresult DragDataProducer::GetImageData(imgIContainer* aImage,
 nsresult DragDataProducer::Produce(DataTransfer* aDataTransfer, bool* aCanDrag,
                                    Selection** aSelection,
                                    nsIContent** aDragNode,
-                                   nsIPrincipal** aPrincipal) {
+                                   nsIPrincipal** aPrincipal,
+                                   nsIContentSecurityPolicy** aCsp) {
   MOZ_ASSERT(aCanDrag && aSelection && aDataTransfer && aDragNode,
              "null pointer passed to Produce");
   NS_ASSERTION(mWindow, "window not set");
@@ -511,11 +516,11 @@ nsresult DragDataProducer::Produce(DataTransfer* aDataTransfer, bool* aCanDrag,
   nsIContent* editingElement = mSelectionTargetNode->IsEditable()
                                    ? mSelectionTargetNode->GetEditingHost()
                                    : nullptr;
-  nsCOMPtr<nsITextControlElement> textControl =
-      nsITextControlElement::GetTextControlElementFromEditingHost(
-          editingElement);
-  if (textControl) {
-    nsISelectionController* selcon = textControl->GetSelectionController();
+  RefPtr<TextControlElement> textControlElement =
+      TextControlElement::GetTextControlElementFromEditingHost(editingElement);
+  if (textControlElement) {
+    nsISelectionController* selcon =
+        textControlElement->GetSelectionController();
     if (selcon) {
       selection =
           selcon->GetSelection(nsISelectionController::SELECTION_NORMAL);
@@ -542,28 +547,18 @@ nsresult DragDataProducer::Produce(DataTransfer* aDataTransfer, bool* aCanDrag,
   // if set, serialize the content under this node
   nsCOMPtr<nsIContent> nodeToSerialize;
 
-  nsCOMPtr<nsIDocShellTreeItem> dsti = mWindow->GetDocShell();
-  const bool isChromeShell =
-      dsti && dsti->ItemType() == nsIDocShellTreeItem::typeChrome;
+  BrowsingContext* bc = mWindow->GetBrowsingContext();
+  const bool isChromeShell = bc && bc->IsChrome();
 
   // In chrome shells, only allow dragging inside editable areas.
   if (isChromeShell && !editingElement) {
-    RefPtr<nsFrameLoaderOwner> flo = do_QueryObject(mTarget);
-    if (flo) {
-      RefPtr<nsFrameLoader> fl = flo->GetFrameLoader();
-      if (fl) {
-        BrowserParent* tp = static_cast<BrowserParent*>(fl->GetRemoteBrowser());
-        if (tp) {
-          // We have a BrowserParent, so it may have data for dnd in case the
-          // child process started a dnd session.
-          tp->AddInitialDnDDataTo(aDataTransfer, aPrincipal);
-        }
-      }
-    }
+    // This path should already be filtered out in
+    // EventStateManager::DetermineDragTargetAndDefaultData.
+    MOZ_ASSERT_UNREACHABLE("Shouldn't be generating drag data for chrome");
     return NS_OK;
   }
 
-  if (isChromeShell && textControl) {
+  if (isChromeShell && textControlElement) {
     // Only use the selection if the target node is in the selection.
     if (!selection->ContainsNode(*mSelectionTargetNode, false, IgnoreErrors()))
       return NS_OK;
@@ -632,10 +627,10 @@ nsresult DragDataProducer::Produce(DataTransfer* aDataTransfer, bool* aCanDrag,
           HTMLAreaElement::FromNodeOrNull(draggedNode);
       if (areaElem) {
         // use the alt text (or, if missing, the href) as the title
-        areaElem->GetAttribute(NS_LITERAL_STRING("alt"), mTitleString);
+        areaElem->GetAttr(nsGkAtoms::alt, mTitleString);
         if (mTitleString.IsEmpty()) {
           // this can be a relative link
-          areaElem->GetAttribute(NS_LITERAL_STRING("href"), mTitleString);
+          areaElem->GetAttr(nsGkAtoms::href, mTitleString);
         }
 
         // we'll generate HTML like <a href="absurl">alt text</a>
@@ -672,7 +667,7 @@ nsresult DragDataProducer::Produce(DataTransfer* aDataTransfer, bool* aCanDrag,
         // XXXbz Also, what if this is an nsIImageLoadingContent
         // that's not an <html:img>?
         if (imageElement) {
-          imageElement->GetAttribute(NS_LITERAL_STRING("alt"), mTitleString);
+          imageElement->GetAttr(nsGkAtoms::alt, mTitleString);
         }
 
         if (mTitleString.IsEmpty()) {
@@ -728,6 +723,11 @@ nsresult DragDataProducer::Produce(DataTransfer* aDataTransfer, bool* aCanDrag,
 
     nsCOMPtr<Document> doc = mWindow->GetDoc();
     NS_ENSURE_TRUE(doc, NS_ERROR_FAILURE);
+
+    nsCOMPtr<nsIContentSecurityPolicy> csp = doc->GetCsp();
+    if (csp) {
+      NS_IF_ADDREF(*aCsp = csp);
+    }
 
     // if we have selected text, use it in preference to the node
     nsCOMPtr<nsITransferable> transferable;

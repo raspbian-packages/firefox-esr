@@ -23,16 +23,17 @@ printpreview-scale =
     .value = Omjer:
     .accesskey = m
 printpreview-shrink-to-fit =
-    .label = Smanji da pristaje stranici
+    .label = Smanji na veličinu prozora
 printpreview-custom =
     .label = Prilagođeno...
 printpreview-print =
-    .label = Ispis...
+    .label = Ispiši …
     .accesskey = p
 printpreview-of =
     .value = od
 printpreview-custom-prompt =
     .value = Prilagođen omjer...
+printpreview-custom-scale-prompt-title = Prilagođen omjer
 printpreview-page-setup =
     .label = Postavke stranice...
     .accesskey = s
@@ -44,6 +45,8 @@ printpreview-page =
 ## $percent (integer) - menuitem percent label
 ## $arrow (String) - UTF-8 arrow character for navigation buttons
 
+printpreview-percentage-value =
+    .label = { $percent }%
 printpreview-homearrow =
     .label = { $arrow }
     .tooltiptext = Prva stranica
@@ -56,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Posljednja stranica
+

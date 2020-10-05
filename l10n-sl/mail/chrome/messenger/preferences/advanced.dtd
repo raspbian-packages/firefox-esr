@@ -26,7 +26,7 @@
 <!ENTITY useSmoothScrolling.label      "Uporabi gladko drsenje">
 <!ENTITY useSmoothScrolling.accesskey  "a">
 
-<!ENTITY systemIntegration.label       "Sistemska povezljivost">
+<!ENTITY systemIntegration.label       "Vključitev v sistem">
 <!ENTITY alwaysCheckDefault.label      "Ob zagonu vedno preveri, ali je &brandShortName; privzeti odjemalec elektronske pošte">
 <!ENTITY alwaysCheckDefault.accesskey  "O">
 <!ENTITY searchIntegration.label       "Dovoli &searchIntegration.engineName;, da preišče sporočila">
@@ -122,3 +122,8 @@
 <!ENTITY manageCertificates.accesskey "U">
 <!ENTITY viewSecurityDevices.label "Varnostne naprave">
 <!ENTITY viewSecurityDevices.accesskey "V">
+
+<!ENTITY manageCertificates2.label "Upravljanje potrdil …">
+<!ENTITY manageCertificates2.accesskey "U">
+<!ENTITY viewSecurityDevices2.label "Varnostne naprave …">
+<!ENTITY viewSecurityDevices2.accesskey "V">

@@ -34,7 +34,10 @@ app-basics-title = Ohjelman perustiedot
 app-basics-name = Nimi
 app-basics-version = Versio
 app-basics-build-id = Koosteen tunniste
+app-basics-distribution-id = Jakelutunnus
 app-basics-update-channel = Päivityskanava
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir = Päivityskansio
 app-basics-update-history = Päivityshistoria
 app-basics-show-update-history = Näytä päivityshistoria
@@ -55,7 +58,6 @@ app-basics-service-workers = Rekisteröidyt Service Workers -apukomentosarjat
 app-basics-profiles = Profiilit
 app-basics-launcher-process-status = Käynnistysprosessi
 app-basics-multi-process-support = Useaa prosessia hyödyntäviä ikkunoita
-app-basics-process-count = Verkkosisällön prosesseja
 app-basics-remote-processes-count = Etäprosessit
 app-basics-enterprise-policies = Yrityskäytännöt
 app-basics-location-service-key-google = Google Location Service -avain
@@ -87,6 +89,8 @@ graphics-crash-guards-title = Kaatumisvahdin käytöstä poistamat ominaisuudet
 graphics-workarounds-title = Hätäratkaisut
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Ikkunointiprotokolla
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Työpöytäympäristö
 place-database-title = Places-tietokanta
 place-database-integrity = Virheettömyys
 place-database-verify-integrity = Tarkista virheettömyys
@@ -111,6 +115,19 @@ sandbox-sys-call-number = Järjestelmäkutsu
 sandbox-sys-call-args = Argumentit
 safe-mode-title = Kokeile vikasietotilaa
 restart-in-safe-mode-label = Käynnistä uudelleen ilman lisäosia…
+clear-startup-cache-title = Kokeile tyhjentää käynnistyksen välimuisti
+clear-startup-cache-label = Tyhjennä käynnistyksen välimuisti…
+startup-cache-dialog-title = Käynnistyksen välimuistin tyhjennys
+startup-cache-dialog-body = Käynnistyksen välimuistin tyhjentämiseksi { -brand-short-name } käynnistetään uudestaan. Tämä ei muuta asetuksia eikä poista laajennuksia, jotka on lisätty { -brand-short-name(case: "illative") }.
+restart-button-label = Käynnistä uudestaan
+
+## Media titles
+
+audio-backend = Äänen taustajärjestelmä
+max-audio-channels = Kanavia enintään
+channel-layout = Ensisijainen kanava-asettelu
+sample-rate = Ensisijainen näytteenottotaajuus
+roundtrip-latency = Edestakainen viive (keskihajonta)
 media-title = Media
 media-output-devices-title = Toistolaitteet
 media-input-devices-title = Syöttölaitteet
@@ -123,6 +140,12 @@ media-device-format = Muoto
 media-device-channels = Kanavia
 media-device-rate = Näytteenottotaajuus
 media-device-latency = Viive
+media-capabilities-title = Mediaominaisuudet
+# List all the entries of the database.
+media-capabilities-enumerate = Listaa tietokannan sisältö
+
+##
+
 intl-title = Internationalisointi ja lokalisointi
 intl-app-title = Sovelluksen asetukset
 intl-locales-requested = Pyydetyt localet
@@ -132,6 +155,22 @@ intl-locales-default = Oletuslocale
 intl-os-title = Käyttöjärjestelmä
 intl-os-prefs-system-locales = Järjestelmän localet
 intl-regional-prefs = Alueasetukset
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Etävianjäljitys (Chromium-protokolla)
+remote-debugging-accepting-connections = Hyväksyy yhteyksiä
+remote-debugging-url = URL-osoite
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -228,7 +267,9 @@ unknown-failure = Estolistalla; virhekoodi { $failureCode }
 d3d11layers-crash-guard = D3D11-koostaminen
 d3d11video-crash-guard = D3D11-videopurkaja
 d3d9video-crash-buard = D3D9-videopurkaja
+d3d9video-crash-guard = D3D9-videopurkaja
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX -videopurkaja
 reset-on-next-restart = Nollaa seuraavan käynnistyksen yhteydessä
 gpu-process-kill-button = Lopeta GPU-prosessi
 gpu-device-reset = Laitteen nollaus
@@ -237,12 +278,7 @@ uses-tiling = Käyttää ruutuihin jakoa
 content-uses-tiling = Käyttää ruutuihin jakoa (sisältö)
 off-main-thread-paint-enabled = Pääsäikeen ulkopuolinen piirtäminen käytössä
 off-main-thread-paint-worker-count = Pääsäikeen ulkopuolisen piirtämisen työyksiköitä
-low-end-machine = Havaittu vähemmän suorituskykyinen kone
 target-frame-rate = Tavoitteellinen kuvataajuus
-audio-backend = Äänen taustajärjestelmä
-max-audio-channels = Kanavia enintään
-channel-layout = Ensisijainen kanava-asettelu
-sample-rate = Ensisijainen näytteenottotaajuus
 min-lib-versions = Odotettu minimiversio
 loaded-lib-versions = Käytössä oleva versio
 has-seccomp-bpf = Seccomp-BPF (Järjestelmäkutsujen suodatus)
@@ -257,6 +293,11 @@ sandbox-proc-type-content = sisältö
 sandbox-proc-type-file = tiedostojen sisältö
 sandbox-proc-type-media-plugin = medialiitännäinen
 sandbox-proc-type-data-decoder = datan purkaja
+startup-cache-title = Käynnistyksen välimuisti
+startup-cache-disk-cache-path = Levyvälimuistin polku
+startup-cache-ignore-disk-cache = Ohita levyvälimuisti
+startup-cache-found-disk-cache-on-init = Levyvälimuisti löytyi alustuksessa
+startup-cache-wrote-to-disk-cache = Kirjoitettiin levyvälimuistiin
 launcher-process-status-0 = Käytössä
 launcher-process-status-1 = Ei käytössä johtuen viasta
 launcher-process-status-2 = Poistettu käytöstä pakottaen
@@ -280,6 +321,7 @@ touch-enabled = kosketusliittymä käytössä
 drag-enabled = vierityspalkin vastus käytössä
 keyboard-enabled = näppäimistö käytössä
 autoscroll-enabled = automaattivieritys käytössä
+zooming-enabled = portaaton nipistyszoomaus käytössä
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

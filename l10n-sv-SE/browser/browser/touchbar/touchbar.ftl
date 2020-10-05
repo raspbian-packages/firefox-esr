@@ -9,6 +9,7 @@ forward = Framåt
 reload = Ladda om
 home = Start
 fullscreen = Helskärm
+touchbar-fullscreen-exit = Avsluta helskärm
 find = Sök
 new-tab = Ny flik
 add-bookmark = Lägg till bokmärke
@@ -18,3 +19,21 @@ reader-view = Läsvy
 open-location = Sök eller ange adress
 share = Dela
 close-window = Stäng fönster
+open-sidebar = Sidrad
+
+# This string describes shortcuts for search.
+search-popover = Sök genvägar
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Sök i:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Bokmärken
+search-history = Historik
+search-opentabs = Öppna flikar
+search-tags = Taggar
+search-titles = Rubriker
+
+##
+

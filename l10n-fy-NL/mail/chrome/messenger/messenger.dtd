@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "b">
 <!ENTITY  newContactCmd.label "Adresboekkontakt…">
 <!ENTITY  newContactCmd.accesskey "k">
+<!ENTITY openMenuCmd.label "Iepenje">
+<!ENTITY openMenuCmd.accesskey "I">
 <!ENTITY openMessageFileCmd.label "Bewarre berjocht iepenje…">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "Bewarje as">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "K">
 <!ENTITY folderPaneBar.label "Mappenfinsterarkbalke">
 <!ENTITY folderPaneBar.accesskey "M">
-<!ENTITY folderModeSelector.label "Mappenwerjefte">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Sortearje op">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Berjochten sykje…">
 <!ENTITY searchMailCmd.accesskey "B">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Globaal sykje…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Adressen sykje…">
 <!ENTITY searchAddressesCmd.accesskey "A">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Selektearre berjocht ferpleatse">
 <!ENTITY archiveButton.tooltip "Selektearre berjocht argivearje">
 <!ENTITY openConversationButton.tooltip "Petear fan selektearre berjocht toane">
+<!ENTITY openMsgConversationButton.tooltip "Petear fan selektearre berjocht toane">
 <!ENTITY nextButton.tooltip "Nei it folgjende net-lêzen berjocht gean">
 <!ENTITY nextMsgButton.tooltip "Nei it folgjende berjocht gean">
 <!ENTITY previousButton.tooltip "Nei it foarige net-lêzen berjocht gean">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Berjocht labelje">
 <!ENTITY compactButton.tooltip "Fuortsmiten berjochten út de selektearre map definityf fuortsmite">
 <!ENTITY appmenuButton1.tooltip "It &brandShortName;-menu toane">
-
 <!ENTITY addonsButton.tooltip "Jo add-ons beheare">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Sykopdracht as in map bewarje…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Berjochten selektearje">
 <!ENTITY threadColumn.label "Petear">
 <!ENTITY fromColumn.label "Fan">
 <!ENTITY recipientColumn.label "Untfanger">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Folchoarder fan ûntfangst">
 <!ENTITY attachmentColumn.label "Bylagen">
 
+<!ENTITY deleteColumn.label "Fuortsmite">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Selektearje kolommen om te toanen">
+<!ENTITY selectColumn.tooltip "Berjochtenseleksje omwikselje">
 <!ENTITY threadColumn2.tooltip "Berjochtpetearen toane">
 <!ENTITY fromColumn2.tooltip "Sortearje op fan">
 <!ENTITY recipientColumn2.tooltip "Sortearje op ûntfanger">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Sortearje op lokaasje">
 <!ENTITY idColumn2.tooltip "Sortearje op folchoarder fan ûntfangst">
 <!ENTITY attachmentColumn2.tooltip "Sortearje op bylagen">
+
+<!ENTITY deleteColumn.tooltip "In berjocht fuortsmite">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Nij berjocht fan sjabloan">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Programmasymboalopsjes…">
 <!ENTITY writeNewMessageDock.label      "Skriuw in nij berjocht">
 <!ENTITY openAddressBookDock.label      "Adresboek iepenje">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Gean ien side tebek">
+<!ENTITY browseForwardButton.tooltip "Gean ien side foarút">

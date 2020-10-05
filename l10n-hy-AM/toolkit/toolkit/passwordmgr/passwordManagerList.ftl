@@ -54,6 +54,7 @@ import =
 close-button =
     .label = Փակել
     .accesskey = Փ
+
 show-passwords =
     .label = Ցուցադրել Գաղտնաբառերը
     .accesskey = P
@@ -68,6 +69,8 @@ remove-all =
 remove-all-shown =
     .label = Հեռացնել բոլոր ցուցադրվածները
     .accesskey = բ
-remove-all-passwords-prompt = Դուք վստա՞հ եք որ ցանկանում էք ջնջել բոլոր գաղտնաբառերը։
+remove-all-passwords-prompt = Դուք վստա՞հ եք որ ցանկանում եք ջնջել բոլոր գաղտնաբառերը։
 remove-all-passwords-title = Ջնջել բոլոր գաղտնաբառերը
 no-master-password-prompt = Իրո՞ք ցանկանում եք Ձեր գաղտնաբառերը ցուցադրել:
+auto-fill-logins-and-passwords =
+    .label = Ինքնալցել մուտքանունները և գաղտնաբառերը

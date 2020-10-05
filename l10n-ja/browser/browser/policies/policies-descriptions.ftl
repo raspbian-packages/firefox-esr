@@ -11,6 +11,8 @@
 
 policy-3rdparty = WebExtension が chrome.storage.managed を経由してアクセス可能なポリシーを設定します。
 
+policy-AppAutoUpdate = アプリケーションの自動更新を有効または無効にします。
+
 policy-AppUpdateURL = アプリケーションのカスタム更新 URL を設定します。
 
 policy-Authentication = ウェブサイトが対応する統合認証の設定を行います。
@@ -31,11 +33,15 @@ policy-CertificatesDescription = 証明書を追加、または組み込みの�
 
 policy-Cookies = ウェブサイトの Cookie の保存を許可するか拒否するか設定します。
 
+policy-DisabledCiphers = 暗号を無効にします。
+
 policy-DefaultDownloadDirectory = 既定のダウンロードディレクトリーを設定します。
 
 policy-DisableAppUpdate = ブラウザの更新を禁止します。
 
 policy-DisableBuiltinPDFViewer = { -brand-short-name } 組み込みの PDF ビューアーの PDF.js を無効にします。
+
+policy-DisableDefaultBrowserAgent = デフォルトブラウザーエージェントのアクションをすべて禁止します。Windows のみ有効です。他のプラットフォームはエージェントがありません。
 
 policy-DisableDeveloperTools = 開発ツールへのアクセスをブロックします。
 
@@ -53,6 +59,8 @@ policy-DisableForgetButton = [忘れる]ボタンへのアクセスを禁止し�
 policy-DisableFormHistory = 検索とフォームの履歴を記憶しないようにします。
 
 policy-DisableMasterPasswordCreation = true にすると、マスターパスワードを作成できないようにします。
+
+policy-DisablePasswordReveal = 保存されたパスワードの表示を許可しないようにします。
 
 policy-DisablePocket = ウェブページを Pocket に保存する機能を無効にします。
 
@@ -85,6 +93,9 @@ policy-DownloadDirectory = ダウンロードディレクトリーを設定し�
 # “lock” means that the user won’t be able to change this setting
 policy-EnableTrackingProtection = コンテンツブロッキングを有効または無効にし、任意で設定をロックします。
 
+# “lock” means that the user won’t be able to change this setting
+policy-EncryptedMediaExtensions = Encrypted Media Extensions を有効または無効にし、任意で設定をロックします。
+
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
@@ -98,6 +109,8 @@ policy-FirefoxHome = Firefox Home の設定を行います。
 
 policy-FlashPlugin = Flash プラグインの実行を許可、または拒否します。
 
+policy-Handlers = 既定のアプリケーションハンドラーを設定します。
+
 policy-HardwareAcceleration = false にすると、ハードウェアアクセラレーションをオフにします。
 
 # “lock” means that the user won’t be able to change this setting
@@ -105,7 +118,19 @@ policy-Homepage = ホームページを設定し、任意でロックします�
 
 policy-InstallAddonsPermission = 特定のウェブサイトにアドオンのインストールを許可します。
 
+policy-LegacyProfiles = インストレーションごとにプロファイルが分割されるのを強制的に無効にします。
+
+## Do not translate "SameSite", it's the name of a cookie attribute.
+
+policy-LegacySameSiteCookieBehaviorEnabled = 従来の SameSite Cookie の動作設定を既定で有効にします。
+
+policy-LegacySameSiteCookieBehaviorEnabledForDomainList = 特定のサイトでは従来の SameSite Cookie の動作に戻します。
+
+##
+
 policy-LocalFileLinks = 特定のウェブサイトにローカルファイルへのリンクを許可します。
+
+policy-MasterPassword = マスターパスワードの使用を要求または抑止します。
 
 policy-NetworkPrediction = 先読み機能 (DNS プリフェッチ) を有効または無効にします。
 
@@ -115,11 +140,20 @@ policy-NoDefaultBookmarks = { -brand-short-name } の初期ブックマークと
 
 policy-OfferToSaveLogins = { -brand-short-name } に保存したログイン情報とパスワードを利用する設定を強制します。値は true か false を設定します。
 
+policy-OfferToSaveLoginsDefault = { -brand-short-name } に保存したログイン情報とパスワードを利用する設定の既定値を設定します。値は true か false を設定します。
+
 policy-OverrideFirstRunPage = 初回起動時に表示されるページを上書きします。初回起動時のページを無効にする場合は、このポリシーの設定をブランクにします。
 
 policy-OverridePostUpdatePage = 更新後に表示される更新情報ページを上書きします。更新後のページを無効にするには、このポリシーの設定をブランクにします。
 
-policy-Permissions = カメラ、マイク、位置情報、通知の許可と拒否を設定します。
+policy-PasswordManagerEnabled = パスワードのパスワードマネージャーへの保存を有効にします。
+
+# PDF.js and PDF should not be translated
+policy-PDFjs = { -brand-short-name } の組み込み PDF ビューアー PDF.js を無効化または設定します。
+
+policy-Permissions2 = カメラ、マイク、位置情報、通知、自動再生の許可と拒否を設定します。
+
+policy-PictureInPicture = ピクチャーインピクチャーを有効または無効にします。
 
 policy-PopupBlocking = 特定のウェブサイトのポッポアップ表示を既定で許可します。
 
@@ -130,8 +164,6 @@ policy-PromptForDownloadLocation = ダウンロード時にファイルの保存
 policy-Proxy = プロキシーの設定を指示します。
 
 policy-RequestedLocales = アプリケーションに要求される言語リストと優先順位を設定します。
-
-policy-SanitizeOnShutdown = 終了時にナビゲーションデータをすべて消去します。
 
 policy-SanitizeOnShutdown2 = 終了時にナビゲーションデータを消去します。
 
@@ -149,6 +181,8 @@ policy-SSLVersionMax = SSL の最高バージョンを設定します。
 policy-SSLVersionMin = SSL の最低バージョンを設定します。
 
 policy-SupportMenu = ヘルプメニューにカスタムサポートメニューを追加します。
+
+policy-UserMessaging = 特定のメッセージをユーザーに表示させないようにします。
 
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = ウェブサイトを訪問済みにしません。書式の詳細はドキュメントをご覧ください。

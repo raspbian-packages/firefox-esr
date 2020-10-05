@@ -34,9 +34,19 @@ app-basics-title = Infurmaziuns da basa
 app-basics-name = Num
 app-basics-version = Versiun
 app-basics-build-id = ID dal build
+app-basics-distribution-id = ID distribuziun
 app-basics-update-channel = Chanal d'actualisaziuns
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Ordinatur per las actualisaziuns
+       *[other] Ordinatur per las actualisaziuns
+    }
 app-basics-update-history = Cronologia d'actualisaziuns
 app-basics-show-update-history = Mussar la cronologia da las actualisaziuns
+# Represents the path to the binary used to start the application.
+app-basics-binary = Datoteca binara da l'applicaziun
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Ordinatur dal profil
@@ -52,7 +62,6 @@ app-basics-service-workers = Service Workers registrads
 app-basics-profiles = Profils
 app-basics-launcher-process-status = Process launcher
 app-basics-multi-process-support = Fanestras da plirs process
-app-basics-process-count = Process per cuntegn da web
 app-basics-remote-processes-count = Process a distanza
 app-basics-enterprise-policies = Directivas d'interpresa
 app-basics-location-service-key-google = Clav dal servetsch da localisaziun da Google
@@ -82,6 +91,10 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Protocol da decisiuns
 graphics-crash-guards-title = Funcziunalitads deactivadas da la protecziun cunter collaps
 graphics-workarounds-title = Soluziuns
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = Protocol da fanestras
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Sistem da desktop
 place-database-title = Banca da datas «Places»
 place-database-integrity = Integritad
 place-database-verify-integrity = Verifitgar l'integritad
@@ -106,6 +119,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Arguments
 safe-mode-title = Empruvar il modus segirà
 restart-in-safe-mode-label = Reaviar cun supplements deactivads…
+clear-startup-cache-title = Emprova da svidar il cache da l'aviar
+clear-startup-cache-label = Svidar il cache da l'aviar…
+startup-cache-dialog-title = Svidar il cache da l'aviar
+startup-cache-dialog-body = Reaviescha { -brand-short-name } per svidar il cache da l'aviar. Quai na mida betg tes parameters e n'allontanescha naginas extensiuns che ti has agiuntà a { -brand-short-name }.
+restart-button-label = Reaviar
+
+## Media titles
+
+audio-backend = Backend dad audio
+max-audio-channels = Maximum da chanals
+channel-layout = Modus da chanals preferì
+sample-rate = Frequenza da scannar preferida
+roundtrip-latency = Latenza da l'ir e turnar (deviaziun da standard)
 media-title = Multimedia
 media-output-devices-title = Apparats da sortida
 media-input-devices-title = Apparats d'entrada
@@ -118,6 +144,12 @@ media-device-format = Format
 media-device-channels = Chanals
 media-device-rate = Frequenza
 media-device-latency = Latenza
+media-capabilities-title = Funcziunalitad medias
+# List all the entries of the database.
+media-capabilities-enumerate = Percurrer la banca da datas
+
+##
+
 intl-title = Internaziunalisaziun & lingua
 intl-app-title = Configuraziun da l'applicaziun
 intl-locales-requested = Linguas dumandadas
@@ -127,6 +159,22 @@ intl-locales-default = Lingua predefinida
 intl-os-title = Sistem operativ
 intl-os-prefs-system-locales = Linguas dal sistem
 intl-regional-prefs = Preferenzas regiunalas
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Debugadi a distanza (protocol Chromium)
+remote-debugging-accepting-connections = Connexiuns vegnan acceptadas
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -199,6 +247,7 @@ gpu-device-id = ID da l'apparat
 gpu-subsys-id = ID dal subsys
 gpu-drivers = Drivers
 gpu-ram = RAM
+gpu-driver-vendor = Producent dal driver
 gpu-driver-version = Versiun dal driver
 gpu-driver-date = Data dal driver
 gpu-active = Activ
@@ -222,7 +271,9 @@ unknown-failure = Sin la glista naira; numer da sbagl { $failureCode }
 d3d11layers-crash-guard = D3D11 Compositor
 d3d11video-crash-guard = Decodader da video D3D11
 d3d9video-crash-buard = Decodader da video D3D9
+d3d9video-crash-guard = Decodader da video D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX Video Decoder
 reset-on-next-restart = Redefinir cun reaviar la proxima giada
 gpu-process-kill-button = Terminar il process da la GPU
 gpu-device-reset = Reinizialisaziun da l'apparat
@@ -231,12 +282,7 @@ uses-tiling = Utilisescha plattinas
 content-uses-tiling = Utilisescha plattinas (cuntegn)
 off-main-thread-paint-enabled = Activà painting ordaifer il thread principal
 off-main-thread-paint-worker-count = Dumber da workers da painting ordaifer il thread principal
-low-end-machine = Identifitgà ina maschina cun prestaziun limitada
 target-frame-rate = Finamira per frequenza da maletgs
-audio-backend = Backend dad audio
-max-audio-channels = Maximum da chanals
-channel-layout = Modus da chanals preferì
-sample-rate = Frequenza da scannar preferida
 min-lib-versions = Versiun minimala spetgada
 loaded-lib-versions = Versiun utilisada
 has-seccomp-bpf = Seccomp-BPF (Filtrar cloms dal sistem)
@@ -251,6 +297,11 @@ sandbox-proc-type-content = cuntegn
 sandbox-proc-type-file = cuntegn da la datoteca
 sandbox-proc-type-media-plugin = plugin per medias
 sandbox-proc-type-data-decoder = decoder da datas
+startup-cache-title = Cache da l'aviar
+startup-cache-disk-cache-path = Ordinatur dal cache sin il disc dir
+startup-cache-ignore-disk-cache = Ignorar il cache sin il disc dir
+startup-cache-found-disk-cache-on-init = Chattà il cache sin il disc durant l'inizialisaziun
+startup-cache-wrote-to-disk-cache = Scrit en il cache dal disc
 launcher-process-status-0 = Activà
 launcher-process-status-1 = Deactivà pervia dad errurs
 launcher-process-status-2 = Deactivà cun forza
@@ -274,6 +325,7 @@ touch-enabled = input tactil activà
 drag-enabled = trav da defilar per tutgar activada
 keyboard-enabled = tastatura activada
 autoscroll-enabled = scrollar automatic activà
+zooming-enabled = activà il pinch-zoom fluid
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

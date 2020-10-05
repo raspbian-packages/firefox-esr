@@ -14,6 +14,7 @@
                        for the help button in the menubar but Gnome does not.   -->
 <!ENTITY helpMenuWin.label        "Súgó"> 
 <!ENTITY helpMenuWin.accesskey    "S">
+
 <!ENTITY aboutProduct2.label      "A &brandShorterName; névjegye">
 <!ENTITY aboutProduct2.accesskey  "A">
 <!ENTITY productHelp2.label       "&brandShorterName; súgó">
@@ -27,9 +28,6 @@
 <!ENTITY helpSafeMode.accesskey   "r">
 <!ENTITY helpSafeMode.stop.label       "Újraindítás engedélyezett kiegészítőkkel">
 <!ENTITY helpSafeMode.stop.accesskey   "r">
-
-<!ENTITY healthReport2.label      "&brandShorterName; állapotjelentés">
-<!ENTITY healthReport2.accesskey  "e">
 
 <!ENTITY helpTroubleshootingInfo.label      "Hibakeresési információ">
 <!ENTITY helpTroubleshootingInfo.accesskey  "H">
@@ -52,3 +50,5 @@
 <!ENTITY hideOtherAppsCmdMac.commandkey "H">
 
 <!ENTITY showAllAppsCmdMac.label        "Mindet mutat">
+
+<!ENTITY touchBarCmdMac.label           "Érintősár testreszabása…">

@@ -18,8 +18,10 @@
 <!ENTITY htmlComposeHeader.label              "HTML">
 <!ENTITY font.label                           "Ruwäch tz'ib':">
 <!ENTITY font.accesskey                       "z">
-<!ENTITY size.label                           "Nimilem:">
-<!ENTITY size.accesskey                       "m">
+<!ENTITY fontSize.label                       "Nimilem:">
+<!ENTITY fontSize.accesskey                   "e">
+<!ENTITY useReaderDefaults.label              "Ke'okisäx ri taq b'onil erucha'on ri sik'inel">
+<!ENTITY useReaderDefaults.accesskey          "e">
 <!ENTITY fontColor.label                      "Rub'onil Rucholajem Tzij:">
 <!ENTITY fontColor.accesskey                  "T">
 <!ENTITY bgColor.label                        "Rub'onil Rupam:">
@@ -55,7 +57,7 @@
 <!ENTITY editDirectories.label                 "Kenuk' taq Soltzij…">
 <!ENTITY editDirectories.accesskey             "K">
 <!ENTITY showAsDefault.label                   "Rucholb'al tikirib'äl k'o wi pa ri rutzuwäch kitz'ib'awuj ochochib'äl:">
-<!ENTITY showAsDefault.accesskey               "S">
+<!ENTITY showAsDefault.accesskey               "D">
 <!ENTITY showAsDefaultLast.label               "Ruk'isib'äl cholb'äl okisan">
 
 <!ENTITY sendOptionsDescription.label          "Tib'an runuk'ulem runa'oj rub'anikil cholan tzij">

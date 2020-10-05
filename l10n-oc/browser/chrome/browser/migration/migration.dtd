@@ -5,7 +5,7 @@
 
 <!ENTITY migrationWizard.title          "Assistent d'importacion">
 
-<!ENTITY importFrom.label               "Importar las opcions, los marcapaginas, l'istoric, los mots de pas e las autras donadas de :">
+<!ENTITY importFrom.label               "Importar las opcions, los marcapaginas, l'istoric, los senhals e las autras donadas de :">
 <!ENTITY importFromUnix.label           "Importar las preferéncias, los marcapaginas, l'istoric, los senhals e las autras donadas de :">
 <!ENTITY importFromBookmarks.label      "Importar los marcapaginas de :">
 
@@ -13,6 +13,10 @@
 <!ENTITY importFromIE.accesskey         "M">
 <!ENTITY importFromEdge.label           "Microsoft Edge">
 <!ENTITY importFromEdge.accesskey       "E">
+<!ENTITY importFromEdgeLegacy.label     "Microsoft Edge ancian">
+<!ENTITY importFromEdgeLegacy.accesskey "a">
+<!ENTITY importFromEdgeBeta.label       "Microsoft Edge Beta">
+<!ENTITY importFromEdgeBeta.accesskey   "d">
 <!ENTITY importFromNothing.label        "Importar pas res">
 <!ENTITY importFromNothing.accesskey    "p">
 <!ENTITY importFromSafari.label         "Safari">

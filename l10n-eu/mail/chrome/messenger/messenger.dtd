@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "m">
 <!ENTITY  newContactCmd.label "Helbide-liburuko kontaktua…">
 <!ENTITY  newContactCmd.accesskey "k">
+<!ENTITY openMenuCmd.label "Ireki">
+<!ENTITY openMenuCmd.accesskey "I">
 <!ENTITY openMessageFileCmd.label "Ireki gordetako mezua…">
 <!ENTITY openMessageFileCmd.accesskey "I">
 <!ENTITY saveAsMenu.label "Gorde honela">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "n">
 <!ENTITY folderPaneBar.label "Karpeten panelaren tresna-barra">
 <!ENTITY folderPaneBar.accesskey "K">
-<!ENTITY folderModeSelector.label "Karpeta ikuspegiak">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Sailkapen irizpidea">
@@ -235,7 +236,7 @@
 <!ENTITY threadsWithUnreadCmd.accesskey "I">
 <!ENTITY watchedThreadsWithUnreadCmd.label "Irakurri gabeak dituzten ikusitako hariak">
 <!ENTITY watchedThreadsWithUnreadCmd.accesskey "I">
-<!ENTITY ignoredThreadsCmd.label "Ezkikusitako utzitako hariak">
+<!ENTITY ignoredThreadsCmd.label "Ezikusitako hariak">
 <!ENTITY ignoredThreadsCmd.accesskey "i">
 
 <!ENTITY headersMenu.label "Goiburuak">
@@ -288,8 +289,10 @@
 <!ENTITY searchMailCmd.label "Bilatu mezuak…">
 <!ENTITY searchMailCmd.accesskey "B">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Bilaketa globala…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Bilatu helbideak…">
-<!ENTITY searchAddressesCmd.accesskey "B">
+<!ENTITY searchAddressesCmd.accesskey "h">
 
 <!-- Go Menu -->
 <!ENTITY goMenu.label "Joan">
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Artxibatu hautatutako mezua">
 <!ENTITY archiveButton.tooltip "Artxibatu hautatutako mezuak">
 <!ENTITY openConversationButton.tooltip "Erakutsi aukeratutako mezuaren elkarrizketa">
+<!ENTITY openMsgConversationButton.tooltip "Erakutsi aukeratutako mezuaren elkarrizketa">
 <!ENTITY nextButton.tooltip "Mugitu irakurri gabeko hurrengo mezura">
 <!ENTITY nextMsgButton.tooltip "Joan hurrengo mezura">
 <!ENTITY previousButton.tooltip "Mugitu irakurri gabeko aurreko mezura">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Etiketatu mezuak">
 <!ENTITY compactButton.tooltip "Kendu ezabatutako mezuak hautatutako karpetatik">
 <!ENTITY appmenuButton1.tooltip "Bistaratu &brandShortName; menua">
-
 <!ENTITY addonsButton.tooltip "Kudeatu zure gehigarriak">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Gorde bilaketa karpeta gisa…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Aukeratu mezuak">
 <!ENTITY threadColumn.label "Haria">
 <!ENTITY fromColumn.label "Nork">
 <!ENTITY recipientColumn.label "Hartzailea">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Jasotako ordena">
 <!ENTITY attachmentColumn.label "Eranskinak">
 
+<!ENTITY deleteColumn.label "Ezabatu">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Hautatu bistaratzeko zutabeak">
+<!ENTITY selectColumn.tooltip "Txandakatu aukeratutako mezu guztiak">
 <!ENTITY threadColumn2.tooltip "Bistaratu mezuen hariak">
 <!ENTITY fromColumn2.tooltip "Ordenatu bidaltzailearen arabera">
 <!ENTITY recipientColumn2.tooltip "Ordenatu hartzailearen arabera">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Ordenatu kokalekuaren arabera">
 <!ENTITY idColumn2.tooltip "Ordenatu jasotako ordenaren arabera">
 <!ENTITY attachmentColumn2.tooltip "Ordenatu eranskinen arabera">
+
+<!ENTITY deleteColumn.tooltip "Ezabatu mezua">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Mezu berria txantiloitik">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Aplikazio-ikonoaren aukerak…">
 <!ENTITY writeNewMessageDock.label      "Idatzi mezu berria">
 <!ENTITY openAddressBookDock.label      "Ireki helbide-liburua">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Joan orri bat atzera">
+<!ENTITY browseForwardButton.tooltip "Joan orri bat aurrera">

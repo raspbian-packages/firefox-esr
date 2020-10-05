@@ -21,17 +21,16 @@
 <!ENTITY firstrun_data_message "Mačči aṭas n yisefka, ugar n usekles">
 <!ENTITY firstrun_data_subtext2 "Kkes armad n tugniwin akken ad tḥerzeḍ isefka deg yal asmel anda terziḍ.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY firstrun_sync_message2 "Kemmel seg anida telliḍ.">
+<!ENTITY firstrun_sync_message3 "Semtawi ticraḍ-ik n isebtar, amazray akked awalen uffiren deg tiliɣri.">
 <!ENTITY firstrun_sync_subtext2 "Seqdec Sync akken ad tafeḍ ticraḍ n isebtar, awalen uffiren, akked tiγawsiwin nniḍen γer &brandShortName; deg akk ibenkan.">
 <!ENTITY newfirstrun_sync_subtext "Mtawi ayen i teskelseḍ ɣed yibenk-ik aziraz akked Firefox i uselkim, s tedreg akked tɣellist.">
-<!ENTITY updatednewfirstrun_sync_subtext "Qqen ɣer umiḍan inek (inem) akken ad teẓreḍ ugar ɣef &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Azen iccer">
+<!ENTITY firstrun_sendtab_message "Bdu icarren seg tiliɣri ɣer tnarit — di teswiεt.">
 <!ENTITY firstrun_signin_message "Qqen, bdu">
-<!ENTITY firstrun_signin_button "Qqen ɣer Sync">
-<!ENTITY newfirstrun_signin_button "Rmed Synch">
-<!ENTITY updatednewfirstrun_signin_button "Qqen ɣer &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Bdu tunigin">
+<!ENTITY onboard_start_button_browser "Bdu tunigin">
 <!ENTITY firstrun_button_notnow "Mačči tura">
 <!ENTITY firstrun_button_next "Ɣer sdat">
+<!ENTITY firstrun_signup_button "Jerred">
 
 <!ENTITY firstrun_tabqueue_title "Iseγwan">
 
@@ -68,7 +67,6 @@
 <!ENTITY  sending_crash_report "Tuzzna n ussaɣ n uɣelluy\u2026">
 <!ENTITY  crash_close_label "Mdel">
 <!ENTITY  crash_restart_label "Senker i tikelt nniḍen &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; yeɣli">
@@ -116,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Akaram ittwalqem">
 <!ENTITY bookmark_parent_folder "Akaram agejdan">
 <!ENTITY bookmark_add_folder "Rnu akaram amaynut">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(ulac azwel)">
@@ -279,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Inagan n tuqqna">
 <!ENTITY pref_cookies_accept_all "Irmed">
 <!ENTITY pref_cookies_not_accept_foreign "Yettwasireg, ḥala inagan n tuqqna n wis kraḍ">
+<!ENTITY pref_cookies_not_accept_trackers "Yermed, ala inagan n tuqqna inedfaṛen">
 <!ENTITY pref_cookies_disabled "Arurmid">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -339,11 +337,6 @@
 
 <!ENTITY pref_pwa "Isnasen web n usfari">
 <!ENTITY pref_pwa_summary "Sireg akken isnasen web ad ttwarnun ɣer uqgil agejdan">
-
-<!ENTITY tracking_protection_prompt_title "Tura s ummesten mgal asfuɣel">
-<!ENTITY tracking_protection_prompt_text "Ad isewḥel iferdisen n usfuɣel akken ur yettili ara wugur yid-k.">
-<!ENTITY tracking_protection_prompt_tip_text "Wali iɣewwaṛen n tbaḍnit akken ad tissineḍ ugar">
-<!ENTITY tracking_protection_prompt_action_button "Awi-t!">
 
 <!ENTITY tab_queue_toast_message3 "Iccer yettwasekles deg &brandShortName;">
 <!ENTITY tab_queue_toast_action "Ldi tura">
@@ -430,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Senned ɣef yiminig sakin fren &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Rzu ɣer tallalt Mozilla">
 <!ENTITY pref_about_firefox "Ɣef &brandShortName;">
 <!ENTITY pref_vendor_faqs "Isteqsiyen FAQ">
 <!ENTITY pref_vendor_feedback "Efk-d tikti-k">
@@ -480,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; Ameẓlu n tansa iteddu">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Aleqqem awurman">
-<!ENTITY pref_update_autodownload_wifi "S Wi-Fi kan">
-<!ENTITY pref_update_autodownload_never "Werǧin">
-<!ENTITY pref_update_autodownload_always "Yal tikelt">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Tallalt">
 
@@ -501,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Bḍu">
 <!ENTITY share_title "Bḍu s">
 <!ENTITY share_image_failed "Ur izmir ara ad yebḍu tugna-agi">
+<!ENTITY share_error_toast_message "Ur izmir ara ad ibḍu asnas">
 <!ENTITY save_as_pdf "Kles d PDF">
 <!ENTITY print "Siggez">
 <!ENTITY view_page_source "Wali tangalt taɣbalut n usebter">
@@ -601,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Tansa:">
 <!ENTITY bookmark_edit_keyword "Awal n tsaruţ">
 <!ENTITY bookmark_select_folder "Fren akaram">
-
 <!ENTITY bookmark_edit_undo "Sefsex">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -691,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Fren neɣ sekles imesli">
 <!ENTITY filepicker_image_title "Fren neɣ ṭṭef tawlaft">
 <!ENTITY filepicker_video_title "Fren neɣ sekles tavidyutt">
-
 <!ENTITY filepicker_permission_denied "Ulac tisirag ittwasran, uɣal ɣer amefran n ifuyla n unagraw.">
 
 <!-- Site identity popup -->
@@ -753,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Nadi &formatS1; ɣef &formatS2;">
 
 <!ENTITY searchable_description "Ticraḍ d umazray">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Lqem n &brandShortName; yellan">
-<!ENTITY updater_start_select2 "Nnal akken ad d-tessidreḍ">
-
-<!ENTITY updater_downloading_title2 "Asider n &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Ifuyla ittwazedmen">
-<!ENTITY updater_downloading_select2 "Nnal akken ad tesneseḍ lqem ticki yettusider-d">
-<!ENTITY updater_downloading_retry2 "Nnal akken ad tɛerḍeḍ tikelt-nniḍen.">
-
-<!ENTITY updater_apply_title3 "Lqem n &brandShortName; yellan">
-<!ENTITY updater_apply_select3 "Nal akken ad tesbedded">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Akken ad d-tessidreḍ ifuyla akked ileqman, efk i &brandShortName; tasiregt n unekcum ɣer usekles.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Sireg">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Tiɣimit tanebgit tamaynut">
@@ -883,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Iferdisen n tmeẓri n umeɣri n tecraḍ ara teɣreḍ deg uskar war tuqqna.">
 <!ENTITY helper_triple_readerview_open_button "Rnu ɣer tecraḍ">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Ansuf ɣer &brandShortName;">
+<!ENTITY activity_stream_signin_description "Bdu amtawi n ticraḍ, awalen uffiren, akked waṭas-nniḍen s umiḍan n Firefox.">
+<!ENTITY activity_stream_signup_button "Jerred">
+<!ENTITY activity_stream_signin_prompt "Ɣur-k yakan amiḍan?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Kcem.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Firefox amaynut, ad d-yewed deg 2020">
+<!ENTITY activity_stream_firefox_promo_description "Ad yeffeɣ ticki: Tɣellist mgal aneḍfar. Timahilin ara k-yeffken  tallelt, asekles, d beṭṭu n yawen tḥemmleḍ.">
+<!ENTITY activity_stream_firefox_promo_button "Ɛreḍ-it uqbel ad d-yeffeɣ">
+
 <!ENTITY activity_stream_topsites "Ismal yettwarzan aṭas">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Ittwasumer sγur &brandPocket;">
@@ -940,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Imseli d uvidyu">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "timahltin d tixbula &vendorShortName;">
-<!ENTITY updater_notification_channel "Ileqman n usnas">
 <!ENTITY synced_tabs_notification_channel "Iccaren yemtawin">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

@@ -5,50 +5,66 @@
 permissions-window =
     .title = Izjeme
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Naslov spletne strani
     .accesskey = N
+
 permissions-block =
     .label = Prepovej
     .accesskey = r
+
 permissions-session =
     .label = Dovoli v tej seji
     .accesskey = S
+
 permissions-allow =
     .label = Dovoli
     .accesskey = D
+
 permissions-site-name =
     .label = Spletna stran
+
 permissions-status =
     .label = Stanje
+
 permissions-remove =
     .label = Odstrani spletno stran
     .accesskey = O
+
 permissions-remove-all =
     .label = Odstrani vse spletne strani
     .accesskey = v
+
 permissions-button-cancel =
     .label = Prekliči
     .accesskey = P
+
 permissions-button-ok =
     .label = Shrani spremembe
     .accesskey = S
+
 permissions-autoplay-menu = Privzeto za vse spletne strani:
+
 permissions-searchbox =
     .placeholder = Išči po spletni strani
+
 permissions-capabilities-autoplay-allow =
     .label = Dovoli zvok in video
 permissions-capabilities-autoplay-block =
     .label = Zavrni zvok
 permissions-capabilities-autoplay-blockall =
     .label = Zavrni zvok in video
+
 permissions-capabilities-allow =
     .label = Dovoli
 permissions-capabilities-block =
     .label = Prepovej
 permissions-capabilities-prompt =
     .label = Vedno vprašaj
+
 permissions-capabilities-listitem-allow =
     .value = Dovoli
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Izjeme – Zavračanje vsebine
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Zavračanje vsebine na teh spletnih straneh je onemogočeno.
+
+permissions-exceptions-etp-window =
+    .title = Izjeme za izboljšano zaščito pred sledenjem
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Za te spletne strani ste izklopili zaščito.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Naslednje spletne strani so zahtevale dostop do
 permissions-site-location-disable-label =
     .label = Zavrni nove zahteve, ki zahtevajo informacijo o lokaciji
 permissions-site-location-disable-desc = To bo preprečilo, da bi katera koli spletna stran, ki ni navedena zgoraj, zahtevala dovoljenje za dostop do vaše lokacije. Blokiranje dostopa do vaše lokacije lahko prekine nekatere funkcije spletnega mesta.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Nastavitve – Dovoljenja navidezne resničnosti
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Naslednje spletne strani so zahtevale dostop do vaših naprav navidezne resničnosti. Določite lahko, katere spletne strani lahko dostopajo do vaših naprav navidezne resničnosti. Prav tako lahko zavrnete nove zahteve za dostop do vaših naprav navidezne resničnosti.
+permissions-site-xr-disable-label =
+    .label = Zavrni nove zahteve, ki zahtevajo informacijo o napravah navidezne resničnosti
+permissions-site-xr-disable-desc = To bo preprečilo, da bi katera koli spletna stran, ki ni navedena zgoraj, zahtevala dovoljenje za dostop do vaših naprav navidezne resničnosti. Blokiranje dostopa do vaših naprav navidezne resničnosti lahko prekine nekatere funkcije spletnega mesta.
 
 ## Site Permissions - Camera
 

@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "s">
 <!ENTITY  newContactCmd.label "Kontakt adresára…">
 <!ENTITY  newContactCmd.accesskey "K">
+<!ENTITY openMenuCmd.label "Otvoriť">
+<!ENTITY openMenuCmd.accesskey "O">
 <!ENTITY openMessageFileCmd.label "Otvoriť uložené správy…">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "Uložiť ako">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "K">
 <!ENTITY folderPaneBar.label "Nástroje panela priečinkov">
 <!ENTITY folderPaneBar.accesskey "a">
-<!ENTITY folderModeSelector.label "Zobrazenie priečinkov">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Usporiadať podľa">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Hľadať v správach…">
 <!ENTITY searchMailCmd.accesskey "s">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Globálne vyhľadávanie…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Hľadať adresy…">
 <!ENTITY searchAddressesCmd.accesskey "a">
 
@@ -393,7 +396,7 @@
 <!ENTITY killThreadMenu.accesskey "I">
 <!ENTITY killThreadMenu.key "k">
 <!ENTITY killSubthreadMenu.label "Ignorovať podvlákno">
-<!ENTITY killSubthreadMenu.accesskey "g">
+<!ENTITY killSubthreadMenu.accesskey "o">
 <!ENTITY killSubthreadMenu.key "k">
 <!ENTITY watchThreadMenu.label "Sledovať vlákno">
 <!ENTITY watchThreadMenu.accesskey "S">
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Uložiť označenú správu do súboru">
 <!ENTITY archiveButton.tooltip "Presunúť označené správy do archívu">
 <!ENTITY openConversationButton.tooltip "Zobraziť konverzáciu k vybranej správe">
+<!ENTITY openMsgConversationButton.tooltip "Zobraziť konverzáciu k vybranej správe">
 <!ENTITY nextButton.tooltip "Presunúť sa na nasledujúcu neprečítanú správu">
 <!ENTITY nextMsgButton.tooltip "Presunúť sa na nasledujúcu správu">
 <!ENTITY previousButton.tooltip "Presunúť sa na predchádzajúcu neprečítanú správu">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Priradí k správe popis">
 <!ENTITY compactButton.tooltip "Odstráni vymazané správy z označeného priečinka">
 <!ENTITY appmenuButton1.tooltip "Zobrazí ponuku aplikácie &brandShortName;">
-
 <!ENTITY addonsButton.tooltip "Správa doplnkov">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Uložiť hľadanie ako priečinok…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Označte správy">
 <!ENTITY threadColumn.label "Vlákno">
 <!ENTITY fromColumn.label "Od">
 <!ENTITY recipientColumn.label "Adresát">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Poradie prijatia">
 <!ENTITY attachmentColumn.label "Prílohy">
 
+<!ENTITY deleteColumn.label "Odstrániť">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Zvoliť stĺpce">
+<!ENTITY selectColumn.tooltip "Vyberie všetky správy">
 <!ENTITY threadColumn2.tooltip "Usporiadať správy do vlákien">
 <!ENTITY fromColumn2.tooltip "Usporiadať podľa stĺpca Od">
 <!ENTITY recipientColumn2.tooltip "Usporiadať podľa adresáta">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Usporiadať podľa umiestnenia">
 <!ENTITY idColumn2.tooltip "Usporiadať podľa poradia, v akom boli správy prijaté">
 <!ENTITY attachmentColumn2.tooltip "Zoskupiť správy s prílohou">
+
+<!ENTITY deleteColumn.tooltip "Odstrániť správu">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Nová správa zo šablóny">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Nastavenia ikony aplikácie…">
 <!ENTITY writeNewMessageDock.label      "Nová e-mailová správa">
 <!ENTITY openAddressBookDock.label      "Otvoriť adresár">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Prejsť naspäť o jednu stránku">
+<!ENTITY browseForwardButton.tooltip "Prejsť dopredu o jednu stránku">

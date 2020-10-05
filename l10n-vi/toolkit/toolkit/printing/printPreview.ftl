@@ -33,6 +33,7 @@ printpreview-of =
     .value = trên tổng
 printpreview-custom-prompt =
     .value = Tùy biến tỉ lệ…
+printpreview-custom-scale-prompt-title = Tùy biến tỉ lệ
 printpreview-page-setup =
     .label = Thiết lập trang in…
     .accesskey = u
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Trang cuối
+

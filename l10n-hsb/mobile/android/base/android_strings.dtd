@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Mjenje datow, wjace zalutowanjow">
 <!ENTITY firstrun_data_subtext2 "Blokujće wobrazy, zo byšće mjenje datow na kóždym sydłe, kotrež wopytujeće, přetrjebował.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Konto">
-<!ENTITY firstrun_sync_message2 "Čińće tam dale, hdźež sće přestał.">
+<!ENTITY firstrun_sync_message3 "Synchronizujće swoje zapołožki, historiju a hesła na swojim telefonje.">
 <!ENTITY firstrun_sync_subtext2 "Wužiwajće Sync, zo byšće zapołožki, hesła a druhe wěcy namakał, kotrež w &brandShortName; na wšěch swojich gratach składujeće.">
 <!ENTITY newfirstrun_sync_subtext "Synchronizujće informacije, kotrež na mobilnym graće składujeće, z Firefox za desktop, priwatnje a wěsće.">
-<!ENTITY updatednewfirstrun_sync_subtext "Přizjewće so pola swojeho konta, zo byšće najlěpše z &brandShortName; wućahnył">
+<!ENTITY firstrun_sendtab_title "Rajtark słać">
+<!ENTITY firstrun_sendtab_message "Dźělće rajtarki mobilneho telefona z desktopom - hnydom.">
 <!ENTITY firstrun_signin_message "Zwjazajće so, započńće">
-<!ENTITY firstrun_signin_button "Pola Sync přizjewić">
-<!ENTITY newfirstrun_signin_button "Synchronizaciju zapinać">
-<!ENTITY updatednewfirstrun_signin_button "Pola &brandShortName; přizjewić">
-<!ENTITY  onboard_start_button_browser "Přehladowanje startować">
+<!ENTITY onboard_start_button_browser "Přehladowanje startować">
 <!ENTITY firstrun_button_notnow "Nic hnydom">
 <!ENTITY firstrun_button_next "Přichodny">
+<!ENTITY firstrun_signup_button "Registrować">
 
 <!ENTITY firstrun_tabqueue_title "Wotkazy">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Spadowa rozprawa so sćele\u2026">
 <!ENTITY  crash_close_label "Začinić">
 <!ENTITY  crash_restart_label "&brandShortName; znowa startować">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; je spadnył">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Rjadowak zaktualizowany">
 <!ENTITY bookmark_parent_folder "Nadrjadowany rjadowak">
 <!ENTITY bookmark_add_folder "Nowy rjadowak přidać">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(žadyn titul)">
@@ -211,7 +207,7 @@
 <!ENTITY pref_category_privacy_short "Priwatnosć">
 <!ENTITY pref_category_privacy_summary4 "Slědowanje, přizjewjenja, datowe wuběry">
 <!ENTITY pref_category_vendor2 "&vendorShortName; &brandShortName;">
-<!ENTITY pref_category_vendor_summary2 "Wo &brandShortName;, huste prašenja, komentary">
+<!ENTITY pref_category_vendor_summary2 "Wo &brandShortName;, husto stajene prašenja, komentary">
 <!ENTITY pref_category_datareporting "Datowe wuběry">
 <!ENTITY pref_category_logins "Přizjewjenja">
 <!ENTITY pref_learn_more "Dalše informacije">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Placki">
 <!ENTITY pref_cookies_accept_all "Zmóžnjeny">
 <!ENTITY pref_cookies_not_accept_foreign "Zmóžnjeny, z wuwzaćom třećich poskićowarjow">
+<!ENTITY pref_cookies_not_accept_trackers "Zmóžnjeny, nimo slědowacych plackow">
 <!ENTITY pref_cookies_disabled "Znjemóžnjeny">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Postupne webnałoženja">
 <!ENTITY pref_pwa_summary "Dowolće, zo so webnałoženja startowej wobrazowce přidawaja">
-
-<!ENTITY tracking_protection_prompt_title "Nětko ze slědowanskim škitom">
-<!ENTITY tracking_protection_prompt_text "Slědowanske elementy so aktiwnje blokuja, njetrjebaće tuž so starosćić.">
-<!ENTITY tracking_protection_prompt_tip_text "Wopytajće nastajenja priwatnosće, zo byšće wjace zhonił">
-<!ENTITY tracking_protection_prompt_action_button "Sym to zrozumił!">
 
 <!ENTITY tab_queue_toast_message3 "Rajtark je so w &brandShortName; składował">
 <!ENTITY tab_queue_toast_action "Nětko wočinić">
@@ -431,9 +423,8 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Podótkńće so nałoženja wobhladowaka a wubjerće &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Pomoc Mozilla wopytać">
 <!ENTITY pref_about_firefox "Wo &brandShortName;">
-<!ENTITY pref_vendor_faqs "Huste prašenja">
+<!ENTITY pref_vendor_faqs "Huste stajene prašenja">
 <!ENTITY pref_vendor_feedback "Komentar pisać">
 
 <!ENTITY pref_dialog_set_default "Jako standard wužiwać">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Stejnišćowa słužba &vendorShortName; běži">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Awtomatiske aktualizacije">
-<!ENTITY pref_update_autodownload_wifi "Jenož přez Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Ženje">
-<!ENTITY pref_update_autodownload_always "Přeco">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Pomoc">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Dźělić">
 <!ENTITY share_title "Dźělić přez">
 <!ENTITY share_image_failed "Tutón wobraz njeda so dźělić">
+<!ENTITY share_error_toast_message "Njeda so z podatym nałoženjom dźělić">
 <!ENTITY save_as_pdf "Jako PDF składować">
 <!ENTITY print "Ćišćeć">
 <!ENTITY view_page_source "Žórłowy tekst strony pokazać">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Městno">
 <!ENTITY bookmark_edit_keyword "Klučowe słowo">
 <!ENTITY bookmark_select_folder "Rjadowak wubrać">
-
 <!ENTITY bookmark_edit_undo "Cofnyć">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Wubjerće abo natočće zynk">
 <!ENTITY filepicker_image_title "Wubjerće abo wutworće wobraz">
 <!ENTITY filepicker_video_title "Widejo wubrać abo natočić">
-
 <!ENTITY filepicker_permission_denied "Trěbne prawa njejsu so dali, wróći so k systemowemu datajowemu wuběrakej.">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "&formatS1; za &formatS2; přepytać">
 
 <!ENTITY searchable_description "Zapołožki a historija">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Aktualizacija za &brandShortName; k dispoziciji">
-<!ENTITY updater_start_select2 "Dótkńće so, zo byšće sćahnył">
-
-<!ENTITY updater_downloading_title2 "&brandShortName; sćahnyć">
-<!ENTITY updater_downloading_title_failed2 "Sćehnjenje njeje so poradźiło">
-<!ENTITY updater_downloading_select2 "Dótkńće so, zo byšće aktualizaciju jónkróć sćahnył">
-<!ENTITY updater_downloading_retry2 "Dótkńće so, zo byšće hišće raz spytał">
-
-<!ENTITY updater_apply_title3 "Aktualizacija za &brandShortName; sćehnjena">
-<!ENTITY updater_apply_select3 "Dótkńće so, zo byšće instalował">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Zo byšće dataje a aktualizacije sćahnył, dajće &brandShortName; přistup na składowak.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Dowolić">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Nowe hóstne posedźenje">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Składujće zapiski čitanskeho napohlada jako zapołožki, zo byšće je offline čitał.">
 <!ENTITY helper_triple_readerview_open_button "K zapołožkam přidać">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Witajće k &brandShortName;">
+<!ENTITY activity_stream_signin_description "Synchronizujće nětko zapołožki, hesła a wjace ze swojim kontom Firefox.">
+<!ENTITY activity_stream_signup_button "Registrować">
+<!ENTITY activity_stream_signin_prompt "Maće hižo konto?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Přizjewće so.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Waš dospołnje nowy Firefox, kotryž w lěće 2020 wundźe">
+<!ENTITY activity_stream_firefox_promo_description "Póndźe bórze: Polěpšeny wukon. Polěpšeny slědowanski škit. A funkcije, kotrež su so wuwili, zo bychu wam pomhali, wjace wo tym namakać, składować a dźělić, štož online lubujeće.">
+<!ENTITY activity_stream_firefox_promo_button "Pohladnyć">
+
 <!ENTITY activity_stream_topsites "Najhusćišo wopytane sydła">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Wot &brandPocket; doporučeny">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Zynka a widejo">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Pokiwy a triki &vendorShortName;">
-<!ENTITY updater_notification_channel "Aktualizacije nałoženjow">
 <!ENTITY synced_tabs_notification_channel "Synchronizowane rajtarki">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

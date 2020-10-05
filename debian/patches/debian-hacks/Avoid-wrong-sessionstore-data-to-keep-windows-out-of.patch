@@ -12,10 +12,10 @@ Closes: #552426, #553453
  1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/browser/components/sessionstore/SessionStore.jsm b/browser/components/sessionstore/SessionStore.jsm
-index 496a9339de9..0b7bcd6c8a2 100644
+index 6ab86fd5913..c5c8f04b8e6 100644
 --- a/browser/components/sessionstore/SessionStore.jsm
 +++ b/browser/components/sessionstore/SessionStore.jsm
-@@ -4917,7 +4917,7 @@ var SessionStoreInternal = {
+@@ -5114,7 +5114,7 @@ var SessionStoreInternal = {
          !isNaN(aTop) &&
          (aLeft != win_("screenX") || aTop != win_("screenY"))
        ) {
@@ -24,7 +24,7 @@ index 496a9339de9..0b7bcd6c8a2 100644
        }
        if (
          aWidth &&
-@@ -4946,9 +4946,8 @@ var SessionStoreInternal = {
+@@ -5143,9 +5143,8 @@ var SessionStoreInternal = {
            case "minimized":
              if (aSizeModeBeforeMinimized == "maximized") {
                aWindow.maximize();

@@ -31,9 +31,19 @@ app-basics-title = Ri najowäx richin runuk'ulem ri chokoy
 app-basics-name = B'i'aj
 app-basics-version = Ruwäch
 app-basics-build-id = Nimaläj rub'i' molïk
+app-basics-distribution-id = Jachonïk ID
 app-basics-update-channel = Rub'ey taq k'exoj ruwäch
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Rucholajem K'exoj
+       *[other] Rumolb'al K'exoj
+    }
 app-basics-update-history = Kinatab'al taq k'exoj ruwäch
 app-basics-show-update-history = Tik'ut pe ri kinatab'al taq k'exoj ruwäch
+# Represents the path to the binary used to start the application.
+app-basics-binary = Ruwinari Chokoy
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Rucholb'äl Ruwäch B'i'aj
@@ -49,7 +59,6 @@ app-basics-service-workers = Samajela' pa samaj tz'ib'an kib'i'
 app-basics-profiles = Taq ruwäch b'i'aj
 app-basics-launcher-process-status = Rub'anik K'aqonel
 app-basics-multi-process-support = Rutzuwach k'ïy tajin
-app-basics-process-count = Rutajinik Rupam Ajk'amaya'l
 app-basics-remote-processes-count = Näj taq Tajin
 app-basics-enterprise-policies = Ajk'aymolojel taq Na'ojil
 app-basics-location-service-key-google = Google K'ojlib'äl Ewan Rutzij Samaj
@@ -79,6 +88,10 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Runa'oj tz'ib'anïk
 graphics-crash-guards-title = Tzaqoj Chajïy q'ajon taq b'anikil
 graphics-workarounds-title = Tz'aqat taq soloj
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = Rub'eyal Tzuwäch
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Ruk'ojlib'al Ajkematz'ib'
 place-database-title = Taq kik'ojlem cholxe'el tzij
 place-database-integrity = Ch'ajch'ojri'ïl
 place-database-verify-integrity = Tinik'öx ch'ajch'ojri'ïl
@@ -103,6 +116,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Taq rutzijol
 safe-mode-title = Titojtob'ëx ütz rub'anikil
 restart-in-safe-mode-label = Titikirisäx chik kik'in ri chupül taq tz'aqat…
+clear-startup-cache-title = Titojtob'ëx niyuj ri rujumej ruyakoj tikirib'äl
+clear-startup-cache-label = Tiyuj rujumejyak tikirib'äl…
+startup-cache-dialog-title = Tiyuj rujumejyak tikirib'äl
+startup-cache-dialog-body = Titikirisäx chik { -brand-short-name } richin niyuj ri rujumej ruyakoj tikirib'äl. Re re' man xtujäl ta ri anuk'ulem chuqa' man xkeruyüj ta ri taq k'amal e'atz'aqatisan pa { -brand-short-name }.
+restart-button-label = Titikirisäx chik
+
+## Media titles
+
+audio-backend = Q'ojom Backend
+max-audio-channels = Nima'q taq b'ey
+channel-layout = Ruwachib'enik Ajowan B'ey
+sample-rate = Ajowan Q'ijun Tz'etb'äl
+roundtrip-latency = Rulatensya b'enam chuqa' tzolojnem (junaman jech'unïk)
 media-title = Q'ojom
 media-output-devices-title = Elem taq Okisaxel
 media-input-devices-title = Okib'äl taq Okisaxel
@@ -115,6 +141,12 @@ media-device-format = B'anikil
 media-device-channels = Taq b'ey
 media-device-rate = Rajil
 media-device-latency = Rub'anikil k'o wi
+media-capabilities-title = Kisamaj K'oxom
+# List all the entries of the database.
+media-capabilities-enumerate = Ticholajïx cholxe'el
+
+##
+
 intl-title = Elniminïk & Tzalq'omanri'ïl
 intl-app-title = Kinuk'ulem Chokoy
 intl-locales-requested = K'utun taq Tzalq'omanïk
@@ -124,6 +156,22 @@ intl-locales-default = Tzalq'omanïk kan k'o wi
 intl-os-title = Samajel taq Q'inoj
 intl-os-prefs-system-locales = Kitzalq'omanik Q'inoj
 intl-regional-prefs = Aj wawe' taq Ajowab'äl
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Näj Ruchojmirisanem (Chromium Rub'eyal Samaj)
+remote-debugging-accepting-connections = Kek'ul taq okem
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -220,7 +268,9 @@ unknown-failure = Q'ëq cholb'äl: rub'itz'ib' sachoj { $failureCode }
 d3d11layers-crash-guard = D3D11 Chojmirisanel
 d3d11video-crash-guard = D3D11 Silowachib'äl ewanel rusik'ixik
 d3d9video-crash-buard = D3D9 Silowachib'äl Ewanel rusik'ixik
+d3d9video-crash-guard = D3D9 Silowachib'äl Ewanel rusik'ixik
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX Silowachib'äl Ewanel Rusik'ixik
 reset-on-next-restart = K'a xtitzolïx na ri Rutikirisaxik chik
 gpu-process-kill-button = Tik'isb'ëx ri GPU Tajin
 gpu-device-reset = Titzij chik Okisaxel
@@ -229,12 +279,7 @@ uses-tiling = Tokisäx Ch'utiwäch
 content-uses-tiling = Tokisäx Ch'utiwäch (Rupam)
 off-main-thread-paint-enabled = Off Nïm Rub'ey Rachwinäq Tzijon
 off-main-thread-paint-worker-count = Off Main Thread Painting Worker Tajiläx
-low-end-machine = Xilitäj jun ko'öl rub'eyal nisamäj samajib'äl
 target-frame-rate = Retal Ruchi' Rub'ey:
-audio-backend = Q'ojom Backend
-max-audio-channels = Nima'q taq b'ey
-channel-layout = Ruwachib'enik Ajowan B'ey
-sample-rate = Ajowan Q'ijun Tz'etb'äl
 min-lib-versions = Ch'uti'n ruwäch oyob'en
 loaded-lib-versions = Ruwäch tajin nokisäx
 has-seccomp-bpf = Seccomp-BPF (Ruq'inoj chayunel taq oyonïk)
@@ -249,6 +294,11 @@ sandbox-proc-type-content = rupam
 sandbox-proc-type-file = rupam yakb'äl
 sandbox-proc-type-media-plugin = q'ojom nak'ab'äl
 sandbox-proc-type-data-decoder = sik'inel tzij
+startup-cache-title = Rukache' Tikirib'äl
+startup-cache-disk-cache-path = Rub'ey Rukache' Seteb'äl
+startup-cache-ignore-disk-cache = Tirepüx Rukache' Seteb'äl
+startup-cache-found-disk-cache-on-init = Rukache' Seteb'äl Xilitäj toq Xtikirisäx
+startup-cache-wrote-to-disk-cache = Xtz'ib'äx chi re ri Rukache' Seteb'äl
 launcher-process-status-0 = Tzijon
 launcher-process-status-1 = Xchup ruma sachoj
 launcher-process-status-2 = Xb'an chi xchup
@@ -272,6 +322,7 @@ touch-enabled = chapoj richin nitzij ri okitz'ib'
 drag-enabled = chupul ruqirirexik rukajtz'ik q'axanel
 keyboard-enabled = tzijon pitz'b'äl
 autoscroll-enabled = tzijon autoscroll
+zooming-enabled = xtz'ij rusum eqal ch'opoj
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

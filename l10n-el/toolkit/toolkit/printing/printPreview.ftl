@@ -33,6 +33,7 @@ printpreview-of =
     .value = από
 printpreview-custom-prompt =
     .value = Προσαρμοσμένη κλίμακα...
+printpreview-custom-scale-prompt-title = Προσαρμοσμένη κλίμακα
 printpreview-page-setup =
     .label = Διαμόρφωση σελίδας…
     .accesskey = δ
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Τελευταία σελίδα
+

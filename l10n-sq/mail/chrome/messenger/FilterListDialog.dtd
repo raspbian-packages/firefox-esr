@@ -9,14 +9,14 @@
 <!ENTITY newButton.accesskey "i">
 <!ENTITY newButton.popupCopy.label "Kopjoni…">
 <!ENTITY newButton.popupCopy.accesskey "K">
-<!ENTITY editButton.label "Përpunojeni…">
+<!ENTITY editButton.label "Përpunoni…">
 <!ENTITY editButton.accesskey "P">
 <!ENTITY deleteButton.label "Fshije">
 <!ENTITY deleteButton.accesskey "e">
 <!ENTITY reorderTopButton "Shpjere në Krye">
 <!ENTITY reorderTopButton.accessKey "k">
 <!ENTITY reorderTopButton.toolTip "Risistemojeni filtrin që të ekzekutohet përpara krejt të tjerëve">
-<!ENTITY reorderUpButton.label "Shpjere Sipër">
+<!ENTITY reorderUpButton.label "Ngrije">
 <!ENTITY reorderUpButton.accesskey "S">
 <!ENTITY reorderDownButton.label "Shpjere Poshtë">
 <!ENTITY reorderDownButton.accesskey "o">
@@ -36,8 +36,5 @@
 <!ENTITY folderPickerPrefix.accesskey "u">
 <!ENTITY helpButton.label "Ndihmë">
 <!ENTITY helpButton.accesskey "d">
-<!ENTITY closeCmd.key "W"> 
+<!ENTITY closeCmd.key "W">
 <!ENTITY searchBox.emptyText "Kërkoni sipas emrash te filtrat…">
-
-
-

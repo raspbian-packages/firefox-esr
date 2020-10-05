@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Pestañas sincronizadas
 synced-tabs-sidebar-noclients-subtitle = ¿Quieres ver las pestañas de tus otros dispositivos aquí?
 synced-tabs-sidebar-notsignedin = Inicia sesión para ver una lista de pestañas de tus otros dispositivos.
+synced-tabs-sidebar-intro = Ver una lista de pestañas de sus otros dispositivos.
 synced-tabs-sidebar-unverified = Tu cuenta necesita ser verificada.
 synced-tabs-sidebar-notabs = No hay pestañas abiertas
 synced-tabs-sidebar-openprefs = Abriendo preferencias de { -sync-brand-short-name }
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Administrar dispositivos…
     .accesskey = D
+synced-tabs-context-sync-now =
+    .label = Sincronizar ahora
+    .accesskey = S
 fxa-sign-in = Iniciar sesión con { -sync-brand-short-name }
+turn-on-sync = Activar { -sync-brand-short-name }

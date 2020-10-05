@@ -31,7 +31,10 @@ app-basics-title = Bazaj programaj informoj
 app-basics-name = Nomo
 app-basics-version = Versio
 app-basics-build-id = Identigilo de konstruo
+app-basics-distribution-id = Identigilo de distribuo
 app-basics-update-channel = Kanalo de ĝisdatigo
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Dosierujo de ĝisdatigoj
@@ -56,7 +59,6 @@ app-basics-service-workers = Registritaj Service Workers
 app-basics-profiles = Profiloj
 app-basics-launcher-process-status = Lanĉa procezo
 app-basics-multi-process-support = Plurprocezaj fenestroj
-app-basics-process-count = Teksaĵaj enhavaj taskoj
 app-basics-remote-processes-count = Foraj procezoj
 app-basics-enterprise-policies = Kompaniaj politikoj
 app-basics-location-service-key-google = Ŝlosilo de la pozicia servo de Google
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Trajtoj malŝaltitaj de la protekto kontraŭ paneo
 graphics-workarounds-title = Provizoraj solvoj
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Fenestra protokolo
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Labortabla ĉirkaŭaĵo
 place-database-title = Datumbazo de lokoj
 place-database-integrity = Integreco
 place-database-verify-integrity = Kontroli integrecon
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Sistema voko
 sandbox-sys-call-args = Parametroj
 safe-mode-title = Provi la sekuran reĝimon
 restart-in-safe-mode-label = Restartigi kun ĉiuj aldonaĵoj malaktivaj…
+clear-startup-cache-title = Provu viŝi la startan staplon
+clear-startup-cache-label = Viŝi startan staplon…
+startup-cache-dialog-title = Viŝi startan staplon
+startup-cache-dialog-body = Restartigi { -brand-short-name } por viŝi la startan staplon. Tiu ago ne ŝanĝos viajn agordojn nek forigos etendaĵojn aldonitaj de vi al { -brand-short-name }.
+restart-button-label = Restartigi
+
+## Media titles
+
+audio-backend = Sonsistemo
+max-audio-channels = Maksimuma nombro de kanaloj
+channel-layout = Preferata aranĝo de kanaloj
+sample-rate = Preferata specimena frekvenco
+roundtrip-latency = Tien-reena tempo (norma devio)
 media-title = Aŭdvidaĵo
 media-output-devices-title = Eligaj aparatoj
 media-input-devices-title = Enigaj aparatoj
@@ -124,6 +141,12 @@ media-device-format = Formo
 media-device-channels = Kanaloj
 media-device-rate = Frekvenco
 media-device-latency = Prokrasto
+media-capabilities-title = Aŭdvidaĵaj kapabloj
+# List all the entries of the database.
+media-capabilities-enumerate = Listigi datumbazon
+
+##
+
 intl-title = Lingvo kaj internacieco
 intl-app-title = Agordoj de programo
 intl-locales-requested = Petitaj lingvoj
@@ -133,6 +156,22 @@ intl-locales-default = Norma lingvo
 intl-os-title = Mastruma sistemo
 intl-os-prefs-system-locales = Lingvoj de la sistemo
 intl-regional-prefs = Regionaj preferoj
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Fora senerarigo (protokolo Chromium)
+remote-debugging-accepting-connections = Konektoj akceptataj
+remote-debugging-url = Retadreso
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -229,7 +268,9 @@ unknown-failure = En bloklisto; kodo de malsukceso { $failureCode }
 d3d11layers-crash-guard = D3D11 Komponisto
 d3d11video-crash-guard = D3D11 Videa malkodilo
 d3d9video-crash-buard = D3D9 Videa malkodilo
+d3d9video-crash-guard = D3D9 Videa malkodilo
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX Videa malkodilo
 reset-on-next-restart = Restarigi en la venonta restarto
 gpu-process-kill-button = Fini procezon de GPU
 gpu-device-reset = Restartigi aparaton
@@ -238,12 +279,7 @@ uses-tiling = Kaheloj uzataj
 content-uses-tiling = Kaheloj uzataj (enhavo)
 off-main-thread-paint-enabled = La farbado ekster la ĉefa fadeno estas aktiva
 off-main-thread-paint-worker-count = Nombro de workers, kiuj farbas ekster la ĉefa fadeno
-low-end-machine = Malpli pova maŝino trovita
 target-frame-rate = Celata frekvenco de kadroj
-audio-backend = Sonsistemo
-max-audio-channels = Maksimuma nombro de kanaloj
-channel-layout = Preferata aranĝo de kanaloj
-sample-rate = Preferata specimena frekvenco
 min-lib-versions = Minimuma atendita versio
 loaded-lib-versions = Uzata versio
 has-seccomp-bpf = Seccomp-BPF (Filtrado de sistemaj vokoj)
@@ -258,6 +294,11 @@ sandbox-proc-type-content = enhavo
 sandbox-proc-type-file = enhavo de dosiero
 sandbox-proc-type-media-plugin = aŭdvida kromprogramo
 sandbox-proc-type-data-decoder = malkodilo de datumoj
+startup-cache-title = Starta staplo
+startup-cache-disk-cache-path = Vojo al la diska staplo
+startup-cache-ignore-disk-cache = Ignori diskan staplon
+startup-cache-found-disk-cache-on-init = Diska staplo trovita je starto
+startup-cache-wrote-to-disk-cache = Skribado al diska staplo
 launcher-process-status-0 = Aktiva
 launcher-process-status-1 = Malaktiva pro paneo
 launcher-process-status-2 = Devigite malaktiva
@@ -281,6 +322,7 @@ touch-enabled = tuŝa enigo aktiva
 drag-enabled = treno de ŝovstrio aktiva
 keyboard-enabled = klavaro aktiva
 autoscroll-enabled = aŭtomata ŝovo aktiva
+zooming-enabled = flua ŝanĝo de grando per pinĉo aktivita
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

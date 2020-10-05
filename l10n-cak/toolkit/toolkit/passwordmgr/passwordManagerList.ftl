@@ -54,12 +54,13 @@ import =
 close-button =
     .label = Titz'apïx
     .accesskey = T
+
 show-passwords =
     .label = Kek'ut pe ri ewan taq tzij
     .accesskey = P
 hide-passwords =
     .label = Ke'ewäx ri ewan taq tzij
-    .accesskey = P
+    .accesskey = e
 logins-description-all = Ri kitikirib'al moloj re taq ruxaq k'amaya'l re' yeyak pan akematz'ib'
 logins-description-filtered = Re jujun kitikirib'al molojri'ïl re', nikik'äm ki' rik'in ri nakanoj:
 remove-all =

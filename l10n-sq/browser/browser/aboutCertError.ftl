@@ -16,9 +16,9 @@ cert-error-trust-cert-invalid = Dëshmia nuk është besuar, sepse qe lëshuar n
 cert-error-trust-untrusted-issuer = Dëshmia nuk është besuar, sepse lëshuesi i dëshmisë nuk është besuar.
 cert-error-trust-signature-algorithm-disabled = Dëshmia nuk është e besueshme, ngaqë është nënshkruar duke përdorur një algoritëm nënshkrimesh i cili është i çaktivizuar, pasi nuk është i sigurt.
 cert-error-trust-expired-issuer = Dëshmia nuk është besuar, sepse dëshmia e lëshuesit ka skaduar.
-cert-error-trust-self-signed = Dëshmia nuk është besuar, sepse është e vetë-nënshkruar.
+cert-error-trust-self-signed = Dëshmia nuk besohet, ngaqë është e vetënënshkruar.
 cert-error-trust-symantec = Dëshmitë e lëshuara nga GeoTrust, RapidSSL, Symantec, Thawte, dhe VeriSign nuk konsiderohen më gjatë të sigurta, ngaqë këto autoritete dëshmish nuk kanë ndjekur praktika sigurie në të kaluarën.
-cert-error-untrusted-default = Dëshmia nuk vjen prej një burimi të besuar.
+cert-error-untrusted-default = Dëshmia nuk vjen nga një burim i besuar.
 # Variables:
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-domain-mismatch = Sajtet e dëshmojnë identitetin e tyre përmes dëshmish. { -brand-short-name } nuk i zë besë këtij sajti ngaqë përdor një dëshmi që s’është e vlefshme për { $hostname }.
@@ -46,5 +46,57 @@ cert-error-not-yet-valid-now = Sajtet e dëshmojnë identitetin e tyre përmes d
 cert-error-code-prefix-link = Kod gabimi: <a data-l10n-name="error-code-link">{ $error }</a>
 # Variables:
 # $hostname (String) - Hostname of the website with cert error.
-cert-error-symantec-distrust-description = Sajtet e dëshmojnë identitetin e tyre përmes dëshmish, të cilat lëshohen nga autoritete dëshmish. Shumica e shfletuesve nuk u besojnë më dëshmive të lëshuara nga GeoTrust, RapidSSL, Symantec, Thawte, dhe VeriSign. { $hostname } përdor një dëshmi prej njërit prej këtyre autoritete, ndaj identiteti i sajtit s’mund të provohet.
+cert-error-symantec-distrust-description = Sajtet e dëshmojnë identitetin e tyre përmes dëshmish, të cilat lëshohen nga autoritete dëshmish. Shumica e shfletuesve nuk u besojnë më dëshmive të lëshuara nga GeoTrust, RapidSSL, Symantec, Thawte, dhe VeriSign. { $hostname } përdor një dëshmi nga njëri prej këtyre autoriteteve, ndaj identiteti i sajtit s’mund të provohet.
 cert-error-symantec-distrust-admin = Mundeni të njoftoni përgjegjësin e sajtit mbi këtë problem.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
+cert-error-details-cert-chain-label = Varg dëshmish:
+open-in-new-window-for-csp-or-xfo-error = Hape Sajtin në Dritare të Re
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Për të mbrojtur sigurinë tuaj, { $hostname } s’do ta lejojë { -brand-short-name }-in të shfaqë faqen, nëse e ka trupëzuar një sajt tjetër. Që të shihni këtë faqe, duhet ta hapni në një dritare tjetër.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = S'arrin të lidhet
+deniedPortAccess-title = Kjo adresë është e ndaluar
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm. Po kemi probleme me gjetjen e atij sajti.
+fileNotFound-title = S'u gjet kartelë
+fileAccessDenied-title = Hyrja te kartela u mohua
+generic-title = Hëm.
+captivePortal-title = Hyni në rrjet
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm. AJo adresë s’duket në rregull.
+netInterrupt-title = Lidhja u ndërpre
+notCached-title = Dokumenti Ka Skaduar
+netOffline-title = Mënyrë jo në linjë
+contentEncodingError-title = Gabim Kodimi Lënde
+unsafeContentType-title = Lloj Kartele Jo i Parrezik
+netReset-title = Lidhja u rivendos
+netTimeout-title = Lidhjes i mbaroi koha
+unknownProtocolFound-title = Adresa nuk u kuptua
+proxyConnectFailure-title = Shërbyesi ndërmjetës po hedh poshtë lidhjet
+proxyResolveFailure-title = S'arrihet të gjendet shërbyesi ndërmjetës
+redirectLoop-title = Faqja nuk është ridrejtuar si duhet
+unknownSocketType-title = Përgjigje e papritur prej shërbyesit
+nssFailure2-title = Dështoi Lidhja e Sigurt
+cspBlocked-title = Bllokuar nga Rregulla Sigurie Lënde
+xfoBlocked-title = Bllokuar nga Rregulla mbi X-Frame-Options
+csp-xfo-error-title = { -brand-short-name }-i S’mund Ta Hapë Këtë Faqe
+corruptedContentError-title = Gabim nga Lëndë e Dëmtuar
+remoteXUL-title = XUL i Largët
+sslv3Used-title = S'arrin të Lidhet Në Mënyrë të Sigurt
+inadequateSecurityError-title = Lidhja juaj s'është e sigurt
+blockedByPolicy-title = Faqe e Bllokuar
+clockSkewError-title = Ora e kompjuterit tuaj është gabim
+networkProtocolError-title = Gabim Protokolli Rrjeti
+nssBadCert-title = Kujdes: Rrezik Potencial Sigurie Përpara
+nssBadCert-sts-title = Nuk U Lidh: Çështje Potenciale Sigurie
+certerror-mitm-title = Një software po i pengon { -brand-short-name }-it të Lidhet Në Mënyrë të Sigurt te Ky Sajt

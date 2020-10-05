@@ -25,6 +25,16 @@ process-type-file = ローカルファイル
 # permission to allocate large amounts of memory
 process-type-weblargeallocation = 大きなサイズの割り当て
 
+# process used to isolate a webpage from other web pages
+# to improve security
+process-type-webisolated = 隔離されたウェブコンテンツ
+
 # process used to communicate with the GPU for
 # graphics acceleration
 process-type-gpu = GPU
+
+# process used to perform network operations
+process-type-socket = ソケット
+
+# process preallocated; may change to other types
+process-type-prealloc = 割り当て済み

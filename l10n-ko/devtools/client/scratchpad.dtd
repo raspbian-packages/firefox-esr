@@ -11,7 +11,7 @@
   - A good criteria is the language in which you'd find the best
   - documentation on web development on the web. -->
 
-<!-- LOCALIZATION NOTE (scratchpad.title):
+<!-- LOCALIZATION NOTE (window.title):
   -  The Scratchpad is intended to provide a simple text editor for creating
   -  and evaluating bits of JavaScript code for the purposes of function
   -  prototyping, experimentation and convenient scripting.
@@ -53,10 +53,10 @@
 <!ENTITY viewMenu.label               "보기">
 <!ENTITY viewMenu.accesskey           "V">
 
-<!ENTITY lineNumbers.label             "줄번호 보기">
+<!ENTITY lineNumbers.label             "줄 번호 표시">
 <!ENTITY lineNumbers.accesskey         "L">
 
-<!ENTITY wordWrap.label                "긴 줄 여러 줄로 보기">
+<!ENTITY wordWrap.label                "자동 줄 바꿈">
 <!ENTITY wordWrap.accesskey            "W">
 
 <!ENTITY highlightTrailingSpace.label     "줄 끝 빈칸 강조">
@@ -90,7 +90,7 @@
 <!ENTITY display.accesskey            "D">
 <!ENTITY display.key                  "l">
 
-<!ENTITY pprint.label                 "예쁘게 보기">
+<!ENTITY pprint.label                 "예쁜 출력">
 <!ENTITY pprint.key                   "p">
 <!ENTITY pprint.accesskey             "P">
 
@@ -134,7 +134,7 @@
 <!ENTITY resetContext2.label          "변수 재설정">
 <!ENTITY resetContext2.accesskey      "T">
 
-<!ENTITY reloadAndRun.label           "새로고침하고 실행">
+<!ENTITY reloadAndRun.label           "새로 고침하고 실행">
 <!ENTITY reloadAndRun.accesskey       "E">
 <!ENTITY reloadAndRun.key             "r">
 

@@ -31,7 +31,10 @@ app-basics-title = Қолданба негіздері
 app-basics-name = Аты
 app-basics-version = Нұсқасы
 app-basics-build-id = Жинақ ID-і
+app-basics-distribution-id = Таратылым ID
 app-basics-update-channel = Жаңарту арнасы
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Буманы жаңарту
@@ -56,7 +59,6 @@ app-basics-service-workers = Тіркелген жұмыс үрдістері
 app-basics-profiles = Профильдер
 app-basics-launcher-process-status = Жөнелтетін үрдіс
 app-basics-multi-process-support = Мультипроцесс терезелері
-app-basics-process-count = Веб құрамасы процестері
 app-basics-remote-processes-count = Қашықтағы үрдістер
 app-basics-enterprise-policies = Кәсіпоорындық саясаттар
 app-basics-location-service-key-google = Google орналасулар қызметінің кілті
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Қулаудан қорғаныс сөндірге
 graphics-workarounds-title = Арнайы қолдау
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Терезелерді басқару хаттамасы
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Жұмыс үстелі ортасы
 place-database-title = Орналасулар дерекқоры
 place-database-integrity = Бүтіндігі
 place-database-verify-integrity = Бүтіндігін тексеру
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Жүйелік шақыру
 sandbox-sys-call-args = Аргументтер
 safe-mode-title = Қауіпсіз режимін қолданып көру
 restart-in-safe-mode-label = Сөндірілген кеңейтулермен қайта қосу…
+clear-startup-cache-title = Іске қосылу кэшін тарартып көріңіз
+clear-startup-cache-label = Іске қосылу кэшін тазарту…
+startup-cache-dialog-title = Іске қосылу кэшін тазарту
+startup-cache-dialog-body = Іске қосылу кэшін тазарту үшін { -brand-short-name } қайта іске қосыңыз. Бұл сіздің баптаулараңызы өзгертпейді, немесе сіз { -brand-short-name } ішіне қосқан кеңейтулерді өшірмейді.
+restart-button-label = Қайта қосу
+
+## Media titles
+
+audio-backend = Аудио файлдарын ойнату бағдарламасы
+max-audio-channels = Макс. арналар
+channel-layout = Таңдамалы арналар жаймасы
+sample-rate = Таңдамалы кадрлар жиілігі
+roundtrip-latency = Айналма жолдың кідірісі (стандартты ауытқу)
 media-title = Мультимедиа
 media-output-devices-title = Шығыс құрылғылары
 media-input-devices-title = Енгізу құрылғылары
@@ -124,6 +141,12 @@ media-device-format = Пішімі
 media-device-channels = Арналар
 media-device-rate = Жиілігі
 media-device-latency = Кідірісі
+media-capabilities-title = Медиа мүмкіндіктері
+# List all the entries of the database.
+media-capabilities-enumerate = Дерекқор жазбаларын шығару
+
+##
+
 intl-title = Интернационалдандыру және локализация
 intl-app-title = Қолданба баптаулары
 intl-locales-requested = Сұралған локальдер
@@ -133,6 +156,22 @@ intl-locales-default = Бастапқы локаль
 intl-os-title = Операциялық жүйе
 intl-os-prefs-system-locales = Жүйелік локальдер
 intl-regional-prefs = Аймақтық баптаулар
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Қашықтан жөндеу (Chromium хаттамасы)
+remote-debugging-accepting-connections = Кіріс байланыстарды қабылдау
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -229,7 +268,9 @@ unknown-failure = Блоктізіміде; қателік коды { $failureCo
 d3d11layers-crash-guard = D3D11 араластырушысы
 d3d11video-crash-guard = D3D11 видео декодері
 d3d9video-crash-buard = D3D9 видео декодері
+d3d9video-crash-guard = D3D9 видео декодері
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX видео декодері
 reset-on-next-restart = Келесі іске қосылған кезде тастау
 gpu-process-kill-button = GPU процесін тоқтату
 gpu-device-reset = Құрылғыны қалпына келтіру
@@ -238,12 +279,7 @@ uses-tiling = Тайлингті қолданады
 content-uses-tiling = Тайлинг қолданады (мазмұны)
 off-main-thread-paint-enabled = Басты емес ағында элементтерді суреттеу іске қосылған
 off-main-thread-paint-worker-count = Негізгі ағыннан тыс салатын воркер саны
-low-end-machine = Өнімділігі аздау машина аяқталды
 target-frame-rate = Кадр/сек мақсат көрсеткіші
-audio-backend = Аудио файлдарын ойнату бағдарламасы
-max-audio-channels = Макс. арналар
-channel-layout = Таңдамалы арналар жаймасы
-sample-rate = Таңдамалы кадрлар жиілігі
 min-lib-versions = Күтілген минималды нұсқасы
 loaded-lib-versions = Қолданыстағы нұсқасы
 has-seccomp-bpf = Seccomp-BPF (Жүйелік шақыруларды сүзгілеу)
@@ -258,6 +294,11 @@ sandbox-proc-type-content = құрамасы
 sandbox-proc-type-file = файл құрамасы
 sandbox-proc-type-media-plugin = медиа плагині
 sandbox-proc-type-data-decoder = деректер декодері
+startup-cache-title = Іске қосу кэші
+startup-cache-disk-cache-path = Диск кэш жолы
+startup-cache-ignore-disk-cache = Диск кэшін елемеу
+startup-cache-found-disk-cache-on-init = Іске қосылу кезінде диск кэші табылды
+startup-cache-wrote-to-disk-cache = Диск кэшіне жазылды
 launcher-process-status-0 = Іске қосулы
 launcher-process-status-1 = Ақаулығы салдарынан сөндірілген
 launcher-process-status-2 = Мәжбүрлі сөндірілген
@@ -281,6 +322,7 @@ touch-enabled = сенсорлық енгізу іске қосылған
 drag-enabled = айналдыру жолағының ұстап тарту іске қосылған
 keyboard-enabled = пернетақта іске қосылған
 autoscroll-enabled = автоайналдыру іске қосылған
+zooming-enabled = тегіс ыммен масштабтау іске қосылған
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

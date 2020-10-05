@@ -157,7 +157,7 @@ about-debugging-runtime-tabs =
     .name = 分頁
 # Title of the service workers category.
 about-debugging-runtime-service-workers =
-    .name = Service Workers
+    .name = Service Worker
 # Title of the shared workers category.
 about-debugging-runtime-shared-workers =
     .name = 共享 Workers
@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = 檢測效能
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = 您瀏覽器的設定與 Service Worker 不相容。<a>了解更多資訊</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = 連結的瀏覽器使用的是舊版（{ $runtimeVersion }）。目前支援的最小版本為（{ $minVersion }）。不支援這種設定，可能會造成開發者工具發生錯誤，請更新連線的瀏覽器。<a>點此進行疑難排解</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = 連結的瀏覽器使用的是舊版�
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = 除錯器面板可能與連結的瀏覽器不相容。若需要對此瀏覽器除錯請改用 Firefox { $runtimeVersion }。
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = 此版本的 Firefox 無法對 Firefox for Android 68 版進行除錯。我們建議您在手機上安裝 Firefox for Android Nightly 來進行測試。<a>更多詳情</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -217,7 +220,7 @@ about-debugging-collapse-expand-debug-targets = 展開 / 摺疊
 
 # Displayed in the categories of "runtime" pages that don't have any debug target to
 # show. Debug targets depend on the category (extensions, tabs, workers...).
-about-debugging-debug-target-list-empty = 還沒有任何東西。
+about-debugging-debug-target-list-empty = 沒有任何東西。
 # Text of a button displayed next to debug targets of "runtime" pages. Clicking on this
 # button will open a DevTools toolbox that will allow inspecting the target.
 # A target can be an addon, a tab, a worker...
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = 推送
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = 開始
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = 推送
+    .disabledTitle = 多程序的 { -brand-shorter-name } 目前暫時無法使用 Service Worker push
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = 開始
+    .disabledTitle = 多程序的 { -brand-shorter-name } 目前暫時無法使用 Service Worker start
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = 取消註冊
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -277,7 +289,7 @@ about-debugging-worker-fetch-not-listening =
 # worker instance is active).
 about-debugging-worker-status-running = 執行中
 # Displayed for service workers in runtime pages that are registered but stopped.
-about-debugging-worker-status-stopped = 已停止
+about-debugging-worker-status-stopped = 停止
 # Displayed for service workers in runtime pages that are registering.
 about-debugging-worker-status-registering = 註冊中
 # Displayed for service workers in runtime pages, to label the scope of a worker
@@ -287,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = 推送服務
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = 多程序的 { -brand-shorter-name } 目前暫時無法使用 Service Worker 檢測
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = 還沒有完全載入分頁內容，無法檢測
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = 主要 Process
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = 目標瀏覽器的主要 Process
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = 多處理程序工具箱
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = 目標瀏覽器的主要與內容處理程序
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = 關閉訊息

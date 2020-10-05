@@ -9,7 +9,7 @@
 <!ENTITY newfirstrun_urlbar_subtext "Швидкий, приватний і ваш.">
 <!ENTITY firstrun_panel_title_privacy "Приватність">
 <!ENTITY firstrun_privacy_message "Переглядайте без думки, що за вами хтось спостерігає">
-<!ENTITY firstrun_privacy_subtext "В режимі приватного перегляду блокуються елементи стеження на веб-сайтах і не зберігається історія після завершення сеансу.">
+<!ENTITY firstrun_privacy_subtext "В режимі приватного перегляду блокуються елементи стеження на вебсайтах і не зберігається історія після завершення сеансу.">
 <!ENTITY newfirstrun_privacy_subtext "Приватний перегляд блокує рекламу і стеження, що переслідують вас онлайн.">
 <!ENTITY firstrun_panel_title_customize "Пристосування">
 <!ENTITY firstrun_customize_message "Зробіть &brandShortName; зручним для себе.">
@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Менше даних, більше заощаджень">
 <!ENTITY firstrun_data_subtext2 "Вимкніть зображення на відвідуваних сайтах, щоб зменшити споживання даних.">
 <!ENTITY firstrun_sync_title "Синхронізація">
-<!ENTITY updatednewfirstrun_sync_title "Обліковий запис">
-<!ENTITY firstrun_sync_message2 "Продовжуйте з місця, на якому ви зупинилися.">
+<!ENTITY firstrun_sync_message3 "Синхронізуйте свої закладки, історію та паролі з телефоном.">
 <!ENTITY firstrun_sync_subtext2 "Використовуйте синхронізацію для доступу до закладок, паролів та інших даних, які ви зберігаєте в &brandShortName;, на всіх пристроях.">
 <!ENTITY newfirstrun_sync_subtext "Користуйтеся приватною і безпечною синхронізацією Firefox між мобільним і комп\&apos;ютером.">
-<!ENTITY updatednewfirstrun_sync_subtext "Увійдіть до свого облікового запису для отримання максимуму від &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Надіслати вкладку">
+<!ENTITY firstrun_sendtab_message "Миттєво надсилайте вкладки з мобільного на комп\&apos;ютер.">
 <!ENTITY firstrun_signin_message "Під’єднайтесь і вперед">
-<!ENTITY firstrun_signin_button "Увійти до Синхронізації">
-<!ENTITY newfirstrun_signin_button "Увімкнути синхронізацію">
-<!ENTITY updatednewfirstrun_signin_button "Увійти в &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Почати перегляд">
+<!ENTITY onboard_start_button_browser "Почати перегляд">
 <!ENTITY firstrun_button_notnow "Не зараз">
 <!ENTITY firstrun_button_next "Далі">
+<!ENTITY firstrun_signup_button "Зареєструватись">
 
 <!ENTITY firstrun_tabqueue_title "Посилання">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Надсилання звіту про збій\u2026">
 <!ENTITY  crash_close_label "Закрити">
 <!ENTITY  crash_restart_label "Перезапустити &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "Збій &brandShortName;">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Теку оновлено">
 <!ENTITY bookmark_parent_folder "Основна тека">
 <!ENTITY bookmark_add_folder "Додати нову теку">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(без назви)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Куки">
 <!ENTITY pref_cookies_accept_all "Увімкнено">
 <!ENTITY pref_cookies_not_accept_foreign "Увімкнено, крім сторонніх">
+<!ENTITY pref_cookies_not_accept_trackers "Увімкнено, за винятком куків стеження">
 <!ENTITY pref_cookies_disabled "Вимкнено">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Прогресивні веб-додатки">
 <!ENTITY pref_pwa_summary "Дозволити веб-додаткам додаватися на домашній екран">
-
-<!ENTITY tracking_protection_prompt_title "Тепер із захистом від стеження">
-<!ENTITY tracking_protection_prompt_text "Інтенсивне блокування елементів стеження, отже вам не потрібно хвилюватись.">
-<!ENTITY tracking_protection_prompt_tip_text "Щоб дізнатися більше, перегляньте налаштування приватності">
-<!ENTITY tracking_protection_prompt_action_button "Зрозуміло!">
 
 <!ENTITY tab_queue_toast_message3 "Вкладка збережена в &brandShortName;">
 <!ENTITY tab_queue_toast_action "Відкрити зараз">
@@ -421,7 +413,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY pref_private_data_formdata2 "Історія форм">
 <!ENTITY pref_private_data_cookies2 "Куки й активні сеанси">
 <!ENTITY pref_private_data_cache "Кеш">
-<!ENTITY pref_private_data_offlineApps "Дані автономних веб-сайтів">
+<!ENTITY pref_private_data_offlineApps "Дані автономних вебсайтів">
 <!ENTITY pref_private_data_siteSettings2 "Налаштування сайтів">
 <!ENTITY pref_private_data_downloadFiles2 "Завантаження">
 <!ENTITY pref_private_data_syncedTabs "Синхронізовані вкладки">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Торкніться Браузер &amp; оберіть &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Відвідати Підтримку Mozilla">
 <!ENTITY pref_about_firefox "Про &brandShortName;">
 <!ENTITY pref_vendor_faqs "Питання">
 <!ENTITY pref_vendor_feedback "Залишити відгук">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Служба розташування &vendorShortName; виконується">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Автоматичні оновлення">
-<!ENTITY pref_update_autodownload_wifi "Лише через Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Ніколи">
-<!ENTITY pref_update_autodownload_always "Завжди">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Допомога">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Поділитись">
 <!ENTITY share_title "Поділитись через">
 <!ENTITY share_image_failed "Не вдалося поділитись зображенням">
+<!ENTITY share_error_toast_message "Неможливо надіслати до вказаної програми">
 <!ENTITY save_as_pdf "Зберегти як PDF">
 <!ENTITY print "Друк">
 <!ENTITY view_page_source "Програмний код сторінки">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Адреса">
 <!ENTITY bookmark_edit_keyword "Ключове слово">
 <!ENTITY bookmark_select_folder "Обрати теку">
-
 <!ENTITY bookmark_edit_undo "Повернути">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -652,7 +635,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY home_closed_tabs_number "&formatD; вкладок">
 <!-- Localization note (home_closed_tabs_one): This is the singular version of home_closed_tabs_number, referring to the number of recently closed tabs available. -->
 <!ENTITY home_closed_tabs_one "1 вкладка">
-<!ENTITY home_most_recent_empty "Тут з’являтимуться останні відвідані вами веб-сайти.">
+<!ENTITY home_most_recent_empty "Тут з’являтимуться останні відвідані вами вебсайти.">
 <!-- Localization note (home_most_recent_emptyhint2): "Psst" is a sound that might be used to attract someone's attention unobtrusively, and intended to hint at Private Browsing to the user.
      The placeholders &formatS1; and &formatS2; are used to mark the location of text underlining. -->
 <!ENTITY home_most_recent_emptyhint2 "Зверніть увагу: історія з &formatS1;Нової приватної вкладки&formatS2; не буде зберігатися.">
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Виберіть чи запишіть звук">
 <!ENTITY filepicker_image_title "Виберіть чи зробіть фото">
 <!ENTITY filepicker_video_title "Виберіть чи запишіть відео">
-
 <!ENTITY filepicker_permission_denied "Необхідні дозволи не отримано, активовано системний вибір файлів.">
 
 <!-- Site identity popup -->
@@ -757,25 +739,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Шукати &formatS2; у &formatS1;">
 
 <!ENTITY searchable_description "Закладки та історія">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Наявні оновлення для &brandShortName;">
-<!ENTITY updater_start_select2 "Торкніться, щоб завантажити">
-
-<!ENTITY updater_downloading_title2 "Завантаження &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Завантаження невдале">
-<!ENTITY updater_downloading_select2 "Торкніться, щоб застосувати оновлення по завершенні">
-<!ENTITY updater_downloading_retry2 "Торкніться, щоб повторити">
-
-<!ENTITY updater_apply_title3 "Завантажено оновлення для &brandShortName;">
-<!ENTITY updater_apply_select3 "Торкніться для встановлення">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Для завантаження файлів та оновлень, дайте дозвіл &brandShortName; на доступ до вашого сховища.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Дозволити">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Новий гостьовий сеанс">
@@ -850,9 +813,9 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY restrictable_feature_advanced_settings "Додаткові налаштування">
 <!ENTITY restrictable_feature_advanced_settings_description "Це включає імпорт закладок, відновлення вкладок та автоматичні оновлення. Вимкніть для спрощених налаштувань, які підходять для будь-кого з членів сім’ї.">
 <!ENTITY restrictable_feature_camera_microphone "Камера й мікрофон">
-<!ENTITY restrictable_feature_camera_microphone_description "Дозволяє членам сім’ї спілкуватись у режимі реального часу на веб-сайтах.">
+<!ENTITY restrictable_feature_camera_microphone_description "Дозволяє членам сім’ї спілкуватись у режимі реального часу на вебсайтах.">
 <!ENTITY restrictable_feature_block_list "Список блокування">
-<!ENTITY restrictable_feature_block_list_description "Блокувати веб-сайти, які включають вразливий вміст.">
+<!ENTITY restrictable_feature_block_list_description "Блокувати вебсайти, які включають вразливий вміст.">
 
 <!-- Default Bookmarks titles-->
 <!-- LOCALIZATION NOTE (bookmarks_about_browser): link title for about:fennec -->
@@ -886,6 +849,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_title "Доступ без Інтернету">
 <!ENTITY helper_triple_readerview_open_message "Додавайте закладки для елементів режиму читання, щоб читати їх без Інтернету.">
 <!ENTITY helper_triple_readerview_open_button "Додати до закладок">
+
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Вітаємо в &brandShortName;">
+<!ENTITY activity_stream_signin_description "Почніть синхронізувати закладки, паролі та інші дані з Обліковим записом Firefox.">
+<!ENTITY activity_stream_signup_button "Зареєструватись">
+<!ENTITY activity_stream_signin_prompt "Вже маєте обліковий запис?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Увійти.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "У 2020 році вийде цілком новий Firefox">
+<!ENTITY activity_stream_firefox_promo_description "Незабаром: Покращена швидкодія. Вдосконалений захист від стеження. А також функції, створені, щоб допомагати вам краще знаходити, зберігати й ділитися тим, що ви любите в Інтернеті.">
+<!ENTITY activity_stream_firefox_promo_button "Ознайомитись">
 
 <!ENTITY activity_stream_topsites "Популярні сайти">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
@@ -926,8 +906,8 @@ is simply hidden from the Activity Stream panel. -->
 displayed when there are more than 3 actions available for a page.
 See also https://bug1409261.bmoattachments.org/attachment.cgi?id=8919897 -->
 <!ENTITY pwa_add_to_launcher_badge2 "Додати на головний екран">
-<!ENTITY pwa_continue_to_website "Продовжити на веб-сайті">
-<!ENTITY pwa_onboarding_sumo "Ви можете легко додати цей веб-сайт на головний екран, щоб мати миттєвий доступ до нього і працювати швидше.">
+<!ENTITY pwa_continue_to_website "Продовжити на вебсайті">
+<!ENTITY pwa_onboarding_sumo "Ви можете легко додати цей вебсайт на головний екран, щоб мати миттєвий доступ до нього і працювати швидше.">
 
 <!-- Used by accessibility services to identify the play/pause buttons shown in the
 Picture-in-picture mini window -->
@@ -944,7 +924,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Звук та відео">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Поради та підказки від &vendorShortName;">
-<!ENTITY updater_notification_channel "Оновлення програми">
 <!ENTITY synced_tabs_notification_channel "Синхронізовані вкладки">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

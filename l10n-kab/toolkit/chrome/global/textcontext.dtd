@@ -15,11 +15,11 @@
 <!ENTITY deleteCmd.label "Kkes">
 <!ENTITY deleteCmd.accesskey "K">
 
-<!ENTITY spellAddToDictionary.label "Rnu amawal">
+<!ENTITY spellAddToDictionary.label "Rnu ɣer umawal">
 <!ENTITY spellAddToDictionary.accesskey "w">
 <!ENTITY spellUndoAddToDictionary.label "Sefsex timerna n umawal">
 <!ENTITY spellUndoAddToDictionary.accesskey "r">
-<!ENTITY spellCheckToggle.label "Senqed taɣdira">
+<!ENTITY spellCheckToggle.label "Senqed tira">
 <!ENTITY spellCheckToggle.accesskey "S">
 <!ENTITY spellNoSuggestions.label "(ulac awalen ittwasumren)">
 <!ENTITY spellDictionaries.label "Tutlayin">

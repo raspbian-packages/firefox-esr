@@ -103,9 +103,10 @@ print-window =
     .title = Drucken
 print-complete =
     .value = Drucken ist abgeschlossen.
+
 # Variables
 # $percent (integer) - Number of printed percentage
 print-percent =
-    .value = { $percent }%
+    .value = { $percent } %
 dialog-cancel-label = Abbrechen
 dialog-close-label = Schließen

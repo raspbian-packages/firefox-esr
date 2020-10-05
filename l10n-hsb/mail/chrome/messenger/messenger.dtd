@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "P">
 <!ENTITY  newContactCmd.label "Kontakt adresnika…">
 <!ENTITY  newContactCmd.accesskey "K">
+<!ENTITY openMenuCmd.label "Wočinić">
+<!ENTITY openMenuCmd.accesskey "o">
 <!ENTITY openMessageFileCmd.label "Składowanu powěsć wočinić…">
 <!ENTITY openMessageFileCmd.accesskey "S">
 <!ENTITY saveAsMenu.label "Składować jako">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "K">
 <!ENTITY folderPaneBar.label "Symbolowa lajsta rjadowakoweho wobłuka">
 <!ENTITY folderPaneBar.accesskey "S">
-<!ENTITY folderModeSelector.label "Rjadowakowe napohlady">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Sortěrować po">
@@ -201,7 +202,7 @@
 <!ENTITY sortByFromCmd.accesskey "o">
 <!ENTITY sortByRecipientCmd.label "přijimarje">
 <!ENTITY sortByRecipientCmd.accesskey "j">
-<!ENTITY sortByCorrespondentCmd.label "Dopisowarjo">
+<!ENTITY sortByCorrespondentCmd.label "Wotpósłarjo">
 <!ENTITY sortByCorrespondentCmd.accesskey "s">
 <!ENTITY sortByUnreadCmd.label "přečitanych">
 <!ENTITY sortByUnreadCmd.accesskey "e">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Powěsće pytać…">
 <!ENTITY searchMailCmd.accesskey "o">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Globalne pytanje…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Adresy pytać…">
 <!ENTITY searchAddressesCmd.accesskey "A">
 
@@ -467,7 +470,7 @@
 <!ENTITY addressBookCmd.key "B">
 <!ENTITY addons.label "Přidatki">
 <!ENTITY addons.accesskey "d">
-<!ENTITY addonPrefs.label "Nastanja přidatka">
+<!ENTITY addonPrefs.label "Nastajenja přidatka">
 <!ENTITY addonPrefs.accesskey "N">
 <!ENTITY addonPrefsUnix.label "Nastajenja přidatka">
 <!ENTITY addonPrefsUnix.accesskey "N">
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Wubranu powěsć składować">
 <!ENTITY archiveButton.tooltip "Wubrane powěsće archiwować">
 <!ENTITY openConversationButton.tooltip "Rozmołwu wubraneje powěsće pokazać">
+<!ENTITY openMsgConversationButton.tooltip "Konwersaciju wubraneje powěsće pokazać">
 <!ENTITY nextButton.tooltip "K přichodnej njepřečitanej powěsći">
 <!ENTITY nextMsgButton.tooltip "K přichodnej powěsći přesunyć">
 <!ENTITY previousButton.tooltip "K předchadnej njepřečitanej powěsći">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Powěsće markěrować">
 <!ENTITY compactButton.tooltip "Zhašane powěsće z wubraneho rjadowaka wotstronić">
 <!ENTITY appmenuButton1.tooltip "Meni &brandShortName; zwobraznić">
-
 <!ENTITY addonsButton.tooltip "Rjadujće swoje přidatki">
 
 <!-- Toolbar Button Popup -->
@@ -707,10 +710,11 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Pytanje jako rjadowak składować…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Powěsće wubrać">
 <!ENTITY threadColumn.label "Nitka">
 <!ENTITY fromColumn.label "Wot">
 <!ENTITY recipientColumn.label "Přijimar">
-<!ENTITY correspondentColumn.label "Dopisowarjo">
+<!ENTITY correspondentColumn.label "Wotpósłarjo">
 <!ENTITY subjectColumn.label "Tema">
 <!ENTITY dateColumn.label "Datum">
 <!ENTITY priorityColumn.label "Priorita">
@@ -728,12 +732,15 @@
 <!ENTITY idColumn.label "Porjad přijeća">
 <!ENTITY attachmentColumn.label "Přiwěški">
 
+<!ENTITY deleteColumn.label "Zhašeć">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Wubjerće špałty, kotrež maja so zwobraznić">
+<!ENTITY selectColumn.tooltip "Wuběranje wšěch powěsćow přepinać">
 <!ENTITY threadColumn2.tooltip "Powěsćowe nitki zwobraznić">
 <!ENTITY fromColumn2.tooltip "Po Wot sortěrować">
 <!ENTITY recipientColumn2.tooltip "Po přijimarju sortěrować">
-<!ENTITY correspondentColumn2.tooltip "Po dopisowarjach sortěrować">
+<!ENTITY correspondentColumn2.tooltip "Po wotpósłarjach sortěrować">
 <!ENTITY subjectColumn2.tooltip "Po temje sortěrować">
 <!ENTITY dateColumn2.tooltip "Po datumje sortěrować">
 <!ENTITY priorityColumn2.tooltip "Po prioriće sortěrować">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Po adresy sortěrować">
 <!ENTITY idColumn2.tooltip "Po porjedźe přijimanja sortěrować">
 <!ENTITY attachmentColumn2.tooltip "Po přiwěškach sortěrować">
+
+<!ENTITY deleteColumn.tooltip "Powěsć zhašeć">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Nowa powěsć z předłohi">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Nastajenja nałoženskich symbolow…">
 <!ENTITY writeNewMessageDock.label      "Nowu powěsć pisać">
 <!ENTITY openAddressBookDock.label      "Adresnik wočinić">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Jednu stronu wróćo">
+<!ENTITY browseForwardButton.tooltip "Jednu stronu doprědka">

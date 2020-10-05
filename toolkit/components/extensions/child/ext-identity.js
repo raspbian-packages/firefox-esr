@@ -1,5 +1,9 @@
 /* -*- Mode: indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /* vim: set sts=2 sw=2 et tw=80: */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 "use strict";
 
 var { Constructor: CC } = Components;
@@ -44,6 +48,7 @@ this.identity = class extends ExtensionAPI {
         launchWebAuthFlow: function(details) {
           // Validate the url and retreive redirect_uri if it was provided.
           let url, redirectURI;
+          let baseRedirectURL = this.getRedirectURL();
           try {
             url = new URL(details.url);
           } catch (e) {
@@ -51,8 +56,11 @@ this.identity = class extends ExtensionAPI {
           }
           try {
             redirectURI = new URL(
-              url.searchParams.get("redirect_uri") || this.getRedirectURL()
+              url.searchParams.get("redirect_uri") || baseRedirectURL
             );
+            if (!redirectURI.href.startsWith(baseRedirectURL)) {
+              return Promise.reject({ message: "redirect_uri not allowed" });
+            }
           } catch (e) {
             return Promise.reject({ message: "redirect_uri is invalid" });
           }

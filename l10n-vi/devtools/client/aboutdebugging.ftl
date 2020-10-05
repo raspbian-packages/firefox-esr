@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = Hồ sơ hiệu suất
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Cấu hình trình duyệt của bạn không tương thích với Service Workers. <a>Tìm hiểu thêm</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Trình duyệt được kết nối có phiên bản cũ ({ $runtimeVersion }). Phiên bản được hỗ trợ tối thiểu là ({ $minVersion }). Đây là một thiết lập không được hỗ trợ và có thể khiến DevTools bị lỗi. Vui lòng cập nhật trình duyệt được kết nối. <a>Khắc phục sự cố</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = Trình duyệt được kết nối c�
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Bảng trình gỡ lỗi có thể không hoạt động với trình duyệt được kết nối. Vui lòng sử dụng Firefox { $runtimeVersion } nếu bạn cần sử dụng trình gỡ lỗi với trình duyệt này.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Phiên bản Firefox này không thể gỡ lỗi Firefox dành cho Android (68). Chúng tôi khuyên bạn nên cài đặt Firefox Nightly dành cho Android trên điện thoại để thử nghiệm. <a>Chi tiết khác</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Đẩy
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Bắt đầu
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Đẩy
+    .disabledTitle = Dịch vụ đẩy Service Worker hiện đang bị vô hiệu hóa cho đa xử lý { -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Bắt đầu
+    .disabledTitle = Dịch vụ bắt đầu Service Worker hiện đang bị vô hiệu hóa cho đa xử lý { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Hủy đăng ký
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -287,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Dịch vụ đẩy
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Trình kiểm tra Service Worker hiện đang bị vô hiệu hóa cho đa xử lý { -brand-shorter-name }
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Thẻ không được tải đầy đủ và không thể được kiểm tra
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Tiến trình chính
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Quy trình chính cho trình duyệt đích
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Hộp công cụ đa xử lý
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Quy trình chính và quy trình nội dung cho trình duyệt đích
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Đóng thông báo

@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = Prestaasjes profilearje
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Jo browserkonfiguraasje is net kompatibel mei Service Workers. <a>Mear ynfo</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = De ferbûne browser hat in âlde ferzje ({ $runtimeVersion }). De minimaal stipe ferzje is ({ $minVersion }). Dizze konfiguraasje wurdt net stipe en kin derfoar soargje dat DevTools net goed wurket. Wurkje de ferbûne browser by. <a>Probleemoplossing</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = De ferbûne browser hat in âlde ferzj
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = It Debugger-paniel wurket mooglik net mei de ferbûne browser. Brûk Firefox { $runtimeVersion } as jo de Debugger mei dizze browser brûke moatte.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Dizze ferzje fan Firefox kin Firefox foar Android (68) net debugge. Wy riede oan om foar testdoeleinen Firefox foar Android Nightly op jo telefoan te ynstallearjen. <a>Mear ynfo</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -263,16 +266,25 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Push
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Starte
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Push
+    .disabledTitle = Service Worker-push is op dit stuit útskeakele foar multiproses-{ -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Starte
+    .disabledTitle = Service Worker-starte is op dit stuit útskeakele foar multiproses-{ -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Registraasje opheffe
 # Displayed for service workers in runtime pages that listen to Fetch events.
 about-debugging-worker-fetch-listening =
     .label = Fetch
-    .value = Der wurdt nei fetch-barrens lústere
+    .value = Der wurdt nei fetch-barrens harke
 # Displayed for service workers in runtime pages that do not listen to Fetch events.
 about-debugging-worker-fetch-not-listening =
     .label = Fetch
-    .value = Der wurdt net nei fetch-barrens lústere
+    .value = Der wurdt net nei fetch-barrens harke
 # Displayed for service workers in runtime pages that are currently running (service
 # worker instance is active).
 about-debugging-worker-status-running = Aktyf
@@ -287,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Push-tsjinst
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Service Worker-ynspeksje is op dit stuit útskeakele foar multiproses-{ -brand-shorter-name }
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Ljepblêd is net folslein laden en kin net ynspektearre wurde
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Haadproses
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Haadproses foar de doelbrowser
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Multiproses-arkset
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Haadproses en ynhâldsprosessen foar de doelbrowser
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Berjocht slute

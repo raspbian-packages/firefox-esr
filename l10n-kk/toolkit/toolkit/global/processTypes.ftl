@@ -18,6 +18,13 @@ process-type-file = Жергілікті файл
 # process used to isolate webpages that requested special
 # permission to allocate large amounts of memory
 process-type-weblargeallocation = Үлкен бөлу
+# process used to isolate a webpage from other web pages
+# to improve security
+process-type-webisolated = Оқшауланған веб-мазмұны
 # process used to communicate with the GPU for
 # graphics acceleration
 process-type-gpu = GPU
+# process used to perform network operations
+process-type-socket = Сокет
+# process preallocated; may change to other types
+process-type-prealloc = Алдын-ала бөлінген

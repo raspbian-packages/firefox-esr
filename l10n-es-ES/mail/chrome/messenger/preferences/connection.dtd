@@ -5,6 +5,7 @@
 <!ENTITY connectionsDialog.title "Configuración de conexión">
 <!ENTITY window.width "59em">
 <!ENTITY window.macWidth "52em">
+
 <!ENTITY proxyTitle.label "Configurar proxies para el acceso a Internet">
 <!ENTITY noProxyTypeRadio.label "Sin proxy">
 <!ENTITY noProxyTypeRadio.accesskey "i">
@@ -22,6 +23,8 @@
 <!ENTITY http.accesskey "h">
 <!ENTITY ssl.label "Proxy SSL:">
 <!ENTITY ssl.accesskey "s">
+<!ENTITY https.label "Proxy HTTPS:">
+<!ENTITY https.accesskey "S">
 <!ENTITY socks.label "Servidor SOCKS:">
 <!ENTITY socks.accesskey "c">
 <!ENTITY socks4.label "SOCKS v4">
@@ -39,6 +42,9 @@
 <!ENTITY noproxyExplain.label "Ejemplo: .mozilla.org, .net.nz, 192.168.1.0/24">
 <!ENTITY shareproxy.label "Usar el mismo proxy para todo">
 <!ENTITY shareproxy.accesskey "x">
+<!ENTITY noproxyLocalhostDesc.label "Las conexiones a localhost, 127.0.0.1 y ::1 nunca se tratan por el proxy.">
+<!ENTITY proxyHttpSharing.label "Usar también este proxy para HTTPS">
+<!ENTITY proxyHttpSharing.accesskey "x">
 <!ENTITY autologinproxy.label "No solicitar identificación si la contraseña está guardada">
 <!ENTITY autologinproxy.accesskey "d">
 <!ENTITY autologinproxy.tooltip "Esta opción le identifica sin ningún mensaje ante los proxis cuando ha guardado credenciales para ellos. Se le preguntará en caso de que falle el inicio de sesión.">
@@ -46,9 +52,4 @@
 <!ENTITY socksRemoteDNS.accesskey "5">
 <!ENTITY dnsOverHttps.label "Activar DNS sobre HTTPS">
 <!ENTITY dnsOverHttps.accesskey "v">
-<!ENTITY dnsOverHttpsUrlDefault.label "Usar valor preterminado">
-<!ENTITY dnsOverHttpsUrlDefault.accesskey "U">
 <!ENTITY dnsOverHttpsUrlDefault.tooltip "Usar la URL predeterminada para la resolución DNS sobre HTTPS">
-<!ENTITY dnsOverHttpsUrlCustom.label "Personalizado">
-<!ENTITY dnsOverHttpsUrlCustom.accesskey "P">
-<!ENTITY dnsOverHttpsUrlCustom.tooltip "Introduzca su URL preferida para la resolución DNS sobre HTTPS">

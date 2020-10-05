@@ -5,50 +5,66 @@
 permissions-window =
     .title = İstisnalar
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Site adresi
     .accesskey = d
+
 permissions-block =
     .label = Engelle
     .accesskey = E
+
 permissions-session =
     .label = Oturum boyunca izin ver
     .accesskey = r
+
 permissions-allow =
     .label = İzin ver
     .accesskey = z
+
 permissions-site-name =
     .label = Web sitesi
+
 permissions-status =
     .label = Durum
+
 permissions-remove =
     .label = Siteyi sil
     .accesskey = S
+
 permissions-remove-all =
     .label = Tüm siteleri sil
     .accesskey = e
+
 permissions-button-cancel =
     .label = Vazgeç
     .accesskey = a
+
 permissions-button-ok =
     .label = Değişiklikleri kaydet
     .accesskey = D
+
 permissions-autoplay-menu = Tüm web siteler için varsayılan:
+
 permissions-searchbox =
     .placeholder = Web sitesi ara
+
 permissions-capabilities-autoplay-allow =
     .label = Ses ve videoya izin ver
 permissions-capabilities-autoplay-block =
     .label = Sesi engelle
 permissions-capabilities-autoplay-blockall =
     .label = Ses ve videoyu engelle
+
 permissions-capabilities-allow =
     .label = İzin ver
 permissions-capabilities-block =
     .label = Engelle
 permissions-capabilities-prompt =
     .label = Her zaman sor
+
 permissions-capabilities-listitem-allow =
     .value = İzin ver
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = İstisnalar - İçerik Engelleme
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Aşağıdaki web sitelerinde içerik engellemeyi kapattınız.
+
+permissions-exceptions-etp-window =
+    .title = Gelişmiş İzlenme Koruması İstisnaları
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Aşağıdaki web sitelerinde korumaları kapattınız.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Aşağıdaki web siteleri konumunuza erişme is
 permissions-site-location-disable-label =
     .label = Konumumu öğrenme isteklerini sormadan engelle
 permissions-site-location-disable-desc = Yukarıdaki listede bulunmayan hiçbir web sitesi konumunuzu öğrenme isteğinde bulunamayacaktır. Konumunuzun öğrenilmesini engellerseniz bazı site özellikleri çalışmayabilir.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Ayarlar - Sanal Gerçeklik İzinleri
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Aşağıdaki web siteleri sanal gerçeklik cihazlarınıza erişme isteğinde bulundu. Hangi web sitelerinin sanal gerçeklik cihazlarınıza erişebileceğini seçebilirsiniz. Ayrıca sanal gerçeklik cihazlarınıza erişim isteklerini tamamen engelleyebilirsiniz.
+permissions-site-xr-disable-label =
+    .label = Sanal gerçeklik cihazlarına erişme isteklerini sormadan engelle
+permissions-site-xr-disable-desc = Yukarıdaki listede bulunmayan hiçbir web sitesi sanal gerçeklik cihazlarınıza erişme isteğinde bulunamayacaktır. Sanal gerçeklik cihazlarınıza erişimi engellerseniz bazı site özellikleri çalışmayabilir.
 
 ## Site Permissions - Camera
 

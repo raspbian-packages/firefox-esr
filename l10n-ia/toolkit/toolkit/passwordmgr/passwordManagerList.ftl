@@ -34,7 +34,7 @@ search-filter =
 column-heading-site =
     .label = Sito
 column-heading-username =
-    .label = Nomine del usator
+    .label = Nomine de usator
 column-heading-password =
     .label = Contrasigno
 column-heading-time-created =
@@ -54,6 +54,7 @@ import =
 close-button =
     .label = Clauder
     .accesskey = C
+
 show-passwords =
     .label = Monstrar le contrasignos
     .accesskey = c

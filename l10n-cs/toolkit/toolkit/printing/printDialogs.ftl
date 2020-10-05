@@ -103,9 +103,10 @@ print-window =
     .title = Tisk
 print-complete =
     .value = Tisk je dokončen.
+
 # Variables
 # $percent (integer) - Number of printed percentage
 print-percent =
-    .value = { $percent }%
+    .value = { $percent } %
 dialog-cancel-label = Zrušit
 dialog-close-label = Zavřít

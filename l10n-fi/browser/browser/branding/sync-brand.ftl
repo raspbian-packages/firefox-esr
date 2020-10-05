@@ -12,14 +12,17 @@
         [partitive] Sync-palvelua
        *[nominative] Sync
     }
+
 # “Sync” can be localized, “Firefox” must be treated as a brand,
 # and kept in English.
 -sync-brand-name = Firefox Sync
+
 # “Account” can be localized, “Firefox” must be treated as a brand,
 # and kept in English.
 -fxaccount-brand-name =
     { $case ->
         [adessive] Firefox-tilillä
+        [allative] Firefox-tilille
         [genitive] Firefox-tilin
         [illative] Firefox-tiliin
         [partitive] Firefox-tiliä

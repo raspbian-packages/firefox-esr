@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Rusachoj b'itz'ib': <a data-l10n-name="error-code-
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Ri ajk'amaya'l taq ruxaq nikitojtob'ej ri ab'anikil kik'in taq iqitzijib'äl e'elesan kuma ri kik'amöl taq b'ey iqitzijib'anem. Konojel ri taq okik'amaya'l man nikikuqub'a' ta chik kik'u'x chi kij ri taq iqitzijib'äl elesan kuma GeoTrust, RapidSSL, Symantec, Thawte, chuqa' VeriSign. { $hostname } nrokisaj jun riqitzijib'al jun chi ke re k'amöl taq b'ey re' ruma ri' toq man tikirel ta nitojtob'ëx rub'anikil ri ajk'amaya'l ruxaq.
 cert-error-symantec-distrust-admin = Yatikïr naya' rutzijol chi re ri runuk'samajel ajk'amaya'l ruxaq chi rij re k'ayewal re'.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Jikïl ruchajixik ruk'waxik: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Xjikib'äx ri ewan tzij kichin winäq: { $hasHPKP }
+cert-error-details-cert-chain-label = Rucholajil wujil:
+open-in-new-window-for-csp-or-xfo-error = Tijaq Ruxaq pa jun K'ak'a' Tzuwäch
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Richin nichajïx ri ajikomal, man xtuya' ta q'ij ri { $hostname } chi re ri { -brand-short-name } richin nuk'üt pe ri ruxaq we jun chik ruxaq k'amaya'l ruch'ikib'an. Richin nitz'et re ruxaq re', k'o chi nijaq pa jun k'ak'a' tzuwäch.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Man tikirel ta nok
+deniedPortAccess-title = Re ochochib'äl re' q'aton rusamaj
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm. K'o qak'ayewal richin niqïl ri ruxaq k'amaya'l.
+fileNotFound-title = Man xilitäj ta ri yakb'äl
+fileAccessDenied-title = Xq'at rutz'etik ri yakb'äl
+generic-title = Uy.
+captivePortal-title = Tok pa k'amab'ey
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm. Man ütz ta niwachin ri ochochib'äl ri'.
+netInterrupt-title = Xq'at ri okem
+notCached-title = Xk'is ruq'ijul ri wuj
+netOffline-title = Pa rub'eyal majun okem
+contentEncodingError-title = Sachoj pa rucholajil rupam
+unsafeContentType-title = Itzel ruwäch chi yakb'äl
+netReset-title = Tikirisan chik ri okem
+netTimeout-title = Xxik'o ruq'ijul ri okem
+unknownProtocolFound-title = Man nich'ob'otäj ta ri ochochib'äl
+proxyConnectFailure-title = Ri proxy ruk'u'x samaj tajin yerutzolij ri taq okem
+proxyResolveFailure-title = Man nilitäj ta ri proxi ruk'u'x samaj
+redirectLoop-title = Man ütz ta tajin niq'axan ri ruxaq k'amaya'l
+unknownSocketType-title = Man oyob'en ta re rutzijol tajin nuya' pe ri ruk'u'x samaj
+nssFailure2-title = Xq'ate' ri ütz okem
+cspBlocked-title = Q'aton ruma ri Runa'ojil Rujikomal Rupam Etamab'äl
+xfoBlocked-title = Xq'at ruma ri X-Frame-Options Na'ojil
+csp-xfo-error-title = { -brand-short-name } Man Nitikïr Ta Nujäq Re Ruxaq Re'
+corruptedContentError-title = Sachoj ruma itzel rupam
+remoteXUL-title = Näj XUL
+sslv3Used-title = Man tikirel ta ütz nok
+inadequateSecurityError-title = Itzel ri awokem
+blockedByPolicy-title = Q'aton Ruxaq
+clockSkewError-title = Sachinäq ri ruch'utiq'ijub'al akematz'ib'
+networkProtocolError-title = Rusachoj Rub'eyal Nisamäj K'amb'ey
+nssBadCert-title = Rutzijol K'ayewal: Nimaläj Ruk'ayewal Jikomal Petenäq
+nssBadCert-sts-title = Man Xok Ta: Jikïl jun Ruk'ayewal Jikomal
+certerror-mitm-title = Software Nuq'äch chi ri { -brand-short-name } Ütz tok pa re Ruxaq K'amaya'l Re'

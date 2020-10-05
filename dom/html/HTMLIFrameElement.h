@@ -29,13 +29,9 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
                                            nsGenericHTMLFrameElement)
 
   // Element
-  virtual bool IsInteractiveHTMLContent(bool aIgnoreTabindex) const override {
-    return true;
-  }
+  virtual bool IsInteractiveHTMLContent() const override { return true; }
 
   // nsIContent
-  virtual nsresult BindToTree(Document* aDocument, nsIContent* aParent,
-                              nsIContent* aBindingParent) override;
   virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
                               const nsAString& aValue,
                               nsIPrincipal* aMaybeScriptedPrincipal,
@@ -45,6 +41,8 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
       const override;
 
   virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
+
+  void BindToBrowsingContext(BrowsingContext* aBrowsingContext);
 
   uint32_t GetSandboxFlags() const;
 
@@ -67,7 +65,11 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
     SetHTMLAttr(nsGkAtoms::name, aName, aError);
   }
   nsDOMTokenList* Sandbox() {
-    return GetTokenList(nsGkAtoms::sandbox, sSupportedSandboxTokens);
+    if (!mSandbox) {
+      mSandbox =
+          new nsDOMTokenList(this, nsGkAtoms::sandbox, sSupportedSandboxTokens);
+    }
+    return mSandbox;
   }
   bool AllowFullscreen() const {
     return GetBoolAttr(nsGkAtoms::allowfullscreen);
@@ -155,7 +157,7 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
   bool FullscreenFlag() const { return mFullscreenFlag; }
   void SetFullscreenFlag(bool aValue) { mFullscreenFlag = aValue; }
 
-  FeaturePolicy* Policy() const;
+  mozilla::dom::FeaturePolicy* FeaturePolicy() const;
 
  protected:
   virtual ~HTMLIFrameElement();
@@ -197,7 +199,14 @@ class HTMLIFrameElement final : public nsGenericHTMLFrameElement {
    */
   void AfterMaybeChangeAttr(int32_t aNamespaceID, nsAtom* aName, bool aNotify);
 
-  RefPtr<mozilla::dom::FeaturePolicy> mFeaturePolicy;
+  /**
+   * Feature policy inheritance is broken in cross process model, so we may
+   * have to store feature policy in browsingContext when neccesary.
+   */
+  void MaybeStoreCrossOriginFeaturePolicy();
+
+  RefPtr<dom::FeaturePolicy> mFeaturePolicy;
+  RefPtr<nsDOMTokenList> mSandbox;
 };
 
 }  // namespace dom

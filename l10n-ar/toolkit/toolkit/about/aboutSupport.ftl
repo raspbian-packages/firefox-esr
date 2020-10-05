@@ -4,6 +4,7 @@
 
 page-title = معلومات مواجهة الأعطال
 page-subtitle = تحتوي هذه الصفحة معلومات تقنية قد تكون مفيدة عندما تحاول حل مشكلة ما. إن كنت تبحث عن إجابات لأسئلة شائعة تخص { -brand-short-name }، تحقق من <a data-l10n-name="support-link">موقع الدعم</a>.
+
 crashes-title = بلاغات الانهيار
 crashes-id = معرّف البلاغ
 crashes-send-date = أُرسلَ
@@ -24,13 +25,25 @@ features-title = مميزات { -brand-short-name }
 features-name = الاسم
 features-version = النسخة
 features-id = المعرّف
+processes-title = العمليات البعيدة
+processes-type = النوع
+processes-count = العدد
 app-basics-title = أساسيات التطبيق
 app-basics-name = الاسم
 app-basics-version = النسخة
 app-basics-build-id = معرف البناء
 app-basics-update-channel = قناة التحديث
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] دليل التحديثات
+       *[other] مجلد التحديثات
+    }
 app-basics-update-history = تأريخ التحديث
 app-basics-show-update-history = أظهر تأريخ التحديث
+# Represents the path to the binary used to start the application.
+app-basics-binary = ملف التطبيق الثنائي
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] مجلد الملف الشخصي
@@ -45,10 +58,11 @@ app-basics-performance = الأداء
 app-basics-service-workers = عمّال الخدمة المسجلين
 app-basics-profiles = ملفات الإعدادات
 app-basics-multi-process-support = نوافذ متعددة السيرورات
-app-basics-process-count = سيرورة محتوى الوب
+app-basics-remote-processes-count = العمليات البعيدة
 app-basics-enterprise-policies = سياسات المؤسسات
-app-basics-key-google = مفتاح جوجل
-app-basics-key-mozilla = مفتاح خدمة التموضع من موزيلا
+app-basics-location-service-key-google = مفتاح خدمة التموضع من جوجل
+app-basics-safebrowsing-key-google = مفتاح التصفّح الآمن من جوجل
+app-basics-key-mozilla = مفتاح خدمة التموضع من Mozilla
 app-basics-safe-mode = الوضع الآمن
 show-dir-label =
     { PLATFORM() ->
@@ -73,6 +87,8 @@ graphics-gpu2-title = معالج الرسوميات #2
 graphics-decision-log-title = سجل القرارات
 graphics-crash-guards-title = خصائص حامي التحطم المعطَّلة
 graphics-workarounds-title = الحلول الالتفافية
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = ميفاق النوافذ
 place-database-title = قاعدة بيانات الأماكن
 place-database-integrity = التكامل
 place-database-verify-integrity = تحقّق من التكامل
@@ -97,6 +113,14 @@ sandbox-sys-call-number = نداء النظام
 sandbox-sys-call-args = المعطيات
 safe-mode-title = جرّب الوضع الآمن
 restart-in-safe-mode-label = أعِد التشغيل مع تعطيل الإضافات…
+
+## Media titles
+
+audio-backend = سند الصوت
+max-audio-channels = أقصى عدد للقنوات
+channel-layout = تخطيط القنوات المفضل
+sample-rate = معدل العينات المفضل
+
 media-title = الوسائط
 media-output-devices-title = أجهزة الخَرْج
 media-input-devices-title = أجهزة الدَخْل
@@ -109,6 +133,9 @@ media-device-format = التنسيق
 media-device-channels = القنوات
 media-device-rate = المعدل
 media-device-latency = الكمون
+
+##
+
 intl-title = التدويل و التوطين
 intl-app-title = إعدادات التطبيق
 intl-locales-requested = المحليات المطلوبة
@@ -118,6 +145,19 @@ intl-locales-default = المحلية المبدئية
 intl-os-title = نظام التشغيل
 intl-os-prefs-system-locales = محليات النظام
 intl-regional-prefs = التفضيلات الإقليمية
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -129,6 +169,7 @@ report-crash-for-days =
         [many] بلاغات انهيار آخر { $days } يومًا
        *[other] بلاغات انهيار آخر { $days } يوم
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -140,6 +181,7 @@ crashes-time-minutes =
         [many] منذ { $minutes } دقيقة
        *[other] منذ { $minutes } دقيقة
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -151,6 +193,7 @@ crashes-time-hours =
         [many] منذ { $hours } ساعة
        *[other] منذ { $hours } ساعة
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -162,6 +205,7 @@ crashes-time-days =
         [many] منذ { $days } يومًا
        *[other] منذ { $days } يوم
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -173,6 +217,7 @@ pending-reports =
         [many] كل بلاغات الانهيار (تشمل { $reports } بلاغ انهيار معلّق في الفترة الزمنية المحددة)
        *[other] كل بلاغات الانهيار (تشمل { $reports } بلاغ انهيار معلّق في الفترة الزمنية المحددة)
     }
+
 raw-data-copied = نُسخت البيانات الخام إلى الحافظة
 text-copied = نُسخ النص إلى الحافظة
 
@@ -185,9 +230,11 @@ blocked-mismatched-version = معطلة بسبب عدم تطابق إصدارة 
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = معطّلة بسبب إصدارة مشغل البطاقة الرسومية. جرّب تحديث مشغل البطاقة الرسومية لديك إلى النسخة { $driverVersion } أو أحدث.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = معاملات ClearType
+
 compositing = التراكب
 hardware-h264 = فك ترميز H264 باستخدام العتاد
 main-thread-no-omtc = الخيط الأساسي، لا OMTC
@@ -200,6 +247,7 @@ no = لا
 
 found = موجود
 missing = مفقود
+
 gpu-description = الوصف
 gpu-vendor-id = معرّف المنتِج
 gpu-device-id = معرّف الجهاز
@@ -220,16 +268,21 @@ webgl2-version = إصدارة مشغّل WebGL 2
 webgl2-driver-extensions = امتدادات مشغّل WebGL 2
 webgl2-extensions = امتدادات WebGL 2
 blocklisted-bug = على قائمة الحجب بسبب مشاكل معروفة معه
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = العلة { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = على قائمة الحجب؛ رمز العطل { $failureCode }
+
 d3d11layers-crash-guard = مركّب D3D11
 d3d11video-crash-guard = فاكك ترميز D3D11 للڤديو
 d3d9video-crash-buard = فاكك ترميز D3D9 للڤديو
+d3d9video-crash-guard = فاكك ترميز D3D9 للڤديو
 glcontext-crash-guard = أوپن‌جي‌إل
+
 reset-on-next-restart = صفّر عند التشغيل التالي
 gpu-process-kill-button = أنهِ سيرورة وحدة معالجة الرسوميات
 gpu-device-reset-button = أطلِق عملية إعادة الجهاز إلى حالته المبدئية
@@ -237,12 +290,10 @@ uses-tiling = يستخدم البلاطات
 content-uses-tiling = يستخدم البلاطات (المحتوى)
 off-main-thread-paint-enabled = الرسم خارج الخيط الرئيسي مفعل
 off-main-thread-paint-worker-count = عدد عمال الرسم خارج الخيط الرئيسي
-audio-backend = سند الصوت
-max-audio-channels = أقصى عدد للقنوات
-channel-layout = تخطيط القنوات المفضل
-sample-rate = معدل العينات المفضل
+
 min-lib-versions = أقل إصدارة مقبولة
 loaded-lib-versions = الإصدارة المستخدمة
+
 has-seccomp-bpf = ‏Seccomp-BPF (ترشيح استدعاءات النظام)
 has-seccomp-tsync = مزامنة Seccomp للخيوط
 has-user-namespaces = نطاقات أسماء المستخدمين
@@ -254,6 +305,7 @@ effective-content-sandbox-level = مستوى عزل سيرورة المحتوى 
 sandbox-proc-type-content = محتوى
 sandbox-proc-type-file = محتوى الملف
 sandbox-proc-type-media-plugin = ملحقة وسائط
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -266,6 +318,7 @@ multi-process-status-6 = عطّله إدخال النصوص غير المدعو�
 multi-process-status-7 = عطّلته الإضافات
 multi-process-status-8 = عطّل إجبارًا
 multi-process-status-unknown = الحالة غير معروفة
+
 async-pan-zoom = التقريب غير المتزامن
 apz-none = لا شيء
 wheel-enabled = إدخال البكرة مُفعّل

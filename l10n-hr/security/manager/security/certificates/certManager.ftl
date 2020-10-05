@@ -3,147 +3,177 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 certmgr-title =
-    .title = Upravitelj certifikata
+    .title = Upravljač certifikata
+
 certmgr-tab-mine =
-    .label = Vaši certifikati
+    .label = Tvoji certifikati
+
 certmgr-tab-people =
     .label = Osobe
+
 certmgr-tab-servers =
     .label = Poslužitelji
+
 certmgr-tab-ca =
-    .label = Agencije
-certmgr-mine = Imate certifikate sljedećih organizacija koje vas identificiraju
-certmgr-people = Imate certifikate na datoteci koji identificiraju sljedeće osobe
-certmgr-servers = Imate certifikate na datoteci koji identificiraju sljedeće poslužitelje
-certmgr-ca = Imate certifikate na datoteci koji identificiraju sljedeće nadležne agencije
+    .label = Certifikacijska tijela
+
+certmgr-mine = Imaš certifikate sljedećih organizacija koje te identificiraju
+certmgr-people = Imaš spremljene certifikate koji identificiraju sljedeće osobe
+certmgr-servers = Imaš spremljene certifikate koji identificiraju sljedeće poslužitelje
+certmgr-ca = Imaš spremljene certifikate koji identificiraju ova certifikacijska tijela
+
 certmgr-detail-general-tab-title =
-    .label = Općenito
+    .label = Opće
     .accesskey = O
+
 certmgr-detail-pretty-print-tab-title =
     .label = Detalji
     .accesskey = D
+
 certmgr-pending-label =
     .value = Trenutno potvrđujem certifikat…
-certmgr-subject-info-label =
-    .value = Izdano
-certmgr-issuer-info-label =
-    .value = Izdao
-certmgr-period-of-validity-label =
-    .value = Razdoblje valjanosti
-certmgr-fingerprints-label =
-    .value = Otisci
+
 certmgr-subject-label = Izdano
+
 certmgr-issuer-label = Izdao
+
 certmgr-period-of-validity = Razdoblje valjanosti
+
 certmgr-fingerprints = Otisci
+
 certmgr-cert-detail =
     .title = Detalji certifikata
     .buttonlabelaccept = Zatvori
     .buttonaccesskeyaccept = Z
-certmgr-cert-detail-cn =
-    .value = Ime (CN)
-certmgr-cert-detail-o =
-    .value = Organizacija (O)
-certmgr-cert-detail-ou =
-    .value = Organizacijska jedinica (OU)
-certmgr-cert-detail-serialnumber =
-    .value = Serijski broj
-certmgr-cert-detail-sha256-fingerprint =
-    .value = SHA-256 otisak
-certmgr-cert-detail-sha1-fingerprint =
-    .value = SHA1 otisak
+
 certmgr-cert-detail-commonname = Ime (CN)
+
 certmgr-cert-detail-org = Organizacija (O)
+
 certmgr-cert-detail-orgunit = Organizacijska jedinica (OU)
+
 certmgr-cert-detail-serial-number = Serijski broj
+
 certmgr-cert-detail-sha-256-fingerprint = SHA-256 otisak
+
 certmgr-cert-detail-sha-1-fingerprint = SHA1 otisak
+
 certmgr-edit-ca-cert =
     .title = Uredi postavke povjerenja CA-ovih certifikata
     .style = width: 48em;
+
 certmgr-edit-cert-edit-trust = Uredi postavke povjerenja:
+
 certmgr-edit-cert-trust-ssl =
     .label = Ovaj certifikat može identificirati web stranice.
+
 certmgr-edit-cert-trust-email =
     .label = Ovaj certifikat može identificirati korisnike e-pošte.
+
 certmgr-delete-cert =
     .title = Obriši certifikat
     .style = width: 48em; height: 24em;
+
 certmgr-cert-name =
     .label = Naziv certifikata
+
 certmgr-cert-server =
     .label = Poslužitelj
+
 certmgr-override-lifetime =
     .label = Vijek trajanja
+
 certmgr-token-name =
     .label = Sigurnosni uređaj
+
 certmgr-begins-on = Počinje na
+
 certmgr-begins-label =
     .label = Počinje na
-certmgr-begins-value =
-    .value = { certmgr-begins-label.label }
-certmgr-expires-on = Istječe
+
+certmgr-expires-on = Isteći će
+
 certmgr-expires-label =
-    .label = Istječe
-certmgr-expires-value =
-    .value = { certmgr-expires-label.label }
+    .label = Isteći će
+
 certmgr-email =
     .label = Adresa e-pošte
+
 certmgr-serial =
     .label = Serijski broj
+
 certmgr-view =
     .label = Pogled…
     .accesskey = P
+
 certmgr-edit =
     .label = Uredi povjerenje…
     .accesskey = U
+
 certmgr-export =
     .label = Izvoz…
     .accesskey = z
+
 certmgr-delete =
     .label = Obriši…
     .accesskey = b
+
 certmgr-delete-builtin =
     .label = Obriši ili ne vjeruj…
     .accesskey = O
+
 certmgr-backup =
-    .label = Pohrani…
-    .accesskey = h
-certmgr-backup-all =
-    .label = Pohrani sve…
+    .label = Izradi sigurnosnu kopiju …
     .accesskey = s
+
+certmgr-backup-all =
+    .label = Izradi sigurnosnu kopiju za sve …
+    .accesskey = k
+
 certmgr-restore =
     .label = Uvezi…
     .accesskey = v
+
 certmgr-details =
     .value = Polja certifikata
     .accesskey = P
+
 certmgr-fields =
     .value = Vrijednost polja
     .accesskey = V
+
 certmgr-hierarchy =
     .value = Hijerarhija certifikata
     .accesskey = H
+
 certmgr-add-exception =
     .label = Dodaj iznimku…
     .accesskey = D
+
 exception-mgr =
     .title = Dodaj sigurnosnu iznimku
+
 exception-mgr-extra-button =
     .label = Potvrdi sigurnosnu iznimku
     .accesskey = r
-exception-mgr-supplemental-warning = Legitimne banke, trgovine i ostale javne stranice vas neće tražiti da ovo učinite.
+
+exception-mgr-supplemental-warning = Legitimne banke, trgovine i ostale javne stranice te neće tražiti da ovo učiniš.
+
 exception-mgr-cert-location-url =
     .value = Lokacija:
+
 exception-mgr-cert-location-download =
     .label = Preuzmi certifikat
     .accesskey = c
+
 exception-mgr-cert-status-view-cert =
     .label = Pogled…
     .accesskey = P
+
 exception-mgr-permanent =
     .label = Trajno spremi ovu iznimku
     .accesskey = i
+
 pk11-bad-password = Lozinka koju ste upisali je bila netočna.
 pkcs12-decode-err = Dekodiranje datoteke nije uspjelo. Ili datoteka nije u PKCS #12 formatu ili je oštećena ili je lozinka koju ste unijeli bila kriva.
 pkcs12-unknown-err-restore = Vraćanje PKCS #12 datoteke nije uspjelo zbog nepoznatih razloga.
@@ -161,33 +191,39 @@ choose-p12-restore-file-dialog = Datoteka certifikata za uvoz
 ## Import certificate(s) file dialog
 
 file-browse-certificate-spec = Datoteke certifikata
-import-ca-certs-prompt = Za uvoz odaberite datoteku koja sadrži CA certifikat
-import-email-cert-prompt = Za uvoz odaberite datoteku koja sadrži nečiji certifikat e-pošte
+import-ca-certs-prompt = Za uvoz odaberi datoteku koja sadrži CA certifikat
+import-email-cert-prompt = Za uvoz odaberi datoteku koja sadrži nečiji certifikat e-pošte
 
 ## For editing certificates trust
 
 # Variables:
 #   $certName: the name of certificate
-edit-trust-ca = Certifikat "{ $certName }" predstavlja agenciju certifikata.
+edit-trust-ca = Certifikat „{ $certName }” predstavlja certifikacijsko tijelo.
 
 ## For Deleting Certificates
 
 delete-user-cert-title =
-    .title = Obrišite vaše certifikate
-delete-user-cert-confirm = Jeste li sigurni da želite obrisati ove certifikate?
+    .title = Izbriši svoje certifikate
+delete-user-cert-confirm = Stvarno želiš obrisati ove certifikate?
 delete-user-cert-impact = Ako obrišete jedan od vlastitih certifikata, više ga nećete moći koristiti za identifikaciju.
+
+
 delete-ssl-cert-title =
     .title = Obriši iznimku certifikata poslužitelja
-delete-ssl-cert-confirm = Jeste li sigurni da želite ukloniti ove iznimke poslužitelja?
-delete-ssl-cert-impact = Ako obrišete iznimku poslužitelja, obnavljate uobičajene sigurnosne provjere za te poslužitelje i uvjete o ispravnim certifikatima.
+delete-ssl-cert-confirm = Zaista želiš ukloniti ove iznimke poslužitelja?
+delete-ssl-cert-impact = Ako izbrišeš iznimku poslužitelja, obnavljaš uobičajene sigurnosne provjere za te poslužitelje i uvjetuješ upotrebu ispravnih certifikata.
+
 delete-ca-cert-title =
     .title = Brisanje ili poništavanje povjerenja CA certifikata
-delete-ca-cert-confirm = Zatražili ste brisanje ovih CA certifikata. Za ugrađene certifikate će sva povjerenja biti uklonjena, što ima isti efekt. Jeste li sigurni da želite obrisati ili poništiti povjerenje?
-delete-ca-cert-impact = Ako obrišete ili poništite povjerenje CA certifikat, ova aplikacija više neće vjerovati certifikatima koje je objavio taj CA.
+delete-ca-cert-confirm = Zatražio/la si brisanje ovih CA certifikata. Za ugrađene certifikate uklonit će se sva povjerenja, što ima isti efekt. Zaista želiš obrisati certifikate ili poništiti povjerenje?
+delete-ca-cert-impact = Ako izbrišeš ili poništiš povjerenje za certifikat certifikacijskog tijela, ovaj program više neće vjerovati certifikatima koje izdaje to certifikacijsko tijelo.
+
+
 delete-email-cert-title =
     .title = Obriši certifikate e-pošte
-delete-email-cert-confirm = Jeste li sigurni da želite obrisati certifikate e-pošte ovih ljudi?
+delete-email-cert-confirm = Stvarno želiš obrisati certifikate e-pošte ovih ljudi?
 delete-email-cert-impact = Ako obrišete certifikat e-pošte određene osobe, više neće moći toj osobi slati kriptirane e-poruke.
+
 # Used for semi-uniquely representing a cert.
 #
 # Variables:
@@ -203,21 +239,29 @@ cert-with-serial =
 #   $certificate : a string representative of the certificate being viewed.
 cert-viewer-title =
     .title = Preglednik certifikata: “{ $certName }”
+
 not-present =
     .value = <Nije dio certifikata>
+
 # Cert verification
 cert-verified = Ovaj certifikat je ovjeren za sljedeće namjene:
+
 # Add usage
 verify-ssl-client =
     .value = Certifikat SSL klijenta
+
 verify-ssl-server =
     .value = Certifikat SSL poslužitelja
+
 verify-ssl-ca =
-    .value = Izdavač SSL certifikata
+    .value = Certifikacijsko tijelo za SSL
+
 verify-email-signer =
     .value = Certifikat potpisnika e-pošte
+
 verify-email-recip =
     .value = Certifikat primatelja e-pošte
+
 # Cert verification
 cert-not-verified-cert-revoked = Ovjera ovog certifikata nije moguća jer je poništen.
 cert-not-verified-cert-expired = Ovjera ovog certifikata nije moguća jer je istekao.
@@ -237,7 +281,7 @@ add-exception-domain-mismatch-long = Certifikat pripada drugoj stranici, što mo
 add-exception-expired-short = Zastarjela informacija
 add-exception-expired-long = Certifikat trenutno nije ispravan. Možda je ukraden ili izgubljen, i može biti upotrebljen za krivotvorenje ove stranice.
 add-exception-unverified-or-bad-signature-short = Nepoznat identitet
-add-exception-unverified-or-bad-signature-long = Certifikat nije pouzdan jer nije potvrđen kao izdan od priznate agencije koristeći sigurni potpis.
+add-exception-unverified-or-bad-signature-long = Certifikatu se ne vjeruje jer nije potvrđen kao certifikat, kojeg je izdalo priznato certifikacijsko tijelo sa sigurnim potpisom.
 add-exception-valid-short = Ispravan certifikat
 add-exception-valid-long = Ova stranica pruža ispravnu, potvrđenu identifikaciju. Nema potrebe za dodavanjem iznimke.
 add-exception-checking-short = Provjera informacija

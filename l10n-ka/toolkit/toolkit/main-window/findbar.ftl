@@ -9,12 +9,10 @@ findbar-next =
     .tooltiptext = ფრაზის შემდეგი კონტექსტის პოვნა
 findbar-previous =
     .tooltiptext = ფრაზის წინა კონტექსტის პოვნა
+
 findbar-find-button-close =
     .tooltiptext = ძიების ველის დახურვა
-findbar-highlight-all =
-    .label = ყველას მონიშვნა
-    .accesskey = ყ
-    .tooltiptext = ფრაზის ყველა კონტექსტის გამოკვეთა
+
 findbar-highlight-all2 =
     .label = ყველას გამორჩევა
     .accesskey =
@@ -23,10 +21,17 @@ findbar-highlight-all2 =
            *[other] ყ
         }
     .tooltiptext = ყველა თანხვედრის გამორჩევა
+
 findbar-case-sensitive =
-    .label = მთავრულის გათვალისწინებით
+    .label = ემთხვევა მთავრული
     .accesskey = რ
     .tooltiptext = ძიება მთავრულის გათვალისწინებით
+
+findbar-match-diacritics =
+    .label = ემთხვევა დიაკრიტიკული
+    .accesskey = ტ
+    .tooltiptext = განასხვავებს ნიშანდართულებს ძირითადი ასოებისგან (მაგალითად სიტყვები „resume“ და „résumé“ ერთდროულად აღარ მოიძებნება)
+
 findbar-entire-word =
     .label = მთლიანი სიტყვები
     .accesskey = მ

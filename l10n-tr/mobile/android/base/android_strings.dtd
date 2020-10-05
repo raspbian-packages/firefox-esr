@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Daha az veri, daha çok tasarruf">
 <!ENTITY firstrun_data_subtext2 "Girdiğiniz her sitede daha az veri harcamak için resimleri kapatabilirsiniz.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Hesap">
-<!ENTITY firstrun_sync_message2 "Kaldığın yerden devam et.">
+<!ENTITY firstrun_sync_message3 "Yer imlerinizi, geçmişinizi ve parolalarınızı telefonunuzda kullanın.">
 <!ENTITY firstrun_sync_subtext2 "Tüm cihazlarınızda &brandShortName;’a kaydettiğiniz yer imlerine, parolalara ve diğer bilgilere ulaşmak için Sync’i kullanabilirsiniz.">
 <!ENTITY newfirstrun_sync_subtext "Mobil cihazınızda kaydettiğiniz her şeyi bilgisayarınızdaki Firefox’a güvenle aktarın.">
-<!ENTITY updatednewfirstrun_sync_subtext "&brandShortName;’tan en iyi şekilde yararlanmak için hesabınıza giriş yapın">
+<!ENTITY firstrun_sendtab_title "Sekmeyi Gönder">
+<!ENTITY firstrun_sendtab_message "Telefonunuzdaki sekmeleri anında bilgisayarınıza gönderin.">
 <!ENTITY firstrun_signin_message "Bağlan, kullanmaya başla">
-<!ENTITY firstrun_signin_button "Sync’e giriş yap">
-<!ENTITY newfirstrun_signin_button "Sync’i etkinleştir">
-<!ENTITY updatednewfirstrun_signin_button "&brandShortName;’a giriş yapın">
-<!ENTITY  onboard_start_button_browser "Gezinmeye başla">
+<!ENTITY onboard_start_button_browser "Gezinmeye başla">
 <!ENTITY firstrun_button_notnow "Daha sonra">
 <!ENTITY firstrun_button_next "İleri">
+<!ENTITY firstrun_signup_button "Kaydol">
 
 <!ENTITY firstrun_tabqueue_title "Bağlantılar">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Çökme raporu gönderiliyor\u2026">
 <!ENTITY  crash_close_label "Kapat">
 <!ENTITY  crash_restart_label "&brandShortName; baştan başlasın">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; çöktü">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Dizin güncellendi">
 <!ENTITY bookmark_parent_folder "Üst dizin">
 <!ENTITY bookmark_add_folder "Yeni dizin ekle">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(başlık yok)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Çerezler">
 <!ENTITY pref_cookies_accept_all "Etkin">
 <!ENTITY pref_cookies_not_accept_foreign "Etkin, 3. parti hariç">
+<!ENTITY pref_cookies_not_accept_trackers "Etkin, takip çerezleri hariç">
 <!ENTITY pref_cookies_disabled "Devre dışı">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Progresif web uygulamaları">
 <!ENTITY pref_pwa_summary "Web uygulamalarının ana ekrana eklenmesine izin ver">
-
-<!ENTITY tracking_protection_prompt_title "Şimdi İzlenme Koruması ile">
-<!ENTITY tracking_protection_prompt_text "Endişeye yer kalmasın diye, size izleyen öğeleri aktif bir şekilde engelliyoruz.">
-<!ENTITY tracking_protection_prompt_tip_text "Daha fazla bilgi için Gizlilik ayarlarını ziyaret edin">
-<!ENTITY tracking_protection_prompt_action_button "Anladım!">
 
 <!ENTITY tab_queue_toast_message3 "Sekme &brandShortName; üzerinde kaydedildi">
 <!ENTITY tab_queue_toast_action "Şimdi aç">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "“Tarayıcı uygulaması”na dokunup &brandShortName;’u seçin">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Mozilla Destek’i ziyaret et">
 <!ENTITY pref_about_firefox "&brandShortName; hakkında">
 <!ENTITY pref_vendor_faqs "SSS">
 <!ENTITY pref_vendor_feedback "Geri bildirim gönder">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; Konum Hizmeti çalışıyor">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Otomatik güncellemeler">
-<!ENTITY pref_update_autodownload_wifi "Yalnızca Wi-Fi üzerinden">
-<!ENTITY pref_update_autodownload_never "Asla">
-<!ENTITY pref_update_autodownload_always "Her zaman">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Yardım">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Paylaş">
 <!ENTITY share_title "Paylaş">
 <!ENTITY share_image_failed "Bu resim paylaşılamadı">
+<!ENTITY share_error_toast_message "Belirtilen uygulamayla paylaşılamadı">
 <!ENTITY save_as_pdf "PDF olarak kaydet">
 <!ENTITY print "Yazdır">
 <!ENTITY view_page_source "Sayfa kaynağını göster">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Konum">
 <!ENTITY bookmark_edit_keyword "Anahtar kelime">
 <!ENTITY bookmark_select_folder "Dizin seç">
-
 <!ENTITY bookmark_edit_undo "Geri al">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Bir ses seçin veya kaydedin">
 <!ENTITY filepicker_image_title "Bir resim seçin veya çekin">
 <!ENTITY filepicker_video_title "Bir video seçin veya kaydedin">
-
 <!ENTITY filepicker_permission_denied "Gerekli izinler verilmedi. Sistem dosya seçicisine dönülüyor.">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "&formatS1; üzerinde &formatS2; araması">
 
 <!ENTITY searchable_description "Yer imleri ve geçmiş">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "&brandShortName; güncellemesi var">
-<!ENTITY updater_start_select2 "İndirmek için dokunun">
-
-<!ENTITY updater_downloading_title2 "&brandShortName; indiriliyor">
-<!ENTITY updater_downloading_title_failed2 "İndirme başarısız oldu">
-<!ENTITY updater_downloading_select2 "İndirildiğinde güncellemeyi uygulamak için dokunun">
-<!ENTITY updater_downloading_retry2 "Yeniden denemek için dokunun">
-
-<!ENTITY updater_apply_title3 "&brandShortName; güncellemesi indirildi">
-<!ENTITY updater_apply_select3 "Kurmak için dokunun">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Dosyaları ve güncellemeleri indirmek için &brandShortName; tarayıcısının depolamaya erişmesine izin verin.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "İzin ver">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Yeni konuk oturumu">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Çevrimdışı okumak istediğiniz Okuyucu Görünümü öğelerini yer imlerine ekleyin.">
 <!ENTITY helper_triple_readerview_open_button "Yer imlerine git">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "&brandShortName; tarayıcısına hoş geldiniz">
+<!ENTITY activity_stream_signin_description "Firefox hesabınızla yer imlerinizi, parolalarınızı ve daha fazlasını eşitlemeye başlayın.">
+<!ENTITY activity_stream_signup_button "Kaydol">
+<!ENTITY activity_stream_signin_prompt "Zaten hesabınız var mı?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Giriş yapın.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Yepyeni Firefox 2020’de geliyor">
+<!ENTITY activity_stream_firefox_promo_description "Çok yakında: Daha yüksek performans; gelişmiş izlenme koruması; sevdiğiniz şeyleri daha kolay bulmanız, kaydetmeniz ve paylaşmanız için tasarlanmış özellikler.">
+<!ENTITY activity_stream_firefox_promo_button "İlk siz deneyin">
+
 <!ENTITY activity_stream_topsites "Önemli Siteler">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "&brandPocket; öneriyor">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Ses ve video">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; ipuçları ve püf noktaları">
-<!ENTITY updater_notification_channel "Uygulama güncellemeleri">
 <!ENTITY synced_tabs_notification_channel "Eşitlenmiş sekmeler">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

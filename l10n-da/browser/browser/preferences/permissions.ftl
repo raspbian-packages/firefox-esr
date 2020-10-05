@@ -5,32 +5,43 @@
 permissions-window =
     .title = Undtagelser
     .style = width: 36em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adresse på websted
     .accesskey = d
+
 permissions-block =
     .label = Bloker
     .accesskey = B
+
 permissions-session =
     .label = Tillad for session
     .accesskey = s
+
 permissions-allow =
     .label = Tillad
     .accesskey = T
+
 permissions-site-name =
     .label = Websted
+
 permissions-status =
     .label = Status
+
 permissions-remove =
     .label = Fjern websted
     .accesskey = F
+
 permissions-remove-all =
     .label = Fjern alle websteder
     .accesskey = a
+
 permissions-button-cancel =
     .label = Fortryd
     .accesskey = o
+
 permissions-button-ok =
     .label = Gem ændringer
     .accesskey = G
@@ -53,12 +64,11 @@ permissions-capabilities-block =
     .label = Bloker
 permissions-capabilities-prompt =
     .label = Spørg altid
+
 permissions-capabilities-listitem-allow =
     .value = Tillad
 permissions-capabilities-listitem-block =
     .value = Bloker
-permissions-capabilities-listitem-allow-first-party =
-    .value = Tillad kun for det oprindelige websted
 permissions-capabilities-listitem-allow-session =
     .value = Tillad for session
 
@@ -69,14 +79,15 @@ permissions-invalid-uri-label = Indtast venligst et gyldigt værtsnavn
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = Undtagelser - beskyttelse mod sporing
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = Du har deaktiveret beskyttelse mod sporing på disse websteder.
 permissions-exceptions-content-blocking-window =
     .title = Undtagelser - blokering af indhold
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Du har deaktiveret blokering af indhold på disse websteder.
+
+permissions-exceptions-etp-window =
+    .title = Undtagelser for udvidet beskyttelse mod sporing
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Du har slået beskyttelse fra for disse websteder.
 
 ## Exceptions - Cookies
 
@@ -135,10 +146,20 @@ permissions-site-notification-disable-desc = Dette vil forhindre websteder, der 
 permissions-site-location-window =
     .title = Indstillinger - Tilladelser for position
     .style = { permissions-window.style }
-permissions-site-location-desc = Følgende websteder har anmodet om at tilgå din position. Du kan angive, hvilke websteder, der må tilgå din position. Du kan også blokere nye anmodninger om at tilgå din position.
+permissions-site-location-desc = Følgende websteder har anmodet om at se din position. Du kan angive, hvilke websteder, der må se din position. Du kan også blokere nye anmodninger om at se din position.
 permissions-site-location-disable-label =
-    .label = Bloker nye anmodninger om at tilgå din position.
+    .label = Bloker nye anmodninger om at se din position.
 permissions-site-location-disable-desc = Dette vil forhindre websteder, der ikke er angivet ovenfor, i at anmode om din position. At blokere anmodninger om din position kan muligvis forhindre nogle websteder i at fungere optimalt.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Indstillinger - Tilladelser for virtual reality
+    .style = { permissions-window.style }
+permissions-site-xr-desc = De følgende websteder har anmodet om adgang til dine virtual reality-enheder. Du kan angive, hvilke websteder, der må have adgang til dine virtual reality-enheder. Du kan også blokere nye anmodninger om adgang til dine virtual reality-enheder.
+permissions-site-xr-disable-label =
+    .label = Bloker nye anmodninger om adgang til dine virtual reality-enheder
+permissions-site-xr-disable-desc = Dette vil forhindre websteder, der ikke er angivet ovenfor, i at anmode om adgang til dine virtual reality-enheder. At blokere anmodninger om adgang til dine virtual reality-enheder kan muligvis forhindre nogle websteder i at fungere optimalt.
 
 ## Site Permissions - Camera
 

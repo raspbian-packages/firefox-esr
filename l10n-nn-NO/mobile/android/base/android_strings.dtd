@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Mindre data, meir spart">
 <!ENTITY firstrun_data_subtext2 "Skru av bilde for å bruka mindre data på kvar nettstad du besøker.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Konto">
-<!ENTITY firstrun_sync_message2 "Fortset der du slutta.">
+<!ENTITY firstrun_sync_message3 "Synkroniser bokmerke, historikk og passord på mobiltelefon din.">
 <!ENTITY firstrun_sync_subtext2 "Bruk Sync for å finna bokmerke, passord og andre ting som du lagrar i &brandShortName; på alle einingane dine.">
 <!ENTITY newfirstrun_sync_subtext "Synkroniser det du lagrar på mobilen til Firefox for datamaskiner, privat og sikkert.">
-<!ENTITY updatednewfirstrun_sync_subtext "Logg inn på kontoen din for å få det meste ut av &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Send fane">
+<!ENTITY firstrun_sendtab_message "Del faner frå mobil til datamaskin — direkte.">
 <!ENTITY firstrun_signin_message "Kopla til og kom i gang">
-<!ENTITY firstrun_signin_button "Logg inn for å synkronisere">
-<!ENTITY newfirstrun_signin_button "Aktiver Sync">
-<!ENTITY updatednewfirstrun_signin_button "Logg inn på &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Start nettlesing">
+<!ENTITY onboard_start_button_browser "Start nettlesing">
 <!ENTITY firstrun_button_notnow "Ikkje akkurat no">
 <!ENTITY firstrun_button_next "Neste">
+<!ENTITY firstrun_signup_button "Registrer deg">
 
 <!ENTITY firstrun_tabqueue_title "Lenker">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Send krasjrapport \u2026">
 <!ENTITY  crash_close_label "Lat att">
 <!ENTITY  crash_restart_label "Start &brandShortName; på nytt">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; krasja">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Mappe oppdatert">
 <!ENTITY bookmark_parent_folder "Foreldermappe">
 <!ENTITY bookmark_add_folder "Legg til ny mappe">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(namnlaus)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Infokapslar">
 <!ENTITY pref_cookies_accept_all "Påslått">
 <!ENTITY pref_cookies_not_accept_foreign "Påslått, med unntak for tredjeparts">
+<!ENTITY pref_cookies_not_accept_trackers "Aktivert, unntatt sporingsinfokapslar">
 <!ENTITY pref_cookies_disabled "Avslått">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Progresive nettappar">
 <!ENTITY pref_pwa_summary "Tillat at nettappar vert lagde til på heimeskjermen">
-
-<!ENTITY tracking_protection_prompt_title "No med sporingsvern">
-<!ENTITY tracking_protection_prompt_text "Aktivt blokker sporingselement slik at du slepp å uroa deg.">
-<!ENTITY tracking_protection_prompt_tip_text "Gå til personverninnstillingar for å lesa meir">
-<!ENTITY tracking_protection_prompt_action_button "Greitt!">
 
 <!ENTITY tab_queue_toast_message3 "Fane lagra i &brandShortName;">
 <!ENTITY tab_queue_toast_action "Opna no">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Tast nettlesarapp og vel &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Besøk Mozilla Support">
 <!ENTITY pref_about_firefox "Om &brandShortName;">
 <!ENTITY pref_vendor_faqs "Vanlege spørsmål (FAQ)">
 <!ENTITY pref_vendor_feedback "Gje tilbakemelding">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; stadteneste køyrer">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Automatiske oppdateringar">
-<!ENTITY pref_update_autodownload_wifi "Berre over Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Aldri">
-<!ENTITY pref_update_autodownload_always "Alltid">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Hjelp">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Del">
 <!ENTITY share_title "Del via">
 <!ENTITY share_image_failed "Klarte ikkje å dela dette bildet">
+<!ENTITY share_error_toast_message "Klarte ikkje å dele med spesifisert app">
 <!ENTITY save_as_pdf "Lagra som PDF">
 <!ENTITY print "Skriv ut">
 <!ENTITY view_page_source "Vis kjeldekode">
@@ -550,19 +534,19 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY contextmenu_subscribe "Abonner på sida">
 <!ENTITY contextmenu_site_settings "Rediger nettstadinnstillingar">
 <!ENTITY contextmenu_top_sites_edit "Rediger">
-<!ENTITY contextmenu_top_sites_pin "Lås nettstad">
-<!ENTITY contextmenu_top_sites_unpin "Opphev låsing">
+<!ENTITY contextmenu_top_sites_pin "Fest nettstad">
+<!ENTITY contextmenu_top_sites_unpin "Løys nettstad">
 <!-- Localization note (contextmenu_pin_to_top_sites, contextmenu_unpin_from_top_sites): These strings are used to
      pin/unpin items from top sites when the user is not on the top sites screen so they'd be missing context on what
      just "Pin Site" or "Unpin Site" would mean. -->
-<!ENTITY contextmenu_pin_to_top_sites "Fest til toppliste">
-<!ENTITY contextmenu_unpin_from_top_sites "Løys frå toppliste">
+<!ENTITY contextmenu_pin_to_top_sites "Fest til mest besøkte">
+<!ENTITY contextmenu_unpin_from_top_sites "Løys frå mest besøkte">
 <!ENTITY contextmenu_add_search_engine "Legg til ein søkjemotor">
 
 <!-- Localization note (pinned_page_to_top_sites, unpinned_page_from_top_sites): These strings are shown in a snackbar
      after the user pins/unpins the currently displayed page from top sites. -->
-<!ENTITY pinned_page_to_top_sites "Festa side til populære nettstadar">
-<!ENTITY unpinned_page_from_top_sites "SIde fjerna frå toppliste">
+<!ENTITY pinned_page_to_top_sites "Festa side til mest besøkte">
+<!ENTITY unpinned_page_from_top_sites "Løyste sida frå mest besøkte">
 
 <!-- Localization note (doorhanger_login_no_username): This string is used in the save-login doorhanger
      where normally a username would be displayed. In this case, no username was found, and this placeholder
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Adresse">
 <!ENTITY bookmark_edit_keyword "Nykelord">
 <!ENTITY bookmark_select_folder "Vel mappe">
-
 <!ENTITY bookmark_edit_undo "Angre">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -629,10 +612,10 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY button_clear "Tøm">
 <!ENTITY button_copy "Kopier">
 
-<!ENTITY home_top_sites_title "Populære nettstadar">
+<!ENTITY home_top_sites_title "Mest besøkte nettstadar">
 <!-- Localization note (home_top_sites_add): This string is used as placeholder
      text underneath empty thumbnails in the Top Sites page on about:home. -->
-<!ENTITY home_top_sites_add "Legg til nettstad">
+<!ENTITY home_top_sites_add "Legg til ein nettstad">
 
 <!-- Localization note (home_title): This string should be kept in sync
      with the page title defined in aboutHome.dtd -->
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Vel eller spel inn ein lyd">
 <!ENTITY filepicker_image_title "Vel eller ta eit bilde">
 <!ENTITY filepicker_video_title "Vel eller spel inn ein video">
-
 <!ENTITY filepicker_permission_denied "Påkravde løyve ikkje gjevne, går tilbake til systemfilveljaren.">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Søk med &formatS1; etter &formatS2;">
 
 <!ENTITY searchable_description "Bokmerke og historikk">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Oppdatering er tilgjengeleg for &brandShortName;">
-<!ENTITY updater_start_select2 "Trykk for å lasta ned">
-
-<!ENTITY updater_downloading_title2 "Lastar ned &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Nedlasting feila">
-<!ENTITY updater_downloading_select2 "Trykk for å installera etter ferdig nedlasting">
-<!ENTITY updater_downloading_retry2 "Trykk for å prøva på nytt">
-
-<!ENTITY updater_apply_title3 "Oppdatering er lasta ned for &brandShortName;">
-<!ENTITY updater_apply_select3 "Trykk for å installera">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "For å lasta ned filer og oppdateringar, tillat &brandShortName; å bruka lagring.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Tillat">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Ny gjesteøkt">
@@ -884,7 +847,24 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Bokmerk lesevisingselement for å lesa dei fråkopla.">
 <!ENTITY helper_triple_readerview_open_button "Legg til i bokmerka">
 
-<!ENTITY activity_stream_topsites "Populære nettstadar">
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Velkomen til &brandShortName;">
+<!ENTITY activity_stream_signin_description "Begynn å synkronisere bokmerke, passord og meir med Firefox-kontoen din.">
+<!ENTITY activity_stream_signup_button "Registrer deg">
+<!ENTITY activity_stream_signin_prompt "Har du allerieie ein konto?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Logg inn.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Ein heilt ny Firefox, kjem i 2020">
+<!ENTITY activity_stream_firefox_promo_description "Kjem snart: Forbetra yting. Utvida sporingsvern. I tillegg kjem eigenskapar laga for å hjelpe deg med å finne, lagre og dele meir av det du likar på nettet.">
+<!ENTITY activity_stream_firefox_promo_button "Ta ein sniktitt">
+
+<!ENTITY activity_stream_topsites "Mest besøkte nettstadar">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Tilrådd av &brandPocket;">
 <!ENTITY activity_stream_highlights "Høgdepunkt">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Lyd og video">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; tips og triks">
-<!ENTITY updater_notification_channel "App-oppdateringar">
 <!ENTITY synced_tabs_notification_channel "Synkroniserte faner">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

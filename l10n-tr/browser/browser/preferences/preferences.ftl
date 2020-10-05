@@ -14,6 +14,11 @@ pref-page =
             [windows] Seçenekler
            *[other] Tercihler
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Seçenekler
+       *[other] Tercihler
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -29,11 +34,6 @@ search-input-box =
             [windows] Seçeneklerde ara
            *[other] Tercihlerde ara
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Kurumunuz bazı seçenekleri değiştirme olanağını devre dışı bırakmış.
-       *[other] Kurumunuz bazı tercihleri değiştirme olanağını devre dışı bırakmış.
-    }
 managed-notice = Tarayıcınız kuruluşunuz tarafından yönetiliyor.
 pane-general-title = Genel
 category-general =
@@ -203,6 +203,15 @@ advanced-fonts =
 colors-settings =
     .label = Renkler…
     .accesskey = R
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Yakınlaştırma
+preferences-default-zoom = Varsayılan yakınlaştırma
+    .accesskey = m
+preferences-default-zoom-value =
+    .label = %{ $percentage }
+preferences-zoom-text-only =
+    .label = Sadece metni yakınlaştır
+    .accesskey = t
 language-header = Dil
 choose-language-description = Sayfaları hangi dilde görmeyi tercih ettiğinizi seçin
 choose-button =
@@ -223,6 +232,10 @@ translate-attribution = Çeviriler: <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = İstisnalar…
     .accesskey = s
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Tarihleri, saatleri, sayıları ve ölçüleri biçimlendirmek için “{ $localeName }” işletim sistemi ayarlarımı kullan
 check-user-spelling =
     .label = Yazarken yazım denetimi yap
     .accesskey = t
@@ -258,6 +271,75 @@ applications-type-column =
 applications-action-column =
     .label = Eylem
     .accesskey = E
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = { $extension } dosyası
+applications-action-save =
+    .label = Dosyayı kaydet
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = { $app-name } kullanılsın
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = { $app-name } kullanılsın (varsayılan)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Varsayılan macOS uygulamasını kullan
+            [windows] Varsayılan Windows uygulamasını kullan
+           *[other] Varsayılan sistem uygulamasını kullan
+        }
+applications-use-other =
+    .label = Başkasını kullan…
+applications-select-helper = Yardımcı uygulamayı seçin
+applications-manage-app =
+    .label = Uygulama ayrıntıları…
+applications-always-ask =
+    .label = Her zaman sor
+applications-type-pdf = Taşınabilir Belge Biçimi (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = { $plugin-name } kullan ({ -brand-short-name } içinde)
+applications-open-inapp =
+    .label = { -brand-short-name } ile aç
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Sayısal Hak Yönetimi (DRM) içerikleri
 play-drm-content =
     .label = DRM denetimli içerikleri oynat
@@ -344,12 +426,16 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Yazmaya başlar başlamaz arama yap
     .accesskey = z
+browsing-picture-in-picture-toggle-enabled =
+    .label = Görüntü içinde görüntü video düğmelerini etkinleştir
+    .accesskey = G
+browsing-picture-in-picture-learn-more = Daha fazla bilgi al
 browsing-cfr-recommendations =
     .label = Gezinirken yeni eklentiler öner
     .accesskey = G
 browsing-cfr-features =
-    .label = Gezinti yeni özellikler öner
-    .accesskey = G
+    .label = Gezinirken yeni özellikler öner
+    .accesskey = z
 browsing-cfr-recommendations-learn-more = Daha fazla bilgi al
 
 ## General Section - Proxy
@@ -398,6 +484,54 @@ choose-bookmark =
     .label = Yer imi kullan…
     .accesskey = m
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Firefox giriş sayfası içeriği
+home-prefs-content-description = Firefox giriş sayfasında görmek istediğiniz içerikleri seçin.
+home-prefs-search-header =
+    .label = Web araması
+home-prefs-topsites-header =
+    .label = Sık kullanılan siteler
+home-prefs-topsites-description = En çok ziyaret ettiğiniz siteler
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = { $provider } öneriyor
+home-prefs-recommended-by-description = İnternetin her yanından sizin için seçtiğimiz kaliteli içerikler
+home-prefs-recommended-by-description-update = { $provider } tarafından seçilen harika içerikler
+
+##
+
+home-prefs-recommended-by-learn-more = Nasıl çalışır?
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Sponsorlu haberler
+home-prefs-highlights-header =
+    .label = Öne çıkanlar
+home-prefs-highlights-description = Kaydettiğiniz ve ziyaret ettiğiniz sitelerin bir seçkisi
+home-prefs-highlights-option-visited-pages =
+    .label = Ziyaret ettiğim sayfalar
+home-prefs-highlights-options-bookmarks =
+    .label = Yer imleri
+home-prefs-highlights-option-most-recent-download =
+    .label = Son indirme
+home-prefs-highlights-option-saved-to-pocket =
+    .label = { -pocket-brand-name }’a kaydettiğim sayfalar
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Duyurular
+home-prefs-snippets-description = { -vendor-short-name } ve { -brand-product-name }’tan haberler
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } satır
+           *[other] { $num } satır
+        }
+
 ## Search Section
 
 search-bar-header = Arama çubuğu
@@ -407,6 +541,13 @@ search-bar-shown =
     .label = Araç çubuğuna arama çubuğunu ekle
 search-engine-default-header = Varsayılan arama motoru
 search-engine-default-desc = Adres çubuğunda ve arama çubuğunda kullanılacak varsayılan arama motorunu seçin.
+search-engine-default-desc-2 = Bu, adres çubuğundaki ve arama çubuğundaki varsayılan arama motorunuzdur. İstediğiniz zaman değiştirebilirsiniz.
+search-engine-default-private-desc-2 = Yalnızca gizli pencerelerde kullanmak istediğiniz arama motorunu seçin
+search-separate-default-engine =
+    .label = Gizli pencerelerde bu arama motorunu kullan
+    .accesskey = G
+search-suggestions-header = Arama önerileri
+search-suggestions-desc = Arama motorlarından gelen önerilerin nasıl görüneceğini seçin.
 search-suggestions-option =
     .label = Arama önerileri sun
     .accesskey = ö
@@ -420,6 +561,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Adres çubuğu sonuçlarında arama önerilerini gezinti geçmişinden önce göster
+search-show-suggestions-private-windows =
+    .label = Gizli pencerelerde arama önerilerini göster
+suggestions-addressbar-settings = Gezinti geçmişi, yer imleri ve sekme önerileri tercihlerini değiştirin
+suggestions-addressbar-settings-generic = Diğer adres çubuğu önerileri için tercihleri değiştir
 search-suggestions-cant-show = { -brand-short-name } tarayıcısını geçmişi hatırlamayacak şekilde ayarladığınız için konum çubuğu sonuçlarında arama önerileri gösterilmeyecektir.
 search-one-click-header = Tek tıklamalı arama motorları
 search-one-click-desc = Anahtar kelimeleri yazmaya başladığınızda adres çubuğunun ve arama çubuğunun altında görünecek alternatif arama motorlarını seçin.
@@ -445,16 +590,29 @@ search-keyword-warning-bookmark = Şu anda bir yer imi tarafından kullanılan b
 ## Containers Section
 
 containers-back-link = « Geri dön
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Seçeneklere geri dön
+           *[other] Tercihlere geri dön
+        }
 containers-header = Kapsayıcı sekmeler
 containers-add-button =
     .label = Yeni kapsayıcı ekle
     .accesskey = e
+containers-new-tab-check =
+    .label = Her yeni sekme için kapsayıcı seç
+    .accesskey = H
 containers-preferences-button =
     .label = Tercihler
 containers-remove-button =
     .label = Sil
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Web’inizi yanınızda taşıyın
 sync-signedout-description = Yer imlerinizi, geçmişinizi, sekmelerinizi, eklentilerinizi ve tercihlerinizi tüm cihazlarınız arasında senkronize edin.
@@ -464,6 +622,9 @@ sync-signedout-account-create = Hesabınız yok mu? Hemen açın
 sync-signedout-account-signin =
     .label = Giriş yap…
     .accesskey = G
+sync-signedout-account-signin2 =
+    .label = { -sync-brand-short-name }’e giriş yap…
+    .accesskey = r
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
 #   `<a data-l10n-name="android-link">` - Link to Android Download
@@ -476,11 +637,17 @@ sync-mobile-promo = Mobil cihazınızla eşitleme yapmak isterseniz <img data-l1
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Profil resmini değiştir
 sync-disconnect =
     .label = Bağlantıyı kes…
     .accesskey = B
+sync-sign-out =
+    .label = Çıkış yap…
+    .accesskey = k
 sync-manage-account = Hesabı yönet
     .accesskey = H
 sync-signedin-unverified = { $email } doğrulanmamış.
@@ -496,6 +663,48 @@ sync-sign-in =
     .accesskey = G
 sync-signedin-settings-header = Sync ayarları
 sync-signedin-settings-desc = { -brand-short-name } kullanan cihazlarınız arasında eşitlenecek öğeleri seçin.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Eşitleme: AÇIK
+prefs-syncing-off = Eşitleme: KAPALI
+prefs-sync-setup =
+    .label = { -sync-brand-short-name }’i kur…
+    .accesskey = S
+prefs-sync-offer-setup-label = Yer imlerinizi, geçmişinizi, sekmelerinizi, eklentilerinizi ve tercihlerinizi tüm cihazlarınız arasında senkronize edin.
+prefs-sync-now =
+    .labelnotsyncing = Şimdi eşitle
+    .accesskeynotsyncing = m
+    .labelsyncing = Eşitleniyor…
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Şu anda aşağıdaki öğeleri eşitliyorsunuz:
+sync-currently-syncing-bookmarks = Yer imleri
+sync-currently-syncing-history = Geçmiş
+sync-currently-syncing-tabs = Açık sekmeler
+sync-currently-syncing-logins-passwords = Hesaplar ve parolalar
+sync-currently-syncing-addresses = Adresler
+sync-currently-syncing-creditcards = Kredi kartları
+sync-currently-syncing-addons = Eklentiler
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Seçenekler
+       *[other] Tercihler
+    }
+sync-change-options =
+    .label = Değiştir…
+    .accesskey = D
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Nelerin eşitleneceğini seçin
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Değişiklikleri kaydet
+    .buttonaccesskeyaccept = D
+    .buttonlabelextra2 = Bağlantıyı kes…
+    .buttonaccesskeyextra2 = B
 sync-engine-bookmarks =
     .label = Yer imleri
     .accesskey = m
@@ -509,6 +718,10 @@ sync-engine-tabs =
 sync-engine-logins =
     .label = Hesaplar
     .tooltiptext = Kaydettiğiniz kullanıcı adları ve parolaları
+    .accesskey = H
+sync-engine-logins-passwords =
+    .label = Hesaplar ve parolalar
+    .tooltiptext = Kaydettiğiniz kullanıcı adları ve parolalar
     .accesskey = H
 sync-engine-addresses =
     .label = Adresler
@@ -530,6 +743,9 @@ sync-engine-prefs =
         }
     .tooltiptext = Değiştirdiğiniz Genel, Gizlilik ve Güvenlik ayarları
     .accesskey = e
+
+## The device name controls.
+
 sync-device-name-header = Cihaz adı
 sync-device-name-change =
     .label = Cihaz adını değiştir…
@@ -553,6 +769,13 @@ privacy-header = Tarayıcı gizliliği
 ## Privacy Section - Forms
 
 logins-header = Hesaplar ve parolalar
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Hesaplar ve parolalar
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Sitelerdeki kullanıcı adı ve parolalarımı kaydetmeyi öner
     .accesskey = r
@@ -562,6 +785,14 @@ forms-exceptions =
 forms-generate-passwords =
     .label = Güçlü parolalar öner ve oluştur
     .accesskey = G
+forms-breach-alerts =
+    .label = Veri ihlaline uğrayan sitelerdeki parolalarla ilgili uyarı göster
+    .accesskey = V
+forms-breach-alerts-learn-more-link = Daha fazla bilgi al
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Kullanıcı adı ve parolaları otomatik doldur
+    .accesskey = ı
 forms-saved-logins =
     .label = Kayıtlı hesaplar…
     .accesskey = K
@@ -571,6 +802,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Ana parolayı değiştir…
     .accesskey = d
+forms-master-pw-fips-title = Şu anda FIPS kipindesiniz. FIPS için boş olmayan bir ana parola gerekli.
+forms-master-pw-fips-desc = Parola değiştirme başarısız
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Ana parola oluşturmak için Windows hesap bilgilerinizi girin. Bu sayede hesaplarınızı daha güvenli bir şekilde koruyabiliriz.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = ana parola oluşturma
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -638,6 +882,12 @@ sitedata-block-desc = Engellenecek tür
     .accesskey = ü
 sitedata-option-block-trackers =
     .label = Üçüncü taraf takipçileri
+sitedata-option-block-cross-site-trackers =
+    .label = Siteler arası takipçiler
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Siteler arası takipçiler ve sosyal medya takipçileri
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Siteler arası takipçiler ve sosyal medya takipçileri, kalan çerezleri izole et
 sitedata-option-block-unvisited =
     .label = Ziyaret etmediğim sitelerden gelen çerezler
 sitedata-option-block-all-third-party =
@@ -653,6 +903,9 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = İzinleri yönet…
     .accesskey = z
+sitedata-cookies-exceptions =
+    .label = İstisnaları yönet…
+    .accesskey = İ
 
 ## Privacy Section - Address Bar
 
@@ -667,13 +920,17 @@ addressbar-locbar-bookmarks-option =
 addressbar-locbar-openpage-option =
     .label = Açık sekmeler
     .accesskey = s
+addressbar-locbar-topsites-option =
+    .label = Sık kullanılanlar
+    .accesskey = S
 addressbar-suggestions-settings = Arama motoru önerileri için tercihleri değiştir
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = İçerik engelleme
-content-blocking-description = Web’de sizi takip eden üçüncü taraf içeriklerini engelleyebilirsiniz. İnternette yaptıklarınızın ne kadarının depolanacağına ve siteler arasında paylaşılacağına siz karar verin.
 content-blocking-section-description = Gezinirken gizliliğinizi koruyun. Ziyaret ettiğiniz siteleri izleyen ve profilinizi çıkarak görünmez içerikleri engelleyebilirsiniz. Bu içerikleri engellemek sayfaların daha hızlı yüklenmesini de sağlayabilir.
+content-blocking-enhanced-tracking-protection = Gelişmiş izlenme koruması
+content-blocking-section-top-level-description = Takipçiler, gezinti alışkanlıklarınız ve ilgi alanlarınız hakkında bilgi toplamak için internette sizi takip eder. { -brand-short-name } bu takipçilerin ve diğer kötü amaçlı betiklerin çoğunu engeller.
 content-blocking-learn-more = Daha fazla bilgi al
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
@@ -686,28 +943,56 @@ content-blocking-setting-strict =
 content-blocking-setting-custom =
     .label = Özel
     .accesskey = Ö
-content-blocking-standard-description = Bilinen takipçileri yalnızca gizli penceredeyken engeller.
 content-blocking-standard-desc = Koruma ve performans dengesi sunar. Web sitelerinin düzgün çalışabilmesi için bazı takipçilere izin verir.
-content-blocking-strict-desc = { -brand-short-name } tarafından bulunan tüm takipçileri engeller. Bazı siteler düzgün çalışmayabilir.
 content-blocking-strict-description = Daha güçlü koruma. Bazı sitelerin bozulmasına neden olabilir.
 content-blocking-custom-desc = Nelerin engelleneceğini seçin.
 content-blocking-private-trackers = Bilinen takipçileri yalnızca gizli pencelerde engeller
 content-blocking-third-party-cookies = Üçüncü taraf takip çerezlerini engeller
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Standart
+    .accesskey = d
+enhanced-tracking-protection-setting-strict =
+    .label = Sıkı
+    .accesskey = S
+enhanced-tracking-protection-setting-custom =
+    .label = Özel
+    .accesskey = Ö
+
+##
+
+content-blocking-etp-standard-desc = Dengeli koruma ve performans. Sayfalar normal şekilde yüklenir.
+content-blocking-etp-strict-desc = Daha güçlü koruma, ama bazı siteler ve içerikler düzgün çalışmayabilir.
+content-blocking-etp-custom-desc = Hangi takipçilerin ve betiklerin engelleneceğini seçin.
+content-blocking-private-windows = Gizli pencelerde takip amaçlı içerikler
+content-blocking-cross-site-tracking-cookies = Siteler arası takip çerezleri
+content-blocking-cross-site-tracking-cookies-plus-isolate = Siteler arası takipçiler ve takip çerezleri, kalan çerezleri izole et
+content-blocking-social-media-trackers = Sosyal medya takipçileri
 content-blocking-all-cookies = Tüm çerezler
 content-blocking-unvisited-cookies = Ziyaret etmediğim sitelerden gelen çerezler
 content-blocking-all-windows-trackers = Bilinen takipçileri tüm pencerelerde engeller
+content-blocking-all-windows-tracking-content = Tüm pencerelerde takip amaçlı içerikler
 content-blocking-all-third-party-cookies = Tüm üçüncü taraf çerezlerini engeller
 content-blocking-cryptominers = Kripto madencileri
 content-blocking-fingerprinters = Parmak izi toplayıcılar
 content-blocking-warning-title = Dikkat!
 content-blocking-warning-description = İçerikleri engellemek bazı sitelerin bozulmasına neden olabilir. Güvendiğiniz sitelerde engellemeyi kolayca kapatabilirsiniz.
 content-blocking-learn-how = Engellemeyi kapatmayı öğrenin
+content-blocking-and-isolating-etp-warning-description = Takipçileri engellemek ve çerezleri izole etmek bazı sitelerin düzgün çalışmamasına yol açabilir. Takipçi içeren bir sayfanın tüm içeriğini yüklemek için sayfayı tazeleyin.
+content-blocking-warning-learn-how = Nasıl yapılacağını öğrenin
 content-blocking-reload-description = Bu değişiklikleri uygulamak için sekmelerinizi tazelemeniz gerekiyor.
 content-blocking-reload-tabs-button =
-    .label = Tüm sekmeleri tazele
-    .accesskey = T
+    .label = Sekmeleri tazele
+    .accesskey = S
 content-blocking-trackers-label =
     .label = Takipçiler
+    .accesskey = T
+content-blocking-tracking-content-label =
+    .label = Takip amaçlı içerikler
     .accesskey = T
 content-blocking-tracking-protection-option-all-windows =
     .label = Tüm pencerelerde
@@ -744,6 +1029,10 @@ permissions-location = Konum
 permissions-location-settings =
     .label = Ayarlar…
     .accesskey = r
+permissions-xr = Sanal gerçeklik
+permissions-xr-settings =
+    .label = Ayarlar…
+    .accesskey = A
 permissions-camera = Kamera
 permissions-camera-settings =
     .label = Ayarlar…
@@ -792,6 +1081,8 @@ permissions-a11y-privacy-link = Daha fazla bilgi al
 collection-header = { -brand-short-name } veri toplama ve kullanma izinleri
 collection-description = Yalnızca { -brand-short-name } tarayıcınızı geliştirmemize yarayacak verileri topluyoruz ve istemezseniz onları da toplamıyoruz. Kişisel verilerinizi sunucularımıza göndermeden önce mutlaka izninizi istiyoruz.
 collection-privacy-notice = Gizlilik bildirimi
+collection-health-report-telemetry-disabled = Artık { -vendor-short-name }’nın teknik veri ve etkileşim verisi toplamasına izin vermiyorsunuz. Eski verilerinizin hepsi 30 gün içinde silinecektir.
+collection-health-report-telemetry-disabled-link = Daha fazla bilgi al
 collection-health-report =
     .label = { -brand-short-name }, teknik ve etkileşim verilerimi { -vendor-short-name }’ya gönderebilir
     .accesskey = r

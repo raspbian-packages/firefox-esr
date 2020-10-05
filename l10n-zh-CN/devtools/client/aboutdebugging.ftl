@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = 分析性能
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = 您的浏览器配置与 Service Worker 不兼容。<a>详细了解</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = 已连接的浏览器为旧版本（{ $runtimeVersion }）。支持的最低版本为（{ $minVersion }）。不支持的版本可能致使开发者工具运行失败。请更新连接的浏览器。<a>故障排查</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = 已连接的浏览器为旧版本（{ 
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = 调试器面板可能与连接的浏览器不兼容。若需要对此浏览器调试请使用 Firefox { $runtimeVersion }。
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Firefox 无法调试 Android 版 Firefox（68）。我们建议您在手机上安装 Android 版 Firefox Nightly 进行测试。<a>更多信息</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -219,11 +222,11 @@ about-debugging-collapse-expand-debug-targets = 折叠 / 展开
 
 # Displayed in the categories of "runtime" pages that don't have any debug target to
 # show. Debug targets depend on the category (extensions, tabs, workers...).
-about-debugging-debug-target-list-empty = 尚未开始。
+about-debugging-debug-target-list-empty = 没有任何东西。
 # Text of a button displayed next to debug targets of "runtime" pages. Clicking on this
 # button will open a DevTools toolbox that will allow inspecting the target.
 # A target can be an addon, a tab, a worker...
-about-debugging-debug-target-inspect-button = 查看
+about-debugging-debug-target-inspect-button = 检查
 # Text of a button displayed in the "This Firefox" page, in the Temporary Extension
 # section. Clicking on the button will open a file picker to load a temporary extension
 about-debugging-tmp-extension-install-button = 临时载入附加组件…
@@ -264,7 +267,16 @@ about-debugging-extension-id =
 # probably better to not localize it.
 about-debugging-worker-action-push = 推送
 # This string is displayed as a label of the button that starts a service worker.
-about-debugging-worker-action-start = 开始
+about-debugging-worker-action-start = 启动
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = 推送
+    .disabledTitle = Service Worker “推送”目前在多进程 { -brand-shorter-name } 下禁用
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = 启动
+    .disabledTitle = Service Worker “启动”功能目前在多进程 { -brand-shorter-name } 下无法使用
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = 取消注册
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -289,12 +301,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = 推送服务
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Service Worker 检查功能目前在多进程 { -brand-shorter-name } 下暂时无法使用
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = 由于标签页未完全加载，无法检查
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = 主进程
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = 目标浏览器的主进程
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = 多进程工具箱
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = 目标浏览器的主进程和内容进程
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = 关闭消息

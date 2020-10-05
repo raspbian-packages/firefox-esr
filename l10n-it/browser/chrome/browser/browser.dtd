@@ -8,28 +8,6 @@
 <!ENTITY mainWindow.titlePrivateBrowsingSuffix "(Navigazione anonima)">
 <!ENTITY appmenu.tooltip "Apri menu">
 <!ENTITY navbarOverflow.label "Altri strumenti…">
-<!ENTITY reloadTab.label "Ricarica scheda">
-<!ENTITY reloadTab.accesskey "R">
-<!ENTITY selectAllTabs.label "Seleziona tutte le schede">
-<!ENTITY selectAllTabs.accesskey "u">
-<!ENTITY duplicateTab.label "Duplica scheda">
-<!ENTITY duplicateTab.accesskey "u">
-<!ENTITY duplicateTabs.label "Duplica schede">
-<!ENTITY duplicateTabs.accesskey "u">
-<!ENTITY closeTabsToTheEnd.label "Chiudi le schede a destra">
-<!ENTITY closeTabsToTheEnd.accesskey "d">
-<!ENTITY closeOtherTabs.label "Chiudi le altre schede">
-<!ENTITY closeOtherTabs.accesskey "a">
-<!ENTITY closeTabs.label "Chiudi schede">
-<!ENTITY closeTabs.accesskey "u">
-<!ENTITY pinSelectedTabs.label "Appunta schede">
-<!ENTITY pinSelectedTabs.accesskey "h">
-<!ENTITY unpinSelectedTabs.label "Rilascia schede">
-<!ENTITY unpinSelectedTabs.accesskey "h">
-<!ENTITY reloadTabs.label "Ricarica schede">
-<!ENTITY reloadTabs.accesskey "R">
-<!ENTITY bookmarkSelectedTabs.label "Aggiungi schede ai segnalibri…">
-<!ENTITY bookmarkSelectedTabs.accesskey "b">
 <!ENTITY pinTab.label "Appunta scheda">
 <!ENTITY pinTab.accesskey "h">
 <!ENTITY unpinTab.label "Rilascia scheda">
@@ -38,24 +16,8 @@
 <!ENTITY sendPageToDevice.accesskey "I">
 <!ENTITY sendLinkToDevice.label "Invia link a dispositivo">
 <!ENTITY sendLinkToDevice.accesskey "I">
-<!ENTITY moveTabOptions.label "Sposta scheda">
-<!ENTITY moveTabOptions.accesskey "S">
-<!ENTITY moveSelectedTabOptions.label "Sposta schede">
-<!ENTITY moveSelectedTabOptions.accesskey "S">
-<!ENTITY moveToStart.label "Sposta all’inizio">
-<!ENTITY moveToStart.accesskey "z">
-<!ENTITY moveToEnd.label "Sposta alla fine">
-<!ENTITY moveToEnd.accesskey "f">
-<!ENTITY moveToNewWindow.label "Sposta in una nuova finestra">
-<!ENTITY moveToNewWindow.accesskey "f">
-<!ENTITY reopenInContainer.label "Riapri in contenitore">
-<!ENTITY reopenInContainer.accesskey "e">
-<!ENTITY bookmarkTab.label "Aggiungi scheda ai segnalibri…">
-<!ENTITY bookmarkTab.accesskey "A">
 <!ENTITY undoCloseTab.label "Riapri scheda chiusa">
 <!ENTITY undoCloseTab.accesskey "s">
-<!ENTITY closeTab.label "Chiudi scheda">
-<!ENTITY closeTab.accesskey "C">
 <!ENTITY hiddenTabs.label "Schede nascoste">
 <!ENTITY allTabsMenu.searchTabs.label "Cerca scheda">
 <!ENTITY listAllTabs.label "Elenco di tutte le schede">
@@ -81,21 +43,11 @@
 <!ENTITY menubarCmd.label "Barra dei menu">
 <!ENTITY menubarCmd.accesskey "m">
 <!ENTITY navbarCmd.label "Barra di navigazione">
+<!ENTITY navbar.accessibleLabel "Navigazione">
 <!ENTITY personalbarCmd.label "Barra dei segnalibri">
 <!ENTITY personalbarCmd.accesskey "s">
+<!ENTITY personalbar.accessibleLabel "Segnalibri">
 <!ENTITY bookmarksToolbarItem.label "Elementi della barra dei segnalibri">
-<!ENTITY toolbarContextMenu.reloadSelectedTab.label "Ricarica scheda selezionata">
-<!ENTITY toolbarContextMenu.reloadSelectedTab.accesskey "R">
-<!ENTITY toolbarContextMenu.reloadSelectedTabs.label "Ricarica schede selezionate">
-<!ENTITY toolbarContextMenu.reloadSelectedTabs.accesskey "R">
-<!ENTITY toolbarContextMenu.bookmarkSelectedTab.label "Aggiungi scheda selezionata ai segnalibri…">
-<!ENTITY toolbarContextMenu.bookmarkSelectedTab.accesskey "A">
-<!ENTITY toolbarContextMenu.bookmarkSelectedTabs.label "Aggiungi schede selezionate ai segnalibri…">
-<!ENTITY toolbarContextMenu.bookmarkSelectedTabs.accesskey "A">
-<!ENTITY toolbarContextMenu.selectAllTabs.label "Seleziona tutte le schede">
-<!ENTITY toolbarContextMenu.selectAllTabs.accesskey "u">
-<!ENTITY toolbarContextMenu.undoCloseTab.label "Riapri scheda chiusa">
-<!ENTITY toolbarContextMenu.undoCloseTab.accesskey "a">
 <!ENTITY pageSourceCmd.label "Sorgente pagina">
 <!ENTITY pageSourceCmd.accesskey "o">
 <!ENTITY pageSourceCmd.commandkey "U">
@@ -118,6 +70,7 @@
 <!ENTITY showAllTabsCmd.accesskey "h">
 <!ENTITY toggleReaderMode.key "R">
 <!ENTITY toggleReaderMode.win.keycode "VK_F9">
+<!-- Original keys: ] and }, using the characters on the same key for the Italian keyboard layout -->
 <!ENTITY fxaSignIn.label "Accedi a &syncBrand.shortName.label;">
 <!ENTITY fxaSignedIn.tooltip "Apri le impostazioni di &syncBrand.shortName.label;">
 <!ENTITY fxaSignInError.label "Riconnetti a &syncBrand.shortName.label;">
@@ -129,6 +82,8 @@
 <!ENTITY fullScreenAutohide.accesskey "N">
 <!ENTITY fullScreenExit.label "Esci da schermo intero">
 <!ENTITY fullScreenExit.accesskey "E">
+<!ENTITY pictureInPictureHideToggle.label "Nascondi selettore Picture-in-Picture">
+<!ENTITY pictureInPictureHideToggle.accesskey "N">
 <!ENTITY fxa.signin.callout.label "Porta Firefox con te">
 <!ENTITY fxa.signin.description.label "Ritrova segnalibri, cronologia, password e altre impostazioni su tutti i tuoi dispositivi.">
 <!ENTITY fxa.signin.button.label "Attiva &syncBrand.shortName.label;…">
@@ -138,15 +93,25 @@
 <!ENTITY fxa.menu.signedInAs.label "Accesso effettuato come">
 <!ENTITY fxa.menu.manageAccount.label "Gestisci account…">
 <!ENTITY fxa.menu.syncSettings.label "Impostazioni di &syncBrand.shortName.label;…">
-<!ENTITY fxa.menu.connectAnotherDevice.label "&syncedTabs.sidebar.connectAnotherDevice;">
+<!ENTITY fxa.menu.syncSettings2.label "Impostazioni di &syncBrand.shortName.label;">
 <!ENTITY fxa.menu.connectAnotherDevice2.label "Connetti un altro dispositivo…">
 <!ENTITY fxa.menu.firefoxAccount "&syncBrand.fxAccount.label;">
+<!ENTITY fxa.menu.signin.label "Accedi a &brandProductName;">
+<!ENTITY fxa.menu.turnOnSync.label "Attiva &syncBrand.shortName.label;">
+<!ENTITY fxa.menu.firefoxServices.label "Servizi di &brandProductName;">
+<!ENTITY fxa.menu.account.label "Account">
+<!ENTITY fxa.menu.settings.label "Impostazioni">
+<!ENTITY fxa.menu.accountSettings.label "Impostazioni account">
+<!ENTITY fxa.menu.manageAccount2.label "Gestisci account">
+<!ENTITY fxa.menu.signOut.label "Disconnetti…">
+<!ENTITY fxa.menu.setupSync.label "Configura &syncBrand.shortName.label;…">
+<!ENTITY fxa.service.sendTab.description "Invia immediatamente una scheda a qualsiasi dispositivo connesso al tuo account.">
 <!ENTITY fullscreenWarning.beforeDomain.label "">
 <!ENTITY fullscreenWarning.afterDomain.label "è ora visualizzato a schermo intero">
 <!ENTITY fullscreenWarning.generic.label "Questo documento è ora visualizzato a schermo intero">
 <!ENTITY pointerlockWarning.beforeDomain.label "">
 <!ENTITY pointerlockWarning.afterDomain.label "sta controllando il puntatore del mouse. Premere Esc per riprenderne il controllo.">
-<!ENTITY pointerlockWarning.generic.label "sta controllando il puntatore del mouse. Premere Esc per riprenderne il controllo.">
+<!ENTITY pointerlockWarning.generic.label "Questo documento sta controllando il puntatore del mouse. Premere Esc per riprenderne il controllo.">
 <!ENTITY exitDOMFullscreen.button "Esci da schermo intero (Esc)">
 <!ENTITY exitDOMFullscreenMac.button "Esci da schermo intero (esc)">
 <!ENTITY leaveDOMFullScreen.label "Esci da schermo intero">
@@ -204,13 +169,14 @@
 <!ENTITY urlbar.translatedNotificationAnchor.tooltip "Gestisci la traduzione della pagina">
 <!ENTITY urlbar.emeNotificationAnchor.tooltip "Gestisci l’utilizzo del software DRM">
 <!ENTITY urlbar.midiNotificationAnchor.tooltip "Apri pannello MIDI">
-<!ENTITY urlbar.cameraBlocked.tooltip "La fotocamera è bloccata per questo sito.">
-<!ENTITY urlbar.microphoneBlocked.tooltip "Il microfono è bloccato per questo sito.">
-<!ENTITY urlbar.screenBlocked.tooltip "La condivisione dello schermo è bloccata per questo sito.">
-<!ENTITY urlbar.geolocationBlocked.tooltip "Il rilevamento della posizione è bloccato per questo sito.">
-<!ENTITY urlbar.webNotificationsBlocked.tooltip "Le notifiche sono bloccate per questo sito.">
-<!ENTITY urlbar.persistentStorageBlocked.tooltip "Il salvataggio dati nell’archivio permanente è bloccato per questo sito.">
-<!ENTITY urlbar.popupBlocked.tooltip "Sono state bloccate delle finestre pop-up per questo sito web.">
+<!ENTITY urlbar.permissionsGranted.tooltip "Sono stati concessi permessi aggiuntivi a questo sito web.">
+<!ENTITY urlbar.cameraBlocked.tooltip "La fotocamera è bloccata per questo sito web.">
+<!ENTITY urlbar.microphoneBlocked.tooltip "Il microfono è bloccato per questo sito web.">
+<!ENTITY urlbar.screenBlocked.tooltip "La condivisione dello schermo è bloccata per questo sito web.">
+<!ENTITY urlbar.geolocationBlocked.tooltip "Il rilevamento della posizione è bloccato per questo sito web.">
+<!ENTITY urlbar.webNotificationsBlocked.tooltip "Le notifiche sono bloccate per questo sito web.">
+<!ENTITY urlbar.persistentStorageBlocked.tooltip "Il salvataggio dati nell’archivio permanente è bloccato per questo sito web.">
+<!ENTITY urlbar.popupBlocked.tooltip "Sono state bloccate delle finestre pop-up per questo sito web web.">
 <!ENTITY urlbar.autoplayMediaBlocked.tooltip "È stata bloccata la riproduzione automatica di contenuti sonori per questo sito web.">
 <!ENTITY urlbar.canvasBlocked.tooltip "È stato bloccato l’accesso ai dati dei canvas per questo sito web.">
 <!ENTITY urlbar.flashPluginBlocked.tooltip "È stato bloccato l’utilizzo del plugin Adobe Flash per questo sito web.">
@@ -330,8 +296,11 @@
 <!ENTITY appMenuRemoteTabs.noclients.subtitle "Come fare per visualizzare in questa sezione le schede da altri dispositivi?">
 <!ENTITY appMenuRemoteTabs.opensyncprefs.label "Apri preferenze Sync">
 <!ENTITY appMenuRemoteTabs.notsignedin.label "Accedi per visualizzare un elenco delle schede aperte in altri dispositivi.">
+<!ENTITY appMenuRemoteTabs.welcome.label "Visualizza un elenco delle schede aperte in altri dispositivi.">
 <!ENTITY appMenuRemoteTabs.unverified.label "L’account non è ancora stato verificato.">
 <!ENTITY appMenuRemoteTabs.signin.label "Accedi a Sync">
+<!ENTITY appMenuRemoteTabs.signintosync.label "Accedi a &syncBrand.shortName.label;…">
+<!ENTITY appMenuRemoteTabs.turnonsync.label "Attiva &syncBrand.shortName.label;…">
 <!ENTITY appMenuRemoteTabs.managedevices.label "Gestione dispositivi…">
 <!ENTITY appMenuRemoteTabs.sidebar.label "Visualizza barra laterale Schede sincronizzate">
 <!ENTITY appMenuRemoteTabs.hidesidebar.label "Nascondi barra laterale Schede sincronizzate">
@@ -532,7 +501,7 @@
 <!ENTITY fullZoomResetCmd.accesskey "R">
 <!ENTITY fullZoomResetCmd.commandkey "0">
 <!ENTITY fullZoomResetCmd.commandkey2 "">
-<!ENTITY fullZoomToggleCmd.label "Zoom solo del testo">
+<!ENTITY fullZoomToggleCmd.label "Ingrandisci solo il testo">
 <!ENTITY fullZoomToggleCmd.accesskey "t">
 <!ENTITY fullZoom.label "Zoom">
 <!ENTITY fullZoom.accesskey "Z">
@@ -562,7 +531,7 @@
 <!ENTITY editPopupSettings.label "Modifica le opzioni di blocco finestre pop-up…">
 <!ENTITY editPopupSettings.accesskey "M">
 <!ENTITY dontShowMessage.accesskey "N">
-<!ENTITY bidiSwitchPageDirectionItem.label "Cambia direzione di pagina">
+<!ENTITY bidiSwitchPageDirectionItem.label "Cambia orientamento pagina">
 <!ENTITY bidiSwitchPageDirectionItem.accesskey "g">
 <!ENTITY bidiSwitchTextDirectionItem.label "Cambia direzione testo">
 <!ENTITY bidiSwitchTextDirectionItem.accesskey "d">
@@ -586,7 +555,7 @@
 <!ENTITY identity.connectionSecure "Connessione sicura">
 <!ENTITY identity.connectionNotSecure "Connessione non sicura">
 <!ENTITY identity.connectionFile "Questa pagina è salvata sul dispositivo in uso.">
-<!ENTITY identity.connectionVerified2 "La connessione con questo sito è sicura. Il sito è gestito da:">
+<!ENTITY identity.connectionVerified2 "La connessione con questo sito è sicura. Il proprietario del sito è:">
 <!ENTITY identity.connectionInternal "Questa è una pagina sicura di &brandShortName;.">
 <!ENTITY identity.extensionPage "Questa pagina è caricata da un’estensione.">
 <!ENTITY identity.insecureLoginForms2 "Gli accessi effettuati in questa pagina potrebbero essere vulnerabili.">
@@ -619,35 +588,10 @@
 <!ENTITY identity.permissionsEmpty "Nessun permesso speciale associato a questo sito.">
 <!ENTITY identity.permissionsReloadHint "Potrebbe essere necessario ricaricare la pagina per rendere effettive le modifiche.">
 <!ENTITY identity.permissionsPreferences.tooltip "Apri preferenze per i permessi">
-<!ENTITY identity.contentBlockingPreferences.tooltip "Apri preferenze per il blocco contenuti">
+<!ENTITY identity.contentBlockingPreferences.tooltip "Apri preferenze relative al blocco contenuti">
 <!ENTITY tabsToolbar.label "Schede del browser">
 <!ENTITY syncTabsMenu3.label "Schede sincronizzate">
 <!ENTITY syncedTabs.sidebar.label "Schede sincronizzate">
-<!ENTITY syncedTabs.sidebar.noclients.label "Accedi a Firefox con altri dispositivi per visualizzarne le schede aperte.">
-<!ENTITY syncedTabs.sidebar.noclients.subtitle "Come fare per visualizzare in questa sezione le schede da altri dispositivi?">
-<!ENTITY syncedTabs.sidebar.notsignedin.label "Accedi per visualizzare un elenco delle schede dagli altri dispositivi connessi.">
-<!ENTITY syncedTabs.sidebar.unverified.label "L’account non è ancora stato verificato.">
-<!ENTITY syncedTabs.sidebar.notabs.label "Nessuna scheda aperta">
-<!ENTITY syncedTabs.sidebar.openprefs.label "Apri le impostazioni di &syncBrand.shortName.label;">
-<!ENTITY syncedTabs.sidebar.tabsnotsyncing.label "Attiva la sincronizzazione delle schede per visualizzare le schede disponibili negli altri dispositivi.">
-<!ENTITY syncedTabs.sidebar.searchPlaceholder "Cerca nelle schede sincronizzate">
-<!ENTITY syncedTabs.sidebar.connectAnotherDevice "Connetti un altro dispositivo">
-<!ENTITY syncedTabs.context.open.label "Apri">
-<!ENTITY syncedTabs.context.open.accesskey "A">
-<!ENTITY syncedTabs.context.openInNewTab.label "Apri in una nuova scheda">
-<!ENTITY syncedTabs.context.openInNewTab.accesskey "h">
-<!ENTITY syncedTabs.context.openInNewWindow.label "Apri in una nuova finestra">
-<!ENTITY syncedTabs.context.openInNewWindow.accesskey "f">
-<!ENTITY syncedTabs.context.openInNewPrivateWindow.label "Apri in una nuova finestra anonima">
-<!ENTITY syncedTabs.context.openInNewPrivateWindow.accesskey "n">
-<!ENTITY syncedTabs.context.bookmarkSingleTab.label "Aggiungi ai segnalibri…">
-<!ENTITY syncedTabs.context.bookmarkSingleTab.accesskey "s">
-<!ENTITY syncedTabs.context.copy.label "Copia">
-<!ENTITY syncedTabs.context.copy.accesskey "C">
-<!ENTITY syncedTabs.context.openAllInTabs.label "Apri tutte le schede">
-<!ENTITY syncedTabs.context.openAllInTabs.accesskey "A">
-<!ENTITY syncedTabs.context.managedevices.label "Gestione dispositivi…">
-<!ENTITY syncedTabs.context.managedevices.accesskey "G">
 <!ENTITY syncBrand.shortName.label "Sync">
 <!ENTITY syncSignIn.label "Accedi a &syncBrand.shortName.label;…">
 <!ENTITY syncSignIn.accesskey "y">
@@ -657,32 +601,6 @@
 <!ENTITY syncReAuthItem.label "Riconnetti a &syncBrand.shortName.label;…">
 <!ENTITY syncReAuthItem.accesskey "R">
 <!ENTITY syncToolbarButton.label "Sync">
-<!ENTITY customizeMode.menuAndToolbars.header3 "Trascina gli elementi preferiti nella barra degli strumenti o nel menu extra">
-<!ENTITY customizeMode.restoreDefaults "Ripristina predefiniti">
-<!ENTITY customizeMode.done "Fatto">
-<!ENTITY customizeMode.titlebar "Barra del titolo">
-<!ENTITY customizeMode.extraDragSpace "Spazio per trascinamento">
-<!ENTITY customizeMode.toolbars2 "Barre degli strumenti">
-<!ENTITY customizeMode.lwthemes "Temi">
-<!ENTITY customizeMode.lwthemes.myThemes "I miei temi">
-<!ENTITY customizeMode.lwthemes.recommended "Consigliato">
-<!ENTITY customizeMode.lwthemes.menuManage "Gestisci">
-<!ENTITY customizeMode.lwthemes.menuManage.accessKey "G">
-<!ENTITY customizeMode.lwthemes.menuGetMore "Ottieni altri temi">
-<!ENTITY customizeMode.lwthemes.menuGetMore.accessKey "O">
-<!ENTITY customizeMode.overflowList.title2 "Menu extra">
-<!ENTITY customizeMode.overflowList.description "Trascina e rilascia elementi in quest’area per tenerli a portata di clic ma fuori dalla barra degli strumenti…">
-<!ENTITY customizeMode.uidensity "Densità">
-<!ENTITY customizeMode.uidensity.menuNormal.label "Normale">
-<!ENTITY customizeMode.uidensity.menuNormal.tooltip "Normale">
-<!ENTITY customizeMode.uidensity.menuNormal.accessKey "N">
-<!ENTITY customizeMode.uidensity.menuCompact.label "Compatta">
-<!ENTITY customizeMode.uidensity.menuCompact.tooltip "Compatta">
-<!ENTITY customizeMode.uidensity.menuCompact.accessKey "C">
-<!ENTITY customizeMode.uidensity.menuTouch.label "Touch">
-<!ENTITY customizeMode.uidensity.menuTouch.tooltip "Touch">
-<!ENTITY customizeMode.uidensity.menuTouch.accessKey "T">
-<!ENTITY customizeMode.uidensity.autoTouchMode.checkbox.label "Utilizza Touch per la modalità tablet">
 <!ENTITY customizeMode.autoHideDownloadsButton.label "Nascondi automaticamente">
 <!ENTITY getUserMedia.selectCamera.label "Fotocamera da condividere:">
 <!ENTITY getUserMedia.selectCamera.accesskey "F">
@@ -724,45 +642,14 @@
 <!ENTITY pluginNotification.showAll.accesskey "M">
 <!ENTITY pluginNotification.width "28em">
 <!ENTITY uiTour.infoPanel.close "Chiudi">
-<!ENTITY panicButton.view.mainTimeframeDesc "Dimentica:">
-<!ENTITY panicButton.view.5min "gli ultimi 5 minuti">
-<!ENTITY panicButton.view.2hr "le ultime 2 ore">
-<!ENTITY panicButton.view.day "le ultime 24 ore">
-<!ENTITY panicButton.view.mainActionDesc "Questo comporta:">
-<!ENTITY panicButton.view.deleteCookies "Eliminazione dei <html:strong>cookie</html:strong> recenti">
-<!ENTITY panicButton.view.deleteHistory "Eliminazione della <html:strong>cronologia</html:strong> recente">
-<!ENTITY panicButton.view.deleteTabsAndWindows "Chiusura di tutte le <html:strong>schede</html:strong> e <html:strong>finestre</html:strong> aperte">
-<!ENTITY panicButton.view.openNewWindow "Apertura di una nuova finestra “pulita”">
-<!ENTITY panicButton.view.undoWarning "Questa operazione non può essere annullata.">
-<!ENTITY panicButton.view.forgetButton "Dimentica">
 <!ENTITY panicButton.thankyou.msg1 "La cronologia recente è stata eliminata.">
 <!ENTITY panicButton.thankyou.msg2 "Buona navigazione.">
 <!ENTITY panicButton.thankyou.buttonlabel "Grazie">
 <!ENTITY emeLearnMoreContextMenu.label "Ulteriori informazioni sul DRM…">
 <!ENTITY emeLearnMoreContextMenu.accesskey "D">
-<!ENTITY updateAvailable.message "Aggiorna &brandShorterName; per ottenere il massimo della velocità e della privacy.">
-<!ENTITY updateAvailable.whatsnew.label "Scopri le novità.">
-<!ENTITY updateAvailable.header.message "È disponibile un nuovo aggiornamento di &brandShorterName;.">
-<!ENTITY updateAvailable.acceptButton.label "Scarica l’aggiornamento">
-<!ENTITY updateAvailable.acceptButton.accesskey "S">
-<!ENTITY updateAvailable.cancelButton.label "Non adesso">
-<!ENTITY updateAvailable.cancelButton.accesskey "N">
 <!ENTITY updateAvailable.panelUI.label "Scarica l’aggiornamento di &brandShorterName;">
-<!ENTITY updateManual.message "Scarica un’altra copia di &brandShorterName; e cercheremo di aiutarti con l’installazione.">
-<!ENTITY updateManual.whatsnew.label "Scopri le novità.">
-<!ENTITY updateManual.header.message "Non è stato possibile aggiornare &brandShorterName; all’ultima versione disponibile.">
-<!ENTITY updateManual.acceptButton.label "Scarica &brandShorterName;">
-<!ENTITY updateManual.acceptButton.accesskey "S">
-<!ENTITY updateManual.cancelButton.label "Non adesso">
-<!ENTITY updateManual.cancelButton.accesskey "N">
 <!ENTITY updateManual.panelUI.label "Scarica un’altra copia di &brandShorterName;">
 <!ENTITY updateUnsupported.panelUI.label "Non è possibile installare ulteriori aggiornamenti">
-<!ENTITY updateRestart.message2 "Dopo il riavvio verranno ripristinate tutte le schede e le finestre attualmente aperte, ad eccezione di quelle in modalità Navigazione anonima.">
-<!ENTITY updateRestart.header.message2 "Riavvia per aggiornare &brandShorterName;.">
-<!ENTITY updateRestart.acceptButton.label "Riavvia e ripristina">
-<!ENTITY updateRestart.acceptButton.accesskey "R">
-<!ENTITY updateRestart.cancelButton.label "Non adesso">
-<!ENTITY updateRestart.cancelButton.accesskey "N">
 <!ENTITY updateRestart.panelUI.label2 "Riavvia per aggiornare &brandShorterName;">
 <!ENTITY newTabControlled.header.message "La pagina Nuova scheda è cambiata">
 <!ENTITY newTabControlled.keepButton.label "Mantieni modifiche">
@@ -789,13 +676,3 @@
 <!ENTITY pageAction.shareMore.label "Altro…">
 <!ENTITY libraryButton.tooltip "Visualizza cronologia, password salvate e altro ancora">
 <!ENTITY accessibilityIndicator.tooltip "Caratteristiche per l’accessibilità attive">
-<!ENTITY addonPostInstallMessage.label "Gestisci i componenti aggiuntivi facendo clic su <image class='addon-addon-icon'/> nel menu <image class='addon-toolbar-icon'/>.">
-<!ENTITY addonPostInstall.incognito.checkbox.label "Consenti il funzionamento di questa estensione in finestre anonime">
-<!ENTITY addonPostInstall.incognito.checkbox.accesskey "C">
-<!ENTITY addonPrivateBrowsing.header2.label "Cambiamenti relativi alle estensioni in finestre anonime">
-<!ENTITY addonPrivateBrowsing.body2.label "Qualunque estensione aggiunta a &brandShorterName; non funzionerà in finestre anonime a meno che non venga garantito il permesso nelle impostazioni.">
-<!ENTITY addonPrivateBrowsing.learnMore.label "Scopri come gestire le impostazioni delle estensioni">
-<!ENTITY addonPrivateBrowsing.okButton.label "OK, tutto chiaro">
-<!ENTITY addonPrivateBrowsing.okButton.accesskey "O">
-<!ENTITY addonPrivateBrowsing.manageButton.label "Gestisci estensioni">
-<!ENTITY addonPrivateBrowsing.manageButton.accesskey "G">

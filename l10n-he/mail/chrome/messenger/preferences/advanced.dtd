@@ -40,10 +40,12 @@
 <!ENTITY showReturnReceipts.accesskey  "ז">
 
 <!-- Data Choices -->
+<!ENTITY telemetryDesc.label             "משתף מידע על ביצועים, חומרה, שימוש והתאמות אישיות על לקוח הדוא״ל שלך עם &vendorShortName; כדי לסייע לנו בשיפור &brandShortName;">
 <!ENTITY telemetryLearnMore.label        "מידע נוסף">
 
-<!ENTITY crashReporterSection.label      "דיווח קריסות">
-<!ENTITY enableCrashReporter.label       "הפעלת דיווח קריסות">
+<!ENTITY crashReporterSection.label      "מדווח הקריסות">
+<!ENTITY crashReporterDesc.label         "‏&brandShortName; שולח דיווחי קריסה כדי לסייע ל־&vendorShortName; להפוך את לקוח הדוא״ל שלך ליציב ומאובטח יותר">
+<!ENTITY enableCrashReporter.label       "הפעלת מדווח הקריסות">
 <!ENTITY enableCrashReporter.accesskey   "ק">
 <!ENTITY crashReporterLearnMore.label    "מידע נוסף">
 
@@ -64,13 +66,12 @@
 <!ENTITY updateAuto.accesskey            "א">
 <!ENTITY updateCheck.label               "לבדוק עדכונים, אבל לאפשר לי לבחור האם להתקין אותם">
 <!ENTITY updateCheck.accesskey           "ב">
-<!ENTITY updateManual.label              "לעולם לא לבדוק אם יש עדכונים (לא מומלץ: סכנת אבטחה)">
-<!ENTITY updateManual.accesskey          "ל">
 <!ENTITY updateHistory.label             "הצגת היסטוריית עדכונים">
 <!ENTITY updateHistory.accesskey         "ע">
 
 <!ENTITY useService.label                "שימוש בשירות רקע כדי להתקין עדכונים">
 <!ENTITY useService.accesskey            "ר">
+
 
 <!-- Networking and Disk Space -->
 <!ENTITY showSettings.label            "הגדרות…">
@@ -102,7 +103,7 @@
 <!ENTITY clearCacheNow.accesskey         "נ">
 
 <!-- Certificates -->
-<!ENTITY certSelection.description       "כאשר שרת מבקש את האישור האישי שלי:">
+<!ENTITY certSelection.description       "כאשר שרת מבקש את אישור האבטחה האישי שלי:">
 <!ENTITY certs.auto                      "בחר אחד באופן אוטומטי">
 <!ENTITY certs.auto.accesskey            "א">
 <!ENTITY certs.ask                       "שאל אותי תמיד">
@@ -112,3 +113,4 @@
 <!ENTITY manageCertificates.accesskey "נ">
 <!ENTITY viewSecurityDevices.label "התקני אבטחה">
 <!ENTITY viewSecurityDevices.accesskey "ה">
+

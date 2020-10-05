@@ -33,6 +33,7 @@ printpreview-of =
     .value = dari
 printpreview-custom-prompt =
     .value = Skala Tersuai…
+printpreview-custom-scale-prompt-title = Skala Khusus
 printpreview-page-setup =
     .label = Tata Laman…
     .accesskey = L
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Laman terakhir
+

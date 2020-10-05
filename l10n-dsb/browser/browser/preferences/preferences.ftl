@@ -14,6 +14,11 @@ pref-page =
             [windows] Nastajenja
            *[other] Nastajenja
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Nastajenja
+       *[other] Nastajenja
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -29,11 +34,6 @@ search-input-box =
             [windows] W nastajenjach pytaś
            *[other] W nastajenjach pytaś
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Waša organizacija jo změny někotarych nastajenjow znjemóžnił.
-       *[other] Waša organizacija jo změny někotarych nastajenjow znjemóžnił.
-    }
 managed-notice = Waš wobglědowak se wót wašeje organizacije zastoj.
 pane-general-title = Powšykne
 category-general =
@@ -81,7 +81,7 @@ restart-later = Pózdźej znowego startowaś
 extension-controlled-homepage-override = Rozšyrjenje <img data-l10n-name="icon"/> { $name } waš startowy bok wóźi.
 # This string is shown to notify the user that their new tab page
 # is being controlled by an extension.
-extension-controlled-new-tab-url = Rozšyrjenje <img data-l10n-name="icon"/> { $name } waš bok nowego rejtarka wóźi.
+extension-controlled-new-tab-url = Rozšyrjenje <img data-l10n-name="icon"/> { $name } waš bok nowego rejtarika wóźi.
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
 extension-controlled-web-notifications = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, toś to nastajenje wóźi.
@@ -90,7 +90,7 @@ extension-controlled-web-notifications = Rozšyrjenje, <img data-l10n-name="icon
 extension-controlled-default-search = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, jo wašu standardnu pytnicu nastajiło.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlled-privacy-containers = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, se kontejnerowe rejtark pomina.
+extension-controlled-privacy-containers = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, se kontejnerowe rejtariki pomina.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
 extension-controlled-websites-content-blocking-all-trackers = Rozšyrjenje, <img data-l10n-name="icon"/> { $name }, toś to nastajenje kontrolěrujo.
@@ -140,46 +140,46 @@ startup-restore-warn-on-quit =
     .label = Warnowaś, gaž se wobglědowak kóńcy
 disable-extension =
     .label = Rozšyrjenje znjemóžniś
-tabs-group-header = Rejtarki
+tabs-group-header = Rejtariki
 ctrl-tab-recently-used-order =
-    .label = Strg+Tab pśejźo rejtarki pó tuchylu póstajonem pórěźe
+    .label = Strg+Tab pśejźo rejtariki pó tuchylu póstajonem pórěźe
     .accesskey = T
 open-new-link-as-tabs =
-    .label = Wótkaze w rejtarkach město nowych woknow wócyniś
+    .label = Wótkaze w rejtarikach město nowych woknow wócyniś
     .accesskey = r
 warn-on-close-multiple-tabs =
-    .label = Warnowaś, gaž někotare rejtarki se zacynjaju
+    .label = Warnowaś, gaž někotare rejtariki se zacynjaju
     .accesskey = W
 warn-on-open-many-tabs =
-    .label = Warnowaś, gaby wócynjanje někotarych rejtarkow mógło { -brand-short-name } spomałšyś
+    .label = Warnowaś, gaby wócynjanje někotarych rejtarikow mógło { -brand-short-name } spomałšyś
     .accesskey = k
 switch-links-to-new-tabs =
-    .label = Ned na wótkaz pśešaltowaś, kótaryž jo se w nowem rejtarku wócynił
-    .accesskey = t
+    .label = Ned k rejtarikoju  pśejś, w kótaremž se wótkaz wócynja
+    .accesskey = N
 show-tabs-in-taskbar =
-    .label = Rejtarkowe pśeglědy we Windowsowej nadawkowej rědce pokazaś
+    .label = Rejtarikowe pśeglědy we Windowsowej nadawkowej rědce pokazaś
     .accesskey = R
 browser-containers-enabled =
-    .label = Kontejnerowe rejtarki zmóžniś
+    .label = Kontejnerowe rejtariki zmóžniś
     .accesskey = m
 browser-containers-learn-more = Dalšne informacije
 browser-containers-settings =
     .label = Nastajenja…
     .accesskey = s
-containers-disable-alert-title = Wše kontejnerowe rejtarki zacyniś?
+containers-disable-alert-title = Wše kontejnerowe rejtariki zacyniś?
 containers-disable-alert-desc =
     { $tabCount ->
-        [one] Jolic znjemóžnjaśo něnto kontejnerowe rejtarki, se { $tabCount } kontejnerowy rejtark zacynijo. Cośo kontejnerowe rejtarki napšawdu znjemóžniś?
-        [two] Jolic znjemóžnjaśo něnto kontejnerowe rejtarki, se { $tabCount } kontejnerowej rejtarka zacynijotej. Cośo kontejnerowe rejtarki napšawdu znjemóžniś?
-        [few] Jolic znjemóžnjaśo něnto kontejnerowe rejtarki, se { $tabCount } kontejnerowe rejtarki zacyniju. Cośo kontejnerowe rejtarki napšawdu znjemóžniś?
-       *[other] Jolic znjemóžnjaśo něnto kontejnerowe rejtarki, se { $tabCount } kontejnerowych rejtarkow zacynijo. Cośo kontejnerowe rejtarki napšawdu znjemóžniś?
+        [one] Jolic znjemóžnjaśo něnto kontejnerowe rejtariki, se { $tabCount } kontejnerowy rejtarik zacynijo. Cośo kontejnerowe rejtariki napšawdu znjemóžniś?
+        [two] Jolic znjemóžnjaśo něnto kontejnerowe rejtariki, se { $tabCount } kontejnerowej rejtarika zacynijotej. Cośo kontejnerowe rejtariki napšawdu znjemóžniś?
+        [few] Jolic znjemóžnjaśo něnto kontejnerowe rejtariki, se { $tabCount } kontejnerowe rejtariki zacyniju. Cośo kontejnerowe rejtariki napšawdu znjemóžniś?
+       *[other] Jolic znjemóžnjaśo něnto kontejnerowe rejtariki, se { $tabCount } kontejnerowych rejtarikow zacynijo. Cośo kontejnerowe rejtariki napšawdu znjemóžniś?
     }
 containers-disable-alert-ok-button =
     { $tabCount ->
-        [one] { $tabCount } kontejnerowy rejtark zacyniś
-        [two] { $tabCount } kontejnerowej rejtarka zacyniś
-        [few] { $tabCount } kontejnerowe rejtarki zacyniś
-       *[other] { $tabCount } kontejnerowych rejtarkow zacyniś
+        [one] { $tabCount } kontejnerowy rejtarik zacyniś
+        [two] { $tabCount } kontejnerowej rejtarika zacyniś
+        [few] { $tabCount } kontejnerowe rejtariki zacyniś
+       *[other] { $tabCount } kontejnerowych rejtarikow zacyniś
     }
 containers-disable-alert-cancel-button = Zmóžnjone wóstajiś
 containers-remove-alert-title = Toś ten kontejner wótwónoźeś?
@@ -187,10 +187,10 @@ containers-remove-alert-title = Toś ten kontejner wótwónoźeś?
 #   $count (Number) - Number of tabs that will be closed.
 containers-remove-alert-msg =
     { $count ->
-        [one] Jolic wotwónoźijośo toś ten kontejner něnto, se { $count } kontejnerowy rejtark zacynijo. Cosó toś ten kontejner napšawdu wótwónoźeś?
-        [two] Jolic něnto wotwónoźijośo toś ten kontejner, se { $count } kontejnerowej rejtarka zacynijotej. Cosó toś ten kontejner napšawdu wótwónoźeś?
-        [few] Jolic něnto wotwónoźijośo toś ten kontejner, se { $count } kontejnerowe rejtarki zacyniju. Cosó toś ten kontejner napšawdu wótwónoźeś?
-       *[other] Jolic něnto wotwónoźijośo toś ten kontejner, se { $count } kontejnerowych rejtarkow zacynijo. Cosó toś ten kontejner napšawdu wótwónoźeś?
+        [one] Jolic wotwónoźijośo toś ten kontejner něnto, se { $count } kontejnerowy rejtarik zacynijo. Cosó toś ten kontejner napšawdu wótwónoźeś?
+        [two] Jolic něnto wotwónoźijośo toś ten kontejner, se { $count } kontejnerowej rejtarika zacynijotej. Cosó toś ten kontejner napšawdu wótwónoźeś?
+        [few] Jolic něnto wotwónoźijośo toś ten kontejner, se { $count } kontejnerowe rejtariki zacyniju. Cosó toś ten kontejner napšawdu wótwónoźeś?
+       *[other] Jolic něnto wotwónoźijośo toś ten kontejner, se { $count } kontejnerowych rejtarikow zacynijo. Cosó toś ten kontejner napšawdu wótwónoźeś?
     }
 containers-remove-ok-button = Toś ten kontejner wótwónoźeś
 containers-remove-cancel-button = Toś ten kontejner njewótwónoźeś
@@ -209,6 +209,15 @@ advanced-fonts =
 colors-settings =
     .label = Barwy…
     .accesskey = B
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Skalěrowanje
+preferences-default-zoom = Standardne skalěrowanje
+    .accesskey = S
+preferences-default-zoom-value =
+    .label = { $percentage } %
+preferences-zoom-text-only =
+    .label = Jano tekst skalěrowaś
+    .accesskey = t
 language-header = Rěc
 choose-language-description = Wubjeŕśo swóju preferěrowanu rěc za zwobraznjenje bokow
 choose-button =
@@ -229,6 +238,10 @@ translate-attribution = Pśełožki wót <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Wuwześa…
     .accesskey = W
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Nastajenja wašogo źěłowego systema za „{ $localeName }“ wužywaś, aby se datumy, case, licby a měry formatěrowali.
 check-user-spelling =
     .label = Pśi pisanju pšawopis kontrolěrowaś
     .accesskey = P
@@ -264,6 +277,75 @@ applications-type-column =
 applications-action-column =
     .label = Akcija
     .accesskey = A
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = Dataja { $extension }
+applications-action-save =
+    .label = Dataju składowaś
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = { $app-name } wužywaś
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = { $app-name } wužywaś (standard)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Standardne nałoženje macOS wužywaś
+            [windows] Standardne nałoženje Windows wužywaś
+           *[other] Standardne nałoženje systema wužyiwaś
+        }
+applications-use-other =
+    .label = Druge wužywaś…
+applications-select-helper = Pomocne nałoženje wubraś
+applications-manage-app =
+    .label = Drobnostki nałoženja…
+applications-always-ask =
+    .label = Pśecej se pšašaś
+applications-type-pdf = Portable Document Format (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = { $plugin-name } wužywaś (w { -brand-short-name })
+applications-open-inapp =
+    .label = W { -brand-short-name } wócyniś
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Wopśimjeśe Digital Right Management (DRM)
 play-drm-content =
     .label = Wopśimjeśe wóźony pśez DRM wótgraś
@@ -302,7 +384,7 @@ update-setting-write-failure-title = Zmólka pśi składowanju aktualizěrowańs
 # The newlines between the main text and the line containing the path is
 # intentional so the path is easier to identify.
 update-setting-write-failure-message =
-    { -brand-short-name } jo starcył na zmólku a njejo toś tu změnu składł. Źiwajśo na to, až se toś to aktualizěrowańske nastajenje pisańske pšawo za slědujucu dataju pomina. Wy abo systemowy administrator móžotej zmólku pórěźiś, gaž wužywarskej kupce połnu kontrolu nad toś teju dataju dajotej.
+    { -brand-short-name } jo starcył na zmólku a njejo toś tu změnu składł. Źiwajśo na to, až se toś to aktualizěrowańske nastajenje pisańske pšawo za slědujucu dataju pomina. Wy abo systemowy administrator móžotej zmólku pórěźiś, gaž wužywaŕskej kupce połnu kontrolu nad toś teju dataju dajotej.
     
     Njedajo se do dataje pisaś: { $path }
 update-in-progress-title = Aktualizacija běžy
@@ -325,7 +407,7 @@ performance-allow-hw-accel =
     .accesskey = H
 performance-limit-content-process-option = Limit wopśimjeśowego procesa
     .accesskey = L
-performance-limit-content-process-enabled-desc = Wěcej wopśimjeśowych procesow móžo wugbaśe pólěpšowaś, gaž se někotare rejtarki wužywaju, buźo pak teke wěcej składa pśetrjebowaś.
+performance-limit-content-process-enabled-desc = Wěcej wopśimjeśowych procesow móžo wugbaśe pólěpšowaś, gaž se někotare rejtariki wužywaju, buźo pak teke wěcej składa pśetrjebowaś.
 performance-limit-content-process-blocked-desc = Licba wopśimjeśowych procesow dajo se jano z wěcejprocesowym { -brand-short-name } změniś. <a data-l10n-name="learn-more">Zgóńśo, kak móžośo kontrolěrowaś, lěc wěcejprocesowa funkcija jo zmóžnjona</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -350,6 +432,10 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Pśi pisanju tekst pytaś
     .accesskey = P
+browsing-picture-in-picture-toggle-enabled =
+    .label = Wóźeńske elementy wideo wobraz-we-wobrazu zmóžniś
+    .accesskey = W
+browsing-picture-in-picture-learn-more = Dalšne informacije
 browsing-cfr-recommendations =
     .label = Rozšyrjenja dopórucyś, gaž pśeglědujośo
     .accesskey = R
@@ -369,13 +455,13 @@ network-proxy-connection-settings =
 
 ## Home Section
 
-home-new-windows-tabs-header = Nowe wokna a rejtarki
-home-new-windows-tabs-description2 = Wubjeŕśo, což cośo wiźeś, gaž swój startowy bok, nowe wokna a nowe rejtarki wócynjaśo.
+home-new-windows-tabs-header = Nowe wokna a rejtariki
+home-new-windows-tabs-description2 = Wubjeŕśo, což cośo wiźeś, gaž swój startowy bok, nowe wokna a nowe rejtariki wócynjaśo.
 
 ## Home Section - Home Page Customization
 
 home-homepage-mode-label = Startowy bok a nowe wokna
-home-newtabs-mode-label = Nowe rejtarki
+home-newtabs-mode-label = Nowe rejtariki
 home-restore-defaults =
     .label = Standard wótnowiś
     .accesskey = S
@@ -404,15 +490,72 @@ choose-bookmark =
     .label = Cytańske znamje wužywaś…
     .accesskey = C
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Wopśimjeśe startowego boka Firefox
+home-prefs-content-description = Wubjeŕśo, kótare wopśimjeśe cośo na swójej startowej wobrazowce Firefox měś.
+home-prefs-search-header =
+    .label = Webpytanje
+home-prefs-topsites-header =
+    .label = Nejcesćej woglědane sedła
+home-prefs-topsites-description = Sedła, ku kótarymž se nejcesćej woglědujośo
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = Wót { $provider } dopórucony
+home-prefs-recommended-by-description = Wjelicne wopśimjeśe z cełego weba, wubrane specielnje za was
+home-prefs-recommended-by-description-update = Wurědne wopśimjeśe z cełego weba, wubrane wót { $provider }
+
+##
+
+home-prefs-recommended-by-learn-more = Kak funkcioněrujo
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Sponsorowane tšojenja pokazaś
+home-prefs-highlights-header =
+    .label = Wjerški
+home-prefs-highlights-description = Wuběrk websedłow, kótarež sćo składował abo se woglědał
+home-prefs-highlights-option-visited-pages =
+    .label = Woglědane boki
+home-prefs-highlights-options-bookmarks =
+    .label = Cytańske znamjenja
+home-prefs-highlights-option-most-recent-download =
+    .label = Nejnowše ześěgnjenje
+home-prefs-highlights-option-saved-to-pocket =
+    .label = Boki skłaźone do { -pocket-brand-name }
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Kuski
+home-prefs-snippets-description = Aktualizacije wót { -vendor-short-name } a { -brand-product-name }
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } smužka
+            [two] { $num } smužce
+            [few] { $num }smužki
+           *[other] { $num } smužkow
+        }
+
 ## Search Section
 
 search-bar-header = Pytańske pólo
 search-bar-hidden =
     .label = Wužywajśo adresowe pólo za pytanje a nawigaciju
 search-bar-shown =
-    .label = Pytańske pólo symbolowej rědce pśidaś
+    .label = Symbolowej rědce pytańske pólo pśidaś
 search-engine-default-header = Standardna pytnica
 search-engine-default-desc = Wubjeŕśo standardnu pytnicu, kótaraž ma se w adresowem pólu a pytańskem polu wužywaś.
+search-engine-default-desc-2 = To jo waša standardna pytnica w adresowej rědce a pytańskej rědce. Móžośo je kuždy raz pśešaltowaś.
+search-engine-default-private-desc-2 = Wubjeŕśo drugu standardnu pytnicu jano za priwatny modus
+search-separate-default-engine =
+    .label = Toś tu pytnicu w priwatnych woknach wužywaś
+    .accesskey = T
+search-suggestions-header = Pytańske naraźenja
+search-suggestions-desc = Wubjeŕśo, kak se naraźenja z pytnicow pokazuju.
 search-suggestions-option =
     .label = Pytańske naraźenja pódaś
     .accesskey = P
@@ -426,6 +569,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Pytańske naraźenja pśed pśeglědowańskeju historiju we wuslědkach adresowego póla pokazaś
+search-show-suggestions-private-windows =
+    .label = Pytańske naraźenja w priwatnych woknach pokazaś
+suggestions-addressbar-settings = Wubjeŕśo nastajenja za pśeglědowańsku historiju, cytańske znamjenja a rejtarikowe naraźenja
+suggestions-addressbar-settings-generic = Nastajenja za druge naraźenja adresowego póla změniś
 search-suggestions-cant-show = Pytańske naraźenja njebudu se we wuslědkach adresowego póla pokazaś, dokulaž sćo { -brand-short-name } tak konfigurěrował, až njespomnjejo se nigda historiju.
 search-one-click-header = Pytnice z jadnym kliknjenim
 search-one-click-desc = Wubjeŕśo alternatiwne pytnice, kótarež se pód adresowym pólom a pytańskim pólom pokazuju, gaž klucowe słowo zapódawaśo.
@@ -451,10 +598,19 @@ search-keyword-warning-bookmark = Sćo klucowe słowo wubrał, kótarež wužiwa
 ## Containers Section
 
 containers-back-link = « Slědk
-containers-header = Kontejnerowe rejtarki
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Slědk k nastajenjam
+           *[other] Slědk k nastajenjam
+        }
+containers-header = Kontejnerowe rejtariki
 containers-add-button =
     .label = Nowy kontejner pśidaś
     .accesskey = k
+containers-new-tab-check =
+    .label = Kontejner za kuždy nowy rejtarik wubraś
+    .accesskey = K
 containers-preferences-button =
     .label = Nastajenja
 containers-remove-button =
@@ -462,14 +618,21 @@ containers-remove-button =
 
 ## Sync Section - Signed out
 
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = Wzejśo swój web sobu
-sync-signedout-description = Synchronizěrujśo swóje cytańske znamjenja, historiju, rejtarki, gronidła, dodanki a nastajenja mjazy wšymi wašymi rědami.
+sync-signedout-description = Synchronizěrujśo swóje cytańske znamjenja, historiju, rejtariki, gronidła, dodanki a nastajenja mjazy wšymi wašymi rědami.
 sync-signedout-account-title = Zwězaś z: { -fxaccount-brand-name }
 sync-signedout-account-create = Njamaśo konto? Zachopśo
     .accesskey = k
 sync-signedout-account-signin =
     .label = Pśizjawiś…
     .accesskey = P
+sync-signedout-account-signin2 =
+    .label = Se pla { -sync-brand-short-name } pśizjawiś…
+    .accesskey = l
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
 #   `<a data-l10n-name="android-link">` - Link to Android Download
@@ -482,11 +645,17 @@ sync-mobile-promo = Firefox za <img data-l10n-name="android-icon"/> <a data-l10n
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Profilowy wobraz změniś
 sync-disconnect =
     .label = Zwisk źěliś…
     .accesskey = Z
+sync-sign-out =
+    .label = Wótzjawiś…
+    .accesskey = t
 sync-manage-account = Konto zastojaś
     .accesskey = o
 sync-signedin-unverified = { $email } njejo se pśeglědał.
@@ -502,6 +671,48 @@ sync-sign-in =
     .accesskey = z
 sync-signedin-settings-header = Nastajenja synchronizacije
 sync-signedin-settings-desc = Wubjeŕśo, což ma se z { -brand-short-name } na wašych rědach synchronizěrowaś.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Synchronizacija: ZAŠALTOWANA
+prefs-syncing-off = Synchronizacija: WUŠALTOWANA
+prefs-sync-setup =
+    .label = { -sync-brand-short-name } konfigurěrowaś
+    .accesskey = k
+prefs-sync-offer-setup-label = Synchronizěrujśo swóje cytańske znamjenja, historiju, rejtariki, gronidła, dodanki a nastajenja mjazy wšymi wašymi rědami.
+prefs-sync-now =
+    .labelnotsyncing = Něnto synchronizěrowaś
+    .accesskeynotsyncing = N
+    .labelsyncing = Synchronizěrujo se…
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Synchronizěrujośo tuchylu slědujuce zapiski:
+sync-currently-syncing-bookmarks = Cytańske znamjenja
+sync-currently-syncing-history = Historija
+sync-currently-syncing-tabs = Wócynjone rejtariki
+sync-currently-syncing-logins-passwords = Pśizjawjenja a gronidła
+sync-currently-syncing-addresses = Adrese
+sync-currently-syncing-creditcards = Kreditowe kórty
+sync-currently-syncing-addons = Dodanki
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Nastajenja
+       *[other] Nastajenja
+    }
+sync-change-options =
+    .label = Změniś…
+    .accesskey = Z
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Wubjeŕśo, což ma se synchronizěrowaś
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Změny składowaś
+    .buttonaccesskeyaccept = s
+    .buttonlabelextra2 = Źěliś
+    .buttonaccesskeyextra2 = l
 sync-engine-bookmarks =
     .label = Cytańske znamjenja
     .accesskey = C
@@ -509,12 +720,16 @@ sync-engine-history =
     .label = Historiju
     .accesskey = H
 sync-engine-tabs =
-    .label = Wócynjone rejtarki
+    .label = Wócynjone rejtariki
     .tooltiptext = Lisćina ze wšym, což jo wócynjone na wšych synchronizěrowanych rědach
     .accesskey = r
 sync-engine-logins =
     .label = Pśizjawjenja
-    .tooltiptext = Wužywarske mjenja a gronidła, kótarež sćo składł
+    .tooltiptext = Wužywaŕske mjenja a gronidła, kótarež sćo składł
+    .accesskey = P
+sync-engine-logins-passwords =
+    .label = Pśizjawjenja a gronidła
+    .tooltiptext = Wužywaŕske mjenja a gronidła, kótarež sćo składł
     .accesskey = P
 sync-engine-addresses =
     .label = Adrese
@@ -536,6 +751,9 @@ sync-engine-prefs =
         }
     .tooltiptext = Powšykne nastajenja, nastajenja priwatnosći a wěstoty, kótarež sćo změnił
     .accesskey = N
+
+## The device name controls.
+
 sync-device-name-header = Mě rěda
 sync-device-name-change =
     .label = Mě rěda změniś…
@@ -559,6 +777,13 @@ privacy-header = Priwatnosć wobglědowaka
 ## Privacy Section - Forms
 
 logins-header = Pśizjawjenja a gronidła
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Pśizjawjenja a gronidła
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Pšašaś se, lěc se maju pśizjawjenja a gronidła składowaś
     .accesskey = a
@@ -568,6 +793,14 @@ forms-exceptions =
 forms-generate-passwords =
     .label = Mócne gronidła napóraś a naraźiś
     .accesskey = r
+forms-breach-alerts =
+    .label = Warnowanja za gronidła zranjonych websedłow
+    .accesskey = z
+forms-breach-alerts-learn-more-link = Dalšne informacije
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Pśizjawjenja a gronidła awtomatiski zapisaś
+    .accesskey = i
 forms-saved-logins =
     .label = Skłaźone pśizjawjenja…
     .accesskey = S
@@ -577,6 +810,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Głowne gronidło změniś…
     .accesskey = m
+forms-master-pw-fips-title = Sćo tuchylu we FIPS-modusu. FIPS pomina se głowne gronidło.
+forms-master-pw-fips-desc = Změnjanje gronidła njejo se raźiło
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Zapódajśo swóje pśizjawjeńske daty Windows, aby głowne gronidło napórał. To wěstotu wašych kontow šćita.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = głowne gronidło napóraś
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -644,6 +890,12 @@ sitedata-block-desc = Blokěrowany typ
     .accesskey = t
 sitedata-option-block-trackers =
     .label = Pśeslědowaki tśeśich
+sitedata-option-block-cross-site-trackers =
+    .label = Pśeslědowaki mjazy sedłami
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Pśeslědowaki mjazy sedłami a socialnych medijow
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Pśeslědowaki někotarych sedłow a pśeslědowaki socialnych medijow a izolěrowanje zbytnych cookiejow
 sitedata-option-block-unvisited =
     .label = Cookieje z njewoglědanych websedłow
 sitedata-option-block-all-third-party =
@@ -659,6 +911,9 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = Pšawa zastojaś
     .accesskey = P
+sitedata-cookies-exceptions =
+    .label = Wuwześa zastojaś…
+    .accesskey = u
 
 ## Privacy Section - Address Bar
 
@@ -671,15 +926,19 @@ addressbar-locbar-bookmarks-option =
     .label = Cytańske znamjenja
     .accesskey = C
 addressbar-locbar-openpage-option =
-    .label = Wócynjone rejtarki
+    .label = Wócynjone rejtariki
     .accesskey = r
+addressbar-locbar-topsites-option =
+    .label = Nejcesćej woglědane sedła
+    .accesskey = N
 addressbar-suggestions-settings = Nastajenja za naraźenja pytnice změniś
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Blokěrowanje wopśimjeśa
-content-blocking-description = Blokěrujśo wopśimjeśe tśeśich, kótarež wam pó webje slědujo. Kontrolěrujśo, kak cesto se waša aktiwita online składujo a mjazy websedłami źěli.
 content-blocking-section-description = Šćitajśo swóju priwatnosć, mjaztym až pśeglědujośo. Blokěrujśo njewidobne wopśimjeśe, kótarež sedła slědujo, ku kótarymž se woglědujośo, a profil wó was twóri. Gaž take wopśimjeśe blokěrujośo, daju se boki snaź malsnjej zacytaś.
+content-blocking-enhanced-tracking-protection = Pólěpšony slědowański šćit
+content-blocking-section-top-level-description = Pśeslědowaki wam online slěduju, aby informacije wó wašych pśeglědowańskich zwuconosćach a zajmach gromaźili. { -brand-short-name } wjele z toś tych pśeslědowakow a druge złosne skripty blokěrujo.
 content-blocking-learn-more = Dalšne informacije
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
@@ -692,29 +951,57 @@ content-blocking-setting-strict =
 content-blocking-setting-custom =
     .label = Swójski
     .accesskey = S
-content-blocking-standard-description = Blokěrujo jano znate pśeslědowaki w priwatnych woknach.
 content-blocking-standard-desc = Wurownany za šćit a wugbaśe. Dowólujo někotare pślědowaki, aby websedła pórědnje funkcioněrowali.
-content-blocking-strict-desc = Blokuje wšě přesćěhowaki, kotrež { -brand-short-name } namaka. Tohodla njemóhli někotre websydła korektnje fungować.
 content-blocking-strict-description = Mócnjejšy šćit, móžo zawinowaś, až někotare sedła wěcej njefunkcioněruju.
 content-blocking-custom-desc = Wubjeŕśo, což cośo blokěrowaś.
 content-blocking-private-trackers = Znate pśeslědowaki w priwatnych woknach
 content-blocking-third-party-cookies = Slědujuce cookiejei tśeśich
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Standard
+    .accesskey = d
+enhanced-tracking-protection-setting-strict =
+    .label = Striktny
+    .accesskey = r
+enhanced-tracking-protection-setting-custom =
+    .label = Swójski
+    .accesskey = S
+
+##
+
+content-blocking-etp-standard-desc = Wuwažony za šćit a wugbaśe. Boki se normalnje zacytaju.
+content-blocking-etp-strict-desc = Mócnjejšy šćit, ale móžo zawinowaś, až někotare sedła abo wopśimjeśe wěcej njefunkcioněruju.
+content-blocking-etp-custom-desc = Wubjeŕśo, kótare pśeslědowaki a skripty maju se blokěrowaś.
+content-blocking-private-windows = Slědujuce wopśimjeśe w priwatnych woknach
+content-blocking-cross-site-tracking-cookies = Slědujuce cookieje mjazy sedłami
+content-blocking-cross-site-tracking-cookies-plus-isolate = Někotare sedła slědujuce cookieje a izolěrowanje zbytnych cookiejow
+content-blocking-social-media-trackers = Pśeslědowaki socialnych medijow
 content-blocking-all-cookies = Wšykne cookieje
 content-blocking-unvisited-cookies = Cookieje z njewoglědanych sedłow
 content-blocking-all-windows-trackers = Znate pśeslědowaki we wšych woknach
+content-blocking-all-windows-tracking-content = Slědujuce wopśimjeśe we wšych woknach
 content-blocking-all-third-party-cookies = Wšykne cookieje tśeśich
 content-blocking-cryptominers = Kryptokopanje
 content-blocking-fingerprinters = Palcowe wótśišće
 content-blocking-warning-title = Glědajśo!
 content-blocking-warning-description = Blokěrowanje wopśimjeśa móžo zawinowaś, až někotare websedła wěcej njefunkcioněruju. Jo lažko, blokěrowanje za sedła znjemóžniś, kótarymž dowěriśo.
 content-blocking-learn-how = Zgóńśo kak
-content-blocking-reload-description = Musyśo swóje rejtarki znowego zacytaś, aby toś te změny nałožył.
+content-blocking-and-isolating-etp-warning-description = Blokěrowanje pśeslědowakow a izolěrowanje plackow mógłej funkcionalnosć někotarych websedłow wobwliwowaś. Zacytajśo bok z pśeslědowakami znowego, aby wšykno wopśimjeśe zacytał.
+content-blocking-warning-learn-how = Zgóńśo kak
+content-blocking-reload-description = Musyśo swóje rejtariki znowego zacytaś, aby toś te změny nałožył.
 content-blocking-reload-tabs-button =
-    .label = Wšykne rejtarki znowego zacytaś
+    .label = Wšykne rejtariki znowego zacytaś
     .accesskey = W
 content-blocking-trackers-label =
     .label = Pśeslědowaki
     .accesskey = P
+content-blocking-tracking-content-label =
+    .label = Slědujuce wopśimjeśe
+    .accesskey = S
 content-blocking-tracking-protection-option-all-windows =
     .label = We wšych woknach
     .accesskey = W
@@ -750,6 +1037,10 @@ permissions-location = Městno
 permissions-location-settings =
     .label = Nastajenja…
     .accesskey = t
+permissions-xr = Wirtuelna realita
+permissions-xr-settings =
+    .label = Nastajenja…
+    .accesskey = N
 permissions-camera = Kamera
 permissions-camera-settings =
     .label = Nastajenja…
@@ -789,8 +1080,8 @@ permissions-addon-exceptions =
     .label = Wuwześa…
     .accesskey = W
 permissions-a11y-privacy-checkbox =
-    .label = Słužbam pśistupnosći pśistup k wašomu wobglědowakoju zawoboraś
-    .accesskey = t
+    .label = Słužbam bźezbariernosći pśistup k wašomu wobglědowakoju zawoboraś
+    .accesskey = b
 permissions-a11y-privacy-link = Dalšne informacije
 
 ## Privacy Section - Data Collection
@@ -798,6 +1089,8 @@ permissions-a11y-privacy-link = Dalšne informacije
 collection-header = Gromaźenje a wužywanje datow { -brand-short-name }
 collection-description = Comy was z wuběrkami wobstaraś a janož to zběraś, což musymy póbitowaś, aby my { -brand-short-name } za kuždego pólěpšili. Pšosymy pśecej wó dowólnosć, nježli až wósobinske daty dostanjomy.
 collection-privacy-notice = Powěźeńka priwatnosći
+collection-health-report-telemetry-disabled = Sćo zajmjeł { -vendor-short-name } dowólnosć, techniske a interakciske daty gromaźiś. Wšykne dotychměst zgromaźone daty se w běgu 30 dnjow wulašuju.
+collection-health-report-telemetry-disabled-link = Dalšne informacije
 collection-health-report =
     .label = { -brand-short-name } zmóžniś, techniske a interakciske daty na { -vendor-short-name } pósłaś
     .accesskey = t

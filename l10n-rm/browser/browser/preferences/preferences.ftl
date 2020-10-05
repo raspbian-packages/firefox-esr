@@ -14,6 +14,11 @@ pref-page =
             [windows] Preferenzas
            *[other] Preferenzas
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Preferenzas
+       *[other] Preferenzas
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -29,11 +34,7 @@ search-input-box =
             [windows] Tschertgar en las preferenzas
            *[other] Tschertgar en las preferenzas
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Tia organisaziun ha deactivà la pussaivladad da midar tschertas preferenzas.
-       *[other] Tia organisaziun ha deactivà la pussaivladad da midar tschertas preferenzas.
-    }
+managed-notice = Tes navigatur vegn administrà da tia organisaziun.
 pane-general-title = General
 category-general =
     .tooltiptext = { pane-general-title }
@@ -46,10 +47,6 @@ category-search =
 pane-privacy-title = Sfera privata & segirezza
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = Conto da Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
 pane-sync-title2 = { -sync-brand-short-name }
 category-sync2 =
     .tooltiptext = { pane-sync-title2 }
@@ -206,6 +203,15 @@ advanced-fonts =
 colors-settings =
     .label = Colurs…
     .accesskey = C
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Zoom
+preferences-default-zoom = Zoom da standard
+    .accesskey = Z
+preferences-default-zoom-value =
+    .label = { $percentage }%
+preferences-zoom-text-only =
+    .label = Zoomar mo il text
+    .accesskey = t
 language-header = Lingua
 choose-language-description = Tscherna tia lingua preferida per la visualisaziun da websites
 choose-button =
@@ -226,6 +232,10 @@ translate-attribution = Translaziuns da <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Excepziuns…
     .accesskey = x
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Utilisar la configuraziun dil sistem operativ per «{ $localeName }» per definir il format da datas, temp, numers ed unitads da mesira.
 check-user-spelling =
     .label = Controllar l'ortografia durant l'endataziun
     .accesskey = t
@@ -261,6 +271,75 @@ applications-type-column =
 applications-action-column =
     .label = Acziun
     .accesskey = A
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = Datoteca { $extension }
+applications-action-save =
+    .label = Memorisar la datoteca
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = Utilisar { $app-name }
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = Utilisar { $app-name } (standard)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Utilisar l'applicaziun predefinida da macOS
+            [windows] Utilisar l'applicaziun predefinida da Windows
+           *[other] Utilisar l'applicaziun predefinida dal sistem
+        }
+applications-use-other =
+    .label = Autra applicaziun…
+applications-select-helper = Tscherner in'applicaziun externa
+applications-manage-app =
+    .label = Detagls davart l'applicaziun…
+applications-always-ask =
+    .label = Dumandar mintga giada
+applications-type-pdf = Portable Document Format (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = Utilisar { $plugin-name } (en { -brand-short-name })
+applications-open-inapp =
+    .label = Avrir en { -brand-short-name }
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Cuntegn DRM (Digital Rights Management)
 play-drm-content =
     .label = Far ir cuntegn controllà da DRM
@@ -293,6 +372,21 @@ update-pref-write-failure-title = Errur cun memorisar
 # Variables:
 #   $path (String) - Path to the configuration file
 update-pref-write-failure-message = Errur durant memorisar la preferenza. Impussibel da scriver en la datoteca: { $path }
+update-setting-write-failure-title = Errur cun memorisar preferenzas per actualisaziuns
+# Variables:
+#   $path (String) - Path to the configuration file
+# The newlines between the main text and the line containing the path is
+# intentional so the path is easier to identify.
+update-setting-write-failure-message =
+    { -brand-short-name } è fruntà sin in problem e n'ha betg memorisà questa midada. Igl è necessari da pudair scriver en la datoteca sutvart per pudair definir quest parameter dad actualisaziuns. Eventualmain pos ti u l'administratur dal sistem schliar il problem cun permetter a la gruppa d'utilisaders l'access cumplain a questa datoteca.
+    
+    Impussibel da scriver en la datoteca: { $path }
+update-in-progress-title = Actualisaziun en lavur
+update-in-progress-message = Vuls ti che { -brand-short-name } cuntinueschia cun questa actualisaziun?
+update-in-progress-ok-button = &Annullar
+# Continue is the cancel button so pressing escape or using a platform standard
+# method of closing the UI will not discard the update.
+update-in-progress-cancel-button = &Cuntinuar
 
 ## General Section - Performance
 
@@ -332,6 +426,10 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Retschertgar il text cura che ti cumenzas a tippar
     .accesskey = x
+browsing-picture-in-picture-toggle-enabled =
+    .label = Activar las controllas per maletg-en-maletg
+    .accesskey = A
+browsing-picture-in-picture-learn-more = Ulteriuras infurmaziuns
 browsing-cfr-recommendations =
     .label = Recumandar extensiuns durant la navigaziun
     .accesskey = R
@@ -386,6 +484,54 @@ choose-bookmark =
     .label = Utilisar segnapaginas…
     .accesskey = l
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Cuntegn da la pagina da partenza da Firefox
+home-prefs-content-description = Tscherna il cuntegn che ti vuls vesair sin la pagina da partenza da Firefox.
+home-prefs-search-header =
+    .label = Tschertga web
+home-prefs-topsites-header =
+    .label = Paginas preferidas
+home-prefs-topsites-description = Las paginas che ti visitas il pli savens
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = Recumandà da { $provider }
+home-prefs-recommended-by-description = Cuntegn interessant ord il web, persunalisà per tai
+home-prefs-recommended-by-description-update = Cuntegn excepziunal ord il web, tschernì da { $provider }
+
+##
+
+home-prefs-recommended-by-learn-more = Co ch'i funcziuna
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Artitgels sponsurads
+home-prefs-highlights-header =
+    .label = Accents
+home-prefs-highlights-description = Ina selecziun da paginas che ti has memorisà u visità
+home-prefs-highlights-option-visited-pages =
+    .label = Paginas visitadas
+home-prefs-highlights-options-bookmarks =
+    .label = Segnapaginas
+home-prefs-highlights-option-most-recent-download =
+    .label = L'ultima telechargiada
+home-prefs-highlights-option-saved-to-pocket =
+    .label = Paginas memorisadas en { -pocket-brand-name }
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Zinslas
+home-prefs-snippets-description = Novitads da { -vendor-short-name } e { -brand-product-name }
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } lingia
+           *[other] { $num } lingias
+        }
+
 ## Search Section
 
 search-bar-header = Trav da tschertgar
@@ -395,6 +541,13 @@ search-bar-shown =
     .label = Agiuntar la trav da tschertgar a la trav d'utensils
 search-engine-default-header = Maschina da tschertgar da standard
 search-engine-default-desc = Tscherna la maschina da tschertgar da standard per la trav d'adressas e la trav da tschertgar.
+search-engine-default-desc-2 = Quai è la maschina da tschertgar predefinida per la trav d'adressas e la trav da tschertga. Ti la pos midar da tut temp.
+search-engine-default-private-desc-2 = Tscherna in'autra maschina da tschertgar da standard mo per fanestras privatas
+search-separate-default-engine =
+    .label = Utilisar questa maschina da tschertgar en fanestras privatas
+    .accesskey = U
+search-suggestions-header = Propostas da tschertga
+search-suggestions-desc = Tscherna co las propostas da maschinas da tschertgar duain cumparair.
 search-suggestions-option =
     .label = Porscher propostas da tschertgar
     .accesskey = s
@@ -408,6 +561,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Mussar las propostas da tschertga avant la cronologia da navigaziun en ils resultats da la trav d'adressas
+search-show-suggestions-private-windows =
+    .label = Mussar propostas da tschertga en fanestras privatas
+suggestions-addressbar-settings = Modifitgar las preferenzas per las propostas da la cronologia da navigaziun, dals segnapaginas e dals tabs
+suggestions-addressbar-settings-generic = Midar las preferenzas per avair autras propostas en la trav d'adressas
 search-suggestions-cant-show = Propostas da tschertgar na vegnan betg mussadas en la trav d'adressas perquai che ti has configurà { -brand-short-name } uschia che la cronologia na vegn betg memorisada.
 search-one-click-header = Maschinas da tschertgar cun-in-clic
 search-one-click-desc = Tscherna las maschinas da tschertgar alternativas che cumparan sut la trav d'adressas e la trav da tschertgar sche ti cumenzas a tippar in pled.
@@ -433,16 +590,29 @@ search-keyword-warning-bookmark = Ti has tschernì in pled magic che vegn gia ut
 ## Containers Section
 
 containers-back-link = « Turnar
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Turnar a las preferenzas
+           *[other] Turnar a las preferenzas
+        }
 containers-header = Tabs da container
 containers-add-button =
     .label = Agiuntar in nov container
     .accesskey = A
+containers-new-tab-check =
+    .label = Tscherna in container per mintga nov tab
+    .accesskey = T
 containers-preferences-button =
     .label = Preferenzas
 containers-remove-button =
     .label = Allontanar
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Prenda tes web cun tai
 sync-signedout-description = Sincronisescha tes segnapaginas, tia cronologia, tes tabs, tes pleds-clav, tes supplements e tias preferenzas cun tut tes apparats.
@@ -452,6 +622,9 @@ sync-signedout-account-create = Ti n'has nagin conto? Ta registrescha
 sync-signedout-account-signin =
     .label = S'annunziar…
     .accesskey = a
+sync-signedout-account-signin2 =
+    .label = S'annunziar tar { -sync-brand-short-name }…
+    .accesskey = t
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
 #   `<a data-l10n-name="android-link">` - Link to Android Download
@@ -464,11 +637,17 @@ sync-mobile-promo = Telechargiar Firefox per <img data-l10n-name="android-icon"/
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Midar il maletg da profil
 sync-disconnect =
     .label = Deconnectar…
     .accesskey = D
+sync-sign-out =
+    .label = Sortir…
+    .accesskey = o
 sync-manage-account = Administrar il conto
     .accesskey = o
 sync-signedin-unverified = L'adressa { $email } n'è anc betg verifitgada.
@@ -484,6 +663,48 @@ sync-sign-in =
     .accesskey = a
 sync-signedin-settings-header = Parameters da Sync
 sync-signedin-settings-desc = Tscherna tge che duai vegnir sincronisà tranter tes apparats che utiliseschan { -brand-short-name }.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Sincronisaziun: ACTIVADA
+prefs-syncing-off = Sincronisaziun: DEACTIVADA
+prefs-sync-setup =
+    .label = Configurar { -sync-brand-short-name }…
+    .accesskey = C
+prefs-sync-offer-setup-label = Sincronisescha tes segnapaginas, tia cronologia, tes tabs, tes pleds-clav, tes supplements e tias preferenzas cun tut tes apparats.
+prefs-sync-now =
+    .labelnotsyncing = Sincronisar ussa
+    .accesskeynotsyncing = u
+    .labelsyncing = Sincronisar…
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Ils suandants elements vegnan actualmain sincronisads:
+sync-currently-syncing-bookmarks = Segnapaginas
+sync-currently-syncing-history = Cronologia
+sync-currently-syncing-tabs = Tabs averts
+sync-currently-syncing-logins-passwords = Infurmaziuns d'annunzia e pleds-clav
+sync-currently-syncing-addresses = Adressas
+sync-currently-syncing-creditcards = Cartas da credit
+sync-currently-syncing-addons = Supplements
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Preferenzas
+       *[other] Preferenzas
+    }
+sync-change-options =
+    .label = Modifitgar…
+    .accesskey = M
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Decider tge sincronisar
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Memorisar las midadas
+    .buttonaccesskeyaccept = M
+    .buttonlabelextra2 = Deconnectar…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = ils segnapaginas
     .accesskey = g
@@ -496,6 +717,10 @@ sync-engine-tabs =
     .accesskey = T
 sync-engine-logins =
     .label = Infurmaziuns d'annunzia
+    .tooltiptext = Nums d'utilisader e pleds-clav che ti has memorisà
+    .accesskey = I
+sync-engine-logins-passwords =
+    .label = Infurmaziuns d'annunzia e pleds-clav
     .tooltiptext = Nums d'utilisader e pleds-clav che ti has memorisà
     .accesskey = I
 sync-engine-addresses =
@@ -518,6 +743,9 @@ sync-engine-prefs =
         }
     .tooltiptext = Preferenzas generalas, da la protecziun da datas e da segirezza che ti has midà
     .accesskey = a
+
+## The device name controls.
+
 sync-device-name-header = Num da l'apparat
 sync-device-name-change =
     .label = Midar il num da l'apparat…
@@ -528,8 +756,6 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Memorisar
     .accesskey = m
-sync-mobilepromo-single = Connectar in auter apparat
-sync-mobilepromo-multi = Administrar ils apparats
 sync-connect-another-device = Colliar in auter apparat
 sync-manage-devices = Administrar ils apparats
 sync-fxa-begin-pairing = Associar in apparat
@@ -543,12 +769,30 @@ privacy-header = Protecziun da datas
 ## Privacy Section - Forms
 
 logins-header = Infurmaziuns d'annunzia & pleds-clav
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Infurmaziuns d'annunzia & pleds-clav
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Dumandar da memorisar las infurmaziuns d'annunzia ed ils pleds-clav per paginas d'internet
     .accesskey = r
 forms-exceptions =
     .label = Excepziuns…
     .accesskey = x
+forms-generate-passwords =
+    .label = Proponer e generar pleds-clav cumplexs
+    .accesskey = x
+forms-breach-alerts =
+    .label = Mussar avertiments per ils pleds-clav da websites cun sperditas da datas
+    .accesskey = b
+forms-breach-alerts-learn-more-link = Ulteriuras infurmaziuns
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Emplenir automaticamain infurmaziuns d'annunzia
+    .accesskey = i
 forms-saved-logins =
     .label = Infurmaziuns d'annunzia memorisadas…
     .accesskey = n
@@ -558,6 +802,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Midar il pled-clav universal…
     .accesskey = d
+forms-master-pw-fips-title = Ti es actualmain en il modus FIPS. FIPS pretenda in pled-clav universal.
+forms-master-pw-fips-desc = I n'è betg reussì da midar il pled-clav
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Per crear in pled-clav universal, endatescha tias datas d'annunzia per Windows. Quai gida a garantir la segirezza da tes contos.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = crear in pled-clav universal
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -625,6 +882,12 @@ sitedata-block-desc = Tip da cuntegn bloccà
     .accesskey = T
 sitedata-option-block-trackers =
     .label = Fastizaders da terzas partidas
+sitedata-option-block-cross-site-trackers =
+    .label = Fastizaders tranter websites
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Fastizaders tranter websites e da raits socialas
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Fastizaders interpaginals e fastizaders da medias socialas ed isolar ils cookies restants
 sitedata-option-block-unvisited =
     .label = Cookies da websites betg visitadas
 sitedata-option-block-all-third-party =
@@ -640,6 +903,9 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = Administrar las permissiuns…
     .accesskey = p
+sitedata-cookies-exceptions =
+    .label = Administrar las excepziuns…
+    .accesskey = x
 
 ## Privacy Section - Address Bar
 
@@ -654,13 +920,17 @@ addressbar-locbar-bookmarks-option =
 addressbar-locbar-openpage-option =
     .label = Tabs averts
     .accesskey = b
+addressbar-locbar-topsites-option =
+    .label = Paginas preferidas
+    .accesskey = P
 addressbar-suggestions-settings = Midar las preferenzas per propostas da maschinas da tschertgar
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Bloccada da cuntegn
-content-blocking-description = Blochescha cuntegn da terzas partidas che ta fastizescha en il web. Controllescha quant da tia activitad online che vegn memorisada e cundividida tranter websites.
 content-blocking-section-description = Protegia tia sfera privata durant la navigaziun. Blochescha cuntegn invisibel che po fastizar las websites che ti visitas e skizzar tes profil. Cun bloccar ina part da quest cuntegn chargian las paginas eventualmain pli svelt.
+content-blocking-enhanced-tracking-protection = Protecziun avanzada cunter il fastizar
+content-blocking-section-top-level-description = Fastizaders ta suondan online per rimnar infurmaziuns davart tias disas da navigar e tes interess. { -brand-short-name } blochescha blers da quests fastizaders ed auters scripts donnegius.
 content-blocking-learn-more = Ulteriuras infurmaziuns
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
@@ -673,23 +943,47 @@ content-blocking-setting-strict =
 content-blocking-setting-custom =
     .label = Persunalisà
     .accesskey = P
-content-blocking-standard-description = Blochescha mo fastizaders enconuschents en fanestras privatas.
 content-blocking-standard-desc = Equiliber tranter protecziun e prestaziun. Permetta tscherts fastizaders per che las websites funcziunian endretg.
-content-blocking-strict-desc = Blochescha tut ils fastizaders che { -brand-short-name } chatta. Eventualmain na funcziunan tschertas websites betg pli endretg.
 content-blocking-strict-description = Ina protecziun pli severa, po avair per consequenza che tschertas websites na funcziuneschan betg pli.
 content-blocking-custom-desc = Tscherna tge bloccar.
 content-blocking-private-trackers = Fastizaders enconuschents mo en il modus privat
 content-blocking-third-party-cookies = Cookies che fastizeschan da terzas partidas
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Standard
+    .accesskey = d
+enhanced-tracking-protection-setting-strict =
+    .label = Restrictiv
+    .accesskey = r
+enhanced-tracking-protection-setting-custom =
+    .label = Persunalisà
+    .accesskey = u
+
+##
+
+content-blocking-etp-standard-desc = Equiliber tranter protecziun e prestaziun. Paginas chargian normal.
+content-blocking-etp-strict-desc = Ina protecziun pli severa, ma po avair per consequenza che tschertas websites u tscherts cuntegns na funcziuneschan betg pli.
+content-blocking-etp-custom-desc = Tscherna ils fastizaders ed ils scripts che duain vegnir bloccads.
+content-blocking-private-windows = Cuntegn che fastizescha en fanestras privatas
+content-blocking-cross-site-tracking-cookies = Cookies che fastizeschan tranter websites
+content-blocking-cross-site-tracking-cookies-plus-isolate = Cookies che fastizeschan tranter paginas ed isolar ils cookies restants
+content-blocking-social-media-trackers = Fastizaders da raits socialas
 content-blocking-all-cookies = Tut ils cookies
 content-blocking-unvisited-cookies = Cookies da websites betg visitadas
 content-blocking-all-windows-trackers = Fastizaders enconuschents en tut las fanestras
+content-blocking-all-windows-tracking-content = Cuntegn che fastizescha en tut las fanestras
 content-blocking-all-third-party-cookies = Tut ils cookies da terzas partidas
 content-blocking-cryptominers = Criptominiers
 content-blocking-fingerprinters = Improntaders dal det
 content-blocking-warning-title = Attenziun!
-content-blocking-warning-desc = La bloccada da cookies e fastizaders po impedir che tschertas websites funcziunian endretg. Igl è simpel da deactivar la bloccada per websites da las qualas ti ta fidas.
 content-blocking-warning-description = La bloccada da cuntegn po impedir che tschertas websites funcziunian. Igl è simpel da deactivar la bloccada per las websites che ti tegnas per fidablas.
 content-blocking-learn-how = Vegnir a savair co
+content-blocking-and-isolating-etp-warning-description = La bloccada da fastizaders e l'isolaziun da cookies po influenzar las funcziunalitads da tschertas websites. Rechargiar ina pagina cun fastizaders per chargiar l'entir cuntegn.
+content-blocking-warning-learn-how = Vegnir a savair co
 content-blocking-reload-description = Igl è necessari da rechargiar ils tabs per applitgar las midadas.
 content-blocking-reload-tabs-button =
     .label = Rechargiar tut ils tabs
@@ -697,6 +991,9 @@ content-blocking-reload-tabs-button =
 content-blocking-trackers-label =
     .label = Fastizaders
     .accesskey = F
+content-blocking-tracking-content-label =
+    .label = Cuntegn che fastizescha
+    .accesskey = t
 content-blocking-tracking-protection-option-all-windows =
     .label = En tut las fanestras
     .accesskey = t
@@ -732,6 +1029,10 @@ permissions-location = Posiziun
 permissions-location-settings =
     .label = Parameters…
     .accesskey = m
+permissions-xr = Realitad virtuala
+permissions-xr-settings =
+    .label = Parameters…
+    .accesskey = t
 permissions-camera = Camera
 permissions-camera-settings =
     .label = Parameters…
@@ -754,6 +1055,10 @@ permissions-block-autoplay-media2 =
 permissions-block-autoplay-media-exceptions =
     .label = Excepziuns…
     .accesskey = E
+permissions-autoplay = Reproducziun automatica
+permissions-autoplay-settings =
+    .label = Parameters…
+    .accesskey = P
 permissions-block-popups =
     .label = Bloccar fanestras pop-up
     .accesskey = p
@@ -776,6 +1081,8 @@ permissions-a11y-privacy-link = Ulteriuras infurmaziuns
 collection-header = { -brand-short-name }: Collecziun ed utilisaziun da datas
 collection-description = Nus ta laschain la tscherna e ramassain mo las infurmaziuns che nus duvrain per porscher e meglierar { -brand-short-name } per tuts. Nus ta dumandain adina avant che rimnar datas persunalas.
 collection-privacy-notice = Infurmaziuns davart la protecziun da datas
+collection-health-report-telemetry-disabled = Ti na permettas betg pli a { -vendor-short-name } da registrar datas davart la tecnica e l'interacziun. Tut las datas dal passà vegnan stizzadas entaifer 30 dis.
+collection-health-report-telemetry-disabled-link = Ulteriuras infurmaziuns
 collection-health-report =
     .label = Permetter a { -brand-short-name } da trametter datas tecnicas e datas d'interacziun a { -vendor-short-name }
     .accesskey = r

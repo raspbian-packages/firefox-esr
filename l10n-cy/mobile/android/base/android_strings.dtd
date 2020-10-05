@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Llai o ddata, mwy o arbedion">
 <!ENTITY firstrun_data_subtext2 "Diffoddwch ddelweddau a gwario llai ar ddata pob gwefan fyddwch yn mynd iddyn nhw.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Cyfrif">
-<!ENTITY firstrun_sync_message2 "Parhau lle roeddech o\&apos;r blaen.">
+<!ENTITY firstrun_sync_message3 "Cydweddu eich nodau tudalen, hanes a\&apos;ch cyfrineiriau i\&apos;ch ffôn.">
 <!ENTITY firstrun_sync_subtext2 "Defnyddiwch Sync i ganfod nodau tudalen, cyfrineiriau a phethau eraill rydych wedi eu cadw i &brandShortName; ar eich holl ddyfeisiau.">
 <!ENTITY newfirstrun_sync_subtext "Cydweddwch y pethau rydych chi\&apos;n eu cadw ar Firefox symudol i Firefox y bwrdd gwaith, yn breifat ac yn ddiogel.">
-<!ENTITY updatednewfirstrun_sync_subtext "Mewngofnodwch i\&apos;ch cyfrif i gael y mwyaf o &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Tab Anfon">
+<!ENTITY firstrun_sendtab_message "Rhannwch dabiau o\&apos;r ffôn symudol i\&apos;r bwrdd gwaith - ar unwaith.">
 <!ENTITY firstrun_signin_message "Cysylltu a chychwyn arni">
-<!ENTITY firstrun_signin_button "Mewngofnodwch i Sync">
-<!ENTITY newfirstrun_signin_button "Cychwyn Sync">
-<!ENTITY updatednewfirstrun_signin_button "Mewngofnodi i &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Cychwyn Pori">
+<!ENTITY onboard_start_button_browser "Cychwyn Pori">
 <!ENTITY firstrun_button_notnow "Dim nawr">
 <!ENTITY firstrun_button_next "Nesaf">
+<!ENTITY firstrun_signup_button "Ymuno">
 
 <!ENTITY firstrun_tabqueue_title "Dolenni">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Anfon adroddiad chwalu\u2026">
 <!ENTITY  crash_close_label "Cau">
 <!ENTITY  crash_restart_label "Ailgychwyn &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "Mae &brandShortName; wedi chwalu">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Diweddarwyd y ffolder">
 <!ENTITY bookmark_parent_folder "Ffolder Rhiant">
 <!ENTITY bookmark_add_folder "Ychwanegu ffolder newydd">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(dim teitl)">
@@ -236,7 +232,7 @@
 <!ENTITY pref_developer_remotedebugging_usb "Dadfygio pell drwy USB">
 <!ENTITY pref_developer_remotedebugging_wifi "Dadfygio pell drwy\&apos;r diwifr">
 <!ENTITY pref_developer_remotedebugging_wifi_disabled_summary "Mae dadfygio pell drwy\&apos;r diwifr angen i\&apos;ch dyfais gael ap darllenydd QR wedi ei osod.">
-<!ENTITY pref_remember_signons2 "Cofio mewngfnodion">
+<!ENTITY pref_remember_signons2 "Cofio mewngofnodion">
 <!ENTITY pref_manage_logins "Rheoli mewngofnodion">
 
 <!ENTITY pref_category_home "Cartref">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Cwcis">
 <!ENTITY pref_cookies_accept_all "Galluogwyd">
 <!ENTITY pref_cookies_not_accept_foreign "Galluogwyd, eithrio 3ydd parti">
+<!ENTITY pref_cookies_not_accept_trackers "Galluogwyd, hepgor cwcis tracio">
 <!ENTITY pref_cookies_disabled "Analluogwyd">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Apiau Gwe Blaengar">
 <!ENTITY pref_pwa_summary "Caniatáu i apiau gwe gael eu hychwanegu i\&apos;r sgrin cartref">
-
-<!ENTITY tracking_protection_prompt_title "Nawr gyda Diogelwch Rhag Tracio">
-<!ENTITY tracking_protection_prompt_text "Yn rhwystro elfennau tracio heb i chi orfod poeni.">
-<!ENTITY tracking_protection_prompt_tip_text "Ewch i\&apos;r gosodiadau Preifatrwydd i ddysgu rhagor">
-<!ENTITY tracking_protection_prompt_action_button "Iawn!">
 
 <!ENTITY tab_queue_toast_message3 "Tabiau gadwyd yn &brandShortName;">
 <!ENTITY tab_queue_toast_action "Agor nawr">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Tapiwch yr ap Porwr i ddewis &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Mynd i Mozilla Support">
 <!ENTITY pref_about_firefox "Ynghylch &brandShortName;">
 <!ENTITY pref_vendor_faqs "Atebion">
 <!ENTITY pref_vendor_feedback "Rhoi adborth">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; Gwasanaeth Lleoliad yn rhedeg">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Diweddariadau awtomatig">
-<!ENTITY pref_update_autodownload_wifi "Dim ond ar diwifr">
-<!ENTITY pref_update_autodownload_never "Byth">
-<!ENTITY pref_update_autodownload_always "Bob tro">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Cymorth">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Rhannu">
 <!ENTITY share_title "Rhannu drwy">
 <!ENTITY share_image_failed "Methu rhannu\&apos;r ddelwedd">
+<!ENTITY share_error_toast_message "Methu rhannu i\&apos;r ap hwnnw">
 <!ENTITY save_as_pdf "Cadw fel PDF">
 <!ENTITY print "Argraffu">
 <!ENTITY view_page_source "Gweld Ffynhonnell y Dudalen">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Lleoliad">
 <!ENTITY bookmark_edit_keyword "Allweddair">
 <!ENTITY bookmark_select_folder "Dewis ffolder">
-
 <!ENTITY bookmark_edit_undo "Dadwneud">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Dewis neu recordio sain">
 <!ENTITY filepicker_image_title "Dewis neu dynnu llun">
 <!ENTITY filepicker_video_title "Dewis neu recordio fideo">
-
 <!ENTITY filepicker_permission_denied "Heb roi\&apos;r caniatâd gofynnol, gan ddychwelyd at ddewiswr ffeiliau\&apos;r system.">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Chwilio &formatS1; am &formatS2;">
 
 <!ENTITY searchable_description "Nodau Tudalen a hanes">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Diweddariad ar gael ar gyfer &brandShortName;">
-<!ENTITY updater_start_select2 "Cyffwrdd i lwytho i lawr">
-
-<!ENTITY updater_downloading_title2 "Llwytho &brandShortName; i lawr">
-<!ENTITY updater_downloading_title_failed2 "Methodd y llwytho i lawr">
-<!ENTITY updater_downloading_select2 "Cyffwrdd i osod diweddariad wedi ei lwytho i lawr">
-<!ENTITY updater_downloading_retry2 "Cyffwrdd i geisio eto">
-
-<!ENTITY updater_apply_title3 "Diweddariad ar gael ar gyfer &brandShortName;">
-<!ENTITY updater_apply_select3 "Cyffwrdd i\&apos;w osod">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Er mwyn llwytho ffeiliau a diweddariadau i lawr, caniatewch i &brandShortName; gael mynediad at y storfa.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Caniatáu">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Sesiwn Gwestai Newydd">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Gosod Nod Tudalen i eitemau Golwg Darllen i\&apos;w darllen all-lein.">
 <!ENTITY helper_triple_readerview_open_button "Ychwanegu at y Nodau Tudalen">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Croeso i &brandShortName;">
+<!ENTITY activity_stream_signin_description "Cychwynnwch gydweddu nodau tudalen, cyfrineiriau, a rhagor gyda\&apos;ch cyfrif Firefox.">
+<!ENTITY activity_stream_signup_button "Ymuno">
+<!ENTITY activity_stream_signin_prompt "A oes gennych chi gyfrif yn barod?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Mewngofnodi.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Eich Firefox newydd sbon, yn cyrraedd yn 2020">
+<!ENTITY activity_stream_firefox_promo_description "Yn dod cyn hir: Gwell perfformiad. Gwell diogelwch rhag tracio. A nodweddion sydd wedi\&apos;u cynllunio i\&apos;ch helpu chi i ganfod, cadw, a rhannu mwy o\&apos;r hyn rydych chi\&apos;n ei fwynhau ar-lein.">
+<!ENTITY activity_stream_firefox_promo_button "Cymerwch olwg">
+
 <!ENTITY activity_stream_topsites "Hoff Wefannau">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Argymhellwyd gan &brandPocket;">
@@ -936,12 +916,11 @@ Picture-in-picture mini window -->
 <!ENTITY pref_notification_settings_link "Rheoli gosodiadau hysbysu">
 <!-- Notification channels names -->
 <!ENTITY default_notification_channel2 "Porwr">
-<!ENTITY mls_notification_channel "Gwasanaeth Lleoli &vendorShortName;">
+<!ENTITY mls_notification_channel "Gwasanaeth Lleoliad &vendorShortName;">
 <!ENTITY download_notification_channel "Llwythau">
 <!ENTITY media_notification_channel2 "Sain a fideo">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; awgrymiadau a thriciau">
-<!ENTITY updater_notification_channel "Diweddaru apiau">
 <!ENTITY synced_tabs_notification_channel "Tabiau wedi\&apos;u cydweddu">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

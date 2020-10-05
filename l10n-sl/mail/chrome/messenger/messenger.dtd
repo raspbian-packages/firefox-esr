@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "S">
 <!ENTITY  newContactCmd.label "Stik iz imenika …">
 <!ENTITY  newContactCmd.accesskey "t">
+<!ENTITY openMenuCmd.label "Odpri">
+<!ENTITY openMenuCmd.accesskey "O">
 <!ENTITY openMessageFileCmd.label "Odpri shranjeno sporočilo …">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "Shrani kot">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "Z">
 <!ENTITY folderPaneBar.label "Orodna vrstica podokna map">
 <!ENTITY folderPaneBar.accesskey "M">
-<!ENTITY folderModeSelector.label "Pogledi map">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Razvrsti po">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Išči po sporočilih …">
 <!ENTITY searchMailCmd.accesskey "s">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Splošno iskanje …">
+<!ENTITY glodaSearchCmd.accesskey "S">
 <!ENTITY searchAddressesCmd.label "Išči po naslovih …">
 <!ENTITY searchAddressesCmd.accesskey "n">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Shrani izbrano sporočilo">
 <!ENTITY archiveButton.tooltip "Arhiviraj izbrana sporočila">
 <!ENTITY openConversationButton.tooltip "Prikaži pogovor izbranega sporočila">
+<!ENTITY openMsgConversationButton.tooltip "Prikaži pogovor izbranega sporočila">
 <!ENTITY nextButton.tooltip "Pojdi na naslednje neprebrano sporočilo">
 <!ENTITY nextMsgButton.tooltip "Pojdi na naslednje sporočilo">
 <!ENTITY previousButton.tooltip "Pojdi na prejšnje neprebrano sporočilo">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Označi sporočila">
 <!ENTITY compactButton.tooltip "Odstrani izbrisana sporočila iz izbrane mape">
 <!ENTITY appmenuButton1.tooltip "Prikaži &brandShortName;ov meni">
-
 <!ENTITY addonsButton.tooltip "Upravljajte svoje dodatke">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Shrani iskanje kot mapo …">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Izberite sporočila">
 <!ENTITY threadColumn.label "Nit">
 <!ENTITY fromColumn.label "Od">
 <!ENTITY recipientColumn.label "Prejemnik">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Vrstni red prejema">
 <!ENTITY attachmentColumn.label "Priponke">
 
+<!ENTITY deleteColumn.label "Izbriši">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Izberite stolpce za prikaz">
+<!ENTITY selectColumn.tooltip "Preklopi izbor vseh sporočil">
 <!ENTITY threadColumn2.tooltip "Prikaži niti sporočil">
 <!ENTITY fromColumn2.tooltip "Razvrsti po od">
 <!ENTITY recipientColumn2.tooltip "Razvrsti po prejemniku">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Razvrsti po mestu shranjevanja">
 <!ENTITY idColumn2.tooltip "Razvrsti po vrstnem redu prejema">
 <!ENTITY attachmentColumn2.tooltip "Razvrsti po priponkah">
+
+<!ENTITY deleteColumn.tooltip "Izbriši sporočilo">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Novo sporočilo iz predloge">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Možnosti ikone programa …">
 <!ENTITY writeNewMessageDock.label      "Sestavi novo sporočilo">
 <!ENTITY openAddressBookDock.label      "Odpri imenik">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Pojdi na prejšnjo stran">
+<!ENTITY browseForwardButton.tooltip "Pojdi na naslednjo stran">

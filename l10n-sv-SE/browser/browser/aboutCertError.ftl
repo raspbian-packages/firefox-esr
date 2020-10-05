@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Felkod: <a data-l10n-name="error-code-link">{ $err
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Webbplatser bevisar sin identitet via certifikat, som utfärdas av certifikatmyndigheter. De flesta webbläsare litar inte längre på certifikat som utfärdats av GeoTrust, RapidSSL, Symantec, Thawte och VeriSign. { $hostname } använder ett certifikat från en av dessa myndigheter och så kan inte webbplatsens identitet bevisas.
 cert-error-symantec-distrust-admin = Du kan meddela webbplatsens administratör om detta problem.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = Pinnad offentlig HTTP nyckel: { $hasHPKP }
+cert-error-details-cert-chain-label = Certifikatkedja:
+open-in-new-window-for-csp-or-xfo-error = Öppna webbplatsen i nytt fönster
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = För att skydda din säkerhet tillåter { $hostname } inte { -brand-short-name } att visa sidan om en annan webbplats har den inbäddad. För att se den här sidan måste du öppna den i ett nytt fönster.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Anslutningen misslyckades
+deniedPortAccess-title = Adressen har säkerhetsrestriktioner
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm. Vi har problem med att hitta den webbplatsen.
+fileNotFound-title = Filen hittades inte
+fileAccessDenied-title = Åtkomst till filen nekades
+generic-title = Hoppsan.
+captivePortal-title = Logga in till nätverk
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm. Den adressen ser inte rätt ut.
+netInterrupt-title = Anslutningen avbröts
+notCached-title = Utgånget dokument
+netOffline-title = Nedkopplat läge
+contentEncodingError-title = Kodningsfel av innehållet
+unsafeContentType-title = Osäker filtyp
+netReset-title = Anslutningen avbröts
+netTimeout-title = Anslutningen avbröts
+unknownProtocolFound-title = Adressen förstods inte
+proxyConnectFailure-title = Proxyservern avvisar anslutningen
+proxyResolveFailure-title = Kan inte hitta proxyservern
+redirectLoop-title = Sidan dirigeras om felaktigt
+unknownSocketType-title = Oväntat svar från servern
+nssFailure2-title = Säker anslutning misslyckades
+cspBlocked-title = Blockerad av säkerhetspolicyn för innehåll
+xfoBlocked-title = Blockerad av X-Frame-Options policy
+csp-xfo-error-title = { -brand-short-name } Kan inte öppna den här sidan
+corruptedContentError-title = Skadat innehåll
+remoteXUL-title = Extern XUL
+sslv3Used-title = Kan inte ansluta säkert
+inadequateSecurityError-title = Din anslutning är inte säker
+blockedByPolicy-title = Blockerad sida
+clockSkewError-title = Din dators klocka går fel
+networkProtocolError-title = Nätverksprotokollfel
+nssBadCert-title = Varning: Möjlig säkerhetsrisk framöver
+nssBadCert-sts-title = Kunde inte ansluta: Potentiellt säkerhetsproblem
+certerror-mitm-title = Programvaran hindrar { -brand-short-name } från säker anslutning till den här webbplatsen

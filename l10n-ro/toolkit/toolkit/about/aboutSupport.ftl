@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-page-title = Informații de depanare
+page-title = Informații pentru depanare
 page-subtitle =
     Această pagină conține informații tehnice care ar putea fi utile atunci când
     încerci să rezolvi o problemă. Dacă cauți răspunsuri la întrebări comune despre
@@ -34,7 +34,10 @@ app-basics-title = Informații de bază privind aplicația
 app-basics-name = Nume
 app-basics-version = Versiune
 app-basics-build-id = ID-ul versiunii compilate
+app-basics-distribution-id = ID distribuție
 app-basics-update-channel = Canal de actualizare
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Directorul actualizărilor
@@ -59,7 +62,6 @@ app-basics-service-workers = Scripturi Service Worker înregistrate
 app-basics-profiles = Profiluri
 app-basics-launcher-process-status = Procesul lansatorului
 app-basics-multi-process-support = Ferestre multiproces
-app-basics-process-count = Procese pentru conținut web
 app-basics-remote-processes-count = Procese la distanță
 app-basics-enterprise-policies = Politici dedicate întreprinderilor
 app-basics-location-service-key-google = Cheie de servicii Google pentru localizare
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Funcții dezactivate de Crash Guard
 graphics-workarounds-title = Alternative
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protocol de ferestre
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Mediu desktop
 place-database-title = Bază de date cu locuri
 place-database-integrity = Integritate
 place-database-verify-integrity = Verifică integritatea
@@ -115,6 +119,13 @@ sandbox-sys-call-number = Apel sistem
 sandbox-sys-call-args = Argumente
 safe-mode-title = Încearcă modul sigur
 restart-in-safe-mode-label = Repornește cu suplimentele dezactivate…
+
+## Media titles
+
+audio-backend = Backend audio
+max-audio-channels = Canale maxime
+channel-layout = Aspect preferat al canalelor
+sample-rate = Rată de eșantionare preferată
 media-title = Media
 media-output-devices-title = Dispozitive de ieșire
 media-input-devices-title = Dispozitive de intrare
@@ -127,6 +138,12 @@ media-device-format = Format
 media-device-channels = Canale
 media-device-rate = Rată
 media-device-latency = Latență
+media-capabilities-title = Capabilități media
+# List all the entries of the database.
+media-capabilities-enumerate = Enumerare bază de date
+
+##
+
 intl-title = Internaționalizare și localizare
 intl-app-title = Setări privind aplicația
 intl-locales-requested = Limbile solicitate
@@ -136,6 +153,22 @@ intl-locales-default = Limba implicită
 intl-os-title = Sistem de operare
 intl-os-prefs-system-locales = Limbile sistemului
 intl-regional-prefs = Preferințe regionale
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Depanare la distanță (protocol Chromium)
+remote-debugging-accepting-connections = Acceptarea conexiunilor
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -164,9 +197,9 @@ crashes-time-hours =
 # $days (integer) - Number of days since crash
 crashes-time-days =
     { $days ->
-        [one] { $days } zi în urmă
-        [few] { $days } zile în urmă
-       *[other] { $days } de zile în urmă
+        [one] acum { $days } zi
+        [few] acum { $days } zile
+       *[other] acum { $days } de zile
     }
 # Variables
 # $reports (integer) - Number of pending reports
@@ -227,17 +260,19 @@ webgl2-renderer = Renderul driverului WebGL 2
 webgl2-version = Versiunea driverului WebGL 2
 webgl2-driver-extensions = Extensiile driverului WebGL 2
 webgl2-extensions = Extensii WebGL 2
-blocklisted-bug = Pe lista de blocări din cauza problemelor cunoscute
+blocklisted-bug = Pe lista de blocări din cauza unor probleme cunoscute
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = bug { $bugNumber }
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
-unknown-failure = Pe lista de blocări; codu de eroare { $failureCode }
+unknown-failure = Pus pe lista de blocări; cod de eroare { $failureCode }
 d3d11layers-crash-guard = Compozitor D3D11
 d3d11video-crash-guard = Decodor video D3D11
 d3d9video-crash-buard = Decodor video D3D9
+d3d9video-crash-guard = Decodor video D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Decodor video WMF VPX
 reset-on-next-restart = Resetează la următoarea repornire
 gpu-process-kill-button = Termină procesul GPU
 gpu-device-reset = Resetarea dispozitivului
@@ -246,12 +281,7 @@ uses-tiling = Folosește tiling
 content-uses-tiling = Folosește Tiling (Conținut)
 off-main-thread-paint-enabled = Desenare în afara firului de execuție principal activată
 off-main-thread-paint-worker-count = Număr de workeri pentru desenare în afara firului de execuție principal
-low-end-machine = A detectat o mașină cu performanțe scăzute
 target-frame-rate = Frecvență de cadre țintă
-audio-backend = Backend audio
-max-audio-channels = Canale maxime
-channel-layout = Aspect preferat al canalelor
-sample-rate = Rată de eșantionare preferată
 min-lib-versions = Versiune minimă așteptată
 loaded-lib-versions = Versiune în uz
 has-seccomp-bpf = Seccomp-BPF (filtrarea apelurilor de sistem)
@@ -266,6 +296,11 @@ sandbox-proc-type-content = conținut
 sandbox-proc-type-file = conținut fișier
 sandbox-proc-type-media-plugin = plugin media
 sandbox-proc-type-data-decoder = decodor de date
+startup-cache-title = Cache de pornire
+startup-cache-disk-cache-path = Cale de salvare locală pentru cache
+startup-cache-ignore-disk-cache = Ignoră cache-ul salvat local
+startup-cache-found-disk-cache-on-init = Cache local identificat la inițializare
+startup-cache-wrote-to-disk-cache = Cache salvat local
 launcher-process-status-0 = Activat
 launcher-process-status-1 = Dezactivat din cauza unei probleme
 launcher-process-status-2 = Dezactivat forțat
@@ -282,13 +317,14 @@ multi-process-status-6 = Dezactivat din cauza introducerii de text neacceptat
 multi-process-status-7 = Dezactivate de suplimente
 multi-process-status-8 = Dezactivate forțat
 multi-process-status-unknown = Stare necunoscută
-async-pan-zoom = Panoramare/zoom asincron
+async-pan-zoom = Panoramare/zoom asincron(ă)
 apz-none = fără
 wheel-enabled = intrare pentru rotița mouse-ului activată
 touch-enabled = intrare tactilă activată
 drag-enabled = tragerea barei de derulare activată
 keyboard-enabled = tastatură activată
 autoscroll-enabled = autoderulare activată
+zooming-enabled = Zoom lin prin apropiere/depărtare cu degetele activat
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

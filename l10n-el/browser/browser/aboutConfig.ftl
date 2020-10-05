@@ -7,17 +7,49 @@ about-config-warning-title = Εδώ βρίσκονται δράκοι!
 about-config-warning-text = Η αλλαγή αυτών των προηγμένων ρυθμίσεων μπορεί να βλάψει τη σταθερότητα, την ασφάλεια και τις επιδόσεις αυτής της εφαρμογής. Συνεχίστε μόνο αν ξέρετε σίγουρα τι κάνετε.
 about-config-warning-checkbox = Να ενοχληθώ ξανά, παρακαλώ!
 about-config-warning-button = Αποδέχομαι τον κίνδυνο
-about-config-title = about:config
+
 about-config2-title = Προηγμένες ρυθμίσεις
+
 about-config-search-input =
     .placeholder = Αναζήτηση
+
+## These strings appear on the warning you see when first visiting about:config.
+
+about-config-intro-warning-title = Συνέχεια με προσοχή
+about-config-intro-warning-text = Η αλλαγή παραμέτρων των σύνθετων προτιμήσεων μπορεί να επηρεάσει την απόδοση ή την ασφάλεια του { -brand-short-name }.
+about-config-intro-warning-checkbox = Προειδοποίηση κατά την απόπειρα πρόσβασης σε αυτές τις προτιμήσεις
+about-config-intro-warning-button = Αποδοχή κινδύνου και συνέχεια
+
+##
+
+# This is shown on the page before searching but after the warning is accepted.
+about-config-caution-text = Η αλλαγή αυτών των προτιμήσεων μπορεί να επηρεάσει την απόδοση ή την ασφάλεια του { -brand-short-name }.
+
+about-config-page-title = Προηγμένες προτιμήσεις
+
+about-config-search-input1 =
+    .placeholder = Αναζήτηση ονόματος προτίμησης
 about-config-show-all = Εμφάνιση όλων
+
 about-config-pref-add = Προσθήκη
 about-config-pref-toggle = Εναλλαγή
 about-config-pref-edit = Επεξεργασία
 about-config-pref-save = Αποθήκευση
 about-config-pref-reset = Επαναφορά
 about-config-pref-delete = Διαγραφή
+
+about-config-pref-add-button =
+    .title = Προσθήκη
+about-config-pref-toggle-button =
+    .title = Εναλλαγή
+about-config-pref-edit-button =
+    .title = Επεξεργασία
+about-config-pref-save-button =
+    .title = Αποθήκευση
+about-config-pref-reset-button =
+    .title = Επαναφορά
+about-config-pref-delete-button =
+    .title = Διαγραφή
 
 ## Labels for the type selection radio buttons shown when adding preferences.
 

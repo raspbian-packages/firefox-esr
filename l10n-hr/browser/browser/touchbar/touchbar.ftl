@@ -6,15 +6,34 @@
 # MacBook Touch Bar.
 back = Natrag
 forward = Naprijed
-reload = Osvježi
+reload = Učitaj ponovo
 home = Početna stranica
-fullscreen = Cijeli zaslon
+fullscreen = Cjeloekranski prikaz
+touchbar-fullscreen-exit = Izađi iz cjeloekranskog prikaza
 find = Traži
 new-tab = Nova kartica
 add-bookmark = Dodaj zabilješku
 open-bookmarks-sidebar = Otvori okno zabilješki
 reader-view = Prikaz za čitanje
 # Meant to match the string displayed in an empty URL bar.
-open-location = Pretražite ili upišite adresu
+open-location = Pretraži ili upiši adresu
 share = Dijeli
 close-window = Zatvori prozor
+open-sidebar = Bočne trake
+
+# This string describes shortcuts for search.
+search-popover = Prečaci za pretraživanje
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Traži u:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Zabilješke
+search-history = Povijest
+search-opentabs = Otvorene kartice
+search-tags = Oznake
+search-titles = Naslovi
+
+##
+

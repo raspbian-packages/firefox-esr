@@ -31,7 +31,7 @@ shrink-to-fit =
 options-group-label =
     .value = Opções
 print-bg =
-    .label = Imprimir cores e imagens do plano de fundo
+    .label = Imprimir fundo (cores e imagens)
     .accesskey = I
 margin-group-label-inches =
     .value = Margens (em polegadas)
@@ -103,6 +103,7 @@ print-window =
     .title = Imprimindo
 print-complete =
     .value = A impressão foi concluída.
+
 # Variables
 # $percent (integer) - Number of printed percentage
 print-percent =

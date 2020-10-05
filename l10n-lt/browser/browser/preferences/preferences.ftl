@@ -14,6 +14,11 @@ pref-page =
             [windows] Nuostatos
            *[other] Nuostatos
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Nuostatos
+       *[other] Nuostatos
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -29,11 +34,6 @@ search-input-box =
             [windows] Rasti nuostatose
            *[other] Rasti nuostatose
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Jūsų organizacija apribojo galimybę keisti dalį nuostatų.
-       *[other] Jūsų organizacija apribojo galimybę keisti dalį nuostatų.
-    }
 managed-notice = Jūsų naršyklę tvarko jūsų organizacija.
 pane-general-title = Bendrosios
 category-general =
@@ -206,6 +206,15 @@ advanced-fonts =
 colors-settings =
     .label = Spalvos…
     .accesskey = S
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Dydis
+preferences-default-zoom = Numatytasis dydis
+    .accesskey = d
+preferences-default-zoom-value =
+    .label = { $percentage }%
+preferences-zoom-text-only =
+    .label = Keisti tik teksto dydį
+    .accesskey = t
 language-header = Kalba
 choose-language-description = Pasirinkite kalbą, kuria pageidaujate matyti tinklalapių turinį.
 choose-button =
@@ -226,6 +235,10 @@ translate-attribution = Vertimą teikia <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Išimtys…
     .accesskey = š
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Naudoti jūsų operacinės sistemos nuostatas, skirtas „{ $localeName }“, formatuojant datas, laikus, skaičius, ir matavimus.
 check-user-spelling =
     .label = Tikrinti rašybą renkant tekstą
     .accesskey = k
@@ -261,6 +274,75 @@ applications-type-column =
 applications-action-column =
     .label = Veiksmas
     .accesskey = V
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = { $extension } failas
+applications-action-save =
+    .label = Įrašyti failą
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = Atverti programa „{ $app-name }“
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = Atverti programa „{ $app-name }“ (numatytoji)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Naudoti numatytąją „macOS“ programą
+            [windows] Naudoti numatytąją „Windows“ programą
+           *[other] Naudoti numatytąją sistemos programą
+        }
+applications-use-other =
+    .label = Parinkti kitą programą…
+applications-select-helper = Atveriančiosios programos parinkimas
+applications-manage-app =
+    .label = Programų savybės…
+applications-always-ask =
+    .label = Visada klausti
+applications-type-pdf = PDF formato dokumentas
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = Naudoti „{ $plugin-name }“ papildinį (programoje „{ -brand-short-name }“)
+applications-open-inapp =
+    .label = Atverti per „{ -brand-short-name }“
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Skaitmeninių teisių valdymo (DRM) turinys
 play-drm-content =
     .label = Atkurti DRM valdomą turinį
@@ -347,6 +429,10 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Pradėti paiešką pradėjus rinkti tekstą
     .accesskey = P
+browsing-picture-in-picture-toggle-enabled =
+    .label = Įjungti vaizdo vaizde įrašo valdymą
+    .accesskey = j
+browsing-picture-in-picture-learn-more = Sužinoti daugiau
 browsing-cfr-recommendations =
     .label = Rekomenduoti priedus naršant
     .accesskey = R
@@ -401,6 +487,55 @@ choose-bookmark =
     .label = Tinklalapis iš adresyno…
     .accesskey = T
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = „Firefox“ pradžios turinys
+home-prefs-content-description = Pasirinkite, kokį turinį norite matyti „Firefox“ pradžios ekrane
+home-prefs-search-header =
+    .label = Paieška internete
+home-prefs-topsites-header =
+    .label = Lankomiausios svetainės
+home-prefs-topsites-description = Dažniausiai lankomos svetainės
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = Rekomendavo „{ $provider }“
+home-prefs-recommended-by-description = Puikus turinys iš viso saityno, parinktas specialiai jums
+home-prefs-recommended-by-description-update = Išskirtinis turinys iš viso interneto, atrinktas „{ $provider }“
+
+##
+
+home-prefs-recommended-by-learn-more = Kaip tai veikia
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Rėmėjų straipsniai
+home-prefs-highlights-header =
+    .label = Akcentai
+home-prefs-highlights-description = Aplankytų bei išsaugotų svetainių rinkinys
+home-prefs-highlights-option-visited-pages =
+    .label = Aplankyti tinklalapiai
+home-prefs-highlights-options-bookmarks =
+    .label = Adresynas
+home-prefs-highlights-option-most-recent-download =
+    .label = Paskiausias atsisiuntimas
+home-prefs-highlights-option-saved-to-pocket =
+    .label = Į „{ -pocket-brand-name }“ įrašyti tinklalapiai
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Iškarpos
+home-prefs-snippets-description = „{ -vendor-short-name }“ ir „{ -brand-product-name }“ naujienos
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } eilutė
+            [few] { $num } eilučių
+           *[other] { $num } eilutės
+        }
+
 ## Search Section
 
 search-bar-header = Paieškos laukas
@@ -410,6 +545,13 @@ search-bar-shown =
     .label = Pridėti paieškos lauką į priemonių juostą
 search-engine-default-header = Numatytoji ieškyklė
 search-engine-default-desc = Pasirinkite numatytąją ieškyklę, kuri bus naudojama adreso ir paieškos laukuose.
+search-engine-default-desc-2 = Tai yra jūsų numatytoji ieškyklė adreso ir paieškos laukuose. Ją galite bet kada pakeisti.
+search-engine-default-private-desc-2 = Pasirinkite kitą numatytąją ieškyklę, kuri bus skirta tik privačiojo naršymo langams
+search-separate-default-engine =
+    .label = Naudoti šią ieškyklę privačiuose languose
+    .accesskey = N
+search-suggestions-header = Paieškos žodžių siūlymai
+search-suggestions-desc = Pasirinkite, kaip bus pateikiami ieškyklių paieškos žodžių siūlymai.
 search-suggestions-option =
     .label = Pateikti paieškos pasiūlymus
     .accesskey = i
@@ -423,6 +565,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Rodyti paieškos žodžių siūlymus virš naršymo žurnalo, matomus adreso juostos rezultatuose
+search-show-suggestions-private-windows =
+    .label = Rodyti paieškos žodžių siūlymus privačiojo naršymo languose.
+suggestions-addressbar-settings = Keiskite naršymo žurnalo, adresyno, ir kortelių siūlymų nuostatas
+suggestions-addressbar-settings-generic = Keisti kitų adreso juostos siūlymų nuostatas
 search-suggestions-cant-show = Paieškos žodžių siūlymai adreso lauke nebus rodomi, kadangi esate nustatę, jog „{ -brand-short-name }“ niekada nevestų žurnalo.
 search-one-click-header = Ieškyklės vienu spustelėjimu
 search-one-click-desc = Pasirinkite alternatyvias ieškykles, kurios pasirodo po adreso ir paieškos laukais, kai pradedate vesti žodį.
@@ -448,16 +594,29 @@ search-keyword-warning-bookmark = Įvedėte reikšminį žodį, kurį jau naudoj
 ## Containers Section
 
 containers-back-link = « Grįžti
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Grįžti į nuostatas
+           *[other] Grįžti į nuostatas
+        }
 containers-header = Sudėtinio rodinio kortelės
 containers-add-button =
     .label = Pridėti naują sudėtinį rodinį
     .accesskey = P
+containers-new-tab-check =
+    .label = Pasirinkti sudėtinį rodinį kiekvienai naujai kortelei
+    .accesskey = s
 containers-preferences-button =
     .label = Nuostatos
 containers-remove-button =
     .label = Pašalinti
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Pasiimkite savo saityną kartu
 sync-signedout-description = Sinchronizuokite savo adresyną, žurnalą, korteles, slaptažodžius, priedus bei nuostatas visuose savo įrenginiuose.
@@ -467,6 +626,9 @@ sync-signedout-account-create = Neturite paskyros? Pradėkite naudotis
 sync-signedout-account-signin =
     .label = Prisijungti…
     .accesskey = J
+sync-signedout-account-signin2 =
+    .label = Jungtis prie „{ -sync-brand-short-name }“…
+    .accesskey = i
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
 #   `<a data-l10n-name="android-link">` - Link to Android Download
@@ -479,11 +641,17 @@ sync-mobile-promo = Parsisiųskite „Firefox“, skirtą <img data-l10n-name="a
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Keisti profilio nuotrauką
 sync-disconnect =
     .label = Atsijungti…
     .accesskey = t
+sync-sign-out =
+    .label = Atsijungti…
+    .accesskey = g
 sync-manage-account = Tvarkyti paskyrą
     .accesskey = y
 sync-signedin-unverified = Paskyra { $email } yra nepatvirtinta.
@@ -499,6 +667,48 @@ sync-sign-in =
     .accesskey = g
 sync-signedin-settings-header = Sinchronizavimo nuostatos
 sync-signedin-settings-desc = Pasirinkite, ką sinchronizuoti jūsų įrenginiuose, naudojant „{ -brand-short-name }“:
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Sinchronizavimas: ĮJUNGTA
+prefs-syncing-off = Sinchronizavimas: IŠJUNGTA
+prefs-sync-setup =
+    .label = Įjungti „{ -sync-brand-short-name }“…
+    .accesskey = j
+prefs-sync-offer-setup-label = Sinchronizuokite savo adresyną, žurnalą, korteles, slaptažodžius, priedus bei nuostatas visuose savo įrenginiuose.
+prefs-sync-now =
+    .labelnotsyncing = Sinchronizuoti dabar
+    .accesskeynotsyncing = d
+    .labelsyncing = Sinchronizuojama…
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Dabar sinchronizuojate šiuos elementus:
+sync-currently-syncing-bookmarks = Adresynas
+sync-currently-syncing-history = Žurnalas
+sync-currently-syncing-tabs = Atvertos kortelės
+sync-currently-syncing-logins-passwords = Prisijungimai ir slaptažodžiai
+sync-currently-syncing-addresses = Adresai
+sync-currently-syncing-creditcards = Mokėjimo kortelės
+sync-currently-syncing-addons = Priedai
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Nuostatos
+       *[other] Nuostatos
+    }
+sync-change-options =
+    .label = Pakeisti…
+    .accesskey = C
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Pasirinkite, ką sinchronizuosite
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Įrašyti pakeitimus
+    .buttonaccesskeyaccept = r
+    .buttonlabelextra2 = Atsijungti…
+    .buttonaccesskeyextra2 = t
 sync-engine-bookmarks =
     .label = adresyną
     .accesskey = a
@@ -512,13 +722,17 @@ sync-engine-tabs =
 sync-engine-logins =
     .label = prisijungimus
     .tooltiptext = Įrašyti prisijungimų vardai ir slaptažodžiai
-    .accesskey = P
+    .accesskey = p
+sync-engine-logins-passwords =
+    .label = prisijungimus ir slaptažodžius
+    .tooltiptext = Jūsų įrašyti prisijungimai ir slaptažodžiai
+    .accesskey = s
 sync-engine-addresses =
     .label = adresus
     .tooltiptext = Įrašyti pašto adresai (tik kompiuteryje)
-    .accesskey = e
+    .accesskey = d
 sync-engine-creditcards =
-    .label = Kreditinės kortelės
+    .label = mokėjimo korteles
     .tooltiptext = Vardai, numeriai ir galiojimo datos (tik kompiuteryje)
     .accesskey = r
 sync-engine-addons =
@@ -528,11 +742,14 @@ sync-engine-addons =
 sync-engine-prefs =
     .label =
         { PLATFORM() ->
-            [windows] Nuostatos
+            [windows] nuostatos
            *[other] nuostatas
         }
     .tooltiptext = Bendros, privatumo ir saugumo nuostatos, kurias keitėte
     .accesskey = n
+
+## The device name controls.
+
 sync-device-name-header = Įrenginio pavadinimas
 sync-device-name-change =
     .label = Keisti įrenginio pavadinimą…
@@ -556,6 +773,13 @@ privacy-header = Naršyklės privatumas
 ## Privacy Section - Forms
 
 logins-header = Prisijungimai ir slaptažodžiai
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Prisijungimai ir slaptažodžiai
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Klausti, ar norite įrašyti svetainių prisijungimus ir slaptažodžius
     .accesskey = r
@@ -565,6 +789,14 @@ forms-exceptions =
 forms-generate-passwords =
     .label = Siūlyti ir generuoti stiprius slaptažodžius
     .accesskey = i
+forms-breach-alerts =
+    .label = Rodyti įspėjimus apie slaptažodžius pažeistose svetainėse
+    .accesskey = d
+forms-breach-alerts-learn-more-link = Sužinoti daugiau
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Automatiškai užpildyti prisijungimus ir slaptažodžius
+    .accesskey = m
 forms-saved-logins =
     .label = Įrašyti prisijungimai…
     .accesskey = p
@@ -574,6 +806,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Pakeisti pagrindinį slaptažodį…
     .accesskey = k
+forms-master-pw-fips-title = Šiuo metu pasirinkta FIPS veiksena. Jai reikia pagrindinio slaptažodžio.
+forms-master-pw-fips-desc = Slaptažodžio pakeisti nepavyko
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Norėdami sukurti pagrindinį slaptažodį, įveskite savo „Windows“ prisijungimo duomenis. Tai padeda apsaugoti jūsų paskyras.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = sukurti pagrindinį slaptažodį
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -641,6 +886,12 @@ sitedata-block-desc = Blokuojamas tipas
     .accesskey = t
 sitedata-option-block-trackers =
     .label = Trečiųjų šalių stebėjimo elementai
+sitedata-option-block-cross-site-trackers =
+    .label = Tarp svetainių veikiantys stebėjimo elementai
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Tarp svetainių veikiantys ir socialinių tinklų stebėjimo elementai
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Tarp svetainių veikiantys ir socialinių tinklų stebėjimo elementai, o likusius slapukus izoliuoti
 sitedata-option-block-unvisited =
     .label = Slapukai iš neaplankytų svetainių
 sitedata-option-block-all-third-party =
@@ -656,6 +907,9 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = Tvarkyti leidimus…
     .accesskey = l
+sitedata-cookies-exceptions =
+    .label = Tvarkyti išimtis…
+    .accesskey = m
 
 ## Privacy Section - Address Bar
 
@@ -670,41 +924,70 @@ addressbar-locbar-bookmarks-option =
 addressbar-locbar-openpage-option =
     .label = atvertų kortelių
     .accesskey = v
+addressbar-locbar-topsites-option =
+    .label = Lankomiausios svetainės
+    .accesskey = L
 addressbar-suggestions-settings = Keisti ieškyklių siūlymų nuostatas
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Turinio blokavimas
-content-blocking-description = Blokuokite trečiųjų šalių turinį, kuris stebi jūsų veiklą internete. Kontroliuokite, kiek jūsų veiklos saugoma ir dalijamasi tarp svetainių.
 content-blocking-section-description = Saugokite savo privatumą naršydami. Blokuokite nematomą turinį, kuris seka jūsų lankomas svetaines ir jus profiliuoja. Užblokavus dalį šio turinio gali pagreitėti tinklalapių įkėlimas.
+content-blocking-enhanced-tracking-protection = Išplėsta apsauga nuo stebėjimo
+content-blocking-section-top-level-description = Stebėjimo elementai seka jus internete, siekdami surinkti informacijos apie jūsų naršymo įpročius ir pomėgius. „{ -brand-short-name }“ blokuoja daugelį šių elementų ir kitų kenksmingų scenarijų.
 content-blocking-learn-more = Sužinoti daugiau
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
 content-blocking-setting-standard =
-    .label = Standartinis
-    .accesskey = d
+    .label = Numatytasis
+    .accesskey = N
 content-blocking-setting-strict =
     .label = Griežtas
     .accesskey = r
 content-blocking-setting-custom =
     .label = Kitas
     .accesskey = K
-content-blocking-standard-description = Blokuoja tik žinomus stebėjimo elementus privačiojo naršymo languose.
 content-blocking-standard-desc = Pritaikyta saugumui ir našumui. Leidžia dalį stebėjimo elementų, kad svetainės veiktų tinkamai.
-content-blocking-strict-desc = Blokuoja visus „{ -brand-short-name }“ aptinkamus stebėjimo elementus. Gali sutrikti kai kurių svetainių veikimas.
 content-blocking-strict-description = Stipresnė apsauga, tačiau gali sutrikti kai kurių svetainių veikimas.
 content-blocking-custom-desc = Pasirinkite, ką blokuoti.
 content-blocking-private-trackers = Žinomi stebėjimo elementai tik privačiojo naršymo languose
 content-blocking-third-party-cookies = Trečiųjų šalių stebėjimo slapukai
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Numatytoji
+    .accesskey = N
+enhanced-tracking-protection-setting-strict =
+    .label = Griežta
+    .accesskey = G
+enhanced-tracking-protection-setting-custom =
+    .label = Pasirinktinė
+    .accesskey = P
+
+##
+
+content-blocking-etp-standard-desc = Subalansuota apsaugai ir našumui. Tinklalapiai bus įkeliami įprastai.
+content-blocking-etp-strict-desc = Stipresnė apsauga, tačiau gali sutrikti kai kurių svetainių veikimas.
+content-blocking-etp-custom-desc = Pasirinkite, kurios stebėjimo elementus ir scenarijus norite blokuoti.
+content-blocking-private-windows = Stebėjimui naudojamas turinys privačiojo naršymo languose
+content-blocking-cross-site-tracking-cookies = Tarp svetainių veikiantys stebėjimo slapukai
+content-blocking-cross-site-tracking-cookies-plus-isolate = Tarp svetainių veikiantys slapukai, o likusius slapukus izoliuoti
+content-blocking-social-media-trackers = Socialinių tinklų stebėjimo elementai
 content-blocking-all-cookies = Visi slapukai
 content-blocking-unvisited-cookies = Slapukai iš nelankytų svetainių
 content-blocking-all-windows-trackers = Žinomi stebėjimo elementai visuose languose
+content-blocking-all-windows-tracking-content = Stebėjimui naudojamas turinys visuose languose
 content-blocking-all-third-party-cookies = Visi trečiųjų šalių slapukai
 content-blocking-cryptominers = Kriptovaliutų kasėjai
 content-blocking-fingerprinters = Skaitmeninių atspaudų stebėjimas
 content-blocking-warning-title = Dėmesio!
 content-blocking-warning-description = Blokuojant turinį gali sutrikti kai kurių svetainių veikimas. Blokavimą galima lengvai išjungti patikimose svetainėse.
 content-blocking-learn-how = Sužinoti kaip
+content-blocking-and-isolating-etp-warning-description = Stebėjimo elementų blokavimas ir slapukų izoliavimas gali sutrikdyti kai kurių svetainių veikimą. Norėdami įkelti visą turinį, tinklalapį su stebėjimo elementais įkelkite iš naujo.
+content-blocking-warning-learn-how = Sužinoti kaip
 content-blocking-reload-description = Norėdami pritaikyti šiuos pakeitimus, turėsite įkelti savo korteles iš naujo.
 content-blocking-reload-tabs-button =
     .label = Iš naujo įkelti visas korteles
@@ -712,6 +995,9 @@ content-blocking-reload-tabs-button =
 content-blocking-trackers-label =
     .label = Stebėjimo elementai
     .accesskey = S
+content-blocking-tracking-content-label =
+    .label = Stebėjimui naudojamas turinys
+    .accesskey = t
 content-blocking-tracking-protection-option-all-windows =
     .label = Visuose languose
     .accesskey = V
@@ -745,6 +1031,10 @@ tracking-manage-exceptions =
 permissions-header = Leidimai
 permissions-location = Vieta
 permissions-location-settings =
+    .label = Nuostatos…
+    .accesskey = t
+permissions-xr = Virtualioji realybė
+permissions-xr-settings =
     .label = Nuostatos…
     .accesskey = t
 permissions-camera = Kamera
@@ -795,6 +1085,8 @@ permissions-a11y-privacy-link = Sužinoti daugiau
 collection-header = „{ -brand-short-name }“ duomenų rinkimas ir naudojimas
 collection-description = Mes siekiame jums leisti rinktis ir rinkti tik tai, ko reikia teikti ir tobulinti „{ -brand-short-name }“ visiems. Mes visuomet paprašome leidimo prieš gaudami asmeninę informaciją.
 collection-privacy-notice = Privatumo pranešimas
+collection-health-report-telemetry-disabled = Jūs nebeleidžiate „{ -vendor-short-name }“ rinkti techninių ir naudojimosi duomenų. Visi ankstesni duomenys bus pašalinti per 30 dienų.
+collection-health-report-telemetry-disabled-link = Sužinoti daugiau
 collection-health-report =
     .label = Leisti „{ -brand-short-name }“ siųsti techninius ir naudojimosi duomenis „{ -vendor-short-name }i“
     .accesskey = t

@@ -4,18 +4,22 @@
 
 page-info-window =
     .style = width: 970px; min-height: 500px;
+
 copy =
     .key = C
 menu-copy =
     .label = Kopeeri
     .accesskey = K
+
 select-all =
     .key = A
 menu-select-all =
     .label = Vali kõik
     .accesskey = V
-close-window =
-    .key = A
+
+close-dialog =
+    .key = w
+
 general-tab =
     .label = Üldine
     .accesskey = l
@@ -39,6 +43,7 @@ general-meta-name =
     .label = Nimi
 general-meta-content =
     .label = Sisu
+
 media-tab =
     .label = Meedia
     .accesskey = M
@@ -68,11 +73,13 @@ media-save-image-as =
     .accesskey = e
 media-preview =
     .value = Meediafaili eelvaatlus:
+
 perm-tab =
     .label = Õigused
     .accesskey = i
 permissions-for =
     .value = Õigused veebilehele:
+
 security-tab =
     .label = Turvalisus
     .accesskey = r
@@ -93,17 +100,22 @@ security-view-identity-validity =
     .value = Aegub:
 security-view-privacy =
     .value = Privaatsus ja ajalugu
+
 security-view-privacy-history-value = Kas ma olen enne tänast seda lehte juba külastanud?
 security-view-privacy-sitedata-value = Kas see veebileht salvestab infot minu arvutisse?
+
 security-view-privacy-clearsitedata =
     .label = Kustuta küpsised ja saidi andmed
     .accesskey = K
+
 security-view-privacy-passwords-value = Kas ma olen salvestanud selle veebilehe paroole?
+
 security-view-privacy-viewpasswords =
     .label = Vaata salvestatud paroole
     .accesskey = s
 security-view-technical =
     .value = Tehnilised üksikasjad
+
 help-button =
     .label = Abi
 
@@ -115,10 +127,14 @@ help-button =
 
 security-site-data-cookies = Jah, küpsiseid ja { $value } { $unit } saidi andmeid
 security-site-data-only = Jah, { $value } { $unit } saidi andmeid
+
 security-site-data-cookies-only = Jah, küpsiseid
 security-site-data-no = Ei
+
 image-size-unknown = Tundmatu
 not-set-verified-by = Määramata
+page-info-not-specified =
+    .value = Määramata
 not-set-alternative-text = Määramata
 not-set-date = Määramata
 media-img = Pilt
@@ -134,6 +150,7 @@ media-video = Video
 media-audio = Audio
 saved-passwords-yes = Jah
 saved-passwords-no = Ei
+
 no-page-title =
     .value = Nimetu leht:
 general-quirks-mode =
@@ -141,12 +158,15 @@ general-quirks-mode =
 general-strict-mode =
     .value = Standardipõhine režiim
 security-no-owner = Sellel lehel puudub omaniku info.
+page-info-security-no-owner =
+    .value = Sellel lehel puudub omaniku info.
 media-select-folder = Vali kaust, kuhu pilt salvestada
 media-unknown-not-cached =
     .value = Tundmatu (puudub puhvermälust)
 permissions-use-default =
     .label = Kasutatakse vaikeväärtust
 security-no-visits = Ei
+
 # This string is used to display the number of meta tags
 # in the General Tab
 # Variables:
@@ -157,6 +177,7 @@ general-meta-tags =
             [one] Meta (1 silt)
            *[other] Meta ({ $tags } silti)
         }
+
 # This string is used to display the number of times
 # the user has visited the website prior
 # Variables:
@@ -167,6 +188,7 @@ security-visits-number =
         [one] Jah, korra
        *[other] Jah, { $visits } korda
     }
+
 # This string is used to display the size of a media file
 # Variables:
 #   $kb (number) - The size of an image in Kilobytes
@@ -177,6 +199,7 @@ properties-general-size =
             [one] { $kb } KiB  ({ $bytes } bait)
            *[other] { $kb } KiB ({ $bytes } baiti)
         }
+
 # This string is used to display the type and number
 # of frames of a animated image
 # Variables:
@@ -188,12 +211,14 @@ media-animated-image-type =
             [one] { $type } pilt (animeeritud, { $frames } kaader)
            *[other] { $type } pilt (animeeritud, { $frames } kaadrit)
         }
+
 # This string is used to display the type of
 # an image
 # Variables:
 #   $type (string) - The type of an image
 media-image-type =
     .value = { $type } pilt
+
 # This string is used to display the size of a scaled image
 # in both scaled and unscaled pixels
 # Variables:
@@ -203,17 +228,20 @@ media-image-type =
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
     .value = { $dimx }px × { $dimy }px (skaleeritud suurusele { $scaledx }px × { $scaledy }px)
+
 # This string is used to display the size of an image in pixels
 # Variables:
 #   $dimx (number) - The horizontal size of an image
 #   $dimy (number) - The vertical size of an image
 media-dimensions =
     .value = { $dimx }px × { $dimy }px
+
 # This string is used to display the size of a media
 # file in kilobytes
 # Variables:
 #   $size (number) - The size of the media file in kilobytes
 media-file-size = { $size }KiB
+
 # This string is used to display the website name next to the
 # "Block Images" checkbox in the media tab
 # Variables:
@@ -221,6 +249,7 @@ media-file-size = { $size }KiB
 media-block-image =
     .label = Pilte aadressilt { $website } ei laadita
     .accesskey = P
+
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:

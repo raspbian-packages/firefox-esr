@@ -5,50 +5,66 @@
 permissions-window =
     .title = Exceptions
     .style = width: 50em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adresse du site web
     .accesskey = d
+
 permissions-block =
     .label = Bloquer
     .accesskey = B
+
 permissions-session =
     .label = Autoriser pour la session
     .accesskey = o
+
 permissions-allow =
     .label = Autoriser
     .accesskey = A
+
 permissions-site-name =
     .label = Site web
+
 permissions-status =
     .label = État
+
 permissions-remove =
     .label = Supprimer le site
     .accesskey = S
+
 permissions-remove-all =
     .label = Supprimer tous les sites
     .accesskey = u
+
 permissions-button-cancel =
     .label = Annuler
     .accesskey = n
+
 permissions-button-ok =
     .label = Enregistrer les modifications
     .accesskey = E
+
 permissions-autoplay-menu = Par défaut pour tous les sites web :
+
 permissions-searchbox =
     .placeholder = Rechercher un site web
+
 permissions-capabilities-autoplay-allow =
     .label = Autoriser l’audio et la vidéo
 permissions-capabilities-autoplay-block =
     .label = Bloquer l’audio
 permissions-capabilities-autoplay-blockall =
     .label = Bloquer l’audio et la vidéo
+
 permissions-capabilities-allow =
     .label = Autoriser
 permissions-capabilities-block =
     .label = Bloquer
 permissions-capabilities-prompt =
     .label = Toujours demander
+
 permissions-capabilities-listitem-allow =
     .value = Autoriser
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Exceptions - Blocage de contenu
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Vous avez désactivé le blocage de contenu sur ces sites.
+
+permissions-exceptions-etp-window =
+    .title = Exceptions pour la protection renforcée contre le pistage
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Vous avez désactivé les protections sur ces sites web.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Les sites web suivants ont demandé l’accès 
 permissions-site-location-disable-label =
     .label = Bloquer les nouvelles demandes d’accès à votre localisation
 permissions-site-location-disable-desc = Cela empêchera tous les sites web non listés ci-dessus de demander l’autorisation d’accéder à votre localisation. Bloquer l’accès à votre localisation peut invalider les fonctionnalités de certains sites web.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Paramètres - Autorisations de réalité virtuelle
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Les sites web suivants ont demandé l’accès à vos appareils de réalité virtuelle. Vous pouvez spécifier quels sites web sont autorisés à accéder à vos appareils de réalité virtuelle. Vous pouvez également bloquer les nouvelles demandes d’accès à vos appareils de réalité virtuelle.
+permissions-site-xr-disable-label =
+    .label = Bloquer les nouvelles demandes d’accès à vos appareils de réalité virtuelle
+permissions-site-xr-disable-desc = Cela empêchera tous les sites web non listés ci-dessus de demander l’autorisation d’accéder à vos appareils de réalité virtuelle. Bloquer l’accès à vos appareils de réalité virtuelle peut restreindre les fonctionnalités de certains sites web.
 
 ## Site Permissions - Camera
 

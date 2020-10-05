@@ -81,9 +81,11 @@ about-debugging-refresh-usb-devices-button = Actualisar le apparatos
 # Title of the Setup page.
 about-debugging-setup-title = Installation
 # Introduction text in the Setup page to explain how to configure remote debugging.
-about-debugging-setup-intro = Configurar le methodo de connexion desirate pro le depuration remote de tu dispositivo.
+about-debugging-setup-intro = Configura le methodo de connexion desirate pro le depuration remote de tu apparato.
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
 about-debugging-setup-this-firefox = Usar <a>{ about-debugging-this-firefox-runtime-name }</a> pro depurar schedas, extensiones e obreros de servicio sur iste version de { -brand-shorter-name }.
+# Explanatory text in the Setup page about what the 'This Firefox' page is for
+about-debugging-setup-this-firefox2 = Usa <a>{ about-debugging-this-firefox-runtime-name }</a> pro cercar defectos in extensiones e "service workers" in iste version de { -brand-shorter-name }.
 # Title of the heading Connect section of the Setup page.
 about-debugging-setup-connect-heading = Connecter un apparato
 # USB section of the Setup page
@@ -92,9 +94,9 @@ about-debugging-setup-usb-title = USB
 about-debugging-setup-usb-disabled = Iste activation discargara e addera le componentes de depuration USB de Android pro { -brand-shorter-name }.
 # Text of the button displayed in the USB section of the setup page when USB debugging is disabled.
 # Clicking on it will download components needed to debug USB Devices remotely.
-about-debugging-setup-usb-enable-button = Activar le dispositivos USB
+about-debugging-setup-usb-enable-button = Activar apparatos USB
 # Text of the button displayed in the USB section of the setup page when USB debugging is enabled.
-about-debugging-setup-usb-disable-button = Disactivar dispositivos USB
+about-debugging-setup-usb-disable-button = Disactivar apparatos USB
 # Text of the button displayed in the USB section of the setup page while USB debugging
 # components are downloaded and installed.
 about-debugging-setup-usb-updating-button = Actualisation…
@@ -103,16 +105,16 @@ about-debugging-setup-usb-status-enabled = Activate
 about-debugging-setup-usb-status-disabled = Disactivate
 about-debugging-setup-usb-status-updating = Actualisation...
 # USB section step by step guide
-about-debugging-setup-usb-step-enable-dev-menu2 = Activar le menu pro disveloppatores sur tu dispositivo Android.
+about-debugging-setup-usb-step-enable-dev-menu2 = Activar le menu pro disveloppatores sur tu apparato Android.
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Activar le recerca de errores USB in le menu pro disveloppatores sur Android.
 # USB section step by step guide
-about-debugging-setup-usb-step-enable-debug-firefox2 = Activar le recerca de errores USB in Firefox sur le dispositivo Android.
+about-debugging-setup-usb-step-enable-debug-firefox2 = Activar le recerca de errores USB in Firefox sur le apparato Android.
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Connecte le apparato Android a tu computator.
 # Text shown in the USB section of the setup page with a link to troubleshoot connection errors.
 # The link goes to https://developer.mozilla.org/docs/Tools/Remote_Debugging/Debugging_over_USB
-about-debugging-setup-usb-troubleshoot = Problemas de connexion al dispositivo USB?  <a>Remediar</a>
+about-debugging-setup-usb-troubleshoot = Problemas de connexion al apparato USB?  <a>Remediar</a>
 # Network section of the Setup page
 about-debugging-setup-network =
     .title = Position del rete
@@ -173,7 +175,7 @@ about-debugging-runtime-profile-button2 = Prestationes del profilo
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Le configuration de tu navigator non es compatibile con le obreros de servicio. <a>Saper plus</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Le navigator connexe ha un version vetere ({ $runtimeVersion }). Le version minime supportate es ({ $minVersion }). Isto es un installation non supportate e pote facer faller DevTools. Actualisa le navigator connexe.
@@ -184,8 +186,11 @@ about-debugging-browser-version-too-old = Le navigator connexe ha un version vet
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Le quadro del Depurator non pote laborar con le navigator connexe. Usa Firefox { $runtimeVersion } si tu debe usar le Depurator con iste navigator.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Iste version de Firefox non pote depurar Firefox pro Android (68). Nos recommenda installar Firefox pro Android Nightly sur tu telephono pro facer tests. <a>Plus detalios</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -261,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Pulsar
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Initiar
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Pulsar
+    .disabledTitle = Le pulsar de Service Worker es actualmente disactivate pro { -brand-shorter-name } multe-processo
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Initiar
+    .disabledTitle = Le lanceamento de Service Worker es actualmente disactivate pro multi-processores { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = De-registrar
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -285,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Servicio de pulsata
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Le analyse de Service Worker es actualmente disactivate pro { -brand-shorter-name } multe-processo
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Le scheda non ha essite cargate completemente e non pote esser analysate
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Processo principal
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Processo principal pro le navigator destination
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Instrumentario multiprocesso
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Processo principal e processos de contento pro le navigator de destination
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Clauder message

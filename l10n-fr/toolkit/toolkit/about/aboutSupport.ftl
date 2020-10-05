@@ -34,7 +34,10 @@ app-basics-title = Paramètres de base de l’application
 app-basics-name = Nom
 app-basics-version = Version
 app-basics-build-id = Identifiant de compilation
+app-basics-distribution-id = ID de distribution
 app-basics-update-channel = Canal de mise à jour
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Répertoire pour les mises à jour
@@ -59,7 +62,6 @@ app-basics-service-workers = Service workers inscrits
 app-basics-profiles = Profils
 app-basics-launcher-process-status = Processus de lancement
 app-basics-multi-process-support = Fenêtres multiprocessus
-app-basics-process-count = Processus de contenu web
 app-basics-remote-processes-count = Processus distants
 app-basics-enterprise-policies = Stratégies d’entreprise
 app-basics-location-service-key-google = Clé du service de localisation de Google
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Fonctionnalités désactivées par la protection c
 graphics-workarounds-title = Solutions de contournement
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protocole de fenêtrage
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Environnement de bureau
 place-database-title = Base de données « Places »
 place-database-integrity = Intégrité
 place-database-verify-integrity = Vérifier l’intégrité
@@ -115,6 +119,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Arguments
 safe-mode-title = Essayez en mode sans échec
 restart-in-safe-mode-label = Redémarrer avec les modules désactivés…
+clear-startup-cache-title = Essayez de vider le cache de démarrage
+clear-startup-cache-label = Vider le cache de démarrage…
+startup-cache-dialog-title = Vider le cache de démarrage
+startup-cache-dialog-body = Redémarrez { -brand-short-name } pour vider le cache de démarrage. Cela ne modifiera pas vos paramètres ni ne supprimera les extensions que vous avez ajoutées à { -brand-short-name }.
+restart-button-label = Redémarrer
+
+## Media titles
+
+audio-backend = Backend audio
+max-audio-channels = Nombre maximum de canaux
+channel-layout = Mode de canal préféré
+sample-rate = Fréquence d’échantillonnage préférée
+roundtrip-latency = Latence aller-retour (écart type)
 media-title = Multimédia
 media-output-devices-title = Périphériques de sortie
 media-input-devices-title = Périphériques d’entrée
@@ -127,6 +144,12 @@ media-device-format = Format
 media-device-channels = Canaux
 media-device-rate = Fréquence
 media-device-latency = Latence
+media-capabilities-title = Capacités média
+# List all the entries of the database.
+media-capabilities-enumerate = Parcourir la base de données
+
+##
+
 intl-title = Langue et internationalisation
 intl-app-title = Paramètres d’application
 intl-locales-requested = Langues demandées
@@ -136,6 +159,22 @@ intl-locales-default = Langue par défaut
 intl-os-title = Système d’exploitation
 intl-os-prefs-system-locales = Langues du système
 intl-regional-prefs = Préférences régionales
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Débogage à distance (protocole Chromium)
+remote-debugging-accepting-connections = Accepter les connexions
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -232,7 +271,9 @@ unknown-failure = Mis sur liste de blocage ; code d’erreur { $failureCode }
 d3d11layers-crash-guard = Compositeur D3D11
 d3d11video-crash-guard = Décodeur vidéo D3D11
 d3d9video-crash-buard = Décodeur vidéo D3D9
+d3d9video-crash-guard = Décodeur vidéo D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Décodeur vidéo WMF VPX
 reset-on-next-restart = Réinitialisé au prochain démarrage
 gpu-process-kill-button = Arrêter le processus GPU
 gpu-device-reset = Réinitialisation de l’appareil
@@ -241,12 +282,7 @@ uses-tiling = Utilise le pavage
 content-uses-tiling = Utilise le pavage (contenu)
 off-main-thread-paint-enabled = Painting en dehors du fil d’exécution principal activé
 off-main-thread-paint-worker-count = Nombre de workers participant au painting en dehors du fil d’exécution principal
-low-end-machine = Machine peu performante détectée
 target-frame-rate = Fréquence d’images cible
-audio-backend = Backend audio
-max-audio-channels = Nombre maximum de canaux
-channel-layout = Mode de canal préféré
-sample-rate = Fréquence d’échantillonnage préférée
 min-lib-versions = Version minimale attendue
 loaded-lib-versions = Version utilisée
 has-seccomp-bpf = Seccomp-BPF (Filtrage des appels système)
@@ -261,6 +297,11 @@ sandbox-proc-type-content = contenu
 sandbox-proc-type-file = contenu du fichier
 sandbox-proc-type-media-plugin = plugin multimédia
 sandbox-proc-type-data-decoder = décodeur de données
+startup-cache-title = Cache de démarrage
+startup-cache-disk-cache-path = Chemin du cache disque
+startup-cache-ignore-disk-cache = Ignorer le cache disque
+startup-cache-found-disk-cache-on-init = Cache disque trouvé à l’initialisation
+startup-cache-wrote-to-disk-cache = Écriture dans le cache disque
 launcher-process-status-0 = Activé
 launcher-process-status-1 = Désactivé en raison d’une défaillance
 launcher-process-status-2 = Désactivé de force
@@ -284,6 +325,7 @@ touch-enabled = entrée tactile activée
 drag-enabled = faire glisser les barres de défilement
 keyboard-enabled = clavier activé
 autoscroll-enabled = défilement automatique activé
+zooming-enabled = zoom fluide par pincement activé
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

@@ -5,49 +5,70 @@
 permissions-window =
     .title = अपवाद
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = संकेतस्थळाचा पत्ता
     .accesskey = d
+
 permissions-block =
     .label = अडवा
     .accesskey = B
+
 permissions-session =
     .label = सत्रकरिता सहमती द्या
     .accesskey = S
+
 permissions-allow =
     .label = परवानगी द्या
     .accesskey = A
+
 permissions-site-name =
     .label = संकेतस्थळ
+
 permissions-status =
     .label = परीस्थिती
+
 permissions-remove =
     .label = संकेतस्थळ काढून टाका
     .accesskey = R
+
 permissions-remove-all =
     .label = सर्व साईट्स काढून टाका
     .accesskey = e
+
 permissions-button-cancel =
     .label = रद्द करा
     .accesskey = C
+
 permissions-button-ok =
     .label = बदल जतन करा
     .accesskey = S
+
+permissions-autoplay-menu = सर्व वेबसाइटसाठी डीफॉल्टः
+
 permissions-searchbox =
     .placeholder = वेबसाईट शोधा
+
+permissions-capabilities-autoplay-allow =
+    .label = ऑडिओ आणि व्हिडिओला अनुमती द्या
+permissions-capabilities-autoplay-block =
+    .label = ऑडिओ अवरोधित करा
+permissions-capabilities-autoplay-blockall =
+    .label = ऑडिओ आणि व्हिडिओ अवरोधित करा
+
 permissions-capabilities-allow =
     .label = परवानगी द्या
 permissions-capabilities-block =
     .label = अडवा
 permissions-capabilities-prompt =
     .label = नेहमी विचारा
+
 permissions-capabilities-listitem-allow =
     .value = परवानगी द्या
 permissions-capabilities-listitem-block =
     .value = अडवा
-permissions-capabilities-listitem-allow-first-party =
-    .value = फक्त पहिल्या पार्टिला परवानगी द्या
 permissions-capabilities-listitem-allow-session =
     .value = कार्यकाळापूरती परवानगी द्या
 
@@ -58,6 +79,12 @@ permissions-invalid-uri-label = कृपया वैध यजमान ना
 
 ## Exceptions - Tracking Protection
 
+permissions-exceptions-content-blocking-window =
+    .title = अपवाद - मजकूर अवरोधन
+    .style = { permissions-window.style }
+permissions-exceptions-content-blocking-desc = आपण या साइटसाठी मजकूर अवरोधित करणे निष्क्रिय केले आहे.
+
+permissions-exceptions-etp-desc = आपण या वेबसाइटवर संरक्षण बंद केले आहे.
 
 ## Exceptions - Cookies
 
@@ -94,6 +121,12 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = कुठल्या संकेतस्थाळांना स्वायत्तपणे ध्वनीसह मीडिया चालवू द्यायचा हे आपण निश्चित करू शकता. त्याकरता हव्या असलेल्या स्थळाचा पत्ता लिहा व आडवा किंवा परवानगी आहे वर क्लिक करा.
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = सेटिंग - ऑटोप्ले
+    .style = { permissions-window.style }
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -113,6 +146,8 @@ permissions-site-location-desc = खालील संकेतस्थळा�
 permissions-site-location-disable-label =
     .label = आपले स्थान पाहू इच्छिणाऱ्या नवीन विनंत्या नाकारा
 permissions-site-location-disable-desc = वर नमूद न केलेल्या कोणत्याही संकेतस्थळाकडून स्थानाच्या परवानगीच्या विनंतीस यामुळे आळा बसेल. आपल्या स्थानाची माहिती अडवल्यास संकेतस्थळाच्या काही सुविधा मोडकळीस येतील.
+
+## Site Permissions - Virtual Reality
 
 ## Site Permissions - Camera
 

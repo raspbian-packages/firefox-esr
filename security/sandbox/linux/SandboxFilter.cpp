@@ -5,19 +5,6 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SandboxFilter.h"
-#include "SandboxFilterUtil.h"
-
-#include "Sandbox.h"  // for ContentProcessSandboxParams
-#include "SandboxBrokerClient.h"
-#include "SandboxInfo.h"
-#include "SandboxInternal.h"
-#include "SandboxLogging.h"
-#include "SandboxOpenedFiles.h"
-#include "mozilla/Move.h"
-#include "mozilla/PodOperations.h"
-#include "mozilla/TemplateLib.h"
-#include "mozilla/UniquePtr.h"
-#include "prenv.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -35,9 +22,22 @@
 #include <sys/utsname.h>
 #include <time.h>
 #include <unistd.h>
-#include <vector>
-#include <algorithm>
 
+#include <algorithm>
+#include <utility>
+#include <vector>
+
+#include "Sandbox.h"  // for ContentProcessSandboxParams
+#include "SandboxBrokerClient.h"
+#include "SandboxFilterUtil.h"
+#include "SandboxInfo.h"
+#include "SandboxInternal.h"
+#include "SandboxLogging.h"
+#include "SandboxOpenedFiles.h"
+#include "mozilla/PodOperations.h"
+#include "mozilla/TemplateLib.h"
+#include "mozilla/UniquePtr.h"
+#include "prenv.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/system_headers/linux_seccomp.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
@@ -70,6 +70,23 @@ using namespace sandbox::bpf_dsl;
 // actual value because it shows up in file flags.
 #define O_LARGEFILE_REAL 00100000
 
+// Not part of UAPI, but userspace sees it in F_GETFL; see bug 1650751.
+#define FMODE_NONOTIFY 0x4000000
+
+#ifndef F_LINUX_SPECIFIC_BASE
+#  define F_LINUX_SPECIFIC_BASE 1024
+#else
+static_assert(F_LINUX_SPECIFIC_BASE == 1024);
+#endif
+
+#ifndef F_ADD_SEALS
+#  define F_ADD_SEALS (F_LINUX_SPECIFIC_BASE + 9)
+#  define F_GET_SEALS (F_LINUX_SPECIFIC_BASE + 10)
+#else
+static_assert(F_ADD_SEALS == (F_LINUX_SPECIFIC_BASE + 9));
+static_assert(F_GET_SEALS == (F_LINUX_SPECIFIC_BASE + 10));
+#endif
+
 // To avoid visual confusion between "ifdef ANDROID" and "ifndef ANDROID":
 #ifndef ANDROID
 #  define DESKTOP
@@ -94,19 +111,29 @@ namespace mozilla {
 // denied if no broker client is provided by the concrete class.
 class SandboxPolicyCommon : public SandboxPolicyBase {
  protected:
-  enum class ShmemUsage {
+  enum class ShmemUsage : uint8_t {
     MAY_CREATE,
     ONLY_USE,
   };
 
-  SandboxBrokerClient* mBroker;
-  ShmemUsage mShmemUsage;
+  enum class AllowUnsafeSocketPair : uint8_t {
+    NO,
+    YES,
+  };
+
+  SandboxBrokerClient* mBroker = nullptr;
+  bool mMayCreateShmem = false;
+  bool mAllowUnsafeSocketPair = false;
 
   explicit SandboxPolicyCommon(SandboxBrokerClient* aBroker,
-                               ShmemUsage aShmemUsage = ShmemUsage::MAY_CREATE)
-      : mBroker(aBroker), mShmemUsage(aShmemUsage) {}
+                               ShmemUsage aShmemUsage,
+                               AllowUnsafeSocketPair aAllowUnsafeSocketPair)
+      : mBroker(aBroker),
+        mMayCreateShmem(aShmemUsage == ShmemUsage::MAY_CREATE),
+        mAllowUnsafeSocketPair(aAllowUnsafeSocketPair ==
+                               AllowUnsafeSocketPair::YES) {}
 
-  SandboxPolicyCommon() : SandboxPolicyCommon(nullptr, ShmemUsage::ONLY_USE) {}
+  SandboxPolicyCommon() = default;
 
   typedef const sandbox::arch_seccomp_data& ArgsRef;
 
@@ -368,9 +395,10 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
         return Some(Allow());
 
       case SYS_SOCKETPAIR: {
-        // Allow "safe" (always connected) socketpairs when using the
-        // file broker.
-        if (mBroker == nullptr) {
+        // We try to allow "safe" (always connected) socketpairs when using the
+        // file broker, or for content processes, but we may need to fall back
+        // and allow all socketpairs in some cases, see bug 1066750.
+        if (!mBroker && !mAllowUnsafeSocketPair) {
           return Nothing();
         }
         // See bug 1066750.
@@ -424,6 +452,10 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
           return Trap(LStatTrap, mBroker);
         CASES_FOR_fstatat:
           return Trap(StatAtTrap, mBroker);
+        // Used by new libc and Rust's stdlib, if available.
+        // We don't have broker support yet so claim it does not exist.
+        case __NR_statx:
+          return Error(ENOSYS);
         case __NR_chmod:
           return Trap(ChmodTrap, mBroker);
         case __NR_link:
@@ -448,6 +480,10 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
     switch (sysno) {
         // Timekeeping
       case __NR_clock_nanosleep:
+      case __NR_clock_getres:
+#ifdef __NR_clock_gettime64
+      case __NR_clock_gettime64:
+#endif
       case __NR_clock_gettime: {
         // clockid_t can encode a pid or tid to monitor another
         // process or thread's CPU usage (see CPUCLOCK_PID and related
@@ -509,14 +545,7 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
         return Allow();
 
       CASES_FOR_ftruncate:
-        switch (mShmemUsage) {
-          case ShmemUsage::MAY_CREATE:
-            return Allow();
-          case ShmemUsage::ONLY_USE:
-            return InvalidSyscall();
-          default:
-            MOZ_CRASH("unreachable");
-        }
+        return mMayCreateShmem ? Allow() : InvalidSyscall();
 
         // Used by our fd/shm classes
       case __NR_dup:
@@ -531,6 +560,13 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
       case __NR_mprotect:
         return Allow();
 
+#if !defined(MOZ_MEMORY)
+        // No jemalloc means using a system allocator like glibc
+        // that might use brk.
+      case __NR_brk:
+        return Allow();
+#endif
+
         // madvise hints used by malloc; see bug 1303813 and bug 1364533
       case __NR_madvise: {
         Arg<int> advice(2);
@@ -544,7 +580,11 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
             .Else(InvalidSyscall());
       }
 
-      // Signal handling
+        // musl libc will set this up in pthreads support.
+      case __NR_membarrier:
+        return Allow();
+
+        // Signal handling
 #if defined(ANDROID) || defined(MOZ_ASAN)
       case __NR_sigaltstack:
 #endif
@@ -583,6 +623,11 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
 
         // prctl
       case __NR_prctl: {
+        // WARNING: do not handle __NR_prctl directly in subclasses;
+        // override PrctlPolicy instead.  The special handling of
+        // PR_SET_NO_NEW_PRIVS is used to detect that a thread already
+        // has the policy applied; see also bug 1257361.
+
         if (SandboxInfo::Get().Test(SandboxInfo::kHasSeccompTSync)) {
           return PrctlPolicy();
         }
@@ -643,6 +688,13 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
       case __NR_sysinfo:
         return Error(EPERM);
 #endif
+
+        // Bug 1651701: an API for restartable atomic sequences and
+        // per-CPU data; exposing information about CPU numbers and
+        // when threads are migrated or preempted isn't great but the
+        // risk should be relatively low.
+      case __NR_rseq:
+        return Allow();
 
 #ifdef MOZ_ASAN
         // ASAN's error reporter wants to know if stderr is a tty.
@@ -848,7 +900,8 @@ class ContentSandboxPolicy : public SandboxPolicyCommon {
  public:
   ContentSandboxPolicy(SandboxBrokerClient* aBroker,
                        ContentProcessSandboxParams&& aParams)
-      : SandboxPolicyCommon(aBroker),
+      : SandboxPolicyCommon(aBroker, ShmemUsage::MAY_CREATE,
+                            AllowUnsafeSocketPair::YES),
         mParams(std::move(aParams)),
         mAllowSysV(PR_GetEnv("MOZ_SANDBOX_ALLOW_SYSV") != nullptr),
         mUsingRenderDoc(PR_GetEnv("RENDERDOC_CAPTUREOPTS") != nullptr) {}
@@ -875,12 +928,6 @@ class ContentSandboxPolicy : public SandboxPolicyCommon {
         const auto trapFn = aHasArgs ? ConnectTrap : ConnectTrapLegacy;
         return Some(AllowBelowLevel(4, Trap(trapFn, mBroker)));
       }
-      case SYS_ACCEPT:
-      case SYS_ACCEPT4:
-        if (mUsingRenderDoc) {
-          return Some(Allow());
-        }
-        return SandboxPolicyCommon::EvaluateSocketCall(aCall, aHasArgs);
       case SYS_RECV:
       case SYS_SEND:
       case SYS_GETSOCKOPT:
@@ -889,6 +936,12 @@ class ContentSandboxPolicy : public SandboxPolicyCommon {
       case SYS_GETPEERNAME:
       case SYS_SHUTDOWN:
         return Some(Allow());
+      case SYS_ACCEPT:
+      case SYS_ACCEPT4:
+        if (mUsingRenderDoc) {
+          return Some(Allow());
+        }
+        [[fallthrough]];
 #endif
       default:
         return SandboxPolicyCommon::EvaluateSocketCall(aCall, aHasArgs);
@@ -1069,7 +1122,7 @@ class ContentSandboxPolicy : public SandboxPolicyCommon {
         // new SETFL-able flags are added.  (In particular we want to
         // forbid O_ASYNC; see bug 1328896, but also see bug 1408438.)
         static const int ignored_flags =
-            O_ACCMODE | O_LARGEFILE_REAL | O_CLOEXEC;
+            O_ACCMODE | O_LARGEFILE_REAL | O_CLOEXEC | FMODE_NONOTIFY;
         static const int allowed_flags = ignored_flags | O_APPEND | O_NONBLOCK;
         return Switch(cmd)
             // Close-on-exec is meaningless when execve isn't allowed, but
@@ -1092,6 +1145,9 @@ class ContentSandboxPolicy : public SandboxPolicyCommon {
 #ifdef F_SETLKW64
             .Case(F_SETLKW64, Allow())
 #endif
+            // Wayland client libraries use file seals
+            .Case(F_ADD_SEALS, Allow())
+            .Case(F_GET_SEALS, Allow())
             .Default(SandboxPolicyCommon::EvaluateSyscall(sysno));
       }
 
@@ -1139,6 +1195,8 @@ class ContentSandboxPolicy : public SandboxPolicyCommon {
 
       case __NR_getpriority:
       case __NR_setpriority:
+      case __NR_sched_getattr:
+      case __NR_sched_setattr:
       case __NR_sched_get_priority_min:
       case __NR_sched_get_priority_max:
       case __NR_sched_getscheduler:
@@ -1160,7 +1218,6 @@ class ContentSandboxPolicy : public SandboxPolicyCommon {
         return Allow();
 
       CASES_FOR_getrlimit:
-      case __NR_clock_getres:
       CASES_FOR_getresuid:
       CASES_FOR_getresgid:
         return Allow();
@@ -1247,6 +1304,23 @@ class ContentSandboxPolicy : public SandboxPolicyCommon {
 
       case __NR_get_mempolicy:
         return Allow();
+
+        // Mesa's amdgpu driver uses kcmp with KCMP_FILE; see also bug
+        // 1624743.  The pid restriction should be sufficient on its
+        // own if we need to remove the type restriction in the future.
+      case __NR_kcmp: {
+        // The real KCMP_FILE is part of an anonymous enum in
+        // <linux/kcmp.h>, but we can't depend on having that header,
+        // and it's not a #define so the usual #ifndef approach
+        // doesn't work.
+        static const int kKcmpFile = 0;
+        const pid_t myPid = getpid();
+        Arg<pid_t> pid1(0), pid2(1);
+        Arg<int> type(2);
+        return If(AllOf(pid1 == myPid, pid2 == myPid, type == kKcmpFile),
+                  Allow())
+            .Else(InvalidSyscall());
+      }
 
 #endif  // DESKTOP
 
@@ -1372,7 +1446,13 @@ class GMPSandboxPolicy : public SandboxPolicyCommon {
         return Trap(OpenTrap, mFiles);
 
       case __NR_brk:
+      // Because Firefox on glibc resorts to the fallback implementation
+      // mentioned in bug 1576006, we must explicitly allow the get*id()
+      // functions in order to use NSS in the clearkey CDM.
+      CASES_FOR_getuid:
+      CASES_FOR_getgid:
       CASES_FOR_geteuid:
+      CASES_FOR_getegid:
         return Allow();
       case __NR_sched_get_priority_min:
       case __NR_sched_get_priority_max:
@@ -1413,7 +1493,8 @@ UniquePtr<sandbox::bpf_dsl::Policy> GetMediaSandboxPolicy(
 class RDDSandboxPolicy final : public SandboxPolicyCommon {
  public:
   explicit RDDSandboxPolicy(SandboxBrokerClient* aBroker)
-      : SandboxPolicyCommon(aBroker) {}
+      : SandboxPolicyCommon(aBroker, ShmemUsage::MAY_CREATE,
+                            AllowUnsafeSocketPair::NO) {}
 
   static intptr_t FcntlTrap(const sandbox::arch_seccomp_data& aArgs,
                             void* aux) {
@@ -1449,6 +1530,173 @@ UniquePtr<sandbox::bpf_dsl::Policy> GetDecoderSandboxPolicy(
     SandboxBrokerClient* aMaybeBroker) {
   return UniquePtr<sandbox::bpf_dsl::Policy>(
       new RDDSandboxPolicy(aMaybeBroker));
+}
+
+// Basically a clone of RDDSandboxPolicy until we know exactly what
+// the SocketProcess sandbox looks like.
+class SocketProcessSandboxPolicy final : public SandboxPolicyCommon {
+ public:
+  explicit SocketProcessSandboxPolicy(SandboxBrokerClient* aBroker)
+      : SandboxPolicyCommon(aBroker, ShmemUsage::MAY_CREATE,
+                            AllowUnsafeSocketPair::NO) {}
+
+  static intptr_t FcntlTrap(const sandbox::arch_seccomp_data& aArgs,
+                            void* aux) {
+    const auto cmd = static_cast<int>(aArgs.args[1]);
+    switch (cmd) {
+        // This process can't exec, so the actual close-on-exec flag
+        // doesn't matter; have it always read as true and ignore writes.
+      case F_GETFD:
+        return O_CLOEXEC;
+      case F_SETFD:
+        return 0;
+      default:
+        return -ENOSYS;
+    }
+  }
+
+  Maybe<ResultExpr> EvaluateSocketCall(int aCall,
+                                       bool aHasArgs) const override {
+    switch (aCall) {
+      case SYS_BIND:
+        return Some(Allow());
+
+      case SYS_SOCKET:
+        return Some(Allow());
+
+      case SYS_CONNECT:
+        return Some(Allow());
+
+      case SYS_RECVFROM:
+      case SYS_SENDTO:
+      case SYS_SENDMMSG:
+        return Some(Allow());
+
+      case SYS_RECV:
+      case SYS_SEND:
+      case SYS_GETSOCKOPT:
+      case SYS_SETSOCKOPT:
+      case SYS_GETSOCKNAME:
+      case SYS_GETPEERNAME:
+      case SYS_SHUTDOWN:
+      case SYS_ACCEPT:
+      case SYS_ACCEPT4:
+        return Some(Allow());
+
+      default:
+        return SandboxPolicyCommon::EvaluateSocketCall(aCall, aHasArgs);
+    }
+  }
+
+  ResultExpr PrctlPolicy() const override {
+    // FIXME: bug 1619661
+    return Allow();
+  }
+
+  ResultExpr EvaluateSyscall(int sysno) const override {
+    switch (sysno) {
+      case __NR_getrusage:
+        return Allow();
+
+      case __NR_ioctl: {
+        static const unsigned long kTypeMask = _IOC_TYPEMASK << _IOC_TYPESHIFT;
+        static const unsigned long kTtyIoctls = TIOCSTI & kTypeMask;
+        // On some older architectures (but not x86 or ARM), ioctls are
+        // assigned type fields differently, and the TIOC/TC/FIO group
+        // isn't all the same type.  If/when we support those archs,
+        // this would need to be revised (but really this should be a
+        // default-deny policy; see below).
+        static_assert(kTtyIoctls == (TCSETA & kTypeMask) &&
+                          kTtyIoctls == (FIOASYNC & kTypeMask),
+                      "tty-related ioctls use the same type");
+
+        Arg<unsigned long> request(1);
+        auto shifted_type = request & kTypeMask;
+
+        // Rust's stdlib seems to use FIOCLEX instead of equivalent fcntls.
+        return If(request == FIOCLEX, Allow())
+            // Rust's stdlib also uses FIONBIO instead of equivalent fcntls.
+            .ElseIf(request == FIONBIO, Allow())
+            // ffmpeg, and anything else that calls isatty(), will be told
+            // that nothing is a typewriter:
+            .ElseIf(request == TCGETS, Error(ENOTTY))
+            // Allow anything that isn't a tty ioctl, for now; bug 1302711
+            // will cover changing this to a default-deny policy.
+            .ElseIf(shifted_type != kTtyIoctls, Allow())
+            .Else(SandboxPolicyCommon::EvaluateSyscall(sysno));
+      }
+
+      CASES_FOR_fcntl : {
+        Arg<int> cmd(1);
+        Arg<int> flags(2);
+        // Typical use of F_SETFL is to modify the flags returned by
+        // F_GETFL and write them back, including some flags that
+        // F_SETFL ignores.  This is a default-deny policy in case any
+        // new SETFL-able flags are added.  (In particular we want to
+        // forbid O_ASYNC; see bug 1328896, but also see bug 1408438.)
+        static const int ignored_flags =
+            O_ACCMODE | O_LARGEFILE_REAL | O_CLOEXEC | FMODE_NONOTIFY;
+        static const int allowed_flags = ignored_flags | O_APPEND | O_NONBLOCK;
+        return Switch(cmd)
+            // Close-on-exec is meaningless when execve isn't allowed, but
+            // NSPR reads the bit and asserts that it has the expected value.
+            .Case(F_GETFD, Allow())
+            .Case(
+                F_SETFD,
+                If((flags & ~FD_CLOEXEC) == 0, Allow()).Else(InvalidSyscall()))
+            .Case(F_GETFL, Allow())
+            .Case(F_SETFL, If((flags & ~allowed_flags) == 0, Allow())
+                               .Else(InvalidSyscall()))
+            .Case(F_DUPFD_CLOEXEC, Allow())
+            // Nvidia GL and fontconfig (newer versions) use fcntl file locking.
+            .Case(F_SETLK, Allow())
+#ifdef F_SETLK64
+            .Case(F_SETLK64, Allow())
+#endif
+            // Pulseaudio uses F_SETLKW, as does fontconfig.
+            .Case(F_SETLKW, Allow())
+#ifdef F_SETLKW64
+            .Case(F_SETLKW64, Allow())
+#endif
+            .Default(SandboxPolicyCommon::EvaluateSyscall(sysno));
+      }
+
+#ifdef DESKTOP
+      // This section is borrowed from ContentSandboxPolicy
+      CASES_FOR_getrlimit:
+      CASES_FOR_getresuid:
+      CASES_FOR_getresgid:
+        return Allow();
+
+      case __NR_prlimit64: {
+        // Allow only the getrlimit() use case.  (glibc seems to use
+        // only pid 0 to indicate the current process; pid == getpid()
+        // is equivalent and could also be allowed if needed.)
+        Arg<pid_t> pid(0);
+        // This is really a const struct ::rlimit*, but Arg<> doesn't
+        // work with pointers, only integer types.
+        Arg<uintptr_t> new_limit(2);
+        return If(AllOf(pid == 0, new_limit == 0), Allow())
+            .Else(InvalidSyscall());
+      }
+#endif  // DESKTOP
+
+      CASES_FOR_getuid:
+      CASES_FOR_getgid:
+      CASES_FOR_geteuid:
+      CASES_FOR_getegid:
+        return Allow();
+
+      default:
+        return SandboxPolicyCommon::EvaluateSyscall(sysno);
+    }
+  }
+};
+
+UniquePtr<sandbox::bpf_dsl::Policy> GetSocketProcessSandboxPolicy(
+    SandboxBrokerClient* aMaybeBroker) {
+  return UniquePtr<sandbox::bpf_dsl::Policy>(
+      new SocketProcessSandboxPolicy(aMaybeBroker));
 }
 
 }  // namespace mozilla

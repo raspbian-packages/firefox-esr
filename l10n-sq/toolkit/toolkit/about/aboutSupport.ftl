@@ -34,7 +34,10 @@ app-basics-title = Të dhëna bazë mbi Aplikacionin
 app-basics-name = Emër
 app-basics-version = Version
 app-basics-build-id = ID Montimi
+app-basics-distribution-id = ID Shpërndarjeje
 app-basics-update-channel = Kanal Përditësimi
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Drejtori Përditësimesh
@@ -54,23 +57,22 @@ app-basics-build-config = Formësim Montimi
 app-basics-user-agent = Agjent Përdoruesi
 app-basics-os = OS
 app-basics-memory-use = Përdorim Kujtese
-app-basics-performance = Performancë
+app-basics-performance = Punim
 app-basics-service-workers = Service Workers të Regjistruar
 app-basics-profiles = Profile
 app-basics-launcher-process-status = Proces Nisësi
 app-basics-multi-process-support = Dritare Multiproces
-app-basics-process-count = Procese Lënde Web
 app-basics-remote-processes-count = Procese të Largët
-app-basics-enterprise-policies = Rregulla të Ndërmarrjes
-app-basics-location-service-key-google = Ky Shërbimi Vendndodhjesh Google
+app-basics-enterprise-policies = Rregulla Në Nivel Ndërmarrjeje
+app-basics-location-service-key-google = Kyç Shërbimi Vendndodhjesh Google
 app-basics-safebrowsing-key-google = Kyç Google Safebrowsing
 app-basics-key-mozilla = Kyç Mozilla Location Service
 app-basics-safe-mode = Mënyrë e Sigurt
 show-dir-label =
     { PLATFORM() ->
-        [macos] Shfaqe Në Finder
+        [macos] Shfaqe në Finder
         [windows] Hape Dosjen
-       *[other] Hap Drejtorinë
+       *[other] Hape Drejtorinë
     }
 modified-key-prefs-title = Parapëlqime të Rëndësishme të Ndryshuara
 modified-prefs-name = Emër
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Veçori të Çaktivizuara nga Roja i Vithisjeve
 graphics-workarounds-title = Zgjidhje të përkohshme
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protokoll Window
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Mjedis Desktop
 place-database-title = Bazë të Dhënash Vendesh
 place-database-integrity = Integritet
 place-database-verify-integrity = Verifikoni Integritetin
@@ -113,9 +117,22 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumente
 safe-mode-title = Provoni Mënyrën e Parrezik
 restart-in-safe-mode-label = Riniseni me Shtesat të Çaktivizuara…
+clear-startup-cache-title = Provoni spastrimin e fshehtinës së nisjes
+clear-startup-cache-label = Spastroni fshehtinë nisjeje…
+startup-cache-dialog-title = Spastroni fshehtinë nisjeje
+startup-cache-dialog-body = Që të spastrohet fshehtina e nisjes, rinisni { -brand-short-name }-in. Kjo nuk do të ndryshojë rregullimet tuaja apo të heqë zgjerime që keni shtuar te { -brand-short-name }-i.
+restart-button-label = Rinise
+
+## Media titles
+
+audio-backend = Mekanizëm Audio
+max-audio-channels = Kanale Maksimum
+channel-layout = Skemë e Parapëlqyer Për Kanalin
+sample-rate = Shpejtësi e Parapëlqyer Kampionizimesh
+roundtrip-latency = Vonesë vajtje-ardhje (shmangie standard)
 media-title = Media
 media-output-devices-title = Pajisje Dalje
-media-input-devices-title = Pajisje Hyrje
+media-input-devices-title = Pajisje Dhëniesh
 media-device-name = Emër
 media-device-group = Grup
 media-device-vendor = Tregtues
@@ -125,6 +142,12 @@ media-device-format = Format
 media-device-channels = Kanale
 media-device-rate = Shpeshti
 media-device-latency = Vonesë
+media-capabilities-title = Aftësi Media
+# List all the entries of the database.
+media-capabilities-enumerate = Numërtoni bazë të dhënash
+
+##
+
 intl-title = Ndërkombëtarizim & Përkthim
 intl-app-title = Rregullime Aplikacionesh
 intl-locales-requested = Gjuhë të Kërkuara
@@ -134,6 +157,22 @@ intl-locales-default = Gjuhë Parazgjedhje
 intl-os-title = Sistem Operativ
 intl-os-prefs-system-locales = Gjuhë Sistemi
 intl-regional-prefs = Parapëlqime Rajoni
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Diagnostikim Së Largëti (Protokolli Chromium)
+remote-debugging-accepting-connections = Me Pranim Lidhjesh
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -230,18 +269,15 @@ unknown-failure = Vënë në listë të zezë, kod dështimi { $failureCode }
 d3d11layers-crash-guard = Hartues D3D11
 d3d11video-crash-guard = Shkodues Videosh D3D11
 d3d9video-crash-buard = Shkodues Videosh D3D9
+d3d9video-crash-guard = Shkodues Videosh D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Shkodues Videosh WMF VPX
 reset-on-next-restart = Gjatë Rinisjes Tjetër Ktheje te Parazgjedhjet
 gpu-process-kill-button = Përfundoje Procesin GPU
 gpu-device-reset = Rikthim i Pajisjes Në Fillimet
 gpu-device-reset-button = Shkakto Rikthim të Pajisjes Në Fillimet
 uses-tiling = Përdor Tjegullzim
 content-uses-tiling = Përdor Tjegullzim (Lëndë)
-low-end-machine = U pikas makinë më pak e suksesshme
-audio-backend = Mekanizëm Audio
-max-audio-channels = Kanale Maksimum
-channel-layout = Skemë e Parapëlqyer Për Kanalin
-sample-rate = Shpejtësi e Parapëlqyer Kampionizimesh
 min-lib-versions = Version minimum i pritshëm
 loaded-lib-versions = Version në përdorim
 has-seccomp-bpf = Seccomp-BPF (Filtrim Thirrjesh Sistemi)
@@ -251,10 +287,16 @@ has-privileged-user-namespaces = Emërhapësira Përdoruesi për procese të pri
 can-sandbox-content = Mbajtje Brenda Bankëprovës e Proceseve të Lëndës
 can-sandbox-media = Mbajtje Brenda Bankëprovës e Shtojcave Për Media
 content-sandbox-level = Shkallë Mbajtjeje Brenda Bankëprovës e Proceseve të Lëndës
+effective-content-sandbox-level = Shkallë Efektive Mbajtjeje Brenda Bankëprovës e Proceseve të Lëndës
 sandbox-proc-type-content = lëndë
 sandbox-proc-type-file = lëndë kartele
 sandbox-proc-type-media-plugin = shtojcë mediash
 sandbox-proc-type-data-decoder = shkodues të dhënash
+startup-cache-title = Fshehtinë Nisjeje
+startup-cache-disk-cache-path = Shteg Fshehtine Disku
+startup-cache-ignore-disk-cache = Shpërfill Fshehtinë Disku
+startup-cache-found-disk-cache-on-init = U gjet Fshehtinë Disku në Init
+startup-cache-wrote-to-disk-cache = U shkrua në Fshehtinë Disku
 launcher-process-status-0 = E aktivizuar
 launcher-process-status-1 = Çaktivizuar për shkak dështimesh
 launcher-process-status-2 = Çaktivizuar forcërisht

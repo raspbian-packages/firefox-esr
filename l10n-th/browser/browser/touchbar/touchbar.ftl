@@ -9,6 +9,7 @@ forward = เดินหน้า
 reload = โหลดใหม่
 home = หน้าแรก
 fullscreen = เต็มหน้าจอ
+touchbar-fullscreen-exit = ออกจากภาพเต็มหน้าจอ
 find = ค้นหา
 new-tab = แท็บใหม่
 add-bookmark = เพิ่มที่คั่นหน้า
@@ -18,3 +19,21 @@ reader-view = มุมมองผู้อ่าน
 open-location = ค้นหาหรือป้อนที่อยู่
 share = แบ่งปัน
 close-window = ปิดหน้าต่าง
+open-sidebar = แถบข้าง
+
+# This string describes shortcuts for search.
+search-popover = ทางลัดการค้นหา
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = ค้นหาใน:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = ที่คั่นหน้า
+search-history = ประวัติ
+search-opentabs = แท็บที่เปิด
+search-tags = ป้ายกำกับ
+search-titles = ชื่อเรื่อง
+
+##
+

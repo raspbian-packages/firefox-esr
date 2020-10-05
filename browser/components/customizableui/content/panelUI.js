@@ -17,6 +17,11 @@ ChromeUtils.defineModuleGetter(
   "PanelMultiView",
   "resource:///modules/PanelMultiView.jsm"
 );
+ChromeUtils.defineModuleGetter(
+  this,
+  "ToolbarPanelHub",
+  "resource://activity-stream/lib/ToolbarPanelHub.jsm"
+);
 
 /**
  * Maintains the state and dispatches events for the main menu panel.
@@ -40,16 +45,17 @@ const PanelUI = {
       libraryRecentHighlights: "appMenu-library-recentHighlights",
       menuButton: "PanelUI-menu-button",
       panel: "appMenu-popup",
-      notificationPanel: "appMenu-notification-popup",
       addonNotificationContainer: "appMenu-addon-banners",
       overflowFixedList: "widget-overflow-fixed-list",
       overflowPanel: "widget-overflow",
       navbar: "nav-bar",
+      whatsNewPanel: "PanelUI-whatsNew",
     };
   },
 
   _initialized: false,
   _notifications: null,
+  _notificationPanel: null,
 
   init() {
     this._initElements();
@@ -107,10 +113,6 @@ const PanelUI = {
 
     window.addEventListener("activate", this);
     CustomizableUI.addListener(this);
-
-    for (let event of this.kEvents) {
-      this.notificationPanel.addEventListener(event, this);
-    }
 
     // We do this sync on init because in order to have the overflow button show up
     // we need to know whether anything is in the permanent panel area.
@@ -171,8 +173,11 @@ const PanelUI = {
 
   uninit() {
     this._removeEventListeners();
-    for (let event of this.kEvents) {
-      this.notificationPanel.removeEventListener(event, this);
+
+    if (this._notificationPanel) {
+      for (let event of this.kEvents) {
+        this.notificationPanel.removeEventListener(event, this);
+      }
     }
 
     Services.obs.removeObserver(this, "fullscreen-nav-toolbox");
@@ -186,6 +191,7 @@ const PanelUI = {
     this.menuButton.removeEventListener("keypress", this);
     CustomizableUI.removeListener(this);
     this.libraryView.removeEventListener("ViewShowing", this);
+    this.whatsNewPanel.removeEventListener("ViewShowing", this);
   },
 
   /**
@@ -295,7 +301,12 @@ const PanelUI = {
         }
         break;
       case "mousedown":
-        if (aEvent.button == 0) {
+        // On Mac, ctrl-click will send a context menu event from the widget, so
+        // we don't want to bring up the panel when ctrl key is pressed.
+        if (
+          aEvent.button == 0 &&
+          (AppConstants.platform != "macosx" || !aEvent.ctrlKey)
+        ) {
           this.toggle(aEvent);
         }
         break;
@@ -314,6 +325,8 @@ const PanelUI = {
       case "ViewShowing":
         if (aEvent.target == this.libraryView) {
           this.onLibraryViewShowing(aEvent.target).catch(Cu.reportError);
+        } else if (aEvent.target == this.whatsNewPanel) {
+          this.onWhatsNewPanelShowing();
         }
         break;
     }
@@ -371,7 +384,13 @@ const PanelUI = {
   async showSubView(aViewId, aAnchor, aEvent) {
     let domEvent = null;
     if (aEvent) {
-      if (aEvent.type == "mousedown" && aEvent.button != 0) {
+      // On Mac, ctrl-click will send a context menu event from the widget, so
+      // we don't want to bring up the panel when ctrl key is pressed.
+      if (
+        aEvent.type == "mousedown" &&
+        (aEvent.button != 0 ||
+          (AppConstants.platform == "macosx" && aEvent.ctrlKey))
+      ) {
         return;
       }
       if (
@@ -423,6 +442,7 @@ const PanelUI = {
     }
 
     this.ensureLibraryInitialized(viewNode);
+    this.ensureWhatsNewInitialized(viewNode);
 
     let container = aAnchor.closest("panelmultiview");
     if (container) {
@@ -433,7 +453,7 @@ const PanelUI = {
       let tempPanel = document.createXULElement("panel");
       tempPanel.setAttribute("type", "arrow");
       tempPanel.setAttribute("id", "customizationui-widget-panel");
-      tempPanel.setAttribute("class", "cui-widget-panel");
+      tempPanel.setAttribute("class", "cui-widget-panel panel-no-padding");
       tempPanel.setAttribute("viewId", aViewId);
       if (aAnchor.getAttribute("tabspecific")) {
         tempPanel.setAttribute("tabspecific", true);
@@ -442,7 +462,6 @@ const PanelUI = {
         tempPanel.setAttribute("animate", "false");
       }
       tempPanel.setAttribute("context", "");
-      tempPanel.setAttribute("photon", true);
       document
         .getElementById(CustomizableUI.AREA_NAVBAR)
         .appendChild(tempPanel);
@@ -637,6 +656,31 @@ const PanelUI = {
   },
 
   /**
+   * Sets up the event listener for when the What's New panel is shown.
+   *
+   * @param {panelview} panelView The What's New panelview.
+   */
+  ensureWhatsNewInitialized(panelView) {
+    if (panelView != this.whatsNewPanel || panelView._initialized) {
+      return;
+    }
+
+    panelView._initialized = true;
+    panelView.addEventListener("ViewShowing", this);
+  },
+
+  /**
+   * When the What's New panel is showing, we fetch the messages to show.
+   */
+  onWhatsNewPanelShowing() {
+    ToolbarPanelHub.renderMessages(
+      window,
+      document,
+      "PanelUI-whatsNew-message-container"
+    );
+  },
+
+  /**
    * NB: The enable- and disableSingleSubviewPanelAnimations methods only
    * affect the hiding/showing animations of single-subview panels (tempPanel
    * in the showSubView method).
@@ -688,7 +732,7 @@ const PanelUI = {
 
     let helpMenu = document.getElementById("menu_HelpPopup");
     let items = this.getElementsByTagName("vbox")[0];
-    let attrs = ["oncommand", "onclick", "label", "key", "disabled"];
+    let attrs = ["command", "oncommand", "onclick", "label", "key", "disabled"];
 
     // Remove all buttons from the view
     while (items.firstChild) {
@@ -712,7 +756,10 @@ const PanelUI = {
         }
         button.setAttribute(attrName, node.getAttribute(attrName));
       }
-      button.setAttribute("class", "subviewbutton");
+      if (node.id) {
+        button.id = "appMenu_" + node.id;
+      }
+      button.setAttribute("class", "subviewbutton subviewbutton-iconic");
       fragment.appendChild(button);
     }
     items.appendChild(fragment);
@@ -745,6 +792,10 @@ const PanelUI = {
   },
 
   _hidePopup() {
+    if (!this._notificationPanel) {
+      return;
+    }
+
     if (this.isNotificationPanelOpen) {
       this.notificationPanel.hidePopup();
     }
@@ -786,7 +837,7 @@ const PanelUI = {
       if (!notifications[0].options.badgeOnly) {
         this._showBannerItem(notifications[0]);
       }
-    } else if (doorhangers.length > 0) {
+    } else if (doorhangers.length) {
       // Only show the doorhanger if the window is focused and not fullscreen
       if (
         (window.fullScreen && this.autoHideToolbarInFullScreen) ||
@@ -819,8 +870,6 @@ const PanelUI = {
 
     let anchor = this._getPanelAnchor(this.menuButton);
 
-    this.notificationPanel.hidden = false;
-
     // Insert Fluent files when needed before notification is opened
     MozXULElement.insertFTLIfNeeded("branding/brand.ftl");
     MozXULElement.insertFTLIfNeeded("browser/appMenuNotifications.ftl");
@@ -848,6 +897,21 @@ const PanelUI = {
     this._clearNotificationPanel();
     this._clearBadge();
     this._clearBannerItem();
+  },
+
+  get notificationPanel() {
+    // Lazy load the panic-button-success-notification panel the first time we need to display it.
+    if (!this._notificationPanel) {
+      let template = document.getElementById("appMenuNotificationTemplate");
+      template.replaceWith(template.content);
+      this._notificationPanel = document.getElementById(
+        "appMenu-notification-popup"
+      );
+      for (let event of this.kEvents) {
+        this._notificationPanel.addEventListener(event, this);
+      }
+    }
+    return this._notificationPanel;
   },
 
   _formatDescriptionMessage(n) {
@@ -970,17 +1034,7 @@ const PanelUI = {
   },
 
   _getPanelAnchor(candidate) {
-    let iconAnchor =
-      document.getAnonymousElementByAttribute(
-        candidate,
-        "class",
-        "toolbarbutton-badge-stack"
-      ) ||
-      document.getAnonymousElementByAttribute(
-        candidate,
-        "class",
-        "toolbarbutton-icon"
-      );
+    let iconAnchor = candidate.badgeStack || candidate.icon;
     return iconAnchor || candidate;
   },
 
@@ -1008,7 +1062,7 @@ XPCOMUtils.defineConstant(this, "PanelUI", PanelUI);
  * @return  the selected locale
  */
 function getLocale() {
-  return Services.locale.appLocaleAsLangTag;
+  return Services.locale.appLocaleAsBCP47;
 }
 
 /**

@@ -40,8 +40,10 @@
 <!ENTITY  newMessageCmd.key "M">
 <!ENTITY  newMessageCmd.label "Mesazh">
 <!ENTITY  newMessageCmd.accesskey "m">
-<!ENTITY  newContactCmd.label "Kontakt nga Libri i Adresave…">
+<!ENTITY  newContactCmd.label "Kontakt Nga Libër Adresash…">
 <!ENTITY  newContactCmd.accesskey "K">
+<!ENTITY openMenuCmd.label "Hape">
+<!ENTITY openMenuCmd.accesskey "H">
 <!ENTITY openMessageFileCmd.label "Hapni Mesazh të Ruajtur…">
 <!ENTITY openMessageFileCmd.accesskey "H">
 <!ENTITY saveAsMenu.label "Ruaje Si">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "P">
 <!ENTITY folderPaneBar.label "Panel Kuadrati Dosjesh">
 <!ENTITY folderPaneBar.accesskey "D">
-<!ENTITY folderModeSelector.label "Pamje Dosjesh">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Renditi sipas">
@@ -197,7 +198,7 @@
 <!ENTITY sortByJunkStatusCmd.accesskey "v">
 <!ENTITY sortBySubjectCmd.label "Subjektesh">
 <!ENTITY sortBySubjectCmd.accesskey "s">
-<!ENTITY sortByFromCmd.label "Prej">
+<!ENTITY sortByFromCmd.label "Nga">
 <!ENTITY sortByFromCmd.accesskey "J">
 <!ENTITY sortByRecipientCmd.label "Marrësish">
 <!ENTITY sortByRecipientCmd.accesskey "ë">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Kërkoni Te Mesazhet…">
 <!ENTITY searchMailCmd.accesskey "M">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Kërkim Global…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Kërkoni te Adresat…">
 <!ENTITY searchAddressesCmd.accesskey "A">
 
@@ -352,7 +355,7 @@
 <!ENTITY replySenderCmd.accesskey "D">
 <!ENTITY replyNewsgroupCmd2.label "Përgjigjuni te Grupi i Lajmeve">
 <!ENTITY replyNewsgroupCmd2.accesskey "G">
-<!ENTITY replyToAllMsgCmd.label "Përgjigjiuni të Tërëve">
+<!ENTITY replyToAllMsgCmd.label "Përgjigjuni të Tërëve">
 <!ENTITY replyToAllMsgCmd.accesskey "T">
 <!ENTITY replyToAllMsgCmd.key "r">
 <!ENTITY replyToListMsgCmd.label "Përgjigjuni te Lista">
@@ -380,7 +383,7 @@
 <!ENTITY createFilter.accesskey "F">
 <!ENTITY moveMsgToMenu.label "Shpjere Te">
 <!ENTITY moveMsgToMenu.accesskey "S">
-<!ENTITY moveCopyMsgRecentMenu.label "Së Fundi">
+<!ENTITY moveCopyMsgRecentMenu.label "Së fundi">
 <!ENTITY moveCopyMsgRecentMenu.accesskey "F">
 <!ENTITY copyMessageLocation.label "Kopjo Vendndodhje Mesazhi">
 <!ENTITY copyMessageLocation.accesskey "M">
@@ -499,7 +502,7 @@
 <!ENTITY deleteJunk.accesskey "v">
 <!ENTITY importCmd.label "Importoni…">
 <!ENTITY importCmd.accesskey "I">
-<!ENTITY clearRecentHistory.label "Pastroni Historikun Së Fundi…">
+<!ENTITY clearRecentHistory.label "Spastroni Historikun Së Fundi…">
 <!ENTITY clearRecentHistory.accesskey "H">
 <!ENTITY accountManagerCmd2.label "Rregullime Llogarie">
 <!ENTITY accountManagerCmd2.accesskey "R">
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Skedojeni mesazhin e përzgjedhur">
 <!ENTITY archiveButton.tooltip "Mesazhe të përzgjedhur në arkiv">
 <!ENTITY openConversationButton.tooltip "Shfaq bisedën e mesazhit të përzgjedhur">
+<!ENTITY openMsgConversationButton.tooltip "Shfaq bisedën e mesazhit të përzgjedhur">
 <!ENTITY nextButton.tooltip "Kaloni te mesazhi i palexuar pasues">
 <!ENTITY nextMsgButton.tooltip "Kaloni te mesazhi pasues">
 <!ENTITY previousButton.tooltip "Kaloni te mesazhi i mëparshëm i palexuar">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Etiketoni mesazhe">
 <!ENTITY compactButton.tooltip "Hiqini mesazhet e fshirë prej dosjes së përzgjedhur">
 <!ENTITY appmenuButton1.tooltip "Shfaq Menunë e &brandShortName;-it">
-
 <!ENTITY addonsButton.tooltip "Administroni shtesat tuaja">
 
 <!-- Toolbar Button Popup -->
@@ -674,7 +677,7 @@
 <!ENTITY folderContextSendUnsentMessages.label "Dërgo Mesazhet e Padërguar">
 <!ENTITY folderContextSendUnsentMessages.accesskey "P">
 <!ENTITY folderContextUnsubscribe.label "Shpajtohuni">
-<!ENTITY folderContextUnsubscribe.accesskey "Ç">
+<!ENTITY folderContextUnsubscribe.accesskey "S">
 <!ENTITY folderContextMarkNewsgroupRead.label "Shënoje Grupin e Lajmeve si Të lexuar">
 <!ENTITY folderContextMarkNewsgroupRead.accesskey "L">
 <!ENTITY folderContextMarkMailFolderRead.label "Shënoje Dosjen si Të lexuar">
@@ -699,7 +702,7 @@
 
 <!-- Quick Search Menu Bar -->
 <!ENTITY searchSubjectMenu.label "Subjekt">
-<!ENTITY searchFromMenu.label "Prej">
+<!ENTITY searchFromMenu.label "Nga">
 <!ENTITY searchSubjectOrFromMenu.label "Subjekt ose Prej">
 <!ENTITY searchRecipient.label "Për ose Cc">
 <!ENTITY searchSubjectOrRecipientMenu.label "Subjekt, Për ose Cc">
@@ -707,8 +710,9 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Ruajeni Kërkimin si Dosje…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Përzgjidhni Mesazhe">
 <!ENTITY threadColumn.label "Rrjedhë">
-<!ENTITY fromColumn.label "Prej">
+<!ENTITY fromColumn.label "Nga">
 <!ENTITY recipientColumn.label "Marrës">
 <!ENTITY correspondentColumn.label "Korrespondentë">
 <!ENTITY subjectColumn.label "Subjekt">
@@ -728,15 +732,18 @@
 <!ENTITY idColumn.label "Radhë sipas Marrjes">
 <!ENTITY attachmentColumn.label "Bashkëngjitje">
 
+<!ENTITY deleteColumn.label "Fshije">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Përzgjidhni shtylla që të shfaqen">
+<!ENTITY selectColumn.tooltip "Aktivizoni/çaktivizoni përzgjedhjen e krejt mesazheve">
 <!ENTITY threadColumn2.tooltip "Shfaq rrjedha mesazhesh">
 <!ENTITY fromColumn2.tooltip "Renditi sipas nga-ve">
 <!ENTITY recipientColumn2.tooltip "Renditi sipas marrësit">
 <!ENTITY correspondentColumn2.tooltip "Renditi sipas korrespondentësh">
 <!ENTITY subjectColumn2.tooltip "Renditi sipas subjektesh">
 <!ENTITY dateColumn2.tooltip "Renditi sipas datash">
-<!ENTITY priorityColumn2.tooltip "Renditi sipas përparësie">
+<!ENTITY priorityColumn2.tooltip "Renditi sipas përparësish">
 <!ENTITY tagsColumn2.tooltip "Renditi sipas etiketash">
 <!ENTITY accountColumn2.tooltip "Renditi sipas llogarish">
 <!ENTITY statusColumn2.tooltip "Renditi sipas gjendjesh">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Renditi sipas vendndodhjesh">
 <!ENTITY idColumn2.tooltip "Renditi sipas radhe marrjeje">
 <!ENTITY attachmentColumn2.tooltip "Renditi sipas bashkëngjitjesh">
+
+<!ENTITY deleteColumn.tooltip "Fshini një mesazh">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Mesazh i Ri prej Gjedheje">
@@ -776,7 +785,7 @@
 <!ENTITY contextReplySender.accesskey "G">
 <!ENTITY contextReplyNewsgroup2.label "Përgjigjuni te Grupi i Lajmeve">
 <!ENTITY contextReplyNewsgroup2.accesskey "L">
-<!ENTITY contextReplyAll.label "Përgjigjiu të Tërëve">
+<!ENTITY contextReplyAll.label "Përgjigjuni të Tërëve">
 <!ENTITY contextReplyAll.accesskey "T">
 <!ENTITY contextReplyList.label "Përgjigjuni te Lista">
 <!ENTITY contextReplyList.accesskey "L">
@@ -792,7 +801,7 @@
 <!ENTITY contextMultiForwardAsAttachment.accesskey "B">
 <!ENTITY contextMoveMsgMenu.label "Shpjere Te">
 <!ENTITY contextMoveMsgMenu.accesskey "e">
-<!ENTITY contextMoveCopyMsgRecentMenu.label "Së Fundi">
+<!ENTITY contextMoveCopyMsgRecentMenu.label "Së fundi">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "F">
 <!ENTITY contextMoveCopyMsgFavoritesMenu.label "Më të pëlqyerit">
 <!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "p">
@@ -859,7 +868,7 @@
 <!ENTITY contextPlay.label "Luaje">
 <!ENTITY contextPlay.accesskey "L">
 <!ENTITY contextPause.label "Ndale">
-<!ENTITY contextPause.accesskey "P">
+<!ENTITY contextPause.accesskey "N">
 <!ENTITY contextMute.label "Pa Zë">
 <!ENTITY contextMute.accesskey "a">
 <!ENTITY contextUnmute.label "Me Zë">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Mundësi Ikone Aplikacioni…">
 <!ENTITY writeNewMessageDock.label      "Shkruani Mesazh të Ri">
 <!ENTITY openAddressBookDock.label      "Hap Libër Adresash">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Shkoni mbrapsht një faqe">
+<!ENTITY browseForwardButton.tooltip "Shkoni përpara një faqe">

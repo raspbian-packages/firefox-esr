@@ -9,8 +9,9 @@ forward = Doprědka
 reload = Znowego zacytaś
 home = Startowy bok
 fullscreen = Połna wobrazowka
+touchbar-fullscreen-exit = Połnu wobrazowku spušćiś
 find = Pytaś
-new-tab = Nowy rejtark
+new-tab = Nowy rejtarik
 add-bookmark = Cytańske znamje pśidaś
 open-bookmarks-sidebar = Bocnicu cytańskich znamjenjow wócyniś
 reader-view = Cytański naglěd
@@ -18,3 +19,21 @@ reader-view = Cytański naglěd
 open-location = Pytaś abo adresu zapódaś
 share = Źěliś
 close-window = Wokno zacyniś
+open-sidebar = Bócnice
+
+# This string describes shortcuts for search.
+search-popover = Pytańske skrotconki
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Pytaś w:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Cytańske znamjenja
+search-history = Historija
+search-opentabs = Wócynjone rejtariki
+search-tags = Wobznamjenja
+search-titles = Titele
+
+##
+

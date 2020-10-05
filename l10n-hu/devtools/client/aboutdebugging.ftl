@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = Profil teljesítménye
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = A böngésző beállításai nem kompatibilisek a Service Workerekkel. <a>További információk</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = A csatlakoztatott böngésző régi verziójú ({ $runtimeVersion }). A minimális támogatott verzió: ({ $minVersion }). Ez egy nem támogatott összeállítás és a fejlesztői eszközök hibáját okozhatja. Frissítse a csatlakoztatott böngészőt. <a>Hibaelhárítás</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = A csatlakoztatott böngésző régi ve
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = A Hibakereső panel lehet hogy nem fog működni a csatlakoztatott böngészővel. Használja a Firefox { $runtimeVersion } verziót, ha ezzel a böngészővel akarja használni a Hibakeresőt.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = A Firefox ezen verziója nem tud hibát keresni a Firefox for Androidban (68). Javasoljuk, hogy a teszteléshez telepítse a Firefox for Android Nightlyt a telefonján.
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Küldés
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Kezdés
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Push üzenetek
+    .disabledTitle = A Service Worker push üzenetek jelenleg le vannak tiltva a többfolyamatos { -brand-shorter-name }ban
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Kezdés
+    .disabledTitle = A Service Worker indítása jelenleg le van tiltva a többfolyamatos { -brand-shorter-name }ban
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Regisztráció megszüntetése
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -287,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Küldési szolgáltatás
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = A Service Worker ellenőrzés jelenleg le van tiltva a többfolyamatos { -brand-shorter-name }ban.
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = A lap nincs teljesen betöltve, és nem vizsgálható
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Fő folyamat
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = A célböngésző fő folyamata
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Többfolyamatos eszköztár
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Fő folyamat és tartalomfolyamatok a cél böngészőhöz
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Üzenet bezárása

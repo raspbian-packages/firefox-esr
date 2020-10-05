@@ -27,6 +27,7 @@
 <!ENTITY contextOutgoing.accesskey "V">
 <!ENTITY contextArchive.label "Archivieren">
 <!ENTITY contextArchive.accesskey "r">
+<!ENTITY contextPeriodic.accesskey "e">
 
 <!ENTITY filterActionDesc.label "Auszuführende Aktionen:">
 <!ENTITY filterActionDesc.accesskey "z">
@@ -56,6 +57,11 @@
 <!ENTITY addAction.tooltip "Weitere Aktion hinzufügen">
 <!ENTITY removeAction.tooltip "Aktion entfernen">
 
+<!-- LOCALIZATION NOTE
+     The values below are used to control the widths of the filter action widgets.
+     Change the values only when the localized strings in the popup menus
+     are truncated in the widgets.
+  -->
 <!-- LOCALIZATION NOTE
   The values below are used to control the widths of the filter action widgets.
   Change the values only when the localized strings in the popup menus

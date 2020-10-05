@@ -31,7 +31,10 @@ app-basics-title = Programfakta
 app-basics-name = Namn
 app-basics-version = Version
 app-basics-build-id = Versions-ID
+app-basics-distribution-id = Distributions-ID
 app-basics-update-channel = Uppdateringskanal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Uppdatera mapp
@@ -56,7 +59,6 @@ app-basics-service-workers = Registrerade Service Workers
 app-basics-profiles = Profiler
 app-basics-launcher-process-status = Uppstartsprocess
 app-basics-multi-process-support = Multiprocess fönster
-app-basics-process-count = Webbinnehållsprocesser
 app-basics-remote-processes-count = Fjärrprocesser
 app-basics-enterprise-policies = Företagspolicyer
 app-basics-location-service-key-google = Nyckel Google Location Service
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Kraschskydd inaktiverade funktioner
 graphics-workarounds-title = Lösningar
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Fönsterprotokoll
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Skrivbordsmiljö
 place-database-title = Platser databas
 place-database-integrity = Integritet
 place-database-verify-integrity = Verifiera integritet
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argument
 safe-mode-title = Prova felsäkert läge
 restart-in-safe-mode-label = Starta om utan tillägg…
+clear-startup-cache-title = Prova att rensa startcachen
+clear-startup-cache-label = Rensa startcache…
+startup-cache-dialog-title = Rensa startcache
+startup-cache-dialog-body = Starta om { -brand-short-name } för att rensa startcachen. Detta kommer inte att ändra dina inställningar eller ta bort tillägg som du har lagt till i { -brand-short-name }.
+restart-button-label = Starta om
+
+## Media titles
+
+audio-backend = Ljudgränssnitt
+max-audio-channels = Max kanaler
+channel-layout = Önskad kanallayout
+sample-rate = Önskad samplingshastighet
+roundtrip-latency = Tur och retur-fördröjning (standardavvikelse)
 media-title = Media
 media-output-devices-title = Utmatningsenheter
 media-input-devices-title = Inmatningsenheter
@@ -124,6 +141,12 @@ media-device-format = Format
 media-device-channels = Kanaler
 media-device-rate = Hastighet
 media-device-latency = Fördröjning
+media-capabilities-title = Mediefunktioner
+# List all the entries of the database.
+media-capabilities-enumerate = Räkna upp databasen
+
+##
+
 intl-title = Internationalisering & lokalisering
 intl-app-title = Programinställningar
 intl-locales-requested = Begärda språkversioner
@@ -133,6 +156,22 @@ intl-locales-default = Standardspråk
 intl-os-title = Operativsystem
 intl-os-prefs-system-locales = Språkversioner system
 intl-regional-prefs = Regionala inställningar
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Fjärrfelsökning (Chromium-protokollet)
+remote-debugging-accepting-connections = Accepterar anslutningar
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -229,7 +268,9 @@ unknown-failure = Svartlistad; felkod { $failureCode }
 d3d11layers-crash-guard = D3D11 Kompositör
 d3d11video-crash-guard = D3D11 Videoavkodare
 d3d9video-crash-buard = D3D9 Videoavkodare
+d3d9video-crash-guard = D3D9 Videoavkodare
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX Videoavkodare
 reset-on-next-restart = Återställ vid nästa omstart
 gpu-process-kill-button = Avsluta GPU process
 gpu-device-reset = Enhetsåterställning
@@ -238,12 +279,7 @@ uses-tiling = Använder Tiling
 content-uses-tiling = Använder Tiling (innehåll)
 off-main-thread-paint-enabled = Målning utanför huvudtråden aktiverad
 off-main-thread-paint-worker-count = Målning utanför huvudtråden Worker-antal
-low-end-machine = Upptäckte mindre presterande maskin
 target-frame-rate = Målramhastighet
-audio-backend = Ljudgränssnitt
-max-audio-channels = Max kanaler
-channel-layout = Önskad kanallayout
-sample-rate = Önskad samplingshastighet
 min-lib-versions = Förväntad minimiversion
 loaded-lib-versions = Version som används
 has-seccomp-bpf = Seccomp-BPF (Systemanropsfiltrering)
@@ -258,6 +294,11 @@ sandbox-proc-type-content = innehåll
 sandbox-proc-type-file = filinnehåll
 sandbox-proc-type-media-plugin = insticksmodul media
 sandbox-proc-type-data-decoder = dataavkodare
+startup-cache-title = Startcache
+startup-cache-disk-cache-path = Sökväg diskcache
+startup-cache-ignore-disk-cache = Ignorera diskcache
+startup-cache-found-disk-cache-on-init = Hittade diskcache på Init
+startup-cache-wrote-to-disk-cache = Skrev till diskcache
 launcher-process-status-0 = Aktiverad
 launcher-process-status-1 = Inaktiverad på grund av fel
 launcher-process-status-2 = Inaktiverad med tvång
@@ -281,6 +322,7 @@ touch-enabled = tryckinmatning aktiverad
 drag-enabled = rullningslist är dragaktiverad
 keyboard-enabled = tangentbord aktiverad
 autoscroll-enabled = autoscroll aktiverad
+zooming-enabled = mjuk pinch-zoom aktiverad
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

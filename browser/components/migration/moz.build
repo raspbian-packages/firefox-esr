@@ -34,6 +34,7 @@ if CONFIG['OS_ARCH'] == 'WINNT':
     ]
     EXTRA_JS_MODULES += [
         '360seProfileMigrator.jsm',
+        'ChromeWindowsLoginCrypto.jsm',
         'EdgeProfileMigrator.jsm',
         'ESEDBReader.jsm',
         'IEProfileMigrator.jsm',
@@ -41,9 +42,20 @@ if CONFIG['OS_ARCH'] == 'WINNT':
     ]
 
 if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
+    EXPORTS += [
+        'nsKeychainMigrationUtils.h',
+    ]
     EXTRA_JS_MODULES += [
+        'ChromeMacOSLoginCrypto.jsm',
         'SafariProfileMigrator.jsm',
     ]
+    SOURCES += [
+        'nsKeychainMigrationUtils.mm',
+    ]
+    XPIDL_SOURCES += [
+        'nsIKeychainMigrationUtils.idl',
+    ]
+
 
 XPCOM_MANIFESTS += [
     'components.conf',

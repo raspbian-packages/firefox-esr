@@ -5,50 +5,66 @@
 permissions-window =
     .title = Undantag
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Webbplatsens adress
     .accesskey = d
+
 permissions-block =
     .label = Blockera
     .accesskey = B
+
 permissions-session =
     .label = Tillåt för sessionen
     .accesskey = s
+
 permissions-allow =
     .label = Tillåt
     .accesskey = å
+
 permissions-site-name =
     .label = Webbplats
+
 permissions-status =
     .label = Status
+
 permissions-remove =
     .label = Ta bort webbplats
     .accesskey = T
+
 permissions-remove-all =
     .label = Ta bort alla webbplatser
     .accesskey = a
+
 permissions-button-cancel =
     .label = Avbryt
     .accesskey = A
+
 permissions-button-ok =
     .label = Spara ändringar
     .accesskey = S
+
 permissions-autoplay-menu = Standard för alla webbplatser:
+
 permissions-searchbox =
     .placeholder = Sök webbplats
+
 permissions-capabilities-autoplay-allow =
     .label = Tillåt ljud och video
 permissions-capabilities-autoplay-block =
     .label = Blockera ljud
 permissions-capabilities-autoplay-blockall =
     .label = Blockera ljud och video
+
 permissions-capabilities-allow =
     .label = Tillåt
 permissions-capabilities-block =
     .label = Blockera
 permissions-capabilities-prompt =
     .label = Fråga alltid
+
 permissions-capabilities-listitem-allow =
     .value = Tillåt
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Undantag - Innehållsblockering
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Du har inaktiverat innehållsblockering på dessa webbplatser.
+
+permissions-exceptions-etp-window =
+    .title = Undantag för förbättrat spårningsskydd
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Du har inaktiverat skydd på dessa webbplatser.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Följande webbplatser har begärt att komma åt
 permissions-site-location-disable-label =
     .label = Blockera nya förfrågningar om att få tillgång till din position
 permissions-site-location-disable-desc = Detta kommer att förhindra att webbplatser som inte listas ovan från att begära tillstånd att komma åt din position. Om du blockerar åtkomst till din position kan det störa vissa webbplatsfunktioner.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Inställningar - Rättigheter för virtuell verklighet
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Följande webbplatser har begärt att få tillgång till dina enheter för virtuell verklighet. Du kan ange vilka webbplatser som får åtkomst till dina enheter för virtuell verklighet. Du kan också blockera nya förfrågningar som ber om åtkomst till dina enheter för virtuell verklighet.
+permissions-site-xr-disable-label =
+    .label = Blockera nya förfrågningar som ber om åtkomst till dina enheter för virtuell verklighet
+permissions-site-xr-disable-desc = Detta förhindrar alla webbplatser som inte listas ovan från att begära tillåtelse att få tillgång till dina enheter för virtuell verklighet. Om du blockerar åtkomst till dina enheter för virtuell verklighet kan vissa webbplatsfunktioner sluta att fungera.
 
 ## Site Permissions - Camera
 

@@ -19,13 +19,52 @@ onboarding-button-label-get-started = શરૂ કરો
 ## Welcome modal dialog strings
 
 onboarding-welcome-header = { -brand-short-name } માં તમારું સ્વાગત છે
+onboarding-welcome-body = તમને બ્રાઉઝર મળ્યો છે.<br/> બાકીના { -brand-product-name } મળો.
+onboarding-welcome-learn-more = ફાયદાઓ વિશે વધુ જાણો.
+
+onboarding-join-form-header = { -brand-product-name } માં જોડાઓ
+
+onboarding-join-form-body = શરુ કરવા માટે તમારું ઇમેઇલ સરનામું દાખલ કરો
 onboarding-join-form-email =
     .placeholder = ઇમેઇલ દાખલ કરો
 onboarding-join-form-email-error = માન્ય ઇમેઇલ આવશ્યક છે
+onboarding-join-form-continue = ચાલુ રાખો
+
 onboarding-start-browsing-button-label = બ્રાઉઝિંગ શરુ કરો
+
+onboarding-cards-dismiss =
+    .title = રદ કરો
+    .aria-label = રદ કરો
+
+## Welcome full page string
+
+## Firefox Sync modal dialog strings.
+
+onboarding-sync-welcome-header = તમારી સાથે { -brand-product-name } લો
+onboarding-sync-welcome-content = તમારા બધા ઉપકરણો પર તમારા બુકમાર્ક્સ, ઇતિહાસ, પાસવર્ડ્સ અને અન્ય સેટિંગ્સ મેળવો.
+onboarding-sync-welcome-learn-more-link = Fireofox ખાતા વિશે વધુ શીખો
+
+onboarding-sync-form-input =
+    .placeholder = ઇમેઇલ
+
+onboarding-sync-form-continue-button = ચાલુ રાખો
+onboarding-sync-form-skip-login-button = આ પગલું છોડી દો
+
+## This is part of the line "Enter your email to continue to Firefox Sync"
+
+onboarding-sync-form-header = તમારા ઇમેઇલ દાખલ કરો
+onboarding-sync-form-sub-header = { -sync-brand-name } ચાલુ રાખવા માટે
+
 
 ## These are individual benefit messages shown with an image, title and
 ## description.
+
+onboarding-benefit-products-title = ઉપયોગી વસ્તુઓ
+
+onboarding-benefit-knowledge-title = વ્યવહારુ જ્ઞાન
+onboarding-benefit-knowledge-text = સ્માર્ટ અને સુરક્ષિત ઑનલાઇન રહેવા માટે તમારે જાણવાની જરૂર છે તે બધું જાણો.
+
+onboarding-benefit-privacy-title = સાચું ગોપનીયતા
 
 
 ## These strings belong to the individual onboarding messages.
@@ -37,19 +76,44 @@ onboarding-start-browsing-button-label = બ્રાઉઝિંગ શરુ �
 
 onboarding-private-browsing-title = ખાનગી બ્રાઉઝિંગ
 onboarding-private-browsing-text = તમારી જાતે બ્રાઉઝ કરો. સામગ્રી અવરોધિત સાથે કરેલું ખાનગી બ્રાઉઝિંગ એ ઓનલાઇન ટ્રેકર્સ કે જે તમને વેબ પર અનુસરે છે તેમને અવરોધે છે.
+
 onboarding-screenshots-title = સ્ક્રીનશોટ્સ
 onboarding-screenshots-text = { -brand-short-name } દૂર કર્યા સિવાય -  સ્ક્રીનશોટ્સ લો, સાચવો અને વહેંચો. બ્રાઉઝ કરતી વખતે સમગ્ર પાનું અથવા વિસ્તાર આવરી લો. ત્યારબાદ વેબમાં સહેલાઇથી પ્રવેશ કરવા અને વહેંચવા માટે સાચવો.
+
 onboarding-addons-title = ઍડ-ઑન્સ
 onboarding-addons-text = { -brand-short-name } તમારી માટે વધું સારી રીતે કામ કરે તેનાં માટે હજું વધારે લક્ષણો ઉમેરો. વિવિધ થીમનો ઉપયોગ કરીને કિંમતો સરખાવો, હવામાન તપાસો અથવા તમારું વ્યક્તિત્વ દર્શાવો.
+
 onboarding-ghostery-title = Ghostery
 onboarding-ghostery-text = Ghostery જેવાં વિસ્તરણ સાથે ઝડપી, વધું બુધ્ધિપૂર્વકનું, અથવા સલામતીભર્યુ બ્રાઉઝ કરો, જે તમને અણગમતી જાહેરાતોને અવરોધવાં દેશે.
+
 # Note: "Sync" in this case is a generic verb, as in "to synchronize"
 onboarding-fxa-title = સમન્વય
 onboarding-fxa-text = { -fxaccount-brand-name } માટે સાઇન અપ કરો અને તમે જ્યાં પણ { -brand-short-name } નો ઉપયોગ કરો છો ત્યાં તમારા બુકમાર્ક્સ, પાસવર્ડ્સ અને ખુલ્લા ટૅબ્સને સમન્વયિત કરો.
 
+onboarding-tracking-protection-button2 = તે કેવી રીતે કામ કરે છે
+
+onboarding-data-sync-button2 = { -sync-brand-short-name } સાઇન ઇન કરો
+
+onboarding-browse-privately-title = ખાનગી રૂપે બ્રાઉઝ કરો
+onboarding-browse-privately-button = ખાનગી વિન્ડો ખોલો
+
+onboarding-firefox-send-title = તમારી શેર કરેલી ફાઇલોને ખાનગી રાખો
+onboarding-firefox-send-button = { -send-brand-name } વાપરો
+
+onboarding-mobile-phone-title = તમારા ફોન પર { -brand-product-name } મેળવો
+onboarding-mobile-phone-text = IOS અથવા Android માટે { -brand-product-name } ડાઉનલોડ કરો અને તમારા ડેટાને સમગ્ર ઉપકરણો પર સમન્વયિત કરો.
+# "Mobile" is short for mobile/cellular phone, "Browser" is short for web
+# browser.
+onboarding-mobile-phone-button = મોબાઇલ બ્રાઉઝર ડાઉનલોડ કરો
+
+onboarding-pocket-anywhere-text2 = { -pocket-brand-name } એપ્લિકેશન સાથે તમારી પસંદની સામગ્રીને ઓફલાઇન સાચવો અને તમારી અનુકૂળતા પ્રમાણે વાંચો, સાંભળો અને જુઓ.
+onboarding-pocket-anywhere-button = { -pocket-brand-name } વાપરો
+
+
 ## Message strings belonging to the Return to AMO flow
 
 return-to-amo-sub-header = સરસ, તમને { -brand-short-name } મળી ગયું
+
 # <icon></icon> will be replaced with the icon belonging to the extension
 #
 # Variables:

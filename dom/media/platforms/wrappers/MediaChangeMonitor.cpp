@@ -14,7 +14,7 @@
 #include "MediaInfo.h"
 #include "PDMFactory.h"
 #include "VPXDecoder.h"
-#include "mozilla/StaticPrefs.h"
+#include "mozilla/StaticPrefs_media.h"
 #include "mozilla/TaskQueue.h"
 
 namespace mozilla {
@@ -131,7 +131,9 @@ class H264ChangeMonitor : public MediaChangeMonitor::CodecChangeMonitor {
           gfx::IntRect(0, 0, spsdata.pic_width, spsdata.pic_height));
       mCurrentConfig.mColorDepth = spsdata.ColorDepth();
       mCurrentConfig.mColorSpace = spsdata.ColorSpace();
-      mCurrentConfig.mFullRange = spsdata.video_full_range_flag;
+      mCurrentConfig.mColorRange = spsdata.video_full_range_flag
+                                       ? gfx::ColorRange::FULL
+                                       : gfx::ColorRange::LIMITED;
     }
     mCurrentConfig.mExtraData = aExtraData;
     mTrackInfo = new TrackInfoSharedPtr(mCurrentConfig, mStreamID++);
@@ -191,7 +193,7 @@ class VPXChangeMonitor : public MediaChangeMonitor::CodecChangeMonitor {
     // The AR data isn't found in the VP8/VP9 bytestream.
     mCurrentConfig.mColorDepth = gfx::ColorDepthForBitDepth(info.mBitDepth);
     mCurrentConfig.mColorSpace = info.ColorSpace();
-    mCurrentConfig.mFullRange = info.mFullRange;
+    mCurrentConfig.mColorRange = info.ColorRange();
     mTrackInfo = new TrackInfoSharedPtr(mCurrentConfig, mStreamID++);
 
     return rv;
@@ -244,7 +246,7 @@ MediaChangeMonitor::MediaChangeMonitor(PlatformDecoderModule* aPDM,
   mInConstructor = false;
 }
 
-MediaChangeMonitor::~MediaChangeMonitor() {}
+MediaChangeMonitor::~MediaChangeMonitor() = default;
 
 RefPtr<MediaDataDecoder::InitPromise> MediaChangeMonitor::Init() {
   RefPtr<MediaChangeMonitor> self = this;
@@ -399,7 +401,7 @@ RefPtr<ShutdownPromise> MediaChangeMonitor::Shutdown() {
     if (mShutdownPromise) {
       // We have a shutdown in progress, return that promise instead as we can't
       // shutdown a decoder twice.
-      RefPtr<ShutdownPromise> p = mShutdownPromise.forget();
+      RefPtr<ShutdownPromise> p = std::move(mShutdownPromise);
       return p;
     }
     return ShutdownDecoder();
@@ -411,7 +413,7 @@ RefPtr<ShutdownPromise> MediaChangeMonitor::ShutdownDecoder() {
   return InvokeAsync(mTaskQueue, __func__, [self, this]() {
     mConversionRequired.reset();
     if (mDecoder) {
-      RefPtr<MediaDataDecoder> decoder = mDecoder.forget();
+      RefPtr<MediaDataDecoder> decoder = std::move(mDecoder);
       return decoder->Shutdown();
     }
     return ShutdownPromise::CreateAndResolve(true, __func__);
@@ -530,7 +532,7 @@ bool MediaChangeMonitor::CanRecycleDecoder() const {
   AssertOnTaskQueue();
 
   MOZ_ASSERT(mDecoder);
-  return StaticPrefs::MediaDecoderRecycleEnabled() &&
+  return StaticPrefs::media_decoder_recycle_enabled() &&
          mDecoder->SupportDecoderRecycling();
 }
 

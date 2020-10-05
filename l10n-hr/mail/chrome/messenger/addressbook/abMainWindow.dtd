@@ -44,9 +44,9 @@
 <!-- Edit Menu -->
 <!ENTITY editMenu.label                                 "Uredi">
 <!ENTITY editMenu.accesskey                             "e">
-<!ENTITY undoCmd.label                                  "Vrati">
+<!ENTITY undoCmd.label                                  "Poništi">
 <!ENTITY undoCmd.key                                    "Z">
-<!ENTITY undoCmd.accesskey                              "V">
+<!ENTITY undoCmd.accesskey                              "P">
 <!ENTITY redoCmd.label                                  "Ponovi">
 <!ENTITY redoCmd.key                                    "Y">
 <!ENTITY redoCmd.accesskey                              "P">
@@ -164,6 +164,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY deleteButton2.accesskey                        "O">
 
 <!-- Address Book Toolbar Tooltips -->
+<!ENTITY columnChooser.tooltip                          "Odaberi stupce za prikaz">
 <!ENTITY newContactButton.tooltip                       "Stvori novi kontakt u adresaru">
 <!ENTITY newlistButton.tooltip                          "Stvori novi popis primatelja">
 <!ENTITY editPropertiesButton.tooltip                   "Uredi odabranu stavku">
@@ -173,9 +174,6 @@ because displayed names don't have the comma in between. -->
 <!ENTITY newmsgButton.tooltip                           "Pošalji poruku">
 <!ENTITY newIM.tooltip                                  "Pošalji instant poruku ili razgovor">
 <!ENTITY deleteButton2.tooltip                          "Obriši odabranu stavku">
-
-<!-- Dir Tree header -->
-<!ENTITY dirTreeHeader.label                            "Adresari">
 
 <!-- Search Bar -->
 <!ENTITY SearchNameOrEmail.label                        "Ime ili adresa e-pošte">
@@ -243,4 +241,4 @@ because displayed names don't have the comma in between. -->
 <!ENTITY minimizeWindow.label                           "Minimiziraj">
 <!ENTITY minimizeWindow.key                             "m">
 <!ENTITY bringAllToFront.label                          "Postavi sve na vrh">
-<!ENTITY zoomWindow.label                               "Uvećanje">
+<!ENTITY zoomWindow.label                               "Zumiraj">

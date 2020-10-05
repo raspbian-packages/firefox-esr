@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Қате коды: <a data-l10n-name="error-code-l
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Веб-сайттар өздерінің шынайлығын сертификаттау орталықтары шығарған сертификаттар арқылы дәлелдейді. Браузерлердің көбі GeoTrust, RapidSSL, Symantec, Thawte және VeriSign шығарған сертификаттарға енді сенбейді. { $hostname } осы орталықтарының бірімен шығарылған сертификатты пайдаланады, сондықтан веб-сайт шынайылығын дәлелдеу мүмкін емес.
 cert-error-symantec-distrust-admin = Веб-сайт әкімшісіне бұл мәселе туралы хабарлай аласыз.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
+cert-error-details-cert-chain-label = Сертификаттар тізбегі:
+open-in-new-window-for-csp-or-xfo-error = Сайтты жаңа терезеде ашу
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Қауіпсіздігіңізді қорғау үшін, { $hostname } { -brand-short-name } үшін бетті көрсетуге рұқсат етпейді, егер оны басқа сайт ендірілген болса. Бұл бетті қарау үшін, оны жаңа терезеде ашыңыз.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Байланысты орнату сәтсіз аяқталды
+deniedPortAccess-title = Бұл портқа тыйым салынған
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Кешіріңіз, бұл сайтты таба алмадық.
+fileNotFound-title = Файл табылмады
+fileAccessDenied-title = Файлға қатынау құқығы жоқ
+generic-title = Қате.
+captivePortal-title = Желіге кіру
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Кешіріңіз, бұл адрес дұрыс адреске ұқсамайды.
+netInterrupt-title = Байланыс үзілген
+notCached-title = Құжат ескірген
+netOffline-title = Дербес жұмыс істеу режимі
+contentEncodingError-title = Құраманы декодтау кезінде қате кетті
+unsafeContentType-title = Қауіпсіз емес файл түрі
+netReset-title = Байланыс үзілген
+netTimeout-title = Байланысты күту уақыты аяқталды
+unknownProtocolFound-title = Адресті талдау қатесі
+proxyConnectFailure-title = Прокси сервері сұранымдарды үзіп тұр
+proxyResolveFailure-title = Прокси сервері табылмады
+redirectLoop-title = Парақтағы бағдарлау дұрыс емес
+unknownSocketType-title = Сервердің жауабы күтпеген түрде
+nssFailure2-title = Қорғалған байланысты орнату сәтсіз аяқталды
+cspBlocked-title = Құрамасының қауіпсіздік саясатымен блокталған
+xfoBlocked-title = X-Frame-Options саясатымен бұғаттаған
+csp-xfo-error-title = { -brand-short-name } бұл парақты аша алмайды
+corruptedContentError-title = Зақымдалған құрама қатесі
+remoteXUL-title = Қашықтағы XUL
+sslv3Used-title = Қауіпсіз түрде байланысу мүмкін емес
+inadequateSecurityError-title = Сіздің байланысыңыз қауіпсіз емес
+blockedByPolicy-title = Бұғатталған бет
+clockSkewError-title = Сіздің компьютеріңіздің сағаты қате
+networkProtocolError-title = Желілік хаттама қатесі
+nssBadCert-title = Назарыңызға: алдыңызда тәуекел бар сияқты
+nssBadCert-sts-title = Байланыс орнатылмады: мүмкін қауіпсіздік мәселесі
+certerror-mitm-title = Бағдарламалық қамтама { -brand-short-name } үшін бұл сайтқа қауіпсіз түрде байланысуға жол бермейді

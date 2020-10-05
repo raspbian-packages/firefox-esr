@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Synkroniserte faner
 synced-tabs-sidebar-noclients-subtitle = Vil du se faner fra de andre enhetene dine her?
 synced-tabs-sidebar-notsignedin = Logg inn for å vise en liste over faner fra andre enheter.
+synced-tabs-sidebar-intro = Vis en liste over faner fra andre enheter.
 synced-tabs-sidebar-unverified = Kontoen din må bekreftes.
 synced-tabs-sidebar-notabs = Ingen åpne faner
 synced-tabs-sidebar-openprefs = Åpne innstillinger for { -sync-brand-short-name }
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Administrer enheter …
     .accesskey = d
+synced-tabs-context-sync-now =
+    .label = Synkroniser nå
+    .accesskey = r
 fxa-sign-in = Logg inn på { -sync-brand-short-name }
+turn-on-sync = Slå på { -sync-brand-short-name }

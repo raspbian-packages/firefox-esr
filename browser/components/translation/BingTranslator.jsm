@@ -57,7 +57,7 @@ var BingTranslator = function(
   this._translatedCharacterCount = 0;
 };
 
-this.BingTranslator.prototype = {
+BingTranslator.prototype = {
   /**
    * Performs the translation, splitting the document into several chunks
    * respecting the data limits of the API.
@@ -314,7 +314,10 @@ BingRequest.prototype = {
       );
 
       // Prepare request headers.
-      let headers = [["Content-type", "text/xml"], ["Authorization", auth]];
+      let headers = [
+        ["Content-type", "text/xml"],
+        ["Authorization", auth],
+      ];
 
       // Prepare the request body.
       let requestString =

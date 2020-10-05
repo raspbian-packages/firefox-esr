@@ -8,6 +8,7 @@ url-classifier-search-result-title = ফলাফল
 url-classifier-search-result-uri = URI: { $uri }
 url-classifier-search-input = URL
 url-classifier-search-error-invalid-url = অবৈধ URL
+url-classifier-search-error-no-features = কোন বৈশিষ্ট্য নির্বাচন করা নেই
 url-classifier-search-btn = অনুসন্ধান শুরু করুন
 url-classifier-search-features = বৈশিষ্ট্য
 url-classifier-search-listType = তালিকার ধরন
@@ -38,6 +39,7 @@ url-classifier-debug-sb-modules = নিরাপদ ব্রাউজিং �
 url-classifier-debug-modules = বর্তমান লগ মডিউল
 url-classifier-debug-sbjs-modules = নিরাপদ ব্রাউজিং JS লগ
 url-classifier-debug-file = বর্তমান লগ ফাইল
+
 url-classifier-trigger-update = ট্রিগার হালনাগাদ
 url-classifier-not-available = N/A
 url-classifier-disable-sbjs-log = নিরাপদ ব্রাউজিং JS লগ নিষ্ক্রিয় করুন

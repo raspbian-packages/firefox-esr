@@ -54,6 +54,7 @@ import =
 close-button =
     .label = بند کریں
     .accesskey = ب
+
 show-passwords =
     .label = پاس ورڈ نمائش کریں
     .accesskey = P
@@ -70,3 +71,5 @@ remove-all-shown =
 remove-all-passwords-prompt = کیا آپ واقعی تمام پاس ورڈ ہٹانا چاہتے ہیں؟
 remove-all-passwords-title = تمام پاس ورڈ ہٹائیں
 no-master-password-prompt = کیا آپ واقعی اپنے پاس ورڈ نمائش کرنا چاہتے ہیں؟
+auto-fill-logins-and-passwords =
+    .label = خودبخود فل ہونے والے لاگ انز اور پاس ورڈز

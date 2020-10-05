@@ -3,7 +3,7 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <!-- Context Menu -->
-<!ENTITY popupWindowRejectCmd.label     "Recusar janelas popup deste site">
+<!ENTITY popupWindowRejectCmd.label     "Recusar janelas pop-up deste site">
 <!ENTITY popupWindowRejectCmd.accesskey "o">
 <!ENTITY popupWindowAllowCmd.label      "Permitir janelas pop-up deste site">
 <!ENTITY popupWindowAllowCmd.accesskey  "o">
@@ -53,6 +53,8 @@
 <!ENTITY reloadImageCmd.accesskey     "e">
 <!ENTITY viewImageCmd.label           "Ver imagem">
 <!ENTITY viewImageCmd.accesskey       "V">
+<!ENTITY viewImageInfoCmd.label       "Ver informação da imagem">
+<!ENTITY viewImageInfoCmd.accesskey   "f">
 <!ENTITY viewVideoCmd.label           "Ver vídeo">
 <!ENTITY viewVideoCmd.accesskey       "d">
 <!ENTITY viewBGImageCmd.label         "Ver imagem de fundo">
@@ -153,6 +155,16 @@ items are mutually exclusive. -->
 <!ENTITY spellDictionaries.accesskey    "I">
 <!ENTITY spellAddDictionaries.label     "Transferir mais dicionários…">
 <!ENTITY spellAddDictionaries.accesskey "d">
+
+<!ENTITY fillLoginMenu.label          "Preencher credencial">
+<!ENTITY fillLoginMenu.accesskey      "e">
+<!ENTITY fillPasswordMenu.label       "Preencher palavra-passe">
+<!ENTITY fillPasswordMenu.accesskey   "e">
+<!ENTITY fillUsernameMenu.label       "Preencher nome de utilizador">
+<!ENTITY fillUsernameMenu.accesskey   "e">
+<!ENTITY noLoginSuggestions.label     "(Sem sugestões de credenciais)">
+<!ENTITY viewSavedLogins.label        "Ver credenciais guardadas">
+
 <!-- Developer Tools -->
 <!ENTITY devtoolsInspect.label          "Inspecionar elemento">
 <!ENTITY devtoolsInspect.accesskey      "n">

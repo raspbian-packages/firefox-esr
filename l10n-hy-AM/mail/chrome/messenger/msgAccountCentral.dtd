@@ -9,7 +9,7 @@
 <!ENTITY newsSectionHdr.label         "Լուրախմբեր">
 <!ENTITY subscribeNewsLink.label      "Կառավարել բաժանորդագրությունները">
 
-<!ENTITY feedsSectionHdr.label        "Շղթաներ">
+<!ENTITY feedsSectionHdr.label        "Սնումներ">
 <!ENTITY subscribeFeeds.label         "Կառավարել բաժանորդագրությունները">
 
 <!ENTITY chat.label                   "Զրույց">
@@ -18,8 +18,7 @@
 <!ENTITY accountsSectionHdr.label     "Փոստարկղեր">
 <!ENTITY subscribeImapFolders.label   "Կառավարել բաժանորդագրությունները">
 <!ENTITY settingsLink.label           "Փոստարկղի մանրամասները">
-<!ENTITY newAcctLink.label            "Ստեղծել նոր փոստարկղ">
-<!ENTITY newAcct.label                "Ստեղծել նոր հաշիվ.">
+<!ENTITY setupNewAcct.label           "Ստեղծել հաշիվ.">
 
 <!ENTITY advFeaturesSectionHdr.label  "Ընդլայնված հնարավորություններ">
 <!ENTITY searchMsgsLink.label         "Նամակների որոնում">

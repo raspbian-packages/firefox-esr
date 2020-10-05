@@ -18,6 +18,13 @@ process-type-file = Krajevna datoteka
 # process used to isolate webpages that requested special
 # permission to allocate large amounts of memory
 process-type-weblargeallocation = Velika dodelitev
+# process used to isolate a webpage from other web pages
+# to improve security
+process-type-webisolated = Ločena spletna vsebina
 # process used to communicate with the GPU for
 # graphics acceleration
 process-type-gpu = GPE
+# process used to perform network operations
+process-type-socket = Vtičnica
+# process preallocated; may change to other types
+process-type-prealloc = Vnaprej dodeljeno

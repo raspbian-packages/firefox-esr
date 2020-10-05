@@ -2,7 +2,10 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
+<!ENTITY  fontsAndEncodingsDialog.title           "Typos de litteras &amp; codificationes">
 
+<!ENTITY  language.label                          "Typos de litteras pro:">
+<!ENTITY  language.accesskey                      "t">
 
 <!ENTITY  size.label                              "Dimension:">
 <!ENTITY  sizeProportional.accesskey              "o">
@@ -50,7 +53,7 @@
 <!ENTITY  font.langGroup.sinhala                  "Sinhala">
 <!ENTITY  font.langGroup.tibetan                  "Tibetano">
 <!-- Minimum font size -->
-<!ENTITY minSize.label                            "Grandor minime del character:">
+<!ENTITY minSize.label                            "Dimension minime de litteras:">
 <!ENTITY minSize.accesskey                        "d">
 <!ENTITY minSize.none                             "Nulle">
 
@@ -59,15 +62,19 @@
 <!ENTITY  useDefaultFontSansSerif.label           "Sans Serif">
 
 <!-- fonts in message -->
-<!ENTITY  fontControl.label                       "Controlo del characteres">
-<!ENTITY  useDocumentFonts.label                  "Consenti al messages de usar altere characteres">
+<!ENTITY  fontControl.label                       "Controlo de typos de litteras">
+<!ENTITY  useFixedWidthForPlainText.label         "Usar un typo de litteras a largessa fixe pro messages de texto simple">
+<!ENTITY  fixedWidth.accesskey                    "x">
+<!ENTITY  useDocumentFonts.label                  "Permitter que le messages usa altere typos de litteras">
 <!ENTITY  useDocumentFonts.accesskey              "o">
 
 <!-- Language settings -->
-<!ENTITY sendDefaultCharset.label         "Email in exito:">
+<!ENTITY sendDefaultCharset.label         "Posta exiente:">
 <!ENTITY sendDefaultCharset.accesskey     "u">
 <!ENTITY languagesTitle2.label            "Codification del texto">
 <!ENTITY composingDescription2.label      "Predefinir le codification del texto pro reciper e inviar posta">
 
-<!ENTITY viewDefaultCharsetList.label     "Posta in arrivata:">
+<!ENTITY viewDefaultCharsetList.label     "Posta entrante:">
 <!ENTITY viewDefaultCharsetList.accesskey  "">
+<!ENTITY replyInDefaultCharset3.label     "Quando possibile, usar le codification de texto predefinite in responsas">
+<!ENTITY replyInDefaultCharset3.accesskey "Q">

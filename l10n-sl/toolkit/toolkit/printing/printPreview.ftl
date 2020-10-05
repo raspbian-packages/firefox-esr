@@ -33,6 +33,7 @@ printpreview-of =
     .value = od
 printpreview-custom-prompt =
     .value = Merilo po meri ...
+printpreview-custom-scale-prompt-title = Merilo po meri
 printpreview-page-setup =
     .label = Nastavitve strani ...
     .accesskey = v
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Zadnja stran
+

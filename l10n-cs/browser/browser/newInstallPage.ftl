@@ -8,23 +8,40 @@
 ### given Firefox channel". These terms are not synonymous.
 
 title = Důležité novinky
-heading = Změny v používání profilů aplikace { -brand-short-name }
+heading =
+    Změny v používání profilů { -brand-short-name.gender ->
+        [masculine] { -brand-short-name(case: "gen") }
+        [feminine] { -brand-short-name(case: "gen") }
+        [neuter] { -brand-short-name(case: "gen") }
+       *[other] aplikace { -brand-short-name }
+    }
+
 changed-title = Co se změnilo?
-changed-desc-profiles = Tato instalace aplikace { -brand-short-name } má nový profil. Profil je místo, kam Firefox ukládá data jako jsou vaše záložky, hesla a vaše nastavení.
-changed-desc-dedicated = Aby bylo možné bezpečně používat více instalací Firefoxu najednou (finální verzi Firefoxu, ESR, betaverzi, Firefox Developer Edition a Nightly), tato instalace nyní používá vlastní profil. Automaticky už tedy nesdílí uložená data s ostatními instalacemi.
+changed-desc-profiles =
+    Tato instalace { -brand-short-name.gender ->
+        [masculine] { -brand-short-name(case: "gen") }
+        [feminine] { -brand-short-name(case: "gen") }
+        [neuter] { -brand-short-name(case: "gen") }
+       *[other] aplikace { -brand-short-name }
+    } má nový profil. Profil je místo, kam Firefox ukládá data jako jsou vaše záložky, hesla a vaše nastavení.
+changed-desc-dedicated = Aby bylo možné bezpečně používat více instalací prohlížeče Firefox najednou (finální verzi, ESR, betaverzi, Firefox Developer Edition a Nightly), tato instalace nyní používá vlastní profil. Automaticky už tedy nesdílí uložená data s ostatními instalacemi.
+
 lost = <b>O žádná svá data a nastavení nepřijdete.</b> Vše je bezpečně uloženo v profilu a dostupné pro první spuštěnou instalaci Firefoxu.
+
 options-title = Co mohu dělat dál?
 options-do-nothing =
-    { -brand-short-name.gender ->
-        [masculine] Pokud nebudete dělat nic, váš { -brand-short-name } bude používat samostatný profil a nebude sdílet žádná data s ostatními instalacemi Firefoxu.
-        [feminine] Pokud nebudete dělat nic, vaše { -brand-short-name } bude používat samostatný profil a nebude sdílet žádná data s ostatními instalacemi Firefoxu.
-        [neuter] Pokud nebudete dělat nic, vaše { -brand-short-name } bude používat samostatný profil a nebude sdílet žádná data s ostatními instalacemi Firefoxu.
-       *[other] Pokud nebudete dělat nic, vaše aplikace { -brand-short-name } bude používat samostatný profil a nebude sdílet žádná data s ostatními instalacemi Firefoxu.
-    }
-options-use-sync = Pokud chcete mít stejná data ve více instalacích Firefoxu, použijte bezpečnou synchronizaci pomocí účtu Firefoxu.
+    Pokud nebudete dělat nic, { -brand-short-name.gender ->
+        [masculine] váš { -brand-short-name }
+        [feminine] vaše { -brand-short-name }
+        [neuter] vaše { -brand-short-name }
+       *[other] vaše aplikace { -brand-short-name }
+    } bude používat samostatný profil a nebude sdílet žádná data s ostatními instalacemi prohlížeče Firefox.
+options-use-sync = Pokud chcete mít stejná data ve více instalacích Firefoxu, použijte bezpečnou synchronizaci pomocí { -fxaccount-brand-name(case: "gen", capitalization: "lower") }.
+
 resources = Zdroje:
 support-link = Správa profilů - článek nápovědy
-sync-header = Přihlaste se nebo si založte { -fxaccount-brand-name }
+
+sync-header = Přihlaste se nebo si založte { -fxaccount-brand-name(case: "acc", capitalization: "lower") }
 sync-label = Zadejte svoji e-mailovou adresu
 sync-input =
     .placeholder = E-mail

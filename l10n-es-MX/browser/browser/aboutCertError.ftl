@@ -34,9 +34,69 @@ cert-error-domain-mismatch-single-nolink = Los sitios web prueban su identidad a
 # $subject-alt-names (String) - Alternate domain names for which the cert is valid.
 cert-error-domain-mismatch-multiple = Los sitios web prueban su identidad a través de certificados. { -brand-short-name } no confía en este sitio porque usa un certificado que no es válido para { $hostname }. El certificado solo es válido para los siguientes nombres: { $subject-alt-names }
 # Variables:
+# $hostname (String) - Hostname of the website with cert error.
+# $not-after-local-time (Date) - Certificate is not valid after this time.
+cert-error-expired-now = Los sitios web acreditan su identidad mediante certificados, los cuales son válidos durante un plazo determinado. El certificado de { $hostname } caducó el { $not-after-local-time }.
+# Variables:
+# $hostname (String) - Hostname of the website with cert error.
+# $not-before-local-time (Date) - Certificate is not valid before this time.
+cert-error-not-yet-valid-now = Los sitios web acreditan su identidad mediante certificados, los cuales son válidos durante un plazo determinado. El certificado de { $hostname } no será válido sino a partir del { $not-before-local-time }.
+# Variables:
 # $error (String) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 cert-error-code-prefix-link = Código de error: <a data-l10n-name="error-code-link">{ $error }</a>
 # Variables:
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Los sitios web prueban su identidad a través de certificados que son emitidos por las autoridades de certificación. La mayoría de los navegadores ya no confían en los certificados emitidos por GeoTrust, RapidSSL, Symantec, Thawte y VeriSign. { $hostname } usa un certificado de una de estas autoridades y, por lo tanto, no se puede probar la identidad del sitio web.
 cert-error-symantec-distrust-admin = Puedes notificar al administrador del sitio web acerca de este problema.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = Seguridad de transporte HTTP estricta: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = Fijar clave pública HTTP: { $hasHPKP }
+cert-error-details-cert-chain-label = Cadena de certificado:
+open-in-new-window-for-csp-or-xfo-error = Abrir el sitio en una nueva ventana
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Para proteger tu seguridad, { $hostname } no permitirá que { -brand-short-name } despliegue la página si otro sitio la ha incrustado. Para ver esta página debes abrirla en una nueva ventana.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = No se puede conectar
+deniedPortAccess-title = Esta dirección está restringida
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm. Estamos teniendo problemas para encontrar ese sitio.
+fileNotFound-title = Archivo no encontrado
+fileAccessDenied-title = El acceso al archivo fue denegado
+generic-title = ¡Chin!
+captivePortal-title = Iniciar sesión en la red
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm. Esa dirección no se ve bien.
+netInterrupt-title = La conexión se interrumpió
+notCached-title = Documento expirado
+netOffline-title = Modo sin conexión
+contentEncodingError-title = Error de codificación de contenido
+unsafeContentType-title = Tipo de archivo inseguro
+netReset-title = La conexión se reinició
+netTimeout-title = Se agotó el tiempo de espera
+unknownProtocolFound-title = No se comprende la dirección
+proxyConnectFailure-title = El servidor proxy está rechazando las conexiones
+proxyResolveFailure-title = No se puede encontrar el servidor proxy
+redirectLoop-title = La página no se está redireccionando apropiadamente
+unknownSocketType-title = Respuesta inesperada del servidor
+nssFailure2-title = Conexión segura fallida
+cspBlocked-title = Bloqueado por la Política de Seguridad de Contenido
+xfoBlocked-title = Bloqueada por la política X-Frame-Options
+csp-xfo-error-title = { -brand-short-name } no puede abrir esta página
+corruptedContentError-title = Error por contenido dañado
+remoteXUL-title = XUL remoto
+sslv3Used-title = Imposible conectar de forma segura
+inadequateSecurityError-title = Tu conexión no es segura
+blockedByPolicy-title = Página bloqueada
+clockSkewError-title = El reloj de tu computadora está mal
+networkProtocolError-title = Error de protocolo de red
+nssBadCert-title = Advertencia: Riesgo potencial de seguridad a continuación
+nssBadCert-sts-title = No se conectó: Posible problema de seguridad
+certerror-mitm-title = Software está impidiendo que { -brand-short-name } se conecte de forma segura a este sitio

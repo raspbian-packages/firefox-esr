@@ -17,7 +17,7 @@
 
 <!ENTITY spellAddToDictionary.label "Dodaj u direktorij">
 <!ENTITY spellAddToDictionary.accesskey "o">
-<!ENTITY spellUndoAddToDictionary.label "Vrati dodavanje u rječnik">
+<!ENTITY spellUndoAddToDictionary.label "Poništi dodavanje u rječnik">
 <!ENTITY spellUndoAddToDictionary.accesskey "V">
 <!ENTITY spellCheckToggle.label "Provjeri pravopis">
 <!ENTITY spellCheckToggle.accesskey "s">
@@ -25,7 +25,7 @@
 <!ENTITY spellDictionaries.label "Jezici">
 <!ENTITY spellDictionaries.accesskey "J">
 
-<!ENTITY searchTextBox.clear.label "Očisti">
+<!ENTITY searchTextBox.clear.label "Obriši">
 
 <!ENTITY fillLoginMenu.label          "Popuni prijavu">
 <!ENTITY fillLoginMenu.accesskey      "u">

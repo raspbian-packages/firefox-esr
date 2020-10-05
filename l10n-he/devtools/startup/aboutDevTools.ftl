@@ -13,6 +13,7 @@ enable-common-message = כלי הפיתוח של Firefox מנוטרלים כבר
 enable-learn-more-link = מידע נוסף על כלי הפיתוח
 enable-enable-button = הפעלת כלי פיתוח
 enable-close-button = סגירת לשונית זו
+
 welcome-title = ברוכים הבאים לכלי הפיתוח של Firefox!
 newsletter-title = Mozilla Developer Newsletter
 newsletter-message = קבלת חדשות, טריקים ומשאבים ישירות לתיבת הדואר הנכנס שלך.
@@ -22,9 +23,11 @@ newsletter-privacy-label = מקובל עליי שצוות Mozilla יטפל במ�
 newsletter-subscribe-button = הרשמה
 newsletter-thanks-title = תודה!
 newsletter-thanks-message = אם טרם אישרת מינוי לקבוצת דיוור בנושאי Mozilla יתכן שיהיה עליך לעשות זאת. נא לחפש בתיבת הדואר הנכנס או הספאם שלך אם הגיעה הודעה מאתנו.
+
 footer-title = Firefox Developer Edition
 footer-message = מעניין אותך לחקור לא רק את כלי הפיתוח? ניתן לבחון את דפדפן ה־Firefox שנבנה במיוחד למפתחים ולצורות עבודה מודרניות.
 footer-learn-more-link = מידע נוסף
+
 features-learn-more = מידע נוסף
 features-inspector-title = מפקח
 features-inspector-desc = חקירה וליטוש קוד לבניית פריסות מושלמות עד רמת הפיקסל. <a data-l10n-name="learn-more">{ features-learn-more }</a>
@@ -37,7 +40,7 @@ features-network-desc = מעקב אחר בקשות רשת שעשויות להא�
 features-storage-title = אחסון
 features-storage-desc = הוספה, שינוי והסרת מטמון, עוגיות, מסדי נתונים ונתוני פעילות גלישה. <a data-l10n-name="learn-more">{ features-learn-more }</a>
 features-responsive-title = מצב עיצוב מסתגל
-features-responsive-desc = בדיקת אתרים על התקנים מדומים בדפדפן שלך. <a data-l10n-name="learn-more">{ features-learn-more }</a>
+features-responsive-desc = בדיקת אתרים על מכשירים מדומים בדפדפן שלך. <a data-l10n-name="learn-more">{ features-learn-more }</a>
 features-visual-editing-title = עריכה חזותית
 features-visual-editing-desc = כוונון של הנפשות, יישור וריפוד. <a data-l10n-name="learn-more">{ features-learn-more }</a>
 features-performance-title = ביצועים

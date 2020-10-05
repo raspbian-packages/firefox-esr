@@ -34,8 +34,8 @@
 <!ENTITY notCached.title "Documento fora de validade">
 <!ENTITY notCached.longDesc "<p>O documento solicitado não está mais no cache de navegação.</p><ul><li>Como precaução de segurança, documentos contendo informações confidenciais não são solicitados de novo automaticamente.</li><li>Clique em “Tentar novamente” para solicitar mais uma vez o documento do site.</li></ul>">
 
-<!ENTITY netOffline.title "Modo desconectado">
-<!ENTITY netOffline.longDesc2 "<p>O navegador está no modo desconectado e não pode conectar-se ao item solicitado.</p><ul><li>O computador está conectado a uma rede ativa?</li><li>Pressione &quot;Tentar novamente&quot; para mudar para modo conectado e recarregar a página.</li></ul>">
+<!ENTITY netOffline.title "Modo offline">
+<!ENTITY netOffline.longDesc2 "<p>O navegador está no modo offline e não pode conectar-se ao item solicitado.</p><ul><li>O computador está conectado a uma rede ativa?</li><li>Pressione &quot;Tentar novamente&quot; para mudar para modo online e recarregar a página.</li></ul>">
 
 <!ENTITY contentEncodingError.title "Erro na codificação do conteúdo">
 <!ENTITY contentEncodingError.longDesc "<p>A página que você está tentando ver não pode ser exibida porque usa uma forma de compactação não suportada ou inválida.</p><ul><li>Entre em contato com os responsáveis pelo site para informar o problema.</li></ul>">
@@ -81,6 +81,9 @@
 
 <!ENTITY cspBlocked.title "Bloqueado pela política de segurança de conteúdo">
 <!ENTITY cspBlocked.longDesc "<p>O navegador impediu esta página de carregar desta forma porque a política de segurança de conteúdo da página não permite.</p>">
+
+<!ENTITY xfoBlocked.title "Bloqueada pela política X-Frame-Options">
+<!ENTITY xfoBlocked.longDesc "<p>O navegador impediu que esta página fosse carregada neste contexto porque a página tem uma política X-Frame-Options que não permite.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Corrupted Content Error">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>The page you are trying to view cannot be shown because an error in the data transmission was detected.</p><ul><li>Please contact the website owners to inform them of this problem.</li></ul>">

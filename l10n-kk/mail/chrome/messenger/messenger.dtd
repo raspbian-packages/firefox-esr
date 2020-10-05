@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "м">
 <!ENTITY  newContactCmd.label "Адрестік кітапша контакты…">
 <!ENTITY  newContactCmd.accesskey "к">
+<!ENTITY openMenuCmd.label "Ашу">
+<!ENTITY openMenuCmd.accesskey "ш">
 <!ENTITY openMessageFileCmd.label "Сақталған хабарламаны ашу…">
 <!ENTITY openMessageFileCmd.accesskey "а">
 <!ENTITY saveAsMenu.label "Қалайша сақтау">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "Ы">
 <!ENTITY folderPaneBar.label "Бума панелінің саймандар панелі">
 <!ENTITY folderPaneBar.accesskey "Б">
-<!ENTITY folderModeSelector.label "Бумалар көріністері">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Бойынша сұрыптау">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Хабарламаларды іздеу…">
 <!ENTITY searchMailCmd.accesskey "м">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Глобалды іздеу…">
+<!ENTITY glodaSearchCmd.accesskey "Г">
 <!ENTITY searchAddressesCmd.label "Адрестерді іздеу…">
 <!ENTITY searchAddressesCmd.accesskey "з">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Таңдалған хабарламаны керек бумаға салу">
 <!ENTITY archiveButton.tooltip "Таңдалған хабарламаны архивтеу">
 <!ENTITY openConversationButton.tooltip "Таңдалған хабарламаның сөйлесуін көрсету">
+<!ENTITY openMsgConversationButton.tooltip "Таңдалған хабарламаның сөйлесуін көрсету">
 <!ENTITY nextButton.tooltip "Келесі оқылмаған хабарламаға өту">
 <!ENTITY nextMsgButton.tooltip "Келесі хабарламаға өту">
 <!ENTITY previousButton.tooltip "Алдыңғы оқылмаған хабарламаға өту">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Хабарламаларға тег қою">
 <!ENTITY compactButton.tooltip "Таңдалған бумадан өшірілген хабарламаларды жою">
 <!ENTITY appmenuButton1.tooltip "&brandShortName; мәзірін көрсету">
-
 <!ENTITY addonsButton.tooltip "Қосымшаларды басқару">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Іздеуді бума ретінде сақтау…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Хабарламаларды таңдау">
 <!ENTITY threadColumn.label "Ағын">
 <!ENTITY fromColumn.label "Кімнен">
 <!ENTITY recipientColumn.label "Қабылдаушысы">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Алынған реті">
 <!ENTITY attachmentColumn.label "Салынымдар">
 
+<!ENTITY deleteColumn.label "Өшіру">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Көрсетілетін бағандарды таңдаңыз">
+<!ENTITY selectColumn.tooltip "Барлық хабарламаларды таңдау/таңдауды алып тастау">
 <!ENTITY threadColumn2.tooltip "Хабарлама ағындарын көрсету">
 <!ENTITY fromColumn2.tooltip "Жіберуші бойынша сұрыптау">
 <!ENTITY recipientColumn2.tooltip "Алушы бойынша сұрыптау">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Орналасуы бойынша сұрыптау">
 <!ENTITY idColumn2.tooltip "Алынған реті бойынша сұрыптау">
 <!ENTITY attachmentColumn2.tooltip "Салынымдары бойынша сұрыптау">
+
+<!ENTITY deleteColumn.tooltip "Хабарламаны өшіру">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Үлгіден жаңа хабарлама">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Қолданба таңбашасының баптаулары…">
 <!ENTITY writeNewMessageDock.label      "Жаңа хабарламаны жазу">
 <!ENTITY openAddressBookDock.label      "Адрестік кітапшаны ашу">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Алдыңғы бетке қайту">
+<!ENTITY browseForwardButton.tooltip "Келесі бетке өту">

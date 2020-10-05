@@ -5,50 +5,66 @@
 permissions-window =
     .title = Uitzonderingen
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adres van website
     .accesskey = d
+
 permissions-block =
     .label = Blokkeren
     .accesskey = B
+
 permissions-session =
     .label = Toestaan voor sessie
     .accesskey = o
+
 permissions-allow =
     .label = Toestaan
     .accesskey = T
+
 permissions-site-name =
     .label = Website
+
 permissions-status =
     .label = Status
+
 permissions-remove =
     .label = Website verwijderen
     .accesskey = v
+
 permissions-remove-all =
     .label = Alle websites verwijderen
     .accesskey = A
+
 permissions-button-cancel =
     .label = Annuleren
     .accesskey = n
+
 permissions-button-ok =
     .label = Wijzigingen opslaan
     .accesskey = s
+
 permissions-autoplay-menu = Standaard voor alle websites:
+
 permissions-searchbox =
     .placeholder = Website doorzoeken
+
 permissions-capabilities-autoplay-allow =
     .label = Audio en video toestaan
 permissions-capabilities-autoplay-block =
     .label = Audio blokkeren
 permissions-capabilities-autoplay-blockall =
     .label = Audio en video blokkeren
+
 permissions-capabilities-allow =
     .label = Toestaan
 permissions-capabilities-block =
     .label = Blokkeren
 permissions-capabilities-prompt =
     .label = Altijd vragen
+
 permissions-capabilities-listitem-allow =
     .value = Toestaan
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Uitzonderingen - Inhoudsblokkering
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = U hebt inhoudsblokkering uitgeschakeld op deze websites.
+
+permissions-exceptions-etp-window =
+    .title = Uitzonderingen voor Verbeterde bescherming tegen volgen
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = U hebt beschermingen voor deze websites uitgeschakeld.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = De volgende websites hebben om toegang tot uw l
 permissions-site-location-disable-label =
     .label = Nieuwe verzoeken om toegang tot uw locatie blokkeren
 permissions-site-location-disable-desc = Dit voorkomt dat websites die hierboven niet worden vermeld om toestemming voor toegang tot uw locatie vragen. Het blokkeren van toegang tot uw locatie kan bepaalde functies van websites verstoren.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Instellingen - Toestemmingen voor virtual reality
+    .style = { permissions-window.style }
+permissions-site-xr-desc = De volgende websites hebben om toegang tot uw virtual-reality-apparaten gevraagd. U kunt opgeven welke websites uw virtual-reality-apparaten mogen benaderen. U kunt ook nieuwe verzoeken om toegang tot uw virtual-reality-apparaten blokkeren.
+permissions-site-xr-disable-label =
+    .label = Nieuwe verzoeken om toegang tot uw virtual-reality-apparaten blokkeren
+permissions-site-xr-disable-desc = Dit voorkomt dat websites die hierboven niet worden vermeld om toestemming voor toegang tot uw virtual-reality-apparaten vragen. Het blokkeren van toegang tot uw virtual-reality-apparaten kan bepaalde functies van websites verstoren.
 
 ## Site Permissions - Camera
 

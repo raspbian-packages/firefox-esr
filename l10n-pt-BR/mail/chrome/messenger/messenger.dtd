@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "m">
 <!ENTITY  newContactCmd.label "Contato de catálogo de endereços…">
 <!ENTITY  newContactCmd.accesskey "C">
+<!ENTITY openMenuCmd.label "Abrir">
+<!ENTITY openMenuCmd.accesskey "A">
 <!ENTITY openMessageFileCmd.label "Abrir arquivo de mensagem…">
 <!ENTITY openMessageFileCmd.accesskey "b">
 <!ENTITY saveAsMenu.label "Salvar como">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "c">
 <!ENTITY folderPaneBar.label "Barra de Ferramentas do Painel de Pastas">
 <!ENTITY folderPaneBar.accesskey "F">
-<!ENTITY folderModeSelector.label "Visualização de pastas">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Ordenar por">
@@ -275,12 +276,12 @@
 
 <!-- Search Menu -->
 <!ENTITY findMenu.label "Procurar">
-<!ENTITY findMenu.accesskey "z">
+<!ENTITY findMenu.accesskey "o">
 <!ENTITY findCmd.label "Procurar nesta mensagem…">
-<!ENTITY findCmd.accesskey "z">
+<!ENTITY findCmd.accesskey "o">
 <!ENTITY findCmd.key "F">
 <!ENTITY findAgainCmd.label "Procurar próxima">
-<!ENTITY findAgainCmd.accesskey "L">
+<!ENTITY findAgainCmd.accesskey "x">
 <!ENTITY findAgainCmd.key "G">
 <!ENTITY findAgainCmd.key2 "VK_F3">
 <!ENTITY findPrevCmd.key "G">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Pesquisar mensagens…">
 <!ENTITY searchMailCmd.accesskey "P">
 <!ENTITY searchMailCmd.key "F">
+<!ENTITY glodaSearchCmd.label "Pesquisa global…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Pesquisar catálogo…">
 <!ENTITY searchAddressesCmd.accesskey "e">
 
@@ -466,7 +469,7 @@
 <!ENTITY addressBookCmd.accesskey "a">
 <!ENTITY addressBookCmd.key "b">
 <!ENTITY addons.label "Extensões">
-<!ENTITY addons.accesskey "C">
+<!ENTITY addons.accesskey "E">
 <!ENTITY addonPrefs.label "Opções de extensões">
 <!ENTITY addonPrefs.accesskey "O">
 <!ENTITY addonPrefsUnix.label "Preferências de extensões">
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Mover mensagem selecionada para outra pasta">
 <!ENTITY archiveButton.tooltip "Arquivar mensagens selecionadas">
 <!ENTITY openConversationButton.tooltip "Mostrar a conversa das mensagens selecionadas">
+<!ENTITY openMsgConversationButton.tooltip "Mostrar conversa da mensagem selecionada">
 <!ENTITY nextButton.tooltip "Mover para próxima mensagem não lida">
 <!ENTITY nextMsgButton.tooltip "Mover para próxima mensagem">
 <!ENTITY previousButton.tooltip "Mover para mensagem anterior não lida">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Aplicar etiquetas em mensagens">
 <!ENTITY compactButton.tooltip "Remover as mensagens excluídas da pasta selecionada">
 <!ENTITY appmenuButton1.tooltip "Exibir o menu do &brandShortName;">
-
 <!ENTITY addonsButton.tooltip "Gerenciar suas extensões">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Salvar como pasta…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Selecionar mensagens">
 <!ENTITY threadColumn.label "Tópico">
 <!ENTITY fromColumn.label "De">
 <!ENTITY recipientColumn.label "Destinatário">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Ordem de chegada">
 <!ENTITY attachmentColumn.label "Anexos">
 
+<!ENTITY deleteColumn.label "Excluir">
+
 <!-- Thread Pane Tooltips -->
-<!ENTITY columnChooser2.tooltip "Selecionar colunas a serem exibidas">
+<!ENTITY columnChooser2.tooltip "Selecionar colunas a ser exibidas">
+<!ENTITY selectColumn.tooltip "Alternar seleção de todas as mensagens">
 <!ENTITY threadColumn2.tooltip "Exibir tópicos de mensagens">
 <!ENTITY fromColumn2.tooltip "Ordenar por remetente">
 <!ENTITY recipientColumn2.tooltip "Ordenar por destinatário">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Ordenar por localização">
 <!ENTITY idColumn2.tooltip "Ordenar por ordem de chegada">
 <!ENTITY attachmentColumn2.tooltip "Ordenar por anexos">
+
+<!ENTITY deleteColumn.tooltip "Excluir uma mensagem">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Nova mensagem do modelo">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Opções do ícone…">
 <!ENTITY writeNewMessageDock.label      "Escrever nova mensagem">
 <!ENTITY openAddressBookDock.label      "Abrir catálogo de endereços">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Voltar uma página">
+<!ENTITY browseForwardButton.tooltip "Avançar uma página">

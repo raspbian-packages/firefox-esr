@@ -82,11 +82,10 @@ about-debugging-refresh-usb-devices-button = Ketzolïx ri taq okisaxel
 about-debugging-setup-title = Runuk'ulem
 # Introduction text in the Setup page to explain how to configure remote debugging.
 about-debugging-setup-intro = Tanuk'samajij rub'eyal ri okem achoq ik'in nachojmirisaj chi näj ri awokisab'al.
-# Link displayed in the Setup page that leads to MDN page with list of supported devices.
-# Temporarily leads to https://support.mozilla.org/en-US/kb/will-firefox-work-my-mobile-device#w_android-devices
-about-debugging-setup-link-android-devices = Rutz'etik kicholajil Android okisab'äl kik'amon ki'
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
 about-debugging-setup-this-firefox = Tokisäx <a>{ about-debugging-this-firefox-runtime-name }</a> richin yechojmirisäx taq ruwi', taq k'amal chuqa' service taq worker pa re ruwäch { -brand-shorter-name }.
+# Explanatory text in the Setup page about what the 'This Firefox' page is for
+about-debugging-setup-this-firefox2 = Tokisäx <a>{ about-debugging-this-firefox-runtime-name }</a> richin yechojmirisäx taq k'amal chuqa' service taq worker pa re ruwäch { -brand-shorter-name }.
 # Title of the heading Connect section of the Setup page.
 about-debugging-setup-connect-heading = Tokisäx jun Okisab'äl
 # USB section of the Setup page
@@ -105,12 +104,6 @@ about-debugging-setup-usb-updating-button = Nik'ex...
 about-debugging-setup-usb-status-enabled = Tzijon
 about-debugging-setup-usb-status-disabled = Chupun
 about-debugging-setup-usb-status-updating = Nik'ex...
-# USB section step by step guide
-about-debugging-setup-usb-step-enable-dev-menu = Titzij ri ruk'utsamaj B'anonel pan Adroid awokisab'al. <a>Tawetamaj rub'eyal</a>
-# USB section step by step guide
-about-debugging-setup-usb-step-enable-debug = Titzij USB Chojmirisanem pa ri Ruk'utsamaj Rub'anonel Android. <a>Tetamäx rub'eyal</a>
-# USB section step by step guide
-about-debugging-setup-usb-step-enable-debug-firefox = Titzij USB Chojmirisanem pa Firefox pa ri Android awokisab'al. <a>Tetamäx rub'eyal</a>
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-dev-menu2 = Titzij ruk'utsamaj B'anonel pan Android awoyonib'al.
 # USB section step by step guide
@@ -182,7 +175,7 @@ about-debugging-runtime-profile-button2 = Rub'eyal nisamäj rub'i' ruwäch
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Ri runuk'ulem awokik'amaya'l man nuk'äm ta ri' rik'in ri Service Workers. <a>Tetamäx rub'eyal</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Ri ruq'ijul samaj okisan ojer rub'anikil ({ $runtimeVersion }). Ri ko'öl ruwäch nuk'äm ri' ja ri ({ $minVersion }). Rere' jun man nuk'äm ta ri' chi nuk'ulem ri nitikïr nub'än chi nisach ri DevTools. Tak'exa' ri ruq'ijul samaj okisan. <a>Kisolik taq k'ayewal</a>
@@ -193,8 +186,11 @@ about-debugging-browser-version-too-old = Ri ruq'ijul samaj okisan ojer rub'anik
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Rik'in jub'a' man nisamäj ta ri ruchojmirisanel pas rik'in ri okik'amaya'l okisan. Tawokisaj Firefox { $runtimeVersion } we nawajo' nawokisaj ri chojmirisanel rik'in re okik'amaya'l re'.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Re ruwäch Firefox man nikitiïr ta nuchojmirisaj Firefox richin Android (68). Niqachilab'ej chi tiyak Firefox richin Android Nightly pan awoyonib'al richin nitojtob'ëx. <a>Juley retal</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -215,11 +211,6 @@ about-debugging-connection-prompt-enable-button = Titzij ri tz'etöy okem
 about-debugging-connection-prompt-disable-button = Tichup ri tz'etöy okem
 # Title of a modal dialog displayed on remote runtime pages after clicking on the Profile Runtime button.
 about-debugging-profiler-dialog-title2 = B'i'aj wachib'äl
-# Label of a checkbox displayed in the runtime page for "This Firefox".
-# This checkbox will toggle preferences that enable local addon debugging.
-# The "Learn more" link points to MDN.
-# https://developer.mozilla.org/docs/Tools/about:debugging#Enabling_add-on_debugging
-about-debugging-extension-debug-setting-label = Titzij ri kichojmirisanem taq k'amal. <a>Tetamäx ch'aqa' chik</a>
 # Clicking on the header of a debug target category will expand or collapse the debug
 # target items in the category. This text is used as ’title’ attribute of the header,
 # to describe this feature.
@@ -275,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Tinim
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Titikirisäx
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Tinim
+    .disabledTitle = Chupül ri runimik Service Worker pa k'ïy tajinïk { -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Titikirisäx
+    .disabledTitle = Chupül ri rutikirib'al Service Worker richin k'ïy tajinïk { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Tiyuj ri tz'ib'axïk
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -299,12 +299,29 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Samaj richin Taqoj
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Chupül ri runik'oxik Service Worker richin k'ïy tajinïk { -brand-shorter-name }
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Man tz'aqatisan ta rusamajixik ri ruwi' ruma ri' toq man tikirel ta ninik'öx
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Nimaläj Tajin
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Nïm Tajin richin ri okik'amaya'l napon wi.
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Rukaxa Rusamajib'al K'ïy Tajinïk
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Nïm Tajinïk chuqa'  Rutajinik Rupam Richin ri Aponel Okik'amaya'l
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Titz'apïx rutzijol
+# Label text used for the error details of message component.
+about-debugging-message-details-label-error = Rub'anikil sachoj
+# Label text used for the warning details of message component.
+about-debugging-message-details-label-warning = Rub'anikil k'ayewal
+# Label text used for default state of details of message component.
+about-debugging-message-details-label = Kib'anikil

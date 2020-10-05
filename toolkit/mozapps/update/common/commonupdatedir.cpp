@@ -898,6 +898,23 @@ GetUserUpdateDirectory(const wchar_t* installPath, const char* vendor,
 }
 
 /**
+ * This is a much more limited version of the GetCommonUpdateDirectory that can
+ * be called from Rust.
+ * The result parameter must be a valid pointer to a buffer of length
+ * MAX_PATH + 1
+ */
+extern "C" HRESULT get_common_update_directory(const wchar_t* installPath,
+                                               wchar_t* result) {
+  mozilla::UniquePtr<wchar_t[]> uniqueResult;
+  HRESULT hr = GetCommonUpdateDirectory(
+      installPath, SetPermissionsOf::BaseDirIfNotExists, uniqueResult);
+  if (FAILED(hr)) {
+    return hr;
+  }
+  return StringCchCopyW(result, MAX_PATH + 1, uniqueResult.get());
+}
+
+/**
  * This is a helper function that does all of the work for
  * GetCommonUpdateDirectory and GetUserUpdateDirectory. It partially exists to
  * prevent callers of GetUserUpdateDirectory from having to pass a useless
@@ -1472,8 +1489,9 @@ static HRESULT EnsureCorrectPermissions(SimpleAutoString& path,
   // and we don't really want to move everything around unnecessarily in those
   // cases.
   Tristate permissionsOk = file.PermsOk(path, perms);
-  if (permissionsOk == Tristate::False || (permissionsOk == Tristate::Unknown &&
-      permsToSet == SetPermissionsOf::AllFilesAndDirs)) {
+  if (permissionsOk == Tristate::False ||
+      (permissionsOk == Tristate::Unknown &&
+       permsToSet == SetPermissionsOf::AllFilesAndDirs)) {
     bool permissionsFixed;
     hrv = FixDirectoryPermissions(path, file, perms, permissionsFixed);
     returnValue = FAILED(returnValue) ? returnValue : hrv;
@@ -1692,7 +1710,7 @@ static HRESULT MoveFileOrDir(const SimpleAutoString& moveFrom,
                              const AutoPerms& perms) {
   BOOL success = MoveFileW(moveFrom.String(), moveTo.String());
   if (success) {
-   return S_OK;
+    return S_OK;
   }
 
   FileOrDirectory fileToMove(moveFrom, Lockstate::Locked);
@@ -1713,19 +1731,19 @@ static HRESULT MoveFileOrDir(const SimpleAutoString& moveFrom,
     success = DeleteFileW(moveFrom.String());
     if (!success) {
       // If we failed to delete it, try having it removed at reboot.
-      success = MoveFileExW(moveFrom.String(), nullptr,
-                            MOVEFILE_DELAY_UNTIL_REBOOT);
+      success =
+          MoveFileExW(moveFrom.String(), nullptr, MOVEFILE_DELAY_UNTIL_REBOOT);
       if (!success) {
         returnValue = FAILED(returnValue) ? returnValue
                                           : HRESULT_FROM_WIN32(GetLastError());
       }
     }
     return returnValue;
-  } // Done handling files. The rest of this function is for moving a directory.
+  }  // Done handling files. The rest of this function is for moving a
+     // directory.
 
-  success = CreateDirectoryW(
-    moveTo.String(),
-    const_cast<LPSECURITY_ATTRIBUTES>(&perms.securityAttributes));
+  success = CreateDirectoryW(moveTo.String(), const_cast<LPSECURITY_ATTRIBUTES>(
+                                                  &perms.securityAttributes));
   if (!success) {
     return HRESULT_FROM_WIN32(GetLastError());
   }
@@ -1753,7 +1771,7 @@ static HRESULT MoveFileOrDir(const SimpleAutoString& moveFrom,
       }
 
       childPath.AssignSprintf(MAX_PATH + 1, L"%s\\%s", moveFrom.String(),
-                             entry->d_name);
+                              entry->d_name);
       if (childPath.Length() == 0) {
         returnValue = FAILED(returnValue)
                           ? returnValue
@@ -1788,8 +1806,8 @@ static HRESULT MoveFileOrDir(const SimpleAutoString& moveFrom,
   HRESULT hrv = RemoveRecursive(moveFrom, fileToMove);
   if (FAILED(hrv)) {
     // If we failed to remove it, try having it removed on reboot.
-    success = MoveFileExW(moveFrom.String(), nullptr,
-                          MOVEFILE_DELAY_UNTIL_REBOOT);
+    success =
+        MoveFileExW(moveFrom.String(), nullptr, MOVEFILE_DELAY_UNTIL_REBOOT);
     if (!success) {
       returnValue = FAILED(returnValue) ? returnValue
                                         : HRESULT_FROM_WIN32(GetLastError());

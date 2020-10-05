@@ -33,6 +33,7 @@ printpreview-of =
     .value = ->
 printpreview-custom-prompt =
     .value = Fərdi Ölçü…
+printpreview-custom-scale-prompt-title = Fərdi miqyas
 printpreview-page-setup =
     .label = Səhifə nizamı…
     .accesskey = a
@@ -44,6 +45,8 @@ printpreview-page =
 ## $percent (integer) - menuitem percent label
 ## $arrow (String) - UTF-8 arrow character for navigation buttons
 
+printpreview-percentage-value =
+    .label = { $percent }%
 printpreview-homearrow =
     .label = { $arrow }
     .tooltiptext = İlk səhifə
@@ -56,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Son səhifə
+

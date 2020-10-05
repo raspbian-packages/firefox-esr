@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "gtest/gtest.h"
-#include "nsIObserverService.h"
 #include "mozilla/StaticPtr.h"
 #include "GMPTestMonitor.h"
 #include "GMPVideoDecoderProxy.h"
@@ -16,15 +15,13 @@
 #include "mozilla/DebugOnly.h"
 #include "nsThreadUtils.h"
 
-using namespace std;
-
 using namespace mozilla;
 using namespace mozilla::gmp;
 
 struct GMPTestRunner {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(GMPTestRunner)
 
-  GMPTestRunner() {}
+  GMPTestRunner() = default;
   void DoTest(void (GMPTestRunner::*aTestMethod)(GMPTestMonitor&));
   void RunTestGMPTestCodec1(GMPTestMonitor& aMonitor);
   void RunTestGMPTestCodec2(GMPTestMonitor& aMonitor);
@@ -35,7 +32,7 @@ struct GMPTestRunner {
   void RunTestGMPCrossOrigin4(GMPTestMonitor& aMonitor);
 
  private:
-  ~GMPTestRunner() {}
+  ~GMPTestRunner() = default;
 };
 
 template <class T, class Base,
@@ -75,7 +72,6 @@ class RunTestGMPVideoCodec : public Base {
     return ((*service).*Getter)(nullptr, &tags, aNodeId, std::move(aCallback));
   }
 
- protected:
   GMPTestMonitor& mMonitor;
 };
 

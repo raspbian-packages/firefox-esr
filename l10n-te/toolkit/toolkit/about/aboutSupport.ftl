@@ -4,6 +4,7 @@
 
 page-title = ట్రబుల్‌షూటింగ్ సమాచారం
 page-subtitle = మీరు ఒక సమస్యను పరిష్కరించుటకు ప్రయత్నించునప్పుడు మీకు ఉపయోగవంతంగా వుండగల సాంకేతిక సమాచారమును ఈ పేజీ కలిగివుంటుంది. మీరు { -brand-short-name } గురించిన వుమ్మడి ప్రశ్నలకు సమాధానముల కొరకు చూస్తుంటే, మా <a data-l10n-name="support-link">తోడ్పాటు వెబ్ సైట్</a> చూడండి.
+
 crashes-title = క్రాష్ నివేదికలు
 crashes-id = నివేదిక ID
 crashes-send-date = సమర్పించినది
@@ -96,6 +97,13 @@ sandbox-sys-call-number = సిస్‌కాల్
 sandbox-sys-call-args = చర్చలు
 safe-mode-title = సేఫ్ మోడ్ ప్రయత్నించండి
 restart-in-safe-mode-label = పొడిగింతలను అచేతనించి పునఃప్రారంభించు…
+
+## Media titles
+
+audio-backend = ఆడియో బ్యాకెండ్
+max-audio-channels = గరిష్ఠ వాహికలు
+channel-layout = కావలసిన వాహికల ఆకారము
+
 media-title = మాధ్యమం
 media-output-devices-title = ఔట్‌పుట్ పరికరాలు
 media-input-devices-title = ఇన్‌పుట్ పరికరాలు
@@ -108,6 +116,9 @@ media-device-format = రూపం
 media-device-channels = వాహికలు
 media-device-rate = రేటు
 media-device-latency = Latency
+
+##
+
 intl-title = అంతర్జాతీయీకరణ & స్థానికీకరణ
 intl-app-title = అనువర్తన అమరికలు
 intl-locales-requested = అభ్యర్థించిన భాషలు
@@ -115,6 +126,18 @@ intl-locales-available = అందుబాటులోని భాషలు
 intl-locales-default = అప్రమేయ లొకేల్
 intl-os-title = నిర్వాహక వ్యవస్థ
 intl-regional-prefs = ప్రాంతీయ అభిరుచులు
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -122,6 +145,7 @@ report-crash-for-days =
         [one] గత { $days } రోజులో క్రాష్ నివేదికలు
        *[other] గత { $days } రోజులలో క్రాష్ నివేదికలు
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -129,6 +153,7 @@ crashes-time-minutes =
         [one] { $minutes } నిమిషం క్రితం
        *[other] { $minutes } నిమిషాల క్రితం
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -136,6 +161,7 @@ crashes-time-hours =
         [one] { $hours } గంట క్రితం
        *[other] { $hours } గంటల క్రితం
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -143,6 +169,7 @@ crashes-time-days =
         [one] { $days } రోజు క్రితం
        *[other] { $days } రోజుల క్రితం
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -150,6 +177,7 @@ pending-reports =
         [one] అన్ని క్రాష్ నివేదికలు (ఇచ్చిక సమయ విస్తృతి నందలి { $reports } వాయిదా క్రాష్)
        *[other] అన్ని క్రాష్ నివేదికలు (ఇచ్చిక సమయ విస్తృతి నందలి { $reports } వాయిదా క్రాష్లు)
     }
+
 raw-data-copied = క్లిప్‌బోర్డు లోనికి ముడి దత్తాంశం కాపీ అయ్యింది
 text-copied = పాఠం క్లిప్‌బోర్డునకు కాపీతీయబడెను
 
@@ -162,9 +190,11 @@ blocked-mismatched-version = రిజిస్ట్రీ మరియు DLL 
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = మీ గ్రాఫిక్స్ డ్రైవర్ వర్షన్ కొరకు నిరోధించబడెను. మీ గ్రాఫిక్స్ డ్రైవర్‌ను వర్షన్ { $driverVersion } కు లేదా కొత్తదానికి నవీకరించుటకు ప్రయత్నించు.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType పారామితులు
+
 compositing = కంపోజిషన్
 hardware-h264 = హార్డ్వేర్ H264 డీకోడింగ్
 main-thread-no-omtc = ముఖ్యమైన త్రెడ్ , ఏ OMTC
@@ -177,6 +207,7 @@ no = కాదు
 
 found = కనబడ్డవి
 missing = కనబడనివి
+
 gpu-description = వివరణ
 gpu-vendor-id = అమ్మకందారు ఐడి
 gpu-device-id = పరికరం ఐడి
@@ -197,24 +228,28 @@ webgl2-version = WebGL 2 డ్రైవ్వర్ వెర్షన్
 webgl2-driver-extensions = WebGL 2 డ్రైవ్వర్ పొడిగింతలు
 webgl2-extensions = WebGL 2 పొడిగింతలు
 blocklisted-bug = తెలిసిన సమస్యలు కారణంగా జాబితా బ్లాక్
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = బగ్ { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = బ్లాక్ జాబితా ; వైఫల్యం కోడ్ { $failureCode }
+
 d3d11layers-crash-guard = D3D11 కూర్చే
 d3d11video-crash-guard = D3D11 వీడియో డికోడర్
 d3d9video-crash-buard = D3D11 వీడియో డికోడర్
+d3d9video-crash-guard = D3D11 వీడియో డికోడర్
 glcontext-crash-guard = OpenGL
+
 reset-on-next-restart = తదుపరి పునఃప్రారంభించు రీసెట్
 gpu-process-kill-button = GPU క్రియలను ఆపివేయి
 gpu-device-reset-button = పరికర రీసెట్ను ట్రిగ్గర్ చేయండి
-audio-backend = ఆడియో బ్యాకెండ్
-max-audio-channels = గరిష్ఠ వాహికలు
-channel-layout = కావలసిన వాహికల ఆకారము
+
 min-lib-versions = కావలసిన కనీస వర్షన్
 loaded-lib-versions = వినియోగంలో వున్న వర్షన్
+
 has-seccomp-bpf = సెకండరీ కాంప్ - బిపిఎఫ్ (సిస్టమ్ కాల్ ఫిల్టరింగ్)
 has-seccomp-tsync = సెకండరీ కాంప్ త్రెడ్ సమకాలీకరణ
 has-user-namespaces = వాడుకరి నేంస్పేసులు
@@ -226,6 +261,7 @@ effective-content-sandbox-level = సమర్థవంతమైన విష
 sandbox-proc-type-content = విషయం
 sandbox-proc-type-file = ఫైలు విషయం
 sandbox-proc-type-media-plugin = మీడియా ప్లగ్ఇన్
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -238,6 +274,7 @@ multi-process-status-6 = మద్దతివ్వని టెక్స్ట
 multi-process-status-7 = ఈ పొడిగింత అచేతనము చేయి
 multi-process-status-8 = బలవంతంగా నిలిపివెయ్యబడింది
 multi-process-status-unknown = తెలియని స్థితి
+
 async-pan-zoom = అసమకాలిక పాన్ / జూమ్
 apz-none = ఏమీలేవు
 wheel-enabled = చక్రం ఇన్పుట్ ప్రారంభించబడిందని

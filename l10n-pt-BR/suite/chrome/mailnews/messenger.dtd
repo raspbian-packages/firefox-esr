@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "Mensagens sinalizadas">
 <!ENTITY selectFlaggedCmd.accesskey "M">
+<!ENTITY menuFavoriteFolder.label "Pasta preferida">
+<!ENTITY menuFavoriteFolder.accesskey "r">
 <!ENTITY folderPropsCmd.label "Propriedades">
 <!ENTITY folderPropsFolderCmd.label "Propriedades da pasta">
 <!ENTITY folderPropsNewsgroupCmd.label "Propriedades do grupo de notícias">
@@ -112,8 +114,8 @@
 <!ENTITY redoDefaultCmd.label "Refazer">
 
 <!-- View Menu -->
-<!ENTITY showMessengerToolbarCmd.label "Padrão">
-<!ENTITY showMessengerToolbarCmd.accesskey "a">
+<!ENTITY showMessengerToolbarCmd.label "Barra de ferramentas de e-mai">
+<!ENTITY showMessengerToolbarCmd.accesskey "m">
 <!ENTITY showSearchToolbarCmd.label "Barra de pesquisa">
 <!ENTITY showSearchToolbarCmd.accesskey "a">
 <!ENTITY showTabsToolbarCmd.label "Barra de ferramentas de abas">
@@ -133,6 +135,10 @@
 <!ENTITY showThreadPaneCmd.accesskey "t">
 <!ENTITY showFolderPaneCmd.label "Pastas">
 <!ENTITY showFolderPaneCmd.accesskey "P">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "Ordenar por">
@@ -272,6 +278,8 @@
 <!ENTITY goForwardCmd.commandKey "]">
 <!ENTITY prevFlaggedMsgCmd.label "Mensagem sinalizada">
 <!ENTITY prevFlaggedMsgCmd.accesskey "z">
+<!ENTITY folderMenu.label "Pasta">
+<!ENTITY folderMenu.accesskey "s">
 <!ENTITY startPageCmd.label "Página inicial">
 <!ENTITY startPageCmd.accesskey "c">
 
@@ -417,6 +425,7 @@
 <!ENTITY deleteButton.label "Excluir ">
 <!ENTITY undeleteButton.label "Restaurar">
 <!ENTITY markButton.label "Marcar">
+<!ENTITY printButton.label "Imprimir">
 <!ENTITY stopButton.label "Parar ">
 <!ENTITY junkButton.label "Lixo">
 <!ENTITY notJunkButton.label "Não spam">
@@ -440,8 +449,10 @@
 <!ENTITY deleteButton.tooltip "Excluir os itens selecionados">
 <!ENTITY undeleteButton.tooltip "Restaurar mensagem selecionadas">
 <!ENTITY markButton.tooltip "Marcar mensagens">
+<!ENTITY printButton.tooltip "Imprimir esta mensagem">
 <!ENTITY stopButton.tooltip "Interromper a transferência atual">
 <!ENTITY throbber.tooltip "Abrir o site do &vendorShortName; ">
+<!ENTITY throbber.tooltip2 "Ir para a página inicial do &brandShortName;">
 <!ENTITY junkButton.tooltip "Marcar como spam as mensagens selecionadas">
 <!ENTITY notJunkButton.tooltip "Marcar como não spam as mensagens selecionadas">
 
@@ -495,6 +506,8 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Receber mensagens desta conta">
 <!ENTITY folderContextGetMessages.accesskey "R">
+<!ENTITY folderContextMarkAllFoldersRead.label "Marcar todas as pastas como lidas">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "M">
 <!ENTITY folderContextOpenNewWindow.label "Abrir em nova janela">
 <!ENTITY folderContextOpenNewWindow.accesskey "A">
 <!ENTITY folderContextOpenNewTab.label "Abrir em nova aba">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "P">
 <!ENTITY folderContextProperties.label "Propriedades">
 <!ENTITY folderContextProperties.accesskey "o">
+<!ENTITY folderContextFavoriteFolder.label "Pasta preferida">
+<!ENTITY folderContextFavoriteFolder.accesskey "a">
 <!ENTITY folderContextSettings.label "Configurações…">
 <!ENTITY folderContextSettings.accesskey "C">
 

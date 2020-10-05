@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 about-telemetry-show-current-ping-data = נתוני הפינג הנוכחיים
+about-telemetry-show-current-data = נתונים נוכחיים
 about-telemetry-choose-ping = בחירת פינג:
 about-telemetry-archive-ping-header = פינג
 about-telemetry-option-group-today = היום
@@ -25,7 +26,7 @@ about-telemetry-keyed-histogram-section = היסטוגרמות ממופתחות
 about-telemetry-events-section = אירועים
 about-telemetry-simple-measurements-section = מדדים פשוטים
 about-telemetry-slow-sql-section = משפטי SQL איטיים
-about-telemetry-addon-details-section = פרטי תוספת
+about-telemetry-addon-details-section = פרטי תוספות
 about-telemetry-captured-stacks-section = מחסניות שנלכדו
 about-telemetry-late-writes-section = כתיבה מאוחרת
 about-telemetry-raw-payload-section = מטען גולמי
@@ -50,7 +51,7 @@ about-telemetry-upload-type =
     }
 # Variables:
 #   $telemetryServerOwner (String): the value of the toolkit.telemetry.server_owner preference. Typically "Mozilla"
-about-telemetry-page-subtitle = עמוד זה מציג מידע על ביצועים, חומרה, שימוש והתאמות אישיות כפי שנאספו על ידי Telemetry. מידע זה נשלח אל { $telemetryServerOwner } כדי לסייע בשיפור { -brand-full-name }.
+about-telemetry-page-subtitle = עמוד זה מציג מידע על ביצועים, חומרה, שימוש והתאמות אישיות כפי שנאספו על־ידי Telemetry. מידע זה נשלח אל { $telemetryServerOwner } כדי לסייע בשיפור { -brand-full-name }.
 # string used as a placeholder for the search field
 # More info about it can be found here:
 # https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/data/main-ping.html
@@ -75,6 +76,8 @@ about-telemetry-no-search-results-all = מצטערים! אין תוצאות בכ
 # Variables:
 #   $sectionName (String): is replaced by the section name.
 about-telemetry-no-data-to-display = מצטערים! כרגע אין נתונים זמינים ב־“{ $sectionName }”
+# used as a tooltip for the “current” ping title in the sidebar
+about-telemetry-current-data-sidebar = נתונים נוכחיים
 # used in the “Ping Type” select
 about-telemetry-telemetry-ping-type-all = הכל
 # button label to copy the histogram

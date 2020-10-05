@@ -18,6 +18,13 @@ process-type-file = Paikallinen tiedosto
 # process used to isolate webpages that requested special
 # permission to allocate large amounts of memory
 process-type-weblargeallocation = Suuri allokaatio
+# process used to isolate a webpage from other web pages
+# to improve security
+process-type-webisolated = Eristetty verkkosisältö
 # process used to communicate with the GPU for
 # graphics acceleration
 process-type-gpu = GPU
+# process used to perform network operations
+process-type-socket = Pistoke
+# process preallocated; may change to other types
+process-type-prealloc = Esijaettu

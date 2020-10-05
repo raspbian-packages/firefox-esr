@@ -8,12 +8,13 @@ enable-inspect-element-title = Ativar ferramentas de programador do Firefox para
 enable-inspect-element-message = Examine e edite HTML e CSS com o inspetor das ferramentas de programador.
 enable-about-debugging-message = Programe e depure WebExtensions, web workers, service workers e mais com as ferramentas de programador do Firefox.
 enable-key-shortcut-message = Ativou um atalho das ferramentas de programador. Se foi um engano, pode fechar este separador.
-enable-menu-message = Aperfeiçoe o HTML, CSS, e JavaScript do seu website com ferramentas como o Inspetor e Depurador.
+enable-menu-message = Melhore o HTML, CSS e JavaScript do seu site com ferramentas como o Inspetor e Depurador.
 enable-common-message = As ferramentas de programador do Firefox estão desativadas por predefinição para lhe dar mais controlo sobre o seu navegador.
 enable-learn-more-link = Saber mais acerca das ferramentas de programador
 enable-enable-button = Ativar ferramentas de programador
 enable-close-button = Fechar este separador
-welcome-title = Bem-vindo(a) às ferramentas de programador do Firefox!
+
+welcome-title = Bem-vindo(a) às ferramentas de programação do Firefox!
 newsletter-title = Newsletter Mozilla Developer
 newsletter-message = Obtenha noticias de programador, truques e recursos enviados diretamente para a sua caixa de entrada.
 newsletter-email-placeholder =
@@ -22,16 +23,18 @@ newsletter-privacy-label = Estou bem com a Mozilla manusear a minha informação
 newsletter-subscribe-button = Subscrever
 newsletter-thanks-title = Obrigado!
 newsletter-thanks-message = Se não confirmou previamente uma subscrição a uma newsletter relacionada com a Mozilla, pode ter de o fazer. Por favor verifique a sua caixa de entrada ou o seu filtro de spam por um email nosso.
+
 footer-title = Firefox Developer Edition
 footer-message = À procura de mais do que ferramentas de programador? Confira o navegador Firefox que é construído especificamente para programadores e fluxos de trabalho modernos.
 footer-learn-more-link = Saber mais
+
 features-learn-more = Saber mais
 features-inspector-title = Inspetor
 features-inspector-desc = Inspecione e melhore o código para construir layouts perfeitamente definidos. <a data-l10n-name="learn-more">{ features-learn-more }</a>
 features-console-title = Consola
 features-console-desc = Identifique problemas de CSS, JavaScript, segurança e de rede. <a data-l10n-name="learn-more">{ features-learn-more }</a>
 features-debugger-title = Depurador
-features-debugger-desc = Um potente depurador de JavaScript com suporte para a sua framework. <a data-l10n-name="learn-more">{ features-learn-more }</a>
+features-debugger-desc = Um depurador de JavaScript poderoso com suporte para a sua framework. <a data-l10n-name="learn-more">{ features-learn-more }</a>
 features-network-title = Rede
 features-network-desc = Monitorize pedidos de rede que possam tornar lento ou bloquear o seu site. <a data-l10n-name="learn-more">{ features-learn-more }</a>
 features-storage-title = Armazenamento
@@ -51,4 +54,4 @@ newsletter-error-unknown = Ocorreu um erro inesperado.
 newsletter-error-timeout = A solicitação de subscrição expirou.
 # Variables:
 #   $shortcut (String) - The keyboard shortcut used for the tool
-welcome-message = Ativou as ferramentas de programador com sucesso! Para começar, explore o menu de Programador Web ou abra as ferramentas com { $shortcut }.
+welcome-message = Ativou as ferramentas de programador com sucesso! Para começar, explore o menu de Ferramentas de programação ou abra as ferramentas com { $shortcut }.

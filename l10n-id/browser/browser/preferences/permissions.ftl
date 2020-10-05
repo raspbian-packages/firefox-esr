@@ -5,50 +5,66 @@
 permissions-window =
     .title = Pengecualian
     .style = width: 41em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Alamat situs web
     .accesskey = l
+
 permissions-block =
     .label = Blokir
     .accesskey = B
+
 permissions-session =
     .label = Izinkan untuk Sesi ini
     .accesskey = S
+
 permissions-allow =
     .label = Izinkan
     .accesskey = I
+
 permissions-site-name =
     .label = Situs web
+
 permissions-status =
     .label = Status
+
 permissions-remove =
     .label = Hapus Situs Web
     .accesskey = H
+
 permissions-remove-all =
     .label = Hapus Semua Situs Web
     .accesskey = a
+
 permissions-button-cancel =
     .label = Batal
     .accesskey = B
+
 permissions-button-ok =
     .label = Simpan Perubahan
     .accesskey = S
+
 permissions-autoplay-menu = Baku untuk semua situs Web:
+
 permissions-searchbox =
     .placeholder = Cari Situs Web
+
 permissions-capabilities-autoplay-allow =
     .label = Izinkan Audio dan Video
 permissions-capabilities-autoplay-block =
     .label = Blokir Audio
 permissions-capabilities-autoplay-blockall =
     .label = Blokir Audio dan Video
+
 permissions-capabilities-allow =
     .label = Izinkan
 permissions-capabilities-block =
     .label = Blokir
 permissions-capabilities-prompt =
     .label = Tanyakan Selalu
+
 permissions-capabilities-listitem-allow =
     .value = Izinkan
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Pengecualian - Pemblokiran Konten
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Anda telah menonaktifkan pemblokiran konten di situs berikut.
+
+permissions-exceptions-etp-window =
+    .title = Pengecualian untuk Perlindungan Pelacakan yang Ditingkatkan
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Anda telah menonaktifkan perlindungan di situs web ini.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Situs web berikut ini minta mengakses lokasi An
 permissions-site-location-disable-label =
     .label = Blokir permintaan baru untuk mengakses lokasi Anda
 permissions-site-location-disable-desc = Ini akan mencegah situs web apa pun yang tidak tercantum di atas minta mengakses lokasi Anda. Memblokir akses ke lokasi Anda dapat menghentikan beberapa fitur situs web.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Setelan - Izin Realitas Virtual
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Situs web berikut ini minta mengakses perangkat realitas virtual Anda. Anda dapat menentukan situs web apa saja yang diizinkan mengakses perangkat realitas virtual Anda. Anda juga dapat memblokir permintaan baru yang minta mengakses perangkat realitas virtual Anda.
+permissions-site-xr-disable-label =
+    .label = Blokir permintaan baru untuk mengakses perangkat realitas virtual Anda
+permissions-site-xr-disable-desc = Ini akan mencegah situs web apa pun yang tidak tercantum di atas minta mengakses perangkat realitas virtual Anda. Memblokir akses ke perangkat realitas virtual Anda dapat menghentikan beberapa fitur situs web.
 
 ## Site Permissions - Camera
 

@@ -4,6 +4,7 @@
 
 about-telemetry-ping-data-source = Zdroj údajov pre ping:
 about-telemetry-show-current-ping-data = Aktuálne údaje príkazu ping
+about-telemetry-show-current-data = Aktuálne údaje
 about-telemetry-show-archived-ping-data = Archivované údaje príkazu ping
 about-telemetry-show-subsession-data = Zobraziť údaje sub-relácie
 about-telemetry-choose-ping = Zvoľte ping:
@@ -91,6 +92,8 @@ about-telemetry-no-search-results-all = Mrzí nás to, no pre hľadaný výraz �
 about-telemetry-no-data-to-display = Mrzí nás to, no v sekcii „{ $sectionName }“ nie sú dostupné žiadne údaje
 # used as a tooltip for the “current” ping title in the sidebar
 about-telemetry-current-ping-sidebar = súčasný ping
+# used as a tooltip for the “current” ping title in the sidebar
+about-telemetry-current-data-sidebar = súčasné údaje
 # used in the “Ping Type” select
 about-telemetry-telemetry-ping-type-all = všetko
 # button label to copy the histogram
@@ -125,4 +128,9 @@ about-telemetry-category-header = kategória
 about-telemetry-method-header = metóda
 about-telemetry-object-header = objekt
 about-telemetry-extra-header = extra
+about-telemetry-origin-section = Origin telemetria
+about-telemetry-origin-origin = origin
 about-telemetry-origin-count = počet
+# Variables:
+#  $process (String): type of process in subsection headers ( e.g. "content", "parent" )
+about-telemetry-process = typ procesu: { $process }

@@ -4,11 +4,15 @@
 
 <!-- extracted from AccountManager.xul -->
 
+<!-- extracted from AccountManager.xhtml -->
+
 <!ENTITY accountManagerTitle.label "Ρυθμίσεις λογαριασμών αλληλογραφίας">
+
+<!ENTITY  accountManagerCloseButton.label "Κλείσιμο">
 
 <!ENTITY accountActionsButton.label "Ενέργειες λογαριασμού">
 <!ENTITY accountActionsButton.accesskey "ν">
-<!ENTITY addMailAccountButton.label "Προσθήκη λογαριασμού e-mail…">
+<!ENTITY addMailAccountButton.label "Προσθήκη λογαριασμού email…">
 <!ENTITY addMailAccountButton.accesskey "α">
 <!ENTITY addIMAccountButton.label "Προσθήκη λογαριασμού συνομιλίας…">
 <!ENTITY addIMAccountButton.accesskey "σ">
@@ -22,6 +26,8 @@
 <!ENTITY removeButton.accesskey "Δ">
 
 <!-- AccountManager.xul -->
+
+<!-- AccountManager.xhtml -->
 <!-- LOCALIZATION NOTE : this is part of an inline-style attribute on the account
      setting dialog, which specifies the width and height in em units of the dialog.
      Localizers ONLY can increase these widths if they are having difficulty getting

@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Синхрондалған беттер
 synced-tabs-sidebar-noclients-subtitle = Басқа құрылғыларыңыздан беттерді осында көргіңіз келе ме?
 synced-tabs-sidebar-notsignedin = Басқа құрылғыларыңыздан беттер тізімдерін қарау үшін кіріңіз.
+synced-tabs-sidebar-intro = Басқа құрылғыларыңыздан беттер тізімін қарау.
 synced-tabs-sidebar-unverified = Тіркелгіңіз расталуы тиіс.
 synced-tabs-sidebar-notabs = Ашық беттер жоқ
 synced-tabs-sidebar-openprefs = { -sync-brand-short-name } баптауларын ашу
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Құрылғыларды басқару…
     .accesskey = д
+synced-tabs-context-sync-now =
+    .label = Қазір синхрондау
+    .accesskey = с
 fxa-sign-in = { -sync-brand-short-name } ішіне кіру
+turn-on-sync = { -sync-brand-short-name } іске қосу

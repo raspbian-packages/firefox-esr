@@ -9,24 +9,29 @@ findbar-next =
     .tooltiptext = Leita að næsta tilfelli þessara orða
 findbar-previous =
     .tooltiptext = Leita að fyrra tilfelli þessara orða
+
 findbar-find-button-close =
     .tooltiptext = Loka leitarslá
-findbar-highlight-all =
-    .label = Lita allt
-    .accesskey = L
-    .tooltiptext = Lita öll tilvik orðsins
+
 findbar-highlight-all2 =
-    .label = Litla allt
+    .label = Lita allt
     .accesskey =
         { PLATFORM() ->
             [macos] l
            *[other] a
         }
     .tooltiptext = Lita öll tilvik orðsins
+
 findbar-case-sensitive =
     .label = Stafrétt
     .accesskey = S
     .tooltiptext = Leita miðað við stafsöðu
+
+findbar-match-diacritics =
+    .label = Passa við broddstafi
+    .accesskey = i
+    .tooltiptext = Gera greinarmun á broddstöfum og grunnstöfum (sem dæmi, ef leitað er að “resume”, þá verður ekki leitað að “résumé”)
+
 findbar-entire-word =
     .label = Stök orð
     .accesskey = ð

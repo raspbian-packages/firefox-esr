@@ -5,49 +5,66 @@
 permissions-window =
     .title = మినహాయింపులు
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = వెబ్‌సైటు చిరునామా
     .accesskey = d
+
 permissions-block =
     .label = నిరోధించు
     .accesskey = B
+
 permissions-session =
     .label = ఈ సెషనుకి అనుమతించు
     .accesskey = S
+
 permissions-allow =
     .label = అనుమతించు
     .accesskey = A
+
 permissions-site-name =
     .label = వెబ్‌సైటు
+
 permissions-status =
     .label = స్థితి
+
 permissions-remove =
     .label = వెబ్‌సైటును తీసివేయి
     .accesskey = R
+
 permissions-remove-all =
     .label = వెబ్‌సైట్లన్నీ తీసివేయి
     .accesskey = e
+
 permissions-button-cancel =
     .label = రద్దుచేయి
     .accesskey = C
+
 permissions-button-ok =
     .label = మార్పులను భద్రపరచు
     .accesskey = S
+
 permissions-searchbox =
     .placeholder = వెబ్‌సైట్లను వెతకండి
+
+permissions-capabilities-autoplay-block =
+    .label = ఆడియోను నిరోధించు
+permissions-capabilities-autoplay-blockall =
+    .label = ఆడియో మరియు వీడియోను నిరోధించు
+
 permissions-capabilities-allow =
     .label = అనుమతించు
 permissions-capabilities-block =
     .label = నిరోధించు
 permissions-capabilities-prompt =
     .label = ఎల్లప్పుడూ అడుగు
+
 permissions-capabilities-listitem-allow =
     .value = అనుమతించు
 permissions-capabilities-listitem-block =
     .value = నిరోధించు
-permissions-capabilities-listitem-allow-first-party =
-    .value = మొదటి పార్టీ మాత్రమే అనుమతించు
 permissions-capabilities-listitem-allow-session =
     .value = సెషనుకి అనుమతించు
 
@@ -58,10 +75,6 @@ permissions-invalid-uri-label = దయచేసి సరైన హోస్ట�
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = మినహాయింపులు - ట్రాకింగ్ సంరక్షణ
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = ఈ వెబ్‌సైట్లలో మీరు ట్రాకింగ్ సంరక్షణను అచేతనించారు.
 permissions-exceptions-content-blocking-window =
     .title = మినహాయింపులు - విషయ నిరోధం
     .style = { permissions-window.style }
@@ -100,6 +113,12 @@ permissions-exceptions-autoplay-media-window2 =
     .title = మినహాయింపులు - స్వీయారంభం
     .style = { permissions-window.style }
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = అమరికలు - ఆటోప్లే
+    .style = { permissions-window.style }
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -115,6 +134,8 @@ permissions-site-location-window =
     .style = { permissions-window.style }
 permissions-site-location-disable-label =
     .label = మీ స్థాన సమాచారం గురించి వచ్చే కొత్త అభ్యర్థనలను తిరస్కరించు
+
+## Site Permissions - Virtual Reality
 
 ## Site Permissions - Camera
 

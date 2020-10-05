@@ -5,50 +5,66 @@
 permissions-window =
     .title = Исключения
     .style = width: 55em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Адрес веб-сайта
     .accesskey = е
+
 permissions-block =
     .label = Блокировать
     .accesskey = л
+
 permissions-session =
     .label = Разрешить на сессию
     .accesskey = с
+
 permissions-allow =
     .label = Разрешить
     .accesskey = з
+
 permissions-site-name =
     .label = Веб-сайт
+
 permissions-status =
     .label = Статус
+
 permissions-remove =
     .label = Удалить веб-сайт
     .accesskey = д
+
 permissions-remove-all =
     .label = Удалить все веб-сайты
     .accesskey = в
+
 permissions-button-cancel =
     .label = Отмена
     .accesskey = м
+
 permissions-button-ok =
     .label = Сохранить изменения
     .accesskey = х
+
 permissions-autoplay-menu = По умолчанию для всех веб-сайтов:
+
 permissions-searchbox =
     .placeholder = Поиск по веб-сайту
+
 permissions-capabilities-autoplay-allow =
     .label = Разрешить аудио и видео
 permissions-capabilities-autoplay-block =
     .label = Блокировать аудио
 permissions-capabilities-autoplay-blockall =
     .label = Блокировать аудио и видео
+
 permissions-capabilities-allow =
     .label = Разрешить
 permissions-capabilities-block =
     .label = Блокировать
 permissions-capabilities-prompt =
     .label = Всегда спрашивать
+
 permissions-capabilities-listitem-allow =
     .value = Разрешить
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Исключения — Блокировка содержимого
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Вы отключили блокировку содержимого на следующих веб-сайтах.
+
+permissions-exceptions-etp-window =
+    .title = Исключения для улучшенной защиты от отслеживания
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Вы отключили защиту на следующих веб-сайтах.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Следующие веб-сайты запро
 permissions-site-location-disable-label =
     .label = Блокировать новые запросы на доступ к вашему местоположению
 permissions-site-location-disable-desc = Это не позволит веб-сайтам, кроме перечисленных выше, запрашивать разрешение на доступ к вашему местоположению. Блокировка доступа к вашему местоположению может нарушить некоторые функции веб-сайта.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Настройки - Разрешения виртуальной реальности
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Следующие веб-сайты запросили разрешение на доступ к вашим устройствам виртуальной реальности. Вы можете указать каким веб-сайтам разрешено получать доступ к вашим устройствам виртуальной реальности. Вы также можете блокировать новые запросы с просьбами разрешить доступ к вашим устройствам виртуальной реальности.
+permissions-site-xr-disable-label =
+    .label = Блокировать новые запросы на доступ к вашим устройствам виртуальной реальности
+permissions-site-xr-disable-desc = Это не позволит веб-сайтам, кроме перечисленных выше, запрашивать разрешение на доступ к устройствам виртуальной реальности. Блокировка доступа к вашим устройствам виртуальной реальности может нарушить некоторые функции веб-сайта.
 
 ## Site Permissions - Camera
 

@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Klaidos kodas: <a data-l10n-name="error-code-link"
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Svetainės įrodo savo tapatumą pateikdamos liudijimus, išduotus liudijimo įstaigų. Dauguma naršyklių jau nepasitikti liudijimais, kuriuos išdavė „GeoTrust“, „RapidSSL“, „Symantec“, „Thawte“, arba „VeriSign“. { $hostname } naudoja liudijimą, išduotą vienos iš šių įstaigų, tad svetainės tapatumas negali būti įrodytas.
 cert-error-symantec-distrust-admin = Galite apie problemą pranešti svetainės prižiūrėtojui.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = „HTTP Strict Transport Security“: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP viešojo rakto įsiminimas: { $hasHPKP }
+cert-error-details-cert-chain-label = Liudijimų grandinė:
+open-in-new-window-for-csp-or-xfo-error = Atverti svetainę naujame lange
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Kad apsaugotų jūsų saugumą, { $hostname } neleis „{ -brand-short-name }“ parodyti tinklalapio, jei jis yra įterptas kitoje svetainėje. Norėdami matyti šį tinklalapį, turite jį atverti naujame lange.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Nepavyko užmegzti ryšio
+deniedPortAccess-title = Prieiga prie šio adreso apribota
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm. Mums nepavyksta rasti šios svetainės.
+fileNotFound-title = Nerastas failas
+fileAccessDenied-title = Priėjimas prie failo uždraustas
+generic-title = Klaida
+captivePortal-title = Prisijungti prie tinklo
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm. Šis adresas neatrodo gerai.
+netInterrupt-title = Ryšys buvo nutrauktas
+notCached-title = Dokumento galiojimas baigėsi
+netOffline-title = Dirbama neprisijungus prie tinklo
+contentEncodingError-title = Kodavimo klaida
+unsafeContentType-title = Nesaugus failo tipas
+netReset-title = Ryšys nutrūko
+netTimeout-title = Baigėsi prisijungimui skirtas laikas
+unknownProtocolFound-title = Neatpažintas adresas
+proxyConnectFailure-title = Įgaliotasis serveris atmeta ryšį
+proxyResolveFailure-title = Nerastas įgaliotasis serveris
+redirectLoop-title = Netinkamas tinklalapio peradresavimas
+unknownSocketType-title = Netikėtas serverio atsakas
+nssFailure2-title = Saugaus ryšio užmegzti nepavyko
+cspBlocked-title = Užblokuota dėl saugumo politikos
+xfoBlocked-title = Užblokuota dėl „X-Frame-Options“ politikos
+csp-xfo-error-title = „{ -brand-short-name }“ negali atverti šio tinklalapio
+corruptedContentError-title = Klaida: duomenys pažeisti
+remoteXUL-title = XUL iš tinklo
+sslv3Used-title = Nepavyko prisijungti saugiai
+inadequateSecurityError-title = Jūsų ryšys nėra saugus
+blockedByPolicy-title = Uždraustas puslapis
+clockSkewError-title = Jūsų kompiuterio laikas neteisingas
+networkProtocolError-title = Tinklo protokolo klaida
+nssBadCert-title = Dėmesio: galima saugumo rizika
+nssBadCert-sts-title = Neprisijungta: galima saugumo problema
+certerror-mitm-title = Kažkuri programa neleidžia „{ -brand-short-name }“ saugiai prisijungti prie šios svetainės

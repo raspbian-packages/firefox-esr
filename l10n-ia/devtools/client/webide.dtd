@@ -14,9 +14,9 @@
 <!ENTITY projectMenu_importHostedApp_accesskey "h">
 <!ENTITY projectMenu_selectApp_label "Aperir un application...">
 <!ENTITY projectMenu_selectApp_accesskey "A">
-<!ENTITY projectMenu_play_label "Installar e exequer">
+<!ENTITY projectMenu_play_label "Installar e executar">
 <!ENTITY projectMenu_play_accesskey "I">
-<!ENTITY projectMenu_stop_label "Cessar le application">
+<!ENTITY projectMenu_stop_label "Stoppar le application">
 <!ENTITY projectMenu_stop_accesskey "C">
 <!ENTITY projectMenu_debug_label "Depurar le application">
 <!ENTITY projectMenu_debug_accesskey "D">
@@ -32,7 +32,7 @@
 <!ENTITY runtimeMenu_accesskey "A">
 <!ENTITY runtimeMenu_disconnect_label "Disconnecter se">
 <!ENTITY runtimeMenu_disconnect_accesskey "D">
-<!ENTITY runtimeMenu_takeScreenshot_label "Instantaneo del schermo">
+<!ENTITY runtimeMenu_takeScreenshot_label "Captura de schermo">
 <!ENTITY runtimeMenu_takeScreenshot_accesskey "I">
 <!ENTITY runtimeMenu_showDetails_label "Informationes sur le ambiente de execution">
 <!ENTITY runtimeMenu_showDetails_accesskey "n">
@@ -40,7 +40,6 @@
 <!ENTITY runtimeMenu_showDevicePrefs_accesskey "r">
 <!ENTITY runtimeMenu_showSettings_label "Parametros del apparato">
 <!ENTITY runtimeMenu_showSettings_accesskey "P">
-
 <!ENTITY runtimeMenu_showPerformancePanel_label "Prestationes">
 <!ENTITY runtimeMenu_showPerformancePanel_accesskey "p">
 
@@ -50,10 +49,11 @@
 <!ENTITY viewMenu_zoomin_accesskey "A">
 <!ENTITY viewMenu_zoomout_label "Distantiar">
 <!ENTITY viewMenu_zoomout_accesskey "D">
-<!ENTITY viewMenu_resetzoom_label "Remontar le zoom">
+<!ENTITY viewMenu_resetzoom_label "Reinitialisar le zoom">
 <!ENTITY viewMenu_resetzoom_accesskey "R">
 
 <!ENTITY projectButton_label "Aperir un application">
+
 <!ENTITY runtimeButton_label "Eliger le ambiente de execution">
 
 <!-- We try to repicate Firefox' bindings: -->
@@ -74,10 +74,9 @@
 <!ENTITY projectPanel_myProjects "Mi projectos">
 <!ENTITY projectPanel_runtimeApps "Applicationes del ambiente">
 <!ENTITY projectPanel_tabs "Schedas">
-<!ENTITY runtimePanel_usb "Dispositivos USB">
-<!ENTITY runtimePanel_wifi "Dispositivos Wi-Fi">
+<!ENTITY runtimePanel_usb "Apparatos USB">
+<!ENTITY runtimePanel_wifi "Apparatos Wi-Fi">
 <!ENTITY runtimePanel_other "Alteres">
-<!ENTITY runtimePanel_noadbhelper "Installar ADB Helper">
 <!ENTITY runtimePanel_nousbdevice "Impossibile vider tu apparato?">
 <!ENTITY runtimePanel_refreshDevices_label "Actualisar le apparatos">
 
@@ -120,12 +119,6 @@
 
 <!-- Runtime Details -->
 <!ENTITY runtimedetails_title "Informationes sur le ambiente de execution">
-<!ENTITY runtimedetails_adbIsRoot "ADB es radice: ">
-<!ENTITY runtimedetails_summonADBRoot "apparato con privilegios de administrator">
-<!ENTITY runtimedetails_ADBRootWarning "(require un cargator de initio disblocate)">
-<!ENTITY runtimedetails_unrestrictedPrivileges "Privilegios non restricte de DevTools: ">
-<!ENTITY runtimedetails_requestPrivileges "sollicitar privilegios superior">
-<!ENTITY runtimedetails_privilegesWarning "(Reinitiara le apparato. Privilegios de administrator es necessari.)">
 
 <!-- Device Preferences and Settings -->
 <!ENTITY device_typeboolean "Boolean">
@@ -155,7 +148,7 @@
 <!ENTITY wifi_auth_header "Identification del cliente">
 <!-- LOCALIZATION NOTE (wifi_auth_scan_request): Instructions requesting the
      user to transfer authentication info by scanning a QR code. -->
-<!ENTITY wifi_auth_scan_request "Le puncto terminal al qual tu tenta connecter te necessita altere informationes pro identificar le connexion.  Per favor scande le codice QR infra via le linea de commando in tu altere apparato.">
+<!ENTITY wifi_auth_scan_request "Le puncto terminal al qual tu tenta connecter te require plus information pro authenticar le connexion. Per favor scanna le codice QR sequente via le requesta monstrate sur tu altere apparato.">
 <!-- LOCALIZATION NOTE (wifi_auth_no_scanner): Link text to assist users with
      devices that can't scan a QR code. -->
 <!ENTITY wifi_auth_no_scanner "Nulle suggestion de scanner QR?">
@@ -164,8 +157,8 @@
 <!ENTITY wifi_auth_yes_scanner "Ha un suggestion de scanner QR?">
 <!-- LOCALIZATION NOTE (wifi_auth_token_request): Instructions requesting the
      user to transfer authentication info by transferring a token. -->
-<!ENTITY wifi_auth_token_request "Si tu altere dispositivo demanda un token in vice de scander un codice QR, per favor copia le valor infra, al altere apparato:">
-<!ENTITY wifi_auth_qr_size_note "Si le codice QR sembtroppo parve pro stabilir le connexion correctemente, tenta approximar le zoom o aggrandir le fenestra.">
+<!ENTITY wifi_auth_token_request "Si tu altere apparato demanda un token in vice de scannar un codice QR, per favor insere le valor sequente sur le altere apparato:">
+<!ENTITY wifi_auth_qr_size_note "Si le codice QR sembla troppo parve pro stabilir le connexion correctemente, tenta facer zoom avante o aggrandir le fenestra.">
 
 <!-- Logs panel -->
 <!ENTITY logs_title "Registros de commandos pre-impacchettage">

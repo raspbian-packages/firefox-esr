@@ -5,50 +5,66 @@
 permissions-window =
     .title = Excepciones
     .style = width: 36em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Dirección del sitio web
     .accesskey = d
+
 permissions-block =
     .label = Bloquear
     .accesskey = B
+
 permissions-session =
     .label = Permitir por esta sesión
     .accesskey = s
+
 permissions-allow =
     .label = Permitir
     .accesskey = P
+
 permissions-site-name =
     .label = Sitio web
+
 permissions-status =
     .label = Estado
+
 permissions-remove =
     .label = Eliminar sitio web
     .accesskey = R
+
 permissions-remove-all =
     .label = Eliminar todos los sitios
     .accesskey = e
+
 permissions-button-cancel =
     .label = Cancelar
     .accesskey = C
+
 permissions-button-ok =
     .label = Guardar cambios
     .accesskey = S
+
 permissions-autoplay-menu = Opción predeterminada para todos los sitios:
+
 permissions-searchbox =
     .placeholder = Buscar sitio web
+
 permissions-capabilities-autoplay-allow =
     .label = Permitir audio y video
 permissions-capabilities-autoplay-block =
     .label = Bloquear audio
 permissions-capabilities-autoplay-blockall =
     .label = Bloquear audio y video
+
 permissions-capabilities-allow =
     .label = Permitir
 permissions-capabilities-block =
     .label = Bloquear
 permissions-capabilities-prompt =
     .label = Preguntar siempre
+
 permissions-capabilities-listitem-allow =
     .value = Permitir
 permissions-capabilities-listitem-block =
@@ -68,6 +84,11 @@ permissions-exceptions-content-blocking-window =
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Has desactivado el bloqueo de contenido en estos sitios web.
 
+permissions-exceptions-etp-window =
+    .title = Excepciones para la protección de seguimiento mejorada
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Has desactivado la protección en estos sitios web.
+
 ## Exceptions - Cookies
 
 permissions-exceptions-cookie-window =
@@ -85,9 +106,9 @@ permissions-exceptions-popup-desc = Puedes especificar qué sitios web pueden ab
 ## Exceptions - Saved Logins
 
 permissions-exceptions-saved-logins-window =
-    .title = Excepciones - Conexiones guardadas
+    .title = Excepciones - Credenciales guardadas
     .style = { permissions-window.style }
-permissions-exceptions-saved-logins-desc = Las conexiones para los siguientes sitios no serán guardadas
+permissions-exceptions-saved-logins-desc = Las credenciales para los siguientes sitios no serán guardadas
 
 ## Exceptions - Add-ons
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Los siguientes sitios web han solicitado permis
 permissions-site-location-disable-label =
     .label = Bloquear futuras solicitudes de acceso a tu ubicación
 permissions-site-location-disable-desc = Esto evitará que los sitios web no listados arriba puedan solicitar permiso para acceder a tu ubicación. Bloquear el acceso a tu ubicación puede hacer fallar ciertas características de algunos sitios web.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Ajustes - Permisos de realidad virtual
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Los siguientes sitios web han solicitado permiso para acceder a tus dispositivos de realidad virtual. Puedes especificar que sitios web tienen acceso a tus dispositivos de realidad virtual. También puedes bloquear futuras solicitudes de acceso a tus dispositivos de realidad virtual.
+permissions-site-xr-disable-label =
+    .label = Bloquear futuras solicitudes de acceso a tus dispositivos de realidad virtual
+permissions-site-xr-disable-desc = Esto evitará que los sitios web no listados arriba puedan solicitar permiso para acceder a tus  dispositivos de realidad virtual. Bloquear el acceso a tus  dispositivos de realidad virtual puede hacer fallar ciertas características de algunos sitios web.
 
 ## Site Permissions - Camera
 

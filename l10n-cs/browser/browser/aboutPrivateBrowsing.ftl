@@ -4,9 +4,10 @@
 
 about-private-browsing-learn-more = Zjistit více o <a data-l10n-name="learn-more">anonymním prohlížení</a>.
 about-private-browsing-info-visited = navštívené stránky
+
 privatebrowsingpage-open-private-window-label = Otevřít anonymní okno
     .accesskey = a
-about-private-browsing-info-notsaved = Při použití anonymního okna { -brand-short-name } <strong>neukládá</strong>:
+about-private-browsing-info-notsaved = Z anonymních oken { -brand-short-name } <strong>neukládá</strong>:
 about-private-browsing-search-placeholder = Vyhledat na webu
 about-private-browsing-info-bookmarks = záložky
 about-private-browsing-info-title = Jste v anonymním okně
@@ -22,10 +23,23 @@ tracking-protection-start-tour = Jak to funguje
 about-private-browsing-note = Ani s funkcí anonymního prohlížení <strong>ale nebudete na internetu zcela neviditelní.</strong> Váš zaměstnavatel nebo poskytovatel připojení k internetu mohou stále zjistit, které stránky navštěvujete.
 about-private-browsing =
     .title = Vyhledat na webu
-about-private-browsing-not-private = Aktuálně nepracujete s anonymním oknem.
+about-private-browsing-not-private = Nyní nejste v anonymním okně.
 content-blocking-title = Blokování obsahu
 content-blocking-description = Některé webové stránky používají prvky, které vás mohou sledovat napříč internetem. V anonymním prohlížení { -brand-short-name } zablokuje mnohé sledovací prvky, které o vás sbírají informace.
 about-private-browsing-info-description =
     { -brand-short-name } vymaže vaši historii vyhledávání a navštívených stránek po ukončení aplikace nebo zavření všech anonymních panelů a oken.
     
-    S touto funkcí nejste na internetu zcela neviditelní a např. poskytovatel připojení k internetu může stále zjistit, které stránky navštěvujete. Vaše aktivita na internetu ale zůstane utajena před dalšími uživateli na tomto počítači.
+    S touto funkcí nejste na internetu zcela neviditelní a např. poskytovatel připojení k internetu může stále zjistit, které stránky navštěvujete. Vaše aktivita na internetu ale zůstane utajena před dalšími uživateli tohoto počítače.
+
+# This string is the title for the banner for search engine selection
+# in a private window.
+# Variables:
+#   $engineName (String) - The engine name that will currently be used for the private window.
+about-private-browsing-search-banner-title = Pro režim anonymního prohlížení máte jako výchozí nastavený vyhledávač { $engineName }.
+about-private-browsing-search-banner-description =
+    { PLATFORM() ->
+        [windows] Nastavení výchozího vyhledávače můžete změnit v <a data-l10n-name="link-options">Možnostech</a>
+       *[other] Nastavení výchozího vyhledávače můžete změnit v <a data-l10n-name="link-options">Předvolbách</a>
+    }
+about-private-browsing-search-banner-close-button =
+    .aria-label = Zavřít

@@ -5,12 +5,12 @@
 <!ENTITY firstrun_panel_title_welcome "Tereg̃uahẽporãite">
 <!ENTITY firstrun_urlbar_message2 "Aguyje reiporavo haguére &brandShortName;">
 <!ENTITY newfirstrun_urlbar_message "Tereg̃uahẽporãite &brandShortName;-pe">
-<!ENTITY firstrun_urlbar_subtext2 "Peteĩ kundahára ojapóva Mozilla, peteĩ aty oheka\&apos;ỹva viru ha oipotáva ñandutiveve isãso ha oikóva opavavépe g̃uarã.">
+<!ENTITY firstrun_urlbar_subtext2 "Kundahára ojapóva Mozilla, peteĩ aty oheka\&apos;ỹva viru ha oipotáva ñanduti isãso ha oikóva opavavépe g̃uarã.">
 <!ENTITY newfirstrun_urlbar_subtext "Pya’e, ñemi ha nde ykére.">
-<!ENTITY firstrun_panel_title_privacy "Tekovepypegua">
-<!ENTITY firstrun_privacy_message "Eikundaha ndaiporiramoguáicha omañañemíva nderehe">
-<!ENTITY firstrun_privacy_subtext "Kundahañemi rupive oñeñangareko nderehe ani hag̃ua ambuekuéra oikuaa mba\&apos;épa rejapo ha resẽ vove ñandutivevégui ndojekuaamo\&apos;ãi mba\&apos;épa rehecha kuri.">
-<!ENTITY newfirstrun_privacy_subtext "Pe kundaha ñemi ojoko jehekaha ñemurãva ohapykuyhóva ñandutípe.">
+<!ENTITY firstrun_panel_title_privacy "Moñemigua">
+<!ENTITY firstrun_privacy_message "Eikundaha neañoramoguáicha">
+<!ENTITY firstrun_privacy_subtext "Kundaha ñemi rupi oñeñangareko nderehe ani hag̃ua ambuekuéra oikuaa mba\&apos;épa ejapo ha esẽvo ñandutígui ndojekuaamo\&apos;ãi ehechava\&apos;ekue.">
+<!ENTITY newfirstrun_privacy_subtext "Kundaha ñemi ojoko ñemurã nderapykuyhóva ñandutípe.">
 <!ENTITY firstrun_panel_title_customize "Ñemomba\&apos;ete">
 <!ENTITY firstrun_customize_message "Emboheko &brandShortName; ikatu hag̃uáicha omba\&apos;apo reipotaháicha.">
 <!ENTITY firstrun_customize_subtext "Eñemomba\&apos;ete &brandShortName; rehe eipurúvo tembipuru\&apos;i joajupyre. Emboyke ta\&apos;ãnga omba\&apos;evendeséva ndéve, embojoapy Firefox-re tembipuru\&apos;i ojapóva reikotevẽva ýrõ embojegua reipotaháicha.">
@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Mba\&apos;ekuaarã\&apos;ive, ñembyatyve">
 <!ENTITY firstrun_data_subtext2 "Embogue ta\&apos;angakuéra embohasa\&apos;ive hag̃ua mba\&apos;ekuaarã peteĩteĩva tenda eho hague pegua.">
 <!ENTITY firstrun_sync_title "Mbojuehe">
-<!ENTITY updatednewfirstrun_sync_title "Mba\&apos;ete">
-<!ENTITY firstrun_sync_message2 "Ejapyhyjey eheja haguépe.">
+<!ENTITY firstrun_sync_message3 "Embojuehe techaukaha, tembiasakue ha ñe’ẽñemi ne pumbyrýpe.">
 <!ENTITY firstrun_sync_subtext2 "Eipuru Sync ejuhu hag̃ua ne rechaukaha, ñe\&apos;ẽñemi ha ambueve reñongatuva\&apos;ekue &brandShortName; pe eipuru vove oimeraẽva mba\&apos;e\&apos;oka rerekóva (ne mohendaha, ne pumbyry, tablet  hamba\&apos;e).">
 <!ENTITY newfirstrun_sync_subtext "Embojuehe tetepy eñongatúva pumbyrýpe Firefox mesa arigua ndive, ñemi ha tekorosã reheve.">
-<!ENTITY updatednewfirstrun_sync_subtext "Emoñepyrũ tembiapo ne mba’etépe eipuru porã hag̃ua &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Emondo tendayke">
+<!ENTITY firstrun_sendtab_message "Emoherakuã tendayke pumbyry guive mohendahápe — pya’e.">
 <!ENTITY firstrun_signin_message "Eike, eñepyrũ">
-<!ENTITY firstrun_signin_button "Emoñepyrũ tembiapo embojuehe hag̃ua">
-<!ENTITY newfirstrun_signin_button "Emyandy ñembojuehe">
-<!ENTITY updatednewfirstrun_signin_button "Emoñepyrũ tembiapo &brandShortName; ndive">
-<!ENTITY  onboard_start_button_browser "Eñepyrũ eikundaha">
+<!ENTITY onboard_start_button_browser "Eñepyrũ eikundaha">
 <!ENTITY firstrun_button_notnow "Ko\&apos;ág̃a nahániri">
 <!ENTITY firstrun_button_next "Upeigua">
+<!ENTITY firstrun_signup_button "Eñemboheraguapy">
 
 <!ENTITY firstrun_tabqueue_title "Joajuhakuéra">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Emondohína jejavy rehegua\u2026">
 <!ENTITY  crash_close_label "Mboty">
 <!ENTITY  crash_restart_label "&brandShortName; moñepyrũjey">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; ombeti">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Ñongatuha oñembohekopyahúma">
 <!ENTITY bookmark_parent_folder "Ñongatuha mba\&apos;eguasuvéva">
 <!ENTITY bookmark_add_folder "Embojuaju ñongatuha pyahu">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(teratee\&apos;ỹ rehe)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Cookie-kuéra">
 <!ENTITY pref_cookies_accept_all "Myandypyre">
 <!ENTITY pref_cookies_not_accept_foreign "Hendypyre, oñemboykehápe pe mbohapyha vore">
+<!ENTITY pref_cookies_not_accept_trackers "Jurujapyre, oñemboykehápe kookie jehapykuehoha">
 <!ENTITY pref_cookies_disabled "Ojepuruve\&apos;ỹva">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Ñanduti Rembipuru Okakuaáva">
 <!ENTITY pref_pwa_summary "Emoneĩ ñanduti rembipurúpe ojuajúvo mba\&apos;erechaha ra\&apos;ãngamýi rehe">
-
-<!ENTITY tracking_protection_prompt_title "Ko\&apos;ág̃a, jehapykueho ñemo\&apos;ãha ndive">
-<!ENTITY tracking_protection_prompt_text "Ejoko mba\&apos;epuru jehapykueho ani hag̃ua rejepy\&apos;apy.">
-<!ENTITY tracking_protection_prompt_tip_text "Eho ñemboheko ñemiguápe eñemomaranduve hag̃ua">
-<!ENTITY tracking_protection_prompt_action_button "Arekóma!">
 
 <!ENTITY tab_queue_toast_message3 "Tendayke oñeñongatu &brandShortName;-pe">
 <!ENTITY tab_queue_toast_action "Ijuruja ko\&apos;ág̃a">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Epoko pe kundaha rembipuru’i &amp; eiporavo &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Eike Mozilla mombytahápe">
 <!ENTITY pref_about_firefox "&brandShortName; reheguaite">
 <!ENTITY pref_vendor_faqs "FAQs">
 <!ENTITY pref_vendor_feedback "Temiandu mondo">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; ohekakuaahína nerenda">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Ñembohekopyahu ijeheguíva">
-<!ENTITY pref_update_autodownload_wifi "Wi-Fi rupive añoite">
-<!ENTITY pref_update_autodownload_never "Araka\&apos;eve">
-<!ENTITY pref_update_autodownload_always "Tapia">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Ñepytyvõ">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Moherakuã">
 <!ENTITY share_title "Omoherakuã">
 <!ENTITY share_image_failed "Ndaikatúi emoherakuã ko ta\&apos;ãnga">
+<!ENTITY share_error_toast_message "Ani emoherakuã tembipuru’i ndive">
 <!ENTITY save_as_pdf "Eñongatu PDF ramo">
 <!ENTITY print "Ñemonguatia">
 <!ENTITY view_page_source "Kuatia ñepyrũha jehecha">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Tendaite">
 <!ENTITY bookmark_edit_keyword "Ñe\&apos;ẽ ñemi">
 <!ENTITY bookmark_select_folder "Ñongatuha jeporavo">
-
 <!ENTITY bookmark_edit_undo "Mbojevy">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Eiporavo térã eñongatu mba\&apos;epu">
 <!ENTITY filepicker_image_title "Eiporavo térã enohẽ avara\&apos;ãnga">
 <!ENTITY filepicker_video_title "Eiporavo térã eñongatu ta\&apos;ãngamýi">
-
 <!ENTITY filepicker_permission_denied "Noñemoneĩri tekotevẽháicha, ejevyjeýnte marandurenda apopyvusu poravohápe.">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Eheka &formatS1; &formatS2;-pe g̃uarã">
 
 <!ENTITY searchable_description "Techaukaha ha tembiasakue">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Hekopyahujeýma &brandShortName;">
-<!ENTITY updater_start_select2 "Epoko emboguejy hag̃ua">
-
-<!ENTITY updater_downloading_title2 "Emboguejyhína &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Ñemboguejy ojavy">
-<!ENTITY updater_downloading_select2 "Epoko eipuru hag̃ua oguejypa rire">
-<!ENTITY updater_downloading_retry2 "Epoko eha\&apos;ãjey hag̃ua">
-
-<!ENTITY updater_apply_title3 "Tekopyahu mboguejypyre &brandShortName;-pe g̃uarã">
-<!ENTITY updater_apply_select3 "Epoko hese emohendaha hag̃ua">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Emboguejy hag̃ua marandurenda ha tekopyahu, &brandShortName; emoneĩ oike hag̃ua ñembyatyhápe.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Moneĩ">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Pepirũmbyréramo Jeike">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Ehecha Bookmark Reader emoñe\&apos;ẽ hag̃ua ñanduti\&apos;ỹre.">
 <!ENTITY helper_triple_readerview_open_button "Embojuaju Techaukaháre">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Eg̃uahẽporãite &brandShortName;-pe">
+<!ENTITY activity_stream_signin_description "Embojuehe ñepyrũ techaukaha, ñe’ẽñemi ha hetave ne mba’ete Firefox pegua ndive.">
+<!ENTITY activity_stream_signup_button "Eñemboheraguapy">
+<!ENTITY activity_stream_signin_prompt "¿Eguerekóma mba\&apos;ete?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Mboheraguapy.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Nde Firefox pyahu og̃uahẽta 2020-pe">
+<!ENTITY activity_stream_firefox_promo_description "Vokoiete: oikovéta ijepuru, tuichavéta tapykuehoha ñemo’ã ha avei tembiapoite ojejapóva petyvõrãva, eñongatu ha emoherakuãve hag̃ua ñandutípe.">
+<!ENTITY activity_stream_firefox_promo_button "Ema’ẽmína hese">
+
 <!ENTITY activity_stream_topsites "Py\&apos;ỹigua">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "&brandPocket; momba\&apos;epyre">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Mba\&apos;epu ha ta\&apos;ãngamýi">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; ñemoñe’ẽ ha apokuaa">
-<!ENTITY updater_notification_channel "Tembipuru mbohekopyahu">
 <!ENTITY synced_tabs_notification_channel "Tendayke mbojuehepyre">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

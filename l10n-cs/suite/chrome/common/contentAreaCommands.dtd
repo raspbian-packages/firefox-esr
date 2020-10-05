@@ -53,6 +53,8 @@
 <!ENTITY reloadImageCmd.accesskey     "b">
 <!ENTITY viewImageCmd.label           "Zobrazit obrázek">
 <!ENTITY viewImageCmd.accesskey       "Z">
+<!ENTITY viewImageInfoCmd.label       "Zobrazit informace o obrázku">
+<!ENTITY viewImageInfoCmd.accesskey   "o">
 <!ENTITY viewVideoCmd.label           "Zobrazit video">
 <!ENTITY viewVideoCmd.accesskey       "Z">
 <!ENTITY viewBGImageCmd.label         "Zobrazit obrázek na pozadí">
@@ -153,6 +155,16 @@ items are mutually exclusive. -->
 <!ENTITY spellDictionaries.accesskey    "J">
 <!ENTITY spellAddDictionaries.label     "Přidat slovník…">
 <!ENTITY spellAddDictionaries.accesskey "P">
+
+<!ENTITY fillLoginMenu.label          "Vyplnit přihlašovací údaje">
+<!ENTITY fillLoginMenu.accesskey      "V">
+<!ENTITY fillPasswordMenu.label       "Vyplnit heslo">
+<!ENTITY fillPasswordMenu.accesskey   "V">
+<!ENTITY fillUsernameMenu.label       "Vyplnit uživatelské jméno">
+<!ENTITY fillUsernameMenu.accesskey   "V">
+<!ENTITY noLoginSuggestions.label     "(Žádné návrhy přihlašovacích údajů)">
+<!ENTITY viewSavedLogins.label        "Zobrazit uložené přihlašovací údaje">
+
 <!-- Developer Tools -->
 <!ENTITY devtoolsInspect.label          "Prozkoumat prvek">
 <!ENTITY devtoolsInspect.accesskey      "P">

@@ -4,20 +4,52 @@
 
 # An old map warning, see https://en.wikipedia.org/wiki/Here_be_dragons
 about-config-warning-title = Inilah naga!
-about-config-warning-text = Mengubah nilai bawaan pada pengaturan canggih ini dapat mengakibatkan kerusakan pada stabilitas, keamanan, dan kinerja aplikasi ini. Hanya lanjutkan jika benar-benar tahu apa yang akan Anda lakukan.
+about-config-warning-text = Mengubah nilai bawaan pada pengaturan tingkat lanjut ini dapat mengakibatkan kerusakan pada stabilitas, keamanan, dan kinerja aplikasi ini. Hanya lanjutkan jika benar-benar tahu apa yang akan Anda lakukan.
 about-config-warning-checkbox = Tanya lagi nanti!
 about-config-warning-button = Saya terima risikonya
-about-config-title = about:config
+
 about-config2-title = Konfigurasi Lanjutan
+
 about-config-search-input =
     .placeholder = Cari
+
+## These strings appear on the warning you see when first visiting about:config.
+
+about-config-intro-warning-title = Lanjutkan dengan Kehati-hatian
+about-config-intro-warning-text = Mengubah pilihan konfigurasi tingkat lanjut dapat mempengaruhi kinerja atau keamanan { -brand-short-name } .
+about-config-intro-warning-checkbox = Peringatkan saya ketika mencoba untuk mengakses preferensi ini.
+about-config-intro-warning-button = Terima Risiko dan Lanjutkan
+
+##
+
+# This is shown on the page before searching but after the warning is accepted.
+about-config-caution-text = Mengubah pilihan ini dapat mempengaruhi kinerja atau keamanan { -brand-short-name } .
+
+about-config-page-title = Preferensi Tingkat Lanjut
+
+about-config-search-input1 =
+    .placeholder = Cari nama preferensi
 about-config-show-all = Tampilkan Semua
+
 about-config-pref-add = Tambah
 about-config-pref-toggle = Aktifkan/Nonaktifkan
 about-config-pref-edit = Edit
 about-config-pref-save = Simpan
 about-config-pref-reset = Setel Ulang
 about-config-pref-delete = Hapus
+
+about-config-pref-add-button =
+    .title = Tambah
+about-config-pref-toggle-button =
+    .title = Aktifkan/Nonaktifkan
+about-config-pref-edit-button =
+    .title = Edit
+about-config-pref-save-button =
+    .title = Simpan
+about-config-pref-reset-button =
+    .title = Setel ulang
+about-config-pref-delete-button =
+    .title = Hapus
 
 ## Labels for the type selection radio buttons shown when adding preferences.
 

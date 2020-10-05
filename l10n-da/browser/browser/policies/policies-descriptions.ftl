@@ -11,6 +11,8 @@
 
 policy-3rdparty = Indstil politikker, som WebExtensions kan tilgå via chrome.storage.managed.
 
+policy-AppAutoUpdate = Slå automatisk opdatering af programmet til eller fra.
+
 policy-AppUpdateURL = Indstil tilpasset URL for app-opdateringer
 
 policy-Authentication = Indstil integreret godkendelse for websteder, der understøtter det
@@ -27,17 +29,19 @@ policy-Bookmarks = Opret bogmærker i Bogmærkelinjen, i menuen Bogmærker eller
 
 policy-CaptivePortal = Slå understøttelse af captive portal til eller fra.
 
-policy-Certificates = Om indbyggede certifikater skal anvendes eller ikke. Denne politik gælder kun for Windows på nuværende tidspunkt.
-
 policy-CertificatesDescription = Tilføj certifikater eller brug indbyggede certifikater.
 
 policy-Cookies = Tillad eller nægt websteder at sætte cookies.
+
+policy-DisabledCiphers = Deaktiver ciphers.
 
 policy-DefaultDownloadDirectory = Indstil standard-mappe for hentede filer.
 
 policy-DisableAppUpdate = Deaktiver opdatering af browseren.
 
 policy-DisableBuiltinPDFViewer = Deaktiver PDF.js, den indbyggede PDF-viser i { -brand-short-name }.
+
+policy-DisableDefaultBrowserAgent = Tillad ikke at standard browser-agenten foretager handlinger. Fungerer kun på Windows; andre platforme har ikke agenten.
 
 policy-DisableDeveloperTools = Bloker adgang til Udviklerværktøj.
 
@@ -56,6 +60,8 @@ policy-DisableFormHistory = Husk ikke formular- og søgehistorik.
 
 policy-DisableMasterPasswordCreation = En hovedadgangskode kan ikke oprettes, hvis sat til true.
 
+policy-DisablePasswordReveal = Tillad ikke adgangskoder at blive vist i gemte logins.
+
 policy-DisablePocket = Deaktiver funktionen at gemme websider til Pocket.
 
 policy-DisablePrivateBrowsing = Deaktiver privat browsing.
@@ -67,8 +73,6 @@ policy-DisableProfileRefresh = Deaktiver knappen Nulstil { -brand-short-name } p
 policy-DisableSafeMode = Deaktiver funktionen til at genstarte i fejlsikret tilstand. NB: Deaktivering af tasten Skift til at starte fejlsikret tilstand kan kun gennemføres i Windows via Gruppepolitik.
 
 policy-DisableSecurityBypass = Deaktiver brugerens mulighed for at omgå bestemte sikkerhedsadvarsler
-
-policy-DisableSetDesktopBackground = Deaktiver menu-kommandoen Brug billede som skrivebordsbaggrund
 
 policy-DisableSetAsDesktopBackground = Deaktiver menu-kommandoen Brug som skrivebordsbaggrund
 
@@ -89,10 +93,12 @@ policy-DownloadDirectory = Indstil og lås valg af mappe til filhentninger.
 # “lock” means that the user won’t be able to change this setting
 policy-EnableTrackingProtection = Slå Blokering af indhold til eller fra. Brugeren kan eventuelt forhindres i at ændre indstillingen.
 
+# “lock” means that the user won’t be able to change this setting
+policy-EncryptedMediaExtensions = Slå Encrypted Media Extensions til eller fra. Brugeren kan eventuelt forhindres i at ændre indstillingen.
+
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
-# English or translate them as verbs. See also:
-# https://github.com/mozilla/policy-templates/blob/master/README.md#extensions-machine-only
+# English or translate them as verbs.
 policy-Extensions = Installer, afinstaller eller lås udvidelser. Valgmuligheden Installer tager URL’er eller stier som parametre. Valgmulighederne Afinstaller og Låst tager udvidelelses-ID som parameter.
 
 policy-ExtensionSettings = Håndter alle aspekter af udvidelses-installering.
@@ -103,6 +109,8 @@ policy-FirefoxHome = Indstil Firefox' startside.
 
 policy-FlashPlugin = Tillad eller afvis brug af Flash-plugin.
 
+policy-Handlers = Indstil håndtering af standard-applikationer.
+
 policy-HardwareAcceleration = False slår hardware-acceleration fra.
 
 # “lock” means that the user won’t be able to change this setting
@@ -110,7 +118,17 @@ policy-Homepage = Indstil og lås eventuelt startsiden.
 
 policy-InstallAddonsPermission = Tillad bestemte websteder at installere tilføjelser.
 
+policy-LegacyProfiles = Deaktiver funktionen, der gennemtvinger at hver installation har en separat profil.
+
+## Do not translate "SameSite", it's the name of a cookie attribute.
+
+policy-LegacySameSiteCookieBehaviorEnabled = Aktiver standard-indstilling for forældet SameSite-opførsel. 
+
+policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Gå tilbage til forældet SameSite-opførsel for cookies på bestemte websteder.
+
 policy-LocalFileLinks = Tillad specifikke websteder at linke til lokale filer.
+
+policy-MasterPassword = Kræv eller deaktiver brug af hovedadgangskode.
 
 policy-NetworkPrediction = Slå network prediction (DNS prefetching) til eller fra.
 
@@ -118,13 +136,22 @@ policy-NewTabPage = Slå siden Nyt faneblad til eller fra.
 
 policy-NoDefaultBookmarks = Deaktiver oprettelse af standard-bogmærker, der følger med { -brand-short-name }, samt de smarte bogmærker (Mest besøgte, Seneste mærkater). NB: Denne politik virker kun, hvis den aktiveres før profilen anvendes første gang.
 
-policy-OfferToSaveLogins = Indstil om { -brand-short-name } skal tilbyde at huske gemte logins og adgangskoder. Både true og false accepteres.
+policy-OfferToSaveLogins = Indstil om { -brand-short-name } skal tilbyde at huske gemte logins og adgangskoder. Vælg true, hvis { -brand-short-name } skal tilbyde at huske logins og adgangskoder, ellers vælg false.
+
+policy-OfferToSaveLoginsDefault = Vælg om { -brand-short-name } skal tilbyde at huske logins og adgangskoder. Vælg true, hvis { -brand-short-name } skal tilbyde at huske logins og adgangskoder, ellers vælg false.
 
 policy-OverrideFirstRunPage = Erstat siden, der vises ved første opstart. Lad politikken være tom, hvis siden ved første opstart skal deaktiveres. 
 
+policy-PasswordManagerEnabled = Tillad at brugeren kan gemme adgangskoder i Adgangskode-håndteringen.
+
+# PDF.js and PDF should not be translated
+policy-PDFjs = Deaktiver eller konfigurer PDF.js, den indbyggede PDF-læser i { -brand-short-name }.
+
 policy-OverridePostUpdatePage = Erstat siden Nyheder, der vises efter opdatering. Lad politikken være tom, hvis siden efter opdatering skal deaktiveres. 
 
-policy-Permissions = Indstil tilladelser for kamera, mikrofon, position og beskeder.
+policy-Permissions2 = Indstil tilladelser for kamera, mikrofon, position, beskeder og automatisk afspilning.
+
+policy-PictureInPicture = Slå Billede-i-billede til eller fra.
 
 policy-PopupBlocking = Tillad bestemte websteder at vise pop op-vinduer som standard.
 
@@ -135,8 +162,6 @@ policy-PromptForDownloadLocation = Spørg hvor hentede filer skal gemmes.
 policy-Proxy = Opsæt proxy-indstillinger.
 
 policy-RequestedLocales = Vælg rækkefølgen af sprog, der skal anvendes i programmet.
-
-policy-SanitizeOnShutdown = Ryd al browsing-data ved lukning.
 
 policy-SanitizeOnShutdown2 = Ryd browsing-data ved lukning.
 
@@ -155,6 +180,7 @@ policy-SSLVersionMin = Angiv den laveste SSL-version.
 
 policy-SupportMenu = Føj et tilpasset menupunkt til menuen Hjælp.
 
-# “format” refers to the format used for the value of this policy. See also:
-# https://github.com/mozilla/policy-templates/blob/master/README.md#websitefilter-machine-only
+policy-UserMessaging = Vis ikke bestemte beskeder til brugeren.
+
+# “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Bloker websteder fra at blive besøgt. Se dokumentationen for detaljer om formatet.

@@ -6,19 +6,32 @@
 ### This file contains the entities needed to use the Find Bar.
 
 findbar-next =
-    .tooltiptext = Pronađi iduće javljanje ovog izraza
+    .tooltiptext = Pronađi sljedeće pojavljivanje ovog izraza
 findbar-previous =
-    .tooltiptext = Pronađi prethodno javljanje ovog izraza
+    .tooltiptext = Pronađi prethodno pojavljivanje ovog izraza
+
 findbar-find-button-close =
     .tooltiptext = Zatvori traku pretraživanja
-findbar-highlight-all =
+
+findbar-highlight-all2 =
     .label = Istakni sve
-    .accesskey = I
-    .tooltiptext = Istakni sve pronađene fraze
+    .accesskey =
+        { PLATFORM() ->
+            [macos] I
+           *[other] I
+        }
+    .tooltiptext = Istakni sva ponavljanja traženog izraza
+
 findbar-case-sensitive =
-    .label = Osjetljivo na veličinu slova
+    .label = Razlikuj velika i mala slova
     .accesskey = j
-    .tooltiptext = Pretraživanje osjetljivo na velika i mala slova
+    .tooltiptext = Razlikuj velika i mala slova prilikom pretraživanja
+
+findbar-match-diacritics =
+    .label = Razlikuj dijakritičke znakove
+    .accesskey = a
+    .tooltiptext = Razlikuj slova s dijakritičkim znakovima i osnovna slova (npr. kad tražiš riječi „kuca”, riječ „kuća” se neće prikazati u rezultatima)
+
 findbar-entire-word =
     .label = Cijele riječi
     .accesskey = C

@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "m">
 <!ENTITY  newContactCmd.label "通讯录联系人…">
 <!ENTITY  newContactCmd.accesskey "C">
+<!ENTITY openMenuCmd.label "打开">
+<!ENTITY openMenuCmd.accesskey "O">
 <!ENTITY openMessageFileCmd.label "打开已保存消息…">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "另存为">
@@ -53,7 +55,7 @@
 <!ENTITY saveAsTemplateCmd.accesskey "T">
 <!ENTITY getNewMsgForCmd.label "获取新消息">
 <!ENTITY getNewMsgForCmd.accesskey "w">
-<!ENTITY getAllNewMsgCmdPopupMenu.label "添加账户">
+<!ENTITY getAllNewMsgCmdPopupMenu.label "所有账户">
 <!ENTITY getAllNewMsgCmdPopupMenu.accesskey "A">
 <!ENTITY getNewMsgCurrentAccountCmdPopupMenu.label "当前账户">
 <!ENTITY getNewMsgCurrentAccountCmdPopupMenu.accesskey "C">
@@ -153,12 +155,12 @@
 <!ENTITY showFolderPaneCmd.accesskey "F">
 <!ENTITY showFolderPaneColsCmd.label "文件夹窗格列">
 <!ENTITY showFolderPaneColsCmd.accesskey "P">
-<!ENTITY showMessageCmd.label "消息">
+<!ENTITY showMessageCmd.label "消息窗格">
 <!ENTITY showMessageCmd.accesskey "M">
 
 <!ENTITY folderView.label "文件夹">
 <!ENTITY folderView.accesskey "F">
-<!ENTITY unifiedFolders.label "统一的">
+<!ENTITY unifiedFolders.label "统一">
 <!ENTITY unifiedFolders.accesskey "n">
 <!ENTITY allFolders.label "全部">
 <!ENTITY allFolders.accesskey "A">
@@ -172,12 +174,11 @@
 <!ENTITY compactVersion.accesskey "C">
 <!ENTITY folderPaneBar.label "文件夹窗格工具栏">
 <!ENTITY folderPaneBar.accesskey "F">
-<!ENTITY folderModeSelector.label "文件夹视图">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "排序">
 <!ENTITY sortMenu.accesskey "S">
-<!ENTITY sortByDateCmd.label "按日期">
+<!ENTITY sortByDateCmd.label "日期">
 <!ENTITY sortByDateCmd.accesskey "e">
 <!ENTITY sortByReceivedCmd.label "接收时间">
 <!ENTITY sortByReceivedCmd.accesskey "v">
@@ -197,15 +198,15 @@
 <!ENTITY sortByJunkStatusCmd.accesskey "J">
 <!ENTITY sortBySubjectCmd.label "主题">
 <!ENTITY sortBySubjectCmd.accesskey "b">
-<!ENTITY sortByFromCmd.label "发件人">
+<!ENTITY sortByFromCmd.label "来自">
 <!ENTITY sortByFromCmd.accesskey "F">
 <!ENTITY sortByRecipientCmd.label "收件人">
 <!ENTITY sortByRecipientCmd.accesskey "c">
 <!ENTITY sortByCorrespondentCmd.label "通信者">
 <!ENTITY sortByCorrespondentCmd.accesskey "e">
-<!ENTITY sortByUnreadCmd.label "按已读">
+<!ENTITY sortByUnreadCmd.label "已读">
 <!ENTITY sortByUnreadCmd.accesskey "R">
-<!ENTITY sortByOrderReceivedCmd.label "按接收顺序">
+<!ENTITY sortByOrderReceivedCmd.label "接收顺序">
 <!ENTITY sortByOrderReceivedCmd.accesskey "O">
 <!ENTITY sortAscending.label "升序">
 <!ENTITY sortAscending.accesskey "A">
@@ -255,11 +256,11 @@
 <!ENTITY bodyAllParts.label "所有主体部分">
 <!ENTITY bodyAllParts.accesskey "A">
 
-<!ENTITY bodyMenuFeed.label "用邮件正文作为">
+<!ENTITY bodyMenuFeed.label "收取点消息正文显示为">
 <!ENTITY bodyMenuFeed.accesskey "B">
 <!ENTITY viewFeedWebPage.label "网页">
 <!ENTITY viewFeedWebPage.accesskey "W">
-<!ENTITY viewFeedSummary.label "概述">
+<!ENTITY viewFeedSummary.label "摘要">
 <!ENTITY viewFeedSummary.accesskey "m">
 <!ENTITY viewFeedSummaryFeedPropsPref.label "默认格式">
 <!ENTITY viewFeedSummaryFeedPropsPref.accesskey "D">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "搜索消息…">
 <!ENTITY searchMailCmd.accesskey "M">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "全局搜索…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "搜索地址…">
 <!ENTITY searchAddressesCmd.accesskey "S">
 
@@ -445,13 +448,13 @@
 <!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "附件">
 <!ENTITY openAttachmentListCmd.accesskey "h">
-<!ENTITY openFeedMessage1.label "当打开收取点信息时">
+<!ENTITY openFeedMessage1.label "当打开收取点消息时">
 <!ENTITY openFeedMessage1.accesskey "O">
-<!ENTITY openFeedWebPage.label "作为网页打开">
+<!ENTITY openFeedWebPage.label "打开为网页">
 <!ENTITY openFeedWebPage.accesskey "W">
-<!ENTITY openFeedSummary.label "作为摘要打开">
+<!ENTITY openFeedSummary.label "打开为摘要">
 <!ENTITY openFeedSummary.accesskey "S">
-<!ENTITY openFeedWebPageInMP.label "切换是否显示消息面板中的网页和摘要">
+<!ENTITY openFeedWebPageInMP.label "在消息窗格中切换网页和摘要">
 <!ENTITY openFeedWebPageInMP.accesskey "T">
 
 <!-- Windows Menu -->
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "移动选择的消息">
 <!ENTITY archiveButton.tooltip "归档选中的消息">
 <!ENTITY openConversationButton.tooltip "显示选定消息的对话">
+<!ENTITY openMsgConversationButton.tooltip "显示选定消息的对话">
 <!ENTITY nextButton.tooltip "转至下一条未读消息">
 <!ENTITY nextMsgButton.tooltip "移动到下一条信息">
 <!ENTITY previousButton.tooltip "转到上一条未读消息">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "为消息添加标签">
 <!ENTITY compactButton.tooltip "从选中文件夹移除已删除消息">
 <!ENTITY appmenuButton1.tooltip "显示 &brandShortName; 菜单">
-
 <!ENTITY addonsButton.tooltip "管理您的附加组件">
 
 <!-- Toolbar Button Popup -->
@@ -699,16 +702,17 @@
 
 <!-- Quick Search Menu Bar -->
 <!ENTITY searchSubjectMenu.label "标题">
-<!ENTITY searchFromMenu.label "发件人">
-<!ENTITY searchSubjectOrFromMenu.label "标题或发件人">
+<!ENTITY searchFromMenu.label "来自">
+<!ENTITY searchSubjectOrFromMenu.label "标题或来自">
 <!ENTITY searchRecipient.label "收件人或转发">
 <!ENTITY searchSubjectOrRecipientMenu.label "标题，收件人或者抄送人">
 <!ENTITY searchMessageBody.label "整条消息">
 <!ENTITY saveAsVirtualFolderMenu.label "将搜索结果保存作为文件夹…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "选择消息">
 <!ENTITY threadColumn.label "话题">
-<!ENTITY fromColumn.label "发件人">
+<!ENTITY fromColumn.label "来自">
 <!ENTITY recipientColumn.label "收件人">
 <!ENTITY correspondentColumn.label "通信者">
 <!ENTITY subjectColumn.label "主题">
@@ -724,14 +728,17 @@
 <!ENTITY readColumn.label "已读">
 <!ENTITY receivedColumn.label "接收时间">
 <!ENTITY starredColumn.label "已加星标">
-<!ENTITY locationColumn.label "地址">
-<!ENTITY idColumn.label "按接收时间排序">
+<!ENTITY locationColumn.label "位置">
+<!ENTITY idColumn.label "接收顺序">
 <!ENTITY attachmentColumn.label "附件">
+
+<!ENTITY deleteColumn.label "删除">
 
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "选择要显示的列">
+<!ENTITY selectColumn.tooltip "切换选择所有消息">
 <!ENTITY threadColumn2.tooltip "显示消息话题">
-<!ENTITY fromColumn2.tooltip "按发件人排序">
+<!ENTITY fromColumn2.tooltip "按来自排序">
 <!ENTITY recipientColumn2.tooltip "按收件人排序">
 <!ENTITY correspondentColumn2.tooltip "按通信者排序">
 <!ENTITY subjectColumn2.tooltip "按主题排序">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "按位置排序">
 <!ENTITY idColumn2.tooltip "按接收顺序排序">
 <!ENTITY attachmentColumn2.tooltip "按附件排序">
+
+<!ENTITY deleteColumn.tooltip "删除消息">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "依托模板新建邮件">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "应用图标选项…">
 <!ENTITY writeNewMessageDock.label      "撰写新邮件">
 <!ENTITY openAddressBookDock.label      "打开通讯录">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "返回上一页">
+<!ENTITY browseForwardButton.tooltip "转到下一页">

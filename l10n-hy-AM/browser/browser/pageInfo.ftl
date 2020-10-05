@@ -4,18 +4,22 @@
 
 page-info-window =
     .style = width: 600px; min-height: 550px;
+
 copy =
     .key = C
 menu-copy =
     .label = Պատճենել
     .accesskey = Պ
+
 select-all =
     .key = A
 menu-select-all =
     .label = Նշել բոլորը
     .accesskey = բ
-close-window =
-    .key = A
+
+close-dialog =
+    .key = w
+
 general-tab =
     .label = Ընդհանուր
     .accesskey = G
@@ -39,6 +43,7 @@ general-meta-name =
     .label = Անվանումը
 general-meta-content =
     .label = Բովանդակություն
+
 media-tab =
     .label = Մեդիա
     .accesskey = M
@@ -68,11 +73,13 @@ media-save-image-as =
     .accesskey = e
 media-preview =
     .value = Մեդիայի նախադիտում.
+
 perm-tab =
     .label = Թույլտվություններ
     .accesskey = Ի
 permissions-for =
     .value = Թույլտվություններ՝
+
 security-tab =
     .label = Անվտանգություն
     .accesskey = S
@@ -93,17 +100,22 @@ security-view-identity-validity =
     .value = Սպառվում է՝
 security-view-privacy =
     .value = Գաղտնիությունը և պատմությունը
+
 security-view-privacy-history-value = Ես այցելե՞լ էմ այս կայք մինչև այսօր
 security-view-privacy-sitedata-value = Այս կայքը տեղեկություններ պահու՞մ է համակարգչում:
+
 security-view-privacy-clearsitedata =
     .label = Մաքրել Cookie-ները և կայքի տվյալները
     .accesskey = C
+
 security-view-privacy-passwords-value = Պահպանե՞լ եմ արդյոք գաղտնաբառեր այս կայքի համար
+
 security-view-privacy-viewpasswords =
     .label = Դիտել Հիշած Գաղտնաբառերը
     .accesskey = w
 security-view-technical =
     .value = Տեխնիկական Մանրամասնություններ
+
 help-button =
     .label = Օգնություն
 
@@ -115,10 +127,14 @@ help-button =
 
 security-site-data-cookies = Այո, cookie-ները և կայքի տվյալները՝ { $value } { $unit }
 security-site-data-only = Այո, կայքի տվյալներ՝ { $value } { $unit }
+
 security-site-data-cookies-only = Այո, cookie-ներ
 security-site-data-no = Ոչ
+
 image-size-unknown = Անհայտ
 not-set-verified-by = Նշված չէ
+page-info-not-specified =
+    .value = Նշված չէ
 not-set-alternative-text = Նշված չէ
 not-set-date = Նշված չէ
 media-img = Նկար
@@ -134,6 +150,7 @@ media-video = Տեսաֆայլ
 media-audio = Աուդիո
 saved-passwords-yes = Այո
 saved-passwords-no = Ոչ՜
+
 no-page-title =
     .value = Անվերնագիր էջ`
 general-quirks-mode =
@@ -141,12 +158,15 @@ general-quirks-mode =
 general-strict-mode =
     .value = Ստանդարտներին համաձայն եղանակ
 security-no-owner = Այս վեբ կայքը չի տրամադրում իր սեփականատիրոջ ինֆորմացիան:
+page-info-security-no-owner =
+    .value = Այս վեբ կայքը չի տրամադրում իր սեփականատիրոջ ինֆորմացիան:
 media-select-folder = Ընտրեք թղթապանակ՝ պատկերները պահպանելու համար
 media-unknown-not-cached =
     .value = Անհայտ (չի մտապահվել)
 permissions-use-default =
     .label = Օգտ. լռելյայն
 security-no-visits = Ոչ՜
+
 # This string is used to display the number of meta tags
 # in the General Tab
 # Variables:
@@ -157,6 +177,7 @@ general-meta-tags =
             [one] Մետա (1 պիտակ)
            *[other] Մետա ({ $tags } պիտակ)
         }
+
 # This string is used to display the number of times
 # the user has visited the website prior
 # Variables:
@@ -167,6 +188,7 @@ security-visits-number =
         [one] Այո, մեկ անգամ
        *[other] Այո, { $visits } անգամ
     }
+
 # This string is used to display the size of a media file
 # Variables:
 #   $kb (number) - The size of an image in Kilobytes
@@ -177,6 +199,7 @@ properties-general-size =
             [one] { $kb } ԿԲ ({ $bytes } բայթ)
            *[other] { $kb } ԿԲ ({ $bytes } բայթ)
         }
+
 # This string is used to display the type and number
 # of frames of a animated image
 # Variables:
@@ -188,12 +211,14 @@ media-animated-image-type =
             [one] { $type } Պատկեր (շարժունացված, { $frames } շրջանակ)
            *[other] { $type } Պատկեր (շարժունացված, { $frames } շրջանակ)
         }
+
 # This string is used to display the type of
 # an image
 # Variables:
 #   $type (string) - The type of an image
 media-image-type =
     .value = Նկար { $type }
+
 # This string is used to display the size of a scaled image
 # in both scaled and unscaled pixels
 # Variables:
@@ -203,17 +228,20 @@ media-image-type =
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
     .value = { $dimx }px × { $dimy }px (մասշտաբը` { $scaledx }px × { $scaledy }px)
+
 # This string is used to display the size of an image in pixels
 # Variables:
 #   $dimx (number) - The horizontal size of an image
 #   $dimy (number) - The vertical size of an image
 media-dimensions =
     .value = { $dimx }px × { $dimy }px
+
 # This string is used to display the size of a media
 # file in kilobytes
 # Variables:
 #   $size (number) - The size of the media file in kilobytes
 media-file-size = { $size } ԿԲ
+
 # This string is used to display the website name next to the
 # "Block Images" checkbox in the media tab
 # Variables:
@@ -221,6 +249,7 @@ media-file-size = { $size } ԿԲ
 media-block-image =
     .label = Փակել Նկարները { $website }-ից
     .accesskey = B
+
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:

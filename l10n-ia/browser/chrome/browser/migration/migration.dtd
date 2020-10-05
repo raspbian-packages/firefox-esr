@@ -13,6 +13,10 @@
 <!ENTITY importFromIE.accesskey         "M">
 <!ENTITY importFromEdge.label           "Microsoft Edge">
 <!ENTITY importFromEdge.accesskey       "E">
+<!ENTITY importFromEdgeLegacy.label     "Microsoft Edge (ancian versiones)">
+<!ENTITY importFromEdgeLegacy.accesskey "a">
+<!ENTITY importFromEdgeBeta.label       "Microsoft Edge Beta">
+<!ENTITY importFromEdgeBeta.accesskey   "d">
 <!ENTITY importFromNothing.label        "Importar nihil">
 <!ENTITY importFromNothing.accesskey    "n">
 <!ENTITY importFromSafari.label         "Safari">
@@ -36,7 +40,7 @@
 
 <!ENTITY importSource.title             "Importar parametros e datos">
 <!ENTITY importItems.title              "Elementos a importar">
-<!ENTITY importItems.label              "Eliger qual files importar:">
+<!ENTITY importItems.label              "Selige le datos a importar:">
 
 <!ENTITY migrating.title                "Importante…">
 <!ENTITY migrating.label                "Le importation del elementos sequente es in curso…">
@@ -47,4 +51,4 @@
 <!ENTITY done.title                     "Importation complete">
 <!ENTITY done.label                     "Le elementos sequente ha essite importate con successo:">
 
-<!ENTITY closeSourceBrowser.label       "Per favor assecura te que le navigator seligite es claudite ante continuar.">
+<!ENTITY closeSourceBrowser.label       "Per favor assecura te que le navigator seligite es claudite ante de continuar.">

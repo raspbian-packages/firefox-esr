@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 appmenu-update-available =
-    .label = Uma nova atualização do { -brand-shorter-name } está disponível.
+    .label = Está disponível uma nova atualização para o { -brand-shorter-name }.
     .buttonlabel = Transferir atualização
     .buttonaccesskey = T
     .secondarybuttonlabel = Agora não
@@ -47,3 +47,22 @@ appmenu-addon-private-browsing =
     .secondarybuttonaccesskey = O
 appmenu-addon-private-browsing-message = Quaisquer novas extensões que adicione ao { -brand-shorter-name } não irão funcionar em janelas privadas a menos que permita isto nas definições.
 appmenu-addon-private-browsing-learn-more = Saber como gerir definições de extensões
+    
+appmenu-new-tab-controlled =
+    .label = O seu novo separador foi alterado.
+    .buttonlabel = Manter alterações
+    .buttonaccesskey = M
+    .secondarybuttonlabel = Desativar extensão
+    .secondarybuttonaccesskey = D
+appmenu-homepage-controlled =
+    .label = A sua página inicial alterou.
+    .buttonlabel = Manter alterações
+    .buttonaccesskey = M
+    .secondarybuttonlabel = Desativar extensão
+    .secondarybuttonaccesskey = D
+appmenu-tab-hide-controlled =
+    .label = Aceda aos seus separadores ocultados
+    .buttonlabel = Manter separadores ocultados
+    .buttonaccesskey = M
+    .secondarybuttonlabel = Desativar extensão
+    .secondarybuttonaccesskey = D

@@ -9,20 +9,29 @@ findbar-next =
     .tooltiptext = Najde další výskyt hledaného textu
 findbar-previous =
     .tooltiptext = Najde předchozí výskyt hledaného textu
+
 findbar-find-button-close =
     .tooltiptext = Zavře lištu hledání
-findbar-highlight-all =
-    .label = Zvýraznit vše
-    .accesskey = Z
-    .tooltiptext = Zvýrazní všechny výskyty hledaného textu
+
 findbar-highlight-all2 =
     .label = Zvýraznit vše
-    .accesskey = Z
+    .accesskey =
+        { PLATFORM() ->
+            [macos] Z
+           *[other] a
+        }
     .tooltiptext = Zvýrazní všechny výskyty hledaného textu
+
 findbar-case-sensitive =
     .label = Rozlišovat velikost
     .accesskey = R
     .tooltiptext = Zohlední se velikost písmen
+
+findbar-match-diacritics =
+    .label = Rozlišovat diakritiku
+    .accesskey = i
+    .tooltiptext = Zohlední rozdíl mezi písmeny s a bez háčků a čárek (např. při hledání slova „být“ nebude nalezeno slovo „byt“)
+
 findbar-entire-word =
     .label = Celá slova
     .accesskey = C

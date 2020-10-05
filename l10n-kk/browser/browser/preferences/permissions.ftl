@@ -5,50 +5,66 @@
 permissions-window =
     .title = Осыдан бөлек
     .style = width: 55em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Сайт адресі
     .accesskey = д
+
 permissions-block =
     .label = Блоктау
     .accesskey = Б
+
 permissions-session =
     .label = Тек осы сессияға рұқсат беру
     .accesskey = Т
+
 permissions-allow =
     .label = Рұқсат ету
     .accesskey = е
+
 permissions-site-name =
     .label = Веб сайт
+
 permissions-status =
     .label = Статус
+
 permissions-remove =
     .label = Вебсайтты өшіру
     .accesskey = ш
+
 permissions-remove-all =
     .label = Барлық вебсайттарды өшіру
     .accesskey = р
+
 permissions-button-cancel =
     .label = Бас тарту
     .accesskey = т
+
 permissions-button-ok =
     .label = Өзгерістерді сақтау
     .accesskey = с
+
 permissions-autoplay-menu = Барлық веб-сайттар үшін негізгі:
+
 permissions-searchbox =
     .placeholder = Вебсайттан іздеу
+
 permissions-capabilities-autoplay-allow =
     .label = Аудио және видеоны рұқсат ету
 permissions-capabilities-autoplay-block =
     .label = Аудионы бұғаттау
 permissions-capabilities-autoplay-blockall =
     .label = Аудио мен видеоны бұғаттау
+
 permissions-capabilities-allow =
     .label = Рұқсат ету
 permissions-capabilities-block =
     .label = Болдырмау
 permissions-capabilities-prompt =
     .label = Әрқашан сұрау
+
 permissions-capabilities-listitem-allow =
     .value = Рұқсат ету
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Ережеден тыс - Құраманы бұғаттау
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Бұл веб-сайттар үшін құраманы бұғаттауды сөндіргенсіз.
+
+permissions-exceptions-etp-window =
+    .title = Бақылаудан кеңейтілген көріністен тыс ережелер
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Сіз осы веб-сайттарда қорғауды өшірдіңіз.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Келесі веб-сайттар орнала
 permissions-site-location-disable-label =
     .label = Орналасуыңызды білуге жаңа сұранымдарды блоктау
 permissions-site-location-disable-desc = Бұл төменде тізілмеген веб-сайттарға орналасуыңызды білуге рұқсат сұрауға тыйым салады. Орналасуыңызға қатынауды блоктау веб-сайттардың кейбір мүмкіндіктерін сындыра алады.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Баптаулар - виртуалды шынайылық рұқсаттары
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Келесі веб-сайттар виртуалды шынайылық құрылғыларына қатынау құқығын сұраған. Сіз қай веб-сайттарға виртуалды шынайылық құрылғыларына қатынауға болатынын таңдай аласыз. Сонымен қатар, виртуалды шынайылық құрылғыларын қолдануға жаңа сұранымдарды блоктай аласыз.
+permissions-site-xr-disable-label =
+    .label = Виртуалды шынайылық құрылғыларына қатынауға жаңа сұранымдарды блоктау
+permissions-site-xr-disable-desc = Бұл төменде тізілмеген веб-сайттарға виртуалды шынайылық құрылғыларына қатынауға рұқсат сұрауға тыйым салады. Виртуалды шынайылық құрылғыларына қатынауды блоктау веб-сайттардың кейбір мүмкіндіктерін сындыра алады.
 
 ## Site Permissions - Camera
 

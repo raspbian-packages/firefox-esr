@@ -3,14 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 fonts-window =
-    .title = Typos de character
+    .title = Typos de litteras
+
 fonts-window-close =
     .key = w
 
 ## Font groups by language
 
-fonts-langgroup-header = Typos de character pro
+fonts-langgroup-header = Typos de litteras pro
     .accesskey = T
+
 fonts-langgroup-arabic =
     .label = Arabe
 fonts-langgroup-armenian =
@@ -75,26 +77,35 @@ fonts-langgroup-other =
 
 fonts-proportional-header = Proportional
     .accesskey = P
+
 fonts-default-serif =
     .label = Serif
 fonts-default-sans-serif =
     .label = Sans Serif
+
 fonts-proportional-size = Dimension
     .accesskey = D
+
 fonts-serif = Serif
     .accesskey = S
+
 fonts-sans-serif = Sans-serif
     .accesskey = n
+
 fonts-monospace = Monospatio
     .accesskey = M
+
 fonts-monospace-size = Dimension
     .accesskey = i
-fonts-minsize = Dimension minime del typo
+
+fonts-minsize = Dimension minime de litteras
     .accesskey = o
+
 fonts-minsize-none =
     .label = Nulle
+
 fonts-allow-own =
-    .label = Permitter que le paginas elige lor proprie typos de character, in vice de tu selectiones supra
+    .label = Permitter que le paginas elige lor proprie typos de litteras, in vice de tu selectiones supra
     .accesskey = A
 
 ## Text Encodings
@@ -104,8 +115,10 @@ fonts-allow-own =
 
 fonts-languages-fallback-header = Codification de texto pro le contento obsolete
 fonts-languages-fallback-desc = Iste codification es usate pro contento obsolete que non ha declarate su codification.
-fonts-languages-fallback-label = Codification de texto de contingentia
+
+fonts-languages-fallback-label = Codification de texto de ultime recurso
     .accesskey = T
+
 fonts-languages-fallback-name-auto =
     .label = Predefinition pro le lingua actual
 fonts-languages-fallback-name-arabic =
@@ -138,9 +151,7 @@ fonts-languages-fallback-name-vietnamese =
     .label = Vietnamese
 fonts-languages-fallback-name-other =
     .label = Altere (incl. europeo occidental)
-fonts-very-large-warning-title = Dimension minime del character troppo grande
-fonts-very-large-warning-message = Tu ha seligite un valor multo alte pro le dimension minime del (plus que 24 pixels). Isto pote facer difficile o impossibile de usar alcun paginas de configuration importante como iste.
-fonts-very-large-warning-accept = Mantener mi cambios comocunque
+
 # Variables:
 #   $name {string, "Arial"} - Name of the default font
 fonts-label-default =

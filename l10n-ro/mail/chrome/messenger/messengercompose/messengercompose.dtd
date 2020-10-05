@@ -3,7 +3,7 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <!--LOCALIZATION NOTE messengercompose.dtd Main UI for message composition -->
-<!ENTITY msgComposeWindow.title "Redactare mesaj: (fără subiect)">
+<!ENTITY msgComposeWindow.title "Scrie mesajul: (fără subiect)">
 
 <!-- File Menu -->
 <!ENTITY fileMenu.label "Fișier">
@@ -16,7 +16,7 @@
 <!ENTITY newMessage.accesskey "M">
 <!ENTITY newContact.label "Contact în agendă…">
 <!ENTITY newContact.accesskey "C">
-<!ENTITY attachMenu.label "Anexează">
+<!ENTITY attachMenu.label "Atașează">
 <!ENTITY attachMenu.accesskey "x">
 <!ENTITY attachFileCmd.label "Fișier(e)…">
 <!ENTITY attachFileCmd.accesskey "F">
@@ -40,8 +40,8 @@
 <!ENTITY saveAsCmd.accesskey "c">
 <!ENTITY saveAsFileCmd.label "Fișier…">
 <!ENTITY saveAsFileCmd.accesskey "F">
-<!ENTITY saveAsDraftCmd.label "Ciornă">
-<!ENTITY saveAsDraftCmd.accesskey "C">
+<!ENTITY saveAsDraftCmd.label "Mesaj nefinalizat">
+<!ENTITY saveAsDraftCmd.accesskey "D">
 <!ENTITY saveAsTemplateCmd.label "Șablon">
 <!ENTITY saveAsTemplateCmd.accesskey "l">
 <!ENTITY sendNowCmd.label "Trimite acum">
@@ -88,30 +88,23 @@
 <!ENTITY reorderAttachmentsCmd.label "Rearanjează atașamentele…">
 <!ENTITY reorderAttachmentsCmd.accesskey "s">
 <!ENTITY reorderAttachmentsCmd.key "x">
-<!ENTITY toggleAttachmentPaneCmd.label "Panoul atașamentelor">
-<!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.accesskey):
-     For better mnemonics, toggleAttachmentPaneCmd.accesskey should be the same
-     as attachments.accesskey. -->
+<!ENTITY toggleAttachmentPaneCmd.label "Panou de atașamente">
 <!ENTITY toggleAttachmentPaneCmd.accesskey "m">
-<!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.key):
-     As Mac does not have access keys, this key defines a Mac-only, cross-l10n
-     shortcut key (Ctrl+M). Typically, this key should not be translated unless
-     otherwise required by specific needs of the localization. -->
 <!ENTITY toggleAttachmentPaneCmd.key "m">
 <!ENTITY selectAllCmd.label "Selectează tot">
 <!ENTITY selectAllCmd.accesskey "a">
 <!ENTITY selectAllCmd.key "A">
-<!ENTITY findBarCmd.label "Găsește…">
+<!ENTITY findBarCmd.label "Caută…">
 <!ENTITY findBarCmd.accesskey "G">
 <!ENTITY findBarCmd.key "F">
-<!ENTITY findReplaceCmd.label "Găsește și înlocuiește…">
+<!ENTITY findReplaceCmd.label "Caută și înlocuiește…">
 <!ENTITY findReplaceCmd.accesskey "l">
 <!ENTITY findReplaceCmd.key "s">
-<!ENTITY findAgainCmd.label "Găsește din nou">
+<!ENTITY findAgainCmd.label "Caută din nou">
 <!ENTITY findAgainCmd.accesskey "G">
 <!ENTITY findAgainCmd.key "G">
 <!ENTITY findAgainCmd.key2 "VK_F3">
-<!ENTITY findPrevCmd.label "Găsește anterior">
+<!ENTITY findPrevCmd.label "Mergi la rezultatul anterior">
 <!ENTITY findPrevCmd.accesskey "n">
 <!ENTITY findPrevCmd.key "G">
 <!ENTITY findPrevCmd.key2 "VK_F3">
@@ -181,7 +174,7 @@
 <!ENTITY dsnMenu.accesskey "N">
 <!ENTITY deliveryFormatMenu.label "Format de trimitere">
 <!ENTITY deliveryFormatMenu.accesskey "F">
-<!ENTITY autoFormatCmd.label "Autodetecție">
+<!ENTITY autoFormatCmd.label "Detectare automată">
 <!ENTITY autoFormatCmd.accesskey "A">
 <!ENTITY plainTextFormatCmd.label "Doar text">
 <!ENTITY plainTextFormatCmd.accesskey "x">
@@ -211,13 +204,13 @@
 <!-- Tools Menu -->
 <!ENTITY tasksMenu.label "Unelte">
 <!ENTITY tasksMenu.accesskey "t">
-<!ENTITY messengerCmd.label "E-mail și Grupuri de discuții">
+<!ENTITY messengerCmd.label "E-mail și grupuri de discuții">
 <!ENTITY messengerCmd.accesskey "C">
 <!ENTITY messengerCmd.commandkey "1">
 <!ENTITY addressBookCmd.label "Agendă de contacte">
 <!ENTITY addressBookCmd.accesskey "A">
 <!ENTITY addressBookCmd.key "B">
-<!ENTITY accountManagerCmd2.label "Setările conturilor">
+<!ENTITY accountManagerCmd2.label "Setări pentru conturi">
 <!ENTITY accountManagerCmd2.accesskey "c">
 <!ENTITY accountManagerCmdUnix2.accesskey "S">
 <!ENTITY preferencesCmd2.label "Opțiuni">
@@ -229,7 +222,7 @@
 <!ENTITY minimizeWindow.key "M">
 <!ENTITY minimizeWindow.label "Minimizează">
 <!ENTITY bringAllToFront.label "Adu-le pe toate în prim-plan">
-<!ENTITY zoomWindow.label "Lupă">
+<!ENTITY zoomWindow.label "Zoom">
 <!ENTITY windowMenu.label "Fereastră">
 
 <!-- Mail Toolbar -->
@@ -259,6 +252,11 @@
     Subject: rows. It should be larger than the largest Header label  -->
 <!ENTITY headersSpace.style "width: 9em;">
 <!ENTITY fromAddr.label "De la:">
+<!--LOCALIZATION NOTE headersSpaces.style is for aligning  the From:, To: and
+    Subject: rows. It should be larger than the largest Header label  -->
+<!ENTITY headersSpace2.style "width: 8em;">
+<!ENTITY extraRecipients.tooltip "Alte tipuri de câmpuri de adresare">
+<!ENTITY fromAddr2.label "De la">
 <!ENTITY fromAddr.accesskey "D">
 <!ENTITY toAddr.label "Către:">
 <!ENTITY ccAddr.label "Cc:">
@@ -267,6 +265,13 @@
 <!ENTITY newsgroupsAddr.label "Grup de discuții:">
 <!ENTITY followupAddr.label "Urmare la:">
 <!ENTITY subject.label "Subiect:">
+<!ENTITY toAddr2.label "Către">
+<!ENTITY ccAddr2.label "Cc">
+<!ENTITY bccAddr2.label "Bcc">
+<!ENTITY replyAddr2.label "Răspuns către">
+<!ENTITY newsgroupsAddr2.label "Grup de știri">
+<!ENTITY followupAddr2.label "Mesaj de revenire">
+<!ENTITY subject2.label "Subiect">
 <!ENTITY subject.accesskey "S">
 <!-- LOCALIZATION NOTE (attachments.accesskey) This access key character should
      be taken from the strings of attachmentCount in composeMsgs.properties.
@@ -275,27 +280,27 @@
      buttons, or labels (message headers, contacts side bar, attachment reminder
      bar). -->
 <!ENTITY attachments.accesskey "A">
-<!ENTITY attachmentBucketHeader.tooltip "Panoul atașamentelor">
-<!ENTITY attachmentBucketCloseButton.tooltip "Ascunde panoul atașamentelor">
+<!ENTITY attachmentBucketHeader.tooltip "Panou de atașamente">
+<!ENTITY attachmentBucketCloseButton.tooltip "Ascunde panoul de atașamente">
 
-<!-- Format Toolbar, imported from editorAppShell.xul -->
-<!ENTITY SmileButton.tooltip "Inserează o figură zâmbitoare">
+<!-- Format Toolbar, imported from editorAppShell.xhtml -->
+<!ENTITY SmileButton.tooltip "Inserează un chip zâmbitor">
 <!ENTITY smiley1Cmd.label "Zâmbet">
-<!ENTITY smiley2Cmd.label "Scârbit">
-<!ENTITY smiley3Cmd.label "Clipit">
+<!ENTITY smiley2Cmd.label "Încruntat">
+<!ENTITY smiley3Cmd.label "Făcând cu ochiul">
 <!ENTITY smiley4Cmd.label "Cu limba scoasă">
 <!ENTITY smiley5Cmd.label "Râzând">
 <!ENTITY smiley6Cmd.label "Rușinat">
-<!ENTITY smiley7Cmd.label "Nedecis">
-<!ENTITY smiley8Cmd.label "Surpriză">
+<!ENTITY smiley7Cmd.label "Nehotărât">
+<!ENTITY smiley8Cmd.label "Surprins">
 <!ENTITY smiley9Cmd.label "Sărut">
 <!ENTITY smiley10Cmd.label "Țipăt">
-<!ENTITY smiley11Cmd.label "Șmecher">
-<!ENTITY smiley12Cmd.label "Gură aurită">
-<!ENTITY smiley13Cmd.label "Ar trebui să taci">
-<!ENTITY smiley14Cmd.label "Nevinovat">
+<!ENTITY smiley11Cmd.label "Cool">
+<!ENTITY smiley12Cmd.label "Cu bani în gură">
+<!ENTITY smiley13Cmd.label "Cu piciorul în gură">
+<!ENTITY smiley14Cmd.label "Inocent">
 <!ENTITY smiley15Cmd.label "Plânset">
-<!ENTITY smiley16Cmd.label "Buze pecetluite">
+<!ENTITY smiley16Cmd.label "Cu buzele pecetluite">
 
 <!-- Message Pane Context Menu -->
 <!ENTITY spellCheckNoSuggestions.label "Nicio sugestie găsită">

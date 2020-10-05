@@ -5,50 +5,66 @@
 permissions-window =
     .title = Išimtys
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Svetainės adresas
     .accesskey = d
+
 permissions-block =
     .label = Neleisti
     .accesskey = N
+
 permissions-session =
     .label = Leisti vienam seansui
     .accesskey = s
+
 permissions-allow =
     .label = Leisti
     .accesskey = L
+
 permissions-site-name =
     .label = Svetainė
+
 permissions-status =
     .label = Leidimas
+
 permissions-remove =
     .label = Pašalinti svetainę
     .accesskey = P
+
 permissions-remove-all =
     .label = Pašalinti visas svetaines
     .accesskey = v
+
 permissions-button-cancel =
     .label = Atsisakyti
     .accesskey = A
+
 permissions-button-ok =
     .label = Įrašyti pakeitimus
     .accesskey = r
+
 permissions-autoplay-menu = Numatyta visoms svetainėms:
+
 permissions-searchbox =
     .placeholder = Ieškoti svetainėje
+
 permissions-capabilities-autoplay-allow =
     .label = Leisti garsus ir vaizdo įrašus
 permissions-capabilities-autoplay-block =
     .label = Blokuoti garsus
 permissions-capabilities-autoplay-blockall =
     .label = Blokuoti garsus ir vaizdo įrašus
+
 permissions-capabilities-allow =
     .label = Leisti
 permissions-capabilities-block =
     .label = Neleisti
 permissions-capabilities-prompt =
     .label = Visada klausti
+
 permissions-capabilities-listitem-allow =
     .value = Leisti
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Išimtys – turinio blokavimas
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Šiose svetainėse esate išjungę turinio blokavimą.
+
+permissions-exceptions-etp-window =
+    .title = Išimtys išplėstai apsaugai nuo stebėjimo
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Šiose svetainėse esate išjungę apsaugą.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Šios svetainės prašo leidimo nustatyti jūs�
 permissions-site-location-disable-label =
     .label = Blokuoti naujus jūsų buvimo vietos nustatymo prašymus
 permissions-site-location-disable-desc = Tai neleis svetainėms, neišvardintoms aukščiau, prašyti leidimo nustatyti jūsų buvimo vietą. Buvimo vietos nustatymo blokavimas gali sutrikdyti svetainių funkcionalumą.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Nuostatos – virtualios realybės leidimai
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Šios svetainės prašo leidimo naudoti jūsų virtualios realybės įrenginius. Jūs galite nurodyti, kurioms svetainėms tai leidžiate daryti. Kartu galite užblokuoti naujus leidimų prašymus.
+permissions-site-xr-disable-label =
+    .label = Blokuoti naujus virtualios realybės įrenginių naudojimo prašymus
+permissions-site-xr-disable-desc = Tai neleis svetainėms, neišvardintoms aukščiau, prašyti leidimo naudoti jūsų virtualios realybės įrenginius. Virtualios realybės įrenginių naudojimo blokavimas gali sutrikdyti svetainių funkcionalumą.
 
 ## Site Permissions - Camera
 

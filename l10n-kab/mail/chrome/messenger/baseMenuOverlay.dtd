@@ -9,24 +9,31 @@
                        for the help button in the menubar but Gnome does not.   -->
 <!ENTITY helpMenuWin.label "Tallat">
 <!ENTITY helpMenuWin.accesskey "l">
+<!ENTITY aboutProduct2.label "Ɣef &brandShorterName;">
+<!ENTITY aboutProduct2.accesskey "A">
 <!ENTITY helpTroubleshootingInfo.label     "Talɣut n usellek">
 <!ENTITY helpTroubleshootingInfo.accesskey "T">
 <!ENTITY helpSafeMode.label     "Senker tikelt nniḍen s izegrar arurmiden…">
 <!ENTITY helpSafeMode.accesskey "S">
-<!ENTITY releaseCmd2.label "Tizmilin n lqem">
-<!ENTITY releaseCmd2.accesskey "N">
-<!ENTITY whatsNewCmd.label "D acu i d amaynut">
-<!ENTITY whatsNewCmd.accesskey "D">
-<!ENTITY openHelp.label "Igburen n tallalt">
-<!ENTITY openHelp.accesskey "I">
-<!ENTITY openHelp.commandkey "VK_F1">
-<!ENTITY openHelpMac.label "&amp;Tallalt &brandShortName;">
-<!ENTITY openHelpMac2.label "Tallalt &brandFullName;">
-<!ENTITY openHelpMac2.commandkey   "?">
-<!ENTITY openHelpMac2.modifiers    "accel">
+<!ENTITY helpSafeMode.stop.label     "Ales asenker s yizegrar urmiden">
+<!ENTITY helpSafeMode.stop.accesskey "R">
+<!ENTITY productHelp.label "&brandShortName; Tallalt">
+<!ENTITY productHelp.accesskey "H">
+<!ENTITY productHelp.commandkey "VK_F1">
+<!ENTITY productHelpMac.commandkey "?">
+<!ENTITY productHelpMac.modifiers "accel">
 
-<!ENTITY aboutMenuCmd.label "Ɣef &brandShortName;">
-<!ENTITY aboutMenuCmd.accesskey "f">
+<!ENTITY helpKeyboardShortcuts.label "Inegzumen n unasiw">
+<!ENTITY helpKeyboardShortcuts.accesskey "K">
 
-<!ENTITY aboutMenuCmd2.label "Γef &brandFullName;">
-<!ENTITY aboutMenuCmd2.accesskey "A">
+<!ENTITY helpFeedbackPage.label "Mudd-ed tamuɣli-inek…">
+<!ENTITY helpFeedbackPage.accesskey "S">
+
+<!ENTITY helpShowTour2.label "Tirza fessusen ɣer &brandShorterName;">
+<!ENTITY helpShowTour2.accesskey "o">
+
+<!ENTITY helpGetInvolvedPage.label "Ttekki">
+<!ENTITY helpGetInvolvedPage.accesskey "I">
+
+<!ENTITY helpDonationsPage.label "Mudd tawsa">
+<!ENTITY helpDonationsPage.accesskey "M">

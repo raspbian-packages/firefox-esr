@@ -4,7 +4,7 @@
 
 appmenu-update-available =
     .label = Ka gati një përditësim të ri për { -brand-shorter-name }-in.
-    .buttonlabel = Shkarkoje Përditësimin
+    .buttonlabel = Shkarko Përditësimin
     .buttonaccesskey = k
     .secondarybuttonlabel = Jo Tani
     .secondarybuttonaccesskey = J
@@ -47,3 +47,22 @@ appmenu-addon-private-browsing =
     .secondarybuttonaccesskey = O
 appmenu-addon-private-browsing-message = Çfarëdo zgjerimesh të reja që shtoni te { -brand-shorter-name } s’do të funksionojë në Dritare Private, veç në e lejofshi ju këtë te rregullimet.
 appmenu-addon-private-browsing-learn-more = Mësoni si të administroni rregullime zgjerimesh.
+    
+appmenu-new-tab-controlled =
+    .label = Rregullimet tuaja për Skedë të Re kanë ndryshuar.
+    .buttonlabel = Mbaji Ndryshimet
+    .buttonaccesskey = M
+    .secondarybuttonlabel = Çaktivizoje Zgjerimin
+    .secondarybuttonaccesskey = Ç
+appmenu-homepage-controlled =
+    .label = Faqja juaj hyrëse ka ndryshuar.
+    .buttonlabel = Mbaji Ndryshimet
+    .buttonaccesskey = M
+    .secondarybuttonlabel = Çaktivizoje Zgjerimin
+    .secondarybuttonaccesskey = Ç
+appmenu-tab-hide-controlled =
+    .label = Hyni Te Skedat Tuaja të Fshehura
+    .buttonlabel = Mbaji Skedat të Fshehura
+    .buttonaccesskey = M
+    .secondarybuttonlabel = Çaktivizoje Zgjerimin
+    .secondarybuttonaccesskey = Ç

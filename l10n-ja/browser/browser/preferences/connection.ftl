@@ -41,6 +41,12 @@ connection-proxy-http-share =
 
 connection-proxy-ssl = SSL プロキシー
     .accesskey = L
+connection-proxy-http-sharing =
+    .label = このプロキシーを FTP と HTTPS でも使用する
+    .accesskey = s
+
+connection-proxy-https = HTTPS プロキシー
+    .accesskey = H
 connection-proxy-ssl-port = ポート
     .accesskey = o
 
@@ -65,6 +71,9 @@ connection-proxy-noproxy = プロキシーなしで接続
 
 connection-proxy-noproxy-desc = 例: .mozilla.org, .net.nz, 192.168.1.0/24
 
+# Do not translate localhost, 127.0.0.1 and ::1.
+connection-proxy-noproxy-localhost-desc = localhost, 127.0.0.1, ::1 へは常にプロキシーなしで接続します。
+
 connection-proxy-autotype =
     .label = 自動プロキシー設定スクリプト URL
     .accesskey = A
@@ -85,13 +94,6 @@ connection-proxy-socks-remote-dns =
 connection-dns-over-https =
     .label = DNS over HTTPS を有効にする
     .accesskey = b
-
-# Variables:
-#   $url (String) - URL for the DNS over HTTPS provider
-connection-dns-over-https-url-default =
-    .label = 標準設定を使用 ({ $url })
-    .accesskey = U
-    .tooltiptext = DNS over HTTPS の解決に既定の URL を使用します
 
 connection-dns-over-https-url-resolver = プロバイダーを使用
     .accesskey = P

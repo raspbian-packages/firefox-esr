@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = الألسنة المُزامنة
 synced-tabs-sidebar-noclients-subtitle = أتريد رؤية ألسنتك من الأجهزة الأخرى هنا؟
 synced-tabs-sidebar-notsignedin = لِج لعرض قائمة بالألسنة من أجهزتك الأخرى.
+synced-tabs-sidebar-intro = اعرض قائمة بالألسنة من أجهزتك الأخرى.
 synced-tabs-sidebar-unverified = يجب تأكيد حسابك.
 synced-tabs-sidebar-notabs = لا ألسنة مفتوحة
 synced-tabs-sidebar-openprefs = افتح تفضيلات { -sync-brand-short-name }
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = أدِر الأجهزة…
     .accesskey = ج
+synced-tabs-context-sync-now =
+    .label = زامِن الآن
+    .accesskey = ز
 fxa-sign-in = لِج إلى { -sync-brand-short-name }
+turn-on-sync = فعّل { -sync-brand-short-name }

@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Облачные вкладки
 synced-tabs-sidebar-noclients-subtitle = Хотите увидеть здесь ваши вкладки с других устройств?
 synced-tabs-sidebar-notsignedin = Войдите, чтобы увидеть список вкладок с других устройств.
+synced-tabs-sidebar-intro = Просмотрите список вкладок с других устройств.
 synced-tabs-sidebar-unverified = Ваш аккаунт должен быть подтверждён.
 synced-tabs-sidebar-notabs = Нет открытых вкладок
 synced-tabs-sidebar-openprefs = Открыть настройки { -sync-brand-short-name(case: "genitive") }
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Управление устройствами…
     .accesskey = п
+synced-tabs-context-sync-now =
+    .label = Синхронизировать
+    .accesskey = х
 fxa-sign-in = Войти в { -sync-brand-short-name(case: "accusative") }
+turn-on-sync = Включить { -sync-brand-short-name(case: "accusative") }

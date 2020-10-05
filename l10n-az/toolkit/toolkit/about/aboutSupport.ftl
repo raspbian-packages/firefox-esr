@@ -4,6 +4,7 @@
 
 page-title = Problem həll etmə məlumatları
 page-subtitle =   Bu səhifə, bir problemi həll etməyə çalışarkən işinizə yaraya biləcək texniki məlumatlara malikdir. { -brand-short-name } haqqında ümumi suallarla bağlı cavab axtarırsınızsa <a data-l10n-name="support-link">dəstək saytımıza</a> baxın.
+
 crashes-title = Çökmə Məlumatları
 crashes-id = Hesabat kimliyi
 crashes-send-date = Göndərilib
@@ -46,9 +47,7 @@ app-basics-service-workers = Qeyd Olunmuş Service Worker-lar
 app-basics-profiles = Profillər
 app-basics-launcher-process-status = Başladıcı Prosesi
 app-basics-multi-process-support = Çox əməliyyatlı Pəncərələr
-app-basics-process-count = Web Məzmun Emalçıları
 app-basics-enterprise-policies = Sahibkarlıq Siyasəti
-app-basics-key-google = Google açarı
 app-basics-key-mozilla = Mozilla Mövqe Xidməti Açarı
 app-basics-safe-mode = Təhlükəsiz Rejim
 show-dir-label =
@@ -98,6 +97,14 @@ sandbox-sys-call-number = Sistem çağrısı
 sandbox-sys-call-args = Parametrlər
 safe-mode-title = Təhlükəsiz Modu Yoxlayın
 restart-in-safe-mode-label = Əlavələr sönülü olaraq yenidən başlat…
+
+## Media titles
+
+audio-backend = Səs arxa tərəfi
+max-audio-channels = Maksimum kanal
+channel-layout = Üstünlük verilən kanal düzülüşü
+sample-rate = Üstünlük verilən nümunə tempi
+
 media-title = Media
 media-output-devices-title = Çıxış cihazları
 media-input-devices-title = Giriş cihazları
@@ -110,6 +117,9 @@ media-device-format = Format
 media-device-channels = Kanallar
 media-device-rate = Tempi
 media-device-latency = Ləngimə
+
+##
+
 intl-title = Beynəlmiləlləşdirmə və Lokallaşdırma
 intl-app-title = Tətbiqetmə Tənzimləmələri
 intl-locales-requested = İstənilən Dillər
@@ -119,6 +129,18 @@ intl-locales-default = Ön seçili dil
 intl-os-title = Əməliyyat Sistemi
 intl-os-prefs-system-locales = Sistem Dilləri
 intl-regional-prefs = Regional Nizamlamalar
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -126,6 +148,7 @@ report-crash-for-days =
         [one] Son { $days } Gün üçün Çökmə Hesabatı
        *[other] Son { $days } Gün üçün Çökmə Hesabatı
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -133,6 +156,7 @@ crashes-time-minutes =
         [one] { $minutes } dəqiqə əvvəl
        *[other] { $minutes } dəqiqə əvvəl
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -140,6 +164,7 @@ crashes-time-hours =
         [one] { $hours } saat əvvəl
        *[other] { $hours } saat əvvəl
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -147,6 +172,7 @@ crashes-time-days =
         [one] { $days } gün əvvəl
        *[other] { $days } gün əvvəl
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -154,6 +180,7 @@ pending-reports =
         [one] Bütün Çökmə Hesabatları (verilən zaman aralığındaki { $reports } gözləyən çökmə də daxil olmaqla)
        *[other] Bütün Çökmə Hesabatları (verilən zaman aralığındaki { $reports } gözləyən çökmələr də daxil olmaqla)
     }
+
 raw-data-copied = Raw data copied to clipboard
 text-copied = Text copied to clipboard
 
@@ -166,9 +193,11 @@ blocked-mismatched-version = Qeyd jurnalıyla DLL arasındakı qrafik sürücüs
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = VGA sürücüsü versiyanız üçün bloklanmışdır. VGA sürücünüzü { $driverVersion } və ya daha yeni bir versiyaya yeniləyin.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType parametrləri
+
 compositing = Birləşdirici
 hardware-h264 = Avadanlıq H264 Dekodlama
 main-thread-no-omtc = ana axın, OMTC yoxdur
@@ -183,6 +212,7 @@ virtual-monitor-disp = Virtual Monitor Ekranı
 
 found = Tapıldı
 missing = Əksik
+
 gpu-process-pid = GPUProcessPid
 gpu-process = GPUProcess
 gpu-description = Açıqlama
@@ -205,16 +235,21 @@ webgl2-version = WebGL 2 Sürücü Buraxılışı
 webgl2-driver-extensions = WebGL 2 Sürücü Əlavəsi
 webgl2-extensions = WebGL 2 Əlavələr
 blocklisted-bug = Bilinən xətalara görə qara siyahıya alındı
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = xəta { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = Əngəlləndi; xəta kodu { $failureCode }
+
 d3d11layers-crash-guard = D3D11 Compositor
 d3d11video-crash-guard = D3D11 Video Dekodlayıcı
 d3d9video-crash-buard = D3D9 Video Dekodlayıcı
+d3d9video-crash-guard = D3D9 Video Dekodlayıcı
 glcontext-crash-guard = OpenGL
+
 reset-on-next-restart = Sonrakı yenidən başlatmada sıfırla
 gpu-process-kill-button = GPU Prosesi Dayandır
 gpu-device-reset = Cihaz Sıfırlama
@@ -223,14 +258,11 @@ uses-tiling = Lövhəcik işlədir
 content-uses-tiling = Lövhə işlədir (Məzmun)
 off-main-thread-paint-enabled = Sönülü əsas bağın rənglənməsi aktivdir
 off-main-thread-paint-worker-count = Sönülü əsas bağın rənglənməsi işçi sayı
-low-end-machine = Az məhsuldar maşın aşkarlandı
 target-frame-rate = Hədəf Kadr Sürəti
-audio-backend = Səs arxa tərəfi
-max-audio-channels = Maksimum kanal
-channel-layout = Üstünlük verilən kanal düzülüşü
-sample-rate = Üstünlük verilən nümunə tempi
+
 min-lib-versions = Gözlənilən minimum versiya
 loaded-lib-versions = İstifadə olunan versiya
+
 has-seccomp-bpf = Seccomp-BPF (Sistem Çağırışı Filtrləmə)
 has-seccomp-tsync = Seccomp əməliyyat sinxronlaşdırması
 has-user-namespaces = İstifadəçi ad boşluqları
@@ -243,10 +275,12 @@ sandbox-proc-type-content = məzmun
 sandbox-proc-type-file = fayl məzmunu
 sandbox-proc-type-media-plugin = media qoşması
 sandbox-proc-type-data-decoder = məlumat dekodlaşdırıcısı
+
 launcher-process-status-0 = Aktivdir
 launcher-process-status-1 = Xətadan dolayı söndürülüb
 launcher-process-status-2 = Zorla söndürülüb
 launcher-process-status-unknown = Bilinməyən status
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -259,6 +293,7 @@ multi-process-status-6 = Dəstəklənməyən mətn girişi tərəfindən söndü
 multi-process-status-7 = Əlavələr tərəfindən söndürülüb
 multi-process-status-8 = Zorla söndürüldü
 multi-process-status-unknown = Bilinməyən durum
+
 async-pan-zoom = Asinxron Sürüşdür/Yaxınlaşdır
 apz-none = heç biri
 wheel-enabled = təkər girişi aktivdir

@@ -36,8 +36,8 @@ unpin-selected-tabs =
     .label = Ξεκαρφίτσωμα καρτελών
     .accesskey = λ
 bookmark-selected-tabs =
-    .label = Προσθήκη καρτελών στους σελιδοδείκτες…
-    .accesskey = κ
+    .label = Αποθήκευση καρτελών…
+    .accesskey = Α
 bookmark-tab =
     .label = Αποθήκευση καρτέλας
     .accesskey = Α
@@ -56,6 +56,17 @@ move-to-new-window =
 undo-close-tab =
     .label = Αναίρεση κλεισίματος καρτέλας
     .accesskey = ν
+tab-context-close-multiple-tabs =
+    .label = Κλείσιμο πολλαπλών καρτελών
+    .accesskey = π
+tab-context-undo-close-tabs =
+    .label =
+        { $tabCount ->
+            [1] Αναίρεση κλεισίματος καρτέλας
+            [one] Αναίρεση κλεισίματος καρτέλας
+           *[other] Αναίρεση κλεισίματος καρτελών
+        }
+    .accesskey = Α
 close-tab =
     .label = Κλείσιμο καρτέλας
     .accesskey = Κ

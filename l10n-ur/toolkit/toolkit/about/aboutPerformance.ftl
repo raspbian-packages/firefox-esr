@@ -15,6 +15,9 @@ column-memory = یاداشت
 ## Special values for the Name column
 
 ghost-windows = حالیہ بند کیے گئے ٹیب
+# Variables:
+#   $title (String) - the title of the preloaded page, typically 'New Tab'
+preloaded-tab = پہلے سے لوڈ شدہ:  { $title }
 
 ## Values for the Type column
 
@@ -51,3 +54,4 @@ close-tab =
     .title = ٹیب بند کریں
 show-addon =
     .title = ایڈ اون مینیجر میں دکھائیں
+

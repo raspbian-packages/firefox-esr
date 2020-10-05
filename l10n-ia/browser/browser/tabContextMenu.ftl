@@ -42,7 +42,7 @@ bookmark-tab =
     .label = Marcar le scheda
     .accesskey = M
 reopen-in-container =
-    .label = Reaperir in Container
+    .label = Reaperir in un scheda contextual
     .accesskey = e
 move-to-start =
     .label = Mover al initio
@@ -56,6 +56,17 @@ move-to-new-window =
 undo-close-tab =
     .label = Reaperir le ultime scheda claudite
     .accesskey = u
+tab-context-close-multiple-tabs =
+    .label = Clauder plure schedas
+    .accesskey = p
+tab-context-undo-close-tabs =
+    .label =
+        { $tabCount ->
+            [1] Reaperir scheda claudite
+            [one] Reaperi scheda claudite
+           *[other] Reaperi schedas claudite
+        }
+    .accesskey = R
 close-tab =
     .label = Clauder le scheda
     .accesskey = C

@@ -9,10 +9,6 @@
 <!ENTITY toggleToolboxF12.keycode          "VK_F12">
 <!ENTITY toggleToolboxF12.keytext          "F12">
 
-<!-- LOCALIZATION NOTE (browserToolboxErrorMessage): This is the label
-  -  shown next to error details when the Browser Toolbox is unable to open. -->
-<!ENTITY browserToolboxErrorMessage          "عُطل أثناء فتح شريط أدوات التصفح:">
-
 <!-- LOCALIZATION NOTE (options.context.advancedSettings): This is the label for
   -  the heading of the advanced settings group in the options panel. -->
 <!ENTITY options.context.advancedSettings "إعدادات متقدّمة">
@@ -36,6 +32,7 @@
 <!-- LOCALIZATION NOTE (options.defaultColorUnit.label): This is the label for a
   -  dropdown list that controls the default color unit used in the inspector.
   -  This label is visible in the options panel. -->
+<!ENTITY options.defaultColorUnit.label "وحدة الألوان المبدئية">
 
 <!-- LOCALIZATION NOTE (options.defaultColorUnit.accesskey): This is the access
   -  key for a dropdown list that controls the default color unit used in the
@@ -63,7 +60,7 @@
   -  options panel and is used for settings that trigger page reload. -->
 <!ENTITY options.context.triggersPageRefresh  "* في الجلسة الحالية فقط، تُعيد تحميل الصفحة">
 
-<!-- LOCALIZATION NOTE (options.enableChrome.label4): This is the label for the
+<!-- LOCALIZATION NOTE (options.enableChrome.label5): This is the label for the
   -  checkbox that toggles chrome debugging, i.e. devtools.chrome.enabled
   -  boolean preference in about:config, in the options panel. -->
 
@@ -71,7 +68,7 @@
   -  checkbox that toggles remote debugging, i.e. devtools.debugger.remote-enabled
   -  boolean preference in about:config, in the options panel. -->
 <!ENTITY options.enableRemote.label3    "فعِّل التنقيح البعيد">
-<!ENTITY options.enableRemote.tooltip2  "تفعيل هذا الخيار سيسمح لأدوات المطورين بتنقيح سيرورات بعيدة مثل نظام فيرفكس">
+<!ENTITY options.enableRemote.tooltip2  "تفعيل هذا الخيار سيسمح لأدوات المطورين بتنقيح سيرورات بعيدة مثل نظام Firefox">
 
 <!-- LOCALIZATION NOTE (options.disableJavaScript.label,
   -  options.disableJavaScript.tooltip): This is the options panel label and
@@ -131,7 +128,7 @@
   -  heading of the group of Debugger preferences in the options panel. -->
 <!ENTITY options.debugger.label            "المنقّح">
 
-<!-- LOCALIZATION NOTE (options.sourceMap.label): This is the
+<!-- LOCALIZATION NOTE (options.sourceMaps.label): This is the
    - label for the checkbox that toggles source maps in all tools -->
 
 <!-- LOCALIZATION NOTE (options.styleeditor.label): This is the label for the
@@ -141,7 +138,7 @@
 
 <!-- LOCALIZATION NOTE (options.stylesheetAutocompletion.label): This is the
    - label for the checkbox that toggles autocompletion of css in the Style Editor -->
-<!ENTITY options.stylesheetAutocompletion.label      "أكِل CSS تلقائيا">
+<!ENTITY options.stylesheetAutocompletion.label      "أكمِل CSS تلقائيا">
 <!ENTITY options.stylesheetAutocompletion.tooltip    "أكمِل خصائص CSS وقيمها ومُحدِّداتها في محرر الأنماط تلقائيا وأنت تكتبها">
 
 <!-- LOCALIZATION NOTE (options.screenshot.label): This is the label for the
@@ -176,4 +173,5 @@
 <!ENTITY options.sourceeditor.expandtab.tooltip         "استخدم المسافات بدل محرف الجدولة">
 <!ENTITY options.sourceeditor.tabsize.label             "حجم التبويب">
 <!ENTITY options.sourceeditor.tabsize.accesskey         "ت">
+<!ENTITY options.sourceeditor.keybinding.label          "ربطات المفاتيح">
 <!ENTITY options.sourceeditor.keybinding.default.label  "المبدئي">

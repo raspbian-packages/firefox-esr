@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Lebih sedikit data, lebih banyak hematnya">
 <!ENTITY firstrun_data_subtext2 "Nonaktifkan gambar untuk menghemat kuota data di setiap situs yang Anda buka.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Akun">
-<!ENTITY firstrun_sync_message2 "Mulai dari situasi saat Anda pergi.">
+<!ENTITY firstrun_sync_message3 "Sinkronkan markah, riwayat, dan sandi ke telepon Anda.">
 <!ENTITY firstrun_sync_subtext2 "Gunakan Sync untuk menemukan markah, sandi, dan hal lainnya yang Anda simpan ke &brandShortName; di semua peranti Anda.">
 <!ENTITY newfirstrun_sync_subtext "Sinkronkan hal-hal yang Anda simpan di ponsel ke Firefox untuk desktop, secara pribadi dan aman.">
-<!ENTITY updatednewfirstrun_sync_subtext "Masuk ke akun Anda untuk memaksimalkan &brandShortName;">
-<!ENTITY firstrun_signin_message "Sambungkan, dan mulai">
-<!ENTITY firstrun_signin_button "Masuk ke Sync">
-<!ENTITY newfirstrun_signin_button "Aktifkan Sync">
-<!ENTITY updatednewfirstrun_signin_button "Masuk ke &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Mulai Menjelajah">
+<!ENTITY firstrun_sendtab_title "Kirim Tab">
+<!ENTITY firstrun_sendtab_message "Bagikan tab dari ponsel ke desktop — secara instan.">
+<!ENTITY firstrun_signin_message "Sambungkan dan mulai">
+<!ENTITY onboard_start_button_browser "Mulai Menjelajah">
 <!ENTITY firstrun_button_notnow "Tidak saat ini">
 <!ENTITY firstrun_button_next "Selanjutnya">
+<!ENTITY firstrun_signup_button "Daftar">
 
 <!ENTITY firstrun_tabqueue_title "Tautan">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Mengirim laporan kerusakan\u2026">
 <!ENTITY  crash_close_label "Tutup">
 <!ENTITY  crash_restart_label "Mulai ulang &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; bermasalah">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Folder diperbarui">
 <!ENTITY bookmark_parent_folder "Folder Induk">
 <!ENTITY bookmark_add_folder "Tambah folder baru">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(tanpa judul)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Kuki">
 <!ENTITY pref_cookies_accept_all "Aktif">
 <!ENTITY pref_cookies_not_accept_foreign "Aktif, kecuali pihak ketiga">
+<!ENTITY pref_cookies_not_accept_trackers "Diaktifkan, tidak termasuk kuki pelacak">
 <!ENTITY pref_cookies_disabled "Matikan">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Aplikasi Web Progresif">
 <!ENTITY pref_pwa_summary "Izinkan aplikasi web ditambahkan ke layar beranda">
-
-<!ENTITY tracking_protection_prompt_title "Kini dengan Perlindungan Pelacakan">
-<!ENTITY tracking_protection_prompt_text "Secara aktif memblokir elemen pelacakan sehingga Anda tidak perlu khawatir.">
-<!ENTITY tracking_protection_prompt_tip_text "Kunjungi setelan Privasi untuk mempelajari lebih lanjut">
-<!ENTITY tracking_protection_prompt_action_button "Paham!">
 
 <!ENTITY tab_queue_toast_message3 "Tab disimpan di &brandShortName;">
 <!ENTITY tab_queue_toast_action "Buka sekarang juga">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Ketuk Browser &amp; pilih &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Kunjungi Dukungan Mozilla">
 <!ENTITY pref_about_firefox "Tentang &brandShortName;">
 <!ENTITY pref_vendor_faqs "T&amp;J">
 <!ENTITY pref_vendor_feedback "Kirim Saran">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Layanan Lokasi &vendorShortName; berjalan">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Pemutakhiran otomatis">
-<!ENTITY pref_update_autodownload_wifi "Hanya lewat Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Tidak">
-<!ENTITY pref_update_autodownload_always "Selalu">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Bantuan">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Bagikan">
 <!ENTITY share_title "Bagikan lewat">
 <!ENTITY share_image_failed "Gagal berbagi gambar ini">
+<!ENTITY share_error_toast_message "Gagal berbagi ke aplikasi yang ditunjukkan">
 <!ENTITY save_as_pdf "Simpan sebagai PDF">
 <!ENTITY print "Cetak">
 <!ENTITY view_page_source "Lihat Sumber Laman">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Lokasi">
 <!ENTITY bookmark_edit_keyword "Kata Kunci">
 <!ENTITY bookmark_select_folder "Pilih folder">
-
 <!ENTITY bookmark_edit_undo "Urungkan">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Pilih atau rekam suara">
 <!ENTITY filepicker_image_title "Pilih atau ambil gambar">
 <!ENTITY filepicker_video_title "Pilih atau rekam video">
-
 <!ENTITY filepicker_permission_denied "Izin yang diperlukan tidak diberikan, kembali ke pemilih berkas sistem.">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Cari &formatS2; lewat &formatS1;">
 
 <!ENTITY searchable_description "Markah dan riwayat">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Versi baru tersedia di &brandShortName;">
-<!ENTITY updater_start_select2 "Sentuh untuk mengunduh">
-
-<!ENTITY updater_downloading_title2 "Mengunduh &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Unduhan gagal">
-<!ENTITY updater_downloading_select2 "Sentuh untuk menerapkan pembaruan setelah selesai diunduh">
-<!ENTITY updater_downloading_retry2 "Sentuh untuk mencoba lagi">
-
-<!ENTITY updater_apply_title3 "Pembaruan diunduh untuk &brandShortName;">
-<!ENTITY updater_apply_select3 "Sentuh untuk memasang">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Untuk mengunduh berkas dan pembaruan, izinkan &brandShortName; untuk mengakses penyimpanan. ">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Izinkan">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Sesi Tamu Baru">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Markahi Tampilan Baca item untuk membacanya secara luring.">
 <!ENTITY helper_triple_readerview_open_button "Tambahkan ke Markah">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Selamat datang di &brandShortName;">
+<!ENTITY activity_stream_signin_description "Mulai sinkronkan markah, kata sandi, dan lainnya dengan akun Firefox Anda.">
+<!ENTITY activity_stream_signup_button "Daftar">
+<!ENTITY activity_stream_signin_prompt "Sudah memiliki akun?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Masuk.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Firefox Anda yang serba baru, tiba pada tahun 2020">
+<!ENTITY activity_stream_firefox_promo_description "Segera hadir: Peningkatan kinerja. Perlindungan pelacakan ditingkatkan. Serta fitur yang dirancang untuk membantu Anda menemukan, menyimpan, dan berbagi lebih banyak dari apa yang Anda sukai di dunia daring.">
+<!ENTITY activity_stream_firefox_promo_button "Intip sekarang juga">
+
 <!ENTITY activity_stream_topsites "Situs Teratas">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Direkomendasikan oleh &brandPocket;">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Suara dan video">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Kiat dan trik &vendorShortName;">
-<!ENTITY updater_notification_channel "Pembaruan aplikasi">
 <!ENTITY synced_tabs_notification_channel "Tab tersinkron">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

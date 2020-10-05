@@ -5,50 +5,66 @@
 permissions-window =
     .title = Salbuespenak
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Webgunearen helbidea
     .accesskey = h
+
 permissions-block =
     .label = Blokeatu
     .accesskey = B
+
 permissions-session =
     .label = Baimendu saiorako
     .accesskey = s
+
 permissions-allow =
     .label = Baimendu
     .accesskey = B
+
 permissions-site-name =
     .label = Webgunea
+
 permissions-status =
     .label = Egoera
+
 permissions-remove =
     .label = Kendu webgunea
     .accesskey = K
+
 permissions-remove-all =
     .label = Kendu webgune guztiak
     .accesskey = e
+
 permissions-button-cancel =
     .label = Utzi
     .accesskey = U
+
 permissions-button-ok =
     .label = Gorde aldaketak
     .accesskey = G
+
 permissions-autoplay-menu = Webgune guztietarako lehenetsia:
+
 permissions-searchbox =
     .placeholder = Bilatu webgunea
+
 permissions-capabilities-autoplay-allow =
     .label = Baimendu audioa eta bideoa
 permissions-capabilities-autoplay-block =
     .label = Blokeatu audioa
 permissions-capabilities-autoplay-blockall =
     .label = Blokeatu audioa eta bideoa
+
 permissions-capabilities-allow =
     .label = Baimendu
 permissions-capabilities-block =
     .label = Blokeatu
 permissions-capabilities-prompt =
     .label = Galdetu beti
+
 permissions-capabilities-listitem-allow =
     .value = Baimendu
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Salbuespenak - Edukia blokeatzea
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Edukia blokeatzea desgaitu duzu gune hauetarako.
+
+permissions-exceptions-etp-window =
+    .title = Jarraipenaren babes hobeturako salbuespenak
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Babesak desaktibatu dituzu webgune hauetan.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Ondorengo webguneek zure kokalekua ezagutzea es
 permissions-site-location-disable-label =
     .label = Blokeatu zure kokalekua ezagutzeko eskaera berriak
 permissions-site-location-disable-desc = Aukera honekin, kokalekua ezagutzeko baimenak eskatzea galaraziko zaie goian zerrendatzen ez diren webguneei. Kokalekuaren ezagutza blokeatzeak webguneen zenbait eginbide hauts litzake.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Ezarpenak - Errealitate birtualaren baimenak
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Ondorengo webguneek zure errealitate birtualeko gailuetarako sarbidea eskatu dute. Errealitate birtualeko gailuetarako sarbidea duten webguneak zehatz ditzakezu. Errealitate birtualeko gailuetarako sarbide-eskaerak ere blokea ditzakezu.
+permissions-site-xr-disable-label =
+    .label = Blokeatu errealitate birtualeko gailuetarako sarbide-eskaera berriak
+permissions-site-xr-disable-desc = Aukera honekin, errealitate birtualeko gailuetarako sarbidearen baimen-eskaerak galaraziko dira goian zerrendatzen ez diren webguneetan. Errealitate birtualeko gailuetarako sarbidea blokeatzeak webguneen zenbait eginbide hauts litzake.
 
 ## Site Permissions - Camera
 

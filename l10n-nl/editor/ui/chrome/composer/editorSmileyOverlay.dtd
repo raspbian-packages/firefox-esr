@@ -8,7 +8,7 @@
 
 <!ENTITY smiley1Cmd.label "Glimlach">
 <!ENTITY smiley1Cmd.accesskey "G">
-<!ENTITY smiley1Cmd.tooltip "Een glimlachend gezicht invoegen">
+<!ENTITY smiley1Cmd.tooltip "Een smiley invoegen">
 <!ENTITY smiley2Cmd.label "Frons">
 <!ENTITY smiley2Cmd.accesskey "F">
 <!ENTITY smiley2Cmd.tooltip "Een gefronst gezicht invoegen">
@@ -54,4 +54,5 @@
 <!ENTITY smiley16Cmd.label "Lippen zijn verzegeld">
 <!ENTITY smiley16Cmd.accesskey "z">
 <!ENTITY smiley16Cmd.tooltip "Een gezicht met verzegelde lippen invoegen">
+<!ENTITY SmileButton.label "Smiley invoegen">
 <!ENTITY SmileButton.tooltip "Een smiley invoegen">

@@ -14,8 +14,9 @@
                        for the help button in the menubar but Gnome does not.   -->
 <!ENTITY helpMenuWin.label        "Help"> 
 <!ENTITY helpMenuWin.accesskey    "H">
+
 <!ENTITY aboutProduct2.label      "Over &brandShorterName;">
-<!ENTITY aboutProduct2.accesskey  "F">
+<!ENTITY aboutProduct2.accesskey  "O">
 <!ENTITY productHelp2.label       "&brandShorterName; Help">
 <!ENTITY productHelp2.accesskey   "H">
 <!ENTITY helpMac.commandkey       "?">
@@ -35,12 +36,12 @@
 <!ENTITY helpFeedbackPage.accesskey  "v">
 
 <!ENTITY helpShowTour2.label            "&brandShorterName;-rondleiding">
-<!ENTITY helpShowTour2.accesskey        "o">
+<!ENTITY helpShowTour2.accesskey        "d">
 
 <!ENTITY preferencesCmdMac.label        "Voorkeuren…">
 <!ENTITY preferencesCmdMac.commandkey   ",">
 
-<!ENTITY servicesMenuMac.label          "Voorzieningen">
+<!ENTITY servicesMenuMac.label          "Services">
 
 <!ENTITY hideThisAppCmdMac2.label       "Verberg &brandShorterName;">
 <!ENTITY hideThisAppCmdMac2.commandkey  "H">
@@ -49,3 +50,5 @@
 <!ENTITY hideOtherAppsCmdMac.commandkey "H">
 
 <!ENTITY showAllAppsCmdMac.label        "Toon alles">
+
+<!ENTITY touchBarCmdMac.label           "Aanraakbalk aanpassen…">

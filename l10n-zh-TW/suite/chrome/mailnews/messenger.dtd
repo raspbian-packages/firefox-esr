@@ -58,9 +58,9 @@
 <!ENTITY renameFolder.label "重新命名資料夾…">
 <!ENTITY renameFolder.accesskey "R">
 <!ENTITY compactFolders.label "壓實重整郵件匣">
-<!ENTITY compactFolders.accesskey		"F">
+<!ENTITY compactFolders.accesskey "F">
 <!ENTITY emptyTrashCmd.label "清空垃圾桶">
-<!ENTITY emptyTrashCmd.accesskey		"y">
+<!ENTITY emptyTrashCmd.accesskey "y">
 <!ENTITY offlineMenu.label "離線">
 <!ENTITY offlineMenu.accesskey "l">
 <!ENTITY synchronizeOfflineCmd.label "立刻下載／同步…">
@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "已標示的訊息">
 <!ENTITY selectFlaggedCmd.accesskey "F">
+<!ENTITY menuFavoriteFolder.label "最愛資料夾">
+<!ENTITY menuFavoriteFolder.accesskey "v">
 <!ENTITY folderPropsCmd.label "屬性…">
 <!ENTITY folderPropsFolderCmd.label "資料夾屬性…">
 <!ENTITY folderPropsNewsgroupCmd.label "新聞群組屬性…">
@@ -127,12 +129,16 @@
 <!ENTITY messagePaneWide.accesskey "W">
 <!ENTITY messagePaneVertical.label "垂直檢視">
 <!ENTITY messagePaneVertical.accesskey "V">
-<!ENTITY showMessagePaneCmd.label "預覽面板">
+<!ENTITY showMessagePaneCmd.label "訊息窗格">
 <!ENTITY showMessagePaneCmd.accesskey "M">
 <!ENTITY showThreadPaneCmd.label "討論串窗格">
 <!ENTITY showThreadPaneCmd.accesskey "T">
 <!ENTITY showFolderPaneCmd.label "資料夾窗格">
 <!ENTITY showFolderPaneCmd.accesskey "F">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "排序方式">
@@ -272,6 +278,8 @@
 <!ENTITY goForwardCmd.commandKey "]">
 <!ENTITY prevFlaggedMsgCmd.label "已標示訊息">
 <!ENTITY prevFlaggedMsgCmd.accesskey "F">
+<!ENTITY folderMenu.label "資料夾">
+<!ENTITY folderMenu.accesskey "o">
 <!ENTITY startPageCmd.label "開始頁面">
 <!ENTITY startPageCmd.accesskey "S">
 
@@ -284,23 +292,23 @@
 <!ENTITY newNewMsgCmd.accesskey "M">
 <!ENTITY replyMsgCmd.label "回覆">
 <!ENTITY replyMsgCmd.accesskey "R">
-<!ENTITY replyMsgCmd.key	"r">
+<!ENTITY replyMsgCmd.key "r">
 <!ENTITY replyListCmd.label "回覆至清單">
 <!ENTITY replyListCmd.accesskey "y">
 <!ENTITY replyNewsgroupCmd.label "回覆到新聞群組">
-<!ENTITY replyNewsgroupCmd.accesskey	"y">
+<!ENTITY replyNewsgroupCmd.accesskey "y">
 <!ENTITY replySenderCmd.label "只回覆給寄件者">
 <!ENTITY replySenderCmd.accesskey "R">
 <!ENTITY replyToAllMsgCmd.label "回覆給所有人">
-<!ENTITY replyToAllMsgCmd.accesskey	"p">
-<!ENTITY replyToAllMsgCmd.key	"r">
+<!ENTITY replyToAllMsgCmd.accesskey "p">
+<!ENTITY replyToAllMsgCmd.key "r">
 <!ENTITY replyToSenderAndNewsgroupCmd.label "回覆給寄件者與新聞群組">
 <!ENTITY replyToSenderAndNewsgroupCmd.accesskey "p">
 <!ENTITY replyToAllRecipientsCmd.label "回覆給所有收件者">
 <!ENTITY replyToAllRecipientsCmd.accesskey "A">
 <!ENTITY forwardMsgCmd.label "轉寄">
 <!ENTITY forwardMsgCmd.accesskey "F">
-<!ENTITY forwardMsgCmd.key	"l">
+<!ENTITY forwardMsgCmd.key "l">
 <!ENTITY forwardAsMenu.label "轉寄為">
 <!ENTITY forwardAsMenu.accesskey "o">
 <!ENTITY forwardAsInline.label "引入內文">
@@ -417,6 +425,7 @@
 <!ENTITY deleteButton.label "刪除">
 <!ENTITY undeleteButton.label "還原">
 <!ENTITY markButton.label "標記">
+<!ENTITY printButton.label "列印">
 <!ENTITY stopButton.label "停止">
 <!ENTITY junkButton.label "垃圾郵件">
 <!ENTITY notJunkButton.label "非垃圾郵件">
@@ -440,8 +449,10 @@
 <!ENTITY deleteButton.tooltip "刪除已選取的訊息或資料夾">
 <!ENTITY undeleteButton.tooltip "還原選取的郵件">
 <!ENTITY markButton.tooltip "標示訊息">
+<!ENTITY printButton.tooltip "列印此訊息">
 <!ENTITY stopButton.tooltip "停止傳送">
 <!ENTITY throbber.tooltip "&vendorShortName; 的首頁">
+<!ENTITY throbber.tooltip2 "前往 &brandShortName; 首頁">
 <!ENTITY junkButton.tooltip "標示所選訊息為垃圾信">
 <!ENTITY notJunkButton.tooltip "標示所選訊息為非垃圾信">
 
@@ -495,6 +506,8 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "下載此帳號的郵件">
 <!ENTITY folderContextGetMessages.accesskey "G">
+<!ENTITY folderContextMarkAllFoldersRead.label "將所有信件匣標示為已讀">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "M">
 <!ENTITY folderContextOpenNewWindow.label "用新郵件視窗開啟">
 <!ENTITY folderContextOpenNewWindow.accesskey "w">
 <!ENTITY folderContextOpenNewTab.label "用新分頁開啟">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "S">
 <!ENTITY folderContextProperties.label "屬性…">
 <!ENTITY folderContextProperties.accesskey "P">
+<!ENTITY folderContextFavoriteFolder.label "最愛資料夾">
+<!ENTITY folderContextFavoriteFolder.accesskey "a">
 <!ENTITY folderContextSettings.label "設定…">
 <!ENTITY folderContextSettings.accesskey "e">
 

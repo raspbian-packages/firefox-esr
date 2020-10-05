@@ -7,6 +7,7 @@ page-subtitle =
     Táto stránka obsahuje technické informácie, ktoré môžu byť užitočné pri riešení
     problémov s touto aplikáciou. Ak hľadáte odpovede na bežné otázky
     o programe { -brand-short-name }, navštívte <a data-l10n-name="support-link">stránku podpory</a>.
+
 crashes-title = Správy o zlyhaní
 crashes-id = Identifikátor správy
 crashes-send-date = Dátum odoslania
@@ -35,8 +36,17 @@ app-basics-name = Názov
 app-basics-version = Verzia
 app-basics-build-id = Identifikátor zostavenia
 app-basics-update-channel = Kanál aktualizácií
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Priečinok, kde je aplikácia nainštalovaná
+       *[other] Priečinok, kde je aplikácia nainštalovaná
+    }
 app-basics-update-history = História aktualizácií
 app-basics-show-update-history = Zobraziť históriu aktualizácií
+# Represents the path to the binary used to start the application.
+app-basics-binary = Binárny súbor aplikácie
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Priečinok profilu
@@ -52,7 +62,6 @@ app-basics-service-workers = Registrovaní Service Workers
 app-basics-profiles = Profily
 app-basics-launcher-process-status = Spúšťací proces
 app-basics-multi-process-support = Multiprocesové okná
-app-basics-process-count = Procesy pre webový obsah
 app-basics-remote-processes-count = Vzdialené procesy
 app-basics-enterprise-policies = Podnikové pravidlá
 app-basics-location-service-key-google = Kľúč služby Google Location Service
@@ -84,6 +93,8 @@ graphics-crash-guards-title = Zakázať funkcie Crash Guard
 graphics-workarounds-title = Možné riešenia
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protokol zobrazovania okien
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Desktopové prostredie
 place-database-title = Databáza umiestnení
 place-database-integrity = Integrita
 place-database-verify-integrity = Skontrolovať integritu
@@ -108,6 +119,14 @@ sandbox-sys-call-number = Systémové volanie
 sandbox-sys-call-args = Argumenty
 safe-mode-title = Vyskúšajte núdzový režim
 restart-in-safe-mode-label = Reštartovať a zakázať doplnky…
+
+## Media titles
+
+audio-backend = Audio Backend
+max-audio-channels = Maximálny počet kanálov
+channel-layout = Preferované nastavenie kanála
+sample-rate = Preferovaný Sample Rate
+
 media-title = Médium
 media-output-devices-title = Výstupné zariadenia
 media-input-devices-title = Vstupné zariadenia
@@ -120,6 +139,12 @@ media-device-format = Formát
 media-device-channels = Kanále
 media-device-rate = Miera
 media-device-latency = Oneskorenie
+media-capabilities-title = Podpora médií
+# List all the entries of the database.
+media-capabilities-enumerate = Vypísanie databázy
+
+##
+
 intl-title = Internacionalizácia a lokalizácia
 intl-app-title = Nastavenia aplikácie
 intl-locales-requested = Požadované jazyky
@@ -129,6 +154,22 @@ intl-locales-default = Predvolený jazyk
 intl-os-title = Operačný systém
 intl-os-prefs-system-locales = Jazyky systému
 intl-regional-prefs = Miestne nastavenia
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Vzdialené ladenie (protokol Chromia)
+remote-debugging-accepting-connections = Prijíma spojenia
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -137,6 +178,7 @@ report-crash-for-days =
         [few] Správy o zlyhaní za posledné { $days } dni
        *[other] Správy o zlyhaní za posledných { $days } dní
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -145,6 +187,7 @@ crashes-time-minutes =
         [few] pred { $minutes } minútami
        *[other] pred { $minutes } minútami
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -153,6 +196,7 @@ crashes-time-hours =
         [few] pred { $hours } hodinami
        *[other] pred { $hours } hodinami
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -161,6 +205,7 @@ crashes-time-days =
         [few] pred { $days } dňami
        *[other] pred { $days } dňami
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -169,6 +214,7 @@ pending-reports =
         [few] Všetky správy o zlyhaní (vrátane { $reports } čakajúcich správ za dané obdobie)
        *[other] Všetky správy o zlyhaní (vrátane { $reports } čakajúcich správ za dané obdobie)
     }
+
 raw-data-copied = Údaje boli skopírované do schránky
 text-copied = Text bol skopírovaný do schránky
 
@@ -181,9 +227,11 @@ blocked-mismatched-version = Blokované kvôli nesúladu verzie ovládača grafi
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = Blokované kvôli verzii ovládača grafickej karty. Skúste ovládač aktualizovať na verziu { $driverVersion } alebo novšiu.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Technológia ClearType
+
 compositing = Skladanie
 hardware-h264 = Hardvérové dekódovanie H264
 main-thread-no-omtc = hlavné vlákno, bez OMTC
@@ -198,6 +246,7 @@ virtual-monitor-disp = Zobrazenie virtuálneho monitoru
 
 found = Nájdený
 missing = Chýba
+
 gpu-process-pid = GPUProcessPid
 gpu-process = GPUProcess
 gpu-description = Popis
@@ -221,16 +270,23 @@ webgl2-version = Verzia ovládača WebGL 2
 webgl2-driver-extensions = Rozšírenia ovládača WebGL 2
 webgl2-extensions = Rozšírenia WebGL 2
 blocklisted-bug = Zablokované kvôli známej chybe
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = bug { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = Zablokované; chybový kód { $failureCode }
+
 d3d11layers-crash-guard = D3D11 Compositor
 d3d11video-crash-guard = D3D11 Video dekodér
 d3d9video-crash-buard = D3D9 Video dekodér
+d3d9video-crash-guard = D3D9 Video dekodér
 glcontext-crash-guard = OpenGL
+
+wmfvpxvideo-crash-guard = WMF VPX video dekodér
+
 reset-on-next-restart = Obnoviť pri nasledujúcom reštarte
 gpu-process-kill-button = Ukončiť GPU proces
 gpu-device-reset = Obnova zariadenia
@@ -239,14 +295,11 @@ uses-tiling = Používa skladanie
 content-uses-tiling = Používa skladanie (obsah)
 off-main-thread-paint-enabled = Vykresľovanie mimo hlavného vlákna povolené
 off-main-thread-paint-worker-count = Počet vlákien pre vykresľovanie mimo hlavného vlákna
-low-end-machine = Bolo rozpoznané menej výkonné zariadenie
 target-frame-rate = Cieľová obrazová frekvencia
-audio-backend = Audio Backend
-max-audio-channels = Maximálny počet kanálov
-channel-layout = Preferované nastavenie kanála
-sample-rate = Preferovaný Sample Rate
+
 min-lib-versions = Očakávaná minimálna verzia
 loaded-lib-versions = Používaná verzia
+
 has-seccomp-bpf = Seccomp-BPF (filtrovanie systémových volaní)
 has-seccomp-tsync = Synchronizácia vlákien Seccomp
 has-user-namespaces = Priestory názvov používateľa
@@ -259,10 +312,12 @@ sandbox-proc-type-content = obsah
 sandbox-proc-type-file = obsah súboru
 sandbox-proc-type-media-plugin = zásuvný modul médií
 sandbox-proc-type-data-decoder = dekóder údajov
+
 launcher-process-status-0 = Povolený
 launcher-process-status-1 = Zakázaný kvôli chybe
 launcher-process-status-2 = Vynútene zakázaný
 launcher-process-status-unknown = Neznámy stav
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -275,6 +330,7 @@ multi-process-status-6 = Zakázané nepodporovaným textovým vstupom
 multi-process-status-7 = Zakázané doplnkami
 multi-process-status-8 = Vynútene zakázané
 multi-process-status-unknown = Neznámy stav
+
 async-pan-zoom = Asynchrónna lupa/panning
 apz-none = žiadna
 wheel-enabled = vstup kolieskom povolený

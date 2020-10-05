@@ -23,6 +23,8 @@
 <!ENTITY lightning.menupopup.open.accesskey           "A">
 <!ENTITY lightning.menupopup.open.message.label       "Neges wedi'i Chadw…">
 <!ENTITY lightning.menupopup.open.message.accesskey   "N">
+
+<!-- Open menu popup in File menu -->
 <!ENTITY lightning.menupopup.open.calendar.label      "Ffeil Calendr…">
 <!ENTITY lightning.menupopup.open.calendar.accesskey  "F">
 
@@ -41,8 +43,8 @@
      lightning.calendarproperties.forceEmailScheduling.label)
      These strings are used in the calendar wizard and the calendar properties dialog, but are only
      displayed when setting/using a caldav calendar -->
-<!ENTITY lightning.calendarproperties.email.label                           "E-Bost:">
-<!ENTITY lightning.calendarproperties.forceEmailScheduling.label            "Ffracio amserlennu e-bost ochr y cleient">
+<!ENTITY lightning.calendarproperties.email.label                           "E-bost:">
+<!ENTITY lightning.calendarproperties.forceEmailScheduling.label            "Ffafrio amserlennu e-bost ochr y cleient">
 <!-- LOCALIZATON NOTE(lightning.calendarproperties.forceEmailScheduling.tooltiptext1,
      lightning.calendarproperties.forceEmailScheduling.tooltiptext2)
      - tooltiptext1 is used in the calendar wizard when setting a new caldav calendar
@@ -67,6 +69,9 @@
 <!ENTITY lightning.imipbar.btnDelete.tooltiptext                            "Dileu o'r calendr">
 <!ENTITY lightning.imipbar.btnDetails.label                                 "Manylion…">
 <!ENTITY lightning.imipbar.btnDetails.tooltiptext                           "Dangos manylion y digwyddiad">
+<!ENTITY lightning.imipbar.btnDoNotShowImipBar.label                        "Peidio â dangos y negeseuon hyn i mi">
+<!ENTITY lightning.imipbar.btnGoToCalendar.label                            "Calendr">
+<!ENTITY lightning.imipbar.btnGoToCalendar.tooltiptext                      "Mynd i'r tab calendr">
 <!ENTITY lightning.imipbar.btnMore.label                                    "Rhagor">
 <!ENTITY lightning.imipbar.btnMore.tooltiptext                              "Cliciwch i ddangos rhagor o ddewisiadau">
 <!ENTITY lightning.imipbar.btnReconfirm2.label                              "Ail gadarnhau">

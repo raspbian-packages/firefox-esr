@@ -12,8 +12,6 @@
 #include <nsError.h>
 #include <nsCOMPtr.h>
 #include <nsIWidget.h>
-#include <nsIBaseWindow.h>
-#include <nsIObserverService.h>
 #include <nsServiceManagerUtils.h>
 
 #include "nsUXThemeData.h"
@@ -25,6 +23,7 @@
 #include "mozilla/dom/HTMLCanvasElement.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/DataSurfaceHelpers.h"
+#include "mozilla/StaticPrefs_layout.h"
 #include "mozilla/Telemetry.h"
 
 // Defined in dwmapi in a header that needs a higher numbered _WINNT #define
@@ -135,7 +134,7 @@ TaskbarPreview::Invalidate() {
   if (!mVisible) return NS_OK;
 
   // DWM Composition is required for previews
-  if (!nsUXThemeData::CheckForCompositor()) return NS_OK;
+  if (!gfxWindowsPlatform::GetPlatform()->DwmCompositionEnabled()) return NS_OK;
 
   HWND previewWindow = PreviewWindow();
   return FAILED(DwmInvalidateIconicBitmaps(previewWindow)) ? NS_ERROR_FAILURE
@@ -232,7 +231,7 @@ TaskbarPreview::WndProc(UINT nMsg, WPARAM wParam, LPARAM lParam) {
       rv = mController->GetHeight(&height);
       if (NS_FAILED(rv)) break;
 
-      double scale = nsIWidget::DefaultScaleOverride();
+      double scale = StaticPrefs::layout_css_devPixelsPerPx();
       if (scale <= 0.0) {
         scale = WinUtils::LogToPhysFactor(PreviewWindow());
       }

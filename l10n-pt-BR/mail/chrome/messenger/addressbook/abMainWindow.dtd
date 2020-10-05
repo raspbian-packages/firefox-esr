@@ -18,6 +18,8 @@
 <!ENTITY newListCmd.accesskey                           "L">
 <!ENTITY newAddressBookCmd.label                        "Catálogo de endereços…">
 <!ENTITY newAddressBookCmd.accesskey                    "a">
+<!ENTITY newCardDAVBookCmd.label                        "Catálogo de endereços CardDAV…">
+<!ENTITY newCardDAVBookCmd.accesskey                    "V">
 <!ENTITY newLDAPDirectoryCmd.label                      "Diretório LDAP…">
 <!ENTITY newLDAPDirectoryCmd.accesskey                  "D">
 <!ENTITY newMessageCmd.label                            "Mensagem">
@@ -29,7 +31,7 @@
 <!ENTITY closeCmd.label                                 "Fechar">
 <!ENTITY closeCmd.key                                   "w">
 <!ENTITY closeCmd.accesskey                             "F">
-<!ENTITY printSetupCmd.label                            "Configurar a página…">
+<!ENTITY printSetupCmd.label                            "Configurar página…">
 <!ENTITY printSetupCmd.accesskey                        "C">
 <!ENTITY printPreviewContactCmd.label                   "Visualizar impressão do contato">
 <!ENTITY printPreviewContactCmd.accesskey               "z">
@@ -164,6 +166,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY deleteButton2.accesskey                        "x">
 
 <!-- Address Book Toolbar Tooltips -->
+<!ENTITY columnChooser.tooltip                          "Selecione as colunas a exibir">
 <!ENTITY newContactButton.tooltip                       "Criar um novo contato no catálogo de endereços">
 <!ENTITY newlistButton.tooltip                          "Criar uma nova lista">
 <!ENTITY editPropertiesButton.tooltip                   "Editar o item selecionado">
@@ -190,7 +193,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY PrimaryEmail.accesskey                         "E">
 <!ENTITY ChatName.label                                 "Nome do bate-papo">
 <!ENTITY ChatName.accesskey                             "B">
-<!ENTITY Company.label                                  "Organização">
+<!ENTITY Company.label                                  "Empresa">
 <!ENTITY Company.accesskey                              "m">
 <!ENTITY NickName.label                                 "Apelido">
 <!ENTITY NickName.accesskey                             "A">

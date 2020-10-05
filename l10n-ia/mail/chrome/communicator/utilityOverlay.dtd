@@ -4,26 +4,40 @@
 
 <!-- LOCALIZATION NOTE : FILE This file contains the global menu items -->
 
+<!ENTITY fileMenu.label          "File">
+<!ENTITY fileMenu.accesskey        "F">
+<!ENTITY newMenu.label            "Nove">
+<!ENTITY newMenu.accesskey          "N">
 
 <!ENTITY editMenu.label          "Rediger">
 <!ENTITY editMenu.accesskey        "R">
 <!ENTITY undoCmd.label            "Disfacer">
 <!ENTITY undoCmd.key            "D">
+<!ENTITY undoCmd.accesskey          "U">
 <!ENTITY redoCmd.label            "Refacer">
+<!ENTITY redoCmd.key            "Y">
+<!ENTITY redoCmd.accesskey          "R">
 <!ENTITY cutCmd.label            "Taliar">
 <!ENTITY cutCmd.key              "X">
+<!ENTITY cutCmd.accesskey          "T">
 <!ENTITY copyCmd.label            "Copiar">
 <!ENTITY copyCmd.key            "C">
+<!ENTITY copyCmd.accesskey          "C">
 <!ENTITY pasteCmd.label            "Collar">
 <!ENTITY pasteCmd.key            "V">
+<!ENTITY pasteCmd.accesskey          "o">
 <!ENTITY deleteCmd.label          "Deler">
 <!ENTITY deleteCmd.accesskey        "D">
 <!ENTITY selectAllCmd.label          "Seliger toto">
 <!ENTITY selectAllCmd.key          "A">
+<!ENTITY selectAllCmd.accesskey        "t">
 <!ENTITY preferencesCmd2.label "Optiones">
 <!ENTITY preferencesCmd2.accesskey "O">
 <!ENTITY preferencesCmdUnix.label       "Preferentias">
 <!ENTITY preferencesCmdUnix.accesskey     "n">
+
+<!ENTITY customizeCmd.label "Personalisar">
+<!ENTITY customizeCmd.accesskey "r">
 
 <!ENTITY viewMenu.label          "Vider">
 <!ENTITY viewMenu.accesskey        "V">
@@ -34,8 +48,14 @@
 
 <!ENTITY closeCmd.label      "Clauder">
 <!ENTITY closeCmd.key      "W">
+<!ENTITY closeCmd.accesskey    "l">
 
 <!ENTITY quitApplicationCmd.label  "Exir">
 <!ENTITY quitApplicationCmd.key    "Q">
+<!ENTITY quitApplicationCmd.accesskey  "Q">
 
+<!ENTITY quitApplicationCmdUnix.label  "Quitar">
+<!ENTITY quitApplicationCmdUnix.accesskey  "Q">
 
+<!ENTITY quitApplicationCmdMac.label  "Quitar &brandShortName;">
+<!ENTITY quitApplicationCmdMac.accesskey  "Q">

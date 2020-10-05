@@ -40,16 +40,15 @@
 <!ENTITY  noproxyExplain.label          "Příklad: .mozilla.org, .net.nz, 192.168.1.0/24">
 <!ENTITY  shareproxy.label              "Pro všechny protokoly používat tento proxy server">
 <!ENTITY  shareproxy.accesskey          "P">
+<!-- LOCALIZATION NOTE (noproxyLocalhostDesc.label): Do not translate
+  localhost, 127.0.0.1 and ::1.
+-->
+<!ENTITY  noproxyLocalhostDesc.label   "Spojení na localhost, 127.0.0.1 a ::1 nikdy proxy servery nepoužívají.">
 <!ENTITY  autologinproxy.label          "Nedotazovat se na autentizaci, pokud je heslo uloženo">
 <!ENTITY  autologinproxy.accesskey      "e">
 <!ENTITY  autologinproxy.tooltip        "Tato volba zajistí provedení tiché autentizace k proxy, pokud pro ni máte uloženy přihlašovací údaje. Pokud autentizace selže, budete na ně dotázání.">
 <!ENTITY  socksRemoteDNS.label          "Použít proxy server pro DNS při použití SOCKS v5">
 <!ENTITY  socksRemoteDNS.accesskey      "d">
-<!ENTITY  dnsOverHttps.label            "Zapnout DNS přes HTTPS">
+<!ENTITY  dnsOverHttps.label            "Zapnout DNS over HTTPS">
 <!ENTITY  dnsOverHttps.accesskey        "p">
-<!ENTITY  dnsOverHttpsUrlDefault.label     "Použít výchozí">
-<!ENTITY  dnsOverHttpsUrlDefault.accesskey "P">
-<!ENTITY  dnsOverHttpsUrlDefault.tooltip   "Použít výchozí URL pro DNS přes HTTPS">
-<!ENTITY  dnsOverHttpsUrlCustom.label      "Vlastní">
-<!ENTITY  dnsOverHttpsUrlCustom.accesskey  "t">
-<!ENTITY  dnsOverHttpsUrlCustom.tooltip    "Vložte svou preferovanou URL pro DNS přes HTTPS">
+<!ENTITY  dnsOverHttpsUrlDefault.tooltip   "Použít výchozí URL adresu pro službu DNS over HTTPS">

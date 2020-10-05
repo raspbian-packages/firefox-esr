@@ -39,16 +39,19 @@
 
 <!ENTITY offlineFolder.check.label               "Përzgjidheni këtë dosje për përdorim jashtë linje">
 <!ENTITY offlineFolder.check.accesskey           "P">
-<!ENTITY offlineFolder.button.label              "Shkarko Tani">
+<!ENTITY offlineFolder.button.label              "Shkarkoje Tani">
 <!ENTITY offlineFolder.button.accesskey          "S">
 
 <!ENTITY selectofflineNewsgroup.check.label      "Përzgjidheni këtë grup lajmesh për jashtë linje">
 <!ENTITY selectofflineNewsgroup.check.accesskey  "P">
-<!ENTITY offlineNewsgroup.button.label           "Shkarko Tani">
+<!ENTITY offlineNewsgroup.button.label           "Shkarkoje Tani">
 <!ENTITY offlineNewsgroup.button.accesskey       "S">
 
 <!ENTITY folderProps.name.label                  "Emër:">
 <!ENTITY folderProps.name.accesskey              "E">
+<!ENTITY folderProps.color.label                 "Ngjyrë Ikonash:">
+<!ENTITY folderProps.color.accesskey             "I">
+<!ENTITY folderProps.reset.tooltip               "Rikthe ngjyrën parazgjedhje">
 <!ENTITY folderProps.location.label              "Vendndodhje:">
 <!ENTITY folderProps.location.accesskey          "V">
 
@@ -56,6 +59,7 @@
 <!ENTITY privileges.button.label                 "Privilegje…">
 <!ENTITY privileges.button.accesskey             "P">
 <!ENTITY permissionsDesc.label                   "Keni lejet vijuese:">
+<!ENTITY folderOtherUsers.label                  "Të tjerë me hyrje në këtë dosje:">
 <!ENTITY folderType.label                        "Lloj Dosjeje:">
 
 <!ENTITY folderQuotaTab.label                    "Kuota">

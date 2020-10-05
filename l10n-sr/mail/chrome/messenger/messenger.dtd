@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "р">
 <!ENTITY  newContactCmd.label "Контакт у именику…">
 <!ENTITY  newContactCmd.accesskey "К">
+<!ENTITY openMenuCmd.label "Отвори">
+<!ENTITY openMenuCmd.accesskey "О">
 <!ENTITY openMessageFileCmd.label "Отвори сачувану поруку…">
 <!ENTITY openMessageFileCmd.accesskey "О">
 <!ENTITY saveAsMenu.label "Сачувај као">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "К">
 <!ENTITY folderPaneBar.label "Трака са алаткама окна фасцикле">
 <!ENTITY folderPaneBar.accesskey "Ф">
-<!ENTITY folderModeSelector.label "Прегледи фасцикле">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Сортирај по">
@@ -288,6 +289,7 @@
 <!ENTITY searchMailCmd.label "Претражи поруке…">
 <!ENTITY searchMailCmd.accesskey "п">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Општа претрага…">
 <!ENTITY searchAddressesCmd.label "Претражи адресе…">
 <!ENTITY searchAddressesCmd.accesskey "с">
 
@@ -440,9 +442,9 @@
 <!ENTITY openMessageWindowCmd.label "Отвори поруку">
 <!ENTITY openMessageWindowCmd.accesskey "О">
 <!ENTITY openMessageWindowCmd.key "o">
-<!ENTITY openConversationCmd.label "Отвори у разговору">
-<!ENTITY openConversationCmd.accesskey "з">
-<!ENTITY openConversationCmd.key "o">
+<!ENTITY openInConversationCmd.label "Отвори у разговору">
+<!ENTITY openInConversationCmd.accesskey "г">
+<!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Прилози">
 <!ENTITY openAttachmentListCmd.accesskey "л">
 <!ENTITY openFeedMessage1.label "Приликом отварања порука у доводу">
@@ -587,6 +589,7 @@
 <!ENTITY fileButton.tooltip "Сачувај изабрану поруку">
 <!ENTITY archiveButton.tooltip "Архивирај изабране поруке">
 <!ENTITY openConversationButton.tooltip "Прикажи разговор у изабраној поруци">
+<!ENTITY openMsgConversationButton.tooltip "Прикажи разговор изабране поруке">
 <!ENTITY nextButton.tooltip "Иди на следећу непрочитану поруку">
 <!ENTITY nextMsgButton.tooltip "Иди на следећу поруку">
 <!ENTITY previousButton.tooltip "Иди на претходну непрочитану поруку">
@@ -605,6 +608,7 @@
 <!ENTITY tagButton.tooltip "Означи поруке">
 <!ENTITY compactButton.tooltip "Уклони обрисане поруке из изабране фасцикле">
 <!ENTITY appmenuButton1.tooltip "Прикажи мени &brandShortName;-а">
+<!ENTITY addonsButton.tooltip "Управљајте вашим додацима">
 
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Проследи као текст унутар друге поруке">
@@ -676,7 +680,7 @@
 <!ENTITY folderContextMarkNewsgroupRead.label "Обележи новинску групу као прочитану">
 <!ENTITY folderContextMarkNewsgroupRead.accesskey "б">
 <!ENTITY folderContextMarkMailFolderRead.label "Обележи фасциклу као прочитану">
-<!ENTITY folderContextMarkMailFolderRead.accesskey "б">
+<!ENTITY folderContextMarkMailFolderRead.accesskey "ф">
 <!ENTITY folderContextSubscribe.label "Претплати се…">
 <!ENTITY folderContextSubscribe.accesskey "т">
 <!ENTITY folderContextSearchForMessages.label "Претражи поруке…">
@@ -705,6 +709,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Сачувај претрагу као фасциклу…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Одаберите поруке">
 <!ENTITY threadColumn.label "Нит">
 <!ENTITY fromColumn.label "Шаље">
 <!ENTITY recipientColumn.label "Прималац">
@@ -728,6 +733,7 @@
 
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Изаберите које колоне треба приказати">
+<!ENTITY selectColumn.tooltip "Изаберите/поништите све поруке">
 <!ENTITY threadColumn2.tooltip "Прикажи нити поруке">
 <!ENTITY fromColumn2.tooltip "Поређај по пошиљаоцу">
 <!ENTITY recipientColumn2.tooltip "Поређај по примаоцу">
@@ -792,6 +798,8 @@
 <!ENTITY contextMoveMsgMenu.accesskey "П">
 <!ENTITY contextMoveCopyMsgRecentMenu.label "Скорашње">
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "р">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.label "Омиљено">
+<!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "О">
 <!ENTITY contextCopyMsgMenu.label "Копирај у">
 <!ENTITY contextCopyMsgMenu.accesskey "У">
 <!ENTITY contextKillThreadMenu.label "Занемари нит">
@@ -811,12 +819,6 @@
 <!ENTITY contextPrintPreview.label "Преглед пре штампе">
 <!ENTITY contextPrintPreview.accesskey "г">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Врати колоне на подразумевано">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -856,7 +858,6 @@
      "File here" option for the move to/copy to widget.
   -->
 <!ENTITY columnPicker.thisFolder.label "Ову фасциклу">
-
 
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Пусти">
@@ -973,3 +974,7 @@
 <!ENTITY dockOptions.label              "Опције иконица програма…">
 <!ENTITY writeNewMessageDock.label      "Напишите нову поруку">
 <!ENTITY openAddressBookDock.label      "Отвори именик">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Претходна страница">
+<!ENTITY browseForwardButton.tooltip "Следећа страница">

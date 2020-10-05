@@ -6,28 +6,33 @@
 ### This file contains the entities needed to use the Find Bar.
 
 findbar-next =
-    .tooltiptext = Procurar a próxima ocorrência da frase
+    .tooltiptext = Procurar a próxima ocorrência da busca
 findbar-previous =
-    .tooltiptext = Procurar a ocorrência anterior da frase
+    .tooltiptext = Procurar a ocorrência anterior da busca
+
 findbar-find-button-close =
     .tooltiptext = Fechar a barra de procura
-findbar-highlight-all =
-    .label = Realçar tudo
-    .accesskey = a
-    .tooltiptext = Realçar todas as ocorrências do texto
+
 findbar-highlight-all2 =
     .label = Destacar todas
     .accesskey =
         { PLATFORM() ->
             [macos] t
-           *[other] o
+           *[other] t
         }
-    .tooltiptext = Destacar todas as ocorrências da frase
+    .tooltiptext = Destacar na página todas as ocorrências da busca
+
 findbar-case-sensitive =
     .label = Diferenciar maiúsculas/minúsculas
-    .accesskey = c
-    .tooltiptext = Pesquisar ignorando maiúsculas de minúsculas
+    .accesskey = m
+    .tooltiptext = Procurar considerando diferenças entre maiúsculas e minúsculas
+
+findbar-match-diacritics =
+    .label = Considerar acentuação
+    .accesskey = C
+    .tooltiptext = Distinguir letras acentuadas de suas letras de base (por exemplo, ao procurar “Pará”, não serão consideradas as ocorrências de “para”)
+
 findbar-entire-word =
-    .label = Palavras completas
+    .label = Palavras inteiras
     .accesskey = P
     .tooltiptext = Só procurar palavras inteiras

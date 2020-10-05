@@ -9,7 +9,7 @@ config-window =
 
 # This text should be attention grabbing and playful
 config-about-warning-title =
-    .value = Dit kan in overtreding zijn met uw garantievoorwaarden!
+    .value = Dit kan in strijd zijn met uw garantievoorwaarden!
 config-about-warning-text = Het wijzigen van deze uitgebreide voorkeuren kan schadelijk zijn voor de stabiliteit, veiligheid en prestaties van deze toepassing. Ga alleen door als u weet wat u doet.
 config-about-warning-button =
     .label = Ik aanvaard het risico!
@@ -27,6 +27,7 @@ config-focus-search-2 =
     .key = f
 
 ## These strings are used for column headers
+
 config-pref-column =
     .label = Voorkeurnaam
 config-lock-column =
@@ -37,12 +38,14 @@ config-value-column =
     .label = Waarde
 
 ## These strings are used for tooltips
+
 config-pref-column-header =
     .tooltip = Klik om te sorteren
 config-column-chooser =
     .tooltip = Klik om weer te geven kolommen te selecteren
 
 ## These strings are used for the context menu
+
 config-copy-pref =
     .key = C
     .label = Kopiëren

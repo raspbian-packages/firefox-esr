@@ -4,6 +4,7 @@
 
 page-title = Informacija problemų sprendimui
 page-subtitle = Šiame tinklalapyje rasite visą techninę informaciją, kuri gali praversti sprendžiant su „{ -brand-short-name }“ iškilusias problemas. Jei ieškote atsakymų į dažniausius klausimus apie šią programą, apsilankykite <a data-l10n-name="support-link">pagalbos svetainėje</a>.
+
 crashes-title = Strigčių pranešimai
 crashes-id = Pranešimo ID
 crashes-send-date = Pranešimo data
@@ -31,7 +32,10 @@ app-basics-title = Pagrindinės programos savybės
 app-basics-name = Pavadinimas
 app-basics-version = Laida
 app-basics-build-id = Versijos ID
+app-basics-distribution-id = Distribucijos ID
 app-basics-update-channel = Atnaujinimų kanalas
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Naujinimų aplankas
@@ -56,7 +60,6 @@ app-basics-service-workers = Registruoti aptarnavimo scenarijai
 app-basics-profiles = Profiliai
 app-basics-launcher-process-status = Paleidimo procesas
 app-basics-multi-process-support = Daugiaprocesiai langai
-app-basics-process-count = Saityno turinio procesai
 app-basics-remote-processes-count = Nuotoliniai procesai
 app-basics-enterprise-policies = Įmonės strategijos
 app-basics-location-service-key-google = „Google“ buvimo vietos nustatymo paslaugos raktas
@@ -88,6 +91,8 @@ graphics-crash-guards-title = Strigčių apsaugos išjungtos funkcijos
 graphics-workarounds-title = Apėjimai
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Langų protokolas
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Darbalaukio aplinka
 place-database-title = Vietų duomenų bazė
 place-database-integrity = Nepažeistumas
 place-database-verify-integrity = Patikrinti nepažeistumą
@@ -112,6 +117,14 @@ sandbox-sys-call-number = Kreipimasis į sistemą
 sandbox-sys-call-args = Argumentai
 safe-mode-title = Išbandykite ribotąją veikseną
 restart-in-safe-mode-label = Perleisti išjungus priedus…
+
+## Media titles
+
+audio-backend = Garso posistemė
+max-audio-channels = Daugiausiai kanalų
+channel-layout = Pageidautinas kanalų išdėstymas
+sample-rate = Pageidautinas atkūrimo dažnis
+
 media-title = Laikmenos
 media-output-devices-title = Išvedimo įrenginiai
 media-input-devices-title = Įvedimo įrenginiai
@@ -124,6 +137,12 @@ media-device-format = Formatas
 media-device-channels = Kanalai
 media-device-rate = Dažnis
 media-device-latency = Delsa
+media-capabilities-title = Medijos galimybės
+# List all the entries of the database.
+media-capabilities-enumerate = Išvardinti duomenų bazės turinį
+
+##
+
 intl-title = Internacionalizacija ir lokalizacija
 intl-app-title = Programos nuostatos
 intl-locales-requested = Užklaustos lokalės
@@ -133,6 +152,22 @@ intl-locales-default = Numatytoji lokalė
 intl-os-title = Operacinė sistema
 intl-os-prefs-system-locales = Sistemos lokalės
 intl-regional-prefs = Regionų nuostatos
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Nuotolinis derinimas („Chromium“ protokolu)
+remote-debugging-accepting-connections = Galima prisijungti
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -141,6 +176,7 @@ report-crash-for-days =
         [few] Pastarųjų { $days } dienų strigčių pranešimai
        *[other] Pastarųjų { $days } dienų strigčių pranešimai
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -149,6 +185,7 @@ crashes-time-minutes =
         [few] Prieš { $minutes } minutes
        *[other] Prieš { $minutes } minučių
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -157,6 +194,7 @@ crashes-time-hours =
         [few] Prieš { $hours } valandas
        *[other] Prieš { $hours } valandų
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -165,6 +203,7 @@ crashes-time-days =
         [few] Prieš { $days } dienas
        *[other] Prieš { $days } dienų
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -173,6 +212,7 @@ pending-reports =
         [few] Visi strigčių pranešimai (taip pat { $reports } neišsiųsti pranešimai iš nurodyto laiko intervalo)
        *[other] Visi strigčių pranešimai (taip pat { $reports } neišsiųstų pranešimų iš nurodyto laiko intervalo)
     }
+
 raw-data-copied = Neapdoroti duomenys nukopijuoti į iškarpinę
 text-copied = Tekstas nukopijuotas į iškarpinę
 
@@ -185,9 +225,11 @@ blocked-mismatched-version = Užblokuota dėl jūsų vaizdo tvarkyklės versijos
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = Užblokuota dėl vaizdo plokštės tvarkyklių. Pabandykite atnaujinti tvarkykles iki { $driverVersion } ar naujesnės laidos.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = „ClearType“ parametrai
+
 compositing = Komponavimas
 hardware-h264 = Aparatinis „H264“ iškodavimas
 main-thread-no-omtc = pagrindinė gija, be OMTC
@@ -202,6 +244,7 @@ virtual-monitor-disp = Virtual Monitor Display
 
 found = Rastas
 missing = Trūkstamas
+
 gpu-process-pid = GPUProcessPid
 gpu-process = GPUProcess
 gpu-description = Aprašymas
@@ -225,16 +268,23 @@ webgl2-version = „WebGL 2“ tvarkyklės versija
 webgl2-driver-extensions = „WebGL 2“ tvarkyklės plėtiniai
 webgl2-extensions = „WebGL 2“ plėtiniai
 blocklisted-bug = Užblokuota dėl žinomų problemų
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = klaida Nr. { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = Užblokuota; gedimo kodas { $failureCode }
+
 d3d11layers-crash-guard = D3D11 rinkėjo gija
 d3d11video-crash-guard = D3D11 vaizdo iškoduotuvas
 d3d9video-crash-buard = D3D9 vaizdo iškoduotuvas
+d3d9video-crash-guard = D3D9 vaizdo iškoduotuvas
 glcontext-crash-guard = OpenGL
+
+wmfvpxvideo-crash-guard = WMF VPX vaizdo iškoduotuvas
+
 reset-on-next-restart = Atstatyti kito paleidimo metu
 gpu-process-kill-button = Sustabdyti GPU procesą
 gpu-device-reset = Įrenginio atstatymas
@@ -243,14 +293,11 @@ uses-tiling = Naudoja išdėstymą išklotine
 content-uses-tiling = Naudoja išdėstymą išklotine (turinys)
 off-main-thread-paint-enabled = Piešimas ne pagrindinėje gijoje įjungtas
 off-main-thread-paint-worker-count = Piešimo ne pagrindinėje gijoje scenarijų kiekis
-low-end-machine = Aptiktas silpniau veikiantis kompiuteris
 target-frame-rate = Tikslinis kadrų dažnis
-audio-backend = Garso posistemė
-max-audio-channels = Daugiausiai kanalų
-channel-layout = Pageidautinas kanalų išdėstymas
-sample-rate = Pageidautinas atkūrimo dažnis
+
 min-lib-versions = Minimali priimtina versija
 loaded-lib-versions = Naudojama versija
+
 has-seccomp-bpf = „Seccomp-BPF“ (kreipimųsi į sistemą filtravimas)
 has-seccomp-tsync = „Seccomp“ gijų sinchronizavimas
 has-user-namespaces = Naudotojo vardų erdvės
@@ -263,10 +310,18 @@ sandbox-proc-type-content = turinys
 sandbox-proc-type-file = failo turinys
 sandbox-proc-type-media-plugin = medijos įskiepis
 sandbox-proc-type-data-decoder = duomenų iškoduotuvas
+
+startup-cache-title = Paleisties podėlis
+startup-cache-disk-cache-path = Disko podėlio kelias
+startup-cache-ignore-disk-cache = Ignoruoti disko podėlį
+startup-cache-found-disk-cache-on-init = Rastas disko podėlis įkėlimo metu
+startup-cache-wrote-to-disk-cache = Įrašyta į disko podėlį
+
 launcher-process-status-0 = Įjungta
 launcher-process-status-1 = Išjungta dėl gedimo
 launcher-process-status-2 = Išjungta priverstinai
 launcher-process-status-unknown = Būsena nežinoma
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -279,6 +334,7 @@ multi-process-status-6 = Išjungta dėl nepalaikomos tekstinės įvesties
 multi-process-status-7 = Išjungta dėl priedų
 multi-process-status-8 = Išjungta priverstinai
 multi-process-status-unknown = Nežinoma būsena
+
 async-pan-zoom = Asinchroninis apžvelgimas/priartinimas
 apz-none = nėra
 wheel-enabled = įjungta įvestis ratuku
@@ -286,6 +342,8 @@ touch-enabled = įjungta įvestis lietimu
 drag-enabled = slankjuostės tempimas įjungtas
 keyboard-enabled = klaviatūra įjungta
 autoscroll-enabled = automatinis slinkimas įjungtas
+
+zooming-enabled = įjungtas tolygus artinimas suimant
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

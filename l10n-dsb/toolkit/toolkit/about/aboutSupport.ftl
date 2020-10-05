@@ -31,7 +31,10 @@ app-basics-title = Zakłady nałoženja
 app-basics-name = Mě
 app-basics-version = Wersija
 app-basics-build-id = Wersijowy ID
+app-basics-distribution-id = ID distribucije
 app-basics-update-channel = Aktualizěrowański kanal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Aktualizěrowański zapis
@@ -56,7 +59,6 @@ app-basics-service-workers = Zregistrěrowane "service workers"
 app-basics-profiles = Profile
 app-basics-launcher-process-status = Startowański proces
 app-basics-multi-process-support = Multiprocesowe wokna
-app-basics-process-count = Webwopśimjeśowe procese
 app-basics-remote-processes-count = Zdalone procese
 app-basics-enterprise-policies = Pśedewześowe pšawidła
 app-basics-location-service-key-google = Kluc stojnišćoweje słužby Google
@@ -88,12 +90,14 @@ graphics-crash-guards-title = Funkcije, kótarež su se wót wowaleńskego stra�
 graphics-workarounds-title = Nuzowe rozwězanja
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Woknowy protokol
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Desktopowa wokolina
 place-database-title = Datowa banka historije a cytańskich znamjenjow
 place-database-integrity = Integrita
 place-database-verify-integrity = Integritu pśeglědowaś
 js-title = JavaScript
 js-incremental-gc = Inkrementelny GC
-a11y-title = Pśistupnosć
+a11y-title = Bźezbariernosć
 a11y-activated = Aktiwěrowany
 a11y-force-disabled = Bźezbarjernosći zajźowaś
 a11y-handler-used = Pśistupny handler wužyty
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumenty
 safe-mode-title = Wěsty modus wopytaś
 restart-in-safe-mode-label = Ze znjemóžnjonymi dodankami znowego startowaś…
+clear-startup-cache-title = Wopytajśo startowy pufrowak wuprozniś
+clear-startup-cache-label = Startowy pufrowak wuprozniś…
+startup-cache-dialog-title = Startowy pufrowak wuprozniś
+startup-cache-dialog-body = Startujśo { -brand-short-name } znowego, aby startowy pufrowak wuproznił. To waše nastajenja njezměnijo abo rozšyrjenja njewótwónoźijo, kótarež sćo pśidał { -brand-short-name }.
+restart-button-label = Znowego startowaś
+
+## Media titles
+
+audio-backend = Awdiobackend
+max-audio-channels = Maksimalna licba kanalow
+channel-layout = Preferěrowane kanalowe wugótowanje
+sample-rate = Preferěrowana wótsmasowańska rata
+roundtrip-latency = Woběgowa latenca (standardne wótchylenje)
 media-title = Medije
 media-output-devices-title = Wudawańske rědy
 media-input-devices-title = Zapódawańske rědy
@@ -124,6 +141,12 @@ media-device-format = Format
 media-device-channels = Kanale
 media-device-rate = Rata
 media-device-latency = Latenca
+media-capabilities-title = Medijowe móžnosći
+# List all the entries of the database.
+media-capabilities-enumerate = Datowu banku nalicyś
+
+##
+
 intl-title = Internacionalizacija a lokalizacija
 intl-app-title = Nastajenja nałoženja
 intl-locales-requested = Pominane rěcy
@@ -133,6 +156,22 @@ intl-locales-default = Standardna rěc
 intl-os-title = Źěłowy system
 intl-os-prefs-system-locales = Systemowe rěcy
 intl-regional-prefs = Regionalne nastajenja
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Zdalone pytanje zmólkow (protokol Chromium)
+remote-debugging-accepting-connections = Zwiski so akceptěruju
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -239,7 +278,9 @@ unknown-failure = W blokěrowańskej lisćinje; zmólkowy kod { $failureCode }
 d3d11layers-crash-guard = D3D11 Compositor
 d3d11video-crash-guard = D3D11 Video Decoder
 d3d9video-crash-buard = D3D9 Video Decoder
+d3d9video-crash-guard = D3D9 Video Decoder
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Wideodekoder WMF VPX
 reset-on-next-restart = Pśi pśiducem nowem starśe slědk stajiś
 gpu-process-kill-button = GPU-proces skóńcyś
 gpu-device-reset = Rěd slědk stajiś
@@ -248,18 +289,13 @@ uses-tiling = Wužywa kachlicki
 content-uses-tiling = Wužywa kachlickowanje (wopśimjeśe)
 off-main-thread-paint-enabled = Off Main Thread Painting zmóžnjony
 off-main-thread-paint-worker-count = Licba workerow Off Main Thread Painting
-low-end-machine = Mjenjej wugbała mašina namakana
-target-frame-rate = Celowa wobcerkowa cestosć
-audio-backend = Awdiobackend
-max-audio-channels = Maksimalna licba kanalow
-channel-layout = Preferěrowane kanalowe wugótowanje
-sample-rate = Preferěrowana wótsmasowańska rata
+target-frame-rate = Celowa wobceŕkowa cestosć
 min-lib-versions = Wótcakowana minimalna wersija
 loaded-lib-versions = Wužyta wersija
 has-seccomp-bpf = Seccomp-BPF (Filtrowanje systemowych zawołanjow)
 has-seccomp-tsync = Nitkowa synchronizacija Seccomp
-has-user-namespaces = Wužywarske mjenjowe rumy
-has-privileged-user-namespaces = Wužywarske mjenjowe rumy za priwilegěrowane procese
+has-user-namespaces = Wužywaŕske mjenjowe rumy
+has-privileged-user-namespaces = Wužywaŕske mjenjowe rumy za priwilegěrowane procese
 can-sandbox-content = Testowanje wopśimjeśowych procesow w pěskowem kašćiku
 can-sandbox-media = Testowanje medijowych tykacow w pěskowem kašćiku
 content-sandbox-level = Rownina wopśimjeśowych procesow w pěskowem kašćiku
@@ -268,6 +304,11 @@ sandbox-proc-type-content = wopśimjeśe
 sandbox-proc-type-file = datajowe wopśimjeśe
 sandbox-proc-type-media-plugin = medijowy tykac
 sandbox-proc-type-data-decoder = dekoděrowak datow
+startup-cache-title = Startowy pufrowak
+startup-cache-disk-cache-path = Sćažka platowego pufrowaka
+startup-cache-ignore-disk-cache = Platowy pufrowak ignorěrowaś
+startup-cache-found-disk-cache-on-init = Platowy pufrowak jo se namakał pśi inicializěrowanju
+startup-cache-wrote-to-disk-cache = Jo se napisało do platowego pufrowaka
 launcher-process-status-0 = Zmóžnjony
 launcher-process-status-1 = Zmólki dla znjemóžnjony
 launcher-process-status-2 = Z nuzkanim znjemóžnjony
@@ -291,6 +332,7 @@ touch-enabled = zapódaśe pśez dotyknjenje zmóžnjone
 drag-enabled = śěgnjenje suwańskeje rědki zmóžnjone
 keyboard-enabled = tastatura zmóžnjona
 autoscroll-enabled = awtomatiske kulanje zmóžnjone
+zooming-enabled = pózlažke šćipate skalěrowanje zmóžnjone
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

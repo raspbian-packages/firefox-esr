@@ -15,21 +15,20 @@ $(call lazy,DEB_HOST_GNU_TYPE,$$(shell dpkg-architecture -qDEB_HOST_GNU_TYPE))
 $(call lazy,DEB_BUILD_GNU_TYPE,$$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE))
 $(call lazy,DEB_BUILD_ARCH_BITS,$$(shell dpkg-architecture -qDEB_BUILD_ARCH_BITS))
 $(call lazy,DEB_HOST_ARCH,$$(shell dpkg-architecture -qDEB_HOST_ARCH))
-$(call lazy,DEB_HOST_ARCH_ENDIAN,$$(shell dpkg-architecture -qDEB_HOST_ARCH_ENDIAN))
 
-PYTHON := python2.7 -B
+PYTHON := python3 -B
 
 PRODUCT := browser
 include debian/upstream.mk
 
 SYSTEM_LIBS = zlib ffi
 ifeq (,$(filter jessie stretch buster,$(DIST)))
-SYSTEM_LIBS += nspr nss sqlite
+SYSTEM_LIBS += nspr nss
 endif
 ifeq (,$(filter jessie stretch,$(DIST)))
 SYSTEM_LIBS += libevent
 endif
-ifeq (,$(filter jessie stretch bullseye,$(DIST)))
+ifeq (,$(filter jessie stretch buster,$(DIST)))
 SYSTEM_LIBS += vpx
 endif
 
@@ -143,29 +142,14 @@ ifeq (default,$(origin CXX))
 CXX := g++
 endif
 
-ifneq (,$(findstring gcc,$(CC)))
-ifeq (,$(filter 4.% 5.%,$(shell $(CC) -dumpversion)))
-CFLAGS += -fno-schedule-insns2 -fno-lifetime-dse -fno-delete-null-pointer-checks
-ifneq (,$(filter armel armhf,$(DEB_HOST_ARCH)))
-CFLAGS += -fno-schedule-insns
-endif
-endif
-endif
-
 ifneq (,$(filter mips mipsel,$(DEB_HOST_ARCH)))
-CONFIGURE_FLAGS += --disable-ion
+CONFIGURE_FLAGS += --disable-jit
 endif
 
-CFLAGS += -DNSS_PKCS11_2_0_COMPAT=1
 CXXFLAGS = $(CFLAGS)
 RUSTFLAGS = --remap-path-prefix=$(CURDIR)=.
 
-ifeq ($(DEB_HOST_ARCH_ENDIAN),big)
-ICU_VERSION := $(shell echo U_ICU_VERSION_MAJOR_NUM | cpp -P -include $(CURDIR)/intl/icu/source/common/unicode/uvernum.h)
-ICU_DATA_FILE = icudt$(ICU_VERSION)b.dat
-endif
-
-EXPORTS := CC CXX CFLAGS CXXFLAGS CPPFLAGS LDFLAGS MOZILLA_OFFICIAL ICU_DATA_FILE RUSTFLAGS
+EXPORTS := CC CXX CFLAGS CXXFLAGS CPPFLAGS LDFLAGS MOZILLA_OFFICIAL RUSTFLAGS
 $(call lazy,CONFIGURE_ENV,$$(foreach export,$(EXPORTS),$$(export)="$$($$(export))"))
 
 IN_FILES := $(wildcard debian/*.in)
@@ -186,14 +170,14 @@ $(call lazy,L10N_PACKAGES,$$(foreach lang,$$(L10N_LANGS),$($(PRODUCT))-l10n-$$(c
 $(call lazy,L10N_PACKAGES_DEPS,$$(shell echo $$(L10N_PACKAGES) | sed 's/ /, /g'))
 
 debian/l10n/$(PRODUCT)-l10n.control: %: %.in
-	$(PYTHON) debian/l10n/gen $(L10N_LANGS) > $@
+	PYTHONIOENCODING=utf-8 $(PYTHON) debian/l10n/gen $(L10N_LANGS) > $@
 
 $(call lazy,LIBAVCODEC,$$(shell awk -F\" '/libavcodec\.so/ { sub(/libavcodec\.so\./,"", $$$$2); p = "libavcodec" $$$$2 " | libavcodec-extra" $$$$2; if (d) { d = d " | " p } else { d = p } } END { print d }' dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp))
 
 $(PREPROCESSED_FILES): VARS = GRE_VERSION $(PRODUCT) $(call uc,$(PRODUCT)) $(Product) MOZ_APP_REMOTINGNAME $(SYSTEM_LIBS_VARS) SHORT_SOURCE_CHANNEL DIST TRANSITION MOZ_FFVPX CRASH_REPORTER DEB_HOST_ARCH
 debian/control: VARS += L10N_PACKAGES_DEPS PRODUCT LIBAVCODEC
 $(PREPROCESSED_FILES):
-	$(PYTHON) python/mozbuild/mozbuild/preprocessor.py --marker % -Fsubstitution $(foreach var,$(VARS),-D$(var)="$($(var))" )$< > $@
+	python3 ./mach python --no-virtualenv python/mozbuild/mozbuild/preprocessor.py --marker % -Fsubstitution $(foreach var,$(VARS),-D$(var)="$($(var))" )$< -o $@
 
 ifdef TRANSITION
 MAINTSCRIPTS := $(addprefix debian/,$(addsuffix .maintscript,$(shell awk -F/ '$$1 != "searchplugins" { next } $$2 == "locale" && $$3 != "en-US" { p="iceweasel-l10n-" $$3 } $$2 == "common" || ($$2 "/" $$3 == "locale/en-US") { p="iceweasel" } !done[p] { print p; done[p] = 1 }' debian/removed_conffiles)))
@@ -244,13 +228,6 @@ stamps/configure-check-$(PRODUCT):: stamps/configure-$(PRODUCT)
 
 stamps/configure-$(PRODUCT):: stamps/prepare-configure debian/$($(PRODUCT)).mozconfig
 	$(if $(wildcard build-$(PRODUCT)),,mkdir build-$(PRODUCT))
-ifeq ($(DEB_HOST_ARCH_ENDIAN),big)
-	echo mk_add_options MOZ_OBJDIR=build-$(PRODUCT) > build-$(PRODUCT)/mozconfig.icu
-	cd build-$(PRODUCT) && \
-	MOZCONFIG=mozconfig.icu \
-	$(CONFIGURE_ENV) \
-	../mach python ../intl/icu_sources_data.py "$(CURDIR)"
-endif
 	cd build-$(PRODUCT) && \
 	MOZCONFIG=$(CURDIR)/debian/$($(PRODUCT)).mozconfig \
 	ASFLAGS="-g" \
@@ -303,13 +280,10 @@ override_dh_auto_clean::
 	rm -rf third_party/python/psutil/build/lib*
 	debian/rules debian/control TESTDIR=
 
-ifeq ($(DEB_HOST_ARCH_ENDIAN),big)
-	rm -f config/external/icu/data/$(ICU_DATA_FILE)
-endif
-
 	dh_auto_clean --builddirectory=build-$(PRODUCT)
 	dh_auto_clean --builddirectory=build-l10n
 	find . -name "*.pyc" -o -name "*.pyo" | xargs --no-run-if-empty rm -f
+	rm -rf obj-*/.mozbuild
 
 override_dh_clean:
 	dh_clean -XCargo.toml.orig
@@ -362,6 +336,9 @@ override_dh_gencontrol-indep:
 	dh_gencontrol$(foreach pkg,$(subst $($(PRODUCT)),iceweasel,$(L10N_PACKAGES)) iceweasel-l10n-all, -p$(pkg)) -- -v1:$(DEBIAN_VERSION)
 	dh_gencontrol$(foreach pkg,$(subst $($(PRODUCT)),iceweasel,$(L10N_PACKAGES)) iceweasel-l10n-all, -N$(pkg))
 endif
+
+# We're dealing with this manually and we don't want config.* files being touched under third_party/rust.
+override_dh_update_autotools_config:
 
 install binary binary-arch binary-indep: $(filter-out %.pc,$(GENERATED_FILES))
 

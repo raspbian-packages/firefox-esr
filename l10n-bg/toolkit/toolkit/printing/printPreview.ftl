@@ -33,6 +33,7 @@ printpreview-of =
     .value = от
 printpreview-custom-prompt =
     .value = Друг мащаб…
+printpreview-custom-scale-prompt-title = Друг мащаб
 printpreview-page-setup =
     .label = Настройки на отпечатване…
     .accesskey = Н
@@ -44,6 +45,8 @@ printpreview-page =
 ## $percent (integer) - menuitem percent label
 ## $arrow (String) - UTF-8 arrow character for navigation buttons
 
+printpreview-percentage-value =
+    .label = { $percent }%
 printpreview-homearrow =
     .label = { $arrow }
     .tooltiptext = Първа страница
@@ -56,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Последна страница
+

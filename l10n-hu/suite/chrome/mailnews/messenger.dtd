@@ -58,9 +58,9 @@
 <!ENTITY renameFolder.label "Mappa átnevezése…">
 <!ENTITY renameFolder.accesskey "a">
 <!ENTITY compactFolders.label "Mappák tömörítése">
-<!ENTITY compactFolders.accesskey		"t">
+<!ENTITY compactFolders.accesskey "t">
 <!ENTITY emptyTrashCmd.label "Törölt elemek mappa ürítése">
-<!ENTITY emptyTrashCmd.accesskey		"r">
+<!ENTITY emptyTrashCmd.accesskey "r">
 <!ENTITY offlineMenu.label "Kapcsolat nélküli munka">
 <!ENTITY offlineMenu.accesskey "p">
 <!ENTITY synchronizeOfflineCmd.label "Letöltés/szinkronizálás most…">
@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "Zászlócskával megjelölt üzenetek">
 <!ENTITY selectFlaggedCmd.accesskey "Z">
+<!ENTITY menuFavoriteFolder.label "Kedvencek mappa">
+<!ENTITY menuFavoriteFolder.accesskey "v">
 <!ENTITY folderPropsCmd.label "Tulajdonságok…">
 <!ENTITY folderPropsFolderCmd.label "Mappatulajdonságok…">
 <!ENTITY folderPropsNewsgroupCmd.label "Hírcsoport tulajdonságai…">
@@ -133,6 +135,10 @@
 <!ENTITY showThreadPaneCmd.accesskey "T">
 <!ENTITY showFolderPaneCmd.label "Mappa ablaktábla">
 <!ENTITY showFolderPaneCmd.accesskey "M">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "Rendezés">
@@ -272,6 +278,8 @@
 <!ENTITY goForwardCmd.commandKey "E">
 <!ENTITY prevFlaggedMsgCmd.label "Zászlócskával megjelölt üzenet">
 <!ENTITY prevFlaggedMsgCmd.accesskey "Z">
+<!ENTITY folderMenu.label "Mappa">
+<!ENTITY folderMenu.accesskey "M">
 <!ENTITY startPageCmd.label "Levelező kezdőoldala">
 <!ENTITY startPageCmd.accesskey "k">
 
@@ -284,23 +292,23 @@
 <!ENTITY newNewMsgCmd.accesskey "Ü">
 <!ENTITY replyMsgCmd.label "Válasz">
 <!ENTITY replyMsgCmd.accesskey "V">
-<!ENTITY replyMsgCmd.key	"V">
+<!ENTITY replyMsgCmd.key "V">
 <!ENTITY replyListCmd.label "Válasz a listára">
 <!ENTITY replyListCmd.accesskey "l">
 <!ENTITY replyNewsgroupCmd.label "Válasz a hírcsoportnak">
-<!ENTITY replyNewsgroupCmd.accesskey	"h">
+<!ENTITY replyNewsgroupCmd.accesskey "h">
 <!ENTITY replySenderCmd.label "Válasz csak a feladónak">
 <!ENTITY replySenderCmd.accesskey "f">
 <!ENTITY replyToAllMsgCmd.label "Válasz mindenkinek">
-<!ENTITY replyToAllMsgCmd.accesskey	"m">
-<!ENTITY replyToAllMsgCmd.key	"m">
+<!ENTITY replyToAllMsgCmd.accesskey "m">
+<!ENTITY replyToAllMsgCmd.key "m">
 <!ENTITY replyToSenderAndNewsgroupCmd.label "Válasz a feladónak és a hírcsoportnak">
 <!ENTITY replyToSenderAndNewsgroupCmd.accesskey "h">
 <!ENTITY replyToAllRecipientsCmd.label "Válasz a feladónak és az összes címzettnek">
 <!ENTITY replyToAllRecipientsCmd.accesskey "s">
 <!ENTITY forwardMsgCmd.label "Továbbítás">
 <!ENTITY forwardMsgCmd.accesskey "T">
-<!ENTITY forwardMsgCmd.key	"T">
+<!ENTITY forwardMsgCmd.key "T">
 <!ENTITY forwardAsMenu.label "Továbbítás módja">
 <!ENTITY forwardAsMenu.accesskey "m">
 <!ENTITY forwardAsInline.label "Beágyazva">
@@ -417,6 +425,7 @@
 <!ENTITY deleteButton.label "Törlés">
 <!ENTITY undeleteButton.label "Undelete">
 <!ENTITY markButton.label "Megjelölés">
+<!ENTITY printButton.label "Nyomtatás">
 <!ENTITY stopButton.label "Leállítás">
 <!ENTITY junkButton.label "Szemét">
 <!ENTITY notJunkButton.label "Nem szemét">
@@ -440,8 +449,10 @@
 <!ENTITY deleteButton.tooltip "A kijelölt üzenet vagy mappa törlése">
 <!ENTITY undeleteButton.tooltip "Visszaállítás">
 <!ENTITY markButton.tooltip "Az üzenet megjelölése">
+<!ENTITY printButton.tooltip "Az üzenet kinyomtatása">
 <!ENTITY stopButton.tooltip "Átvitel megszakítása">
 <!ENTITY throbber.tooltip "Ugrás a &vendorShortName; honlapjára">
+<!ENTITY throbber.tooltip2 "Ugrás a &brandShortName; honlapjára">
 <!ENTITY junkButton.tooltip "A kijelölt üzenetek megjelölése szemétként">
 <!ENTITY notJunkButton.tooltip "A kijelölt üzenetek megjelölése nem szemétként">
 
@@ -495,6 +506,8 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Üzenetek letöltése a postafiókból">
 <!ENTITY folderContextGetMessages.accesskey "z">
+<!ENTITY folderContextMarkAllFoldersRead.label "Összes mappa jelölése olvasottként">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "M">
 <!ENTITY folderContextOpenNewWindow.label "Megnyitása új levelezőablakban">
 <!ENTITY folderContextOpenNewWindow.accesskey "l">
 <!ENTITY folderContextOpenNewTab.label "Megnyitás új lapon">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "k">
 <!ENTITY folderContextProperties.label "Tulajdonságok…">
 <!ENTITY folderContextProperties.accesskey "T">
+<!ENTITY folderContextFavoriteFolder.label "Kedvencek mappa">
+<!ENTITY folderContextFavoriteFolder.accesskey "K">
 <!ENTITY folderContextSettings.label "Beállítások…">
 <!ENTITY folderContextSettings.accesskey "B">
 

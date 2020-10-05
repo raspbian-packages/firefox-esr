@@ -37,21 +37,35 @@ inactive-css-not-inline-or-tablecell = この要素はインライン要素で�
 
 inactive-css-property-because-of-display = この要素は <strong>{ $display }</strong> の display プロパティを持つため、<strong>{ $property }</strong> はこの要素に影響を及ぼしません。
 
+inactive-css-not-display-block-on-floated = この要素は <strong>floated<strong> であるため、<strong>display</strong> の値はエンジンによって <strong>block</strong> に変更されました。
+
+inactive-css-property-is-impossible-to-override-in-visited = <strong>:visited</strong> の制限により、<strong>{ $property }</strong> をオーバーライドすることはできません。
+
+inactive-css-position-property-on-unpositioned-box = この要素は配置の指定がないため、<strong>{ $property }</strong> はこの要素に影響を及ぼしません。
+
+inactive-text-overflow-when-no-overflow = <strong>overflow:hidden</strong> が設定されてないため、<strong>{ $property }</strong> はこの要素に影響を及ぼしません。
+
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
 ## the problem can be solved.
 
 inactive-css-not-grid-or-flex-container-fix = <strong>display:grid</strong> または <strong>display:flex</strong> を追加してみてください。{ learn-more }
 
-inactive-css-not-grid-or-flex-container-or-multicol-container-fix = <strong>display:grid</strong>, <strong>display:flex</strong>, または <strong>columns:2</strong> のいずれかを追加してみてください。{ learn-more }
-
 inactive-css-not-grid-or-flex-item-fix = <strong>display:grid</strong>, <strong>display:flex</strong>, <strong>display:inline-grid</strong> または <strong>display:inline-flex</strong> を追加してみてください。{ learn-more }
 
 inactive-css-not-grid-item-fix =<strong>display:grid</strong> または <strong>display:inline-grid</strong> をアイテムの親に追加してみてください。{ learn-more }
 
+inactive-css-not-grid-or-flex-container-or-multicol-container-fix = <strong>display:grid</strong>, <strong>display:flex</strong>, または <strong>columns:2</strong> のいずれかを追加してみてください。{ learn-more }
+
+inactive-css-not-grid-or-flex-item-fix-2 = <strong>display:grid</strong>, <strong>display:flex</strong>, <strong>display:inline-grid</strong>, または <strong>display:inline-flex</strong> を追加してみてください。{ learn-more }
+
+inactive-css-not-grid-item-fix-2 =<strong>display:grid</strong> または <strong>display:inline-grid</strong> を要素の親に追加してみてください。{ learn-more }
+
 inactive-css-not-grid-container-fix = <strong>display:grid</strong> または <strong>display:inline-grid</strong> を追加してみてください。{ learn-more }
 
 inactive-css-not-flex-item-fix = <strong>display:flex</strong> または <strong>display:inline-flex</strong> をアイテムの親に追加してみてください。{ learn-more }
+
+inactive-css-not-flex-item-fix-2 = <strong>display:flex</strong> または <strong>display:inline-flex</strong> を要素の親に追加してみてください。{ learn-more }
 
 inactive-css-not-flex-container-fix = <strong>display:flex</strong> または <strong>display:inline-flex</strong> を追加してみてください。{ learn-more }
 
@@ -60,3 +74,9 @@ inactive-css-not-inline-or-tablecell-fix = <strong>display:inline</strong> ま�
 inactive-css-non-replaced-inline-or-table-row-or-row-group-fix = <strong>display:inline-block</strong> または <strong>display:block</strong> を追加してみてください。{ learn-more }
 
 inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = <strong>display:inline-block</strong> を追加してみてください。{ learn-more }
+
+inactive-css-not-display-block-on-floated-fix = <strong>float</strong> を削除、または <strong>display:block</strong> を追加してみてください。{ learn-more }
+
+inactive-css-position-property-on-unpositioned-box-fix = <strong>position</strong> プロパティに <strong>static</strong> 以外の値を設定してみてください。{ learn-more }
+
+inactive-text-overflow-when-no-overflow-fix = <strong>overflow:hidden</strong> を追加してみてください。 { learn-more }

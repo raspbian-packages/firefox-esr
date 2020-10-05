@@ -54,6 +54,7 @@ import =
 close-button =
     .label = Sulge
     .accesskey = S
+
 show-passwords =
     .label = Kuva paroole
     .accesskey = K
@@ -71,3 +72,5 @@ remove-all-shown =
 remove-all-passwords-prompt = Kas oled kindel, et soovid kõik oma paroolid kustutada?
 remove-all-passwords-title = Kõigi paroolide eemaldamine
 no-master-password-prompt = Kas oled kindel, et soovid oma paroole kuvada?
+auto-fill-logins-and-passwords =
+    .label = Kasutajatunnuste ja paroolide väljad täidetakse automaatselt

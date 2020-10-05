@@ -628,8 +628,7 @@ var pktUI = (function() {
         if (str.key in data) {
           strings[str.key] = bundle.formatStringFromName(
             str.key,
-            data[str.key],
-            data[str.key].length
+            data[str.key]
           );
         } else {
           strings[str.key] = str.value;
@@ -637,6 +636,7 @@ var pktUI = (function() {
       }
       pktUIMessaging.sendResponseMessageToPanel(panelId, _initL10NMessageId, {
         strings,
+        dir: Services.locale.isAppLocaleRTL ? "rtl" : "ltr",
       });
     });
   }
@@ -730,7 +730,7 @@ var pktUI = (function() {
   }
 
   function getUILocale() {
-    return Services.locale.appLocaleAsLangTag;
+    return Services.locale.appLocaleAsBCP47;
   }
 
   /**
@@ -778,9 +778,7 @@ var pktUIMessaging = (function() {
         var payload = JSON.parse(e.target.getAttribute("payload"))[0];
         var panelId = payload.panelId;
         var data = payload.data;
-        // After Bug 965637 we can query the csp from the document instead
-        // of the nodePrincipal, we can just use: e.target.ownerDocument.csp;
-        var csp = e.target.nodePrincipal.csp;
+        var csp = e.target.ownerDocument.csp;
         callback(panelId, data, nodePrincipal, csp);
 
         // Cleanup the element

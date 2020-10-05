@@ -5,50 +5,66 @@
 permissions-window =
     .title = Výjimky
     .style = width: 36em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adresa webového serveru
     .accesskey = d
+
 permissions-block =
     .label = Blokovat
     .accesskey = B
+
 permissions-session =
     .label = Povolit pro relaci
     .accesskey = o
+
 permissions-allow =
     .label = Povolit
     .accesskey = P
+
 permissions-site-name =
     .label = Server
+
 permissions-status =
     .label = Stav
+
 permissions-remove =
     .label = Odebrat server
     .accesskey = r
+
 permissions-remove-all =
     .label = Odebrat všechny servery
     .accesskey = e
+
 permissions-button-cancel =
     .label = Zrušit
     .accesskey = Z
+
 permissions-button-ok =
     .label = Uložit změny
     .accesskey = U
-permissions-autoplay-menu = Ve výchozím nastavení automatického přehrávání
+
+permissions-autoplay-menu = Výchozí nastavení:
+
 permissions-searchbox =
     .placeholder = Hledat
+
 permissions-capabilities-autoplay-allow =
-    .label = povolit zvuk i video
+    .label = povolit přehrávání zvuků i videí
 permissions-capabilities-autoplay-block =
-    .label = blokovat zvuk
+    .label = blokovat přehrávání zvuků
 permissions-capabilities-autoplay-blockall =
-    .label = blokovat zvuk i video
+    .label = blokovat přehrávání zvuků i videí
+
 permissions-capabilities-allow =
     .label = Povolit
 permissions-capabilities-block =
     .label = Blokovat
 permissions-capabilities-prompt =
     .label = Vždy se zeptat
+
 permissions-capabilities-listitem-allow =
     .value = Povolit
 permissions-capabilities-listitem-block =
@@ -68,19 +84,24 @@ permissions-exceptions-content-blocking-window =
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Na následujících serverech jste vypnuli funkci blokování obsahu.
 
+permissions-exceptions-etp-window =
+    .title = Výjimky pro používání rozšířené ochrany proti sledování
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Pro tyto servery jste ochranu proti sledování vypnuli.
+
 ## Exceptions - Cookies
 
 permissions-exceptions-cookie-window =
     .title = Výjimky pro používání cookies a dat stránek
     .style = { permissions-window.style }
-permissions-exceptions-cookie-desc = Zde můžete určit, které servery mohou nebo nesmí používat cookies a data stránek. Vložte přesnou adresu serveru, který chcete nastavit, a klepněte na tlačítko Blokovat, Povolit pro relaci nebo Povolit.
+permissions-exceptions-cookie-desc = Zde můžete určit, které servery mohou nebo nesmí používat cookies a data stránek. Zadejte přesnou adresu serveru a klepněte na tlačítko Blokovat, Povolit pro relaci nebo Povolit.
 
 ## Exceptions - Pop-ups
 
 permissions-exceptions-popup-window =
     .title = Servery, které mohou otevírat vyskakovací okna
     .style = { permissions-window.style }
-permissions-exceptions-popup-desc = Zde můžete určit, které servery mohou otevírat vyskakovací okna. Vložte přesnou adresu serveru, kterému to chcete povolit, a klepněte na tlačítko Povolit.
+permissions-exceptions-popup-desc = Zde můžete určit, které servery mohou otevírat vyskakovací okna. Zadejte přesnou adresu serveru a klepněte na tlačítko Povolit.
 
 ## Exceptions - Saved Logins
 
@@ -94,19 +115,19 @@ permissions-exceptions-saved-logins-desc = Pro následující servery se nebudou
 permissions-exceptions-addons-window =
     .title = Důvěryhodné servery pro instalaci doplňků
     .style = { permissions-window.style }
-permissions-exceptions-addons-desc = Zde můžete určit, které servery mohou instalovat doplňky. Vložte přesnou adresu serveru, který chcete povolit, a klepněte na tlačítko Povolit.
+permissions-exceptions-addons-desc = Zde můžete určit, které servery mohou instalovat doplňky. Zadejte přesnou adresu serveru a klepněte na tlačítko Povolit.
 
 ## Exceptions - Autoplay Media
 
 permissions-exceptions-autoplay-media-window2 =
     .title = Servery, které mohou automaticky přehrávat média
     .style = { permissions-window.style }
-permissions-exceptions-autoplay-media-desc2 = Zde můžete určit, které servery mohou automaticky spouštět přehrávání médií se zvukem. Zadejte adresu stránky a klepněte na tlačítko Blokovat nebo Povolit.
+permissions-exceptions-autoplay-media-desc2 = Zde můžete určit, které servery mohou automaticky spouštět přehrávání médií se zvukem. Zadejte adresu serveru a klepněte na tlačítko Blokovat nebo Povolit.
 
 ## Site Permissions - Autoplay
 
 permissions-site-autoplay-window =
-    .title = Blokování automatického přehrávání
+    .title = Oprávnění automatického přehrávání
     .style = { permissions-window.style }
 permissions-site-autoplay-desc = Níže můžete nastavit výjimky a vlastní nastavení pro vámi vybrané servery.
 
@@ -125,10 +146,20 @@ permissions-site-notification-disable-desc = Tímto zakážete všem serverům, 
 permissions-site-location-window =
     .title = Oprávnění zjišťovat polohu
     .style = { permissions-window.style }
-permissions-site-location-desc = Následující servery požádaly o přístup k informacím o vaší poloze. Zde můžete určit, které servery mají nebo nemají povoleno vaši polohu zjistit. Můžete zde také zablokovat nové žádosti o přístup.
+permissions-site-location-desc = Následující servery požádaly o přístup k údajům o vaší poloze. Zde můžete určit, které servery mají nebo nemají povoleno vaši polohu zjistit. Můžete zde také zablokovat nové žádosti o přístup.
 permissions-site-location-disable-label =
-    .label = Blokovat nové žádosti o přístup k informacím o vaší poloze
-permissions-site-location-disable-desc = Tímto zakážete všem serverům, které nejsou v seznamu výše, požádat o přístup k informacím o vaší poloze. Při blokování žádostí nemusí některé funkce webových stránek správně fungovat.
+    .label = Blokovat nové žádosti o přístup k údajům o vaší poloze
+permissions-site-location-disable-desc = Tímto zakážete všem serverům, které nejsou v seznamu výše, požádat o přístup k údajům o vaší poloze. Při blokování žádostí nemusí některé funkce webových stránek správně fungovat.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Oprávnění pro virtuální realitu
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Následující servery požádaly o přístup k vašim zařízením pro virtuální realitu. Zde můžete určit, které servery mají nebo nemají povoleno tato zařízení používat. Můžete zde také zablokovat nové žádosti o přístup.
+permissions-site-xr-disable-label =
+    .label = Blokovat nové žádosti o přístup k vašim zařízením pro virtuální realitu
+permissions-site-xr-disable-desc = Tímto zakážete všem serverům, které nejsou v seznamu výše, požádat o přístup k vašim zařízením pro virtuální realitu. Při blokování žádostí nemusí některé funkce webových stránek správně fungovat.
 
 ## Site Permissions - Camera
 

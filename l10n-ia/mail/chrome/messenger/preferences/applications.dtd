@@ -6,7 +6,12 @@
 
 
 
+<!ENTITY chooseFolderWin.label        "Percurrer…">
+<!ENTITY chooseFolderWin.accesskey    "P">
+<!ENTITY chooseFolderMac.label        "Eliger…">
+<!ENTITY chooseFolderMac.accesskey    "E">
 
-<!ENTITY attachments.outgoing.label   "In exito">
+<!ENTITY attachments.incoming.label   "Entrante">
+<!ENTITY attachments.outgoing.label   "Exiente">
 
 

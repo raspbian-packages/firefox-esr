@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Λιγότερα δεδομένα, μεγαλύτερη οικονομία">
 <!ENTITY firstrun_data_subtext2 "Απενεργοποιήστε τις εικόνες για να ξοδεύετε λιγότερα δεδομένα σε κάθε ιστοσελίδα που επισκέπτεστε.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Λογαριασμός">
-<!ENTITY firstrun_sync_message2 "Συνεχίστε από εκεί που σταματήσατε.">
+<!ENTITY firstrun_sync_message3 "Συγχρονίστε τους σελιδοδείκτες, το ιστορικό και τους κωδικούς πρόσβασής σας με το τηλέφωνό σας.">
 <!ENTITY firstrun_sync_subtext2 "Χρησιμοποιήστε το Sync για να βρείτε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και άλλα στοιχεία που αποθηκεύετε στο &brandShortName;, σε όλες σας τις συσκευές.">
 <!ENTITY newfirstrun_sync_subtext "Συγχρονίστε τα δεδομένα που αποθηκεύετε στο κινητό με το Firefox για υπολογιστές, με ασφάλεια και απόρρητο.">
-<!ENTITY updatednewfirstrun_sync_subtext "Συνδεθείτε στο λογαριασμό σας για να αξιοποιήσετε στο έπακρο το &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Αποστολή καρτέλας">
+<!ENTITY firstrun_sendtab_message "Αποστολή καρτελών από κινητό σε υπολογιστή — άμεσα.">
 <!ENTITY firstrun_signin_message "Συνδεθείτε και ξεκινήστε">
-<!ENTITY firstrun_signin_button "Είσοδος στο Sync">
-<!ENTITY newfirstrun_signin_button "Ενεργοποίηση Sync">
-<!ENTITY updatednewfirstrun_signin_button "Σύνδεση στο &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Έναρξη περιήγησης">
+<!ENTITY onboard_start_button_browser "Έναρξη περιήγησης">
 <!ENTITY firstrun_button_notnow "Όχι τώρα">
 <!ENTITY firstrun_button_next "Επόμενο">
+<!ENTITY firstrun_signup_button "Εγγραφή">
 
 <!ENTITY firstrun_tabqueue_title "Σύνδεσμοι">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Γίνεται αποστολή αναφοράς σφάλματος\u2026">
 <!ENTITY  crash_close_label "Κλείσιμο">
 <!ENTITY  crash_restart_label "Επανεκκίνηση του &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "Το &brandShortName; κατέρρευσε">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Ο φάκελος ενημερώθηκε">
 <!ENTITY bookmark_parent_folder "Γονικός φάκελος">
 <!ENTITY bookmark_add_folder "Προσθήκη νέου φακέλου">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(χωρίς τίτλο)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Cookies">
 <!ENTITY pref_cookies_accept_all "Ενεργό">
 <!ENTITY pref_cookies_not_accept_foreign "Ενεργό, εκτός από cookies τρίτων">
+<!ENTITY pref_cookies_not_accept_trackers "Ενεργό, εξαίρεση cookies καταγραφής">
 <!ENTITY pref_cookies_disabled "Απενεργοποίηση">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -341,11 +338,6 @@
 <!ENTITY pref_pwa "Προοδευτικές διαδικτυακές εφαρμογές">
 <!ENTITY pref_pwa_summary "Να επιτρέπεται η προσθήκη διαδικτυακών εφαρμογών στην αρχική οθόνη">
 
-<!ENTITY tracking_protection_prompt_title "Τώρα με προστασία από καταγραφή">
-<!ENTITY tracking_protection_prompt_text "Φραγή στοιχείων καταγραφής έτσι, ώστε να μην χρειάζεται να ανησυχείτε.">
-<!ENTITY tracking_protection_prompt_tip_text "Μεταβείτε στις ρυθμίσεις απορρήτου για να μάθετε περισσότερα">
-<!ENTITY tracking_protection_prompt_action_button "Το \&apos;πιασα!">
-
 <!ENTITY tab_queue_toast_message3 "Η καρτέλα αποθηκεύτηκε στο &brandShortName;">
 <!ENTITY tab_queue_toast_action "Άνοιγμα τώρα">
 <!ENTITY tab_queue_prompt_title "Άνοιγμα πολλαπλών συνδέσμων;">
@@ -402,7 +394,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY pref_zoom_force_enabled_summary "Εξαναγκασμός δυνατότητας μεγέθυνσης σε κάθε σελίδα">
 <!ENTITY pref_voice_input "Φωνητική είσοδος">
 <!ENTITY pref_voice_input_summary2 "Να επιτρέπεται η υπαγόρευση στη γραμμή URL">
-<!ENTITY pref_qrcode_enabled "Αναγνώστης κωδικών QR">
+<!ENTITY pref_qrcode_enabled "Ανάγνωση κωδικών QR">
 <!ENTITY pref_qrcode_enabled_summary2 "Να επιτρέπεται η σάρωση QR στη γραμμή URL">
 
 <!ENTITY pref_use_master_password "Χρήση ενός κύριου κωδικού">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Πατήστε το \&quot;Εφαρμογή προγρ. περιήγησης\&quot; &amp; επιλέξτε το &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Επισκεφθείτε την Υποστήριξη Mozilla">
 <!ENTITY pref_about_firefox "Σχετικά με το &brandShortName;">
 <!ENTITY pref_vendor_faqs "Συχνές ερωτήσεις">
 <!ENTITY pref_vendor_feedback "Στείλτε σχόλια">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Εκτελείται η υπηρεσία τοποθεσίας της &vendorShortName;">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Αυτόματες ενημερώσεις">
-<!ENTITY pref_update_autodownload_wifi "Μόνο μέσω Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Ποτέ">
-<!ENTITY pref_update_autodownload_always "Πάντα">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Βοήθεια">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Κοινή χρήση">
 <!ENTITY share_title "Κοινή χρήση μέσω">
 <!ENTITY share_image_failed "Δεν είναι δυνατή η κοινή χρήση αυτής της εικόνας">
+<!ENTITY share_error_toast_message "Αδυναμία κοινής χρήσης στην ενδεδειγμένη εφαρμογή">
 <!ENTITY save_as_pdf "Αποθήκευση ως PDF">
 <!ENTITY print "Εκτύπωση">
 <!ENTITY view_page_source "Προβολή πηγής σελίδας">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Τοποθεσία">
 <!ENTITY bookmark_edit_keyword "Λέξη κλειδί">
 <!ENTITY bookmark_select_folder "Επιλογή φακέλου">
-
 <!ENTITY bookmark_edit_undo "Αναίρεση">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Επιλέξτε ή εγγράψτε έναν ήχο">
 <!ENTITY filepicker_image_title "Επιλέξτε ή τραβήξτε μια εικόνα">
 <!ENTITY filepicker_video_title "Επιλέξτε ή τραβήξτε ένα βίντεο">
-
 <!ENTITY filepicker_permission_denied "Δεν χορηγήθηκαν τα απαιτούμενα δικαιώματα, επαναφορά στην εφαρμογή επιλογής αρχείων συστήματος.">
 
 <!-- Site identity popup -->
@@ -757,25 +739,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Αναζήτηση του όρου &formatS2; στη μηχανή &formatS1;">
 
 <!ENTITY searchable_description "Σελιδοδείκτες και ιστορικό">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Διαθέσιμη ενημέρωση για το &brandShortName;">
-<!ENTITY updater_start_select2 "Πατήστε για λήψη">
-
-<!ENTITY updater_downloading_title2 "Γίνεται λήψη του &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Η λήψη απέτυχε">
-<!ENTITY updater_downloading_select2 "Πατήστε για εφαρμογή της ενημέρωσης μόλις ολοκληρωθεί η λήψη της">
-<!ENTITY updater_downloading_retry2 "Πατήστε για νέα προσπάθεια">
-
-<!ENTITY updater_apply_title3 "Ελήφθη ενημέρωση για το &brandShortName;">
-<!ENTITY updater_apply_select3 "Πατήστε για εγκατάσταση">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Για να είναι δυνατή η λήψη αρχείων και ενημερώσεων, επιτρέψετε στο &brandShortName; την πρόσβαση στο χώρο αποθήκευσης.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Αποδοχή">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Νέα συνεδρία επισκέπτη">
@@ -887,6 +850,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Προσθέστε τα στοιχεία της προβολής ανάγνωσης στους σελιδοδείκτες για να τα διαβάζετε χωρίς σύνδεση.">
 <!ENTITY helper_triple_readerview_open_button "Προσθήκη στους σελιδοδείκτες">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Καλώς ήλθατε στο &brandShortName;">
+<!ENTITY activity_stream_signin_description "Έναρξη συγχρονισμού σελιδοδεικτών, κωδικών πρόσβασης και άλλων δεδομένων με το λογαριασμό Firefox.">
+<!ENTITY activity_stream_signup_button "Εγγραφή">
+<!ENTITY activity_stream_signin_prompt "Έχετε ήδη λογαριασμό;">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Σύνδεση.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Το ολοκαίνουριο Firefox, έρχεται το 2020">
+<!ENTITY activity_stream_firefox_promo_description "Έρχεται σύντομα: Βελτιωμένες επιδόσεις. Ενισχυμένη προστασία από καταγραφή. Και λειτουργίες σχεδιασμένες για εύρεση, αποθήκευση και κοινή χρήση στο διαδίκτυο.">
+<!ENTITY activity_stream_firefox_promo_button "Ρίξτε μια ματιά">
+
 <!ENTITY activity_stream_topsites "Κορυφαίες ιστοσελίδες">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Προτείνεται από το &brandPocket;">
@@ -944,7 +924,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Ήχος και βίντεο">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Συμβουλές και κόλπα της &vendorShortName;">
-<!ENTITY updater_notification_channel "Ενημερώσεις εφαρμογής">
 <!ENTITY synced_tabs_notification_channel "Συγχρονισμένες καρτέλες">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

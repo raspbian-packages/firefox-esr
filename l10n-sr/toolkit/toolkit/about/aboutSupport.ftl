@@ -27,13 +27,26 @@ features-title = { -brand-short-name } могућности
 features-name = Назив
 features-version = Издање
 features-id = ID
+processes-title = Удаљени процеси
+processes-type = Тип
+processes-count = Број
 app-basics-title = Основе апликације
 app-basics-name = Назив
 app-basics-version = Издање
 app-basics-build-id = ID издања
+app-basics-distribution-id = ID дистрибуције
 app-basics-update-channel = Канал за ажурирање
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Директоријум за ажурирања
+       *[other] Фасцикла за ажурирања
+    }
 app-basics-update-history = Историја ажурирања
 app-basics-show-update-history = Прикажи историјат ажурирања
+# Represents the path to the binary used to start the application.
+app-basics-binary = Бинарна апликација
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Фасцикла профила
@@ -47,10 +60,12 @@ app-basics-memory-use = Меморија
 app-basics-performance = Перформансе
 app-basics-service-workers = Регистровани Service Workers
 app-basics-profiles = Профили
+app-basics-launcher-process-status = Покретачки процес
 app-basics-multi-process-support = Вишепроцесорски прозори
-app-basics-process-count = Процеси веб садржаја
+app-basics-remote-processes-count = Удаљени процеси
 app-basics-enterprise-policies = Полисе предузећа
-app-basics-key-google = Google кључ
+app-basics-location-service-key-google = Google кључ за услуге локације
+app-basics-safebrowsing-key-google = Google кључ за безбедно прегледање
 app-basics-key-mozilla = Кључ Mozilla сервиса за локацију
 app-basics-safe-mode = Безбедни режим
 show-dir-label =
@@ -76,6 +91,10 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Дневник одлука
 graphics-crash-guards-title = Онемогућене могућности чувара рушења
 graphics-workarounds-title = Алтернативна решења
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = Протокол прозора
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Радно окружење
 place-database-title = База података локација
 place-database-integrity = Интегритет
 place-database-verify-integrity = Потврди интегритет
@@ -100,6 +119,19 @@ sandbox-sys-call-number = Системски позив
 sandbox-sys-call-args = Аргументи
 safe-mode-title = Покушај безбедни режим
 restart-in-safe-mode-label = Рестартуј са онемогућеним додацима…
+clear-startup-cache-title = Покушајте да избришете предмеморију покретања
+clear-startup-cache-label = Избриши предмеморију покретања…
+startup-cache-dialog-title = Избриши предмеморију покретања
+startup-cache-dialog-body = Поново покрените { -brand-short-name } да бисте избрисали предмеморију покретања. Ово неће променити подешавања или уклонити проширења која сте додали у { -brand-short-name }.
+restart-button-label = Поново покрени
+
+## Media titles
+
+audio-backend = Audio Backend
+max-audio-channels = Највише канала
+channel-layout = Жељени распоред канала
+sample-rate = Жељена стопа семпла
+roundtrip-latency = Латенција у повратном правцу (стандардна девијација)
 media-title = Медиј
 media-output-devices-title = Излазни уређаји
 media-input-devices-title = Улазни уређаји
@@ -112,6 +144,12 @@ media-device-format = Формат
 media-device-channels = Канали
 media-device-rate = Стопа
 media-device-latency = Латентност
+media-capabilities-title = Могућности медија
+# List all the entries of the database.
+media-capabilities-enumerate = Попис уноса базе података
+
+##
+
 intl-title = Интернационализација & Локализација
 intl-app-title = Поставке апликације
 intl-locales-requested = Захтевани локали
@@ -121,6 +159,22 @@ intl-locales-default = Подразумевани локал
 intl-os-title = Оперативни систем
 intl-os-prefs-system-locales = Локали система
 intl-regional-prefs = Регионалне поставке
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Удаљено уклањање грешака (Chromium Protocol)
+remote-debugging-accepting-connections = Прихватање веза
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -181,6 +235,8 @@ hardware-h264 = Hardware H264 декодирање
 main-thread-no-omtc = главна нит, без OMTC
 yes = да
 no = не
+unknown = Непознато
+virtual-monitor-disp = Приказ виртуелног монитора
 
 ## The following strings indicate if an API key has been found.
 ## In some development versions, it's expected for some API keys that they are
@@ -188,12 +244,15 @@ no = не
 
 found = Пронађено
 missing = Недостаје
+gpu-process-pid = GPUProcessPid
+gpu-process = GPUProcess
 gpu-description = Опис
 gpu-vendor-id = ID продавца
 gpu-device-id = ID уређаја
 gpu-subsys-id = Subsys ID
 gpu-drivers = Драјвери
 gpu-ram = RAM
+gpu-driver-vendor = Произвођач driver-а
 gpu-driver-version = Верзија драјвера
 gpu-driver-date = Датум драјвера
 gpu-active = Активан
@@ -217,18 +276,18 @@ unknown-failure = На црној листи; код грешке { $failureCode
 d3d11layers-crash-guard = D3D11 композитор
 d3d11video-crash-guard = D3D11 видео декодер
 d3d9video-crash-buard = D3D9 видео декодер
+d3d9video-crash-guard = D3D9 видео декодер
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX видео декодер
 reset-on-next-restart = Ресетуј при следећем покретању
 gpu-process-kill-button = Угаси GPU процес
+gpu-device-reset = Поновно покретање уређаја
 gpu-device-reset-button = Покрени ресетовање уређаја
 uses-tiling = Користи плочице
 content-uses-tiling = Користи плочице (садржај)
 off-main-thread-paint-enabled = Нит за сликање омогућена
 off-main-thread-paint-worker-count = Thread Painting Worker бројач
-audio-backend = Audio Backend
-max-audio-channels = Највише канала
-channel-layout = Жељени распоред канала
-sample-rate = Жељена стопа семпла
+target-frame-rate = Циљана брзина освежавања тј. Framerate
 min-lib-versions = Очекивано минимално издање
 loaded-lib-versions = Издање у употреби
 has-seccomp-bpf = Seccomp-BPF (Системско филтрирање позива)
@@ -242,6 +301,16 @@ effective-content-sandbox-level = Ефективни ниво Sandbox проце
 sandbox-proc-type-content = садржај
 sandbox-proc-type-file = садржај дадотеке
 sandbox-proc-type-media-plugin = медија прикључак
+sandbox-proc-type-data-decoder = декодер података
+startup-cache-title = Кеш покретања
+startup-cache-disk-cache-path = Путања до дисковног кеша
+startup-cache-ignore-disk-cache = Игноришите дисковни кеш
+startup-cache-found-disk-cache-on-init = Дисковни кеш пронађен током иницијализације
+startup-cache-wrote-to-disk-cache = Записано у дисковни кеш
+launcher-process-status-0 = Омогућено
+launcher-process-status-1 = Онемогућено због грешке
+launcher-process-status-2 = Онемогућен силом
+launcher-process-status-unknown = Непознат статус
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -261,6 +330,7 @@ touch-enabled = унос додира омогућен
 drag-enabled = превлачење клизача омогућено
 keyboard-enabled = тастатура омогућена
 autoscroll-enabled = аутоматско скроловање омогућено
+zooming-enabled = smooth pinch-zoom омогућен
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

@@ -5,50 +5,66 @@
 permissions-window =
     .title = 例外網站
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = 網站網址
     .accesskey = d
+
 permissions-block =
     .label = 封鎖
     .accesskey = B
+
 permissions-session =
     .label = 此次瀏覽階段允許
     .accesskey = S
+
 permissions-allow =
     .label = 允許
     .accesskey = A
+
 permissions-site-name =
     .label = 網站
+
 permissions-status =
     .label = 狀態
+
 permissions-remove =
     .label = 移除網站
     .accesskey = R
+
 permissions-remove-all =
     .label = 移除所有網站
     .accesskey = e
+
 permissions-button-cancel =
     .label = 取消
     .accesskey = C
+
 permissions-button-ok =
     .label = 儲存變更
     .accesskey = S
+
 permissions-autoplay-menu = 對所有網站的預設行為:
+
 permissions-searchbox =
     .placeholder = 搜尋網站
+
 permissions-capabilities-autoplay-allow =
-    .label = 允許播放影音
+    .label = 允許自動播放影音內容
 permissions-capabilities-autoplay-block =
     .label = 封鎖音訊
 permissions-capabilities-autoplay-blockall =
     .label = 封鎖影音內容
+
 permissions-capabilities-allow =
     .label = 允許
 permissions-capabilities-block =
     .label = 阻擋
 permissions-capabilities-prompt =
     .label = 總是詢問
+
 permissions-capabilities-listitem-allow =
     .value = 允許
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = 例外 - 內容封鎖
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = 您已針對這些網站停用內容封鎖功能。
+
+permissions-exceptions-etp-window =
+    .title = 加強型追蹤保護的例外
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = 您已針對下列網站關閉保護。
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = 下列網站要求取得您的所在地點。�
 permissions-site-location-disable-label =
     .label = 封鎖新網站取得您所在位置的請求
 permissions-site-location-disable-desc = 將防止上列以外的網站請您允許取得您所在位置。封鎖取得所在位置的權限可能會影響某些網站的功能。
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = 設定 - 虛擬實境權限
+    .style = { permissions-window.style }
+permissions-site-xr-desc = 下列網站要求使用您的虛擬實境裝置。您可指定允許哪些網站使用 VR 裝置，也可以封鎖新的 VR 裝置使用請求。
+permissions-site-xr-disable-label =
+    .label = 封鎖新網站使用您虛擬裝置的請求
+permissions-site-xr-disable-desc = 將防止上列以外的網站請求使用您的虛擬實境裝置。封鎖虛擬實境裝置的使用權限可能會影響某些網站的功能。
 
 ## Site Permissions - Camera
 

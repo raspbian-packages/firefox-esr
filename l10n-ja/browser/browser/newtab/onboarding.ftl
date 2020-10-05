@@ -21,6 +21,12 @@ onboarding-welcome-body = ブラウザーを手に入れました。<br/>残り�
 onboarding-welcome-learn-more = 役立つ点についての詳細
 
 onboarding-join-form-header = { -brand-product-name } に参加
+onboarding-welcome-modal-get-body = ブラウザーをインストールできました。<br/>今すぐ { -brand-product-name } を最大限に活用しましょう。
+onboarding-welcome-modal-supercharge-body = プライバシー保護を充実させましょう。
+onboarding-welcome-modal-privacy-body = ブラウザーをインストールできました。プライバシー保護をさらに追加しましょう。
+onboarding-welcome-modal-family-learn-more = { -brand-product-name } ファミリー製品について
+onboarding-welcome-form-header = はじめる
+
 onboarding-join-form-body = メールアドレスを入力すると参加できます。
 onboarding-join-form-email =
     .placeholder = メールアドレスを入力してください
@@ -28,24 +34,69 @@ onboarding-join-form-email-error = 有効なメールアドレスが必要です
 onboarding-join-form-legal = 進むと <a data-l10n-name="terms">利用規約</a> と <a data-l10n-name="privacy">プライバシーに関する通知</a> に同意したとみなします。
 onboarding-join-form-continue = 続行
 
+# This message is followed by a link using onboarding-join-form-signin ("Sign In") as text.
+onboarding-join-form-signin-label = アカウントは登録済みですか？
+# Text for link to submit the sign in form
+onboarding-join-form-signin = ログイン
+
 onboarding-start-browsing-button-label = ブラウジングを開始
+
+onboarding-cards-dismiss =
+    .title = 閉じる
+    .aria-label = 閉じる
+
+## Welcome full page string
+
+onboarding-fullpage-welcome-subheader = できることを探し始めましょう。
+onboarding-fullpage-form-email =
+    .placeholder = あなたのメールアドレス...
+
+## Firefox Sync modal dialog strings.
+
+onboarding-sync-welcome-header = { -brand-product-name } をあなたとともに
+onboarding-sync-welcome-content = すべての端末で、ブックマーク、履歴、パスワード、その他の設定を取得できます。
+onboarding-sync-welcome-learn-more-link = Firefox アカウントに関する詳細情報
+
+onboarding-sync-form-input =
+    .placeholder = メールアドレス
+
+onboarding-sync-form-continue-button = 続行
+onboarding-sync-form-skip-login-button = この手順をスキップ
+
+## This is part of the line "Enter your email to continue to Firefox Sync"
+
+onboarding-sync-form-header = メールアドレスを入力してください
+onboarding-sync-form-sub-header = { -sync-brand-name } の利用を続けるために必要です
+
 
 ## These are individual benefit messages shown with an image, title and
 ## description.
 
 onboarding-benefit-products-title = 有用な製品
+
 onboarding-benefit-products-text = ご使用の端末すべてのプライバシーを尊重する一連のツールを使いましょう。
 
 onboarding-benefit-knowledge-title = 実用的な知識
 onboarding-benefit-knowledge-text = オンラインをよりスマートで安全に保つのに必要な知識を学びましょう。
 
 onboarding-benefit-privacy-title = 真のプライバシー
+
 # "Personal Data Promise" is a concept that should be translated consistently
 # across the product. It refers to a concept shown elsewhere to the user: "The
 # Firefox Personal Data Promise is the way we honor your data in everything we
 # make and do. We take less data. We keep it safe. And we make sure that we are
 # transparent about how we use it."
 onboarding-benefit-privacy-text = 私たちが尊重する個人データ保護の約束: 最小限に、安全に。隠し事をしない。
+
+
+onboarding-benefit-sync-title = { -sync-brand-short-name }
+onboarding-benefit-sync-text = ご使用のどの端末の { -brand-product-name } でもブックマーク、パスワード、履歴などを共有できます。
+
+onboarding-benefit-monitor-title = { -monitor-brand-short-name }
+onboarding-benefit-monitor-text = 既知のデータ漏洩にあなたの個人情報が含まれていた場合に通知を受けられます。
+
+onboarding-benefit-lockwise-title = { -lockwise-brand-short-name }
+onboarding-benefit-lockwise-text = 持ち出しできる保護されたパスワード管理ができます。
 
 
 ## These strings belong to the individual onboarding messages.
@@ -80,6 +131,7 @@ onboarding-data-sync-button2 = { -sync-brand-short-name } にログイン
 
 onboarding-firefox-monitor-title = データの漏洩に備えて
 onboarding-firefox-monitor-text = { -monitor-brand-name } はデータの漏洩にあなたのメールアドレスが使われたか監視し、新たな漏洩があったときに警告します。
+onboarding-firefox-monitor-text2 = { -monitor-brand-name } は既知のデータの漏洩にあなたのメールアドレスが使われたか監視し、新たな漏洩があったときに警告します。
 onboarding-firefox-monitor-button = アカウント登録
 
 onboarding-browse-privately-title = プライベートブラウジング
@@ -100,6 +152,9 @@ onboarding-send-tabs-title = 手軽にタブ送信
 # "Send Tabs" refers to "Send Tab to Device" feature that appears when opening a
 # tab's context menu.
 onboarding-send-tabs-text = タブ送信は、コピー＆ペーストしたりブラウザーを切り替えたりせずに、端末間で手軽にページを共有できます。
+# "Send Tabs" refers to "Send Tab to Device" feature that appears when opening a
+# tab's context menu.
+onboarding-send-tabs-text2 = URL をコピーしたりブラウザーを切り替えたりせずに、端末間で簡単にページを共有できます。
 onboarding-send-tabs-button = タブ送信を始めてみる
 
 onboarding-pocket-anywhere-title = どこでも視聴
@@ -110,12 +165,25 @@ onboarding-lockwise-passwords-title = パスワードをどこにでも
 onboarding-lockwise-passwords-text2 = { -lockwise-brand-name } でパスワードを安全に保存しつつ、ログイン操作が簡単になります。
 onboarding-lockwise-passwords-button2 = アプリを入手
 
+onboarding-lockwise-strong-passwords-title = 強固なパスワードを作成、保存
+onboarding-lockwise-strong-passwords-text = { -lockwise-brand-name } は強固なパスワードをその場で作成し、一か所にすべて保存します。
+onboarding-lockwise-strong-passwords-button = ログイン情報を管理
+
 onboarding-facebook-container-title = Facebook に境界線を
 onboarding-facebook-container-text2 = { -facebook-container-brand-name } を使うと Facebook プロファイルが隔離されるので、Facebook のターゲティング広告が機能しにくくなります。
 onboarding-facebook-container-button = 拡張機能を追加
 
 
+onboarding-import-browser-settings-title = ブックマークやパスワードなどをインポート
+onboarding-import-browser-settings-text = すぐに飛び込もう - Chrome からサイトと設定を簡単に持ち込めます。
+onboarding-import-browser-settings-button = Chrome からデータをインポートする
+
+onboarding-personal-data-promise-title = プライバシー第一の設計
+onboarding-personal-data-promise-text = { -brand-product-name } は、ユーザーデータの取得を最小限にし、それを保護し、使用目的を明確にすることにより、あなたのデータを尊重します。
+onboarding-personal-data-promise-button = 私たちの誓約を確認する
+
 ## Message strings belonging to the Return to AMO flow
+
 return-to-amo-sub-header = おめでとうございます。{ -brand-short-name } をインストールできました。
 
 # <icon></icon> will be replaced with the icon belonging to the extension

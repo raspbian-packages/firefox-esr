@@ -12,6 +12,11 @@ pref-page =
             [windows] ជម្រើស
            *[other] ចំណូលចិត្ត
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] ជម្រើស
+       *[other] ចំណូលចិត្ត
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -39,11 +44,8 @@ category-search =
 pane-privacy-title = ឯកជន​ភាព & សុវត្ថិភាព
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-# The word "account" can be translated, do not translate or transliterate "Firefox".
-pane-sync-title = គណនី Firefox
-category-sync =
-    .tooltiptext = { pane-sync-title }
 help-button-label = { -brand-short-name } ជំនួយ
+addons-button-label = ផ្នែកបន្ថែមនិងរចនាប័ទ្ម
 focus-search =
     .key = f
 close-button =
@@ -83,6 +85,15 @@ extension-controlled-privacy-containers = ផ្នែកបន្ថែម <img
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
 extension-controlled-websites-content-blocking-all-trackers = ផ្នែកបន្ថែម <img data-l10n-name="icon"/> { $name } កំពុងគ្រប់គ្រងការកំណត់នេះ។
+# This string is shown to notify the user that their proxy configuration preferences
+# are being controlled by an extension.
+extension-controlled-proxy-config = ផ្នែកបន្ថែម <img data-l10n-name="icon"/> { $name } កំពុងគ្រប់គ្រងរបៀបដែល { -brand-short-name } តភ្ជាប់ទៅអ៊ីនធឺណិត។
+# This string is shown after the user disables an extension to notify the user
+# how to enable an extension that they disabled.
+#
+# <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
+# <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
+extension-controlled-enable = ដើម្បីអនុញ្ញាតផ្នែកបន្ថែម សូមចូលទៅកាន់ <img data-l10n-name="addons-icon"/> កម្មវិធីបន្ថែម នៅក្នុងម៉ឺនុយ <img data-l10n-name="menu-icon"/>។
 
 ## Preferences UI Search Results
 
@@ -220,6 +231,58 @@ applications-type-column =
 applications-action-column =
     .label = អំពើ
     .accesskey = ព
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = ឯកសារ { $extension }
+applications-action-save =
+    .label = រក្សា​ទុក​ឯកសារ
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = ប្រើ { $app-name }
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = ប្រើ { $app-name } (លំនាំដើម)
+applications-use-other =
+    .label = ប្រើ​ផ្សេងទៀត…
+applications-select-helper = ជ្រើស​កម្មវិធី​ជំនួយ
+applications-manage-app =
+    .label = សេចក្ដី​លម្អិត​អំពី​កម្មវិធី…
+applications-always-ask =
+    .label = សួរ​ជានិច្ច
+applications-type-pdf = ទ្រង់ទ្រាយ​ឯកសារ​ចល័ត (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = ប្រើ { $plugin-name } (ក្នុង { -brand-short-name })
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+
+##
+
 drm-content-header = ខ្លឹមសារ​ការគ្រប់គ្រងសិទ្ធិឌីជីថល (DRM)
 play-drm-content =
     .label = លេងខ្លឹមសារ​ដែលគ្រប់គ្រងដោយ DRM
@@ -301,6 +364,7 @@ network-proxy-connection-settings =
 ## Home Section
 
 home-new-windows-tabs-header = វីនដូ និងផ្ទាំងថ្មី
+home-new-windows-tabs-description2 = ជ្រើសអ្វីដែលអ្នកឃើញនៅពេលអ្នកបើកគេហទំព័រ, វីនដូថ្មី, និងផ្ទាំងថ្មី។
 
 ## Home Section - Home Page Customization
 
@@ -333,6 +397,52 @@ use-current-pages =
 choose-bookmark =
     .label = ប្រើ​ចំណាំ…
     .accesskey = ច
+
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = ខ្លឹមសារ Firefox Home
+home-prefs-content-description = ជ្រើសរើស​ខ្លឹមសារ​អ្វីដែលអ្នកចង់បាននៅលើអេក្រង់ Firefox Home របស់អ្នក។
+home-prefs-search-header =
+    .label = ការស្វែងរកតាម​អ៊ីនធឺណិត
+home-prefs-topsites-header =
+    .label = សាយកំពូល
+home-prefs-topsites-description = គេហទំព័រ​ដែល​អ្នក​មើល​ច្រើន​បំផុត
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = បានណែនាំដោយ { $provider }
+home-prefs-recommended-by-description = មាតិកាល្អ ៗ ពីជុំវិញវេប ដែលបានតម្រូវតាមការចង់បានផ្ទាល់ខ្លួនសម្រាប់អ្នក
+
+##
+
+home-prefs-recommended-by-learn-more = របៀប​ដែល​វា​ដំណើរការ
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = រឿងរ៉ាវដែលបានឧបត្ថម្ភ
+home-prefs-highlights-header =
+    .label = រឿងសំខាន់ៗ
+home-prefs-highlights-description = ការជ្រើសរើស​គេហទំព័រ​ដែល​អ្នក​បាន​រក្សាទុក ឬ​មើល
+home-prefs-highlights-option-visited-pages =
+    .label = ទំព័រ​ដែល​បាន​ទស្សនា
+home-prefs-highlights-options-bookmarks =
+    .label = ចំណាំ
+home-prefs-highlights-option-most-recent-download =
+    .label = ការទាញយកថ្មីបំផុត
+home-prefs-highlights-option-saved-to-pocket =
+    .label = ទំព័រដែលបានរក្សាទុកទៅ { -pocket-brand-name }
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = អត្ថបទសង្ខេប
+home-prefs-snippets-description = បច្ចុប្បន្នភាពពី { -vendor-short-name } និង { -brand-product-name }
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+           *[other] { $num } ជួរ
+        }
 
 ## Search Section
 
@@ -392,6 +502,10 @@ containers-remove-button =
 
 ## Sync Section - Signed out
 
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = យក​បណ្ដាញ​របស់​អ្នក​ជាមួយ​អ្នក
 sync-signedout-description = ធ្វើ​សម​កាល​កម្ម​ចំណាំ​ ប្រវត្តិ ផ្ទាំង ពាក្យ​សម្ងាត់​ កម្មវិធី​ផ្នែក​បន្ថែម​ និង​ចំណូល​ចិត្ត​របស់​អ្នក​ ចំពោះ​គ្រប់​ឧបករណ៍​របស់​អ្នក។​
 sync-signedout-account-title = ភ្ជាប់​ជាមួយ​ { -fxaccount-brand-name }
@@ -412,6 +526,9 @@ sync-mobile-promo = ទាញ​យក​ Firefox សម្រាប់​<img d
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = ប្តូរ​​រូប​ប្រូ​ហ្វាល់
 sync-disconnect =
@@ -421,6 +538,9 @@ sync-manage-account = គ្រប់គ្រង​គណនី
     .accesskey = o
 sync-signedin-unverified = { $email } មិន​ត្រូវ​បាន​ផ្ទៀងផ្ទាត់។
 sync-signedin-login-failure = សូម​ចូល​ដើម្បី​តភ្ជាប់​ឡើង​វិញ { $email }
+sync-resend-verification =
+    .label = ផ្ញើការផ្ទៀងផ្ទាត់ម្ដងទៀត
+    .accesskey = ផ
 sync-remove-account =
     .label = លុប​គណនី
     .accesskey = R
@@ -429,12 +549,52 @@ sync-sign-in =
     .accesskey = g
 sync-signedin-settings-header = ការ​កំណត់​សមកាលកម្ម
 sync-signedin-settings-desc = ជ្រើស​អ្វី​ដែល​ត្រូវ​ធ្វើ​សមកាលកម្ម​នៅ​លើ​ឧបករណ៍​របស់​អ្នក​ដោយ​ប្រើ { -brand-short-name }.
+
+## Sync section - enabling or disabling sync.
+
+
+## The list of things currently syncing.
+
+
+## The "Choose what to sync" dialog.
+
 sync-engine-bookmarks =
     .label = ចំណាំ
     .accesskey = m
 sync-engine-history =
     .label = ប្រវត្តិ
     .accesskey = r
+sync-engine-tabs =
+    .label = ផ្ទាំងដែលបើក
+    .tooltiptext = បញ្ជីអ្វីដែលបានបើកនៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្មទាំងអស់
+    .accesskey = ផ
+sync-engine-logins =
+    .label = ការចូល
+    .tooltiptext = ឈ្មោះអ្នកប្រើនិងពាក្យសម្ងាត់ដែលអ្នកបានរក្សាទុក
+    .accesskey = ក
+sync-engine-addresses =
+    .label = អាសយដ្ឋាន
+    .tooltiptext = អាសយដ្ឋានប្រៃសណីយ៍ដែលអ្នកបានរក្សាទុក (ផ្ទៃតុតែប៉ុណ្ណោះ)
+    .accesskey = យ
+sync-engine-creditcards =
+    .label = កាត​ឥណទាន
+    .tooltiptext = ឈ្មោះ, លេខ និងកាលបរិច្ឆេទផុតកំណត់ (ផ្ទៃតុតែប៉ុណ្ណោះ)
+    .accesskey = ក
+sync-engine-addons =
+    .label = កម្មវិធី​បន្ថែម
+    .tooltiptext = ផ្នែកបន្ថែមនិងរចនាប័ទ្មសម្រាប់ Firefox ផ្ទៃតុ
+    .accesskey = ក
+sync-engine-prefs =
+    .label =
+        { PLATFORM() ->
+            [windows] ជម្រើស
+           *[other] ចំណូលចិត្ត
+        }
+    .tooltiptext = ការកំណត់ទូទៅ, ភាពឯកជន និងសុវត្ថិភាពដែលអ្នកបានប្តូរ
+    .accesskey = s
+
+## The device name controls.
+
 sync-device-name-header = ឈ្មោះ​ឧបករណ៍
 sync-device-name-change =
     .label = ប្ដូរ​ឈ្មោះ​ឧបករណ៍…
@@ -445,8 +605,6 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = រក្សា​ទុក
     .accesskey = v
-sync-mobilepromo-single = តភ្ជាប់ឧបករណ៍ផ្សេងទៀត
-sync-mobilepromo-multi = គ្រប់គ្រងឧបករណ៍
 sync-tos-link = លក្ខខ័ណ្ឌ​សេវាកម្ម
 sync-fxa-privacy-notice = គោលនយោបាយ​ឯកជន
 
@@ -456,6 +614,14 @@ privacy-header = ឯកជនភាព​កម្មវិធី​រុករ
 
 ## Privacy Section - Forms
 
+logins-header = ការចូល និង​ពាក្យ​សម្ងាត់
+
+## Privacy Section - Logins and Passwords
+
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-logins =
+    .label = ស្នើឱ្យរក្សាទុកការចូលនិងពាក្យសម្ងាត់សម្រាប់វេបសាយ
+    .accesskey = ម
 forms-exceptions =
     .label = ករណី​លើកលែង…
     .accesskey = x
@@ -468,6 +634,11 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = ផ្លាស់ប្ដូរ​ពាក្យ​សម្ងាត់​មេ…
     .accesskey = M
+forms-master-pw-fips-title = បច្ចុប្បន្ន​នេះ អ្នក​ស្ថិត​នៅក្នុង​របៀប FIPS ។ FIPS ទាមទារ​ពាក្យសម្ងាត់​មេ​ដែល​មិន​ទទេ​ ។
+forms-master-pw-fips-desc = បាន​បរាជ័យ​ក្នុង​ការ​ផ្លាស់ប្ដូរ​ពាក្យសម្ងាត់
+
+## OS Authentication dialog
+
 
 ## Privacy Section - History
 
@@ -489,10 +660,14 @@ history-remember-option-never =
     .label = កុំ​ចងចាំ​ប្រវត្តិ
 history-remember-option-custom =
     .label = ប្រើ​ការ​កំណត់​ផ្ទាល់ខ្លួន​សម្រាប់​ប្រវត្តិ
+history-remember-description = { -brand-short-name } នឹងចងចាំការរុករក ការទាញយក សំណុំបែបបទ និងប្រវត្តិស្វែងរករបស់អ្នក។
 history-dontremember-description = { -brand-short-name } នឹង​ប្រើ​ការ​កំណត់​ដូច​គ្នា​ជា​ការ​​រក​មើល​ឯកជន ហើយ​នឹង​មិន​ចងចាំ​ប្រវត្តិ​ណាមួយ ពេល​ដែល​អ្នក​រក​មើល​តំបន់​បណ្ដាញ​នោះ​ទេ ។
 history-private-browsing-permanent =
     .label = ប្រើ​របៀប​រកមើល​ឯកជន​ជានិច្ច
     .accesskey = ប
+history-remember-browser-option =
+    .label = ចងចាំ​ប្រវត្តិ​ទាញយកនិង​ការ​រុករក​
+    .accesskey = ង
 history-remember-search-option =
     .label = ចងចាំ​ប្រវត្តិ​ស្វែងរក និង​សំណុំ​បែបបទ
     .accesskey = ទ
@@ -510,6 +685,10 @@ history-clear-button =
 
 sitedata-header = ខូឃី និងទិន្នន័យ​គេហទំព័រ
 sitedata-total-size-calculating = កំពុងគណនាទិន្នន័យតំបន់បណ្តាញ និងទំហំឃ្លាំងសម្ងាត់…
+# Variables:
+#   $value (Number) - Value of the unit (for example: 4.6, 500)
+#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+sitedata-total-size = ខុកឃី ទិន្នន័យវិបសាយ និងឃ្លាំងសម្ងាត់ដែលបានផ្ទុករបស់អ្នកបច្ចុប្បន្នកំពុងប្រើទំហំថាស { $value } { $unit }។
 sitedata-learn-more = ស្វែងយល់​បន្ថែម
 # This label means 'type of content that is blocked', and is followed by a drop-down list with content types below.
 # The list items are the strings named sitedata-block-*-option*.
@@ -549,7 +728,24 @@ content-blocking-setting-standard =
 content-blocking-setting-custom =
     .label = ផ្ទាល់ខ្លួន
     .accesskey = C
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = ស្ដង់ដា
+    .accesskey = d
+enhanced-tracking-protection-setting-custom =
+    .label = ផ្ទាល់ខ្លួន
+    .accesskey = C
+
+##
+
 content-blocking-learn-how = ស្វែងយល់​ពី​របៀប
+content-blocking-cookies-label =
+    .label = ​ខូគី
+    .accesskey = ខ
 
 ## Privacy Section - Tracking
 
@@ -580,8 +776,6 @@ permissions-notification-pause =
 permissions-block-autoplay-media-exceptions =
     .label = ករណីលើកលែង…
     .accesskey = E
-autoplay-option-ask =
-    .label = សួរជានិច្ច
 permissions-block-popups =
     .label = ទប់ស្កាត់​​បង្អួច​លេច​ឡើង
     .accesskey = ទ
@@ -611,7 +805,9 @@ collection-health-report-link = ស្វែងយល់​​បន្ថែម
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = ការ​រាយការណ៍​ទិន្នន័យ​ត្រូវ​បាន​បិទ​សម្រាប់​ការ​កំណត់​រចនាសម្ព័ន្ធ​កំណែ​នេះ
-collection-browser-errors-link = ស្វែងយល់​បន្ថែម
+collection-backlogged-crash-reports =
+    .label = អនុញ្ញាត​ឲ្យ { -brand-short-name } ផ្ញើ​របាយការណ៍​ភាព​ជាប់​គាំង​ដែល​បាន​បម្រុង​ជំនួសអ្នក
+    .accesskey = ភ
 collection-backlogged-crash-reports-link = ស្វែងយល់​​បន្ថែម
 
 ## Privacy Section - Security

@@ -1,8 +1,8 @@
 <!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-<!-- LOCALIZATION NOTE : FILE This file contains the global menu items -->
 
+<!-- LOCALIZATION NOTE : FILE This file contains the global menu items -->
 
 <!ENTITY fileMenu.label          "Datoteka">
 <!ENTITY fileMenu.accesskey        "D">
@@ -11,9 +11,9 @@
 
 <!ENTITY editMenu.label          "Uredi">
 <!ENTITY editMenu.accesskey        "U">
-<!ENTITY undoCmd.label            "Vrati">
+<!ENTITY undoCmd.label            "Poništi">
 <!ENTITY undoCmd.key            "Z">
-<!ENTITY undoCmd.accesskey          "V">
+<!ENTITY undoCmd.accesskey          "P">
 <!ENTITY redoCmd.label            "Ponovi">
 <!ENTITY redoCmd.key            "Y">
 <!ENTITY redoCmd.accesskey          "P">
@@ -35,6 +35,9 @@
 <!ENTITY preferencesCmd2.accesskey "M">
 <!ENTITY preferencesCmdUnix.label       "Postavke">
 <!ENTITY preferencesCmdUnix.accesskey     "s">
+
+<!ENTITY customizeCmd.label "Prilagodi">
+<!ENTITY customizeCmd.accesskey "d">
 
 <!ENTITY viewMenu.label          "Pogled">
 <!ENTITY viewMenu.accesskey        "g">

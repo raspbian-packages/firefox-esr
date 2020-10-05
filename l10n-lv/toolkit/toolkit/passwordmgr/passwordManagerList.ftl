@@ -54,6 +54,7 @@ import =
 close-button =
     .label = Aizvērt
     .accesskey = z
+
 show-passwords =
     .label = Rādīt paroles
     .accesskey = P
@@ -71,3 +72,5 @@ remove-all-shown =
 remove-all-passwords-prompt = Vai tiešām vēlaties izmest visas paroles?
 remove-all-passwords-title = Izmest visas paroles
 no-master-password-prompt = Vai tiešām vēlaties rādīt savas paroles?
+auto-fill-logins-and-passwords =
+    .label = Automātiski aizpildīt lietotājvārdus un paroles

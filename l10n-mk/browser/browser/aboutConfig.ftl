@@ -4,12 +4,29 @@
 
 about-config-warning-checkbox = Изнервирај ме повторно, те молам!
 about-config-warning-button = Го прифаќам ризикот
+
+## These strings appear on the warning you see when first visiting about:config.
+
+##
+
 about-config-show-all = Прикажи сѐ
+
 about-config-pref-add = Додај
 about-config-pref-edit = Уреди
 about-config-pref-save = Сними
 about-config-pref-reset = Ресетирај
 about-config-pref-delete = Избриши
+
+about-config-pref-add-button =
+    .title = Додај
+about-config-pref-edit-button =
+    .title = Уреди
+about-config-pref-save-button =
+    .title = Сними
+about-config-pref-reset-button =
+    .title = Ресетирај
+about-config-pref-delete-button =
+    .title = Избриши
 
 ## Labels for the type selection radio buttons shown when adding preferences.
 

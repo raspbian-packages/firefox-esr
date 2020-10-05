@@ -6,15 +6,13 @@
 ### This file contains the entities needed to use the Find Bar.
 
 findbar-next =
-    .tooltiptext = Trouver la prochaine occurrence de la phrase
+    .tooltiptext = Trouver la prochaine occurrence de l’expression
 findbar-previous =
-    .tooltiptext = Trouver l’occurrence précédente de la phrase
+    .tooltiptext = Trouver l’occurrence précédente de l’expression
+
 findbar-find-button-close =
     .tooltiptext = Fermer la barre de recherche
-findbar-highlight-all =
-    .label = Tout surligner
-    .accesskey = u
-    .tooltiptext = Surligner toutes les occurrences de la phrase
+
 findbar-highlight-all2 =
     .label = Tout surligner
     .accesskey =
@@ -23,10 +21,17 @@ findbar-highlight-all2 =
            *[other] T
         }
     .tooltiptext = Surligner toutes les occurrences de la phrase
+
 findbar-case-sensitive =
     .label = Respecter la casse
     .accesskey = R
     .tooltiptext = Effectuer une recherche en respectant la casse
+
+findbar-match-diacritics =
+    .label = Respecter les accents et diacritiques
+    .accesskey = s
+    .tooltiptext = Effectuer une recherche en respectant les caractères accentués et la cédille (exemple : aucun résultat ne sera trouvé en saisissant « francais » au lieu du mot « français »)
+
 findbar-entire-word =
     .label = Mots entiers
     .accesskey = M

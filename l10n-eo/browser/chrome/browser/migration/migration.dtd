@@ -5,7 +5,7 @@
 
 <!ENTITY migrationWizard.title          "Asistanto de importado">
 
-<!ENTITY importFrom.label               "Importi elekteblojn, legosignojn, historion, pasvortojn kaj aliajn datumojn el:">
+<!ENTITY importFrom.label               "Importi preferojn, legosignojn, historion, pasvortojn kaj aliajn datumojn el:">
 <!ENTITY importFromUnix.label           "Importi preferojn, legosignojn, historion, pasvortojn kaj aliajn datumojn el:">
 <!ENTITY importFromBookmarks.label      "Importi legosignojn el:">
 
@@ -13,6 +13,10 @@
 <!ENTITY importFromIE.accesskey         "M">
 <!ENTITY importFromEdge.label           "Microsoft Edge">
 <!ENTITY importFromEdge.accesskey       "E">
+<!ENTITY importFromEdgeLegacy.label     "Microsoft Edge Legacy">
+<!ENTITY importFromEdgeLegacy.accesskey "L">
+<!ENTITY importFromEdgeBeta.label       "Microsoft Edge Beta">
+<!ENTITY importFromEdgeBeta.accesskey   "d">
 <!ENTITY importFromNothing.label        "Importi nenion">
 <!ENTITY importFromNothing.accesskey    "N">
 <!ENTITY importFromSafari.label         "Safari">

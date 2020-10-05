@@ -29,7 +29,7 @@
 <!ENTITY closeTabCmd.accesskey "s">
 <!ENTITY newAccountCmd.label "Account…">
 <!ENTITY newAccountCmd.accesskey "A">
-<!ENTITY openMessageFileCmd.label "Opgeslagen bericht openen…">
+<!ENTITY openMessageFileCmd.label "Bestand openen…">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY openAttachmentCmd.label "Bijlagen">
 <!ENTITY openAttachmentCmd.accesskey "e">
@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "Gemarkeerde berichten">
 <!ENTITY selectFlaggedCmd.accesskey "m">
+<!ENTITY menuFavoriteFolder.label "Favoriete map">
+<!ENTITY menuFavoriteFolder.accesskey "v">
 <!ENTITY folderPropsCmd.label "Eigenschappen…">
 <!ENTITY folderPropsFolderCmd.label "Mapeigenschappen…">
 <!ENTITY folderPropsNewsgroupCmd.label "Nieuwsgroepeigenschappen…">
@@ -133,6 +135,10 @@
 <!ENTITY showThreadPaneCmd.accesskey "C">
 <!ENTITY showFolderPaneCmd.label "Mappenvenster">
 <!ENTITY showFolderPaneCmd.accesskey "M">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "Sorteren op">
@@ -272,6 +278,8 @@
 <!ENTITY goForwardCmd.commandKey "]">
 <!ENTITY prevFlaggedMsgCmd.label "Gemarkeerd bericht">
 <!ENTITY prevFlaggedMsgCmd.accesskey "m">
+<!ENTITY folderMenu.label "Map">
+<!ENTITY folderMenu.accesskey "a">
 <!ENTITY startPageCmd.label "E-mail-startpagina">
 <!ENTITY startPageCmd.accesskey "s">
 
@@ -288,7 +296,7 @@
 <!ENTITY replyListCmd.label "Lijst beantwoorden">
 <!ENTITY replyListCmd.accesskey "i">
 <!ENTITY replyNewsgroupCmd.label "Nieuwsgroep beantwoorden">
-<!ENTITY replyNewsgroupCmd.accesskey	"r">
+<!ENTITY replyNewsgroupCmd.accesskey "r">
 <!ENTITY replySenderCmd.label "Afzender beantwoorden">
 <!ENTITY replySenderCmd.accesskey "a">
 <!ENTITY replyToAllMsgCmd.label "Allen beantwoorden">
@@ -417,6 +425,7 @@
 <!ENTITY deleteButton.label "Verwijderen">
 <!ENTITY undeleteButton.label "Terugplaatsen">
 <!ENTITY markButton.label "Markeren">
+<!ENTITY printButton.label "Afdrukken">
 <!ENTITY stopButton.label "Stoppen">
 <!ENTITY junkButton.label "Ongewenst">
 <!ENTITY notJunkButton.label "Niet ongewenst">
@@ -440,8 +449,10 @@
 <!ENTITY deleteButton.tooltip "Geselecteerde bericht of map verwijderen">
 <!ENTITY undeleteButton.tooltip "Geselecteerde bericht terugplaatsen">
 <!ENTITY markButton.tooltip "Berichten markeren">
+<!ENTITY printButton.tooltip "Dit bericht afdrukken">
 <!ENTITY stopButton.tooltip "De huidige overdracht stoppen">
 <!ENTITY throbber.tooltip "Naar de &vendorShortName;-startpagina gaan">
+<!ENTITY throbber.tooltip2 "Naar de &brandShortName;-startpagina gaan">
 <!ENTITY junkButton.tooltip "Geselecteerde berichten als ongewenst markeren">
 <!ENTITY notJunkButton.tooltip "Geselecteerde berichten als gewenst markeren">
 
@@ -495,6 +506,8 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Berichten ophalen">
 <!ENTITY folderContextGetMessages.accesskey "B">
+<!ENTITY folderContextMarkAllFoldersRead.label "Alle mappen als gelezen markeren">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "M">
 <!ENTITY folderContextOpenNewWindow.label "Openen in nieuw venster">
 <!ENTITY folderContextOpenNewWindow.accesskey "O">
 <!ENTITY folderContextOpenNewTab.label "Openen in nieuw tabblad">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "z">
 <!ENTITY folderContextProperties.label "Eigenschappen…">
 <!ENTITY folderContextProperties.accesskey "E">
+<!ENTITY folderContextFavoriteFolder.label "Favoriete map">
+<!ENTITY folderContextFavoriteFolder.accesskey "o">
 <!ENTITY folderContextSettings.label "Instellingen…">
 <!ENTITY folderContextSettings.accesskey "I">
 

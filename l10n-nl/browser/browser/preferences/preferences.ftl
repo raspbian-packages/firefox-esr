@@ -14,6 +14,11 @@ pref-page =
             [windows] Opties
            *[other] Voorkeuren
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Opties
+       *[other] Voorkeuren
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -29,11 +34,6 @@ search-input-box =
             [windows] Zoeken in opties
            *[other] Zoeken in voorkeuren
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Uw organisatie heeft de mogelijkheid tot het wijzigen van enkele opties uitgeschakeld.
-       *[other] Uw organisatie heeft de mogelijkheid tot het wijzigen van enkele voorkeuren uitgeschakeld.
-    }
 managed-notice = Uw browser wordt door uw organisatie beheerd.
 pane-general-title = Algemeen
 category-general =
@@ -203,6 +203,15 @@ advanced-fonts =
 colors-settings =
     .label = Kleuren…
     .accesskey = K
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Zoom
+preferences-default-zoom = Standaard zoom
+    .accesskey = z
+preferences-default-zoom-value =
+    .label = { $percentage }%
+preferences-zoom-text-only =
+    .label = Alleen tekst inzoomen
+    .accesskey = t
 language-header = Taal
 choose-language-description = Talen van uw voorkeur kiezen voor het weergeven van webpagina’s
 choose-button =
@@ -223,6 +232,10 @@ translate-attribution = Vertalingen door <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Uitzonderingen…
     .accesskey = z
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = De instellingen voor ‘{ $localeName }’ van uw besturingssysteem gebruiken om data, tijden, getallen en metingen op te maken.
 check-user-spelling =
     .label = Uw spelling controleren tijdens het typen
     .accesskey = s
@@ -258,6 +271,75 @@ applications-type-column =
 applications-action-column =
     .label = Actie
     .accesskey = A
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = { $extension }-bestand
+applications-action-save =
+    .label = Bestand opslaan
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = { $app-name } gebruiken
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = { $app-name } gebruiken (standaard)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Standaardtoepassing in macOS gebruiken
+            [windows] Standaardtoepassing in Windows gebruiken
+           *[other] Standaard systeemtoepassing gebruiken
+        }
+applications-use-other =
+    .label = Andere gebruiken…
+applications-select-helper = Hulptoepassing selecteren
+applications-manage-app =
+    .label = Toepassingsdetails…
+applications-always-ask =
+    .label = Altijd vragen
+applications-type-pdf = Portable Document Format (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = { $plugin-name } gebruiken (in { -brand-short-name })
+applications-open-inapp =
+    .label = Openen in { -brand-short-name }
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Digital Rights Management (DRM)-inhoud
 play-drm-content =
     .label = DRM-beheerde inhoud afspelen
@@ -344,6 +426,10 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Naar tekst zoeken wanneer u begint met typen
     .accesskey = t
+browsing-picture-in-picture-toggle-enabled =
+    .label = Picture-in-picture-videobesturing inschakelen
+    .accesskey = P
+browsing-picture-in-picture-learn-more = Meer info
 browsing-cfr-recommendations =
     .label = Extensies aanbevelen terwijl u surft
     .accesskey = a
@@ -398,6 +484,54 @@ choose-bookmark =
     .label = Bladwijzer gebruiken…
     .accesskey = B
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Inhoud van Firefox-startpagina
+home-prefs-content-description = Kies welke inhoud u op uw Firefox-startscherm wilt laten weergeven.
+home-prefs-search-header =
+    .label = Zoeken op het web
+home-prefs-topsites-header =
+    .label = Topwebsites
+home-prefs-topsites-description = De websites die u het vaakst bezoekt
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = Aanbevolen door { $provider }
+home-prefs-recommended-by-description = Geweldige inhoud van het web, gepersonaliseerd voor u
+home-prefs-recommended-by-description-update = Uitzonderlijke inhoud van het hele internet, samengesteld door { $provider }
+
+##
+
+home-prefs-recommended-by-learn-more = Hoe het werkt
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Gesponsorde verhalen
+home-prefs-highlights-header =
+    .label = Highlights
+home-prefs-highlights-description = Een selectie van websites die u hebt opgeslagen of bezocht
+home-prefs-highlights-option-visited-pages =
+    .label = Bezochte pagina’s
+home-prefs-highlights-options-bookmarks =
+    .label = Bladwijzers
+home-prefs-highlights-option-most-recent-download =
+    .label = Meest recent gedownload
+home-prefs-highlights-option-saved-to-pocket =
+    .label = Naar { -pocket-brand-name } opgeslagen pagina’s
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Snippets
+home-prefs-snippets-description = Updates van { -vendor-short-name } en { -brand-product-name }
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } rij
+           *[other] { $num } rijen
+        }
+
 ## Search Section
 
 search-bar-header = Zoekbalk
@@ -407,6 +541,13 @@ search-bar-shown =
     .label = Zoekbalk toevoegen in werkbalk
 search-engine-default-header = Standaardzoekmachine
 search-engine-default-desc = Kies de standaardzoekmachine die u in de adresbalk en zoekbalk wilt gebruiken.
+search-engine-default-desc-2 = Dit is uw standaardzoekmachine in de adresbalk en de zoekbalk. U kunt deze op elk gewenst moment wijzigen.
+search-engine-default-private-desc-2 = Kies een andere standaardzoekmachine die u alleen in privévensters wilt gebruiken
+search-separate-default-engine =
+    .label = Deze zoekmachine in privévensters gebruiken
+    .accesskey = u
+search-suggestions-header = Zoeksuggesties
+search-suggestions-desc = Kies hoe suggesties van zoekmachines worden weergegeven.
 search-suggestions-option =
     .label = Zoeksuggesties geven
     .accesskey = Z
@@ -420,6 +561,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Zoeksuggesties boven browsergeschiedenis tonen in adresbalkresultaten
+search-show-suggestions-private-windows =
+    .label = Zoeksuggesties weergeven in privévensters
+suggestions-addressbar-settings = Voorkeuren voor navigatiegeschiedenis, bladwijzers en tabbladsuggesties wijzigen
+suggestions-addressbar-settings-generic = Voorkeuren voor overige adresbalksuggesties wijzigen
 search-suggestions-cant-show = Zoeksuggesties worden niet in locatiebalkresultaten getoond, omdat u { -brand-short-name } hebt geconfigureerd om nooit geschiedenis te onthouden.
 search-one-click-header = Eén-klik-zoekmachines
 search-one-click-desc = Kies de alternatieve zoekmachines die onder de adresbalk en zoekbalk verschijnen als u een sleutelwoord begint in te voeren.
@@ -445,16 +590,29 @@ search-keyword-warning-bookmark = U hebt een sleutelwoord gekozen dat momenteel 
 ## Containers Section
 
 containers-back-link = « Teruggaan
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Terug naar Opties
+           *[other] Terug naar Voorkeuren
+        }
 containers-header = Containertabbladen
 containers-add-button =
     .label = Nieuwe container toevoegen
     .accesskey = N
+containers-new-tab-check =
+    .label = Selecteer een container voor elk nieuw tabblad
+    .accesskey = S
 containers-preferences-button =
     .label = Voorkeuren
 containers-remove-button =
     .label = Verwijderen
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Neem uw web mee
 sync-signedout-description = Synchroniseer uw bladwijzers, geschiedenis, tabbladen, wachtwoorden, add-ons en voorkeuren op al uw apparaten.
@@ -463,6 +621,9 @@ sync-signedout-account-create = Hebt u geen account? Beginnen
     .accesskey = c
 sync-signedout-account-signin =
     .label = Aanmelden…
+    .accesskey = A
+sync-signedout-account-signin2 =
+    .label = Aanmelden bij { -sync-brand-short-name }…
     .accesskey = A
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
@@ -476,11 +637,17 @@ sync-mobile-promo = Download Firefox voor <img data-l10n-name="android-icon"/> <
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Profielafbeelding wijzigen
 sync-disconnect =
     .label = Verbinding verbreken…
     .accesskey = v
+sync-sign-out =
+    .label = Afmelden…
+    .accesskey = f
 sync-manage-account = Account beheren
     .accesskey = b
 sync-signedin-unverified = { $email } is niet geverifieerd.
@@ -496,6 +663,48 @@ sync-sign-in =
     .accesskey = m
 sync-signedin-settings-header = Sync-instellingen
 sync-signedin-settings-desc = Kies wat u wilt synchroniseren op uw apparaten die { -brand-short-name } gebruiken.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Synchroniseren: AAN
+prefs-syncing-off = Synchroniseren: UIT
+prefs-sync-setup =
+    .label = { -sync-brand-short-name } instellen…
+    .accesskey = s
+prefs-sync-offer-setup-label = Synchroniseer uw bladwijzers, geschiedenis, tabbladen, wachtwoorden, add-ons en voorkeuren op al uw apparaten.
+prefs-sync-now =
+    .labelnotsyncing = Nu synchroniseren
+    .accesskeynotsyncing = N
+    .labelsyncing = Synchroniseren…
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = U synchroniseert momenteel deze onderdelen:
+sync-currently-syncing-bookmarks = Bladwijzers
+sync-currently-syncing-history = Geschiedenis
+sync-currently-syncing-tabs = Open tabbladen
+sync-currently-syncing-logins-passwords = Aanmeldingen en wachtwoorden
+sync-currently-syncing-addresses = Adressen
+sync-currently-syncing-creditcards = Creditcards
+sync-currently-syncing-addons = Add-ons
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Opties
+       *[other] Voorkeuren
+    }
+sync-change-options =
+    .label = Wijzigen…
+    .accesskey = W
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Kies wat u wilt synchroniseren
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Wijzigingen opslaan
+    .buttonaccesskeyaccept = o
+    .buttonlabelextra2 = Verbinding verbreken…
+    .buttonaccesskeyextra2 = b
 sync-engine-bookmarks =
     .label = Bladwijzers
     .accesskey = B
@@ -508,8 +717,12 @@ sync-engine-tabs =
     .accesskey = t
 sync-engine-logins =
     .label = Aanmeldingen
-    .tooltiptext = Gebruikersnamen en wachtwoorden die u hebt opgeslagen
+    .tooltiptext = Door u opgeslagen gebruikersnamen en wachtwoorden
     .accesskey = n
+sync-engine-logins-passwords =
+    .label = Aanmeldingen en wachtwoorden
+    .tooltiptext = Door u opgeslagen gebruikersnamen en wachtwoorden
+    .accesskey = A
 sync-engine-addresses =
     .label = Adressen
     .tooltiptext = Postadressen die u hebt opgeslagen (alleen desktop)
@@ -530,6 +743,9 @@ sync-engine-prefs =
         }
     .tooltiptext = Algemene, privacy- en beveiligingsinstellingen die u hebt gewijzigd
     .accesskey = O
+
+## The device name controls.
+
 sync-device-name-header = Apparaatnaam
 sync-device-name-change =
     .label = Apparaatnaam wijzigen…
@@ -552,7 +768,14 @@ privacy-header = Browserprivacy
 
 ## Privacy Section - Forms
 
-logins-header = Aanmeldingen en Wachtwoorden
+logins-header = Aanmeldingen en wachtwoorden
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Aanmeldingen en wachtwoorden
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Vragen voor opslaan van aanmeldingen en wachtwoorden voor websites
     .accesskey = r
@@ -562,6 +785,14 @@ forms-exceptions =
 forms-generate-passwords =
     .label = Sterke wachtwoorden voorstellen en genereren
     .accesskey = w
+forms-breach-alerts =
+    .label = Waarschuwingen over wachtwoorden voor getroffen websites tonen
+    .accesskey = f
+forms-breach-alerts-learn-more-link = Meer info
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Aanmeldingen en wachtwoorden automatisch invullen
+    .accesskey = A
 forms-saved-logins =
     .label = Opgeslagen aanmeldingen…
     .accesskey = m
@@ -571,6 +802,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Hoofdwachtwoord wijzigen…
     .accesskey = z
+forms-master-pw-fips-title = U bent momenteel in FIPS-modus. FIPS vereist een ingesteld hoofdwachtwoord.
+forms-master-pw-fips-desc = Wachtwoordwijziging mislukt
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Voer uw aanmeldgegevens voor Windows in om een hoofdwachtwoord in te stellen. Hierdoor wordt de beveiliging van uw accounts beschermd.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = hoofdwachtwoord aanmaken
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -638,6 +882,12 @@ sitedata-block-desc = Geblokkeerd type
     .accesskey = t
 sitedata-option-block-trackers =
     .label = Trackers van derden
+sitedata-option-block-cross-site-trackers =
+    .label = Cross-site-trackers
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Cross-site- en sociale-mediatrackers
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Cross-site- en sociale-mediatrackers, en de resterende cookies isoleren
 sitedata-option-block-unvisited =
     .label = Cookies van niet-bezochte websites
 sitedata-option-block-all-third-party =
@@ -653,27 +903,34 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = Toestemmingen beheren…
     .accesskey = T
+sitedata-cookies-exceptions =
+    .label = Uitzonderingen beheren…
+    .accesskey = z
 
 ## Privacy Section - Address Bar
 
 addressbar-header = Adresbalk
 addressbar-suggest = Bij gebruik van de adresbalk, suggesties weergeven uit
 addressbar-locbar-history-option =
-    .label = Geschiedenis
-    .accesskey = G
+    .label = Navigatiegeschiedenis
+    .accesskey = g
 addressbar-locbar-bookmarks-option =
     .label = Bladwijzers
     .accesskey = d
 addressbar-locbar-openpage-option =
     .label = Open tabbladen
     .accesskey = O
+addressbar-locbar-topsites-option =
+    .label = Topwebsites
+    .accesskey = T
 addressbar-suggestions-settings = Voorkeuren voor zoekmachinesuggesties wijzigen
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Inhoudsblokkering
-content-blocking-description = Blokkeer inhoud van derden die uw surfgedrag volgt. Bepaal hoeveel van uw online-activiteit wordt bewaard en tussen websites wordt gedeeld.
 content-blocking-section-description = Bescherm uw privacy terwijl u surft. Blokkeer onzichtbare inhoud die de door u bezochte websites volgt en u profileert. Door wat van deze inhoud te blokkeren laden pagina’s mogelijk sneller.
+content-blocking-enhanced-tracking-protection = Verbeterde bescherming tegen volgen
+content-blocking-section-top-level-description = Trackers volgen u online om gegevens over uw surfgedrag en interesses te verzamelen. { -brand-short-name } blokkeert veel van deze trackers en andere kwaadwillende scripts.
 content-blocking-learn-more = Meer info
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
@@ -686,22 +943,47 @@ content-blocking-setting-strict =
 content-blocking-setting-custom =
     .label = Aangepast
     .accesskey = A
-content-blocking-standard-description = Blokkeert alleen bekende trackers in privévensters.
 content-blocking-standard-desc = Gebalanceerd voor bescherming en prestaties. Staat bepaalde trackers toe, zodat websites goed werken.
-content-blocking-strict-desc = Blokkeert alle trackers die { -brand-short-name } detecteert. Kan ervoor zorgen dat bepaalde websites niet goed werken.
 content-blocking-strict-description = Strengere bescherming, kan ervoor zorgen dat bepaalde websites niet goed werken.
 content-blocking-custom-desc = Kies wat er wordt geblokkeerd.
 content-blocking-private-trackers = Bekende trackers alleen in privévensters
 content-blocking-third-party-cookies = Tracking-cookies van derden
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Standaard
+    .accesskey = d
+enhanced-tracking-protection-setting-strict =
+    .label = Streng
+    .accesskey = r
+enhanced-tracking-protection-setting-custom =
+    .label = Aangepast
+    .accesskey = A
+
+##
+
+content-blocking-etp-standard-desc = Gebalanceerd voor bescherming en prestaties. Pagina’s laden normaal.
+content-blocking-etp-strict-desc = Sterkere bescherming, maar kan er voor zorgen dat sommige websites of inhoud niet werken.
+content-blocking-etp-custom-desc = Kies welke trackers en scripts u wilt blokkeren.
+content-blocking-private-windows = Volginhoud in privévensters
+content-blocking-cross-site-tracking-cookies = Cross-site-trackingcookies
+content-blocking-cross-site-tracking-cookies-plus-isolate = Cross-site-trackingcookies, en de resterende cookies isoleren
+content-blocking-social-media-trackers = Sociale-mediatrackers
 content-blocking-all-cookies = Alle cookies
 content-blocking-unvisited-cookies = Cookies van niet-bezochte websites
 content-blocking-all-windows-trackers = Bekende trackers in alle vensters
+content-blocking-all-windows-tracking-content = Volginhoud in alle vensters
 content-blocking-all-third-party-cookies = Alle cookies van derden
 content-blocking-cryptominers = Cryptominers
 content-blocking-fingerprinters = Fingerprinters
 content-blocking-warning-title = Let op!
 content-blocking-warning-description = Het blokkeren van inhoud kan ervoor zorgen dat bepaalde websites niet goed werken. Blokkering kan eenvoudig worden uitgeschakeld voor websites die u vertrouwt.
 content-blocking-learn-how = Meer info
+content-blocking-and-isolating-etp-warning-description = Het blokkeren van trackers en isoleren van cookies kan de functionaliteit van sommige websites beïnvloeden. Laad een pagina met trackers opnieuw om alle inhoud te laden.
+content-blocking-warning-learn-how = Meer info
 content-blocking-reload-description = U dient uw tabbladen te vernieuwen om deze wijzigingen toe te passen.
 content-blocking-reload-tabs-button =
     .label = Alle tabbladen vernieuwen
@@ -709,6 +991,9 @@ content-blocking-reload-tabs-button =
 content-blocking-trackers-label =
     .label = Trackers
     .accesskey = T
+content-blocking-tracking-content-label =
+    .label = Volginhoud
+    .accesskey = V
 content-blocking-tracking-protection-option-all-windows =
     .label = In alle vensters
     .accesskey = a
@@ -742,6 +1027,10 @@ tracking-manage-exceptions =
 permissions-header = Toestemmingen
 permissions-location = Locatie
 permissions-location-settings =
+    .label = Instellingen…
+    .accesskey = t
+permissions-xr = Virtual Reality
+permissions-xr-settings =
     .label = Instellingen…
     .accesskey = t
 permissions-camera = Camera
@@ -792,6 +1081,8 @@ permissions-a11y-privacy-link = Meer info
 collection-header = { -brand-short-name }-gegevensverzameling en -gebruik
 collection-description = We streven ernaar u keuzes te bieden en alleen te verzamelen wat we nodig hebben om { -brand-short-name } voor iedereen beschikbaar te maken en te verbeteren. We vragen altijd toestemming voordat we persoonlijke gegevens ontvangen.
 collection-privacy-notice = Privacyverklaring
+collection-health-report-telemetry-disabled = U staat { -vendor-short-name } niet langer toe technische en interactiegegevens vast te leggen. Alle eerdere gegevens worden binnen 30 dagen verwijderd.
+collection-health-report-telemetry-disabled-link = Meer info
 collection-health-report =
     .label = { -brand-short-name } toestaan om technische en interactiegegevens naar { -vendor-short-name } te verzenden
     .accesskey = r

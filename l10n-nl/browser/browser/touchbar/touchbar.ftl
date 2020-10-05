@@ -9,6 +9,7 @@ forward = Vooruit
 reload = Vernieuwen
 home = Startpagina
 fullscreen = Volledig scherm
+touchbar-fullscreen-exit = Volledig scherm verlaten
 find = Zoeken
 new-tab = Nieuw tabblad
 add-bookmark = Bladwijzer toevoegen
@@ -18,3 +19,21 @@ reader-view = Lezerweergave
 open-location = Voer zoekterm of adres in
 share = Delen
 close-window = Venster sluiten
+open-sidebar = Zijbalken
+
+# This string describes shortcuts for search.
+search-popover = Snelkoppelingen zoeken
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Zoeken in:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Bladwijzers
+search-history = Geschiedenis
+search-opentabs = Open tabbladen
+search-tags = Labels
+search-titles = Titels
+
+##
+

@@ -33,6 +33,7 @@ printpreview-of =
     .value = kokku
 printpreview-custom-prompt =
     .value = Kohandatud mõõtkava…
+printpreview-custom-scale-prompt-title = Kohandatud mõõtkava
 printpreview-page-setup =
     .label = Lehekülje sätted…
     .accesskey = j
@@ -44,6 +45,8 @@ printpreview-page =
 ## $percent (integer) - menuitem percent label
 ## $arrow (String) - UTF-8 arrow character for navigation buttons
 
+printpreview-percentage-value =
+    .label = { $percent }%
 printpreview-homearrow =
     .label = { $arrow }
     .tooltiptext = Esimene lehekülg
@@ -56,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Viimane lehekülg
+

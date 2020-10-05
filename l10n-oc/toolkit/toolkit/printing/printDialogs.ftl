@@ -22,12 +22,12 @@ landscape =
     .accesskey = P
 scale =
     .label = Escala :
-    .accesskey = s
+    .accesskey = E
 scale-percent =
     .value = %
 shrink-to-fit =
     .label = Adaptar a la talha de la pagina
-    .accesskey = t
+    .accesskey = A
 options-group-label =
     .value = Opcions
 print-bg =
@@ -49,7 +49,7 @@ margin-bottom-invisible =
     .value = Bas :
 margin-left =
     .value = Esquèrra :
-    .accesskey = q
+    .accesskey = E
 margin-left-invisible =
     .value = Esquèrra :
 margin-right =
@@ -103,6 +103,7 @@ print-window =
     .title = Impression
 print-complete =
     .value = L'impression es acabada.
+
 # Variables
 # $percent (integer) - Number of printed percentage
 print-percent =

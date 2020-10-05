@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Synkade Flikar
 synced-tabs-sidebar-noclients-subtitle = Vill du se dina flikar från andra enheter här?
 synced-tabs-sidebar-notsignedin = Logga in för att se en lista med flikar från dina andra enheter.
+synced-tabs-sidebar-intro = Se en lista med flikar från dina andra enheter.
 synced-tabs-sidebar-unverified = Ditt konto behöver verifieras.
 synced-tabs-sidebar-notabs = Inga öppna flikar
 synced-tabs-sidebar-openprefs = Öppna inställningar för { -sync-brand-short-name }
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Hantera enheter…
     .accesskey = e
+synced-tabs-context-sync-now =
+    .label = Synka nu
+    .accesskey = n
 fxa-sign-in = Logga in till { -sync-brand-short-name }
+turn-on-sync = Slå på { -sync-brand-short-name }

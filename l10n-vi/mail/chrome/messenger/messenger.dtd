@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "m">
 <!ENTITY  newContactCmd.label "Sổ địa chỉ liên hệ…">
 <!ENTITY  newContactCmd.accesskey "C">
+<!ENTITY openMenuCmd.label "Mở">
+<!ENTITY openMenuCmd.accesskey "O">
 <!ENTITY openMessageFileCmd.label "Mở các thư đã lưu…">
 <!ENTITY openMessageFileCmd.accesskey "O">
 <!ENTITY saveAsMenu.label "Lưu thành">
@@ -87,7 +89,7 @@
 <!ENTITY printCmd.label "In…">
 <!ENTITY printCmd.accesskey "P">
 <!ENTITY printCmd.key "p">
-<!ENTITY printPreviewCmd.label "Xem trước khi In">
+<!ENTITY printPreviewCmd.label "Xem trước khi in">
 <!ENTITY printPreviewCmd.accesskey "v">
 <!ENTITY printSetupCmd.label "Thiết lập trang…">
 <!ENTITY printSetupCmd.accesskey "u">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "C">
 <!ENTITY folderPaneBar.label "Thanh công cụ ngăn thư mục">
 <!ENTITY folderPaneBar.accesskey "F">
-<!ENTITY folderModeSelector.label "Cách hiển thị thư mục">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Sắp xếp theo">
@@ -384,7 +385,7 @@
 <!ENTITY moveCopyMsgRecentMenu.accesskey "G">
 <!ENTITY copyMessageLocation.label "Sao chép địa chỉ thư">
 <!ENTITY copyMessageLocation.accesskey "p">
-<!ENTITY copyMsgToMenu.label "Sao chép tới">
+<!ENTITY copyMsgToMenu.label "Sao chép đến">
 <!ENTITY copyMsgToMenu.accesskey "C">
 <!ENTITY moveToFolderAgain.label "Thử di chuyển lại">
 <!ENTITY moveToFolderAgain.accesskey "n">
@@ -587,6 +588,7 @@
 <!ENTITY fileButton.tooltip "Xếp thông điệp được chọn vào thư mục">
 <!ENTITY archiveButton.tooltip "Lưu trữ các thư đã chọn">
 <!ENTITY openConversationButton.tooltip "Hiển thị cuộc trò chuyện của thư được chọn">
+<!ENTITY openMsgConversationButton.tooltip "Hiển thị cuộc hội thoại của thư đã chọn">
 <!ENTITY nextButton.tooltip "Chuyển sang thư chưa đọc tiếp theo">
 <!ENTITY nextMsgButton.tooltip "Di chuyển đến thư kế tiếp">
 <!ENTITY previousButton.tooltip "Chuyển sang thư chưa đọc phía trước">
@@ -605,7 +607,6 @@
 <!ENTITY tagButton.tooltip "Dán nhãn cho thư">
 <!ENTITY compactButton.tooltip "Dọn các thư bị xóa ra khỏi thư mục đã chọn">
 <!ENTITY appmenuButton1.tooltip "Hiển thị menu &brandShortName;">
-
 <!ENTITY addonsButton.tooltip "Quản lý tiện ích của bạn">
 
 <!-- Toolbar Button Popup -->
@@ -707,9 +708,11 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Lưu tìm kiếm dưới dạng thư mục…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Chọn thư">
 <!ENTITY threadColumn.label "Chủ đề">
 <!ENTITY fromColumn.label "Từ">
 <!ENTITY recipientColumn.label "Người nhận">
+<!ENTITY correspondentColumn.label "Người viết">
 <!ENTITY subjectColumn.label "Tiêu đề">
 <!ENTITY dateColumn.label "Ngày">
 <!ENTITY priorityColumn.label "Ưu tiên">
@@ -732,6 +735,7 @@
 <!ENTITY threadColumn2.tooltip "Hiển thị chủ đề thư">
 <!ENTITY fromColumn2.tooltip "Sắp xếp theo người gửi">
 <!ENTITY recipientColumn2.tooltip "Sắp xếp theo người nhận">
+<!ENTITY correspondentColumn2.tooltip "Sắp xếp theo người viết">
 <!ENTITY subjectColumn2.tooltip "Sắp xếp theo chủ đề">
 <!ENTITY dateColumn2.tooltip "Sắp xếp theo ngày">
 <!ENTITY priorityColumn2.tooltip "Sắp xếp theo mức độ ưu tiên">
@@ -745,6 +749,8 @@
 <!ENTITY readColumn2.tooltip "Sắp xếp theo đã đọc">
 <!ENTITY receivedColumn2.tooltip "Sắp xếp theo ngày nhận">
 <!ENTITY starredColumn2.tooltip "Sắp xếp theo sao">
+<!ENTITY locationColumn2.tooltip "Sắp xếp theo địa chỉ">
+<!ENTITY idColumn2.tooltip "Sắp xếp theo thứ tự nhận được">
 <!ENTITY attachmentColumn2.tooltip "Sắp xếp theo đính kèm">
 
 <!-- Thread Pane Context Menu -->
@@ -792,7 +798,7 @@
 <!ENTITY contextMoveCopyMsgRecentMenu.accesskey "G">
 <!ENTITY contextMoveCopyMsgFavoritesMenu.label "Ưa thích">
 <!ENTITY contextMoveCopyMsgFavoritesMenu.accesskey "F">
-<!ENTITY contextCopyMsgMenu.label "Sao chép tới">
+<!ENTITY contextCopyMsgMenu.label "Sao chép đến">
 <!ENTITY contextCopyMsgMenu.accesskey "C">
 <!ENTITY contextKillThreadMenu.label "Bỏ qua chủ đề">
 <!ENTITY contextKillSubthreadMenu.accesskey "b">
@@ -808,7 +814,7 @@
 <!ENTITY contextSaveAs.accesskey "L">
 <!ENTITY contextPrint.label "In…">
 <!ENTITY contextPrint.accesskey "I">
-<!ENTITY contextPrintPreview.label "Xem trước Bản in">
+<!ENTITY contextPrintPreview.label "Xem trước khi in">
 <!ENTITY contextPrintPreview.accesskey "e">
 
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
@@ -852,7 +858,7 @@
 <!ENTITY columnPicker.thisFolder.label "Thư mục này">
 
 <!-- Media (video/audio) controls -->
-<!ENTITY contextPlay.label "Chơi">
+<!ENTITY contextPlay.label "Phát">
 <!ENTITY contextPlay.accesskey "C">
 <!ENTITY contextPause.label "Tạm dừng">
 <!ENTITY contextPause.accesskey "d">
@@ -966,3 +972,7 @@
 <!ENTITY dockOptions.label              "Tùy chọn biểu tượng ứng dụng…">
 <!ENTITY writeNewMessageDock.label      "Viết thư mới">
 <!ENTITY openAddressBookDock.label      "Mở sổ địa chỉ">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Trở lại trang trước">
+<!ENTITY browseForwardButton.tooltip "Tiến tới trang sau">

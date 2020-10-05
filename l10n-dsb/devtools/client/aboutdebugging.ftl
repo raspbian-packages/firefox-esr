@@ -83,7 +83,7 @@ about-debugging-setup-title = Zarědowanje
 # Introduction text in the Setup page to explain how to configure remote debugging.
 about-debugging-setup-intro = Konfigurěrujśo zwiskowu metodu, z kótarejuž cośo swój rěd znazdala za zmólkami pśespytowaś.
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
-about-debugging-setup-this-firefox = Wužywajśo <a>{ about-debugging-this-firefox-runtime-name }</a>, aby rejtarki, rozšyrjenja a service workers toś teje wersije { -brand-shorter-name } za zmólkami pśespytował.
+about-debugging-setup-this-firefox = Wužywajśo <a>{ about-debugging-this-firefox-runtime-name }</a>, aby rejtariki, rozšyrjenja a service workers toś teje wersije { -brand-shorter-name } za zmólkami pśespytował.
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
 about-debugging-setup-this-firefox2 = Wužywajśo <a>{ about-debugging-this-firefox-runtime-name }</a>, aby rozšyrjenja a service workers toś teje wersije { -brand-shorter-name } za zmólkami pśepytował.
 # Title of the heading Connect section of the Setup page.
@@ -105,9 +105,9 @@ about-debugging-setup-usb-status-enabled = Zmóžnjony
 about-debugging-setup-usb-status-disabled = Znjemóžnjony
 about-debugging-setup-usb-status-updating = Aktualizěrujo se…
 # USB section step by step guide
-about-debugging-setup-usb-step-enable-dev-menu2 = Wuwijarski meni na wašom rěźe Android zmóžniś.
+about-debugging-setup-usb-step-enable-dev-menu2 = Wuwijaŕski meni na wašom rěźe Android zmóžniś.
 # USB section step by step guide
-about-debugging-setup-usb-step-enable-debug2 = Pytanje zmólkow USB we wuwijarskem meniju Android zmóžniś.
+about-debugging-setup-usb-step-enable-debug2 = Pytanje zmólkow USB we wuwijaŕskem meniju Android zmóžniś.
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Pytanje zmólkow USB w Firefox na rěźe Android zmóžniś.
 # USB section step by step guide
@@ -154,7 +154,7 @@ about-debugging-runtime-extensions =
     .name = Rozšyrjenja
 # Title of the tabs category.
 about-debugging-runtime-tabs =
-    .name = Rejtarki
+    .name = Rejtariki
 # Title of the service workers category.
 about-debugging-runtime-service-workers =
     .name = Service Workers
@@ -175,10 +175,10 @@ about-debugging-runtime-profile-button2 = Profilowe wugbaśe
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = Konfiguracija wašogo wobglědowaka njejo kompatibelna ze service workers. <a>Dalšne informacije</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
-about-debugging-browser-version-too-old = Zwězany wobglědowak ma staru wersiju ({ $runtimeVersion }). Pódpěrana minimalna wersija jo ({ $minVersion }). To jo njepódpěrana konfiguracija a móžo zawinowaś, až wuwijarske rědy njefunkcioněruju. Pšosym aktualizěrujśo zwězany wobglědowak. <a>Rozwězanje problemow</a>
+about-debugging-browser-version-too-old = Zwězany wobglědowak ma staru wersiju ({ $runtimeVersion }). Pódpěrana minimalna wersija jo ({ $minVersion }). To jo njepódpěrana konfiguracija a móžo zawinowaś, až wuwijaŕske rědy njefunkcioněruju. Pšosym aktualizěrujśo zwězany wobglědowak. <a>Rozwězanje problemow</a>
 # Dedicated message for a backward compatibility issue that occurs when connecting:
 # - from Fx 67 to 66 or to 65
 # - from Fx 68 to 66
@@ -186,13 +186,16 @@ about-debugging-browser-version-too-old = Zwězany wobglědowak ma staru wersiju
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Pólo pytanja zmólkow snaź ze zwězanym wobglědowakom njefunkcioněrujo. Pšosym wužywajśo Firefox { $runtimeVersion }, jolic musyśo pytanje zmólkow z toś tym wobglědowakom wužywaś.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Toś ta wersija Firefox njamóžo Firefox za Android (68) za zmólkami pśeglědowaś. Pórucamy, až Firefox za Android Nightly na swójom telefonje za testowanje instalěrujośo. <a>Dalšne drobnostki</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $localVersion } is the version of your current browser (same format)
-about-debugging-browser-version-too-recent = Zwězany wobglědowak jo aktualnjejšy ({ $runtimeVersion }, buildID { $runtimeID }) lěc waš { -brand-shorter-name } ({ $localVersion }, buildID { $localID }). To jo njepódpěrana konfiguracija a móžo zawinowaś, až wuwijarske rědy njefunkcioněruju. Pšosym aktualizěrujśo Firefox. <a>Rozwězanje problemow</a>
+about-debugging-browser-version-too-recent = Zwězany wobglědowak jo aktualnjejšy ({ $runtimeVersion }, buildID { $runtimeID }) lěc waš { -brand-shorter-name } ({ $localVersion }, buildID { $localID }). To jo njepódpěrana konfiguracija a móžo zawinowaś, až wuwijaŕske rědy njefunkcioněruju. Pšosym aktualizěrujśo Firefox. <a>Rozwězanje problemow</a>
 # Displayed for runtime info in runtime pages.
 # { $name } is brand name such as "Firefox Nightly"
 # { $version } is version such as "64.0a1"
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Push
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Startowaś
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Push
+    .disabledTitle = Push service worker jo tuchylu znjemóžnjony za multiprocesowy { -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Start
+    .disabledTitle = Start service worker jo tuchylu znjemóžnjony za multiprocesowy { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Registrěrowanje wótpóraś
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -282,17 +294,28 @@ about-debugging-worker-status-stopped = Zastajony
 about-debugging-worker-status-registering = Registrěrujo se
 # Displayed for service workers in runtime pages, to label the scope of a worker
 about-debugging-worker-scope =
-    .label = Wobcerk
+    .label = Wobceŕk
 # Displayed for service workers in runtime pages, to label the push service endpoint (url)
 # of a worker
 about-debugging-worker-push-service =
     .label = Słužba za eksterne powěsći
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = Pśeglědanje service worker jo tuchylu znjemóžnjone za multiprocesowy { -brand-shorter-name }
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Rejtarik njejo se dopołnje zacytał a njedajo se pśeglědowaś
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Głowny proces
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Głowny proces za celowy wobglědowak
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Multiprocesowe rědy
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Głowny proces a wopśimjeśowe procese za celowy wobglědowak
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Powěźeńku zacyniś

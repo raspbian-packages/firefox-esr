@@ -27,7 +27,6 @@
 !define AB_CD                 "@AB_CD@"
 
 !define FileMainEXE           "@MOZ_APP_NAME@.exe"
-!define WindowClass           "FirefoxMessageWindow"
 !define MainWindowClass       "MozillaWindowClass"
 !define DialogWindowClass     "MozillaDialogClass"
 !define DDEApplication        "Firefox"
@@ -119,8 +118,21 @@
 !define MOZ_MAINTENANCE_SERVICE
 #endif
 
+#ifdef MOZ_UPDATE_AGENT
+!define MOZ_UPDATE_AGENT
+!define UpdateAgentFullName "Mozilla Update Agent"
+#endif
+
 #ifdef MOZ_BITS_DOWNLOAD
 !define MOZ_BITS_DOWNLOAD
+#endif
+
+#ifdef MOZ_DEFAULT_BROWSER_AGENT
+!define MOZ_DEFAULT_BROWSER_AGENT
+#endif
+
+#ifdef NIGHTLY_BUILD
+!define NIGHTLY_BUILD
 #endif
 
 !if "@AB_CD@" == "en-US"

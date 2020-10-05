@@ -23,6 +23,8 @@
 <!ENTITY lightning.menupopup.open.accesskey           "A">
 <!ENTITY lightning.menupopup.open.message.label       "Message salvate…">
 <!ENTITY lightning.menupopup.open.message.accesskey   "M">
+
+<!-- Open menu popup in File menu -->
 <!ENTITY lightning.menupopup.open.calendar.label      "File de agenda…">
 <!ENTITY lightning.menupopup.open.calendar.accesskey  "A">
 
@@ -48,7 +50,7 @@
      - tooltiptext1 is used in the calendar wizard when setting a new caldav calendar
      - tooltiptext2 is used in the calendar properties dialog for caldav calendars -->
 <!ENTITY lightning.calendarproperties.forceEmailScheduling.tooltiptext1     "Momentaneemente tu pote solo activar lo post le configuration de iste agenda in su fenestra de dialogo de proprietates si le servitor de agenda prende cura de rediger.">
-<!ENTITY lightning.calendarproperties.forceEmailScheduling.tooltiptext2     "Iste option es disponibile solo si le servitor de agenda tracta le redaction. Activar consentira de receder al redaction basate sur le email standard in vice de lo lassar al servitor.">
+<!ENTITY lightning.calendarproperties.forceEmailScheduling.tooltiptext2     "Iste option es disponibile solmente si le servitor de agenda tracta le planification. Activar permittera de recurrer al planification standard basate sur e-mail in loco de lassar lo al servitor.">
 
 <!-- iMIP Bar (meeting support) -->
 <!ENTITY lightning.imipbar.btnAccept.label                                  "Acceptar">
@@ -67,6 +69,9 @@
 <!ENTITY lightning.imipbar.btnDelete.tooltiptext                            "Deler ab le agenda">
 <!ENTITY lightning.imipbar.btnDetails.label                                 "Detalios…">
 <!ENTITY lightning.imipbar.btnDetails.tooltiptext                           "Monstrar le detalios del evento">
+<!ENTITY lightning.imipbar.btnDoNotShowImipBar.label                        "Non monstrar iste messages">
+<!ENTITY lightning.imipbar.btnGoToCalendar.label                            "Agenda">
+<!ENTITY lightning.imipbar.btnGoToCalendar.tooltiptext                      "Ir al scheda del agenda">
 <!ENTITY lightning.imipbar.btnMore.label                                    "Plus">
 <!ENTITY lightning.imipbar.btnMore.tooltiptext                              "Cliccar pro monstrar altere optiones">
 <!ENTITY lightning.imipbar.btnReconfirm2.label                              "Reconfirmar">
@@ -74,7 +79,7 @@
 <!ENTITY lightning.imipbar.btnReschedule.label                              "Reprogrammar">
 <!ENTITY lightning.imipbar.btnReschedule.tooltiptext                        "Reprogrammar le evento">
 <!ENTITY lightning.imipbar.btnSaveCopy.label                                "Salvar un copia">
-<!ENTITY lightning.imipbar.btnSaveCopy.tooltiptext                          "Salva un copia del evento in le agenda, independentemente del responsa al organisator. Le lista de participantes sera clarate.">
+<!ENTITY lightning.imipbar.btnSaveCopy.tooltiptext                          "Salva un copia del evento in le agenda, independentemente del responsa al organisator. Le lista de participantes essera vacuate.">
 <!ENTITY lightning.imipbar.btnTentative.label                               "Provisori">
 <!ENTITY lightning.imipbar.btnTentative2.tooltiptext                        "Acceptar le invitation al evento provisorimente">
 <!ENTITY lightning.imipbar.btnTentativeRecurrences.label                    "Toto provisori">

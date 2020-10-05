@@ -33,6 +33,7 @@ printpreview-of =
     .value = z
 printpreview-custom-prompt =
     .value = Swójske měritko…
+printpreview-custom-scale-prompt-title = Swójske měritko
 printpreview-page-setup =
     .label = Bok zarědowaś…
     .accesskey = B
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Slědny bok
+

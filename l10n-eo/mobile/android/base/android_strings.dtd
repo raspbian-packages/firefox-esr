@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Malpli da datumoj, pli da ŝparo">
 <!ENTITY firstrun_data_subtext2 "Malŝalti bildojn, por uzi malpli da datumoj en ĉiu vizitata retejo.">
 <!ENTITY firstrun_sync_title "Speguli">
-<!ENTITY updatednewfirstrun_sync_title "Konto">
-<!ENTITY firstrun_sync_message2 "Rekomencu kie vi haltis.">
+<!ENTITY firstrun_sync_message3 "Spegulu viajn legosignojn, historion kaj pasvortojn en via telefono.">
 <!ENTITY firstrun_sync_subtext2 "Uzu Speguli por retrovi en ĉiuj viaj aparatoj la legosignojn, pasvortojn kaj aliajn aferojn kiun vi konservis en &brandShortName;.">
 <!ENTITY newfirstrun_sync_subtext "Sekure kaj private spegulu en la komputila Firefox la aferojn, kiujn vi konservas en poŝaparatoj.">
-<!ENTITY updatednewfirstrun_sync_subtext "Komencu seancon en via konto por eltiri la maksimumon el &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Sendi langeton">
+<!ENTITY firstrun_sendtab_message "Dividi langetojn inter poŝaparatoj kaj komputiloj — tuj.">
 <!ENTITY firstrun_signin_message "Komencu seancon kaj eku">
-<!ENTITY firstrun_signin_button "Komenci seancon en Speguli">
-<!ENTITY newfirstrun_signin_button "Malŝalti Speguladon">
-<!ENTITY updatednewfirstrun_signin_button "Komencu seancon en &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Komenci retumi">
+<!ENTITY onboard_start_button_browser "Komenci retumi">
 <!ENTITY firstrun_button_notnow "Nun ne">
 <!ENTITY firstrun_button_next "Antaŭen">
+<!ENTITY firstrun_signup_button "Registriĝi">
 
 <!ENTITY firstrun_tabqueue_title "Ligiloj">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Raporto pri paneo sendata\u2026">
 <!ENTITY  crash_close_label "Fermi">
 <!ENTITY  crash_restart_label "Restartigi &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; paneis">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Dosierujo ĝisdatigita">
 <!ENTITY bookmark_parent_folder "Gepatra dosierujo">
 <!ENTITY bookmark_add_folder "Aldoni novan dosierujon">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(sen titolo)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Kuketoj">
 <!ENTITY pref_cookies_accept_all "Aktiva">
 <!ENTITY pref_cookies_not_accept_foreign "Aktivaj, krom la nerektaj">
+<!ENTITY pref_cookies_not_accept_trackers "Aktivaj, krom la spurilaj kuketoj">
 <!ENTITY pref_cookies_disabled "Malaktiva">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Poiomaj teksaĵaj programoj">
 <!ENTITY pref_pwa_summary "Permesi ke teksaĵaj programoj estu aldonitaj al la hejmekrano">
-
-<!ENTITY tracking_protection_prompt_title "Nun kun protekto kontraŭ spurado">
-<!ENTITY tracking_protection_prompt_text "Aktive bloki spurajn elementojn, tiel ke vi de bezonos zorgi.">
-<!ENTITY tracking_protection_prompt_tip_text "Vizitu la agordojn de privateco por havi pli da informo">
-<!ENTITY tracking_protection_prompt_action_button "Mi komprenis!">
 
 <!ENTITY tab_queue_toast_message3 "Langeto konservita en &brandShortName;">
 <!ENTITY tab_queue_toast_action "Malfermi nun">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Tuŝetu la programon Retumilo kaj elektu &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Vizitu la helpan paĝon de Mozilla">
 <!ENTITY pref_about_firefox "Pri &brandShortName;">
 <!ENTITY pref_vendor_faqs "Oftaj demandoj">
 <!ENTITY pref_vendor_feedback "Sendi komentojn">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "La pozicia servo de &vendorShortName; estas aktiva">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Aŭtomataj ĝisdatigoj">
-<!ENTITY pref_update_autodownload_wifi "Nur per sendrata reto">
-<!ENTITY pref_update_autodownload_never "Neniam">
-<!ENTITY pref_update_autodownload_always "Ĉiam">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Helpo">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Havigi">
 <!ENTITY share_title "Havigi per">
 <!ENTITY share_image_failed "Ne eblas dividi tiun ĉi bildon">
+<!ENTITY share_error_toast_message "Ne eblis dividi ion kun la celita programo">
 <!ENTITY save_as_pdf "Konservi kiel PDF">
 <!ENTITY print "Presi">
 <!ENTITY view_page_source "Vidi fonton de paĝo">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Retadreso">
 <!ENTITY bookmark_edit_keyword "Kategoria vorto">
 <!ENTITY bookmark_select_folder "Elekti dosierujon">
-
 <!ENTITY bookmark_edit_undo "Malfari">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Elekti aŭ registri sonon">
 <!ENTITY filepicker_image_title "Elekti aŭ preni foton">
 <!ENTITY filepicker_video_title "Elekti aŭ registri filmeton">
-
 <!ENTITY filepicker_permission_denied "Postulataj permesoj ne ricevitaj, reiro al la sistema dosieresplorilo.">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Serĉi &formatS2; per &formatS1;">
 
 <!ENTITY searchable_description "Legosignoj kaj historion">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Ĝisdatigo havebla por &brandShortName;">
-<!ENTITY updater_start_select2 "Tuŝu por elŝuti">
-
-<!ENTITY updater_downloading_title2 "&brandShortName; elŝutata">
-<!ENTITY updater_downloading_title_failed2 "Elŝuto malsukcesa">
-<!ENTITY updater_downloading_select2 "Tuŝu por apliki ĝisdatigon post elŝuto">
-<!ENTITY updater_downloading_retry2 "Tuŝu por reprovi">
-
-<!ENTITY updater_apply_title3 "Elŝutita ĝisdatigo por &brandShortName;">
-<!ENTITY updater_apply_select3 "Tuŝu por instali">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Por elŝuti dosierojn kaj ĝisdatigojn, permesu al &brandShortName; uzi la konservejon.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Permesi">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Nova gasta seanco">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Aldoni al legosignoj elementojn de legila vido, por legi ilin malkonektite.">
 <!ENTITY helper_triple_readerview_open_button "Aldoni al legosignoj">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Bonvenon al &brandShortName;">
+<!ENTITY activity_stream_signin_description "Komenci speguli legosignojn, pasvortojn kaj aliajn aferojn per via konto de Firefox.">
+<!ENTITY activity_stream_signup_button "Registriĝi">
+<!ENTITY activity_stream_signin_prompt "Ĉu vi jam havas konton?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Komenci seancon.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Tute nova Firefox alvenos en 2020">
+<!ENTITY activity_stream_firefox_promo_description "Baldaŭ: plibonigita efikeco kaj protekto kontraŭ spurado. Kaj trajtoj kreitaj por helpi vin trovi, konservi kaj kundividi pli da viaj retumaj ŝataĵoj.">
+<!ENTITY activity_stream_firefox_promo_button "Ekrigardu">
+
 <!ENTITY activity_stream_topsites "Plej vizititaj retejoj">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Rekomendita de &brandPocket;">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Sono kaj video">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Konsiloj kaj trukoj de &vendorShortName;">
-<!ENTITY updater_notification_channel "Ĝisdatigoj de la programo">
 <!ENTITY synced_tabs_notification_channel "Spegulitaj langetoj">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

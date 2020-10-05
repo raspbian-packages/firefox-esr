@@ -4,6 +4,7 @@
 
 page-title = Отстраняване на неизправности
 page-subtitle = Тази страница съдържа техническа информация, която може да ви е от полза, когато се опитвате да решите проблем. Ако търсите отговори на често задавани въпроси за { -brand-short-name }, проверете в нашата <a data-l10n-name="support-link">страница за поддръжка</a>.
+
 crashes-title = Доклади за сривове
 crashes-id = Идентификатор на доклад
 crashes-send-date = Изпратен
@@ -24,13 +25,25 @@ features-title = Възможности на { -brand-short-name }
 features-name = Наименование
 features-version = Версия
 features-id = ID
+processes-title = Отдалечени процеси
+processes-type = Вид
+processes-count = Брой
 app-basics-title = Основни за приложението
 app-basics-name = Наименование
 app-basics-version = Версия
 app-basics-build-id = Идентификатор на компилиране
 app-basics-update-channel = Канал за обновяване
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Папка за обновявания
+       *[other] Папка за обновявания
+    }
 app-basics-update-history = История на обновяванията
 app-basics-show-update-history = История на обновяванията
+# Represents the path to the binary used to start the application.
+app-basics-binary = Двоичен файл на приловението
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Директория на профила
@@ -45,9 +58,8 @@ app-basics-performance = Производителност
 app-basics-service-workers = Регистрирани Service Workers
 app-basics-profiles = Профили
 app-basics-multi-process-support = Многопроцесни прозорци
-app-basics-process-count = Процеси за уеб съдържание
+app-basics-remote-processes-count = Отдалечени процеси
 app-basics-enterprise-policies = Ведомствени ограничения
-app-basics-key-google = Google Key
 app-basics-key-mozilla = Mozilla Location Service Key
 app-basics-safe-mode = Надежден режим
 show-dir-label =
@@ -97,6 +109,14 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Аргументи
 safe-mode-title = Пробвайте надеждния режим
 restart-in-safe-mode-label = Рестартиране с изключени добавки…
+
+## Media titles
+
+audio-backend = Аудио хардуер
+max-audio-channels = Максимален брой канали
+channel-layout = Предпочитано разположение на каналите
+sample-rate = Предпочитана честота на дискретизацията
+
 media-title = Медия
 media-output-devices-title = Изходни устройства
 media-input-devices-title = Входни устройства
@@ -109,6 +129,9 @@ media-device-format = Формат
 media-device-channels = Канали
 media-device-rate = Честота
 media-device-latency = Закъснение
+
+##
+
 intl-title = Интернационализиране и локализация
 intl-app-title = Настройки на приложението
 intl-locales-requested = Искани локали
@@ -118,6 +141,22 @@ intl-locales-default = Локал по подразбиране
 intl-os-title = Настройки на операционната система
 intl-os-prefs-system-locales = Системен локал
 intl-regional-prefs = Местни настройки
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Отдалечено отстраняване на грешки (Chromium Protocol)
+remote-debugging-accepting-connections = Приемане на връзки
+remote-debugging-url = Адрес
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -125,6 +164,7 @@ report-crash-for-days =
         [one] Доклади за сривовете през последния { $days } ден
        *[other] Доклади за сривовете през последните { $days } дена
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -132,6 +172,7 @@ crashes-time-minutes =
         [one] преди { $minutes } минута
        *[other] преди { $minutes } минути
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -139,6 +180,7 @@ crashes-time-hours =
         [one] преди { $hours } час
        *[other] преди { $hours } часа
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -146,6 +188,7 @@ crashes-time-days =
         [one] преди { $days } ден
        *[other] преди { $days } дена
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -153,6 +196,7 @@ pending-reports =
         [one] Всички доклади за сривове (включително { $reports } изчакващ срив в дадения времеви диапазон)
        *[other] Всички доклади за сривове (включително { $reports } изчакващи срива в дадения времеви диапазон)
     }
+
 raw-data-copied = Необработените данни са копирани в системния буфер
 text-copied = Текстът е копиран в системния буфер
 
@@ -165,14 +209,17 @@ blocked-mismatched-version = Блокирано поради несъответ�
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = Вашият графичен драйвер е блокиран. Опитайте да обновите драйвера си до версия { $driverVersion } или по-нова.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Параметри на ClearType
+
 compositing = Сглобяване
 hardware-h264 = Хардуерно декодиране на H264
 main-thread-no-omtc = главна нишка, без OMTC
 yes = Да
 no = Не
+virtual-monitor-disp = Виртуален монитор
 
 ## The following strings indicate if an API key has been found.
 ## In some development versions, it's expected for some API keys that they are
@@ -180,12 +227,16 @@ no = Не
 
 found = Наличен
 missing = Липсващ
+
+gpu-process-pid = GPUProcessPid
+gpu-process = GPUProcess
 gpu-description = Описание
 gpu-vendor-id = ID на производител
 gpu-device-id = ID на устройство
 gpu-subsys-id = ID на подсистема
 gpu-drivers = Драйвери
 gpu-ram = RAM
+gpu-driver-vendor = Производител на драйвера
 gpu-driver-version = Версия на драйвера
 gpu-driver-date = Дата на драйвера
 gpu-active = Включен
@@ -200,29 +251,34 @@ webgl2-version = Версия на драйвера за WebGL 2
 webgl2-driver-extensions = Разширения на драйвера за WebGL 2
 webgl2-extensions = Разширения на WebGL 2
 blocklisted-bug = В списъка на блокирането поради известни проблеми
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = дефект { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = В списъка на блокираните: код на грешка { $failureCode }
+
 d3d11layers-crash-guard = Сглобяване с D3D11
 d3d11video-crash-guard = Видео декодер на D3D11
 d3d9video-crash-buard = Видео декодер на D3D9
+d3d9video-crash-guard = Видео декодер на D3D9
 glcontext-crash-guard = OpenGL
+
 reset-on-next-restart = Анулиране при следващото рестартиране
 gpu-process-kill-button = Прекъсване на процес на GPU
+gpu-device-reset = Нулиране на устройството
 gpu-device-reset-button = Нулиране на устройството
 uses-tiling = Използване на повтарящо се изображение
 content-uses-tiling = Използване на повтарящо се изображение (за съдържанието)
 off-main-thread-paint-enabled = Изчертаване в отделна нишка включено
 off-main-thread-paint-worker-count = Брой сервизни нишки, изчертаващи в отделна нишка
-audio-backend = Аудио хардуер
-max-audio-channels = Максимален брой канали
-channel-layout = Предпочитано разположение на каналите
-sample-rate = Предпочитана честота на дискретизацията
+target-frame-rate = Целева честота на кадрите
+
 min-lib-versions = Очаквана минимална версия
 loaded-lib-versions = Използвана версия
+
 has-seccomp-bpf = Seccomp-BPF (филтриране на системни извиквания)
 has-seccomp-tsync = Синхронизиране на нишката на Seccomp
 has-user-namespaces = Потребителски пространства от имена
@@ -234,6 +290,7 @@ effective-content-sandbox-level = Ефективна степен на изол�
 sandbox-proc-type-content = съдържание
 sandbox-proc-type-file = съдържание на файл
 sandbox-proc-type-media-plugin = приставка за медия
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -246,6 +303,7 @@ multi-process-status-6 = изключени поради неподдържан 
 multi-process-status-7 = изключени от добавки
 multi-process-status-8 = принудително изключени
 multi-process-status-unknown = неизвестно състояние
+
 async-pan-zoom = Асинхронно преместване / мащабиране
 apz-none = няма
 wheel-enabled = използване на колелцето на мишката

@@ -4,6 +4,8 @@
 
 <!-- extracted from content/viewSource.xul -->
 
+<!-- extracted from content/viewSource.xhtml -->
+
 <!-- LOCALIZATION NOTE (mainWindow.title) : DONT_TRANSLATE -->
 <!ENTITY mainWindow.title "&brandFullName;">
 <!-- LOCALIZATION NOTE (mainWindow.titlemodifier) : DONT_TRANSLATE -->
@@ -12,6 +14,8 @@
 <!ENTITY mainWindow.titlemodifierseparator " - ">
 <!ENTITY mainWindow.preface "პირველწყარო: ">
 
+<!ENTITY editMenu.label "ჩასწორება">
+<!ENTITY editMenu.accesskey "ჩ">
 <!ENTITY fileMenu.label "ფაილი">
 <!ENTITY fileMenu.accesskey "ფ">
 <!ENTITY savePageCmd.label "გვერდის შენახვა როგორც…">
@@ -73,10 +77,10 @@ you can use these alternative items. Otherwise, their values should be empty.  -
 <!ENTITY findAgainCmd.commandkey2 "VK_F3">
 <!ENTITY findSelectionCmd.commandkey "e">
 
-<!ENTITY backCmd.label "უკან">
-<!ENTITY backCmd.accesskey "უ">
-<!ENTITY forwardCmd.label "წინ">
-<!ENTITY forwardCmd.accesskey "წ">
+<!ENTITY backCmd.label "წინა">
+<!ENTITY backCmd.accesskey "წ">
+<!ENTITY forwardCmd.label "მომდევნო">
+<!ENTITY forwardCmd.accesskey "მ">
 <!ENTITY goBackCmd.commandKey "[">
 <!ENTITY goForwardCmd.commandKey "]">
 

@@ -4,18 +4,19 @@
 
 page-info-window =
     .style = width: 600px; min-height: 550px;
+
 copy =
     .key = C
 menu-copy =
     .label = प्रतिलिपि गर्नुहोस्
     .accesskey = C
+
 select-all =
     .key = A
 menu-select-all =
     .label = सबै चयन गर्नुहोस्
     .accesskey = A
-close-window =
-    .key = A
+
 general-tab =
     .label = सामान्य
     .accesskey = G
@@ -39,6 +40,7 @@ general-meta-name =
     .label = नाम
 general-meta-content =
     .label = सामग्री
+
 media-tab =
     .label = सञ्चार
     .accesskey = M
@@ -68,11 +70,13 @@ media-save-image-as =
     .accesskey = e
 media-preview =
     .value = सञ्चार पूर्वावलोकनः
+
 perm-tab =
     .label = अनुमतिहरू
     .accesskey = P
 permissions-for =
     .value = यसका लागि अनुमतिहरूः
+
 security-tab =
     .label = सुरक्षा
     .accesskey = S
@@ -93,13 +97,17 @@ security-view-identity-validity =
     .value = म्याद समाप्त हुने:
 security-view-privacy =
     .value = गोपनीयता & इतिहास
+
 security-view-privacy-history-value = Have I visited this web site prior to today?
+
 security-view-privacy-passwords-value = के मैले यस वेबसाइटको लागि कुनै गोप्यशब्दहरू सङ्ग्रह गरेको छु ?
+
 security-view-privacy-viewpasswords =
     .label = संरक्षित गोप्यशब्दहरू हेर्नुहोस्
     .accesskey = w
 security-view-technical =
     .value = प्राबिधिक विवरणहरू
+
 help-button =
     .label = मद्दत
 
@@ -111,6 +119,8 @@ help-button =
 
 image-size-unknown = अज्ञात
 not-set-verified-by = निर्दिष्ट नगरिएको
+page-info-not-specified =
+    .value = निर्दिष्ट नगरिएको
 not-set-alternative-text = निर्दिष्ट नगरिएको
 not-set-date = निर्दिष्ट नगरिएको
 media-img = तस्विर
@@ -126,6 +136,7 @@ media-video = भिडियो
 media-audio = ध्वनि
 saved-passwords-yes = हो
 saved-passwords-no = होेइन
+
 no-page-title =
     .value = शीर्षक नभएको पृष्ठ:
 general-quirks-mode =
@@ -133,18 +144,22 @@ general-quirks-mode =
 general-strict-mode =
     .value = गुणस्तर अनुवृत्ति मोड
 security-no-owner = This web site does not supply ownership information.
+page-info-security-no-owner =
+    .value = This web site does not supply ownership information.
 media-select-folder = तस्विरहरू सङ्ग्रह गर्नको लागि फोल्डर चयन गर्नुहोस
 media-unknown-not-cached =
     .value = अज्ञात (क्यास नगरिएको)
 permissions-use-default =
     .label = पूर्वनिर्धारित प्रयोग गर्नुहोस्
 security-no-visits = होेइन
+
 # This string is used to display the type of
 # an image
 # Variables:
 #   $type (string) - The type of an image
 media-image-type =
     .value = { $type } तस्विर
+
 # This string is used to display the size of a scaled image
 # in both scaled and unscaled pixels
 # Variables:
@@ -154,17 +169,20 @@ media-image-type =
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
     .value = { $dimx }px × { $dimy }px (नाप { $scaledx }px × { $scaledy }px)
+
 # This string is used to display the size of an image in pixels
 # Variables:
 #   $dimx (number) - The horizontal size of an image
 #   $dimy (number) - The vertical size of an image
 media-dimensions =
     .value = { $dimx }px × { $dimy }px
+
 # This string is used to display the size of a media
 # file in kilobytes
 # Variables:
 #   $size (number) - The size of the media file in kilobytes
 media-file-size = { $size } KB
+
 # This string is used to display the website name next to the
 # "Block Images" checkbox in the media tab
 # Variables:
@@ -172,6 +190,7 @@ media-file-size = { $size } KB
 media-block-image =
     .label = { $website } बाट तस्विरहरू रोक्नुहोस्
     .accesskey = B
+
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:

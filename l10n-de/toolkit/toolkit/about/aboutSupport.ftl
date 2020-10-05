@@ -34,9 +34,19 @@ app-basics-title = Allgemeine Informationen
 app-basics-name = Name
 app-basics-version = Version
 app-basics-build-id = Build-ID
+app-basics-distribution-id = Distributions-ID
 app-basics-update-channel = Update-Kanal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Update-Verzeichnis
+       *[other] Update-Ordner
+    }
 app-basics-update-history = Update-Chronik
 app-basics-show-update-history = Update-Chronik anzeigen
+# Represents the path to the binary used to start the application.
+app-basics-binary = Anwendungsprogrammdatei
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Profilverzeichnis
@@ -52,12 +62,10 @@ app-basics-service-workers = Angemeldete Service-Worker
 app-basics-profiles = Profile
 app-basics-launcher-process-status = Starter-Prozess
 app-basics-multi-process-support = Fenster mit mehreren Prozessen
-app-basics-process-count = Web-Inhaltsprozesse
 app-basics-remote-processes-count = Externe Prozesse
 app-basics-enterprise-policies = Unternehmensrichtlinien
 app-basics-location-service-key-google = Google-Location-Service-Schlüssel
 app-basics-safebrowsing-key-google = Google-Safebrowsing-Schlüssel
-app-basics-key-google = Google-Schlüssel
 app-basics-key-mozilla = Mozilla-Location-Service-Schlüssel
 app-basics-safe-mode = Abgesicherter Modus
 show-dir-label =
@@ -85,6 +93,8 @@ graphics-crash-guards-title = Absturzverhinderer hat Funktionen deaktiviert
 graphics-workarounds-title = Lösungen
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Window-Protokoll
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Desktop-Umgebung
 place-database-title = Chronik- und Lesezeichendatenbank
 place-database-integrity = Integrität
 place-database-verify-integrity = Integrität überprüfen
@@ -109,6 +119,19 @@ sandbox-sys-call-number = Systemaufruf
 sandbox-sys-call-args = Parameter
 safe-mode-title = Abgesicherten Modus probieren
 restart-in-safe-mode-label = Mit deaktivierten Add-ons neu starten…
+clear-startup-cache-title = Versuchen Sie, den Startcache zu löschen
+clear-startup-cache-label = Startcache löschen…
+startup-cache-dialog-title = Startcache löschen
+startup-cache-dialog-body = Starten Sie { -brand-short-name } neu, um den Startcache zu löschen. Dadurch werden Ihre Einstellungen nicht geändert oder Erweiterungen entfernt, die Sie zu { -brand-short-name } hinzugefügt haben.
+restart-button-label = Neu starten
+
+## Media titles
+
+audio-backend = Audio-Backend
+max-audio-channels = Max. Kanäle
+channel-layout = Bevorzugtes Kanallayout
+sample-rate = Bevorzugte Sample-Rate
+roundtrip-latency = Roundtrip-Latenz (Standardabweichung)
 media-title = Medien
 media-output-devices-title = Ausgabegeräte
 media-input-devices-title = Eingabegeräte
@@ -121,6 +144,12 @@ media-device-format = Format
 media-device-channels = Kanäle
 media-device-rate = Rate
 media-device-latency = Latenz
+media-capabilities-title = Leistungsmerkmale für Medien (Media Capabilities)
+# List all the entries of the database.
+media-capabilities-enumerate = Datenbankeinträge auflisten
+
+##
+
 intl-title = Internationalisierung & Lokalisierung
 intl-app-title = Anwendungseinstellungen
 intl-locales-requested = Angeforderte Sprachen
@@ -130,6 +159,22 @@ intl-locales-default = Standardsprache
 intl-os-title = Betriebssystem
 intl-os-prefs-system-locales = Sprachen des Betriebssystems
 intl-regional-prefs = Region-Einstellungen
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Externes Debugging (Chromium-Protokoll)
+remote-debugging-accepting-connections = Verbindungen werden akzeptiert
+remote-debugging-url = Adresse
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -194,7 +239,6 @@ virtual-monitor-disp = Virtueller Bildschirm
 
 found = Gefunden
 missing = Fehlt
-
 gpu-process-pid = GPUProcessPid
 gpu-process = GPUProcess
 gpu-description = Beschreibung
@@ -227,7 +271,9 @@ unknown-failure = Blockiert; Fehlercode { $failureCode }
 d3d11layers-crash-guard = D3D11-Compositor
 d3d11video-crash-guard = D3D11-Videodekoder
 d3d9video-crash-buard = D3D9-Videodekoder
+d3d9video-crash-guard = D3D9-Videodekoder
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF-VPX-Videodekoder
 reset-on-next-restart = Bei nächstem Neustart zurücksetzen
 gpu-process-kill-button = GPU-Prozess beenden
 gpu-device-reset = Gerät zurücksetzen
@@ -236,13 +282,7 @@ uses-tiling = Verwendet Kacheln
 content-uses-tiling = Verwendent Kacheln für Inhalt
 off-main-thread-paint-enabled = Zeichnen auf Nebenthread aktiviert
 off-main-thread-paint-worker-count = Anzahl Worker für Zeichnen auf Nebenthread
-low-end-machine = Leistungsschwaches Gerät erkannt
 target-frame-rate = Anvisierte Bildwiederholfrequenz (Framerate)
-
-audio-backend = Audio-Backend
-max-audio-channels = Max. Kanäle
-channel-layout = Bevorzugtes Kanallayout
-sample-rate = Bevorzugte Sample-Rate
 min-lib-versions = Minimal vorausgesetzte Version
 loaded-lib-versions = Verwendete Version
 has-seccomp-bpf = Seccomp-BPF (Filtern von Systemaufrufen)
@@ -256,14 +296,16 @@ effective-content-sandbox-level = Effektive Ebene der isolierten Umgebung
 sandbox-proc-type-content = Inhalt
 sandbox-proc-type-file = Dateiinhalt
 sandbox-proc-type-media-plugin = Medienplugin
-
 sandbox-proc-type-data-decoder = Datendekoder
-
+startup-cache-title = Start-Cache
+startup-cache-disk-cache-path = Festplatten-Cache-Ordner
+startup-cache-ignore-disk-cache = Festplatten-Cache ignorieren
+startup-cache-found-disk-cache-on-init = Festplatten-Cache bei Initialisierung erkannt
+startup-cache-wrote-to-disk-cache = In Festplatten-Cache geschrieben
 launcher-process-status-0 = Aktiviert
 launcher-process-status-1 = Deaktiviert nach Fehler
 launcher-process-status-2 = Deaktivierung erzwungen
 launcher-process-status-unknown = Unbekannter Status
-
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -283,6 +325,7 @@ touch-enabled = Berührungs-Eingabe aktiviert
 drag-enabled = Ziehen der Bildlaufleiste aktiviert
 keyboard-enabled = Tastatur aktiviert
 autoscroll-enabled = automatischer Bildlauf aktiviert
+zooming-enabled = sanftes Zoomen durch Antippen aktiviert
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

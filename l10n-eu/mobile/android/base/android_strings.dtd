@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "Datu gutxiago, aurrezpen handiagoa">
 <!ENTITY firstrun_data_subtext2 "Desaktibatu irudiak datu gutxiago gastatzeko bisitatzen duzun gune bakoitzean.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Kontua">
-<!ENTITY firstrun_sync_message2 "Jarraitu utzi zenuen tokitik.">
+<!ENTITY firstrun_sync_message3 "Sinkronizatu laster-markak, historia eta pasahitzak zure telefonoan.">
 <!ENTITY firstrun_sync_subtext2 "Erabili Sync laster-markak, pasahitza eta &brandShortName;(r)en gailu guztietan gordetzen dituzun beste gauzak aurkitzeko.">
 <!ENTITY newfirstrun_sync_subtext "Sinkronizatu mugikorrean gordetako gauzak mahaigainerako Firefoxekin, modu pribatu eta seguruan.">
-<!ENTITY updatednewfirstrun_sync_subtext "Hasi saioa zure kontuan &brandShortName;(r)i ahalik eta zuku gehien ateratzeko">
+<!ENTITY firstrun_sendtab_title "Bidali fitxa">
+<!ENTITY firstrun_sendtab_message "Partekatu fitxak mugikorretik mahaigainera — berehala.">
 <!ENTITY firstrun_signin_message "Konektatu eta abiatu">
-<!ENTITY firstrun_signin_button "Hasi saioa Sync-en">
-<!ENTITY newfirstrun_signin_button "Gaitu sinkronizazioa">
-<!ENTITY updatednewfirstrun_signin_button "Hasi saioa &brandShortName;(r)en">
-<!ENTITY  onboard_start_button_browser "Hasi nabigatzen">
+<!ENTITY onboard_start_button_browser "Hasi nabigatzen">
 <!ENTITY firstrun_button_notnow "Orain ez">
 <!ENTITY firstrun_button_next "Hurrengoa">
+<!ENTITY firstrun_signup_button "Eman izena">
 
 <!ENTITY firstrun_tabqueue_title "Loturak">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "Hutsegite-txostena bidaltzen\u2026">
 <!ENTITY  crash_close_label "Itxi">
 <!ENTITY  crash_restart_label "Berrabiarazi &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName;(e)k huts egin du">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "Karpeta eguneratuta">
 <!ENTITY bookmark_parent_folder "Karpeta gurasoa">
 <!ENTITY bookmark_add_folder "Gehitu karpeta berria">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(izenbururik ez)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Cookieak">
 <!ENTITY pref_cookies_accept_all "Gaituta">
 <!ENTITY pref_cookies_not_accept_foreign "Gaituta, hirugarrenenak salbu">
+<!ENTITY pref_cookies_not_accept_trackers "Gaituta, jarraipen-cookieak salbuesten">
 <!ENTITY pref_cookies_disabled "Desgaituta">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "Web aplikazio aurrerakoiak">
 <!ENTITY pref_pwa_summary "Baimendu hasierako pantailan web aplikazioak gehitzea">
-
-<!ENTITY tracking_protection_prompt_title "Orain jarraipenaren babesarekin">
-<!ENTITY tracking_protection_prompt_text "Blokeatu modu aktiboan jarraipena egiten duten elementuak.">
-<!ENTITY tracking_protection_prompt_tip_text "Bisitatu pribatutasun-ezarpenak argibide gehiagorako">
-<!ENTITY tracking_protection_prompt_action_button "Ulertu dut!">
 
 <!ENTITY tab_queue_toast_message3 "Fitxa &brandShortName;(e)n gordeta">
 <!ENTITY tab_queue_toast_action "Ireki orain">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Sakatu \&apos;Nabigatzailearen aplikazioa\&apos; eta hautatu &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Bisitatu Mozillaren laguntza">
 <!ENTITY pref_about_firefox "&brandShortName;(r)i buruz">
 <!ENTITY pref_vendor_faqs "Ohiko galderak">
 <!ENTITY pref_vendor_feedback "Emaiguzu zure iritzia!">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; kokapen-zerbitzuak exekutatzen ari dira">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Eguneraketa automatikoak">
-<!ENTITY pref_update_autodownload_wifi "Wi-Fi bidez soilik">
-<!ENTITY pref_update_autodownload_never "Inoiz ez">
-<!ENTITY pref_update_autodownload_always "Beti">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Laguntza">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Partekatu">
 <!ENTITY share_title "Partekatu">
 <!ENTITY share_image_failed "Ezin da irudia partekatu">
+<!ENTITY share_error_toast_message "Ezin da zehaztutako aplikazioarekin partekatu">
 <!ENTITY save_as_pdf "Gorde PDF gisa">
 <!ENTITY print "Inprimatu">
 <!ENTITY view_page_source "Ikusi orriaren iturburua">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Helbidea">
 <!ENTITY bookmark_edit_keyword "Gako-hitza">
 <!ENTITY bookmark_select_folder "Hautatu karpeta">
-
 <!ENTITY bookmark_edit_undo "Desegin">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Aukeratu edo grabatu soinua">
 <!ENTITY filepicker_image_title "Aukeratu edo egin argazkia">
 <!ENTITY filepicker_video_title "Aukeratu edo grabatu bideoa">
-
 <!ENTITY filepicker_permission_denied "Beharrezko baimenak falta dira; sistemaren fitxategi-hautatzailea erabiliko da.">
 
 <!-- Site identity popup -->
@@ -755,37 +737,18 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 
 <!ENTITY searchable_description "Laster-markak eta historia">
 
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Eguneraketa erabilgarri &brandShortName;(r)entzat">
-<!ENTITY updater_start_select2 "Ukitu deskargatzeko">
-
-<!ENTITY updater_downloading_title2 "&brandShortName; deskargatzen">
-<!ENTITY updater_downloading_title_failed2 "Deskargak huts egin du">
-<!ENTITY updater_downloading_select2 "Ukitu eguneraketa aplikatzeko behin deskargatuta">
-<!ENTITY updater_downloading_retry2 "Ukitu berriro saiatzeko">
-
-<!ENTITY updater_apply_title3 "Eguneraketa deskargatuta &brandShortName;(r)entzat">
-<!ENTITY updater_apply_select3 "Sakatu instalatzeko">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Fitxategiak eta eguneraketak deskargatzeko, eman &brandShortName;(r)i biltegiratzea atzitzeko baimena.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Baimendu">
-
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Gonbidatu saio berria">
 <!ENTITY exit_guest_session "Irten gonbidatu saiotik">
 <!ENTITY guest_session_dialog_continue "Jarraitu">
 <!ENTITY guest_session_dialog_cancel "Utzi">
 <!ENTITY new_guest_session_title "&brandShortName; berrabiarazi egingo da orain">
-<!ENTITY new_guest_session_text2 "Gonbidatu saioa erabiltzen duen pertsonak ezingo du zure arakatze-datu pertsonalik ikusi (gordetako saio-hasierak, historia edo laster-markak, adibidez).\n\nGonbidatu saioa amaitzean, saio horretako datuak ezabatu eta zure saioa berreskuratuko da.">
+<!ENTITY new_guest_session_text2 "Gonbidatu saioa erabiltzen duen pertsonak ezingo du zure nabigatze-datu pertsonalik ikusi (gordetako saio-hasierak, historia edo laster-markak, adibidez).\n\nGonbidatu saioa amaitzean, saio horretako datuak ezabatu eta zure saioa berreskuratuko da.">
 <!ENTITY guest_browsing_notification_title "Gonbidatu-saioa gaituta dago">
 <!ENTITY guest_browsing_notification_text "Sakatu irteteko">
 
 <!ENTITY exit_guest_session_title "&brandShortName; berrabiarazi egingo da orain">
-<!ENTITY exit_guest_session_text "Saio honetako arakatze-datuak ezabatu egingo dira.">
+<!ENTITY exit_guest_session_text "Saio honetako nabigatze-datuak ezabatu egingo dira.">
 
 <!-- Miscellaneous -->
 <!-- LOCALIZATION NOTE (ellipsis): This text is appended to a piece of text that does not fit in the
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Egin irakurtzeko ikuspegiko elementuen laster-markak hauek lineaz kanpo irakurtzeko.">
 <!ENTITY helper_triple_readerview_open_button "Gehitu laster-marketan">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Ongi etorri &brandShortName;(e)ra">
+<!ENTITY activity_stream_signin_description "Hasi sinkronizatzen laster-markak, historia eta gehiago zure Firefox kontua erabiliz.">
+<!ENTITY activity_stream_signup_button "Eman izena">
+<!ENTITY activity_stream_signin_prompt "Dagoeneko baduzu kontua?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Hasi saioa.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Zure Firefox eraberritua 2020an iritsiko da">
+<!ENTITY activity_stream_firefox_promo_description "Laster zuekin: hobetutako errendimendua. Jarraipenaren babes aurreratua. Eta sarean gustuko dituzunak bilatu, gorde eta partekatzeko diseinatutako eginbideak.">
+<!ENTITY activity_stream_firefox_promo_button "Emaiozu begirada bat">
+
 <!ENTITY activity_stream_topsites "Gune erabilienak">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "&brandPocket;(e)k gomendatua">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Soinua eta bideoa">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; aholku eta trukoak">
-<!ENTITY updater_notification_channel "Aplikazio-eguneraketak">
 <!ENTITY synced_tabs_notification_channel "Sinkronizatutako fitxak">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

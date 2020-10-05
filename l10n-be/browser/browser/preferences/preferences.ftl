@@ -14,6 +14,11 @@ pref-page =
             [windows] Налады
            *[other] Налады
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Налады
+       *[other] Налады
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -29,11 +34,6 @@ search-input-box =
             [windows] Знайсці ў наладах
            *[other] Знайсці ў перавагах
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Ваша арганізацыя выключыла магчымасць змяняць некаторыя налады.
-       *[other] Ваша арганізацыя выключыла магчымасць змяняць некаторыя налады.
-    }
 managed-notice = Вашым браўзерам кіруе ваша арганізацыя.
 pane-general-title = Агульныя
 category-general =
@@ -206,6 +206,15 @@ advanced-fonts =
 colors-settings =
     .label = Колеры…
     .accesskey = К
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Маштаб
+preferences-default-zoom = Прадвызначаны маштаб
+    .accesskey = ч
+preferences-default-zoom-value =
+    .label = { $percentage }%
+preferences-zoom-text-only =
+    .label = Павялічваць толькі тэкст
+    .accesskey = т
 language-header = Мова
 choose-language-description = Выберыце мовы, якім вы аддаяце перавагу, для прагляду старонак
 choose-button =
@@ -226,6 +235,10 @@ translate-attribution = Пераклад <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Выключэнні…
     .accesskey = ч
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Выкарыстоўваць налады аперацыйнай сістэмы для “{ $localeName }” для фармату дат, часу, лічбаў і адзінак вымярэння.
 check-user-spelling =
     .label = Правяраць арфаграфію ў час набору
     .accesskey = н
@@ -261,6 +274,75 @@ applications-type-column =
 applications-action-column =
     .label = Дзеянне
     .accesskey = Д
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = файл { $extension }
+applications-action-save =
+    .label = Захаваць файл
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = Ужываць { $app-name }
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = Ужываць { $app-name } (прадвызначана)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Ужываць прадвызначаную праграму macOS
+            [windows] Ужываць прадвызначаную праграму Windows
+           *[other] Ужываць прадвызначаную праграму сістэмы
+        }
+applications-use-other =
+    .label = Ужываць іншае…
+applications-select-helper = Выбар праграмы-дапаможніка
+applications-manage-app =
+    .label = Падрабязнасці пра праграму…
+applications-always-ask =
+    .label = Заўсёды пытацца
+applications-type-pdf = Фармат пераноснага дакумента (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = Ужываць { $plugin-name } (у { -brand-short-name })
+applications-open-inapp =
+    .label = Адкрываць у { -brand-short-name }
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = Digital Rights Management (DRM) змесціва
 play-drm-content =
     .label = Прайграваць DRM-кантраляванае змесціва
@@ -347,6 +429,10 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Шукаць тэкст, калі вы пачынаеце набор
     .accesskey = ч
+browsing-picture-in-picture-toggle-enabled =
+    .label = Уключыць элементы кіравання відэа ў выяве
+    .accesskey = У
+browsing-picture-in-picture-learn-more = Падрабязней
 browsing-cfr-recommendations =
     .label = Рэкамендаваць пашырэнні цягам аглядання
     .accesskey = Р
@@ -401,6 +487,55 @@ choose-bookmark =
     .label = Ужыць закладку…
     .accesskey = з
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Хатні экран Firefox
+home-prefs-content-description = Выберыце пажаданае змесціва для хатняга экрана Firefox.
+home-prefs-search-header =
+    .label = Пошук у сеціве
+home-prefs-topsites-header =
+    .label = Папулярныя сайты
+home-prefs-topsites-description = Сайты, якія вы наведваеце найчасцей
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = Рэкамендавана { $provider }
+home-prefs-recommended-by-description = Выдатнае змесціва з усяго інтэрнэту, выбранае спецыяльна для вас
+home-prefs-recommended-by-description-update = Выключнае змесціва з усяго інтэрнэту, падабранае { $provider }
+
+##
+
+home-prefs-recommended-by-learn-more = Як гэта працуе
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Артыкулы ад спонсараў
+home-prefs-highlights-header =
+    .label = Выбранае
+home-prefs-highlights-description = Выбраныя сайты, якія вы захавалі ці наведалі
+home-prefs-highlights-option-visited-pages =
+    .label = Наведаныя старонкі
+home-prefs-highlights-options-bookmarks =
+    .label = Закладкі
+home-prefs-highlights-option-most-recent-download =
+    .label = Нядаўнія сцягванні
+home-prefs-highlights-option-saved-to-pocket =
+    .label = Захаваныя ў { -pocket-brand-name } старонкі
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Урыўкі
+home-prefs-snippets-description = Абнаўленні ад { -vendor-short-name } і { -brand-product-name }
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] { $num } радок
+            [few] { $num } радкі
+           *[many] { $num } радкоў
+        }
+
 ## Search Section
 
 search-bar-header = Радок пошуку
@@ -410,6 +545,13 @@ search-bar-shown =
     .label = Дадаць радок пошуку на паліцу прылад
 search-engine-default-header = Прадвызначаны пашукавік
 search-engine-default-desc = Выберыце прадвызначаную пошукавую сістэму для выкарыстання ў адрасным радку і панэлі пошуку.
+search-engine-default-desc-2 = Гэта прадвызначаная пошукавая сістэма ў адрасным радку і радку пошуку. Вы можаце пераключыць яе ў любы час.
+search-engine-default-private-desc-2 = Выберыце іншую прадвызначаную пошукавую сістэму толькі для прыватных акон
+search-separate-default-engine =
+    .label = Выкарыстоўваць гэту пошукавую сістэму ў прыватных вокнах
+    .accesskey = В
+search-suggestions-header = Прапановы пошуку
+search-suggestions-desc = Выберыце, як будуць выглядаць прапановы ад пошукавых сістэм.
 search-suggestions-option =
     .label = Паказваць пошукавыя прапановы
     .accesskey = ы
@@ -423,6 +565,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Адлюстроўваць пошукавыя прапановы перад гісторыяй вэб-аглядання пры выкарыстанні адраснага радка
+search-show-suggestions-private-windows =
+    .label = Паказваць пошукавыя прапановы ў прыватных вокнах
+suggestions-addressbar-settings = Змяніць перавагі для гісторыі прагляду, закладак і прапаноў картак
+suggestions-addressbar-settings-generic = Змяніць налады для іншых падказак у адрасным радку
 search-suggestions-cant-show = Пошукавыя прапановы у панэлі адрасу паказвацца не будуць, бо вы наладзілі { -brand-short-name } ніколі не запамінаць гісторыю.
 search-one-click-header = Пашукавікі ў адну пстрычку
 search-one-click-desc = Абярыце альтэрнатыўныя пашукавікі, якія з'яўляюцца пад адрасным радком ці панэллю пошуку, калі вы пачынаеце ўводзіць ключавое слова.
@@ -448,16 +594,29 @@ search-keyword-warning-bookmark = Вы выбралі ключавое слов�
 ## Containers Section
 
 containers-back-link = « Вярнуцца
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Вярнуцца да наладаў
+           *[other] Вярнуцца да параметраў
+        }
 containers-header = Карткі кантэйнераў
 containers-add-button =
     .label = Дадаць новы кантэйнер
     .accesskey = Д
+containers-new-tab-check =
+    .label = Выбіраць кантэйнер для кожнай новай карткі
+    .accesskey = ы
 containers-preferences-button =
     .label = Налады
 containers-remove-button =
     .label = Выдаліць
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Вазьміце сваё Сеціва з сабой
 sync-signedout-description = Сінхранізуйце свае закладкі, гісторыю, карткі, паролі, дадаткі і налады на ўсіх вашых прыладах.
@@ -467,6 +626,9 @@ sync-signedout-account-create = Няма ўліковага запісу? Дав
 sync-signedout-account-signin =
     .label = Увайсці…
     .accesskey = а
+sync-signedout-account-signin2 =
+    .label = Увайсці ў { -sync-brand-short-name }…
+    .accesskey = ў
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
 #   `<a data-l10n-name="android-link">` - Link to Android Download
@@ -479,11 +641,17 @@ sync-mobile-promo = Сцягнуць Firefox для <img data-l10n-name="android
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Змяніць профільную выяву
 sync-disconnect =
     .label = Адлучыцца…
     .accesskey = А
+sync-sign-out =
+    .label = Выйсці…
+    .accesskey = і
 sync-manage-account = Кіраванне ўліковым запісам
     .accesskey = а
 sync-signedin-unverified = { $email } не пацвержаны.
@@ -499,6 +667,48 @@ sync-sign-in =
     .accesskey = і
 sync-signedin-settings-header = Налады сінхранізацыі
 sync-signedin-settings-desc = Выберыце, што { -brand-short-name } павінен сінхранізаваць на вашых прыладах.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Сінхранізацыя: УКЛЮЧАНА
+prefs-syncing-off = Сінхранізацыя: ВЫКЛЮЧАНА
+prefs-sync-setup =
+    .label = Наладзіць { -sync-brand-short-name }...
+    .accesskey = д
+prefs-sync-offer-setup-label = Сінхранізуйце свае закладкі, гісторыю, карткі, паролі, дадаткі і налады на ўсіх сваіх прыладах.
+prefs-sync-now =
+    .labelnotsyncing = Сінхранізаваць зараз
+    .accesskeynotsyncing = ь
+    .labelsyncing = Сінхранізацыя...
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Вы зараз сінхранізуеце гэтыя элементы:
+sync-currently-syncing-bookmarks = Закладкі
+sync-currently-syncing-history = Гісторыю
+sync-currently-syncing-tabs = Адкрытыя карткі
+sync-currently-syncing-logins-passwords = Лагіны і паролі
+sync-currently-syncing-addresses = Адрасы
+sync-currently-syncing-creditcards = Крэдытныя карты
+sync-currently-syncing-addons = Дадаткі
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Налады
+       *[other] Параметры
+    }
+sync-change-options =
+    .label = Змяніць…
+    .accesskey = м
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Выберыце, што сінхранізаваць
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Захаваць змены
+    .buttonaccesskeyaccept = ы
+    .buttonlabelextra2 = Адлучыць…
+    .buttonaccesskeyextra2 = А
 sync-engine-bookmarks =
     .label = Закладкі
     .accesskey = З
@@ -512,6 +722,10 @@ sync-engine-tabs =
 sync-engine-logins =
     .label = Лагіны
     .tooltiptext = Імёны карыстальніка і паролі, якія вы захавалі
+    .accesskey = Л
+sync-engine-logins-passwords =
+    .label = Лагіны і паролі
+    .tooltiptext = Уліковыя дадзеныя для ўваходу, якія вы захавалі
     .accesskey = Л
 sync-engine-addresses =
     .label = Адрасы
@@ -533,9 +747,12 @@ sync-engine-prefs =
         }
     .tooltiptext = Змененыя вамі налады: Агульныя, Прыватнасць і бяспека
     .accesskey = Н
+
+## The device name controls.
+
 sync-device-name-header = Назва прылады
 sync-device-name-change =
-    .label = Змяніць імя прылады…
+    .label = Змяніць назву прылады…
     .accesskey = м
 sync-device-name-cancel =
     .label = Скасаваць
@@ -547,7 +764,7 @@ sync-connect-another-device = Злучыць іншую прыладу
 sync-manage-devices = Кіраваць прыладамі
 sync-fxa-begin-pairing = Спараваць прыладу
 sync-tos-link = Умовы абслугоўвання
-sync-fxa-privacy-notice = Паведамленнем аб прыватнасці
+sync-fxa-privacy-notice = Паведамленне аб прыватнасці
 
 ## Privacy Section
 
@@ -556,6 +773,13 @@ privacy-header = Прыватнасць браўзера
 ## Privacy Section - Forms
 
 logins-header = Лагіны & Паролі
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Лагіны & Паролі
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Прапаноўваць захаваць лагіны і паролі для вэб-сайтаў
     .accesskey = р
@@ -565,6 +789,14 @@ forms-exceptions =
 forms-generate-passwords =
     .label = Прапаноўваць і генераваць надзейныя паролі
     .accesskey = г
+forms-breach-alerts =
+    .label = Паказваць апавяшчэнні аб паролях для сайтаў, у якіх уцеклі дадзеныя
+    .accesskey = і
+forms-breach-alerts-learn-more-link = Падрабязней
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Аўтаматычна запаўняць лагіны і паролі
+    .accesskey = ў
 forms-saved-logins =
     .label = Захаваныя лагіны…
     .accesskey = З
@@ -574,6 +806,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Змяніць галоўны пароль…
     .accesskey = З
+forms-master-pw-fips-title = Зараз вы ў рэжыме FIPS. Для FIPS патрабуецца не пусты галоўны пароль.
+forms-master-pw-fips-desc = Няўдача змянення пароля
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Каб стварыць галоўны пароль, увядзіце свае ўліковыя дадзеныя для ўваходу ў Windows. Гэта дапамагае захоўваць бяспеку вашых уліковых запісаў.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = стварыць галоўны пароль
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -641,6 +886,12 @@ sitedata-block-desc = Тып заблакаванага
     .accesskey = Т
 sitedata-option-block-trackers =
     .label = Трэкеры трэцяга боку
+sitedata-option-block-cross-site-trackers =
+    .label = Міжсайтавыя трэкеры
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Трэкеры міжсайтавыя і сацыяльных сетак
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Міжсайтавыя і трэкеры сацыяльных сетак, ізаляваць астатнія кукі
 sitedata-option-block-unvisited =
     .label = Кукі з ненаведаных вэб-сайтаў
 sitedata-option-block-all-third-party =
@@ -656,6 +907,9 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = Кіраваць дазволамі...
     .accesskey = з
+sitedata-cookies-exceptions =
+    .label = Кіраваць выключэннямі…
+    .accesskey = ч
 
 ## Privacy Section - Address Bar
 
@@ -670,13 +924,17 @@ addressbar-locbar-bookmarks-option =
 addressbar-locbar-openpage-option =
     .label = Адкрытыя карткі
     .accesskey = А
+addressbar-locbar-topsites-option =
+    .label = Папулярныя сайты
+    .accesskey = П
 addressbar-suggestions-settings = Змяніць налады для падказак пашукавіка
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Блакаванне змесціва
-content-blocking-description = Блакуйце змесціва трэцяга боку, якое асочвае вас па сеціве. Кантралюйце, што з вашай анлайн-актыўнасці захоўваецца і распаўсюджваецца паміж вэб-сайтамі.
 content-blocking-section-description = Ахоўвайце сваю прыватнасць у час аглядання. Блакуйце нябачнае змесціва, якое асочвае сайты, што вы наведваеце, і збірае ваш профіль. Блакаванне часткі гэтага змесціва можа паскорыць загрузку старонак.
+content-blocking-enhanced-tracking-protection = Узмоцненая ахова ад сачэння
+content-blocking-section-top-level-description = Трэкеры ідуць за вамі па сеціве, каб сабраць інфармацыю пра вашыя звычкі і зацікаўленасці. { -brand-short-name } блакуе многія з гэтых трэкераў і іншых зламысных скрыптоў.
 content-blocking-learn-more = Падрабязней
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
@@ -689,28 +947,56 @@ content-blocking-setting-strict =
 content-blocking-setting-custom =
     .label = Адмыслова
     .accesskey = с
-content-blocking-standard-description = Блакуе толькі вядомыя трэкеры ў прыватных вокнах.
 content-blocking-standard-desc = Збалансаваная абарона і прадукцыйнасць. Дазваляе некаторыя трэкеры, таму сайты працуюць спраўна.
-content-blocking-strict-desc = Блакуе ўсе трэкеры, якія { -brand-short-name } заўважае. Можа парушыць працу некаторых сайтаў.
 content-blocking-strict-description = Больш моцная абарона, можа парушыць працу некаторых сайтаў.
 content-blocking-custom-desc = Выберыце, што блакаваць.
 content-blocking-private-trackers = Вядомыя трэкеры толькі ў прыватных вокнах
 content-blocking-third-party-cookies = Трэцебаковыя кукі сачэння
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Стандартна
+    .accesskey = т
+enhanced-tracking-protection-setting-strict =
+    .label = Строга
+    .accesskey = р
+enhanced-tracking-protection-setting-custom =
+    .label = Адмыслова
+    .accesskey = с
+
+##
+
+content-blocking-etp-standard-desc = Збалансаваная ахова і прадукцыйнасць. Старонкі загружаюцца нармальна.
+content-blocking-etp-strict-desc = Больш моцная ахова, але можа прывесці да парушэння некаторых сайтаў ці змесціва.
+content-blocking-etp-custom-desc = Выберыце, якія трэкеры і скрыпты трэба заблакаваць.
+content-blocking-private-windows = Змест з элементамі сачэння ў прыватных вокнах
+content-blocking-cross-site-tracking-cookies = Кукі сачэння між сайтамі
+content-blocking-cross-site-tracking-cookies-plus-isolate = Міжсайтавыя кукі сачэння, ізаляваць астатнія кукі
+content-blocking-social-media-trackers = Трэкеры сацыяльных сетак
 content-blocking-all-cookies = Усе кукі
 content-blocking-unvisited-cookies = Кукі з ненаведаных сайтаў
 content-blocking-all-windows-trackers = Вядомыя трэкеры ва ўсіх вокнах
+content-blocking-all-windows-tracking-content = Элементы сачэння ва ўсіх вокнах
 content-blocking-all-third-party-cookies = Усе кукі трэцяга боку
 content-blocking-cryptominers = Майнеры крыптавалют
 content-blocking-fingerprinters = Збіральнікі адбіткаў пальцаў
 content-blocking-warning-title = Увага!
 content-blocking-warning-description = Блакаванне змесціва можа парушыць працу некаторых вэб-сайтаў. Адключыць блакаванне на сайтах, якім вы давяраеце, лёгка.
 content-blocking-learn-how = Даведацца, як
+content-blocking-and-isolating-etp-warning-description = Блакаванне трэкераў і ізаляванне кукаў можа адбіцца на функцыянальнасці некаторых сайтаў. Абнавіце старонку з трэкерамі, каб загрузіць усё змесціва.
+content-blocking-warning-learn-how = Даведацца, як
 content-blocking-reload-description = Вам трэба будзе перазагрузіць свае карткі, каб прымяніць гэтыя змены.
 content-blocking-reload-tabs-button =
     .label = Перачытаць усе карткі
     .accesskey = к
 content-blocking-trackers-label =
     .label = Трэкеры
+    .accesskey = е
+content-blocking-tracking-content-label =
+    .label = Элементы сачэння
     .accesskey = е
 content-blocking-tracking-protection-option-all-windows =
     .label = Ва ўсіх вокнах
@@ -747,6 +1033,10 @@ permissions-location = Месцазнаходжанне
 permissions-location-settings =
     .label = Налады…
     .accesskey = а
+permissions-xr = Віртуальная рэчаіснасць
+permissions-xr-settings =
+    .label = Налады…
+    .accesskey = Н
 permissions-camera = Камера
 permissions-camera-settings =
     .label = Налады…
@@ -795,6 +1085,8 @@ permissions-a11y-privacy-link = Падрабязней
 collection-header = Збор і выкарыстанне звестак { -brand-short-name }
 collection-description = Мы імкнёмся даць вам выбар і збіраць толькі тое, што патрэбна для ўсіх для выпуску і паляпшэння { -brand-short-name }. Мы заўсёды пытаемся дазволу, перш чым атрымаць асабістую інфармацыю.
 collection-privacy-notice = Паведамленне аб прыватнасці
+collection-health-report-telemetry-disabled = Вы больш не дазваляеце { -vendor-short-name } захоўваць тэхнічныя дадзеныя і звесткі аб узаемадзеянні. Усе мінулыя дадзеныя будуць выдалены на працягу 30 дзён.
+collection-health-report-telemetry-disabled-link = Падрабязней
 collection-health-report =
     .label = Дазволіць { -brand-short-name } адпраўляць тэхнічныя звесткі і звесткі ўзаемадзеяння ў { -vendor-short-name }
     .accesskey = к

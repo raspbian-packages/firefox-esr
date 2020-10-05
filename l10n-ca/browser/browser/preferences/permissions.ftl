@@ -5,50 +5,66 @@
 permissions-window =
     .title = Excepcions
     .style = width: 48em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adreça del lloc web
     .accesskey = d
+
 permissions-block =
     .label = Bloca
     .accesskey = B
+
 permissions-session =
     .label = Permet durant la sessió
     .accesskey = s
+
 permissions-allow =
     .label = Permet
     .accesskey = P
+
 permissions-site-name =
     .label = Lloc web
+
 permissions-status =
     .label = Estat
+
 permissions-remove =
     .label = Elimina el lloc web
     .accesskey = E
+
 permissions-remove-all =
     .label = Elimina tots els llocs web
     .accesskey = E
+
 permissions-button-cancel =
     .label = Cancel·la
     .accesskey = C
+
 permissions-button-ok =
     .label = Desa els canvis
     .accesskey = s
+
 permissions-autoplay-menu = Per defecte per a tots els llocs web:
+
 permissions-searchbox =
     .placeholder = Cerca el lloc web
+
 permissions-capabilities-autoplay-allow =
-    .label = Permet l'àudio i el vídeo
+    .label = Permet àudio i vídeo
 permissions-capabilities-autoplay-block =
-    .label = Bloca l'àudio
+    .label = Bloca àudio
 permissions-capabilities-autoplay-blockall =
-    .label = Bloca l'àudio i el vídeo
+    .label = Bloca àudio i vídeo
+
 permissions-capabilities-allow =
     .label = Permet
 permissions-capabilities-block =
     .label = Bloca
 permissions-capabilities-prompt =
     .label = Demana-m'ho sempre
+
 permissions-capabilities-listitem-allow =
     .value = Permet
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Excepcions - Bloqueig de contingut
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Heu desactivat el bloqueig de contingut en aquests llocs web.
+
+permissions-exceptions-etp-window =
+    .title = Excepcions a la protecció contra el seguiment millorada
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Heu desactivat les proteccions en aquests llocs web.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Els llocs web següents han sol·licitat accés
 permissions-site-location-disable-label =
     .label = Bloca les noves sol·licituds d'accés a la vostra ubicació
 permissions-site-location-disable-desc = Això impedirà que els llocs web que no estiguin en aquesta llista us sol·licitin permís per accedir a la vostra ubicació. Blocar l'accés a la vostra ubicació podria fer que algunes funcions dels llocs web no funcionin correctament.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Paràmetres - Permisos de realitat virtual
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Els llocs web següents han sol·licitat accés als dispositius de realitat virtual. Podeu indicar quins llocs web tenen permís per accedir als dispositius de realitat virtual. També podeu blocar les noves sol·licituds d'accedir als dispositius de realitat virtual.
+permissions-site-xr-disable-label =
+    .label = Bloca les noves sol·licituds d'accés als dispositius de realitat virtual
+permissions-site-xr-disable-desc = Això impedirà que els llocs web que no estiguin en aquesta llista us sol·licitin permís per accedir als dispositius de realitat virtual. Blocar l'accés als dispositius de realitat virtual podria fer que algunes funcions dels llocs web no funcionin correctament.
 
 ## Site Permissions - Camera
 

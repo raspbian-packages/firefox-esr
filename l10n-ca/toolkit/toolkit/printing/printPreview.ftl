@@ -25,14 +25,15 @@ printpreview-scale =
 printpreview-shrink-to-fit =
     .label = Encongeix per ajustar
 printpreview-custom =
-    .label = Personalitza…
+    .label = Personalitzada…
 printpreview-print =
     .label = Imprimeix…
     .accesskey = p
 printpreview-of =
     .value = de
 printpreview-custom-prompt =
-    .value = Personalitza l'escala…
+    .value = Escala personalitzada…
+printpreview-custom-scale-prompt-title = Escala personalitzada
 printpreview-page-setup =
     .label = Configuració de la pàgina…
     .accesskey = g
@@ -44,6 +45,8 @@ printpreview-page =
 ## $percent (integer) - menuitem percent label
 ## $arrow (String) - UTF-8 arrow character for navigation buttons
 
+printpreview-percentage-value =
+    .label = { $percent } %
 printpreview-homearrow =
     .label = { $arrow }
     .tooltiptext = Primera pàgina
@@ -56,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Darrera pàgina
+

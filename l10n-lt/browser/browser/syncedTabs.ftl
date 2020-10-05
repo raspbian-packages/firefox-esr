@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Sinchronizuotos kortelės
 synced-tabs-sidebar-noclients-subtitle = Norite čia matyti savo korteles iš kitų įrenginių?
 synced-tabs-sidebar-notsignedin = Prisijunkite, norėdami peržiūrėti kituose įrenginiuose esančias korteles.
+synced-tabs-sidebar-intro = Peržiūrėkite kituose įrenginiuose esančias korteles.
 synced-tabs-sidebar-unverified = Jūsų paskyra turi būti patvirtinta.
 synced-tabs-sidebar-notabs = Nėra atvirų kortelių
 synced-tabs-sidebar-openprefs = Atverti „{ -sync-brand-short-name }“ nuostatas
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Tvarkyti įrenginius…
     .accesskey = r
+synced-tabs-context-sync-now =
+    .label = Sinchronizuoti dabar
+    .accesskey = S
 fxa-sign-in = Jungtis prie „{ -sync-brand-short-name }“
+turn-on-sync = Įjungti „{ -sync-brand-short-name }“

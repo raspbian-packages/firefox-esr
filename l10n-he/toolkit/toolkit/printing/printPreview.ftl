@@ -33,8 +33,9 @@ printpreview-of =
     .value = מתוך
 printpreview-custom-prompt =
     .value = קנה מידה מותאם אישית...
+printpreview-custom-scale-prompt-title = קנה מידה מותאם אישית
 printpreview-page-setup =
-    .label = הגדרות עמוד...
+    .label = הגדרת עמוד…
     .accesskey = ה
 printpreview-page =
     .value = עמוד:
@@ -44,6 +45,8 @@ printpreview-page =
 ## $percent (integer) - menuitem percent label
 ## $arrow (String) - UTF-8 arrow character for navigation buttons
 
+printpreview-percentage-value =
+    .label = { $percent }%
 printpreview-homearrow =
     .label = { $arrow }
     .tooltiptext = דף ראשון
@@ -56,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = דף אחרון
+

@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Код ошибки: <a data-l10n-name="error-code
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Веб-сайты подтверждают свою подлинность с помощью сертификатов, выдаваемых центрами сертификации. Большинство браузеров больше не доверяют сертификатам, выпущенным GeoTrust, RapidSSL, Symantec, Thawte и VeriSign. { $hostname } использует сертификат от одного из этих центров, поэтому его подлинность не может быть подтверждена.
 cert-error-symantec-distrust-admin = Вы можете уведомить об этой проблеме администратора веб-сайта.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = Форсированное защищённое соединение HTTP (HSTS): { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = Привязка открытого ключа HTTP (HPKP): { $hasHPKP }
+cert-error-details-cert-chain-label = Цепочка сертификата:
+open-in-new-window-for-csp-or-xfo-error = Открыть сайт в новом окне
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Для обеспечения вашей безопасности { $hostname } не разрешил { -brand-short-name } отобразить страницу, так как она встроена в другой сайт. Чтобы увидеть эту страницу, вам нужно открыть её в новом окне.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Попытка соединения не удалась
+deniedPortAccess-title = Обращение к данному адресу заблокировано
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Хмм. Нам не удаётся найти этот сайт.
+fileNotFound-title = Файл не найден
+fileAccessDenied-title = В доступе к файлу отказано
+generic-title = Ой.
+captivePortal-title = Вход в сеть
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Хмм. Этот адрес не выглядит правильным.
+netInterrupt-title = Соединение было прервано
+notCached-title = Документ просрочен
+netOffline-title = Автономный режим
+contentEncodingError-title = Ошибка в типе содержимого
+unsafeContentType-title = Небезопасный тип файла
+netReset-title = Соединение было сброшено
+netTimeout-title = Время ожидания соединения истекло
+unknownProtocolFound-title = Неизвестный тип адреса
+proxyConnectFailure-title = Прокси-сервер отказывается принимать соединения
+proxyResolveFailure-title = Не удалось найти прокси-сервер
+redirectLoop-title = Циклическое перенаправление на странице
+unknownSocketType-title = Неизвестный/неопознанный ответ сервера
+nssFailure2-title = Ошибка при установлении защищённого соединения
+cspBlocked-title = Заблокировано политикой защиты содержимого
+xfoBlocked-title = Заблокировано политикой X-Frame-Options
+csp-xfo-error-title = { -brand-short-name } не может открыть эту страницу
+corruptedContentError-title = Ошибка искажения содержимого
+remoteXUL-title = Удалённый XUL
+sslv3Used-title = Установка защищённого соединения не удалась
+inadequateSecurityError-title = Ваше соединение не защищено
+blockedByPolicy-title = Заблокированная страница
+clockSkewError-title = Часы вашего компьютера установлены неправильно
+networkProtocolError-title = Ошибка сетевого протокола
+nssBadCert-title = Предупреждение: Вероятная угроза безопасности
+nssBadCert-sts-title = Соединение не установлено: Вероятная угроза безопасности
+certerror-mitm-title = Программное обеспечение не даёт { -brand-short-name } безопасно подключиться к этому сайту

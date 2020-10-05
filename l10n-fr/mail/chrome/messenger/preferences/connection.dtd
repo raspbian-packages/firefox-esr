@@ -23,6 +23,8 @@
 <!ENTITY  http.accesskey                "h">
 <!ENTITY  ssl.label                     "Proxy SSL :">
 <!ENTITY  ssl.accesskey                 "s">
+<!ENTITY  https.label                   "Proxy HTTPS :">
+<!ENTITY  https.accesskey               "S">
 <!ENTITY  socks.label                   "Hôte SOCKS :">
 <!ENTITY  socks.accesskey               "c">
 <!ENTITY  socks4.label                  "SOCKS v4">
@@ -40,6 +42,12 @@
 <!ENTITY  noproxyExplain.label          "Exemples : .mozilla.org, .asso.org, 192.168.1.0/24">
 <!ENTITY  shareproxy.label              "Utiliser ce serveur proxy pour tous les protocoles">
 <!ENTITY  shareproxy.accesskey          "i">
+<!-- LOCALIZATION NOTE (noproxyLocalhostDesc.label): Do not translate
+  localhost, 127.0.0.1 and ::1.
+-->
+<!ENTITY  noproxyLocalhostDesc.label    "Les connexions à localhost, 127.0.0.1 ou ::1 ne passent jamais par un proxy.">
+<!ENTITY  proxyHttpSharing.label        "Utiliser également ce proxy pour HTTPS">
+<!ENTITY  proxyHttpSharing.accesskey    "x">
 <!ENTITY  autologinproxy.label          "Ne pas me demander de m’authentifier si le mot de passe est enregistré">
 <!ENTITY  autologinproxy.accesskey      "N">
 <!ENTITY  autologinproxy.tooltip        "Cette option vous authentifie automatiquement sur les serveurs proxy dont le mot de passe est enregistré. Si l’authentification échoue, le mot de passe vous sera demandé.">
@@ -47,12 +55,4 @@
 <!ENTITY  socksRemoteDNS.accesskey      "r">
 <!ENTITY  dnsOverHttps.label            "Activer le DNS via HTTPS">
 <!ENTITY  dnsOverHttps.accesskey        "d">
-<!ENTITY  dnsOverHttpsUrl.label         "URL">
-<!ENTITY  dnsOverHttpsUrl.accesskey     "L">
-<!ENTITY  dnsOverHttpsUrl.tooltip       "URL pour la résolution DNS via HTTPS">
-<!ENTITY  dnsOverHttpsUrlDefault.label     "Utiliser le DNS par défaut">
-<!ENTITY  dnsOverHttpsUrlDefault.accesskey "l">
 <!ENTITY  dnsOverHttpsUrlDefault.tooltip   "Utiliser l’URL par défaut pour résoudre les DNS via HTTPS">
-<!ENTITY  dnsOverHttpsUrlCustom.label      "Personnalisé">
-<!ENTITY  dnsOverHttpsUrlCustom.accesskey  "P">
-<!ENTITY  dnsOverHttpsUrlCustom.tooltip    "Saisissez votre URL préférée pour résoudre les DNS via HTTPS">

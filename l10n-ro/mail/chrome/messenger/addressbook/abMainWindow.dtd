@@ -121,7 +121,7 @@ because displayed names don't have the comma in between. -->
 <!-- Tools Menu -->
 <!ENTITY tasksMenu.label                                "Unelte">
 <!ENTITY tasksMenu.accesskey                            "t">
-<!ENTITY messengerCmd.label                             "E-mail și Grupuri de discuții">
+<!ENTITY messengerCmd.label                             "E-mail și grupuri de discuții">
 <!ENTITY messengerCmd.accesskey                         "C">
 <!ENTITY messengerCmd.commandkey                        "1">
 <!ENTITY addressBookCmd.label                           "Agendă de contacte">
@@ -164,6 +164,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY deleteButton2.accesskey                        "t">
 
 <!-- Address Book Toolbar Tooltips -->
+<!ENTITY columnChooser.tooltip                          "Selectează ce coloane să fie afișate">
 <!ENTITY newContactButton.tooltip                       "Creează un contact nou în agendă">
 <!ENTITY newlistButton.tooltip                          "Creează o nouă listă">
 <!ENTITY editPropertiesButton.tooltip                   "Editează elementul selectat">
@@ -240,4 +241,4 @@ because displayed names don't have the comma in between. -->
 <!ENTITY minimizeWindow.label                           "Minimizează">
 <!ENTITY minimizeWindow.key                             "M">
 <!ENTITY bringAllToFront.label                          "Adu-le pe toate în față">
-<!ENTITY zoomWindow.label                               "Lupă">
+<!ENTITY zoomWindow.label                               "Zoom">

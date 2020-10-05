@@ -7,15 +7,49 @@ about-config-warning-title = Šeit ir pūķi!
 about-config-warning-text = Šo paplašināto iestatījumu mainīšana var kaitēt šīs lietotnes stabilitātei, drošībai un ātrdarbībai. Turpiniet tikai tad, ja zināt, ko darāt.
 about-config-warning-checkbox = Brīdināt arī turpmāk!
 about-config-warning-button = Es piekrītu riskam
-about-config-title = about:config
-about-config-search =
-    .placeholder = Meklēt vai nospiediet ESC, lai parādītu visu
+
+about-config2-title = Papildu konfigurācijas
+
+about-config-search-input =
+    .placeholder = Meklēt
+
+## These strings appear on the warning you see when first visiting about:config.
+
+about-config-intro-warning-title = Rīkojieties piesardzīgi
+about-config-intro-warning-text = Izmaiņas uzlabotās konfigurācijas iestatījumos var ietekmēt { -brand-short-name } veiktspēju vai drošību.
+about-config-intro-warning-checkbox = Brīdiniet mani, kad mēģinu piekļūt šiem iestatījumiem
+about-config-intro-warning-button = Pieņemt risku un turpināt
+
+##
+
+# This is shown on the page before searching but after the warning is accepted.
+about-config-caution-text = Šo iestatījumu maiņa var ietekmēt { -brand-short-name } veiktspēju vai drošību.
+
+about-config-page-title = Papildu iestatījumi
+
+about-config-search-input1 =
+    .placeholder = Meklēt iestatījuma nosaukumu
+about-config-show-all = Parādīt visus
+
 about-config-pref-add = Pievienot
 about-config-pref-toggle = Pārslēgt
 about-config-pref-edit = Rediģēt
 about-config-pref-save = Saglabāt
 about-config-pref-reset = Atiestatīt
 about-config-pref-delete = Dzēst
+
+about-config-pref-add-button =
+    .title = Pievienot
+about-config-pref-toggle-button =
+    .title = Pārslēgt
+about-config-pref-edit-button =
+    .title = Rediģēt
+about-config-pref-save-button =
+    .title = Saglabāt
+about-config-pref-reset-button =
+    .title = Atiestatīt
+about-config-pref-delete-button =
+    .title = Dzēst
 
 ## Labels for the type selection radio buttons shown when adding preferences.
 

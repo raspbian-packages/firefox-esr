@@ -76,11 +76,12 @@ impl StylesheetContents {
         url_data: UrlExtraData,
         origin: Origin,
         shared_lock: &SharedRwLock,
-        stylesheet_loader: Option<&StylesheetLoader>,
-        error_reporter: Option<&ParseErrorReporter>,
+        stylesheet_loader: Option<&dyn StylesheetLoader>,
+        error_reporter: Option<&dyn ParseErrorReporter>,
         quirks_mode: QuirksMode,
         line_number_offset: u32,
         use_counters: Option<&UseCounters>,
+        allow_import_rules: AllowImportRules,
         sanitization_data: Option<&mut SanitizationData>,
     ) -> Self {
         let namespaces = RwLock::new(Namespaces::default());
@@ -95,6 +96,7 @@ impl StylesheetContents {
             quirks_mode,
             line_number_offset,
             use_counters,
+            allow_import_rules,
             sanitization_data,
         );
 
@@ -126,6 +128,7 @@ impl StylesheetContents {
         url_data: UrlExtraData,
         quirks_mode: QuirksMode,
     ) -> Self {
+        debug_assert!(rules.is_static());
         Self {
             rules,
             origin,
@@ -146,6 +149,9 @@ impl StylesheetContents {
     /// Measure heap usage.
     #[cfg(feature = "gecko")]
     pub fn size_of(&self, guard: &SharedRwLockReadGuard, ops: &mut MallocSizeOfOps) -> usize {
+        if self.rules.is_static() {
+            return 0;
+        }
         // Measurement of other fields may be added later.
         self.rules.unconditional_shallow_size_of(ops) +
             self.rules.read_with(guard).size_of(guard, ops)
@@ -351,6 +357,16 @@ pub enum SanitizationKind {
     NoConditionalRules,
 }
 
+/// Whether @import rules are allowed.
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum AllowImportRules {
+    /// @import rules will be parsed.
+    Yes,
+    /// @import rules will not be parsed.
+    No,
+}
+
 impl SanitizationKind {
     fn allows(self, rule: &CssRule) -> bool {
         debug_assert_ne!(self, SanitizationKind::None);
@@ -364,9 +380,7 @@ impl SanitizationKind {
             CssRule::Supports(..) |
             CssRule::Import(..) => false,
 
-            CssRule::FontFace(..) |
-            CssRule::Namespace(..) |
-            CssRule::Style(..) => true,
+            CssRule::FontFace(..) | CssRule::Namespace(..) | CssRule::Style(..) => true,
 
             CssRule::Keyframes(..) |
             CssRule::Page(..) |
@@ -410,9 +424,10 @@ impl Stylesheet {
         existing: &Stylesheet,
         css: &str,
         url_data: UrlExtraData,
-        stylesheet_loader: Option<&StylesheetLoader>,
-        error_reporter: Option<&ParseErrorReporter>,
+        stylesheet_loader: Option<&dyn StylesheetLoader>,
+        error_reporter: Option<&dyn ParseErrorReporter>,
         line_number_offset: u32,
+        allow_import_rules: AllowImportRules,
     ) {
         let namespaces = RwLock::new(Namespaces::default());
 
@@ -428,6 +443,7 @@ impl Stylesheet {
             existing.contents.quirks_mode,
             line_number_offset,
             /* use_counters = */ None,
+            allow_import_rules,
             /* sanitization_data = */ None,
         );
 
@@ -450,11 +466,12 @@ impl Stylesheet {
         origin: Origin,
         namespaces: &mut Namespaces,
         shared_lock: &SharedRwLock,
-        stylesheet_loader: Option<&StylesheetLoader>,
-        error_reporter: Option<&ParseErrorReporter>,
+        stylesheet_loader: Option<&dyn StylesheetLoader>,
+        error_reporter: Option<&dyn ParseErrorReporter>,
         quirks_mode: QuirksMode,
         line_number_offset: u32,
         use_counters: Option<&UseCounters>,
+        allow_import_rules: AllowImportRules,
         mut sanitization_data: Option<&mut SanitizationData>,
     ) -> (Vec<CssRule>, Option<String>, Option<String>) {
         let mut rules = Vec::new();
@@ -479,6 +496,7 @@ impl Stylesheet {
             dom_error: None,
             insert_rule_context: None,
             namespaces,
+            allow_import_rules,
         };
 
         {
@@ -531,10 +549,11 @@ impl Stylesheet {
         origin: Origin,
         media: Arc<Locked<MediaList>>,
         shared_lock: SharedRwLock,
-        stylesheet_loader: Option<&StylesheetLoader>,
-        error_reporter: Option<&ParseErrorReporter>,
+        stylesheet_loader: Option<&dyn StylesheetLoader>,
+        error_reporter: Option<&dyn ParseErrorReporter>,
         quirks_mode: QuirksMode,
         line_number_offset: u32,
+        allow_import_rules: AllowImportRules,
     ) -> Self {
         // FIXME: Consider adding use counters to Servo?
         let contents = StylesheetContents::from_str(
@@ -547,6 +566,7 @@ impl Stylesheet {
             quirks_mode,
             line_number_offset,
             /* use_counters = */ None,
+            allow_import_rules,
             /* sanitized_output = */ None,
         );
 

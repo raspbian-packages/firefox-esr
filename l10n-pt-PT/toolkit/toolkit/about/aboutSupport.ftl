@@ -6,7 +6,7 @@ page-title = Informação para resolução de problemas
 page-subtitle =
     Esta página contém informação técnica que pode ser útil para quando estiver
     a tentar resolver um problema. Se estiver à procura de respostas a questões comuns
-    acerca do { -brand-short-name }, aceda ao nosso <a data-l10n-name="support-link">website de apoio</a>.
+    acerca do { -brand-short-name }, aceda ao nosso <a data-l10n-name="support-link">site de apoio</a>.
 crashes-title = Relatórios de falha
 crashes-id = ID do relatório
 crashes-send-date = Enviado
@@ -34,7 +34,10 @@ app-basics-title = Informações básicas da aplicação
 app-basics-name = Nome
 app-basics-version = Versão
 app-basics-build-id = ID da compilação
+app-basics-distribution-id = ID de distribuição
 app-basics-update-channel = Canal de atualização
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Diretório de atualizações
@@ -51,15 +54,14 @@ app-basics-profile-dir =
     }
 app-basics-enabled-plugins = Plugins ativados
 app-basics-build-config = Configuração da compilação
-app-basics-user-agent = User Agent
+app-basics-user-agent = Agente do utilizador
 app-basics-os = SO
 app-basics-memory-use = Utilização da memória
 app-basics-performance = Desempenho
 app-basics-service-workers = Service Workers registados
 app-basics-profiles = Perfis
-app-basics-launcher-process-status = Processo iniciador
+app-basics-launcher-process-status = Processo de arranque
 app-basics-multi-process-support = Multi-processamento de janelas
-app-basics-process-count = Processos de conteúdo Web
 app-basics-remote-processes-count = Processos remotos
 app-basics-enterprise-policies = Políticas empresariais
 app-basics-location-service-key-google = Chave do serviço de localização da Google
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Funcionalidades desativadas do Crash Guard
 graphics-workarounds-title = Alternativas
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protocolo de janela
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Ambiente gráfico
 place-database-title = Base de dados de locais
 place-database-integrity = Integridade
 place-database-verify-integrity = Verificar integridade
@@ -115,6 +119,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumentos
 safe-mode-title = Tente o modo de segurança
 restart-in-safe-mode-label = Reiniciar com os extras desativados…
+clear-startup-cache-title = Tente limpar a cache de arranque
+clear-startup-cache-label = Limpar cache de arranque ...
+startup-cache-dialog-title = Limpar a cache de arranque ...
+startup-cache-dialog-body = Reinicie o { -brand-short-name } para limpar o cache de arranque. Isto não altera as suas configurações nem remove as extensões que adicionou ao { -brand-short-name }.
+restart-button-label = Reiniciar
+
+## Media titles
+
+audio-backend = Backend de áudio
+max-audio-channels = Máximo de canais
+channel-layout = Esquema de canal preferido
+sample-rate = Taxa de amostras preferida
+roundtrip-latency = Latência de ida e volta (desvio padrão)
 media-title = Multimédia
 media-output-devices-title = Dispositivos de saída
 media-input-devices-title = Dispositivos de entrada
@@ -127,6 +144,12 @@ media-device-format = Formato
 media-device-channels = Canais
 media-device-rate = Taxa
 media-device-latency = Latência
+media-capabilities-title = Recursos de media
+# List all the entries of the database.
+media-capabilities-enumerate = Enumeração de base de dados
+
+##
+
 intl-title = Internacionalização e idioma
 intl-app-title = Definições da aplicação
 intl-locales-requested = Idiomas solicitados
@@ -136,6 +159,22 @@ intl-locales-default = Idioma predefinido
 intl-os-title = Sistema operativo
 intl-os-prefs-system-locales = Idiomas do sistema
 intl-regional-prefs = Preferências regionais
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Depuração remota (Protocolo do Chromium)
+remote-debugging-accepting-connections = A aceitar ligações
+remote-debugging-url = Endereço
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -232,7 +271,9 @@ unknown-failure = Na lista de bloqueio; código de falha { $failureCode }
 d3d11layers-crash-guard = Compositor D3D11
 d3d11video-crash-guard = Decodificador de vídeo D3D11
 d3d9video-crash-buard = Decodificador de vídeo D3D9
+d3d9video-crash-guard = Decodificador de vídeo D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Descodificador vídeo WMF VPX
 reset-on-next-restart = Repor no próximo reinício
 gpu-process-kill-button = Terminar processo GPU
 gpu-device-reset = Reposição do dispositivo
@@ -241,12 +282,7 @@ uses-tiling = Utiliza mosaicos
 content-uses-tiling = Utiliza mosaicos (conteúdo)
 off-main-thread-paint-enabled = Pintura fora da thread principal ativada
 off-main-thread-paint-worker-count = Contagem de workers de pintura fora da thread principal
-low-end-machine = Detetada máquina de menor desempenho
 target-frame-rate = Taxa de frames alvo
-audio-backend = Backend de áudio
-max-audio-channels = Máximo de canais
-channel-layout = Esquema de canal preferido
-sample-rate = Taxa de amostras preferida
 min-lib-versions = Versão mínima esperada
 loaded-lib-versions = Versão em utilização
 has-seccomp-bpf = Seccomp-BPF (Filtro de chamada do sistema)
@@ -261,6 +297,11 @@ sandbox-proc-type-content = conteúdo
 sandbox-proc-type-file = conteúdo de ficheiro
 sandbox-proc-type-media-plugin = plugin multimédia
 sandbox-proc-type-data-decoder = descodificador de dados
+startup-cache-title = Cache de inicialização
+startup-cache-disk-cache-path = Caminho da cache em disco
+startup-cache-ignore-disk-cache = Ignorar cache em disco
+startup-cache-found-disk-cache-on-init = Encontrada cache em disco na inicialização
+startup-cache-wrote-to-disk-cache = Gravado na cache em disco
 launcher-process-status-0 = Ativado
 launcher-process-status-1 = Desativado devido a falha
 launcher-process-status-2 = Desativado forçadamente
@@ -284,6 +325,7 @@ touch-enabled = introdução com toque ativada
 drag-enabled = arrasto da barra de deslocamento ativado
 keyboard-enabled = teclado ativado
 autoscroll-enabled = auto-deslocamento ativado
+zooming-enabled = beliscar para zoom suave ativado
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

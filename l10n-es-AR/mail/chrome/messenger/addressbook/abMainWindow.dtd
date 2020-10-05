@@ -18,6 +18,8 @@
 <!ENTITY newListCmd.accesskey                           "L">
 <!ENTITY newAddressBookCmd.label                        "Libreta de direcciones…">
 <!ENTITY newAddressBookCmd.accesskey                    "b">
+<!ENTITY newCardDAVBookCmd.label                        "Libreta de direcciones CardDAV...">
+<!ENTITY newCardDAVBookCmd.accesskey                    "V">
 <!ENTITY newLDAPDirectoryCmd.label                      "Directorio LDAP…">
 <!ENTITY newLDAPDirectoryCmd.accesskey                  "D">
 <!ENTITY newMessageCmd.label                            "Mensaje">
@@ -164,6 +166,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY deleteButton2.accesskey                        "B">
 
 <!-- Address Book Toolbar Tooltips -->
+<!ENTITY columnChooser.tooltip                          "Seleccionar qué columnas quiere mostrar">
 <!ENTITY newContactButton.tooltip                       "Crear un nuevo contacto en la libreta de direcciones">
 <!ENTITY newlistButton.tooltip                          "Crear nueva lista">
 <!ENTITY editPropertiesButton.tooltip                   "Editar el ítem seleccionado">
@@ -173,9 +176,6 @@ because displayed names don't have the comma in between. -->
 <!ENTITY newmsgButton.tooltip                           "Enviar un mensaje de correo">
 <!ENTITY newIM.tooltip                                  "Enviar un mensaje o conversación instantáneos">
 <!ENTITY deleteButton2.tooltip                          "Borar el ítem seleccionado">
-
-<!-- Dir Tree header -->
-<!ENTITY dirTreeHeader.label                            "Libretas de direcciones">
 
 <!-- Search Bar -->
 <!ENTITY SearchNameOrEmail.label                        "El nombre o el correo electrónico contienen:">

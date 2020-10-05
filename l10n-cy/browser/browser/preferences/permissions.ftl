@@ -5,50 +5,66 @@
 permissions-window =
     .title = Eithriadau
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Cyfeiriad y wefan
     .accesskey = y
+
 permissions-block =
     .label = Rhwystro
     .accesskey = R
+
 permissions-session =
     .label = Caniatâu ar gyfer y Sesiwn
     .accesskey = S
+
 permissions-allow =
     .label = Caniatáu
     .accesskey = a
+
 permissions-site-name =
     .label = Gwefan
+
 permissions-status =
     .label = Statws
+
 permissions-remove =
     .label = Tynnu Gwefan
     .accesskey = T
+
 permissions-remove-all =
     .label = Tynnu Pob Gwefan
     .accesskey = G
+
 permissions-button-cancel =
     .label = Diddymu
     .accesskey = D
+
 permissions-button-ok =
     .label = Cadw Newidiadau
     .accesskey = N
+
 permissions-autoplay-menu = Y rhagosodedig am bob gwefan:
+
 permissions-searchbox =
     .placeholder = Chwilio'r Wefan
+
 permissions-capabilities-autoplay-allow =
     .label = Caniatáu Sain a Fideo
 permissions-capabilities-autoplay-block =
     .label = Rhwystro Sain
 permissions-capabilities-autoplay-blockall =
     .label = Rhwystro Sain a Fideo
+
 permissions-capabilities-allow =
     .label = Caniatáu
 permissions-capabilities-block =
     .label = Rhwystro
 permissions-capabilities-prompt =
     .label = Gofyn bob Tro
+
 permissions-capabilities-listitem-allow =
     .value = Caniatáu
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Eithriadau - Rhwystro Cynnwys
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Rydych wedi analluogi rhwystro cynnwys ar y gwefannau hyn.
+
+permissions-exceptions-etp-window =
+    .title = Eithriadau ar gyfer Diogelwch Uwch Rhag Tracio
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Rydych wedi diffodd y diogelu ar y gwefannau hyn.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Mae'r gwefannau canlynol wedi gofyn i gael myne
 permissions-site-location-disable-label =
     .label = Rhwystro ceisiadau newydd sy'n gofyn i gael mynediad i'ch lleoliad
 permissions-site-location-disable-desc = Bydd hyn yn rhwystro unrhyw wefan sydd heb ei rhestru uchod rhag gofyn am ganiatâd i gael mynediad i'ch lleoliad. Gall rhwystro mynediad i'ch lleoliad dorri nodweddion rhai gwefannau.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Gosodiadau - Caniatâd Rhithrealaeth
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Mae'r gwefannau canlynol wedi gofyn am gael mynediad i'ch dyfeisiau rhithrealaeth. Gallwch chi nodi pa wefannau sy'n cael mynediad i'ch dyfeisiau rhithrealaeth. Gallwch hefyd rwystro ceisiadau newydd sy'n gofyn am gael mynediad i'ch dyfeisiau rhithrealaeth .
+permissions-site-xr-disable-label =
+    .label = Rhwystro geisiadau newydd sy'n gofyn am gael mynediad i'ch dyfeisiau rhithrealaeth
+permissions-site-xr-disable-desc = Bydd hyn yn rhwystro unrhyw wefan sydd heb ei rhestru uchod rhag gofyn am ganiatâd i gael mynediad i'ch dyfeisiau rhithrealaeth. Gall rhwystro mynediad i'ch dyfeisiau rhithrealaeth dorri nodweddion rhai gwefannau.
 
 ## Site Permissions - Camera
 

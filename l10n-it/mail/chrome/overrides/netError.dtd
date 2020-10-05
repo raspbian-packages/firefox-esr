@@ -60,7 +60,7 @@
 <!ENTITY netInterrupt.longDesc "&sharedLongDesc;">
 
 <!ENTITY notCached.title "Documento scaduto">
-<!ENTITY notCached.longDesc "<p>Il documento richiesto non è disponibile nella cache.</p><ul><li>Come precauzione di sicurezza &brandShortName; non richiede nuovamente documenti sensibili.</li><li>Click su Riprova per richiedere nuovamente il documento dal sito web.</li></ul>">
+<!ENTITY notCached.longDesc "<p>Il documento richiesto non è disponibile nella cache.</p><ul><li>Come precauzione di sicurezza &brandShortName; non richiede nuovamente documenti sensibili.</li><li>Clic su Riprova per richiedere nuovamente il documento dal sito web.</li></ul>">
 
 <!ENTITY netOffline.title "Non in linea">
 <!ENTITY netOffline.longDesc2 "
@@ -146,6 +146,9 @@
 
 <!ENTITY cspBlocked.title "Bloccato dai criteri sulla sicurezza dei contenuti">
 <!ENTITY cspBlocked.longDesc "<p>&brandShortName; ha bloccato il caricamento della pagina con questa modalità in quanto include dei criteri sulla sicurezza dei contenuti che lo impediscono.</p>">
+
+<!ENTITY xfoBlocked.title "Bloccato dal criterio X-Frame-Options">
+<!ENTITY xfoBlocked.longDesc "<p>&brandShortName; ha bloccato il caricamento della pagina in questo contesto poiché la stessa include un criterio X-Frame-Options che lo impedisce.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Errore: contenuto corrotto">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>La pagina non può essere mostrata a causa di un errore di trasmissione dati.</p><ul><li>Contattare l'amministratore del sito per segnalare il problema.</li></ul>">

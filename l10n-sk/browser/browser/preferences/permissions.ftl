@@ -5,50 +5,66 @@
 permissions-window =
     .title = Výnimky
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adresa webovej stránky
     .accesskey = d
+
 permissions-block =
     .label = Zakázať
     .accesskey = a
+
 permissions-session =
     .label = Povoliť pre reláciu
     .accesskey = o
+
 permissions-allow =
     .label = Povoliť
     .accesskey = P
+
 permissions-site-name =
     .label = Webová stránka
+
 permissions-status =
     .label = Stav
+
 permissions-remove =
     .label = Odstrániť stránku
     .accesskey = r
+
 permissions-remove-all =
     .label = Odstrániť všetky stránky
     .accesskey = e
+
 permissions-button-cancel =
     .label = Zrušiť
     .accesskey = Z
+
 permissions-button-ok =
     .label = Uložiť zmeny
     .accesskey = U
+
 permissions-autoplay-menu = Predvolené nastavenia pre všetky webové stránky:
+
 permissions-searchbox =
     .placeholder = Hľadať
+
 permissions-capabilities-autoplay-allow =
     .label = Povoliť zvuk a video
 permissions-capabilities-autoplay-block =
     .label = Blokovať zvuk
 permissions-capabilities-autoplay-blockall =
     .label = Blokovať zvuk a video
+
 permissions-capabilities-allow =
     .label = Povoliť
 permissions-capabilities-block =
     .label = Zakázať
 permissions-capabilities-prompt =
     .label = Vždy sa opýtať
+
 permissions-capabilities-listitem-allow =
     .value = Povoliť
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Výnimky - Blokovanie obsahu
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Na týchto stránkach ste vypli blokovanie obsahu.
+
+permissions-exceptions-etp-window =
+    .title = Výnimky pre rozšírenú ochranu pred sledovaním
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Na týchto stránkach ste vypli ochranu pred sledovaním.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Nasledujúce webové stránky požiadali o prí
 permissions-site-location-disable-label =
     .label = Blokovať nové žiadosti o prístup k polohe
 permissions-site-location-disable-desc = Týmto zakážete webovým stránkam, ktoré nie sú uvedené v zozname vyššie, požiadať o prístup k vašej polohe. Blokovanie prístupu k polohe môže rozbiť niektoré funkcie stránok.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Nastavenia - Virtuálna realita
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Nasledujúce webové stránky požiadali o prístup k vašim zariadeniam pre virtuálnu realitu. Na tomto mieste môžete určiť, ktoré webové stránky majú povolené tieto zariadenia používať. Môžete taktiež zablokovať nové žiadosti o prístup.
+permissions-site-xr-disable-label =
+    .label = Blokovať nové žiadosti o prístup k zariadeniam pre virtuálnu realitu
+permissions-site-xr-disable-desc = Týmto zakážete webovým stránkam, ktoré nie sú uvedené v zozname vyššie, požiadať o prístup k vašim zariadeniam pre virtuálnu realitu. Blokovanie prístupu k zariadeniam pre virtuálnu realitu môže rozbiť niektoré funkcie stránok.
 
 ## Site Permissions - Camera
 

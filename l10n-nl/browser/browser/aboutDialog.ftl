@@ -20,8 +20,7 @@ update-downloading = <img data-l10n-name="icon"/>Update downloaden – <label da
 update-applying = Update toepassen…
 
 update-failed = Update mislukt. <label data-l10n-name="failed-link">Download de nieuwste versie</label>
-update-failed-main =
-    Update mislukt. <a data-l10n-name="failed-link-main">Download de nieuwste versie</a>
+update-failed-main = Update mislukt. <a data-l10n-name="failed-link-main">Download de nieuwste versie</a>
 
 update-adminDisabled = Updates zijn uitgeschakeld door uw systeembeheerder
 update-noUpdatesFound = { -brand-short-name } is up-to-date

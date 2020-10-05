@@ -92,7 +92,7 @@ hf-page-and-total =
 hf-custom =
     .label = Swójski…
 print-preview-window =
-    .title = Śišćarski pśeglěd
+    .title = Śišćaŕski pśeglěd
 print-title =
     .value = Titel:
 print-preparing =
@@ -103,6 +103,7 @@ print-window =
     .title = Śišćanje
 print-complete =
     .value = Śišćanje jo skóńcone.
+
 # Variables
 # $percent (integer) - Number of printed percentage
 print-percent =

@@ -23,6 +23,8 @@
 <!ENTITY  http.accesskey                "h">
 <!ENTITY  ssl.label                     "Proxy SSL:">
 <!ENTITY  ssl.accesskey                 "s">
+<!ENTITY  https.label                   "HTTPS Proxy:">
+<!ENTITY  https.accesskey               "S">
 <!ENTITY  socks.label                   "Máy chủ SOCKS:">
 <!ENTITY  socks.accesskey               "c">
 <!ENTITY  socks4.label                  "SOCKS v4">
@@ -40,6 +42,12 @@
 <!ENTITY  noproxyExplain.label          "Ví dụ: .mozilla.org, .net.nz, 192.168.1.0/24">
 <!ENTITY  shareproxy.label              "Sử dụng máy chủ proxy này cho tất cả các giao thức">
 <!ENTITY  shareproxy.accesskey          "x">
+<!-- LOCALIZATION NOTE (noproxyLocalhostDesc.label): Do not translate
+  localhost, 127.0.0.1 and ::1.
+-->
+<!ENTITY  noproxyLocalhostDesc.label    "Các kết nối với localhost, 127.0.0.1 và :: 1 không bao giờ được ủy quyền.">
+<!ENTITY  proxyHttpSharing.label        "Đồng thời sử dụng proxy này cho HTTPS">
+<!ENTITY  proxyHttpSharing.accesskey    "x">
 <!ENTITY  autologinproxy.label          "Không yêu cầu xác nhận nếu đã lưu mật khẩu">
 <!ENTITY  autologinproxy.accesskey      "i">
 <!ENTITY  autologinproxy.tooltip        "Tùy chọn này âm thầm xác thực bạn với proxy khi bạn đã lưu thông tin đăng nhập cho họ. Bạn sẽ được nhắc nếu xác thực thất bại.">
@@ -47,9 +55,4 @@
 <!ENTITY  socksRemoteDNS.accesskey      "d">
 <!ENTITY  dnsOverHttps.label            "Kích hoạt DNS qua HTTPS">
 <!ENTITY  dnsOverHttps.accesskey        "b">
-<!ENTITY  dnsOverHttpsUrlDefault.label     "Sử dụng mặc định">
-<!ENTITY  dnsOverHttpsUrlDefault.accesskey "l">
 <!ENTITY  dnsOverHttpsUrlDefault.tooltip   "Sử dụng URL mặc định để phân giải DNS qua HTTPS">
-<!ENTITY  dnsOverHttpsUrlCustom.label      "Tùy chọn">
-<!ENTITY  dnsOverHttpsUrlCustom.accesskey  "t">
-<!ENTITY  dnsOverHttpsUrlCustom.tooltip    "Nhập URL ưa thích của bạn để giải quyết DNS qua HTTPS">

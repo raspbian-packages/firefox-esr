@@ -21,15 +21,16 @@
 <!ENTITY firstrun_data_message "Pli paucas datas, pli grond respargn">
 <!ENTITY firstrun_data_subtext2 "Deactivar maletgs per consumar main datas per mintga pagina che ti visitas.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY firstrun_sync_message2 "Cuntinuescha là nua che ti has chalà.">
+<!ENTITY firstrun_sync_message3 "Sincronisescha ils segnapaginas, la cronologia ed ils pleds-clav era sin tes telefon.">
 <!ENTITY firstrun_sync_subtext2 "Utilisescha Sync per chattar segnapaginas, pleds-clav ed autras datas che ti has memorisà en &brandShortName; sin tut tes apparats.">
 <!ENTITY newfirstrun_sync_subtext "Sincronisescha quai che ti memoriseschas sin tes apparat mobil era en Firefox per Windows, macOS u Linux – a moda confidenziala e segira.">
+<!ENTITY firstrun_sendtab_title "Trametter il tab">
+<!ENTITY firstrun_sendtab_message "Cundivida tabs da l\&apos;apparat mobil cun il computer — immediatamain.">
 <!ENTITY firstrun_signin_message "Ta collia per cumenzar">
-<!ENTITY firstrun_signin_button "T\&apos;annunzia per sincronisar">
-<!ENTITY newfirstrun_signin_button "Activar Sync">
-<!ENTITY  onboard_start_button_browser "Cumenzar a navigar">
+<!ENTITY onboard_start_button_browser "Cumenzar a navigar">
 <!ENTITY firstrun_button_notnow "Betg gist uss">
 <!ENTITY firstrun_button_next "Enavant">
+<!ENTITY firstrun_signup_button "Sa registrar">
 
 <!ENTITY firstrun_tabqueue_title "Colliaziuns">
 
@@ -66,6 +67,11 @@
 <!ENTITY  sending_crash_report "Trametter il rapport da collaps\u2026">
 <!ENTITY  crash_close_label "Serrar">
 <!ENTITY  crash_restart_label "Reaviar &brandShortName;">
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName; è collabà">
+<!ENTITY  crash_notification_message "Tutga per rapportar a &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Ignorar">
 
 <!ENTITY url_bar_default_text2 "Tschertgar u tippar l\&apos;adressa">
 
@@ -108,6 +114,9 @@
 <!ENTITY bookmark_folder_updated "Actualisà l\&apos;ordinatur">
 <!ENTITY bookmark_parent_folder "Ordinatur surordinà">
 <!ENTITY bookmark_add_folder "Agiuntar in nov ordinatur">
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(senza titel)">
 
 <!ENTITY reader_saved_offline "Memorisà per la lectura offline">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -267,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Cookies">
 <!ENTITY pref_cookies_accept_all "Activà">
 <!ENTITY pref_cookies_not_accept_foreign "Activà, senza tals da terzs">
+<!ENTITY pref_cookies_not_accept_trackers "Activà, cun excepziun da cookies che fastizeschan">
 <!ENTITY pref_cookies_disabled "Deactivà">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -327,11 +337,6 @@
 
 <!ENTITY pref_pwa "Applicaziuns web progressivas">
 <!ENTITY pref_pwa_summary "Permetter dad agiuntar applicaziuns web a la pagina da partenza">
-
-<!ENTITY tracking_protection_prompt_title "Ussa cun protecziun cunter il fastizar">
-<!ENTITY tracking_protection_prompt_text "Bloccar activamain elements che fastizeschan per che ti na stos betg t\&apos;occupar dad els.">
-<!ENTITY tracking_protection_prompt_tip_text "Visita las preferenzas per la sfera privata per ulteriuras infurmaziuns">
-<!ENTITY tracking_protection_prompt_action_button "Chapì!">
 
 <!ENTITY tab_queue_toast_message3 "Memorisà il tab en &brandShortName;">
 <!ENTITY tab_queue_toast_action "Avrir ussa">
@@ -413,14 +418,11 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY pref_private_data_downloadFiles2 "Telechargiadas">
 <!ENTITY pref_private_data_syncedTabs "Tabs sincronisads">
 
-<!ENTITY pref_default_browser "Definir sco navigatur da standard">
-
 <!ENTITY pref_default_browser2 "Definir &brandShortName; sco navigatur da standard">
 <!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Smatga sin «browser» (u sumegliant) &amp; tscherna &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Visitar il support da Mozilla">
 <!ENTITY pref_about_firefox "Davart &brandShortName;">
 <!ENTITY pref_vendor_faqs "Dumondas frequentas">
 <!ENTITY pref_vendor_feedback "Dar in resun">
@@ -470,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Servetsch da posiziun da &vendorShortName; è activ">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Actualisaziuns automaticas">
-<!ENTITY pref_update_autodownload_wifi "Mo via WLAN">
-<!ENTITY pref_update_autodownload_never "Mai">
-<!ENTITY pref_update_autodownload_always "Adina">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Agid">
 
@@ -491,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Cundivider">
 <!ENTITY share_title "Cundivider via">
 <!ENTITY share_image_failed "Impussibel da cundivider questa grafica">
+<!ENTITY share_error_toast_message "Impussibel da cundivider cun l\&apos;app inditgada">
 <!ENTITY save_as_pdf "Memorisar sco PDF">
 <!ENTITY print "Stampar">
 <!ENTITY view_page_source "Mussar il code da funtauna da la pagina">
@@ -591,6 +586,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Adressa">
 <!ENTITY bookmark_edit_keyword "Pled magic">
 <!ENTITY bookmark_select_folder "Tscherner in ordinatur">
+<!ENTITY bookmark_edit_undo "Revocar">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -679,6 +675,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Tscherner u registrar in tun">
 <!ENTITY filepicker_image_title "Tscherner u far in maletg">
 <!ENTITY filepicker_video_title "Tscherner u registrar in video">
+<!ENTITY filepicker_permission_denied "Betg concedì ils dretgs necessaris, return al selectur da datotecas dal sistem.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Ti es collià cun">
@@ -742,25 +739,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Tschertgar cun &formatS1;: &formatS2;">
 
 <!ENTITY searchable_description "Segnapaginas e cronologia">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "&brandShortName;: Actualisaziun disponibla">
-<!ENTITY updater_start_select2 "Tutgar per telechargiar">
-
-<!ENTITY updater_downloading_title2 "Telechargiar &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Betg reussì da telechargiar">
-<!ENTITY updater_downloading_select2 "Tutgar per applitgar l\&apos;actualisaziun cura ch\&apos;ella è telechargiada">
-<!ENTITY updater_downloading_retry2 "Tutgar per reempruvar">
-
-<!ENTITY updater_apply_title3 "Telechargià ina actualisaziun per &brandShortName;">
-<!ENTITY updater_apply_select3 "Tutgar per installar">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Per telechargiar datotecas ed actualisaziuns stos ti permetter a &brandShortName; dad acceder a la memoria.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Permetter">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Nova sessiun da giast">
@@ -872,6 +850,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Marcar elements da la glista da lectura per als leger offline.">
 <!ENTITY helper_triple_readerview_open_button "Agiuntar als segnapaginas">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Bainvegni a &brandShortName;">
+<!ENTITY activity_stream_signin_description "Cumenza a sincronisar segnapaginas, pleds-clav ed auter pli cun tes conto da Firefox.">
+<!ENTITY activity_stream_signup_button "Sa registrar">
+<!ENTITY activity_stream_signin_prompt "Ti has gia in conto?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "T\&apos;annunzia.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "In Firefox cumplettamain nov arriva il 2020">
+<!ENTITY activity_stream_firefox_promo_description "Proximamain: Prestaziun augmentada. Dapli protecziun cunter il fastizar. E funcziuns sviluppadas per ta gidar a chattar, memorisar e cundivider tut quai che ta plascha online.">
+<!ENTITY activity_stream_firefox_promo_button "Dà in tgit">
+
 <!ENTITY activity_stream_topsites "Paginas preferidas">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Recumandà da &brandPocket;">
@@ -929,8 +924,8 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Tun e video">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Tips e trics da &vendorShortName;">
-<!ENTITY updater_notification_channel "Actualisaziuns da l\&apos;app">
 <!ENTITY synced_tabs_notification_channel "Tabs sincronisads">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->
 <!ENTITY site_notifications_channel "Communicaziuns da websites">
+<!ENTITY crash_handler_notifications_channel "Rapportader da collaps da &brandShortName;">

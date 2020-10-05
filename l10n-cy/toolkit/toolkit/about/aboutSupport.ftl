@@ -31,7 +31,10 @@ app-basics-title = Sylfaeni Rhaglen
 app-basics-name = Enw
 app-basics-version = Fersiwn
 app-basics-build-id = Cyfeirnod Adeiladu
+app-basics-distribution-id = ID Dosbarthu
 app-basics-update-channel = Sianel Diweddaru
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Diweddaru Cyfeiriadur
@@ -56,7 +59,6 @@ app-basics-service-workers = Service Workers Cofrestredig
 app-basics-profiles = Proffiliau
 app-basics-launcher-process-status = Proses Lansio
 app-basics-multi-process-support = Ffenestri Amlbroses
-app-basics-process-count = Prosesau Cynnwys Gwe
 app-basics-remote-processes-count = Prosesau Pell
 app-basics-enterprise-policies = Polisïau Mentrau
 app-basics-location-service-key-google = Allwedd Google Location Service
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Nodweddion Crash Guard wedi ei Analluogi
 graphics-workarounds-title = Dulliau Datrys
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protocol Ffenestr
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Amgylchedd Bwrdd Gwaith
 place-database-title = Cronfa Ddata Mannau
 place-database-integrity = Cyfanrwydd
 place-database-verify-integrity = Gwirio Cyfanrwydd
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Ymresymiadau
 safe-mode-title = Defnyddiwch y Modd Diogel
 restart-in-safe-mode-label = Ailgychwyn gydag Ychwanegion wedi eu Hanalluogi…
+clear-startup-cache-title = Ceisiwch glirio'r storfa gychwyn
+clear-startup-cache-label = Clirio'r storfa gychwyn…
+startup-cache-dialog-title = Clirio'r storfa gychwyn
+startup-cache-dialog-body = Ailgychwyn { -brand-short-name } i glirio storfa cychwyn. Ni fydd hyn yn newid eich gosodiadau nac yn dileu estyniadau rydych chi wedi'u hychwanegu at { -brand-short-name }.
+restart-button-label = Ailgychwyn
+
+## Media titles
+
+audio-backend = Cefn Sain
+max-audio-channels = Mwyaf o Sianeli
+channel-layout = Cynllun Sianeli Amgen
+sample-rate = Graddfa Samplo Amgen
+roundtrip-latency = Cylchdro cudd (gwyriad safonol)
 media-title = Cyfrwng
 media-output-devices-title = Dyfeisiau Allbwn
 media-input-devices-title = Dyfeisiau Mewnbwn
@@ -124,6 +141,12 @@ media-device-format = Fformat
 media-device-channels = Sianeli
 media-device-rate = Cyfradd
 media-device-latency = Cuddni
+media-capabilities-title = Gallu Cyfryngol
+# List all the entries of the database.
+media-capabilities-enumerate = Cyfrifo'r gronfa ddata
+
+##
+
 intl-title = Rhyngwladoli a Lleoleiddio
 intl-app-title = Gosodiadau'r Rhaglen
 intl-locales-requested = Locales Gofynnwyd Amdanynt
@@ -133,6 +156,22 @@ intl-locales-default = Locale Rhagosodedig
 intl-os-title = System Weithredu
 intl-os-prefs-system-locales = Locales y System
 intl-regional-prefs = Dewisiadau Rhanbarthol
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Dadfygio o Bell (Protocol Cromiwm)
+remote-debugging-accepting-connections = Derbyn Cysylltiadau
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -249,7 +288,9 @@ unknown-failure = Wedi ei rwystro; gwall cod { $failureCode }
 d3d11layers-crash-guard = Cyfosodwr D3D11
 d3d11video-crash-guard = Dadgodiwr Fideo D3D11
 d3d9video-crash-buard = Dadgodiwr Fideo D3D9
+d3d9video-crash-guard = Dadgodiwr Fideo D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Dadgodiwr Fideo WMF VPX
 reset-on-next-restart = Ailosod wrth Ailgychwyn
 gpu-process-kill-button = Gorffen Proses GPU
 gpu-device-reset = Ailosod Dyfais
@@ -258,12 +299,7 @@ uses-tiling = Yn defnyddio Teilsio
 content-uses-tiling = Yn Defnyddio Teilsio (Cynnwys)
 off-main-thread-paint-enabled = Galluogwyd Paentio All Brif Drywydd
 off-main-thread-paint-worker-count = Cyfrif Gweithiwr Paentio Oddi ar y Brif Drywydd
-low-end-machine = Wedi canfod peiriant llai amlwg
 target-frame-rate = Graddfa Ffrâm Darged
-audio-backend = Cefn Sain
-max-audio-channels = Mwyaf o Sianeli
-channel-layout = Cynllun Sianeli Amgen
-sample-rate = Graddfa Samplo Amgen
 min-lib-versions = Fersiwn lleiaf disgwyliedig
 loaded-lib-versions = Fersiwn mewn defnydd
 has-seccomp-bpf = Seccomp-BPF (Hidlo Galw System)
@@ -278,6 +314,11 @@ sandbox-proc-type-content = cynnwys
 sandbox-proc-type-file = cynnwys ffeil
 sandbox-proc-type-media-plugin = ategyn cyfrwng
 sandbox-proc-type-data-decoder = datgodydd data
+startup-cache-title = Storfa cychwyn
+startup-cache-disk-cache-path = Llwybr Storfa Disg
+startup-cache-ignore-disk-cache = Anwybyddu Storfa Disg
+startup-cache-found-disk-cache-on-init = Wedi dod o hyd i Storfa Disg ar Init
+startup-cache-wrote-to-disk-cache = Ysgrifennwyd at Storfa Disg
 launcher-process-status-0 = Galluogwyd
 launcher-process-status-1 = Analluogwyd oherwydd methiant
 launcher-process-status-2 = Analluogwyd yn orfodol
@@ -301,6 +342,7 @@ touch-enabled = mewnbwn cyffwrdd wedi ei alluogi
 drag-enabled = wedi galluogu llusgo bar sgrolio
 keyboard-enabled = bysellfwrdd wedi ei anlluogi
 autoscroll-enabled = galluogwyd awtosgrolio
+zooming-enabled = pinsio chwyddo llyfn wedi'i alluogi
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

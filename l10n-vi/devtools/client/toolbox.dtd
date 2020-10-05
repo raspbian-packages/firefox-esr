@@ -70,7 +70,7 @@
   -  checkbox that toggles chrome debugging, i.e. devtools.chrome.enabled
   -  boolean preference in about:config, in the options panel. -->
 <!ENTITY options.enableChrome.label5    "Kích hoạt trình duyệt chrome và các hộp công cụ gỡ lỗi tiện ích">
-<!ENTITY options.enableChrome.tooltip3  "Bật tùy chọn này sẽ cho phép bạn sử dụng các công cụ dành cho nhà phát triển khác nhau trong ngữ cảnh trình duyệt (thông qua Công cụ > Nhà phát triển web > Hộp công cụ trình duyệt) và gỡ lỗi các tiện ích bổ sung từ trình quản lý tiện ích">
+<!ENTITY options.enableChrome.tooltip3  "Bật tùy chọn này sẽ cho phép bạn sử dụng các công cụ dành cho nhà phát triển khác nhau trong ngữ cảnh trình duyệt (thông qua Công cụ > Nhà phát triển web > Hộp công cụ trình duyệt) và gỡ lỗi các tiện ích từ trình quản lý tiện ích">
 
 <!-- LOCALIZATION NOTE (options.enableRemote.label3): This is the label for the
   -  checkbox that toggles remote debugging, i.e. devtools.debugger.remote-enabled

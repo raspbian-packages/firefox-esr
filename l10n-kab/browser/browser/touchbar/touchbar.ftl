@@ -9,6 +9,7 @@ forward = Ɣer zdat
 reload = Smiren
 home = Asebter agejdan
 fullscreen = Agdil ačuran
+touchbar-fullscreen-exit = Ffeɣ seg ugdil ačuran
 find = Nadi
 new-tab = Iccer amaynut
 add-bookmark = Rnu tacreṭ n usebter
@@ -18,3 +19,21 @@ reader-view = Askar n tɣuṛi
 open-location = Nadi neɣ sekcem tansa
 share = Bḍu
 close-window = Mdel asfaylu
+open-sidebar = Igalisen idisanen
+
+# This string describes shortcuts for search.
+search-popover = Nadi inegzumen
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Nadi di:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Ticraḍ n isebtar
+search-history = Azray
+search-opentabs = Lddi icarren
+search-tags = Tibzimin
+search-titles = Izwal
+
+##
+

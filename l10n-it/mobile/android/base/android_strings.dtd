@@ -21,17 +21,15 @@
 <!ENTITY firstrun_data_message "Risparmia sulla connessione">
 <!ENTITY firstrun_data_subtext2 "Disattiva le immagini per consumare meno dati ogni volta che visiti un sito.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "Account">
-<!ENTITY firstrun_sync_message2 "Riprendi da dove ti eri interrotto">
+<!ENTITY firstrun_sync_message3 "Sincronizza segnalibri, cronologia e password con il tuo telefono.">
 <!ENTITY firstrun_sync_subtext2 "Utilizza Sync per accedere da tutti i dispositivi a segnalibri, password e altre informazioni salvate in &brandShortName;.">
 <!ENTITY newfirstrun_sync_subtext "Sincronizza le informazioni salvate sul tuo dispositivo mobile con Firefox sul tuo computer, in modo riservato e sicuro.">
-<!ENTITY updatednewfirstrun_sync_subtext "Accedi al tuo account per ottenere il massimo da &brandShortName;">
+<!ENTITY firstrun_sendtab_title "Invia scheda">
+<!ENTITY firstrun_sendtab_message "Condividi al volo schede tra il computer di casa e il telefono.">
 <!ENTITY firstrun_signin_message "Connettiti e inizia">
-<!ENTITY firstrun_signin_button "Accedi a Sync">
-<!ENTITY newfirstrun_signin_button "Attiva Sync">
-<!ENTITY updatednewfirstrun_signin_button "Accedi a &brandShortName;">
 <!ENTITY onboard_start_button_browser "Inizia a navigare">
 <!ENTITY firstrun_button_notnow "Non adesso">
+<!ENTITY firstrun_signup_button "Registrati">
 <!ENTITY firstrun_button_next "Successivo">
 <!ENTITY firstrun_tabqueue_title "Link">
 <!ENTITY firstrun_readerview_title "Articoli">
@@ -171,6 +169,7 @@
 <!ENTITY pref_cookies_menu "Cookie">
 <!ENTITY pref_cookies_accept_all "Attivi">
 <!ENTITY pref_cookies_not_accept_foreign "Attivi, esclusi di terze parti">
+<!ENTITY pref_cookies_not_accept_trackers "Attivi, esclusi cookie traccianti">
 <!ENTITY pref_cookies_disabled "Disattivati">
 <!ENTITY pref_category_data_saver "Risparmio dati">
 <!ENTITY pref_category_media "Elementi multimediali">
@@ -201,10 +200,6 @@
 <!ENTITY custom_tabs_hint_url_copy "Indirizzo copiato">
 <!ENTITY pref_pwa "Web app progressive">
 <!ENTITY pref_pwa_summary "Consenti di aggiungere web app alla pagina iniziale">
-<!ENTITY tracking_protection_prompt_title "Ora con protezione antitracciamento">
-<!ENTITY tracking_protection_prompt_text "Blocca in modo attivo gli elementi traccianti, rimuovendo ogni preoccupazione per l’utente.">
-<!ENTITY tracking_protection_prompt_tip_text "Per ulteriori informazioni visita la sezione Privacy delle impostazioni">
-<!ENTITY tracking_protection_prompt_action_button "Ricevuto!">
 <!ENTITY tab_queue_toast_message3 "Scheda salvata in &brandShortName;">
 <!ENTITY tab_queue_toast_action "Apri adesso">
 <!ENTITY tab_queue_prompt_title "Apertura di più link">
@@ -261,7 +256,6 @@
 <!ENTITY pref_private_data_syncedTabs "Schede sincronizzate">
 <!ENTITY pref_default_browser2 "Imposta &brandShortName; come browser predefinito">
 <!ENTITY default_browser_system_settings_toast "Tocca App Browser e seleziona &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Visita il supporto Mozilla">
 <!ENTITY pref_about_firefox "Informazioni su &brandShortName;">
 <!ENTITY pref_vendor_faqs "FAQ">
 <!ENTITY pref_vendor_feedback "Invia feedback">
@@ -291,10 +285,6 @@
 <!ENTITY datareporting_wifi_title2 "Georilevazione di &vendorShortName;">
 <!ENTITY datareporting_wifi_geolocation_summary4 "Aiuta &vendorShortName; a creare una mappa del mondo. Condividi la posizione approssimativa del tuo dispositivo all’interno delle reti Wi-Fi e cellulare per migliorare i nostri servizi di georilevazione.">
 <!ENTITY datareporting_stumbler_notification_title "Georilevazione di &vendorShortName; in esecuzione">
-<!ENTITY pref_update_autodownload3 "Aggiornamenti automatici">
-<!ENTITY pref_update_autodownload_wifi "Solo con Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Mai">
-<!ENTITY pref_update_autodownload_always "Sempre">
 <!ENTITY help_menu "Guida">
 <!ENTITY quit "Esci">
 <!ENTITY addons "Componenti aggiuntivi">
@@ -304,6 +294,7 @@
 <!ENTITY share "Condividi">
 <!ENTITY share_title "Condividi con">
 <!ENTITY share_image_failed "Impossibile condividere questa immagine">
+<!ENTITY share_error_toast_message "Impossibile condividere con l’app selezionata">
 <!ENTITY save_as_pdf "Salva come PDF">
 <!ENTITY print "Stampa">
 <!ENTITY view_page_source "Visualizza sorgente pagina">
@@ -349,7 +340,7 @@
 <!ENTITY contextmenu_add_search_engine "Aggiungi motore di ricerca">
 <!ENTITY pinned_page_to_top_sites "Aggiunto ai siti principali">
 <!ENTITY unpinned_page_from_top_sites "Rimosso dai siti principali">
-<!ENTITY doorhanger_login_no_username "[nessun nome utente]">
+<!ENTITY doorhanger_login_no_username "(nessun nome utente)">
 <!ENTITY doorhanger_login_edit_title "Modifica credenziali">
 <!ENTITY doorhanger_login_edit_username_hint "Nome utente">
 <!ENTITY doorhanger_login_edit_password_hint "Password">
@@ -449,16 +440,6 @@
 <!ENTITY suggestions_prompt3 "Attivare i suggerimenti di ricerca?">
 <!ENTITY suggestion_for_engine "Cerca &formatS2; in &formatS1;">
 <!ENTITY searchable_description "Segnalibri e cronologia">
-<!ENTITY updater_start_title2 "Aggiornamento disponibile per &brandShortName;">
-<!ENTITY updater_start_select2 "Tocca per scaricare">
-<!ENTITY updater_permission_text "Per scaricare file e aggiornamenti &brandShortName; ha bisogno dei permessi per accedere allo spazio di archiviazione.">
-<!ENTITY updater_permission_allow "Consenti">
-<!ENTITY updater_downloading_title2 "Download di &brandShortName; in corso">
-<!ENTITY updater_downloading_title_failed2 "Download non riuscito">
-<!ENTITY updater_downloading_select2 "Tocca per installare a download completato.">
-<!ENTITY updater_downloading_retry2 "Tocca per riprovare">
-<!ENTITY updater_apply_title3 "Aggiornamento scaricato per &brandShortName;">
-<!ENTITY updater_apply_select3 "Tocca per installare">
 <!ENTITY new_guest_session "Nuova sessione ospite">
 <!ENTITY exit_guest_session "Termina sessione ospite">
 <!ENTITY guest_session_dialog_continue "Continua">
@@ -506,6 +487,14 @@
 <!ENTITY helper_triple_readerview_open_title "Disponibile non in linea">
 <!ENTITY helper_triple_readerview_open_message "Aggiungi ai segnalibri articoli da Modalità lettura per leggerli anche senza connessione a Internet.">
 <!ENTITY helper_triple_readerview_open_button "Aggiungi ai segnalibri">
+<!ENTITY activity_stream_signin_title "Benvenuto in &brandShortName;">
+<!ENTITY activity_stream_signin_description "Inizia a sincronizzare segnalibri, password e molto altro ancora con il tuo account Firefox.">
+<!ENTITY activity_stream_firefox_promo_title "Un Firefox completamente rinnovato, in arrivo nel 2020">
+<!ENTITY activity_stream_firefox_promo_description "Prossimamente: prestazioni migliorate, protezione antitracciamento avanzata e caratteristiche progettate per aiutarti a trovare, salvare e condividere tutto ciò che ami online.">
+<!ENTITY activity_stream_firefox_promo_button "Scoprilo in anteprima">
+<!ENTITY activity_stream_signup_button "Iscriviti">
+<!ENTITY activity_stream_signin_prompt "Hai già un account?">
+<!ENTITY activity_stream_signin_prompt_button "Accedi.">
 <!ENTITY activity_stream_topsites "Siti principali">
 <!ENTITY activity_stream_topstories "Consigliati da &brandPocket;">
 <!ENTITY activity_stream_highlights "In evidenza">
@@ -535,7 +524,6 @@
 <!ENTITY download_notification_channel "Download">
 <!ENTITY media_notification_channel2 "Audio e video">
 <!ENTITY leanplum_default_notifications_channel2 "Consigli e suggerimenti da &vendorShortName;">
-<!ENTITY updater_notification_channel "Aggiornamenti app">
 <!ENTITY synced_tabs_notification_channel "Schede sincronizzate">
 <!ENTITY site_notifications_channel "Notifiche siti">
 <!ENTITY crash_handler_notifications_channel "Crash Reporter &brandShortName;">

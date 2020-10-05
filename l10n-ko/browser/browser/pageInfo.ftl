@@ -4,18 +4,22 @@
 
 page-info-window =
     .style = width: 600px; min-height: 500px;
+
 copy =
     .key = C
 menu-copy =
     .label = 복사
     .accesskey = C
+
 select-all =
     .key = A
 menu-select-all =
     .label = 모두 선택
     .accesskey = A
-close-window =
-    .key = A
+
+close-dialog =
+    .key = w
+
 general-tab =
     .label = 일반
     .accesskey = G
@@ -24,28 +28,29 @@ general-title =
 general-url =
     .value = 주소:
 general-type =
-    .value = 형식:
+    .value = 유형:
 general-mode =
     .value = 렌더링 방식:
 general-size =
-    .value = 파일 용량:
+    .value = 크기:
 general-referrer =
     .value = 참조 URL:
 general-modified =
     .value = 수정:
 general-encoding =
-    .value = 글자 인코딩:
+    .value = 텍스트 인코딩:
 general-meta-name =
     .label = 이름
 general-meta-content =
     .label = 내용
+
 media-tab =
     .label = 미디어
     .accesskey = M
 media-location =
     .value = 위치:
 media-text =
-    .value = 추가 내용:
+    .value = 관련 텍스트:
 media-alt-header =
     .label = 대체 텍스트
 media-address =
@@ -53,11 +58,11 @@ media-address =
 media-type =
     .label = 유형
 media-size =
-    .label = 이미지 크기
+    .label = 크기
 media-count =
-    .label = 카운트
+    .label = 개수
 media-dimension =
-    .value = 사이즈:
+    .value = 픽셀 크기:
 media-long-desc =
     .value = 설명:
 media-save-as =
@@ -68,11 +73,13 @@ media-save-image-as =
     .accesskey = e
 media-preview =
     .value = 미리 보기:
+
 perm-tab =
-    .label = 이용 권한
+    .label = 권한
     .accesskey = P
 permissions-for =
-    .value = 이용 권한:
+    .value = 권한 대상:
+
 security-tab =
     .label = 보안
     .accesskey = S
@@ -86,24 +93,29 @@ security-view-identity =
 security-view-identity-owner =
     .value = 소유자:
 security-view-identity-domain =
-    .value = 사이트 정보:
+    .value = 웹 사이트:
 security-view-identity-verifier =
-    .value = 신원 확인자:
+    .value = 인증 기관:
 security-view-identity-validity =
     .value = 만료일:
 security-view-privacy =
-    .value = 개인 정보 및 방문 기록
-security-view-privacy-history-value = 이전에 현재 웹 사이트 방문 여부
-security-view-privacy-sitedata-value = 이 웹사이트가 내 컴퓨터에 데이터를 저장하나요?
+    .value = 개인 정보 및 기록
+
+security-view-privacy-history-value = 이 웹 사이트를 이전에 방문한 적이 있습니까?
+security-view-privacy-sitedata-value = 이 웹 사이트가 내 컴퓨터에 정보를 저장합니까?
+
 security-view-privacy-clearsitedata =
-    .label = 쿠키와 사이트 데이터 삭제
+    .label = 쿠키 및 사이트 데이터 삭제
     .accesskey = C
-security-view-privacy-passwords-value = 이 사이트에 저정된 비밀번호가 있나요?
+
+security-view-privacy-passwords-value = 이 웹 사이트에 비밀번호를 저장한 적이 있습니까?
+
 security-view-privacy-viewpasswords =
     .label = 저장된 비밀번호 보기
     .accesskey = w
 security-view-technical =
-    .value = 세부 사항
+    .value = 기술적 세부 사항
+
 help-button =
     .label = 도움말
 
@@ -113,12 +125,16 @@ help-button =
 ##   $value (number) - Amount of data being stored
 ##   $unit (string) - The unit of data being stored (Usually KB)
 
-security-site-data-cookies = 네, 쿠키와 { $value } { $unit } 데이터
-security-site-data-only = 네, { $value } { $unit } 데이터
+security-site-data-cookies = 네, 쿠키와 { $value } { $unit }의 사이트 데이터
+security-site-data-only = 네, { $value } { $unit } 사이트 데이터
+
 security-site-data-cookies-only = 네, 쿠키
 security-site-data-no = 아니오
+
 image-size-unknown = 알 수 없음
 not-set-verified-by = 설정되지 않음
+page-info-not-specified =
+    .value = 설정되지 않음
 not-set-alternative-text = 설정되지 않음
 not-set-date = 설정되지 않음
 media-img = 이미지
@@ -134,19 +150,23 @@ media-video = 동영상
 media-audio = 음성
 saved-passwords-yes = 있음
 saved-passwords-no = 없음
+
 no-page-title =
     .value = 페이지 제목 없음:
 general-quirks-mode =
-    .value = 비표준 모드
+    .value = 쿼크 모드
 general-strict-mode =
     .value = 표준 호환 모드
-security-no-owner = 현재 웹 사이트는 소유자 정보를 제공하지 않고 있습니다.
+security-no-owner = 이 웹 사이트는 소유권 정보를 제공하고 있지 않습니다.
+page-info-security-no-owner =
+    .value = 이 웹 사이트는 소유권 정보를 제공하고 있지 않습니다.
 media-select-folder = 이미지를 저장할 폴더 선택
 media-unknown-not-cached =
-    .value = 알 수 없음(캐싱 안 함)
+    .value = 알 수 없음 (캐시 안 됨)
 permissions-use-default =
     .label = 기본 설정 사용
 security-no-visits = 없음
+
 # This string is used to display the number of meta tags
 # in the General Tab
 # Variables:
@@ -156,6 +176,7 @@ general-meta-tags =
         { $tags ->
            *[other] 메타 ({ $tags }개 태그)
         }
+
 # This string is used to display the number of times
 # the user has visited the website prior
 # Variables:
@@ -163,8 +184,9 @@ general-meta-tags =
 security-visits-number =
     { $visits ->
         [0] 아니오
-       *[other] 예, { $visits }회
+       *[other] 네, { $visits }회
     }
+
 # This string is used to display the size of a media file
 # Variables:
 #   $kb (number) - The size of an image in Kilobytes
@@ -174,6 +196,7 @@ properties-general-size =
         { $bytes ->
            *[other] { $kb } KB ({ $bytes } 바이트)
         }
+
 # This string is used to display the type and number
 # of frames of a animated image
 # Variables:
@@ -184,12 +207,14 @@ media-animated-image-type =
         { $frames ->
            *[other] { $type } 이미지 (애니메이션, { $frames } 프레임)
         }
+
 # This string is used to display the type of
 # an image
 # Variables:
 #   $type (string) - The type of an image
 media-image-type =
-    .value = { $type } 형식
+    .value = { $type } 이미지
+
 # This string is used to display the size of a scaled image
 # in both scaled and unscaled pixels
 # Variables:
@@ -198,18 +223,21 @@ media-image-type =
 #   $scaledx (number) - The scaled horizontal size of an image
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
-    .value = { $dimx }px × { $dimy }px (크기 변경 { $scaledx }px × { $scaledy }px)
+    .value = { $dimx }px × { $dimy }px ({ $scaledx }px × { $scaledy }px로 조정됨)
+
 # This string is used to display the size of an image in pixels
 # Variables:
 #   $dimx (number) - The horizontal size of an image
 #   $dimy (number) - The vertical size of an image
 media-dimensions =
     .value = { $dimx }px × { $dimy }px
+
 # This string is used to display the size of a media
 # file in kilobytes
 # Variables:
 #   $size (number) - The size of the media file in kilobytes
 media-file-size = { $size } KB
+
 # This string is used to display the website name next to the
 # "Block Images" checkbox in the media tab
 # Variables:
@@ -217,6 +245,7 @@ media-file-size = { $size } KB
 media-block-image =
     .label = { $website }에서 이미지 차단
     .accesskey = B
+
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:

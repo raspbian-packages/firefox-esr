@@ -5,50 +5,66 @@
 permissions-window =
     .title = Выключэнні
     .style = width: 38em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Адрас вэб-сайта
     .accesskey = д
+
 permissions-block =
     .label = Блакаваць
     .accesskey = Б
+
 permissions-session =
     .label = Дазволіць на час сесіі
     .accesskey = с
+
 permissions-allow =
     .label = Дазволіць
     .accesskey = Д
+
 permissions-site-name =
     .label = Вэб-сайт
+
 permissions-status =
     .label = Статус
+
 permissions-remove =
     .label = Выдаліць вэб-сайт
     .accesskey = В
+
 permissions-remove-all =
     .label = Выдаліць усе вэб-сайты
     .accesskey = ы
+
 permissions-button-cancel =
     .label = Скасаваць
     .accesskey = С
+
 permissions-button-ok =
     .label = Захаваць змены
     .accesskey = Ы
+
 permissions-autoplay-menu = Прадвызначана для ўсіх сайтаў:
+
 permissions-searchbox =
     .placeholder = Пошук сярод вэб-сайтаў
+
 permissions-capabilities-autoplay-allow =
     .label = Дазваляць гук і відэа
 permissions-capabilities-autoplay-block =
     .label = Блакаваць гук
 permissions-capabilities-autoplay-blockall =
     .label = Блакаваць гук і відэа
+
 permissions-capabilities-allow =
     .label = Дазволіць
 permissions-capabilities-block =
     .label = Блакаваць
 permissions-capabilities-prompt =
     .label = Заўсёды пытаць
+
 permissions-capabilities-listitem-allow =
     .value = Дазволіць
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Выключэнні - Блакаванне змесціва
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Вы адключылі блакаванне змесціва на гэтых сайтах.
+
+permissions-exceptions-etp-window =
+    .title = Выключэнні для ўзмоцненай аховы ад сачэння
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Вы адключылі ахову на гэтых сайтах.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Наступныя вэб-сайты запыт
 permissions-site-location-disable-label =
     .label = Блакаваць новыя запыты на доступ да вашага месцазнаходжання
 permissions-site-location-disable-desc = Гэта не дазволіць вэб-сайтам, акрамя пералічаных вышэй, запытваць дазвол на доступ да вашага месцазнаходжання. Блакаванне доступу да вашага месцазнаходжання можа парушыць некаторыя функцыі сайта.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Налады - Дазволы віртуальнай рэальнасці
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Наступныя вэб-сайты запыталі дазвол на доступ да вашых прылад віртуальнай рэальнасці. Вы можаце азначыць, якім вэб-сайтам дазволены доступ да вашых прылад віртуальнай рэальнасці. Вы таксама можаце забараніць новыя запыты на доступ да вашых прылад віртуальнай рэальнасці.
+permissions-site-xr-disable-label =
+    .label = Блакаваць новыя запыты на доступ да вашых прылад віртуальнай рэальнасці
+permissions-site-xr-disable-desc = Гэта не дазволіць вэб-сайтам, акрамя пералічаных вышэй, запытваць дазвол на доступ да вашых прылад віртуальнай рэчаіснасці. Блакаванне доступу да вашых прылад віртуальнай рэальнасці можа парушыць некаторыя функцыі сайта.
 
 ## Site Permissions - Camera
 

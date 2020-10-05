@@ -34,11 +34,14 @@ app-basics-title = Osnovni podatki
 app-basics-name = Ime
 app-basics-version = Različica
 app-basics-build-id = ID gradnje
+app-basics-distribution-id = ID distribucije
 app-basics-update-channel = Posodobitveni kanal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
-        [linux] Posodobi mapo
-       *[other] Posodobi mapo
+        [linux] Mapa za posodobitve
+       *[other] Mapa za posodobitve
     }
 app-basics-update-history = Zgodovina posodobitev
 app-basics-show-update-history = Prikaži zgodovino posodobitev
@@ -59,7 +62,6 @@ app-basics-service-workers = Registrirani Service Workerji
 app-basics-profiles = Profili
 app-basics-launcher-process-status = Proces zaganjača
 app-basics-multi-process-support = Večprocesna okna
-app-basics-process-count = Procesi spletne vsebine
 app-basics-remote-processes-count = Oddaljeni procesi
 app-basics-enterprise-policies = Pravilniki za podjetja
 app-basics-location-service-key-google = Ključ lokacijskih storitev Google
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Onemogočene možnosti zaščite pred sesutjem
 graphics-workarounds-title = Zaobidenja
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Okenski protokol
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Namizno okolje
 place-database-title = Podatkovna zbirka mest
 place-database-integrity = Celovitost
 place-database-verify-integrity = Preveri celovitost
@@ -115,6 +119,19 @@ sandbox-sys-call-number = Sistemski klic
 sandbox-sys-call-args = Argumenti
 safe-mode-title = Poskusite varni način
 restart-in-safe-mode-label = Ponovno zaženi z onemogočenimi dodatki …
+clear-startup-cache-title = Poskusite počistiti predpomnilnik zagona
+clear-startup-cache-label = Počisti predpomnilnik zagona …
+startup-cache-dialog-title = Počistite predpomnilnik zagona
+startup-cache-dialog-body = Ponovno zaženite { -brand-short-name }, da počistite predpomnilnik zagona. To ne bo spremenilo vaših nastavitev ali odstranilo razširitev, ki ste jih dodali v { -brand-short-name }.
+restart-button-label = Ponovno zaženi
+
+## Media titles
+
+audio-backend = Zvočno zaledje
+max-audio-channels = Največje število kanalov
+channel-layout = Prednostna razporeditev kanalov
+sample-rate = Prednostna hitrost vzorčenja
+roundtrip-latency = Zakasnitev povratnega potovanja (standardni odklon)
 media-title = Predstavnost
 media-output-devices-title = Izhodne naprave
 media-input-devices-title = Vhodne naprave
@@ -127,6 +144,12 @@ media-device-format = Oblika
 media-device-channels = Kanali
 media-device-rate = Hitrost
 media-device-latency = Zakasnitev
+media-capabilities-title = Zmogljivosti večpredstavnosti
+# List all the entries of the database.
+media-capabilities-enumerate = Oštevilči bazo podatkov
+
+##
+
 intl-title = Jeziki in lokalizacija
 intl-app-title = Nastavitve programa
 intl-locales-requested = Zahtevani jeziki
@@ -136,6 +159,22 @@ intl-locales-default = Privzeti jezik
 intl-os-title = Operacijski sistem
 intl-os-prefs-system-locales = Sistemski jeziki
 intl-regional-prefs = Območne nastavitve
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Oddaljeno razhroščevanje (protokol Chromium)
+remote-debugging-accepting-connections = Sprejema povezave
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -242,7 +281,9 @@ unknown-failure = Dodano na seznam zavrnjenih; koda napake { $failureCode }
 d3d11layers-crash-guard = Sestavljalnik D3D11
 d3d11video-crash-guard = Videodekodirnik D3D11
 d3d9video-crash-buard = Videodekodirnik D3D9
+d3d9video-crash-guard = Videodekodirnik D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Videodekodirnik WMF VPX
 reset-on-next-restart = Ponastavi ob naslednjem zagonu
 gpu-process-kill-button = Prekini proces GPE
 gpu-device-reset = Ponastavitev naprave
@@ -251,12 +292,7 @@ uses-tiling = Uporablja razpostavljanje
 content-uses-tiling = Uporablja razpostavljanje (vsebina)
 off-main-thread-paint-enabled = Izrisovanje izven glavne niti je omogočeno
 off-main-thread-paint-worker-count = Število workerjev za izrisovanje izven glavne niti
-low-end-machine = Zaznana manj zmogljiva naprava
 target-frame-rate = Ciljna hitrost sličic
-audio-backend = Zvočno zaledje
-max-audio-channels = Največje število kanalov
-channel-layout = Prednostna razporeditev kanalov
-sample-rate = Prednostna hitrost vzorčenja
 min-lib-versions = Najnižja podprta različica
 loaded-lib-versions = Trenutna različica
 has-seccomp-bpf = Seccomp-BPF (Filtriranje sistemskih klicev)
@@ -271,6 +307,11 @@ sandbox-proc-type-content = vsebina
 sandbox-proc-type-file = vsebina datoteke
 sandbox-proc-type-media-plugin = večpredstavni vtičnik
 sandbox-proc-type-data-decoder = podatkovni dekodirnik
+startup-cache-title = Predpomnilnik zagona
+startup-cache-disk-cache-path = Pot predpomnilnika diska
+startup-cache-ignore-disk-cache = Prezri predpomnilnik diska
+startup-cache-found-disk-cache-on-init = Najden predpomnilnik diska ob inicializaciji
+startup-cache-wrote-to-disk-cache = Zapisano v predpomnilnik diska
 launcher-process-status-0 = Omogočeno
 launcher-process-status-1 = Onemogočeno zaradi napake
 launcher-process-status-2 = Prisilno onemogočeno
@@ -294,6 +335,7 @@ touch-enabled = vnos na dotik omogočen
 drag-enabled = vlečenje drsnika omogočeno
 keyboard-enabled = tipkovnica omogočena
 autoscroll-enabled = samodrsenje omogočeno
+zooming-enabled = omogočeno gladko povečanje s približevanjem prstov
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

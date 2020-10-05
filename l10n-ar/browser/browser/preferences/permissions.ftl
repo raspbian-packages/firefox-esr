@@ -5,49 +5,70 @@
 permissions-window =
     .title = الاستثناءات
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = عنوان موقع وِب
     .accesskey = و
+
 permissions-block =
     .label = احجب
     .accesskey = ح
+
 permissions-session =
     .label = اسمح لهذه الجلسة
     .accesskey = ج
+
 permissions-allow =
     .label = اسمح
     .accesskey = س
+
 permissions-site-name =
     .label = موقع الوِب
+
 permissions-status =
     .label = الحالة
+
 permissions-remove =
     .label = احذف موقع الوِب
     .accesskey = ح
+
 permissions-remove-all =
     .label = احذف كل مواقع الوِب
     .accesskey = ذ
+
 permissions-button-cancel =
     .label = ألغِ
     .accesskey = ل
+
 permissions-button-ok =
     .label = احفظ التغييرات
     .accesskey = ح
+
+permissions-autoplay-menu = المبدئي للمواقع كافة:
+
 permissions-searchbox =
     .placeholder = ابحث عن موقع
+
+permissions-capabilities-autoplay-allow =
+    .label = اسمح بالصوت والڤِديو
+permissions-capabilities-autoplay-block =
+    .label = احجب الصوت
+permissions-capabilities-autoplay-blockall =
+    .label = احجب الصوت والڤِديو
+
 permissions-capabilities-allow =
     .label = اسمح
 permissions-capabilities-block =
     .label = احجب
 permissions-capabilities-prompt =
     .label = اسأل دائمًا
+
 permissions-capabilities-listitem-allow =
     .value = اسمح
 permissions-capabilities-listitem-block =
     .value = احجب
-permissions-capabilities-listitem-allow-first-party =
-    .value = اسمح للموقع الأصلي فقط
 permissions-capabilities-listitem-allow-session =
     .value = اسمح لهذه الجلسة
 
@@ -58,14 +79,15 @@ permissions-invalid-uri-label = رجاءً أدخل اسم مستضيف صالح
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = الاستثنائات – الحماية من التعقّب
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = لقد عُطلت حماية التعقب على مواقع الوِب هذه.
 permissions-exceptions-content-blocking-window =
     .title = الاستثناءات - حجب المحتوى
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = عطّلت حجب المحتوى في هذه المواقع.
+
+permissions-exceptions-etp-window =
+    .title = استثناءات الحماية الموسّعة من التعقب
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = عطّلت مزايا الحماية في هذه المواقع.
 
 ## Exceptions - Cookies
 
@@ -102,6 +124,13 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = يمكنك تحديد أي مواقع يسمح لها دائمًا أو لا يسمح أبدًا بتشغيل تشغيل الوسائط التي تحتوي صوتا تلقائيا.  اكتب عنوان الموقع الذي تريد إدارته وانقر احجب، أو اسمح.
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = الإعدادات - التشغيل التلقائي
+    .style = { permissions-window.style }
+permissions-site-autoplay-desc = يمكنك من هنا إدارة المواقع التي لا تتوافق مع الإعدادات المبدئية للتشغيل التلقائي.
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -121,6 +150,16 @@ permissions-site-location-desc = طلبت المواقع الآتية معرفة
 permissions-site-location-disable-label =
     .label = احجب الطلبات الجديدة التي تطلب معرفة مكاني
 permissions-site-location-disable-desc = سيمنع هذا مواقع الوب غير المدرجة أعلاه من طلب تصريح معرفة مكانك. يمكن أن يؤدي منع التصريح هذا إلى عطب مزايا بعض المواقع.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = الإعدادات - تصاريح الواقع الافتراضي
+    .style = { permissions-window.style }
+permissions-site-xr-desc = طلبت المواقع الآتية الوصول إلى أجهزة الواقع الافتراضي عندك. يمكنك تحديد أي المواقع مسموح لها الوصول إلى تلك الأجهزة، ويمكنك أيضا حجب الطلبات الجديدة التي تطلب الوصول إلى تلك الأجهزة عندك.
+permissions-site-xr-disable-label =
+    .label = احجب الطلبات الجديدة التي تطلب الوصول إلى أجهزة الواقع الافتراضي عندك
+permissions-site-xr-disable-desc = سيمنع هذا مواقع الوب غير المدرجة أعلاه من طلب تصريح الوصول إلى أجهزة الواقع الافتراضي عندك. يمكن أن يؤدي منع التصريح هذا إلى عطب مزايا بعض المواقع.
 
 ## Site Permissions - Camera
 

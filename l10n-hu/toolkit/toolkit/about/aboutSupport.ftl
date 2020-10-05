@@ -31,7 +31,10 @@ app-basics-title = Alkalmazás alapadatai
 app-basics-name = Név
 app-basics-version = Verzió
 app-basics-build-id = Build az.
+app-basics-distribution-id = Terjesztési azonosító
 app-basics-update-channel = Frissítési csatorna
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Könyvtár frissítése
@@ -56,7 +59,6 @@ app-basics-service-workers = Regisztrált Service Workerek
 app-basics-profiles = Profilok
 app-basics-launcher-process-status = Indító folyamat
 app-basics-multi-process-support = Több folyamatú ablakok
-app-basics-process-count = Webes tartalomfolyamat
 app-basics-remote-processes-count = Távoli folyamatok
 app-basics-enterprise-policies = Vállalati házirendek
 app-basics-location-service-key-google = Google helymeghatározási szolgáltatás kulcs
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Összeomlásvédelem által letiltott funkciók
 graphics-workarounds-title = Kerülő eljárások
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Ablakprotokoll
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Asztali környezet
 place-database-title = Helyek adatbázisa
 place-database-integrity = Sértetlenség
 place-database-verify-integrity = Sértetlenség ellenőrzése
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Rendszerhívás
 sandbox-sys-call-args = Argumentumok
 safe-mode-title = Biztonságos mód kipróbálása
 restart-in-safe-mode-label = Újraindítás letiltott kiegészítőkkel…
+clear-startup-cache-title = Próbálja meg üríteni az indítási gyorsítótárat
+clear-startup-cache-label = Indítási gyorsítótár törlése…
+startup-cache-dialog-title = Indítási gyorsítótár törlése
+startup-cache-dialog-body = Az indítási gyorsítótár ürítéséhez indítsa újra a { -brand-short-name }ot. Ez nem fogja megváltoztatni a beállításokat, és nem távolítja el a { -brand-short-name }hoz hozzáadott kiegészítőket.
+restart-button-label = Újraindítás
+
+## Media titles
+
+audio-backend = Hang háttérprogram
+max-audio-channels = Csatornák maximum
+channel-layout = Elsődleges csatornakiosztás
+sample-rate = Elsődleges mintavételezési sebesség
+roundtrip-latency = Oda-vissza út késleltetése (szórás)
 media-title = Média
 media-output-devices-title = Kimeneti eszközök
 media-input-devices-title = Bemeneti eszközök
@@ -124,6 +141,12 @@ media-device-format = Formátum
 media-device-channels = Csatornák
 media-device-rate = Sebesség
 media-device-latency = Késleltetés
+media-capabilities-title = Médiafunkciók
+# List all the entries of the database.
+media-capabilities-enumerate = Adatbázis felsorolása
+
+##
+
 intl-title = Nemzetköziesítés és honosítás
 intl-app-title = Alkalmazásbeállítások
 intl-locales-requested = Kért területi beállítások
@@ -133,6 +156,22 @@ intl-locales-default = Alapértelmezett területi beállítás
 intl-os-title = Operációs rendszer
 intl-os-prefs-system-locales = Rendszer területi beállításai
 intl-regional-prefs = Területi beállítások
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Távoli hibakeresés (Chromium protokoll)
+remote-debugging-accepting-connections = Kapcsolatok elfogadása
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -229,7 +268,9 @@ unknown-failure = Blokkolva, hibakód: { $failureCode }
 d3d11layers-crash-guard = D3D11 kompozitáló
 d3d11video-crash-guard = D3D11 videodekóder
 d3d9video-crash-buard = D3D9 videodekóder
+d3d9video-crash-guard = D3D9 videodekóder
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX videodekóder
 reset-on-next-restart = Újraindításkor alaphelyzetbe
 gpu-process-kill-button = GPU folyamat leállítása
 gpu-device-reset = Eszköz visszaállítása
@@ -238,12 +279,7 @@ uses-tiling = Csempézés használata
 content-uses-tiling = Csempézés használata (Tartalom)
 off-main-thread-paint-enabled = Fő szálon kívüli rajzolás engedélyezve
 off-main-thread-paint-worker-count = Fő szálon kívüli rajzoló workerek száma
-low-end-machine = Kisebb teljesítményű gép érzékelve
 target-frame-rate = Cél képkockasebesség
-audio-backend = Hang háttérprogram
-max-audio-channels = Csatornák maximum
-channel-layout = Elsődleges csatornakiosztás
-sample-rate = Elsődleges mintavételezési sebesség
 min-lib-versions = Elvárt minimális verzió
 loaded-lib-versions = Használt verzió
 has-seccomp-bpf = Seccomp-BPF (rendszerhívás-szűrés)
@@ -258,6 +294,11 @@ sandbox-proc-type-content = tartalom
 sandbox-proc-type-file = fájltartalom
 sandbox-proc-type-media-plugin = médiabővítmény
 sandbox-proc-type-data-decoder = adatdekódoló
+startup-cache-title = Indítási gyorsítótár
+startup-cache-disk-cache-path = Lemezgyorsítótár elérési útja
+startup-cache-ignore-disk-cache = Lemezgyorsítótár figyelmen kívül hagyása
+startup-cache-found-disk-cache-on-init = Lemezgyorsítótár megtalálva indításkor
+startup-cache-wrote-to-disk-cache = Lemezgyorsítótárba írva
 launcher-process-status-0 = Engedélyezve
 launcher-process-status-1 = Hiba miatt letiltva
 launcher-process-status-2 = Kényszerítve letiltva
@@ -281,6 +322,7 @@ touch-enabled = érintőbemenet engedélyezve
 drag-enabled = gördítősáv húzása engedélyezve
 keyboard-enabled = billentyűzet engedélyezve
 autoscroll-enabled = automatikus görgetés engedélyezve
+zooming-enabled = sima csípéssel történő nagyítás engedélyezve
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

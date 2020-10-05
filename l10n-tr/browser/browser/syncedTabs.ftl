@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Eşitlenmiş sekmeler
 synced-tabs-sidebar-noclients-subtitle = Diğer cihazlarınızdaki sekmeleri burada görmek ister misiniz?
 synced-tabs-sidebar-notsignedin = Diğer cihazlarınızdaki sekmeleri görmek için giriş yapın.
+synced-tabs-sidebar-intro = Diğer cihazlarınızdaki sekmelerin listesini görün.
 synced-tabs-sidebar-unverified = Hesabınızın doğrulanması gerekiyor.
 synced-tabs-sidebar-notabs = Açık sekme yok
 synced-tabs-sidebar-openprefs = { -sync-brand-short-name } tercihlerini aç
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Cihazları yönet…
     .accesskey = C
+synced-tabs-context-sync-now =
+    .label = Şimdi eşitle
+    .accesskey = m
 fxa-sign-in = { -sync-brand-short-name }’e giriş yap
+turn-on-sync = { -sync-brand-short-name }’i aç

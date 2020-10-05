@@ -3,22 +3,65 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-## UI strings for the simplified onboarding modal
+### UI strings for the simplified onboarding modal / about:welcome
+### Various strings use a non-breaking space to avoid a single dangling /
+### widowed word, so test on various window sizes if you also want this.
+
+
+## These button action text can be split onto multiple lines, so use explicit
+## newlines in translations to control where the line break appears (e.g., to
+## avoid breaking quoted text).
 
 onboarding-button-label-learn-more = Saber mais
 onboarding-button-label-try-now = Experimentar agora
 onboarding-button-label-get-started = Começar
+
+## Welcome modal dialog strings
+
 onboarding-welcome-header = Bem-vindo(a) ao { -brand-short-name }
 onboarding-welcome-body = Já tem o navegador.<br/>Conheça o resto do { -brand-product-name }.
 onboarding-welcome-learn-more = Saiba mais acerca dos benefícios.
 onboarding-join-form-header = Junte-se ao { -brand-product-name }
-onboarding-join-form-body = Introduza o seu endereço de email para começar.
+onboarding-welcome-modal-get-body = Já tem o navegador.<br/>Agora tire o máximo proveito do { -brand-product-name }.
+onboarding-welcome-modal-supercharge-body = Melhore a sua proteção da privacidade.
+onboarding-welcome-modal-privacy-body = Já tem o navegador. Vamos adicionar mais proteção à privacidade.
+onboarding-welcome-modal-family-learn-more = Saber mais sobre a família de produtos do { -brand-product-name }.
+onboarding-welcome-form-header = Comece aqui
+onboarding-join-form-body = Insira o seu endereço de e-mail para começar.
 onboarding-join-form-email =
-    .placeholder = Introduzir email
-onboarding-join-form-email-error = Email válido requerido
-onboarding-join-form-legal = Ao proceder, concorda com os <a data-l10n-name="terms">Termos de serviço</a> e <a data-l10n-name="privacy">Aviso de privacidade</a>.
+    .placeholder = Insira o e-mail
+onboarding-join-form-email-error = É necessário um e-mail válido
+onboarding-join-form-legal = Ao continuar, concorda com os <a data-l10n-name="terms">Termos de serviço</a> e o <a data-l10n-name="privacy">Aviso de privacidade</a>.
 onboarding-join-form-continue = Continuar
+# This message is followed by a link using onboarding-join-form-signin ("Sign In") as text.
+onboarding-join-form-signin-label = Já tem uma conta?
+# Text for link to submit the sign in form
+onboarding-join-form-signin = Iniciar sessão
 onboarding-start-browsing-button-label = Começar a navegar
+onboarding-cards-dismiss =
+    .title = Dispensar
+    .aria-label = Dispensar
+
+## Welcome full page string
+
+onboarding-fullpage-welcome-subheader = Vamos começar por explorar tudo o que pode fazer.
+onboarding-fullpage-form-email =
+    .placeholder = O seu endereço de e-mail…
+
+## Firefox Sync modal dialog strings.
+
+onboarding-sync-welcome-header = Leve o { -brand-product-name } consigo
+onboarding-sync-welcome-content = Obtenha os seus marcadores, histórico, palavras-passe e outras definições em todos os seus dispositivos.
+onboarding-sync-welcome-learn-more-link = Saber mais acerca do Contas Firefox
+onboarding-sync-form-input =
+    .placeholder = Email
+onboarding-sync-form-continue-button = Continuar
+onboarding-sync-form-skip-login-button = Saltar este passo
+
+## This is part of the line "Enter your email to continue to Firefox Sync"
+
+onboarding-sync-form-header = Introduza o seu email
+onboarding-sync-form-sub-header = para continuar para o { -sync-brand-name }.
 
 ## These are individual benefit messages shown with an image, title and
 ## description.
@@ -33,7 +76,13 @@ onboarding-benefit-privacy-title = Privacidade verdadeira
 # Firefox Personal Data Promise is the way we honor your data in everything we
 # make and do. We take less data. We keep it safe. And we make sure that we are
 # transparent about how we use it."
-onboarding-benefit-privacy-text = Tudo o que fazemos honra a nossa Promessa de Dados Pessoais: Recolher menos. Manter seguro. Sem segredos.
+onboarding-benefit-privacy-text = Tudo o que fazemos honra o nosso compromisso com os dados pessoais: Recolher menos. Manter seguro. Sem segredos.
+onboarding-benefit-sync-title = { -sync-brand-short-name }
+onboarding-benefit-sync-text = Leve os seus marcadores, palavras-passe, histórico e muito mais para qualquer lugar onde utilize o { -brand-product-name }.
+onboarding-benefit-monitor-title = { -monitor-brand-short-name }
+onboarding-benefit-monitor-text = Seja notificado quando a sua informação pessoal estiver numa violação de dados conhecida.
+onboarding-benefit-lockwise-title = { -lockwise-brand-short-name }
+onboarding-benefit-lockwise-text = Faça a gestão de palavras-passe que estão protegidas e portáteis.
 
 ## These strings belong to the individual onboarding messages.
 
@@ -43,7 +92,7 @@ onboarding-benefit-privacy-text = Tudo o que fazemos honra a nossa Promessa de D
 ## The string for the button is found above, in the UI strings section
 
 onboarding-private-browsing-title = Navegação privada
-onboarding-private-browsing-text = Navegue por si mesmo(a). A Navegação privada com Bloqueio de conteúdo bloqueia trackers online que lhe seguem pela web.
+onboarding-private-browsing-text = Navegue sozinho. A Navegação privada com Bloqueio de conteúdo bloqueia os rastreadores que o seguem na Internet.
 onboarding-screenshots-title = Capturas de ecrã
 onboarding-screenshots-text = Tire, guarde e partilhe capturas de ecrã - sem sair do { -brand-short-name }. Enquanto navega, capture uma região ou uma página inteira. Depois guarde na web para facilitar o acesso e a partilha.
 onboarding-addons-title = Extras
@@ -53,33 +102,21 @@ onboarding-ghostery-text = Navegue mais rápido, mais inteligentemente, ou com m
 # Note: "Sync" in this case is a generic verb, as in "to synchronize"
 onboarding-fxa-title = Sincronizar
 onboarding-fxa-text = Registe-se para uma { -fxaccount-brand-name } e sincronize os seus marcadores, palavras-passe, e separadores abertos onde quer que utilize o { -brand-short-name }.
-onboarding-tracking-protection-title = Controle como é monitorizado(a)
-onboarding-tracking-protection-text = Não gosta quando os anúncios lhe acompanham? O { -brand-short-name } ajuda-lhe a controlar como os anunciantes monitorizam a sua atividade online.
-# "Update" is a verb, as in "Update the existing settings", not "Options about
-# updates".
-onboarding-tracking-protection-button =
-    { PLATFORM() ->
-        [windows] Atualizar opções
-       *[other] Atualizar preferências
-    }
 onboarding-tracking-protection-title2 = Proteção da monitorização
-onboarding-tracking-protection-text2 = O { -brand-short-name } ajudar a parar os websites de lhe monitorizar online, fazendo mais difícil com que os anúncios lhe sigam pela web.
+onboarding-tracking-protection-text2 = O { -brand-short-name } ajuda a impedir que os sites o rastreiem na Internet, tornando mais difícil que os anúncios o sigam na web.
 onboarding-tracking-protection-button2 = Como funciona
 onboarding-data-sync-title = Leve as suas definições consigo
-# "Sync" is short for synchronize.
-onboarding-data-sync-text = Sincronize os seus marcadores e palavras-passe em todos os lugares que utiliza o { -brand-product-name }.
-onboarding-data-sync-button = Ligar o { -sync-brand-short-name }
 # "Sync" is short for synchronize.
 onboarding-data-sync-text2 = Sincronize os seus marcadores, palavras-passe e mais onde quer que utilize o { -brand-product-name }.
 onboarding-data-sync-button2 = Iniciar sessão no { -sync-brand-short-name }
 onboarding-firefox-monitor-title = Fique atento(a) às brechas de dados
 onboarding-firefox-monitor-text = O { -monitor-brand-name } monitoriza se o seu email aparecer numa brecha de dados e alerta-lhe se este aparecer numa nova brecha.
+onboarding-firefox-monitor-text2 = O { -monitor-brand-name } monitoriza se o seu e-mail apareceu numa violação de dados conhecida e avisa-o se este aparecer numa nova violação de dados.
 onboarding-firefox-monitor-button = Registar-se para alertas
 onboarding-browse-privately-title = Navegue privadamente
 onboarding-browse-privately-text = A navegação privada limpa o seu histórico de pesquisa e de navegação para os manter em segredo de quem utiliza o seu computador.
 onboarding-browse-privately-button = Abrir uma janela privada
 onboarding-firefox-send-title = Mantenha os seus ficheiros privados
-onboarding-firefox-send-text = O { -send-brand-name } protege os ficheiros que partilha partilha com encriptação de ponta a ponta e uma ligação que expira automaticamente.
 onboarding-firefox-send-text2 = Carregue os seus ficheiros para o { -send-brand-name } para os partilhar com encriptação de ponta a ponta e uma ligação que expira automaticamente.
 onboarding-firefox-send-button = Experimente o { -send-brand-name }
 onboarding-mobile-phone-title = Obtenha o { -brand-product-name } no seu telefone
@@ -91,21 +128,28 @@ onboarding-send-tabs-title = Envie separadores para si instantaneamente
 # "Send Tabs" refers to "Send Tab to Device" feature that appears when opening a
 # tab's context menu.
 onboarding-send-tabs-text = Enviar separadores partilha instantaneamente páginas entre os seus dispositivos sem ter de copiar, colar ou deixar o navegador.
+# "Send Tabs" refers to "Send Tab to Device" feature that appears when opening a
+# tab's context menu.
+onboarding-send-tabs-text2 = Partilhe de forma fácil páginas entre os seus dispositivos sem ter de copiar ligações ou deixar o navegador.
 onboarding-send-tabs-button = Começar a utilizar Enviar separadores
 onboarding-pocket-anywhere-title = Leia e oiça em qualquer lugar
-# "downtime" refers to the user's free/spare time.
-onboarding-pocket-anywhere-text = O { -pocket-brand-name } guarda as suas histórias favoritas para que as possa ler, ouvir e ver durante o seu tempo de descanso, mesmo se estiver offline.
 onboarding-pocket-anywhere-text2 = Guarde os seu conteúdo favorito offline com a aplicação do { -pocket-brand-name } e leia, ouça e veja quando lhe é conveniente.
 onboarding-pocket-anywhere-button = Experimente o { -pocket-brand-name }
 onboarding-lockwise-passwords-title = Leve as suas palavras-passe para todo o lado
-onboarding-lockwise-passwords-text = O { -lockwise-brand-name } guarda as suas palavras-passe num lugar seguro para que possa iniciar sessão facilmente nas suas contas.
-onboarding-lockwise-passwords-button = Obter o { -lockwise-brand-name }
 onboarding-lockwise-passwords-text2 = Mantenha as palavras-passe que guarda protegidas e inicie sessão nas suas contas com o { -lockwise-brand-name }.
 onboarding-lockwise-passwords-button2 = Obter a aplicação
+onboarding-lockwise-strong-passwords-title = Crie e armazene palavras-passe seguras
+onboarding-lockwise-strong-passwords-text = O { -lockwise-brand-name } cria passwords seguras no momento e guarda-as todas num único local.
+onboarding-lockwise-strong-passwords-button = Gerir as suas credenciais
 onboarding-facebook-container-title = Defina limites com o Facebook
-onboarding-facebook-container-text = O { -facebook-container-brand-name } mantém a sua identidade do Facebook separada de tudo o resto, fazendo mais difícil com que lhe monitorizem pela web.
 onboarding-facebook-container-text2 = O { -facebook-container-brand-name } mantém o seu perfil separado de tudo o resto, tornando mais difícil com que o Facebook lhe segmente com anúncios.
 onboarding-facebook-container-button = Adicionar a extensão
+onboarding-import-browser-settings-title = Importe os seus marcadores, palavras-passe e muito mais
+onboarding-import-browser-settings-text = Comece já — traga os seus sites e definições do Chrome consigo.
+onboarding-import-browser-settings-button = Importar dados do Chrome
+onboarding-personal-data-promise-title = Privacidade desde a conceção
+onboarding-personal-data-promise-text = O { -brand-product-name } trata os seus dados com respeito, recolhendo menos, protegendo-os e sendo claro sobre como os utilizamos.
+onboarding-personal-data-promise-button = Leia a nossa promessa
 
 ## Message strings belonging to the Return to AMO flow
 

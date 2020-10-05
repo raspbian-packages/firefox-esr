@@ -46,8 +46,17 @@ permissions-button-ok =
     .label = Änderungen speichern
     .accesskey = s
 
+permissions-autoplay-menu = Standard für alle Websites:
+
 permissions-searchbox =
     .placeholder = Website suchen
+
+permissions-capabilities-autoplay-allow =
+    .label = Audio und Video erlauben
+permissions-capabilities-autoplay-block =
+    .label = Medien mit Audio blockieren
+permissions-capabilities-autoplay-blockall =
+    .label = Audio und Video blockieren
 
 permissions-capabilities-allow =
     .label = Erlauben
@@ -60,8 +69,6 @@ permissions-capabilities-listitem-allow =
     .value = Erlauben
 permissions-capabilities-listitem-block =
     .value = Blockieren
-permissions-capabilities-listitem-allow-first-party =
-    .value = Nur als aufgerufene Seite erlauben
 permissions-capabilities-listitem-allow-session =
     .value = Für diese Sitzung erlauben
 
@@ -72,15 +79,15 @@ permissions-invalid-uri-label = Bitte tragen Sie einen gültigen Hostnamen ein
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = Ausnahmen - Schutz vor Aktivitätenverfolgung
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = Sie haben den Schutz vor Aktivitätenverfolgung auf folgenden Seiten deaktiviert.
-
 permissions-exceptions-content-blocking-window =
     .title = Ausnahmen - Blockieren von Seitenelementen
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Sie haben das Blockieren von Seitenelementen auf diesen Websites deaktiviert.
+
+permissions-exceptions-etp-window =
+    .title = Ausnahmen - Verbesserter Schutz vor Aktivitätenverfolgung
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Sie haben die Schutzmaßnahmen für folgende Websites deaktiviert.
 
 ## Exceptions - Cookies
 
@@ -99,9 +106,9 @@ permissions-exceptions-popup-desc = Sie können festlegen, welchen Websites Sie 
 ## Exceptions - Saved Logins
 
 permissions-exceptions-saved-logins-window =
-    .title = Ausnahmen - Gespeicherte Anmeldedaten
+    .title = Ausnahmen - Gespeicherte Zugangsdaten
     .style = { permissions-window.style }
-permissions-exceptions-saved-logins-desc = Anmeldedaten für die folgenden Websites werden nicht gespeichert:
+permissions-exceptions-saved-logins-desc = Zugangsdaten für die folgenden Websites werden nicht gespeichert:
 
 ## Exceptions - Add-ons
 
@@ -116,6 +123,13 @@ permissions-exceptions-autoplay-media-window2 =
     .title = Ausnahmen - Automatische Wiedergabe
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = Hier können die Websites festgelegt werden, welche immer oder nie automatisch Medien mit Ton wiedergeben dürfen. Geben Sie die Adresse der Website ein und klicken Sie dann auf "Blockieren" oder "Erlauben".
+
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = Einstellungen - Automatische Wiedergabe
+    .style = { permissions-window.style }
+permissions-site-autoplay-desc = Hier können die Websites verwaltet werden, welche benutzerdefinierte Einstellungen für die automatische Wiedergabe verwenden.
 
 ## Site Permissions - Notifications
 
@@ -136,6 +150,16 @@ permissions-site-location-desc = Die folgenden Websites haben um Erlaubnis angef
 permissions-site-location-disable-label =
     .label = Neue Anfragen für den Zugriff auf Ihren Standort blockieren
 permissions-site-location-disable-desc = Dies wird alle nicht oben aufgeführten Websites daran hindern, um die Erlaubnis für den Zugriff auf Ihren Standort anzufragen. Durch das Blockieren des Zugriffs auf Ihren Standort können einige Funktionen von Webseiten nicht mehr funktionieren.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Einstellungen - VR-Berechtigungen
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Die folgenden Websites haben um Erlaubnis angefragt, auf Ihre VR-Geräte zugreifen zu dürfen. Sie können festlegen, welche Websites auf Ihre VR-Geräte zugreifen dürfen. Weiterhin können Sie alle zukünftigen Anfragen für den Zugriff auf Ihre VR-Geräte blockieren.
+permissions-site-xr-disable-label =
+    .label = Neue Anfragen für den Zugriff auf Ihre VR-Geräte blockieren
+permissions-site-xr-disable-desc = Dies wird alle nicht oben aufgeführten Websites daran hindern, um die Erlaubnis für den Zugriff auf Ihre VR-Geräte anzufragen. Durch das Blockieren des Zugriffs auf Ihre VR-Geräte können einige Funktionen von Webseiten nicht mehr funktionieren.
 
 ## Site Permissions - Camera
 

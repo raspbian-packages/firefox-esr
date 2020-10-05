@@ -55,11 +55,11 @@
 <!ENTITY unknownProtocolFound.title "Adresa njebu zrozumjena">
 <!ENTITY unknownProtocolFound.longDesc "<ul> <li>Je móžno, zo dyrbiće druhu softwaru instalować, zo byšće tutu adresu wočinił.</li> </ul>">
 
-<!ENTITY proxyConnectFailure.title "Proksy-serwer zwiski wotpokazuje">
-<!ENTITY proxyConnectFailure.longDesc "<ul> <li>Přepruwujće proksy-nastajenja, zo byšće zawěsćił, zo su korektne.</li> <li>Stajće so ze swojim syćowym administratorom do zwiska, zo byšće zawěsćił, za proksy-serwer dźěła.</li> </ul>">
+<!ENTITY proxyConnectFailure.title "Proksyserwer zwiski wotpokazuje">
+<!ENTITY proxyConnectFailure.longDesc "<ul> <li>Přepruwujće proksynastajenja, zo byšće zawěsćił, zo su korektne.</li> <li>Stajće so ze swojim syćowym administratorom do zwiska, zo byšće zawěsćił, za proksyserwer dźěła.</li> </ul>">
 
-<!ENTITY proxyResolveFailure.title "Proksy-serwer njeda so namakać">
-<!ENTITY proxyResolveFailure.longDesc "<ul> <li>Přepruwujće proksy-nastajenja, zo byšće zawěsćił, zo su korektne.</li> <li>Přepruwujće hač waš ličak ma fungowacy syćowy zwisk.</li> <li>Jeli waš ličak abo waša syć so přez wohnjowu murju abo proksy škita, zawěsćće, zo &brandShortName; smě z webom zwjazać.</li> </ul>">
+<!ENTITY proxyResolveFailure.title "Proksyserwer njeda so namakać">
+<!ENTITY proxyResolveFailure.longDesc "<ul> <li>Přepruwujće proksynastajenja, zo byšće zawěsćił, zo su korektne.</li> <li>Přepruwujće hač waš ličak ma fungowacy syćowy zwisk.</li> <li>Jeli waš ličak abo waša syć so přez wohnjowu murju abo proksy škita, zawěsćće, zo &brandShortName; smě z webom zwjazać.</li> </ul>">
 
 <!ENTITY redirectLoop.title "Strona so porjadnje dale njesposrědkuje">
 <!ENTITY redirectLoop.longDesc "<ul> <li>Tutón problem so druhdy zawinuje, hdyž so placki znjemóžnjeja abo wotpokazuja.</li> </ul>">
@@ -77,6 +77,9 @@
 
 <!ENTITY cspBlocked.title "Přez wěstotne prawidła za wobsah zablokowany">
 <!ENTITY cspBlocked.longDesc "<p>&brandShortName; je začitanju tuteje strony na tute wašnje zadźěwał, dokelž strona ma wěstotne prawidła za wobsah, kotrež to njedowoleja.</p>">
+
+<!ENTITY xfoBlocked.title "Přez prawidła X-Frame-Options zablokowane">
+<!ENTITY xfoBlocked.longDesc "<p>&brandShortName; je začitanju tuteje strony w tutym konteksće zadźěwał, dokelž strona ma prawidła X-Frame-Options, kotrež to njedowoluja.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Zmylk - wobškodźeny wobsah">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>Strona, kotruž chceće sej wobhladać, njeda so pokazać, dokelž je so zmylk při přenošowanju datow namakał.</p><ul><li>Prošu stajće so z wobsedźerjemi websydła do zwiska, zo byšće jich wo tutym problemje informował.</li></ul>">

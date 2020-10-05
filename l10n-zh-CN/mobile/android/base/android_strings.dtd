@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "流量消耗更少，帮您节省更多">
 <!ENTITY firstrun_data_subtext2 "不显示网站上的图像，可节省您访问时消耗的数据流量。">
 <!ENTITY firstrun_sync_title "同步">
-<!ENTITY updatednewfirstrun_sync_title "账户">
-<!ENTITY firstrun_sync_message2 "这边看罢，那边继续。">
+<!ENTITY firstrun_sync_message3 "将您的的书签、历史记录以及密码同步到手机。">
 <!ENTITY firstrun_sync_subtext2 "利用同步服务，在您任何设备上的 &brandShortName; 中都能漫游同一套书签、密码等信息。">
 <!ENTITY newfirstrun_sync_subtext "将您在移动设备上保存的内容，私密、安全地同步至桌面版 Firefox。">
-<!ENTITY updatednewfirstrun_sync_subtext "登录账户，享用 &brandShortName; 完整功能">
+<!ENTITY firstrun_sendtab_title "发送标签页">
+<!ENTITY firstrun_sendtab_message "在移动与桌面设备间即刻分享标签页。">
 <!ENTITY firstrun_signin_message "互联设备，即刻畅游">
-<!ENTITY firstrun_signin_button "登录并同步">
-<!ENTITY newfirstrun_signin_button "开启同步">
-<!ENTITY updatednewfirstrun_signin_button "登录 &brandShortName;">
-<!ENTITY  onboard_start_button_browser "开始上网">
+<!ENTITY onboard_start_button_browser "开始上网">
 <!ENTITY firstrun_button_notnow "暂时不要">
 <!ENTITY firstrun_button_next "下一步">
+<!ENTITY firstrun_signup_button "注册">
 
 <!ENTITY firstrun_tabqueue_title "链接">
 
@@ -68,8 +66,7 @@
 <!ENTITY  crash_closing_alert "不发送崩溃报告并退出？">
 <!ENTITY  sending_crash_report "正在发送崩溃报告\u2026">
 <!ENTITY  crash_close_label "关闭">
-<!ENTITY  crash_restart_label "重开 &brandShortName;">
-
+<!ENTITY  crash_restart_label "重启 &brandShortName;">
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; 崩溃了">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "文件夹已更新">
 <!ENTITY bookmark_parent_folder "父文件夹">
 <!ENTITY bookmark_add_folder "添加新文件夹">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(无标题)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Cookie">
 <!ENTITY pref_cookies_accept_all "启用">
 <!ENTITY pref_cookies_not_accept_foreign "启用，第三方 Cookie 除外">
+<!ENTITY pref_cookies_not_accept_trackers "启用，跟踪 Cookie 除外">
 <!ENTITY pref_cookies_disabled "禁用">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -328,8 +325,8 @@
 <!-- Custom Tabs is an Android API for allowing third-party apps to open URLs in a customized UI.
      Instead of switching to the browser it appears as if the user stays in the third-party app.
      For more see: https://developer.chrome.com/multidevice/android/customtabs -->
-<!ENTITY pref_custom_tabs2 "自定义标签页（Custom Tabs）">
-<!ENTITY pref_custom_tabs_summary4 "让应用可以在其特别定制的标签页中快速载入网页内容，不必打开浏览器">
+<!ENTITY pref_custom_tabs2 "定制的标签页（Custom Tabs）">
+<!ENTITY pref_custom_tabs_summary4 "允许其他应用定制一个标签页来快速载入网页内容，无需打开浏览器">
 
 <!-- Localization note (custom_tabs_menu_item_open_in): The variable is replaced by the name of
      default browser from user's preference, such as "Open in Firefox" -->
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "渐进式 Web 应用">
 <!ENTITY pref_pwa_summary "允许网页应用添加到主屏幕">
-
-<!ENTITY tracking_protection_prompt_title "跟踪保护功能新上线">
-<!ENTITY tracking_protection_prompt_text "主动拦截跟踪您的元素，无需劳心。">
-<!ENTITY tracking_protection_prompt_tip_text "在“隐私”设置中详细了解">
-<!ENTITY tracking_protection_prompt_action_button "明白了！">
 
 <!ENTITY tab_queue_toast_message3 "已将标签页存到 &brandShortName; 中">
 <!ENTITY tab_queue_toast_action "立即打开">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "点击“浏览器应用程序”并选择 &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "访问 Mozilla 支持">
 <!ENTITY pref_about_firefox "关于 &brandShortName;">
 <!ENTITY pref_vendor_faqs "常见问题">
 <!ENTITY pref_vendor_feedback "提供反馈">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; 位置服务运行中">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "自动更新">
-<!ENTITY pref_update_autodownload_wifi "仅通过 Wi-Fi">
-<!ENTITY pref_update_autodownload_never "永不">
-<!ENTITY pref_update_autodownload_always "一律下载">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "帮助">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "分享">
 <!ENTITY share_title "分享，通过">
 <!ENTITY share_image_failed "无法分享这个图像">
+<!ENTITY share_error_toast_message "无法分享到指定的应用程序">
 <!ENTITY save_as_pdf "另存为 PDF">
 <!ENTITY print "打印">
 <!ENTITY view_page_source "查看页面源代码">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "地址">
 <!ENTITY bookmark_edit_keyword "关键词">
 <!ENTITY bookmark_select_folder "选择文件夹">
-
 <!ENTITY bookmark_edit_undo "撤销">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "选择或者录制一段声音">
 <!ENTITY filepicker_image_title "选择或者拍摄一张图片">
 <!ENTITY filepicker_video_title "选择或者录制一段视频">
-
 <!ENTITY filepicker_permission_denied "未授予所需权限，将回退为系统文件选取器。">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "使用 &formatS1; 搜索 &formatS2;">
 
 <!ENTITY searchable_description "书签及历史">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "&brandShortName; 有新版本可用">
-<!ENTITY updater_start_select2 "轻触此处下载">
-
-<!ENTITY updater_downloading_title2 "正在下载 &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "下载失败">
-<!ENTITY updater_downloading_select2 "轻触此处在下载完成后安装更新">
-<!ENTITY updater_downloading_retry2 "轻触此处重试">
-
-<!ENTITY updater_apply_title3 "新版 &brandShortName; 下载完毕">
-<!ENTITY updater_apply_select3 "轻触此处安装">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "为了下载文件和进行更新，请允许 &brandShortName; 访问存储空间。">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "允许">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "新建访客会话">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "为阅读项目添加书签，没网也能读。">
 <!ENTITY helper_triple_readerview_open_button "添加书签">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "欢迎使用 &brandShortName;">
+<!ENTITY activity_stream_signin_description "使用您的 Firefox 账户开始同步书签、历史记录等数据。">
+<!ENTITY activity_stream_signup_button "注册">
+<!ENTITY activity_stream_signin_prompt "已有账户？">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "请登录。">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "全新的 Firefox，2020 年推出">
+<!ENTITY activity_stream_firefox_promo_description "即将推出：更好的性能；增强型跟踪保护；专为您的查找、保存和分享而设计的新功能。">
+<!ENTITY activity_stream_firefox_promo_button "先睹为快">
+
 <!ENTITY activity_stream_topsites "常用网站">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "&brandPocket; 推荐">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "声音和视频">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; 使用技巧">
-<!ENTITY updater_notification_channel "应用程序更新">
 <!ENTITY synced_tabs_notification_channel "受同步的标签页">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

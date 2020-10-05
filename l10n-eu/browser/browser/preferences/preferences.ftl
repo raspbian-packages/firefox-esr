@@ -14,6 +14,11 @@ pref-page =
             [windows] Aukerak
            *[other] Hobespenak
         }
+pref-page-title =
+    { PLATFORM() ->
+        [windows] Aukerak
+       *[other] Hobespenak
+    }
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -29,11 +34,6 @@ search-input-box =
             [windows] Bilatu aukeretan
            *[other] Bilatu hobespenetan
         }
-policies-notice =
-    { PLATFORM() ->
-        [windows] Zure erakundeak hainbat aukera aldatzeko modua desgaitu du.
-       *[other] Zure erakundeak hainbat hobespen aldatzeko modua desgaitu du.
-    }
 managed-notice = Nabigatzailea zure erakundeak kudeatzen du.
 pane-general-title = Orokorra
 category-general =
@@ -203,6 +203,15 @@ advanced-fonts =
 colors-settings =
     .label = Koloreak…
     .accesskey = o
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Zooma
+preferences-default-zoom = Zoom lehenetsia
+    .accesskey = Z
+preferences-default-zoom-value =
+    .label = %{ $percentage }
+preferences-zoom-text-only =
+    .label = Zooma testuan soilik
+    .accesskey = t
 language-header = Hizkuntza
 choose-language-description = Aukeratu orriak bistaratzeko hizkuntza hobetsia
 choose-button =
@@ -223,6 +232,10 @@ translate-attribution = Itzulpenak: <img data-l10n-name="logo"/>
 translate-exceptions =
     .label = Salbuespenak…
     .accesskey = S
+# Variables:
+#    $localeName (string) - Localized name of the locale to be used.
+use-system-locale =
+    .label = Erabili zure sitema eragilearen "{ $localeName }" hizkuntzaren ezarpenak datak, orduak, zenbakiak eta neurriak formateatzeko.
 check-user-spelling =
     .label = Egiaztatu ortografia idatzi ahala
     .accesskey = z
@@ -258,6 +271,75 @@ applications-type-column =
 applications-action-column =
     .label = Ekintza
     .accesskey = E
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+applications-file-ending = { $extension } fitxategia
+applications-action-save =
+    .label = Gorde fitxategia
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app =
+    .label = Erabili { $app-name }
+# Variables:
+#   $app-name (String) - Name of an application (e.g Adobe Acrobat)
+applications-use-app-default =
+    .label = { $app-name } erabili (lehenetsia)
+applications-use-os-default =
+    .label =
+        { PLATFORM() ->
+            [macos] Erabili macOS aplikazio lehenetsia
+            [windows] Erabili Windows aplikazio lehenetsia
+           *[other] Erabili sistemaren aplikazio lehenetsia
+        }
+applications-use-other =
+    .label = Beste bat…
+applications-select-helper = Hautatu laguntza-aplikazioa
+applications-manage-app =
+    .label = Aplikazioaren xehetasunak…
+applications-always-ask =
+    .label = Galdetu beti
+applications-type-pdf = Portable Document Format (PDF)
+# Variables:
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-pdf-with-type = { applications-type-pdf } ({ $type })
+# Variables:
+#   $type-description (String) - Description of the type (e.g "Portable Document Format")
+#   $type (String) - the MIME type (e.g application/binary)
+applications-type-description-with-type = { $type-description } ({ $type })
+# Variables:
+#   $extension (String) - file extension (e.g .TXT)
+#   $type (String) - the MIME type (e.g application/binary)
+applications-file-ending-with-type = { applications-file-ending } ({ $type })
+# Variables:
+#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+applications-use-plugin-in =
+    .label = Erabili { $plugin-name } ({ -brand-short-name }(e)n)
+applications-open-inapp =
+    .label = Ireki { -brand-short-name }(e)n
+
+## The strings in this group are used to populate
+## selected label element based on the string from
+## the selected menu item.
+
+applications-use-plugin-in-label =
+    .value = { applications-use-plugin-in.label }
+applications-action-save-label =
+    .value = { applications-action-save.label }
+applications-use-app-label =
+    .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
+applications-always-ask-label =
+    .value = { applications-always-ask.label }
+applications-use-app-default-label =
+    .value = { applications-use-app-default.label }
+applications-use-other-label =
+    .value = { applications-use-other.label }
+applications-use-os-default-label =
+    .value = { applications-use-os-default.label }
+
+##
+
 drm-content-header = DRM edukia
 play-drm-content =
     .label = Erreproduzitu DRM bidez kontrolatutako edukia
@@ -344,6 +426,10 @@ browsing-use-cursor-navigation =
 browsing-search-on-start-typing =
     .label = Bilatu testua idazten hasi bezain laster
     .accesskey = B
+browsing-picture-in-picture-toggle-enabled =
+    .label = Gaitu bideoa beste leiho batean ikusteko kontrolak
+    .accesskey = G
+browsing-picture-in-picture-learn-more = Argibide gehiago
 browsing-cfr-recommendations =
     .label = Gomendatu hedapenak nabigatu ahala
     .accesskey = G
@@ -398,6 +484,54 @@ choose-bookmark =
     .label = Erabili laster-marka…
     .accesskey = b
 
+## Home Section - Firefox Home Content Customization
+
+home-prefs-content-header = Firefoxen hasiera-orriko edukia
+home-prefs-content-description = Aukeratu zein eduki nahi duzun Firefoxen hasiera-orriko pantailan.
+home-prefs-search-header =
+    .label = Web bilaketa
+home-prefs-topsites-header =
+    .label = Gune erabilienak
+home-prefs-topsites-description = Gehien bisitatzen dituzun guneak
+
+## Variables:
+##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+home-prefs-recommended-by-header =
+    .label = { $provider } hornitzaileak gomendatuta
+home-prefs-recommended-by-description = Webeko eduki baliotsua, zuretzat pertsonalizatuta
+home-prefs-recommended-by-description-update = Webeko aparteko edukia, { $provider } hornitzaileak bilduta
+
+##
+
+home-prefs-recommended-by-learn-more = Nola dabilen
+home-prefs-recommended-by-option-sponsored-stories =
+    .label = Babesleen istorioak
+home-prefs-highlights-header =
+    .label = Nabarmendutakoak
+home-prefs-highlights-description = Gorde edo bisitatu dituzun guneen hautapena
+home-prefs-highlights-option-visited-pages =
+    .label = Bisitatutako orriak
+home-prefs-highlights-options-bookmarks =
+    .label = Laster-markak
+home-prefs-highlights-option-most-recent-download =
+    .label = Azken deskarga
+home-prefs-highlights-option-saved-to-pocket =
+    .label = { -pocket-brand-name }-en gordetako orriak
+# For the "Snippets" feature traditionally on about:home.
+# Alternative translation options: "Small Note" or something that
+# expresses the idea of "a small message, shortened from something else,
+# and non-essential but also not entirely trivial and useless.
+home-prefs-snippets-header =
+    .label = Mezu-zatiak
+home-prefs-snippets-description = { -vendor-short-name } eta { -brand-product-name }i buruzko eguneraketak
+home-prefs-sections-rows-option =
+    .label =
+        { $num ->
+            [one] Errenkada bat
+           *[other] { $num } errenkada
+        }
+
 ## Search Section
 
 search-bar-header = Bilaketa-barra
@@ -407,6 +541,13 @@ search-bar-shown =
     .label = Gehitu bilaketa-barra tresna-barran
 search-engine-default-header = Bilaketa-motor lehenetsia
 search-engine-default-desc = Aukeratu helbide- eta bilaketa-barran erabili beharreko bilaketa-motor lehenetsia.
+search-engine-default-desc-2 = Zure bilaketa-motor lehenetsia da hau, bai helbide- nahiz bilaketa-barran. Edozein unetan alda dezakezu.
+search-engine-default-private-desc-2 = Aukeratu leiho pribatuetarako beste bilaketa-motor lehenetsi bat
+search-separate-default-engine =
+    .label = Erabili bilaketa-motor hau leiho pribatuetan
+    .accesskey = r
+search-suggestions-header = Bilaketa-iradokizunak
+search-suggestions-desc = Aukeratu nola agertzen diren bilaketa-motorren iradokizunak.
 search-suggestions-option =
     .label = Hornitu bilaketa-iradokizunak
     .accesskey = b
@@ -420,6 +561,10 @@ search-show-suggestions-url-bar-option =
 # (appearing before).
 search-show-suggestions-above-history-option =
     .label = Helbide-barrako emaitzetan, erakutsi bilaketa-gomendioak nabigatze-historiaren aurretik
+search-show-suggestions-private-windows =
+    .label = Erakutsi bilaketa-iradokizunak leiho pribatuetan
+suggestions-addressbar-settings = Aldatu nabigatze-historia, laster-marka eta fitxen iradokizunen hobespenak
+suggestions-addressbar-settings-generic = Aldatu hobespenak bilaketa-motorren bestelako iradokizunetarako
 search-suggestions-cant-show = Bilaketa-iradokizunak ez dira helbide-barran erakutsiko { -brand-short-name }(e)k historia inoiz ez gogoratzeko konfiguratu duzulako.
 search-one-click-header = Klik bakarreko bilaketa-motorrak
 search-one-click-desc = Aukeratu gako-hitz bat idazten hastean helbide- eta bilaketa-barren azpian agertzen diren ordezko bilaketa-motorrak.
@@ -445,16 +590,29 @@ search-keyword-warning-bookmark = Aukeratu duzun gako-hitza dagoeneko laster-mar
 ## Containers Section
 
 containers-back-link = « Joan atzera
+containers-back-button =
+    .aria-label =
+        { PLATFORM() ->
+            [windows] Itzuli aukeretara
+           *[other] Itzuli hobespenetara
+        }
 containers-header = Edukiontzi-fitxak
 containers-add-button =
     .label = Gehitu edukiontzi berria
     .accesskey = G
+containers-new-tab-check =
+    .label = Hautatu edukiontzi bat fitxa berri bakoitzeko
+    .accesskey = H
 containers-preferences-button =
     .label = Hobespenak
 containers-remove-button =
     .label = Kendu
 
 ## Sync Section - Signed out
+
+
+## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Eraman ezazu weba zurekin
 sync-signedout-description = Sinkronizatu laster-markak, historia, fitxak, pasahitzak, gehigarriak eta hobespenak zure gailu guztien artean.
@@ -463,6 +621,9 @@ sync-signedout-account-create = Ez daukazu konturik? Has gaitezen
     .accesskey = k
 sync-signedout-account-signin =
     .label = Hasi saioa…
+    .accesskey = H
+sync-signedout-account-signin2 =
+    .label = Hasi saioa { -sync-brand-short-name }(e)n…
     .accesskey = H
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
@@ -476,11 +637,17 @@ sync-mobile-promo = Deskargatu <img data-l10n-name="android-icon"/> <a data-l10n
 
 ## Sync Section - Signed in
 
+
+## Firefox Account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Aldatu profileko argazkia
 sync-disconnect =
     .label = Deskonektatu…
     .accesskey = D
+sync-sign-out =
+    .label = Amaitu saioa…
+    .accesskey = A
 sync-manage-account = Kudeatu kontua
     .accesskey = o
 sync-signedin-unverified = { $email } ez dago egiaztatuta.
@@ -496,6 +663,48 @@ sync-sign-in =
     .accesskey = H
 sync-signedin-settings-header = Sinkronizazio-ezarpenak
 sync-signedin-settings-desc = Aukeratu zer sinkronizatuko den { -brand-short-name } darabilzun gailuen artean.
+
+## Sync section - enabling or disabling sync.
+
+prefs-syncing-on = Sinkronizazioa: aktibo
+prefs-syncing-off = Sinkronizazioa: inaktibo
+prefs-sync-setup =
+    .label = Konfiguratu { -sync-brand-short-name }…
+    .accesskey = K
+prefs-sync-offer-setup-label = Sinkronizatu laster-markak, historia, fitxak, pasahitzak, gehigarriak eta hobespenak zure gailu guztien artean.
+prefs-sync-now =
+    .labelnotsyncing = Sinkronizatu orain
+    .accesskeynotsyncing = S
+    .labelsyncing = Sinkronizatzen…
+
+## The list of things currently syncing.
+
+sync-currently-syncing-heading = Une honetan ondorengo elementuak sinkronizatzen dira:
+sync-currently-syncing-bookmarks = Laster-markak
+sync-currently-syncing-history = Historia
+sync-currently-syncing-tabs = Irekitako fitxak
+sync-currently-syncing-logins-passwords = Saio-hasierak eta pasahitzak
+sync-currently-syncing-addresses = Helbideak
+sync-currently-syncing-creditcards = Kreditu-txartelak
+sync-currently-syncing-addons = Gehigarriak
+sync-currently-syncing-prefs =
+    { PLATFORM() ->
+        [windows] Aukerak
+       *[other] Hobespenak
+    }
+sync-change-options =
+    .label = Aldatu…
+    .accesskey = A
+
+## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Aukeratu zer sinkronizatu
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Gorde aldaketak
+    .buttonaccesskeyaccept = G
+    .buttonlabelextra2 = Deskonektatu…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Laster-markak
     .accesskey = m
@@ -509,6 +718,10 @@ sync-engine-tabs =
 sync-engine-logins =
     .label = Saio-hasierak
     .tooltiptext = Gorde dituzun erabiltzaile-izen eta pasahitzak
+    .accesskey = S
+sync-engine-logins-passwords =
+    .label = Saio-hasierak eta pasahitzak
+    .tooltiptext = Gorde dituzun saio-hasiera eta pasahitzak
     .accesskey = S
 sync-engine-addresses =
     .label = Helbideak
@@ -530,6 +743,9 @@ sync-engine-prefs =
         }
     .tooltiptext = Aldatu dituzun 'Orokorra', 'Pribatutasuna' eta 'Segurtasuna' ataletako ezarpenak
     .accesskey = o
+
+## The device name controls.
+
 sync-device-name-header = Gailuaren izena
 sync-device-name-change =
     .label = Aldatu gailuaren izena…
@@ -553,6 +769,13 @@ privacy-header = Nabigatzailearen pribatutasuna
 ## Privacy Section - Forms
 
 logins-header = Saio-hasierak eta pasahitzak
+
+## Privacy Section - Logins and Passwords
+
+# The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
+pane-privacy-logins-and-passwords-header = Saio-hasierak eta pasahitzak
+    .searchkeywords = { -lockwise-brand-short-name }
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
     .label = Galdetu webguneetako saio-hasierak eta pasahitzak gordetzeko
     .accesskey = G
@@ -562,6 +785,14 @@ forms-exceptions =
 forms-generate-passwords =
     .label = Iradoki eta sortu pasahitz sendoak
     .accesskey = d
+forms-breach-alerts =
+    .label = Erakutsi datu-urratzeak izan dituzten webguneetako pasahitzei buruzko abisuak
+    .accesskey = E
+forms-breach-alerts-learn-more-link = Argibide gehiago
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-logins-and-passwords =
+    .label = Automatikoki bete erabiltzaile-izen eta pasahitzak
+    .accesskey = A
 forms-saved-logins =
     .label = Gordetako saio-hasierak…
     .accesskey = s
@@ -571,6 +802,19 @@ forms-master-pw-use =
 forms-master-pw-change =
     .label = Aldatu pasahitz nagusia…
     .accesskey = A
+forms-master-pw-fips-title = Une honetan FIPS moduan zaude. FIPS moduak pasahitz nagusia ezartzea eskatzen du.
+forms-master-pw-fips-desc = Pasahitz aldaketak huts egin du
+
+## OS Authentication dialog
+
+# This message can be seen by trying to add a Master Password.
+master-password-os-auth-dialog-message-win = Pasahitz nagusi bat sortzeko, sartu zure Windows kredentzialak. Honek zure kontuen segurtasuna babesten laguntzen du.
+# This message can be seen by trying to add a Master Password.
+# The macOS strings are preceded by the operating system with "Firefox is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+master-password-os-auth-dialog-message-macosx = sortu pasahitz nagusia
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy Section - History
 
@@ -638,6 +882,12 @@ sitedata-block-desc = Mota blokeatuta
     .accesskey = M
 sitedata-option-block-trackers =
     .label = Hirugarren jarraipen-elementuak
+sitedata-option-block-cross-site-trackers =
+    .label = Guneen arteko jarraipen-elementuak
+sitedata-option-block-cross-site-and-social-media-trackers =
+    .label = Guneen arteko eta sare sozialetako jarraipen-elementuak
+sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
+    .label = Guneen arteko eta sare sozialetako jarraipen-elementuak; bakartu gainerako cookieak
 sitedata-option-block-unvisited =
     .label = Bisitatu gabeko guneetako cookieak
 sitedata-option-block-all-third-party =
@@ -653,6 +903,9 @@ sitedata-settings =
 sitedata-cookies-permissions =
     .label = Kudeatu baimenak
     .accesskey = b
+sitedata-cookies-exceptions =
+    .label = Kudeatu salbuespenak…
+    .accesskey = s
 
 ## Privacy Section - Address Bar
 
@@ -667,13 +920,17 @@ addressbar-locbar-bookmarks-option =
 addressbar-locbar-openpage-option =
     .label = Irekitako fitxak
     .accesskey = I
+addressbar-locbar-topsites-option =
+    .label = Gune erabilienak
+    .accesskey = r
 addressbar-suggestions-settings = Aldatu bilaketa-motorren iradokizunetarako hobespenak
 
 ## Privacy Section - Content Blocking
 
 content-blocking-header = Edukia blokeatzea
-content-blocking-description = Blokeatu webean zure jarraipena egiten duen hirugarrenen edukia. Kontrolatu zure lineako jarduera zenbateraino gordetzen eta partekatzen den webguneen artean.
 content-blocking-section-description = Nabigatzean, babestu zure pribatutasuna. Blokeatu bisitatutako guneen jarraipena egin eta zure profila sortzeko erabiltzen den eduki ikusgaitza. Eduki hauetako batzuk blokeatzean orriak azkarrago karga litezke.
+content-blocking-enhanced-tracking-protection = Jarraipenaren babes hobetua
+content-blocking-section-top-level-description = Jarraipen-elementuek zure lineako jarraipena egiten dute zure nabigatze-ohitura eta -interesei buruzko informazioa biltzeko. Jarraipen-elementu eta bestelako script maltzurretako asko blokeatzen ditu { -brand-short-name }(e)k.
 content-blocking-learn-more = Argibide gehiago
 # The terminology used to refer to categories of Content Blocking is also used in chrome/browser/browser.properties and should be translated consistently.
 # "Standard" in this case is an adjective, meaning "default" or "normal".
@@ -686,22 +943,47 @@ content-blocking-setting-strict =
 content-blocking-setting-custom =
     .label = Pertsonalizatua
     .accesskey = s
-content-blocking-standard-description = Jarraipen-elementu ezagunak leiho pribatuetan blokeatzen ditu soilik.
 content-blocking-standard-desc = Orekatua babeserako eta errendimendurako. Zenbait jarraipen-elementu onartzen ditu, beraz webguneak ondo ibiliko dira.
-content-blocking-strict-desc = { -brand-short-name }(e)k antzemandako jarraipen-elementu guztiak blokeatzen ditu. Zenbait webgune haustea eragin lezake.
 content-blocking-strict-description = Babes sendoagoa, hainbat gune haustea eragin lezake.
 content-blocking-custom-desc = Aukeratu zer blokeatu.
 content-blocking-private-trackers = Jarraipen-elementu ezagunak soilik leiho pribatuetan
 content-blocking-third-party-cookies = Hirugarrenen jarraipen-cookieak
+
+## These strings are used to define the different levels of
+## Enhanced Tracking Protection.
+
+# "Standard" in this case is an adjective, meaning "default" or "normal".
+enhanced-tracking-protection-setting-standard =
+    .label = Oinarrizkoa
+    .accesskey = O
+enhanced-tracking-protection-setting-strict =
+    .label = Zorrotza
+    .accesskey = r
+enhanced-tracking-protection-setting-custom =
+    .label = Pertsonalizatua
+    .accesskey = s
+
+##
+
+content-blocking-etp-standard-desc = Babeserako eta errendimendurako orekatua. Orriak ohi bezala kargatuko dira.
+content-blocking-etp-strict-desc = Babes sendoagoa baina zenbait gune edo eduki apurtzea eragin lezake.
+content-blocking-etp-custom-desc = Aukeratu blokeatu beharreko jarraipen-elementu eta scriptak.
+content-blocking-private-windows = Edukiaren jarraipena leiho pribatuetan
+content-blocking-cross-site-tracking-cookies = Guneen arteko cookie jarraipen-egileak
+content-blocking-cross-site-tracking-cookies-plus-isolate = Guneen arteko jarraipen cookieak; bakartu gainerako cookieak
+content-blocking-social-media-trackers = Sare sozialetako jarraipen-elementuak
 content-blocking-all-cookies = Cookie guztiak
 content-blocking-unvisited-cookies = Bisitatu gabeko guneetako cookieak
 content-blocking-all-windows-trackers = Jarraipen-elementu ezagunak leiho guztietan
+content-blocking-all-windows-tracking-content = Edukiaren jarraipena leiho guztietan
 content-blocking-all-third-party-cookies = Hirugarrenen cookie guztiak
 content-blocking-cryptominers = Kriptomeatzariak
 content-blocking-fingerprinters = Hatz-marka bidezko jarraipena egiten duten elementuak
 content-blocking-warning-title = Argi!
 content-blocking-warning-description = Edukia blokeatzeak zenbait webgune haustea eragin lezake. Erraza da konfiantzazko guneetarako blokeoa desgaitzea.
 content-blocking-learn-how = Ikasi nola
+content-blocking-and-isolating-etp-warning-description = Jarraipen-elementuak blokeatuz eta cookieak bakartuz gero, zenbait gunetako eginbideak kaltetu litezke. Eduki guztiak kargatzeko, berritu jarraipen-elementuak dituen orria.
+content-blocking-warning-learn-how = Ikasi nola
 content-blocking-reload-description = Zure fitxak berritu beharko dituzu aldaketa hauek eragina izan dezaten.
 content-blocking-reload-tabs-button =
     .label = Berritu fitxa guztiak
@@ -709,6 +991,9 @@ content-blocking-reload-tabs-button =
 content-blocking-trackers-label =
     .label = Jarraipen-elementuak
     .accesskey = r
+content-blocking-tracking-content-label =
+    .label = Edukiaren jarraipena
+    .accesskey = E
 content-blocking-tracking-protection-option-all-windows =
     .label = Leiho guztietan
     .accesskey = z
@@ -744,6 +1029,10 @@ permissions-location = Kokapena
 permissions-location-settings =
     .label = Ezarpenak…
     .accesskey = n
+permissions-xr = Errealitate birtuala
+permissions-xr-settings =
+    .label = Ezarpenak…
+    .accesskey = E
 permissions-camera = Kamera
 permissions-camera-settings =
     .label = Ezarpenak…
@@ -751,7 +1040,7 @@ permissions-camera-settings =
 permissions-microphone = Mikrofonoa
 permissions-microphone-settings =
     .label = Ezarpenak…
-    .accesskey = m
+    .accesskey = E
 permissions-notification = Jakinarazpenak
 permissions-notification-settings =
     .label = Ezarpenak…
@@ -792,6 +1081,8 @@ permissions-a11y-privacy-link = Argibide gehiago
 collection-header = { -brand-short-name } datuen bilketa eta erabilera
 collection-description = Aukerak ematen ahalegintzen gara { -brand-short-name } denontzat hobetzeko behar ditugun datuak soilik biltzeko. Informazio pertsonala jaso aurretik zure baimena eskatzen dugu beti.
 collection-privacy-notice = Pribatutasun-oharra
+collection-health-report-telemetry-disabled = Jada ez duzu baimentzen { -vendor-short-name }(e)k datu tekniko eta interakziozkoak kapturatzea. Iraganeko datu guztiak 30 egunen buruan ezabatuko dira.
+collection-health-report-telemetry-disabled-link = Argibide gehiago
 collection-health-report =
     .label = Baimendu { -brand-short-name }(r)i datu tekniko eta interakziozkoak { -vendor-short-name }ra bidaltzea
     .accesskey = r

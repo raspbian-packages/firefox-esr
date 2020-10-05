@@ -22,7 +22,7 @@ url-classifier-provider-last-update-status = Gjendje e përditësimit të fundit
 url-classifier-provider-update-btn = Përditësim
 url-classifier-cache-title = Fshehtinë
 url-classifier-cache-refresh-btn = Rifreskoje
-url-classifier-cache-clear-btn = Pastroje
+url-classifier-cache-clear-btn = Spastroje
 url-classifier-cache-table-name = Emër tabele
 url-classifier-cache-ncache-entries = Numër zërash fshehtine negative
 url-classifier-cache-pcache-entries = Numër zërash fshehtine pozitive
@@ -40,6 +40,7 @@ url-classifier-debug-sb-modules = Module regjistrash Shfletimi të Parrezik
 url-classifier-debug-modules = Module të tanishëm regjistrimi
 url-classifier-debug-sbjs-modules = Regjistër JS Shfletimi të Parrezik
 url-classifier-debug-file = Kartelë regjistri të tanishëm
+
 url-classifier-trigger-update = Shkakto Përditësim
 url-classifier-not-available = N/A
 url-classifier-disable-sbjs-log = Çaktivizo Regjistër JS-je Shfletimi të Sigurt

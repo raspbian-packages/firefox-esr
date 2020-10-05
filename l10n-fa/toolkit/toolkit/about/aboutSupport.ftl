@@ -4,6 +4,7 @@
 
 page-title = اطلاعات رفع اشکال
 page-subtitle = این صفحه حاوی اطلاعات فنی است که امکان دارد هنگامی که به دنبال حل مشکلی هستید به شما کمک کند.  اگر به دنبال پاسخی برای پرسش‌های معمول دربارهٔ { -brand-short-name } هستید، از <a data-l10n-name="support-link">وب‌گاه پشتیبانی ما</a> بازدید نمایید.
+
 crashes-title = گزارش‌های فروپاشی
 crashes-id = شناسهٔ گزارش
 crashes-send-date = ثبت شد
@@ -24,13 +25,25 @@ features-title = امکانات { -brand-short-name }
 features-name = نام
 features-version = نسخه
 features-id = شناسه
+processes-title = پردازش‌های راه دور
+processes-type = نوع
+processes-count = تعداد
 app-basics-title = اطلاعات اولیهٔ برنامه
 app-basics-name = نام
 app-basics-version = نسخه
 app-basics-build-id = شناسه ساخت
 app-basics-update-channel = کانال بروزرسانی
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] بروزرسانی شاخه
+       *[other] بروزرسانی پوشه
+    }
 app-basics-update-history = تاریخچه بروزرسانی
 app-basics-show-update-history = نمایش تاریخچه بروزرسانی
+# Represents the path to the binary used to start the application.
+app-basics-binary = فایل اجرایی برنامه
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] مسیر مجموعه تنظیمات
@@ -45,9 +58,10 @@ app-basics-performance = کارایی
 app-basics-service-workers = Service Workerهای ثبت شده
 app-basics-profiles = نمایه
 app-basics-multi-process-support = پنجره‌های چندپردازشی
-app-basics-process-count = پروسه‌های محتوای وب
+app-basics-remote-processes-count = پردازش‌های راه دور
 app-basics-enterprise-policies = خط و مش های سازمانی
-app-basics-key-google = کلید گوگل
+app-basics-location-service-key-google = کلید سرویس مکان‌یابی گوگل
+app-basics-safebrowsing-key-google = کلید مرور امن گوگل
 app-basics-key-mozilla = کلید سرویس مکان‌یابی موزیلا
 app-basics-safe-mode = حالت امن
 show-dir-label =
@@ -73,6 +87,8 @@ graphics-gpu2-title = پردازنده گرافیکی #2
 graphics-decision-log-title = گزارش تصمیم‌ها
 graphics-crash-guards-title = امکانات غیرفعال شده محافظ فروپاشی
 graphics-workarounds-title = راه‌حل
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = پروتکل پنجره
 place-database-title = پایگاه مکان‌ها
 place-database-integrity = یکپارچگی
 place-database-verify-integrity = بررسی یکپارچگی
@@ -97,6 +113,14 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = آرگومان‌ها
 safe-mode-title = آزمایش حالت امن
 restart-in-safe-mode-label = راه‌اندازی مجدد، همراه با غیرفعال‌سازی افزونه‌ها…
+
+## Media titles
+
+audio-backend = پسانه صوتی
+max-audio-channels = بیشترین میزان کانال‌ها
+channel-layout = لایه کانال ترجیح داده شده
+sample-rate = نرخ مثال ترجیح داده شده
+
 media-title = رسانه
 media-output-devices-title = دستگاه‌های خروجی
 media-input-devices-title = دستگاه‌های ورودی
@@ -109,6 +133,12 @@ media-device-format = قالب
 media-device-channels = کانال‌ها
 media-device-rate = ارزیابی
 media-device-latency = تاخیر
+media-capabilities-title = قابلیت‌های رسانه
+
+
+
+##
+
 intl-title = بین المللی سازی& محلی سازی
 intl-app-title = تنظیمات برنامه
 intl-locales-requested = مکان‌های درخواست شده
@@ -118,6 +148,21 @@ intl-locales-default = مکان‌های پیش فرض
 intl-os-title = سیستم عامل
 intl-os-prefs-system-locales = سیستم‌های محلی
 intl-regional-prefs = ترجیحات منطقه‌ای
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+
+
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -125,6 +170,7 @@ report-crash-for-days =
         [one] گزارش فروپاشی‌ها برای { $days } روز گذشته
        *[other] گزارش فروپاشی‌ها برای { $days } روز گذشته
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -132,6 +178,7 @@ crashes-time-minutes =
         [one] { $minutes } دقیقه قبل
        *[other] { $minutes } دقیقه قبل
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -139,6 +186,7 @@ crashes-time-hours =
         [one] { $hours } ساعت قبل
        *[other] { $hours } ساعت قبل
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -146,6 +194,7 @@ crashes-time-days =
         [one] { $days } روز قبل
        *[other] { $days } روز قبل
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -153,6 +202,7 @@ pending-reports =
         [one] تمامی گزارش‌های فروپاشی (شامل { $reports } فروپاشیِ معلق در بازهٔ زمانی داده شده)
        *[other] تمامی گزارش‌های فروپاشی (شامل { $reports } فروپاشی معلق در باز زمانی داده شده)
     }
+
 raw-data-copied = رونوشت داده‌های خام به تخته‌گیره ارسال شد
 text-copied = رونوشت متن به تخته‌گیره ارسال شد
 
@@ -165,14 +215,18 @@ blocked-mismatched-version = مسدود شدن برای درایور نسخه گ
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = به خاطر نسخهٔ راه‌انداز گرافیکی شما متوقف شده است. سعی کنید راه‌انداز گرافیکی خود را به نسخهٔ { $driverVersion } یا جدیدتر ارتقا دهید.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = پارامترهای تایپ واضح
+
 compositing = ترکیب
 hardware-h264 = رمزگشایی سخت‌افزاری H264
 main-thread-no-omtc = رشته اصلی، بدون OMTC
 yes = بله
 no = خیر
+unknown = نامعلوم
+virtual-monitor-disp = نمایش نمایشگر مجازی
 
 ## The following strings indicate if an API key has been found.
 ## In some development versions, it's expected for some API keys that they are
@@ -180,6 +234,9 @@ no = خیر
 
 found = پیدا شد
 missing = ناپیدا
+
+gpu-process-pid = شماره پردازه GPU
+gpu-process = پردازه GPU
 gpu-description = توضیحات
 gpu-vendor-id = شناسهٔ تولیدکنندهٔ سخت‌افزار گرافیکی
 gpu-device-id = شناسهٔ سخت‌افزار گرافیکی
@@ -200,28 +257,33 @@ webgl2-version = نسخه راه‌انداز WebGL 2
 webgl2-driver-extensions = افزونه راه‌انداز WebGL 2
 webgl2-extensions = افزونه‌های WebGL 2
 blocklisted-bug = مسدود شده به دلیل مسائل شناخته نشده
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = باگ{ $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = مسدود شده،‌ کد خطا { $failureCode }
+
 d3d11layers-crash-guard = حروفچین D3D11
 d3d11video-crash-guard = رمزگشا فیلم D3D11
 d3d9video-crash-buard = رمزگشا فیلم D3D9
+d3d9video-crash-guard = رمزگشا فیلم D3D9
 glcontext-crash-guard = OpenGL
+
 reset-on-next-restart = تنظیم مجدد بعد از راه اندازی مجدد
 gpu-process-kill-button = خاتمه پروسهٔ GPU
+gpu-device-reset = بازنشانی دستگاه
 gpu-device-reset-button = ماشه راه‌ اندازی مجدد دستگاه
 uses-tiling = استفاده از Tiling
 content-uses-tiling = استفاده از Tiling(محتوا)
 off-main-thread-paint-enabled = Off Main Thread Painting فعال شد
-audio-backend = پسانه صوتی
-max-audio-channels = بیشترین میزان کانال‌ها
-channel-layout = لایه کانال ترجیح داده شده
-sample-rate = نرخ مثال ترجیح داده شده
+target-frame-rate = نرخ فریم هدف
+
 min-lib-versions = حداقل نسخهٔ لازم
 loaded-lib-versions = نسخهٔ جاری
+
 has-seccomp-bpf = Seccomp-BPF (پالایش فراخوانی‌های سیستم)
 has-seccomp-tsync = به‌هنگام‌سازی تردهای Seccomp
 has-user-namespaces = زیرمجموعه کاربر
@@ -233,6 +295,13 @@ effective-content-sandbox-level = سطح آزمایشیِ پردازشِ محت�
 sandbox-proc-type-content = محتوا
 sandbox-proc-type-file = محتوا پرونده
 sandbox-proc-type-media-plugin = متصل‌شوندهٔ رسانه
+sandbox-proc-type-data-decoder = رمز‌گشایِ داده
+
+launcher-process-status-0 = فعال شد
+launcher-process-status-1 = به دلیل عدم موفقیت غیرفعال شد
+launcher-process-status-2 = در هر شرایطی غیرفعال شود
+launcher-process-status-unknown = وضعیت نامشخص
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -245,6 +314,7 @@ multi-process-status-6 = غیرفعال توسط ورودی متن خارج از
 multi-process-status-7 = غیرفعال شده توسط افزونه
 multi-process-status-8 = در هر شرایطی غیرفعال شود
 multi-process-status-unknown = وضعیت نامشخص
+
 async-pan-zoom = پان/بزرگنمایی ناهمگام
 apz-none = هیچ‌کدام
 wheel-enabled = ورودی چرخ فعال شد

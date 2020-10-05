@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "n">
 <!ENTITY  newContactCmd.label "Cysylltiad Llyfr Cyfeiriadau…">
 <!ENTITY  newContactCmd.accesskey "C">
+<!ENTITY openMenuCmd.label "Agor">
+<!ENTITY openMenuCmd.accesskey "A">
 <!ENTITY openMessageFileCmd.label "Agor Neges Wedi'i Chadw…">
 <!ENTITY openMessageFileCmd.accesskey "s">
 <!ENTITY saveAsMenu.label "Cadw Fel">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "G">
 <!ENTITY folderPaneBar.label "Bar Offer Paen Ffolder">
 <!ENTITY folderPaneBar.accesskey "B">
-<!ENTITY folderModeSelector.label "Golwg Ffolder">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Trefnu yn ôl">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Chwilio Negeseuon…">
 <!ENTITY searchMailCmd.accesskey "N">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Chwilio Eang…">
+<!ENTITY glodaSearchCmd.accesskey "C">
 <!ENTITY searchAddressesCmd.label "Chwilio Cyfeiriadau…">
 <!ENTITY searchAddressesCmd.accesskey "y">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Ffeilio'r neges">
 <!ENTITY archiveButton.tooltip "Archifo'r negeseuon">
 <!ENTITY openConversationButton.tooltip "Dangos sgwrs neges sydd wedi ei dewis">
+<!ENTITY openMsgConversationButton.tooltip "Dangos sgwrs neges sydd wedi ei dewis">
 <!ENTITY nextButton.tooltip "Symud i'r neges nesaf heb ei darllen">
 <!ENTITY nextMsgButton.tooltip "Symud i'r neges nesaf">
 <!ENTITY previousButton.tooltip "Symud i'r neges heb ei darllen diwethaf">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Tagio negeseuon">
 <!ENTITY compactButton.tooltip "Tynnu negeseuon wedi'u dileu o'r ffolder">
 <!ENTITY appmenuButton1.tooltip "Dangos Dewislen &brandShortName;">
-
 <!ENTITY addonsButton.tooltip "Rheoli eich ychwanegion">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Cadw'r Chwilio fel Ffolder…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Dewis Negeseuon">
 <!ENTITY threadColumn.label "Edefyn">
 <!ENTITY fromColumn.label "Oddi wrth">
 <!ENTITY recipientColumn.label "Derbynnydd">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Trefn Derbyn">
 <!ENTITY attachmentColumn.label "Atodiadau">
 
+<!ENTITY deleteColumn.label "Dileu">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Dewis colofnau i'w dangos">
+<!ENTITY selectColumn.tooltip "Toglo dewis pob neges">
 <!ENTITY threadColumn2.tooltip "Dangos edafedd negeseuon">
 <!ENTITY fromColumn2.tooltip "Trefnu yn ôl anfonwr">
 <!ENTITY recipientColumn2.tooltip "Trefnu yn ôl derbyniwr">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Trefnu yn ôl lleoliad">
 <!ENTITY idColumn2.tooltip "Trefnu yn ôl y drefn derbyniwyd">
 <!ENTITY attachmentColumn2.tooltip "Trefnu yn ôl atodiad">
+
+<!ENTITY deleteColumn.tooltip "Dileu neges">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Neges Newydd o Dempled">
@@ -823,7 +832,7 @@
      folder(s). The sub-menu items indicate whether we want to apply it to just
      a folder or also its children.
   -->
-<!ENTITY columnPicker.applyTo.label "Ailosod colofnau i'r rhagosodedig…">
+<!ENTITY columnPicker.applyTo.label "Gosod y colofnau yn y…">
 <!-- LOCALIZATION NOTE (columnPicker.applyToFolder.label):
      This option in the thread pane column picker is found on a sub-menu beneath
      the "columnPicker.applyTo.label" alongside
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Dewisiadau Eicon Ap…">
 <!ENTITY writeNewMessageDock.label      "Ysgrifennu Neges Newydd">
 <!ENTITY openAddressBookDock.label      "Agor y Llyfr Cyfeiriadau">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Nôl un tudalen">
+<!ENTITY browseForwardButton.tooltip "Mynd ymlaen un tudalen">

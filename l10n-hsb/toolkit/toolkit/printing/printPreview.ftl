@@ -33,6 +33,7 @@ printpreview-of =
     .value = z
 printpreview-custom-prompt =
     .value = Swójske měritko…
+printpreview-custom-scale-prompt-title = Swójske měritko
 printpreview-page-setup =
     .label = Stronu připrawić…
     .accesskey = t
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Poslednja strona
+

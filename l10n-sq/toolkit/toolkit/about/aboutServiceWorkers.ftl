@@ -9,17 +9,12 @@ about-service-workers-title = Mbi Service Workers
 about-service-workers-main-title = Service Workers të Regjistruar
 about-service-workers-warning-not-enabled = Service Workers nuk janë të aktivizuar.
 about-service-workers-warning-no-service-workers = Pa Service Workers të regjistruar.
+
 # The original title of service workers' information
 #
 # Variables:
 #   $originTitle: original title
 origin-title = Origjinë: { $originTitle }
-# Show if app id is in isolated browser element, the term "InBrowserElement" should not be translated
-#
-# Variables:
-#   $appId: the application ID
-#   $isInIsolatedElement: "true" or "false" based on if the app id is in isolate element
-app-title = ID Aplikacioni { -brand-short-name } { $appId } - InBrowserElement { $isInIsolatedElement }
 
 ## These strings are for showing the information of workers.
 ##
@@ -34,8 +29,12 @@ active-cache-name = <strong>Emër Fshehtine Aktive:</strong> { $name }
 waiting-cache-name = <strong>Emër Fshehtine në Pritje:</strong> { $name }
 push-end-point-waiting = <strong>Push Endpoint:</strong> { waiting }
 push-end-point-result = <strong>Push Endpoint:</strong> { $name }
+
 # This term is used as a button label (verb, not noun).
 update-button = Përditësoje
+
 unregister-button = Çregjistroje
-unregister-error = Dështoi çregjistrimi i këtij Service Worker.
+
+unregister-error = S’u arrit të çregjistrohet ky Service Worker.
+
 waiting = Po pritet…

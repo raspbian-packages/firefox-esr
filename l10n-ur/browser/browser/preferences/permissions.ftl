@@ -5,49 +5,70 @@
 permissions-window =
     .title = استثنیات
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = ویب سائٹ کا پتہ
     .accesskey = d
+
 permissions-block =
     .label = بلاک کریں
     .accesskey = B
+
 permissions-session =
     .label = سیشن کے لیے اجازت دیں
     .accesskey = S
+
 permissions-allow =
-    .label = ہونے دیں
+    .label = اجازت دیں
     .accesskey = A
+
 permissions-site-name =
     .label = ويب سائٹ
+
 permissions-status =
     .label = حالت
+
 permissions-remove =
     .label = ویب سائٹ ہٹائیں
     .accesskey = R
+
 permissions-remove-all =
     .label = تمام ویب سائٹیں ہٹائیں
     .accesskey = e
+
 permissions-button-cancel =
     .label = منسوخ کریں
     .accesskey = C
+
 permissions-button-ok =
     .label = تبدیلیاں محفوظ کریں
     .accesskey = S
+
+permissions-autoplay-menu = تمام ویب سائٹس کے لئے پہلے سے طے شدہ:
+
 permissions-searchbox =
     .placeholder = ویبسائٹ تلاش کریں
+
+permissions-capabilities-autoplay-allow =
+    .label = آڈیو اور ویڈیو کی اجازت دیں
+permissions-capabilities-autoplay-block =
+    .label = آڈیو کو مسدود کریں۔
+permissions-capabilities-autoplay-blockall =
+    .label = آڈیو اور ویڈیو کو مسدود کریں
+
 permissions-capabilities-allow =
-    .label = ہونے دیں
+    .label = اجازت دیں
 permissions-capabilities-block =
     .label = بلاک کریں
 permissions-capabilities-prompt =
     .label = ہمیشہ پوچھیں
+
 permissions-capabilities-listitem-allow =
-    .value = ہونے دیں
+    .value = اجازت دیں
 permissions-capabilities-listitem-block =
     .value = بلاک کریں
-permissions-capabilities-listitem-allow-first-party =
-    .value = صرف پہلے فریق کو اجازت دیں
 permissions-capabilities-listitem-allow-session =
     .value = سیشن کے لیے اجازت دیں
 
@@ -58,14 +79,15 @@ permissions-invalid-uri-label = کوئی جائز نام میزبان داخل �
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = استثنیات - سراغ کاری سے حفاظت
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = آپ نے ان ویب سائٹس پر ٹریکنگ کے تحفظ کو غیر فعال کردیا ہے۔
 permissions-exceptions-content-blocking-window =
     .title = استثنیات - مواد روکنا
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = آپنے مواد روکنا غیر فعال کر دی ہے  ان ویبسیٹس کے لئے۔
+
+permissions-exceptions-etp-window =
+    .title = بہتر ٹریکنگ سے حفاظت کے لئے استثنا
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = آپ نے ان ویب سائٹوں پر تحفظات بند کردیئے ہیں۔
 
 ## Exceptions - Cookies
 
@@ -93,7 +115,7 @@ permissions-exceptions-saved-logins-desc = درج ذیل ویب سائٹس کے 
 permissions-exceptions-addons-window =
     .title = اجازت دار ویب سائٹیں - ایڈ اون انسٹالیشن
     .style = { permissions-window.style }
-permissions-exceptions-addons-desc = آپ اختصاص کر سکتے ہیں کہ کونسی سائٹیں وابستہ دریچے کھولنے کےلیے اجازت دادہ ہیں۔ جس سائٹ کو اجازت دینا چاہتے ہیں اس کا ٹھیک ٹھیک پتہ ٹائپ کریں اور پھر 'ہونے دیں' پر کلک کریں۔
+permissions-exceptions-addons-desc = آپ اختصاص کر سکتے ہیں کہ کونسی سائٹیں وابستہ دریچے کھولنے کےلیے اجازت دادہ ہیں۔ جس سائٹ کو اجازت دینا چاہتے ہیں اس کا ٹھیک ٹھیک پتہ ٹائپ کریں اور پھر 'اجازت دیں' پر کلک کریں۔
 
 ## Exceptions - Autoplay Media
 
@@ -102,10 +124,16 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = آپ اس بات کی وضاحت کر سکتے ہے کہ کون سے ویب سائٹ کو اواز کے ساتھ میڈیا خودبخد چلانے کی اجازت ہمیشہ یا کبھی بھی نھی ہے۔ آپ جس سائٹ کو منظم کرنا چاہتے ہے اس کا پتہ درج کریں اور پھر روکیں یا اجازت پر کلک کریں۔
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = سیٹنگز - آٹو پلے
+    .style = { permissions-window.style }
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
-    .title = ترتیبات - نوٹیفکیشن اجازات
+    .title = سیٹنگز - نوٹیفکیشن اجازات
     .style = { permissions-window.style }
 permissions-site-notification-desc = مندرجہ ذیل ویب سائٹ نے آپ کو اطلاعات بھیجنیں کی درخواست کی ہے۔ آپ اس بات کی وظاحت کر سکتے ہے کہ کون سے ویب سائٹ آپکو اطلاعات بھیجنیں کی اجازت رخھتے ہے۔ آپ اطلاعات کی اجازت دینے کا مطالبہ کرتی نئی درخواست کو روک بھی سکتے ہے۔
 permissions-site-notification-disable-label =
@@ -115,17 +143,25 @@ permissions-site-notification-disable-desc = یہ کسی بھی ویب سائٹ 
 ## Site Permissions - Location
 
 permissions-site-location-window =
-    .title = ترتیبات- محل وقوع اجازت
+    .title = سیٹنگز- محل وقوع اجازت
     .style = { permissions-window.style }
 permissions-site-location-desc = مندرجہ ذیل ویب سائٹ نے آپکے موجودہ مقام کے رسائی کی درخواست کی ہے۔ آپ اس بات کی وظاحت کر سکتے ہے کہ کون سے ویب سائٹ آپکے موجودہ مقام کے رسائی کی اجازت رخھتے ہے۔ آپ اپنے موجودہ مقام کے رسائی کی اجازت دینے کا مطالبہ کرتی نئی درخواست کو روک بھی سکتے ہے۔
 permissions-site-location-disable-label =
     .label = آپ کے مقام تک رسائی حاصل کرنے سے متعلق نئی درخواستیں بند کریں
 permissions-site-location-disable-desc = یہ کسی بھی ویب سائٹ کو آپکے موجودہ مقام کے رسائی کی اجازت کی درخواست کرنے سے روکتا ہے جو اوپر درج نہیں ہے۔ آپکے موجودہ مقام کے رسائی کو روکنے سے ویب سائٹ کی کچھ خوبی وقفہ ہو سکتی ہے۔
 
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = سیٹنگز - ورچوئل رئیلٹی اجازت
+    .style = { permissions-window.style }
+permissions-site-xr-disable-label =
+    .label = اپنی ورچوئل رئیلٹی ڈیوائسز تک رسائی کے لیے نئی درخواستوں کو مسدود کریں
+
 ## Site Permissions - Camera
 
 permissions-site-camera-window =
-    .title = ترتیبات- کیمرہ اجازتیں
+    .title = سیٹنگز- کیمرہ اجازتیں
     .style = { permissions-window.style }
 permissions-site-camera-desc = مندرجہ ذیل ویب سائٹ نے آپکے کیمرے کے رسائی کی درخواست کی ہے۔ آپ اس بات کی وظاحت کر سکتے ہے کہ کون سے ویب سائٹ آپکے کیمرے کے رسائی کی اجازت رخھتے ہے۔ آپ اپنے کیمرے کے رسائی کی اجازت دینے کا مطالبہ کرتی نئی درخواست کو روک بھی سکتے ہے۔
 permissions-site-camera-disable-label =
@@ -135,7 +171,7 @@ permissions-site-camera-disable-desc = یہ کسی بھی ویب سائٹ کو �
 ## Site Permissions - Microphone
 
 permissions-site-microphone-window =
-    .title = ترتیبات - مائکروفون کی اجازت
+    .title = سیٹنگز - مائکروفون کی اجازت
     .style = { permissions-window.style }
 permissions-site-microphone-desc = مندرجہ ذیل ویب سائٹ نے آپکے مائیکروفون کے رسائی کی درخواست کی ہے۔ آپ اس بات کی وظاحت کر سکتے ہے کہ کون سے ویب سائٹ آپکے مائیکروفون کے رسائی کی اجازت رخھتے ہے۔ آپ اپنے مائیکروفون کے رسائی کی اجازت دینے کا مطالبہ کرتی نئی درخواست کو روک بھی سکتے ہے۔
 permissions-site-microphone-disable-label =

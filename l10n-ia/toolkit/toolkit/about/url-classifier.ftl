@@ -40,9 +40,10 @@ url-classifier-debug-sb-modules = Modulos de registro de navigation secur
 url-classifier-debug-modules = Modulos de registro actual
 url-classifier-debug-sbjs-modules = Registro JS de navigation secur
 url-classifier-debug-file = File de diario actual
+
 url-classifier-trigger-update = Discatenar le actualisation
 url-classifier-not-available = N/D
-url-classifier-disable-sbjs-log = Inactivar le registro JS de navigation secur
+url-classifier-disable-sbjs-log = Disactivar le registro JS de navigation secur
 url-classifier-enable-sbjs-log = Activar le registro JS de navigation secur
 url-classifier-enabled = Activate
 url-classifier-disabled = Disactivate

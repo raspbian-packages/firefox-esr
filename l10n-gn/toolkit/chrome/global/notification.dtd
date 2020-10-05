@@ -8,7 +8,9 @@
 
 <!ENTITY learnMore "Kuaave…">
 
+<!ENTITY learnMoreNoEllipsis "Kuaave">
+
 <!ENTITY defaultButton.label "OK!">
 <!ENTITY defaultButton.accesskey "O">
 
-<!ENTITY moreActionsButton.accessibleLabel "Jyku’eve">
+<!ENTITY moreActionsButton.accessibleLabel "Jeku’eve">

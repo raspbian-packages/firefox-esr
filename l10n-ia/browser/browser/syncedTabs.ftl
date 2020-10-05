@@ -4,11 +4,12 @@
 
 synced-tabs-sidebar-title = Schedas synchronisate
 synced-tabs-sidebar-noclients-subtitle = Desira tu vider le schedas de altere apparatos hic?
-synced-tabs-sidebar-notsignedin = Authentica te pro vider un lista de schedas de tu altere apparatos.
+synced-tabs-sidebar-notsignedin = Aperi session pro vider un lista de schedas de tu altere apparatos.
+synced-tabs-sidebar-intro = Vider un lista de schedas de tu altere apparatos.
 synced-tabs-sidebar-unverified = Tu conto debe esser verificate.
 synced-tabs-sidebar-notabs = Nulle schedas aperite
 synced-tabs-sidebar-openprefs = Aperir le preferentias de { -sync-brand-short-name }
-synced-tabs-sidebar-tabsnotsyncing = Activar le synchronisation de schedas pro vider un lista del schedas de tu altere apparatos.
+synced-tabs-sidebar-tabsnotsyncing = Activa le synchronisation de schedas pro vider un lista de schedas de tu altere apparatos.
 synced-tabs-sidebar-connect-another-device = Connecter un altere apparato
 synced-tabs-sidebar-search =
     .placeholder = Cercar in le schedas synchronisate
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Gerer le apparatos…
     .accesskey = a
-fxa-sign-in = Connecter se a { -sync-brand-short-name }
+synced-tabs-context-sync-now =
+    .label = Synchronisar ora
+    .accesskey = S
+fxa-sign-in = Aperir session a { -sync-brand-short-name }
+turn-on-sync = Accender { -sync-brand-short-name }

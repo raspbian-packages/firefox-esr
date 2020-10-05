@@ -4,6 +4,7 @@
 
 page-title = Información para solucionar problemas
 page-subtitle = Esta página presenta información técnica que puede ser de ayuda si necesitas resolver un problema. Para obtener respuestas a preguntas comunes sobre { -brand-short-name } visita nuestro <a data-l10n-name="support-link">sitio web de soporte</a>.
+
 crashes-title = Reporte de fallos
 crashes-id = ID del reporte
 crashes-send-date = Enviado
@@ -24,13 +25,26 @@ features-title = Características de { -brand-short-name }
 features-name = Nombre
 features-version = Versión
 features-id = ID
+processes-title = Procesos remotos
+processes-type = Tipo
+processes-count = Recuento
 app-basics-title = Configuración básica de la aplicación
 app-basics-name = Nombre
 app-basics-version = Versión
 app-basics-build-id = Id. de compilación
+app-basics-distribution-id = ID de distribución
 app-basics-update-channel = Canal de actualizaciones
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Directorio de actualizaciones
+       *[other] Carpeta de actualizaciones
+    }
 app-basics-update-history = Historial de actualizaciones
 app-basics-show-update-history = Mostrar historial de actualizaciones
+# Represents the path to the binary used to start the application.
+app-basics-binary = Binario de la aplicación
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Directorio del perfil
@@ -44,9 +58,12 @@ app-basics-memory-use = Uso de memoria
 app-basics-performance = Rendimiento
 app-basics-service-workers = Service Workers registrados
 app-basics-profiles = Perfiles
+app-basics-launcher-process-status = Proceso de lanzamiento
 app-basics-multi-process-support = Ventanas multiproceso
-app-basics-process-count = Procesos de contenido web
+app-basics-remote-processes-count = Procesos remotos
 app-basics-enterprise-policies = Políticas empresariales
+app-basics-location-service-key-google = Clave de servicio de ubicación de Google
+app-basics-safebrowsing-key-google = Clave de navegación segura de Google
 app-basics-key-mozilla = Clave del servicio de localización de Mozilla
 app-basics-safe-mode = Modo Seguro
 show-dir-label =
@@ -72,6 +89,10 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Registro de decisiones
 graphics-crash-guards-title = Características de protección contra fallos deshabilitadas
 graphics-workarounds-title = Soluciones
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = Protocolo de ventanas
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Entorno de escritorio
 place-database-title = Base de datos de lugares
 place-database-integrity = Integridad
 place-database-verify-integrity = Verificar integridad
@@ -96,6 +117,14 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumentos
 safe-mode-title = Probar modo seguro
 restart-in-safe-mode-label = Reiniciar con Complementos Deshabilitados…
+
+## Media titles
+
+audio-backend = Backend de audio
+max-audio-channels = Número máximo de canales
+channel-layout = Formato de canal preferido
+sample-rate = Frecuencia de muestreo preferida
+
 media-title = Multimedia
 media-output-devices-title = Dispositivos de salida
 media-input-devices-title = Dispositivos de entrada
@@ -108,6 +137,12 @@ media-device-format = Formato
 media-device-channels = Canales
 media-device-rate = Frecuencia
 media-device-latency = Latencia
+media-capabilities-title = Capacidades del contenido multimedia
+# List all the entries of the database.
+media-capabilities-enumerate = Enumerar base de datos
+
+##
+
 intl-title = Internacionalización y localización
 intl-app-title = Ajustes de la aplicación
 intl-locales-requested = Localizaciones solicitadas
@@ -117,6 +152,22 @@ intl-locales-default = Localización predeterminada
 intl-os-title = Sistema operativo
 intl-os-prefs-system-locales = Localizaciones del sistema
 intl-regional-prefs = Preferencias regionales
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Depuración remota (protocolo de Chromium )
+remote-debugging-accepting-connections = Aceptando conexiones
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -124,6 +175,7 @@ report-crash-for-days =
         [one] Informe de fallos del último { $days } día
        *[other] Informe de fallos de los últimos { $days } días
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -131,6 +183,7 @@ crashes-time-minutes =
         [one] hace { $minutes } minuto
        *[other] hace { $minutes } minutos
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -138,6 +191,7 @@ crashes-time-hours =
         [one] hace { $hours } hora
        *[other] hace { $hours } horas
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -145,6 +199,7 @@ crashes-time-days =
         [one] hace { $days } día
        *[other] hace { $days } días
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -152,6 +207,7 @@ pending-reports =
         [one] Todos los informes de fallos (incluyendo { $reports } fallo pendiente en el intervalo de tiempo indicado)
        *[other] Todos los informes de fallos (incluyendo { $reports } fallos pendientes en el intervalo de tiempo indicado)
     }
+
 raw-data-copied = Datos en crudo copiados al portapapeles
 text-copied = Texto copiado al portapapeles
 
@@ -164,9 +220,11 @@ blocked-mismatched-version = Bloqueado por la diferencia de versión de tu contr
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = Bloqueado para la versión de tu controlador gráfico. Prueba actualizando tu controlador gráfico a la versión { $driverVersion } o más moderna.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Parámetros de ClearType
+
 compositing = Composición
 hardware-h264 = Decodificación H264 por hardware
 main-thread-no-omtc = hilo principal, no OMTC
@@ -181,6 +239,7 @@ virtual-monitor-disp = Pantalla de monitor virtual
 
 found = Encontrada
 missing = Ausente
+
 gpu-process-pid = GPUProcessPid
 gpu-process = GPUProcess
 gpu-description = Descripción
@@ -189,6 +248,7 @@ gpu-device-id = ID de dispositivo
 gpu-subsys-id = ID del subsistema
 gpu-drivers = Controladores
 gpu-ram = RAM
+gpu-driver-vendor = Fabricante del controlador
 gpu-driver-version = Versión del controlador
 gpu-driver-date = Fecha del controlador
 gpu-active = Activo
@@ -203,16 +263,23 @@ webgl2-version = Versión del controlador WebGL 2
 webgl2-driver-extensions = Extensiones del controlador WebGL 2
 webgl2-extensions = Extensiones WebGL 2
 blocklisted-bug = Bloqueado por problemas conocidos
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = bug { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = Bloqueado; código de falla { $failureCode }
+
 d3d11layers-crash-guard = Compositor D3D11
 d3d11video-crash-guard = Decodificador de video D3D11
 d3d9video-crash-buard = Decodificador de video D3D9
+d3d9video-crash-guard = Decodificador de video D3D9
 glcontext-crash-guard = OpenGL
+
+wmfvpxvideo-crash-guard = Decodificador de vídeo WMF VPX
+
 reset-on-next-restart = Restablecer en el próximo reinicio
 gpu-process-kill-button = Terminar proceso GPU
 gpu-device-reset = Restablecer dispositivo
@@ -221,13 +288,11 @@ uses-tiling = Usa mosaicos
 content-uses-tiling = Usa mosaicos (contenido)
 off-main-thread-paint-enabled = Fuera del hilo principal de pintura Habilitado
 off-main-thread-paint-worker-count = Recuento de dibujo fuera del tema principal
-low-end-machine = Se detectó una máquina de menor rendimiento
-audio-backend = Backend de audio
-max-audio-channels = Número máximo de canales
-channel-layout = Formato de canal preferido
-sample-rate = Frecuencia de muestreo preferida
+target-frame-rate = Frecuencia de imágenes objetivo
+
 min-lib-versions = Versión mínima esperada
 loaded-lib-versions = Versión en uso
+
 has-seccomp-bpf = Seccomp-BPF (sistema de filtro de llamadas)
 has-seccomp-tsync = Sincronización de hilos Seccomp
 has-user-namespaces = Espacios de nombres de usuario
@@ -239,8 +304,19 @@ effective-content-sandbox-level = Nivel efectivo del contenedor de proceso de co
 sandbox-proc-type-content = contenido
 sandbox-proc-type-file = contenido del archivo
 sandbox-proc-type-media-plugin = plugin de medios
+sandbox-proc-type-data-decoder = decodificador de datos
+
+startup-cache-title = Caché de inicio
+startup-cache-disk-cache-path = Ruta de caché de disco
+startup-cache-ignore-disk-cache = Ignorar caché de disco
+startup-cache-found-disk-cache-on-init = Caché de disco encontrada durante la inicialización
+startup-cache-wrote-to-disk-cache = Se escribió a la caché de disco
+
 launcher-process-status-0 = Habilitado
+launcher-process-status-1 = Deshabilitado debido a un fallo
+launcher-process-status-2 = Deshabilitado forzosamente
 launcher-process-status-unknown = Estado desconocido
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -253,6 +329,7 @@ multi-process-status-6 = Deshabilitado por ingresar texto no soportado
 multi-process-status-7 = Deshabilitado por los complementos
 multi-process-status-8 = Desactivado forzosamente
 multi-process-status-unknown = Estado desconocido
+
 async-pan-zoom = Encuadro/zoom asíncrono
 apz-none = ninguno
 wheel-enabled = entrada de rueda de ratón activada
@@ -260,6 +337,8 @@ touch-enabled = entrada táctil habilitada
 drag-enabled = arrastra de barra de desplazamiento habilitado
 keyboard-enabled = teclado habilitado
 autoscroll-enabled = desplazamiento automático habilitado
+
+zooming-enabled = zoom de pellizco suave activado
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

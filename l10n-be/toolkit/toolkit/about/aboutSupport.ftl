@@ -34,7 +34,10 @@ app-basics-title = Асновы праграмы
 app-basics-name = Назва
 app-basics-version = Версія
 app-basics-build-id = ID зборкі
+app-basics-distribution-id = ID дыстрыбутыва
 app-basics-update-channel = Канал абнаўлення
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Каталог абнаўлення
@@ -53,13 +56,12 @@ app-basics-enabled-plugins = Уключаныя плагіны
 app-basics-build-config = Канфігурацыя зборкі
 app-basics-user-agent = Дзеяч карыстальніка
 app-basics-os = АС
-app-basics-memory-use = Ужыванне памяці
+app-basics-memory-use = Выкарыстанне памяці
 app-basics-performance = Прадукцыйнасць
 app-basics-service-workers = Зарэгістраваныя сервіс-воркеры
 app-basics-profiles = Профілі
 app-basics-launcher-process-status = Пускавы працэс
 app-basics-multi-process-support = Шматпрацэсныя вокны
-app-basics-process-count = Працэсы вэб-кантэнту
 app-basics-remote-processes-count = Адлеглыя працэсы
 app-basics-enterprise-policies = Карпаратыўная палітыка
 app-basics-location-service-key-google = Ключ Службы вызначэння месцазнаходжання ад Google
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Адключаныя магчымасці абар
 graphics-workarounds-title = Абыходныя шляхі
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Аконны пратакол
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Працоўнае асяроддзе
 place-database-title = База звестак месцаў
 place-database-integrity = Цэльнасць
 place-database-verify-integrity = Праверыць цэльнасць
@@ -115,6 +119,19 @@ sandbox-sys-call-number = Сістэмны выклік
 sandbox-sys-call-args = Аргументы
 safe-mode-title = Паспрабаваць абаронены рэжым
 restart-in-safe-mode-label = Перазапусціць з адключанымі дадаткамі…
+clear-startup-cache-title = Паспрабаваць ачысціць кэш запуску
+clear-startup-cache-label = Ачысціць кэш запуску…
+startup-cache-dialog-title = Ачысціць кэш запуску
+startup-cache-dialog-body = Перазапусціце { -brand-short-name }, каб ачысціць кэш запуску. Гэта не зменіць вашы налады і не выдаліць пашырэнні, якія вы дадалі ў { -brand-short-name }.
+restart-button-label = Перазапусціць
+
+## Media titles
+
+audio-backend = Аудыё-падсістэма
+max-audio-channels = Макс. колькасць каналаў
+channel-layout = Пераважны фармат канала
+sample-rate = Пераважная частата дыскрэтызацыі
+roundtrip-latency = Затрымка туды і назад (стандартнае адхіленне)
 media-title = Медыя
 media-output-devices-title = Прылады вываду
 media-input-devices-title = Прылады ўводу
@@ -127,6 +144,12 @@ media-device-format = Фармат
 media-device-channels = Каналы
 media-device-rate = Частата
 media-device-latency = Затрымка
+media-capabilities-title = Медыя-магчымасці
+# List all the entries of the database.
+media-capabilities-enumerate = Пералічыць базу дадзеных
+
+##
+
 intl-title = Інтэрнацыяналізацыя і лакалізацыя
 intl-app-title = Налады праграмы
 intl-locales-requested = Запытаная лакалізацыі
@@ -136,6 +159,22 @@ intl-locales-default = Прадвызначаная лакалізацыя
 intl-os-title = Аперацыйная сістэма
 intl-os-prefs-system-locales = Сістэмныя лакалізацыі
 intl-regional-prefs = Рэгіянальныя налады
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Адлеглая адладка (пратакол Chromium)
+remote-debugging-accepting-connections = Прыём злучэнняў
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -237,7 +276,9 @@ unknown-failure = У спісе блакавання; код памылкі { $f
 d3d11layers-crash-guard = Кампазітар D3D11
 d3d11video-crash-guard = Відэадэкодэр D3D11
 d3d9video-crash-buard = Відэадэкодэр D3D9
+d3d9video-crash-guard = Відэадэкодэр D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Відэадэкодэр WMF VPX
 reset-on-next-restart = Скінуць пры наступным перазапуску
 gpu-process-kill-button = Завяршыць GPU працэс
 gpu-device-reset = Скід прылады
@@ -246,14 +287,9 @@ uses-tiling = Выкарыстоўвае тайлінг
 content-uses-tiling = Выкарыстоўвае тайлінг (кантэнт)
 off-main-thread-paint-enabled = Прамалёўванне па-за асноўным патокам уключана
 off-main-thread-paint-worker-count = Колькасць воркераў прамалёўвання па-за асноўным патокам
-low-end-machine = Выяўлена менш прадукцыйная машына
 target-frame-rate = Мэтавая частата кадраў
-audio-backend = Аудыё-падсістэма
-max-audio-channels = Макс. колькасць каналаў
-channel-layout = Пераважны фармат канала
-sample-rate = Пераважная частата дыскрэтызацыі
 min-lib-versions = Чаканая найменшая версія
-loaded-lib-versions = Версія ў ужыванні
+loaded-lib-versions = Версія ва ўжытку
 has-seccomp-bpf = Seccomp-BPF (Фільтраванне сістэмных выклікаў)
 has-seccomp-tsync = Seccomp Thread Synchronization
 has-user-namespaces = Прасторы імён карыстальніка
@@ -266,6 +302,11 @@ sandbox-proc-type-content = змесціва
 sandbox-proc-type-file = змесціва файла
 sandbox-proc-type-media-plugin = медыяплагін
 sandbox-proc-type-data-decoder = дэкодар даных
+startup-cache-title = Кэш запуску
+startup-cache-disk-cache-path = Шлях да дыскавага кэшу
+startup-cache-ignore-disk-cache = Ігнараваць дыскавы кэш
+startup-cache-found-disk-cache-on-init = Знойдзены дыскавы кэш пры ініцыялізацыі
+startup-cache-wrote-to-disk-cache = Запісаны ў дыскавы кэш
 launcher-process-status-0 = Уключана
 launcher-process-status-1 = Адключана з-за збою
 launcher-process-status-2 = Прымусова адключана
@@ -289,6 +330,7 @@ touch-enabled = пальцавы увод ўключаны
 drag-enabled = захоп стужкі прагорткі ўключаны
 keyboard-enabled = клавіятура ўключана
 autoscroll-enabled = аўтапракрутка ўключана
+zooming-enabled = уключана плаўнае маштабаванне жэстам
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

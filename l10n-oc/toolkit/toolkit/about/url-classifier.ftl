@@ -3,6 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 url-classifier-title = Informacion tocant la classificacion de las URL
+url-classifier-search-title = Recèrca
+url-classifier-search-result-title = Resultats
+url-classifier-search-result-uri = URI : { $uri }
+url-classifier-search-result-list = Lista dels tablèus : { $list }
+url-classifier-search-input = URL
+url-classifier-search-error-invalid-url = URL invalida
+url-classifier-search-error-no-features = Pas cap de caracteristica seleccionada
+url-classifier-search-btn = Començar la recerca
+url-classifier-search-features = Caracteristicas
+url-classifier-search-listType = Tipe de lista
 url-classifier-provider-title = Provesidor
 url-classifier-provider = Provesidor
 url-classifier-provider-last-update-time = Darrièra mesa a jorn
@@ -30,6 +40,7 @@ url-classifier-debug-sb-modules = Moduls de jornalizacion pel blocatge de sites 
 url-classifier-debug-modules = Moduls de jornalizacion actuals
 url-classifier-debug-sbjs-modules = Jornal JS del blocatge de sites malvolents
 url-classifier-debug-file = Fichièr de jornalizacion actual
+
 url-classifier-trigger-update = Desenclavar una mesa a jorn
 url-classifier-not-available = N/D
 url-classifier-disable-sbjs-log = Desactivar la jornalizaction JS del blocatge de sites malvolents

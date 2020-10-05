@@ -6,7 +6,12 @@ page-title = Technické informace
 page-subtitle =
     Tato stránka obsahuje technické informace, které mohou být užitečné, pokud se snažíte
     vyřešit nějaký složitější problém s aplikací. Odpovědi na často kladené otázky ohledně
-    aplikace { -brand-short-name } naleznete na <a data-l10n-name="support-link">webových stránkách podpory</a>.
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name(case: "gen") }
+        [feminine] { -brand-short-name(case: "gen") }
+        [neuter] { -brand-short-name(case: "gen") }
+       *[other] aplikace { -brand-short-name }
+    } naleznete na <a data-l10n-name="support-link">webových stránkách podpory</a>.
 crashes-title = Hlášení pádů
 crashes-id = ID hlášení
 crashes-send-date = Odeslaná
@@ -23,7 +28,13 @@ security-software-name = Název
 security-software-antivirus = Antivir
 security-software-antispyware = Antispyware
 security-software-firewall = Firewall
-features-title = Funkce aplikace { -brand-short-name }
+features-title =
+    Funkce { -brand-short-name.gender ->
+        [masculine] { -brand-short-name(case: "gen") }
+        [feminine] { -brand-short-name(case: "gen") }
+        [neuter] { -brand-short-name(case: "gen") }
+       *[other] aplikace { -brand-short-name }
+    }
 features-name = Název
 features-version = Verze
 features-id = ID
@@ -34,13 +45,16 @@ app-basics-title = Stručně o aplikaci
 app-basics-name = Název
 app-basics-version = Verze
 app-basics-build-id = ID sestavení
+app-basics-distribution-id = ID distribuce
 app-basics-update-channel = Kanál aktualizací
-app-basics-update-dir = Složka, kde je aplikace nainstalována
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir = Složka pro aktualizace
 app-basics-update-history = Historie aktualizací
 app-basics-show-update-history = Zobrazit historii aktualizací
 # Represents the path to the binary used to start the application.
 app-basics-binary = Binární soubor aplikace
-app-basics-profile-dir = Složka s profilem aplikace
+app-basics-profile-dir = Složka s profilem
 app-basics-enabled-plugins = Povolené zásuvné moduly
 app-basics-build-config = Nastavení sestavení
 app-basics-user-agent = Identifikace prohlížeče
@@ -51,7 +65,6 @@ app-basics-service-workers = Registrovaní Service Workers
 app-basics-profiles = Profily
 app-basics-launcher-process-status = Spouštěcí proces
 app-basics-multi-process-support = Multiprocesová okna
-app-basics-process-count = Procesy pro webový obsah
 app-basics-remote-processes-count = Vzdálené procesy
 app-basics-enterprise-policies = Podniková pravidla
 app-basics-location-service-key-google = Klíč služby Google Location Service
@@ -67,7 +80,13 @@ modified-key-prefs-title = Důležité změněné předvolby
 modified-prefs-name = Název
 modified-prefs-value = Hodnota
 user-js-title = Předvolby user.js
-user-js-description = Složka s profilem obsahuje <a data-l10n-name="user-js-link">soubor user.js</a>, který obsahuje předvolby, které nebyly vytvořeny aplikací { -brand-short-name }.
+user-js-description =
+    Složka s profilem obsahuje <a data-l10n-name="user-js-link">soubor user.js</a>, který obsahuje předvolby, které nebyly vytvořeny { -brand-short-name.gender ->
+        [masculine] { -brand-short-name(case: "ins") }
+        [feminine] { -brand-short-name(case: "ins") }
+        [neuter] { -brand-short-name(case: "ins") }
+       *[other] aplikací { -brand-short-name }
+    }.
 locked-key-prefs-title = Důležité uzamčené předvolby
 locked-prefs-name = Název
 locked-prefs-value = Hodnota
@@ -82,6 +101,8 @@ graphics-crash-guards-title = Zakázat funkce Crash Guard
 graphics-workarounds-title = Možná řešení
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protokol zobrazování oken
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Desktopové prostředí
 place-database-title = Databáze Places
 place-database-integrity = Integrita
 place-database-verify-integrity = Zkontrolovat integritu
@@ -106,6 +127,19 @@ sandbox-sys-call-number = Systémové volání
 sandbox-sys-call-args = Argumenty
 safe-mode-title = Vyzkoušet nouzový režim
 restart-in-safe-mode-label = Restartovat se zakázanými doplňky…
+clear-startup-cache-title = Zkuste vymazat mezipaměť spouštění
+clear-startup-cache-label = Vymazat mezipaměť spouštění…
+startup-cache-dialog-title = Vymazání mezipaměti spouštění
+startup-cache-dialog-body = Pro vymazání mezipaměti spouštění se { -brand-short-name } restartuje. Nedojde k žádné změně vašich nastavení ani odstranění rozšíření, které jste si do { -brand-short-name(case: "gen") } nainstalovali.
+restart-button-label = Restartovat
+
+## Media titles
+
+audio-backend = Audio Backend
+max-audio-channels = Maximální počet kanálů
+channel-layout = Preferované rozložení kanálů
+sample-rate = Preferovaná vzorkovací frekvence
+roundtrip-latency = Zpoždění (směrodatná odchylka)
 media-title = Média
 media-output-devices-title = Výstupní zařízení
 media-input-devices-title = Vstupní zařízení
@@ -118,6 +152,12 @@ media-device-format = Formát
 media-device-channels = Kanály
 media-device-rate = Vzorkování
 media-device-latency = Prodleva
+media-capabilities-title = Podpora médií
+# List all the entries of the database.
+media-capabilities-enumerate = Vypsat databázi
+
+##
+
 intl-title = Internacionalizace a lokalizace
 intl-app-title = Nastavení aplikace
 intl-locales-requested = Požadované jazyky
@@ -127,6 +167,22 @@ intl-locales-default = Výchozí jazyk
 intl-os-title = Operační systém
 intl-os-prefs-system-locales = Jazyky systému
 intl-regional-prefs = Předvolby regionu
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Vzdálené ladění (protokol Chromia)
+remote-debugging-accepting-connections = Přijímá spojení
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -228,7 +284,9 @@ unknown-failure = Zablokováno; chybový kód { $failureCode }
 d3d11layers-crash-guard = D3D11 Compositor
 d3d11video-crash-guard = D3D11 Video dekodér
 d3d9video-crash-buard = D3D9 Video dekodér
+d3d9video-crash-guard = D3D9 Video dekodér
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX Video dekodér
 reset-on-next-restart = Obnovit po při příštím restartu
 gpu-process-kill-button = Ukončit GPU proces
 gpu-device-reset = Obnova zařízení
@@ -237,12 +295,7 @@ uses-tiling = Používá skládání
 content-uses-tiling = Používá skládání (obsah)
 off-main-thread-paint-enabled = Vykreslování mimo hlavní vlákno povoleno
 off-main-thread-paint-worker-count = Počet vláken pro vykreslování mimo hlavní vlákno
-low-end-machine = Rozpoznáno méně výkonné zařízení
 target-frame-rate = Cílová frekvenci snímkování
-audio-backend = Audio Backend
-max-audio-channels = Maximální počet kanálů
-channel-layout = Preferované rozložení kanálů
-sample-rate = Preferovaná vzorkovací frekvence
 min-lib-versions = Očekávaná minimální verze
 loaded-lib-versions = Používaná verze
 has-seccomp-bpf = Seccomp-BPF (filtrování systémových volání)
@@ -257,6 +310,11 @@ sandbox-proc-type-content = obsah
 sandbox-proc-type-file = obsah souboru
 sandbox-proc-type-media-plugin = zásuvný modul médií
 sandbox-proc-type-data-decoder = dekodér dat
+startup-cache-title = Mezipaměť spouštění
+startup-cache-disk-cache-path = Cesta k mezipaměti na disku
+startup-cache-ignore-disk-cache = Ignorovat mezipaměť na disku
+startup-cache-found-disk-cache-on-init = Mezipaměť na disku během inicializace nalezena
+startup-cache-wrote-to-disk-cache = Zapsáno do mezipaměti na disku
 launcher-process-status-0 = Povoleno
 launcher-process-status-1 = Zakázáno kvůli chybě
 launcher-process-status-2 = Násilně zakázáno
@@ -280,6 +338,7 @@ touch-enabled = dotykový vstup povolen
 drag-enabled = táhnutí posuvníkem povoleno
 keyboard-enabled = klávesnice povolena
 autoscroll-enabled = automatické posunování povoleno
+zooming-enabled = plynulé gesto pro přiblížení zapnuto
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

@@ -9,6 +9,7 @@ forward = Вперед
 reload = Перезавантажити
 home = Домівка
 fullscreen = Повний екран
+touchbar-fullscreen-exit = Вийти з повноекранного режиму
 find = Знайти
 new-tab = Нова вкладка
 add-bookmark = Додати закладку
@@ -18,3 +19,21 @@ reader-view = Режим читання
 open-location = Введіть запит чи адресу
 share = Поділитися
 close-window = Закрити вікно
+open-sidebar = Бічні панелі
+
+# This string describes shortcuts for search.
+search-popover = Пошукові скорочення
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Шукати в:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Закладках
+search-history = Історії
+search-opentabs = Відкритих вкладках
+search-tags = Мітках
+search-titles = Заголовках
+
+##
+

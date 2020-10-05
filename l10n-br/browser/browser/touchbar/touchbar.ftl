@@ -9,6 +9,7 @@ forward = War-lerc'h
 reload = Adkargañ
 home = Degemer
 fullscreen = Skramm a-bezh
+touchbar-fullscreen-exit = Kuitaat ar mod skramm a-bezh
 find = Klask
 new-tab = Ivinell nevez
 add-bookmark = Ouzhpennañ ur sined
@@ -18,3 +19,21 @@ reader-view = Mod Lenn
 open-location = Bizskrivit un termen da glask pe ur chomlec'h
 share = Rannañ
 close-window = Serriñ ar prenestr
+open-sidebar = Barrennoù kostez
+
+# This string describes shortcuts for search.
+search-popover = Berradennoù enklask
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Klask e-barzh:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Sinedoù
+search-history = Roll istor
+search-opentabs = Ivinelloù digor
+search-tags = Merkoù
+search-titles = Titloù
+
+##
+

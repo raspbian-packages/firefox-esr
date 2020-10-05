@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "z">
 <!ENTITY  newContactCmd.label "Anermis n imedlis n tensa…">
 <!ENTITY  newContactCmd.accesskey "n">
+<!ENTITY openMenuCmd.label "Ldi">
+<!ENTITY openMenuCmd.accesskey "L">
 <!ENTITY openMessageFileCmd.label "Ldi izen ikelsen…">
 <!ENTITY openMessageFileCmd.accesskey "L">
 <!ENTITY saveAsMenu.label "Sekles s yisem">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "T">
 <!ENTITY folderPaneBar.label "Afeggag n ugalis n ukaram">
 <!ENTITY folderPaneBar.accesskey "r">
-<!ENTITY folderModeSelector.label "Timeẓriyin n ukaram">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Smizzwer s:">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Nadi iznan di…">
 <!ENTITY searchMailCmd.accesskey "d">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Anadi amatu...">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Nadi tansiwin…">
 <!ENTITY searchAddressesCmd.accesskey "d">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Err iznan yettwafernen ɣer ufaylu">
 <!ENTITY archiveButton.tooltip "Ḥrez iznan yettwafernen">
 <!ENTITY openConversationButton.tooltip "Sken adiwenni n yizen yettwafernen">
+<!ENTITY openMsgConversationButton.tooltip "Sken adiwenni n yizen yettwafernen">
 <!ENTITY nextButton.tooltip "Ddu ɣer yizen ur nettwaɣri ara i d-iteddun">
 <!ENTITY nextMsgButton.tooltip "Ddu ɣer yizen d-iteddun ur nettwaɣri ara">
 <!ENTITY previousButton.tooltip "Ddu ɣer yizen n deffir ur nettwaɣri ara">
@@ -605,6 +609,7 @@
 <!ENTITY tagButton.tooltip "Rnu tabzimt i yiznan">
 <!ENTITY compactButton.tooltip "Kkes iznan ittwaksen seg ukaram ifernen">
 <!ENTITY appmenuButton1.tooltip "Sken umuɣ n &brandShortName;">
+<!ENTITY addonsButton.tooltip "Sefrek izegrar-ik">
 
 <!-- Toolbar Button Popup -->
 <!ENTITY buttonMenuForwardAsInline.label "Welleḥ deg umnaḍ">
@@ -647,7 +652,7 @@
 <!ENTITY folderSizeColumn.label "Teɣzi">
 
 <!-- Folder Pane Context Menu -->
-<!ENTITY folderContextGetMessages.label "Rems-ed iznan">
+<!ENTITY folderContextGetMessages.label "Rems-d iznan">
 <!ENTITY folderContextGetMessages.accesskey "R">
 <!ENTITY folderContextMarkAllFoldersRead.label "Cṛeḍ akk ikaramen yettwaɣran">
 <!ENTITY folderContextPauseAllUpdates.label "Serǧu akk ileqman">
@@ -705,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Kles anadi deg ukaram…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Fren iznan">
 <!ENTITY threadColumn.label "Akala afessas">
 <!ENTITY fromColumn.label "Si">
 <!ENTITY recipientColumn.label "Anermas">
@@ -726,8 +732,11 @@
 <!ENTITY idColumn.label "Taladna tettwarmes">
 <!ENTITY attachmentColumn.label "Ticeqqufin yeddan">
 
+<!ENTITY deleteColumn.label "Kkes">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Fren tigejda ad-sekneḍ">
+<!ENTITY selectColumn.tooltip "Fren/kkes afran n yiznan">
 <!ENTITY threadColumn2.tooltip "Sken asqerdec n yizen">
 <!ENTITY fromColumn2.tooltip "Asmizzwer s Si">
 <!ENTITY recipientColumn2.tooltip "Asmizzwer s unarmas">
@@ -748,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Asmizzwer s wadig">
 <!ENTITY idColumn2.tooltip "Asmizzwer s wazemz n urmas">
 <!ENTITY attachmentColumn2.tooltip "Asmizzer s tceqqufin yeddan">
+
+<!ENTITY deleteColumn.tooltip "Kkes izen">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Izen amaynut sγur tneγruft">
@@ -813,12 +824,6 @@
 <!ENTITY contextPrintPreview.label "Wali send asiggez">
 <!ENTITY contextPrintPreview.accesskey "s">
 
-<!-- Thread Pane Column Picker -->
-<!-- LOCALIZATION NOTE (columnPicker.resetToInbox.label):
-     This option in the thread pane column picker causes us to reset the
-     customizations for the thread pane columns in this folder to their default.
-  -->
-<!ENTITY columnPicker.resetToInbox.label "Wennez tikelt nniḍen tigejda ɣeṛ umezwer">
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -858,7 +863,6 @@
      "File here" option for the move to/copy to widget.
   -->
 <!ENTITY columnPicker.thisFolder.label "Akaram-agi">
-
 
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Urar">
@@ -975,3 +979,7 @@
 <!ENTITY dockOptions.label              "Iɣewwaṛen n tignit n usnas…">
 <!ENTITY writeNewMessageDock.label      "Aru izen amaynut">
 <!ENTITY openAddressBookDock.label      "Ldi imedlis n tansa">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Uɣal s yiwen n usebter">
+<!ENTITY browseForwardButton.tooltip "Aẓ s yiwen usebter">

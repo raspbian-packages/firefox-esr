@@ -14,6 +14,7 @@
                        for the help button in the menubar but Gnome does not.   -->
 <!ENTITY helpMenuWin.label        "ช่วยเหลือ"> 
 <!ENTITY helpMenuWin.accesskey    "ช">
+
 <!ENTITY aboutProduct2.label      "เกี่ยวกับ &brandShorterName;">
 <!ENTITY aboutProduct2.accesskey  "ก">
 <!ENTITY productHelp2.label       "ความช่วยเหลือของ &brandShorterName;">
@@ -27,9 +28,6 @@
 <!ENTITY helpSafeMode.accesskey   "ร">
 <!ENTITY helpSafeMode.stop.label       "เริ่มการทำงานใหม่พร้อมเปิดใช้งานส่วนเสริม">
 <!ENTITY helpSafeMode.stop.accesskey   "ร">
-
-<!ENTITY healthReport2.label      "รายงานสุขภาพ &brandShorterName;">
-<!ENTITY healthReport2.accesskey  "ข">
 
 <!ENTITY helpTroubleshootingInfo.label      "ข้อมูลการแก้ไขปัญหา">
 <!ENTITY helpTroubleshootingInfo.accesskey  "ป">
@@ -52,3 +50,5 @@
 <!ENTITY hideOtherAppsCmdMac.commandkey "H">
 
 <!ENTITY showAllAppsCmdMac.label        "แสดงทั้งหมด">
+
+<!ENTITY touchBarCmdMac.label           "ปรับแต่งแถบสัมผัส…">

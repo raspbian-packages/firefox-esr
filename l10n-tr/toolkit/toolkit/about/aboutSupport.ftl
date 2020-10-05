@@ -31,7 +31,10 @@ app-basics-title = Uygulama temelleri
 app-basics-name = Adı
 app-basics-version = Sürüm
 app-basics-build-id = Yapı numarası
+app-basics-distribution-id = Dağıtım kimliği
 app-basics-update-channel = Güncelleme kanalı
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Güncelleme dizini
@@ -56,7 +59,6 @@ app-basics-service-workers = Kayıtlı Service Worker'lar
 app-basics-profiles = Profiller
 app-basics-launcher-process-status = Başlatıcı işlemi
 app-basics-multi-process-support = Çok işlemli pencereler
-app-basics-process-count = Web içeriği işlemi
 app-basics-remote-processes-count = Uzak işlemler
 app-basics-enterprise-policies = Kurumsal ilkeler
 app-basics-location-service-key-google = Google Konum Hizmeti anahtarı
@@ -88,6 +90,8 @@ graphics-crash-guards-title = Çökme koruyucusu tarafından kapatılan özellik
 graphics-workarounds-title = Çözümler
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Pencere protokolü
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Masaüstü ortamı
 place-database-title = Places veritabanı
 place-database-integrity = Bütünlük
 place-database-verify-integrity = Bütünlüğü doğrula
@@ -112,6 +116,19 @@ sandbox-sys-call-number = Sistem çağrısı
 sandbox-sys-call-args = Parametreler
 safe-mode-title = Güvenli kipi deneyin
 restart-in-safe-mode-label = Eklentileri devre dışı bırakıp yeniden başlat…
+clear-startup-cache-title = Başlangıç önbelleğini temizlemeyi deneyin
+clear-startup-cache-label = Başlangıç önbelleğini temizle…
+startup-cache-dialog-title = Başlangıç önbelleğini temizle
+startup-cache-dialog-body = Başlangıç önbelleğini temizlemek için { -brand-short-name } tarayıcınızı yeniden başlatın. Bu işlem, ayarlarınızı değiştirmez ve mevcut eklentilerinizi kaldırmaz.
+restart-button-label = Yeniden başlat
+
+## Media titles
+
+audio-backend = Ses arka ucu
+max-audio-channels = En fazla kanal
+channel-layout = Tercih edilen kanal düzeni
+sample-rate = Tercih edilen örnek oranı
+roundtrip-latency = Gidiş dönüş gecikmesi (standart sapma)
 media-title = Ortam
 media-output-devices-title = Çıktı cihazları
 media-input-devices-title = Girdi cihazları
@@ -124,6 +141,12 @@ media-device-format = Biçim
 media-device-channels = Kanallar
 media-device-rate = Oran
 media-device-latency = Gecikme
+media-capabilities-title = Çoku ortam yetenekleri
+# List all the entries of the database.
+media-capabilities-enumerate = Veritabanını numaralandır
+
+##
+
 intl-title = Uluslararasılaştırma ve yerelleştirme
 intl-app-title = Uygulama ayarları
 intl-locales-requested = İstenen diller
@@ -133,6 +156,22 @@ intl-locales-default = Varsayılan dil
 intl-os-title = İşletim sistemi
 intl-os-prefs-system-locales = Sistem dilleri
 intl-regional-prefs = Bölgesel tercihler
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Uzaktan hata ayıklama (Chromium protokolü)
+remote-debugging-accepting-connections = Bağlantılar kabul ediliyor mu?
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -229,7 +268,9 @@ unknown-failure = Engellendi. Hata kodu { $failureCode }
 d3d11layers-crash-guard = D3D11 Compositor
 d3d11video-crash-guard = D3D11 Video Çözücüsü
 d3d9video-crash-buard = D3D9 Video Çözücüsü
+d3d9video-crash-guard = D3D9 Video Çözücüsü
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX video çözücüsü
 reset-on-next-restart = Sonraki yeniden başlatmada sıfırla
 gpu-process-kill-button = GPU işlemini sonlandır
 gpu-device-reset = Aygıtı sıfırla
@@ -238,12 +279,7 @@ uses-tiling = Tiling kullanımı
 content-uses-tiling = Tiling kullanımı (içerik)
 off-main-thread-paint-enabled = Off main thread painting etkin
 off-main-thread-paint-worker-count = Off main thread painting işçi sayısı
-low-end-machine = Düşük performanslı makine algılandı
 target-frame-rate = Hedef kare hızı
-audio-backend = Ses arka ucu
-max-audio-channels = En fazla kanal
-channel-layout = Tercih edilen kanal düzeni
-sample-rate = Tercih edilen örnek oranı
 min-lib-versions = Beklenen minimum sürüm
 loaded-lib-versions = Kullanılan sürüm
 has-seccomp-bpf = Seccomp-BPF (sistem çağrısı filtreleme)
@@ -258,6 +294,11 @@ sandbox-proc-type-content = içerik
 sandbox-proc-type-file = dosya içeriği
 sandbox-proc-type-media-plugin = ortam yan uygulaması
 sandbox-proc-type-data-decoder = veri çözücü
+startup-cache-title = Başlangıç önbelleği
+startup-cache-disk-cache-path = Disk önbellek yolu
+startup-cache-ignore-disk-cache = Disk önbelleğini yok say
+startup-cache-found-disk-cache-on-init = Başlangıçta disk önbelleği bulundu
+startup-cache-wrote-to-disk-cache = Disk önbelleğine yazıldı
 launcher-process-status-0 = Etkin
 launcher-process-status-1 = Hata nedeniyle devre dışı
 launcher-process-status-2 = Zorla devre dışı bırakıldı
@@ -281,6 +322,7 @@ touch-enabled = dokunma girdisi etkin
 drag-enabled = kaydırma çubuğu sürükleme etkin
 keyboard-enabled = klavye etkin
 autoscroll-enabled = otomatik kaydırma etkin
+zooming-enabled = yumuşak pinch-zoom etkin
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

@@ -2,7 +2,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!ENTITY  windowClose.key "ტ">
+<!ENTITY  windowClose.key "w">
 <!ENTITY  preferencesDefaultTitleMac.title "პარამეტრები">
 <!ENTITY  preferencesDefaultTitleWin.title "პარამეტრები">
 <!ENTITY  preferencesCloseButton.label "დახურვა">
@@ -10,6 +10,9 @@
 
 <!--LOCALIZATION NOTE (.label): Preferences categories that appear on the left of the preferences dialog -->
 <!ENTITY prefWindow.title "პარამეტრები">
+<!ENTITY prefWindow.size "width: 102ch; height: 44em;">
+<!ENTITY prefWindowMac.size "width: 62em; height: 41em;">
+<!ENTITY prefWindowWin.size "width: 115ch; height: 43em;">
 <!ENTITY categoryHeader "კატეგორია">
 
 <!ENTITY appear.label "იერსახე">
@@ -25,7 +28,7 @@
 <!ENTITY applications.label "დახმარების პროგრამები">
 <!ENTITY locationBar.label "მისამართის პანელი">
 <!ENTITY search.label "ძიება ინტერნეტში">
-<!ENTITY tabWindows.label "გახსნა დაფებზე">
+<!ENTITY tabWindows.label "გახსნა ჩანართებზე">
 <!ENTITY links.label "ბმების ქცევა">
 <!ENTITY download.label "ჩამოტვირთვები">
 

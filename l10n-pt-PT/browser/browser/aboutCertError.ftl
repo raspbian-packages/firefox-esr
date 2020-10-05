@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Código de erro: <a data-l10n-name="error-code-lin
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Os websites provam a sua identidade via certificados, que são emitidos por autoridades certificadoras. A maioria dos navegadores não irão mais confiar em certificados emitidos por GeoTrust, RapidSSL, Symantec, e VeriSign. { $hostname } utiliza um certificado de uma destas autoridades e por isso a identidade do website não pode ser provada.
 cert-error-symantec-distrust-admin = Pode notificar o administrador do website acerca deste problema.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = Segurança rigorosa de transporte HTTP (HSTS): { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
+cert-error-details-cert-chain-label = Cadeia de certificados:
+open-in-new-window-for-csp-or-xfo-error = Abrir site numa nova janela
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Para proteger a sua segurança, { $hostname } não permitirá que o { -brand-short-name } apresente a página se a mesma for incorporada noutro site. Para ver esta página, deve abrir a mesma numa nova janela.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Ligação não estabelecida
+deniedPortAccess-title = Este endereço é restrito
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hum. Estamos a ter problemas em encontrar esse site.
+fileNotFound-title = Ficheiro não encontrado
+fileAccessDenied-title = O acesso ao ficheiro foi negado
+generic-title = Oops.
+captivePortal-title = Iniciar sessão na rede
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm. Esse endereço não parece bem.
+netInterrupt-title = A ligação foi interrompida
+notCached-title = Documento expirado
+netOffline-title = Modo offline
+contentEncodingError-title = Erro de codificação de conteúdo
+unsafeContentType-title = Tipo de ficheiro inseguro
+netReset-title = A ligação foi reposta
+netTimeout-title = A ligação expirou
+unknownProtocolFound-title = O endereço não foi compreendido
+proxyConnectFailure-title = O servidor proxy está a recusar ligações
+proxyResolveFailure-title = Servidor proxy não encontrado
+redirectLoop-title = A página não está a redirecionar corretamente
+unknownSocketType-title = Resposta inesperada do servidor
+nssFailure2-title = A ligação segura falhou
+cspBlocked-title = Bloqueada pela Content Security Policy
+xfoBlocked-title = Bloqueado pela política X-Frame-Options
+csp-xfo-error-title = O { -brand-short-name } não pode abrir esta página
+corruptedContentError-title = Conteúdo corrompido
+remoteXUL-title = XUL remoto
+sslv3Used-title = Não é possível ligar com segurança
+inadequateSecurityError-title = A sua ligação não é segura
+blockedByPolicy-title = Página bloqueada
+clockSkewError-title = O relógio do seu computador está errado
+networkProtocolError-title = Erro de protocolo de rede
+nssBadCert-title = Aviso: Potencial risco de segurança à frente
+nssBadCert-sts-title = Não se ligou: potencial problema de segurança
+certerror-mitm-title = Software está a impedir o { -brand-short-name } de se ligar em segurança a este site

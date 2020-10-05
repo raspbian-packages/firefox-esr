@@ -4,19 +4,43 @@
 
 about-config-warning-checkbox = කරුණාකර, මට නැවත සිහි කැඳවන්න !
 about-config-warning-button = මම අවදානම පිළි ගනිමි
-about-config-title = about:config
-about-config-search =
-    .placeholder = සොයන්න හෝ සියල්ල පෙන්වීමට ESC ඔබන්න
+
+about-config2-title = සංකීර්ණ වින්‍යාසයන්
+
+about-config-search-input =
+    .placeholder = සොයන්න
+
+## These strings appear on the warning you see when first visiting about:config.
+
+##
+
+about-config-show-all = සියල්ල පෙන්වන්න
+
 about-config-pref-add = එකතු
+about-config-pref-toggle = සක්‍රිය කරන්න
 about-config-pref-edit = සැකසුම්
 about-config-pref-save = සුරකින්න
 about-config-pref-reset = යළි සැකසුම
 about-config-pref-delete = මකන්න
 
+about-config-pref-add-button =
+    .title = එකතු
+about-config-pref-toggle-button =
+    .title = සක්‍රිය කරන්න
+about-config-pref-edit-button =
+    .title = සැකසුම්
+about-config-pref-save-button =
+    .title = සුරකින්න
+about-config-pref-reset-button =
+    .title = යළි සැකසුම
+about-config-pref-delete-button =
+    .title = මකන්න
+
 ## Labels for the type selection radio buttons shown when adding preferences.
 
 about-config-pref-add-type-boolean = බූලීය
 about-config-pref-add-type-number = අංකය
+about-config-pref-add-type-string = පෙළ
 
 ## Preferences with a non-default value are differentiated visually, and at the
 ## same time the state is made accessible to screen readers using an aria-label

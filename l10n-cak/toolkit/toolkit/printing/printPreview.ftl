@@ -33,6 +33,7 @@ printpreview-of =
     .value = richin
 printpreview-custom-prompt =
     .value = Ichinan xakb'äl…
+printpreview-custom-scale-prompt-title = Ichinan Xakb'äl
 printpreview-page-setup =
     .label = Tinuk'samajïx ruxaq…
     .accesskey = s
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Ruk'isib'äl ruxaq
+

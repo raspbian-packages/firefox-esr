@@ -5,17 +5,22 @@
 blocklist-window =
     .title = Lista del blocatge
     .style = width: 55em
-blocklist-desc = Podètz causir quina lista de { -brand-short-name } serà utlizada per bolcar los elements web que poiriá pistar vòstra activitat de navegacion.
+
+blocklist-description = Causissètz quina lista { -brand-short-name } utiliza per blocar los traçadors en linha. Las listas venon de <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w
+
 blocklist-treehead-list =
     .label = Lista
+
 blocklist-button-cancel =
     .label = Anullar
     .accesskey = N
+
 blocklist-button-ok =
     .label = Enregistrar las modificacions
     .accesskey = E
+
 # This template constructs the name of the block list in the block lists dialog.
 # It combines the list name and description.
 # e.g. "Standard (Recommended). This list does a pretty good job."
@@ -24,7 +29,8 @@ blocklist-button-ok =
 #   $listName {string, "Standard (Recommended)."} - List name.
 #   $description {string, "This list does a pretty good job."} - Description of the list.
 blocklist-item-list-template = { $listName } { $description }
-blocklist-item-moz-std-name = Proteccion basica de Disconnect.m (Recomandada).
-blocklist-item-moz-std-desc = Autorizar unes traçadors per que los sites foncionen coma cal.
-blocklist-item-moz-full-name = Proteccion estricta de Disconnect.me.
-blocklist-item-moz-full-desc = Bloca los elements de seguiment coneguts. De sites web pòdon pas foncionar coma cal.
+
+blocklist-item-moz-std-listName = Lista de blocatge de nivèl 1 (recomandada).
+blocklist-item-moz-std-description = Autoriza certans traçadors per que mens de sites quiten de foncionar.
+blocklist-item-moz-full-listName = Lista de blocatge de nivèl 2.
+blocklist-item-moz-full-description = Bloca los traçadors detectats. Es possible qu’unes sites web o contenguts se carguen pas corrèctament.

@@ -4,6 +4,7 @@
 
 page-title = विघ्ननिवारण सूचना
 page-subtitle = यह पृष्ठ आपको एक समस्या को हल करने की कोशिश कर रहे हैं उपयोगी हो सकता है कि तकनीकी जानकारी है. { -brand-short-name }, के बारे में आम सवालों के जवाब की तलाश में हैं, हमारे  <a data-l10n-name="support-link">समर्थन वेबसाइट की जाँच करें.</a>
+
 crashes-title = क्रैश रिपोर्ट
 crashes-id = रिपोर्ट ID
 crashes-send-date = सुपुर्द
@@ -45,9 +46,7 @@ app-basics-performance = प्रदर्शन
 app-basics-service-workers = सर्विस श्रमिक पंजीकृत किया गया
 app-basics-profiles = प्रोफ़ाइल
 app-basics-multi-process-support = बहुप्रक्रिया विंडोज़
-app-basics-process-count = वेब सामग्री प्रक्रियाएं
 app-basics-enterprise-policies = एंटरप्राइज नीतियाँ
-app-basics-key-google = गूगल कुंजी
 app-basics-key-mozilla = Mozilla अवस्थिति सेवा कुंजी
 app-basics-safe-mode = सेफ मोड
 show-dir-label =
@@ -97,6 +96,14 @@ sandbox-sys-call-number = सिसकॉल
 sandbox-sys-call-args = मापदंड
 safe-mode-title = सुरक्षित मोड में कोशिश करें
 restart-in-safe-mode-label = निष्क्रिय सहयुक्तियों के साथ फिर आरंभ करें...
+
+## Media titles
+
+audio-backend = ऑडियो बैकएण्ड
+max-audio-channels = मैक्स चैनल
+channel-layout = पसंदीदा चैनल लेआउट
+sample-rate = पसंदीदा नमूना दर
+
 media-title = मीडिया
 media-output-devices-title = आउटपुट उपकरण
 media-input-devices-title = इनपुट उपकरण
@@ -109,6 +116,9 @@ media-device-format = प्रारूप
 media-device-channels = चैनल्स
 media-device-rate = दर
 media-device-latency = विलंबता
+
+##
+
 intl-title = अंतरराष्ट्रीयकरण & स्थानीयकरण
 intl-app-title = अनुप्रयोग सेटिंग्स
 intl-locales-requested = अनुरोधित स्थानिकी
@@ -118,6 +128,20 @@ intl-locales-default = मूल स्थानिकी
 intl-os-title = प्रचालन तंत्र
 intl-os-prefs-system-locales = तंत्र स्थानिकी
 intl-regional-prefs = क्षेत्रीय वरीयताएँ
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -125,6 +149,7 @@ report-crash-for-days =
         [one] अंतिम { $days } दिन के लिए क्रैश रिपोर्ट
        *[other] अंतिम { $days } दिन के लिए क्रैश रिपोर्ट
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -132,6 +157,7 @@ crashes-time-minutes =
         [one] { $minutes } मिनट पहले
        *[other] { $minutes } मिनट पहले
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -139,6 +165,7 @@ crashes-time-hours =
         [one] { $hours } घंटा पहले
        *[other] { $hours } घंटे पहले
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -146,6 +173,7 @@ crashes-time-days =
         [one] { $days } दिन पहले
        *[other] { $days } दिनों पहले
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -153,6 +181,7 @@ pending-reports =
         [one] सभी क्रैश रिपोर्ट (दिए समय परिसर में { $reports } स्थगित क्रैश सहित)
        *[other] सभी क्रैश रिपोर्ट (दिए समय परिसर में { $reports } स्थगित क्रैश सहित)
     }
+
 raw-data-copied = क्लिपबोर्ड में पाठ नकल किए गए
 text-copied = Text copied to clipboard
 
@@ -165,9 +194,11 @@ blocked-mismatched-version = रजिस्ट्री और डीएलए�
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = Blocked for your graphics driver version. Try updating your graphics driver to version { $driverVersion } or newer.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = क्लीयरटाइप पैरामीटर
+
 compositing = संयोजन
 hardware-h264 = हार्डवेयर एच264 कूटानुवाद
 main-thread-no-omtc = मुख्य सूत्र, कोई OMTC नहीं
@@ -181,6 +212,9 @@ unknown = अज्ञात
 
 found = पाया गया
 missing = अनुपलब्ध
+
+gpu-process-pid = GPUProcessPid
+gpu-process = GPUProcess
 gpu-description = वर्णन
 gpu-vendor-id = विक्रेता ID
 gpu-device-id = युक्ति ID
@@ -201,26 +235,29 @@ webgl2-version = WebGL 2 ड्राइवर वर्ज़न
 webgl2-driver-extensions = WebGL 2 ड्राइवर एक्सटेंशन
 webgl2-extensions = WebGL 2 एक्सटेंशन
 blocklisted-bug = ज्ञात समस्याओं के कारण प्रतिबाधित सूची में डाला गया
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = { $bugNumber } दोष
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = निरुद्ध सूचीबद्ध किया गया; { $failureCode } असफल कूट
+
 d3d11layers-crash-guard = डी3डी11 अक्षर योजक
 d3d11video-crash-guard = डी3डी11 वीडियो विसंकेतक
 d3d9video-crash-buard = डी3डी9 वीडियो विसंकेतक
+d3d9video-crash-guard = डी3डी9 वीडियो विसंकेतक
 glcontext-crash-guard = जीएल खोलें
+
 reset-on-next-restart = अगला पुनः आरंभ फिर सेट करें
 gpu-process-kill-button = GPU प्रक्रिया समाप्त करें
 gpu-device-reset-button = ट्रिगर डिवाइस रीसेट करें
 off-main-thread-paint-enabled = मुख्य थ्रेड चित्रकारी बंद
-audio-backend = ऑडियो बैकएण्ड
-max-audio-channels = मैक्स चैनल
-channel-layout = पसंदीदा चैनल लेआउट
-sample-rate = पसंदीदा नमूना दर
+
 min-lib-versions = प्रत्याशित न्यूनतम संस्करण
 loaded-lib-versions = उपयोग में संस्करण
+
 has-seccomp-bpf = Seccomp - BPF (सिस्टम कॉल छनन )
 has-seccomp-tsync = सेक्केम्प लड़ी तुल्यकालन
 has-user-namespaces = उपयोक्ता नामस्थान
@@ -232,10 +269,12 @@ effective-content-sandbox-level = प्रभावी सामग्री �
 sandbox-proc-type-content = अंतर्वस्तु
 sandbox-proc-type-file = फ़ाइल सामग्री
 sandbox-proc-type-media-plugin = मीडिया प्लगइन
+
 launcher-process-status-0 = सक्रिय
 launcher-process-status-1 = विफलता के कारण निष्क्रिय
 launcher-process-status-2 = बलपूर्वक अक्षम किया गया
 launcher-process-status-unknown = अज्ञात स्थिति
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -248,6 +287,7 @@ multi-process-status-6 = असमर्थित अवतरण निवे�
 multi-process-status-7 = ऐड-ऑन्स द्वारा निष्क्रिय किया गया
 multi-process-status-8 = जबरन अक्षम
 multi-process-status-unknown = अज्ञात अवस्था
+
 async-pan-zoom = असमन्वित पैन/Zoom
 apz-none = कोई नहीं
 wheel-enabled = पहिया इनपुट सक्षम

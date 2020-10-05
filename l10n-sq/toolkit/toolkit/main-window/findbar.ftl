@@ -9,12 +9,10 @@ findbar-next =
     .tooltiptext = Gjeni hasjen pasuese të togfjalëshit
 findbar-previous =
     .tooltiptext = Gjeni hasjen e mëparshme të togfjalëshit
+
 findbar-find-button-close =
     .tooltiptext = Mbyllni shtyllën e gjetjeve
-findbar-highlight-all =
-    .label = Theksoji Krejt
-    .accesskey = T
-    .tooltiptext = Theksoni krejt hasjet e togfjalëshit
+
 findbar-highlight-all2 =
     .label = Theksoji Krejt
     .accesskey =
@@ -23,10 +21,17 @@ findbar-highlight-all2 =
            *[other] K
         }
     .tooltiptext = Theksoni krejt hasjet e togfjalëshit
+
 findbar-case-sensitive =
     .label = Siç është shkruar
     .accesskey = S
     .tooltiptext = Kërkojeni siç është shkruar
+
+findbar-match-diacritics =
+    .label = Me Përputhje Me Shenjat Diakritike
+    .accesskey = i
+    .tooltiptext = Bëj dallimin me shkronjash me theks dhe atyre pa të tilla (për shembull, kur kërkohet për “resume”, “résumé” s’do të merret parasysh)
+
 findbar-entire-word =
     .label = Fjalë të Plota
     .accesskey = p

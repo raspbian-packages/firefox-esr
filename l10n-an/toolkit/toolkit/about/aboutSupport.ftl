@@ -4,6 +4,7 @@
 
 page-title = Información ta solucionar problemas
 page-subtitle = Ista pachina contiene información tecnica que puede estar util quan prebe de resolver un problema. Si ye buscando respuestas a preguntas freqüents sobre { -brand-short-name }, mire o <a data-l10n-name="support-link">puesto d'asistencia</a>.
+
 crashes-title = Informes de fallos
 crashes-id = ID d'o informe
 crashes-send-date = Ninviau
@@ -24,13 +25,25 @@ features-title = Caracteristicas de { -brand-short-name }
 features-name = Nombre
 features-version = Versión
 features-id = ID
+processes-title = Procesos remotos
+processes-type = Tipo
+processes-count = Cuenta
 app-basics-title = Configuración basica de l'aplicación
 app-basics-name = Nombre
 app-basics-version = Versión
 app-basics-build-id = Construir ID
 app-basics-update-channel = Esviellar a Canal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Directorio d'actualizacions
+       *[other] Carpeta d'actualizacions
+    }
 app-basics-update-history = Historial d'actualizacions
 app-basics-show-update-history = Amostrar l'historial d'actualizacions
+# Represents the path to the binary used to start the application.
+app-basics-binary = Binario de l'aplicación
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Directorio de perfil
@@ -44,10 +57,12 @@ app-basics-memory-use = Uso de memoria
 app-basics-performance = Rendimiento
 app-basics-service-workers = Service Workers rechistraus
 app-basics-profiles = Perfils
+app-basics-launcher-process-status = Proceso de lanzamiento
 app-basics-multi-process-support = Finestras multiproceso
-app-basics-process-count = Procesos de conteniu web
+app-basics-remote-processes-count = Procesos remotos
 app-basics-enterprise-policies = Politicas d'interpresa
-app-basics-key-google = Google Key
+app-basics-location-service-key-google = Clau d'o servicio de plazamiento de Google
+app-basics-safebrowsing-key-google = Clau d'o servicio de navegación segura de Google
 app-basics-key-mozilla = Clau d'o servicio de plazamiento de Mozilla
 app-basics-safe-mode = Modo seguro
 show-dir-label =
@@ -73,6 +88,8 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Rechistro de decisions
 graphics-crash-guards-title = Caracteristicas Crash Guard desactivadas
 graphics-workarounds-title = Solucions temporals
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = Protocolo de finestra
 place-database-title = Base de datos de puestos
 place-database-integrity = Integridat
 place-database-verify-integrity = Verificar Integridat
@@ -97,6 +114,14 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumentos
 safe-mode-title = Intentar en Modo Seguro
 restart-in-safe-mode-label = Reiniciar con os complementos desactivaus…
+
+## Media titles
+
+audio-backend = Sistema de fondo d'audio
+max-audio-channels = Maximo numero de canals
+channel-layout = Esquema de canal preferiu
+sample-rate = Freqüencia de mostreyo preferida
+
 media-title = Multimedia
 media-output-devices-title = Dispositivos de salida
 media-input-devices-title = Dispositivos de dentrada
@@ -109,6 +134,14 @@ media-device-format = Formato
 media-device-channels = Canals
 media-device-rate = Freqüencia
 media-device-latency = Latencia
+media-capabilities-title = Capacidatz multimedia
+# List all the entries of the database.
+media-capabilities-enumerate = Enumerar la base de datos
+
+
+
+##
+
 intl-title = Internacionalización & localización
 intl-app-title = Achustes d'aplicación
 intl-locales-requested = Locales demandadas
@@ -118,6 +151,24 @@ intl-locales-default = Locale per defecto
 intl-os-title = Sistema operativo
 intl-os-prefs-system-locales = Locales d'o sistema
 intl-regional-prefs = Preferencias rechionals
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Debug a distancia (protocolo Chromium)
+remote-debugging-accepting-connections = Se son acceptando las connexions
+remote-debugging-url = URL
+
+
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -125,6 +176,7 @@ report-crash-for-days =
         [one] Informes de fallos d'o zaguer día
        *[other] Informes de fallos d'os zaguers { $days } días
     }
+
 # Variables
 # $minutes (integer) - Number of minutes since crash
 crashes-time-minutes =
@@ -132,6 +184,7 @@ crashes-time-minutes =
         [one] En fa { $minutes } minuto
        *[other] En fa { $minutes } minutos
     }
+
 # Variables
 # $hours (integer) - Number of hours since crash
 crashes-time-hours =
@@ -139,6 +192,7 @@ crashes-time-hours =
         [one] En fa { $hours } hora
        *[other] En fa { $hours } horas
     }
+
 # Variables
 # $days (integer) - Number of days since crash
 crashes-time-days =
@@ -146,6 +200,7 @@ crashes-time-days =
         [one] En fa { $days } día
        *[other] En fa { $days } días
     }
+
 # Variables
 # $reports (integer) - Number of pending reports
 pending-reports =
@@ -153,6 +208,7 @@ pending-reports =
         [one] Totz os informes de fallos (incluindo { $reports } fallo pendient en o entrevalo de tiempo indicau)
        *[other] Totz os informes de fallos (incluindo { $reports } fallos pendients en o entrevalo de tiempo indicau)
     }
+
 raw-data-copied = S'han copiau ss datos crudos en o portafuellas
 text-copied = S'ha copiau o texto en o portafuellas
 
@@ -165,14 +221,18 @@ blocked-mismatched-version = Bloqueyau ta la versión d'o suyo controlador grafi
 # Variables
 # $driverVersion - The graphics driver version string
 try-newer-driver = Bloqueyau ta la versión d'o suyo controlador grafico. Mire d'actualizar o suyo controlador grafico a la versión { $driverVersion } u mas moderna.
+
 # "ClearType" is a proper noun and should not be translated. Feel free to leave English strings if
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Parametros de ClearType
+
 compositing = Redactando
 hardware-h264 = Decodificación Hardware H264
 main-thread-no-omtc = filo principal, no OMTC
 yes = Sí
 no = No
+unknown = Desconoixiu
+virtual-monitor-disp = Pantalla de monitor virtual
 
 ## The following strings indicate if an API key has been found.
 ## In some development versions, it's expected for some API keys that they are
@@ -180,12 +240,16 @@ no = No
 
 found = Trobau
 missing = Falta
+
+gpu-process-pid = GPUProcessPid
+gpu-process = GPUProcess
 gpu-description = Descripción
 gpu-vendor-id = ID d'o fabricante
 gpu-device-id = ID d'o dispositivo
 gpu-subsys-id = Subsys ID
 gpu-drivers = Controladors
 gpu-ram = RAM
+gpu-driver-vendor = Casa d'o driver
 gpu-driver-version = Versión d'o controlador
 gpu-driver-date = Calendata d'o controlador
 gpu-active = Activo
@@ -200,29 +264,34 @@ webgl2-version = WebGL 2 Driver Version
 webgl2-driver-extensions = WebGL 2 Driver Extensions
 webgl2-extensions = WebGL 2 Extensions
 blocklisted-bug = S'ha ficau en a lista de bloqueyo por problemas conoixius
+
 # Variables
 # $bugNumber (string) - String of bug number from Bugzilla
 bug-link = bug { $bugNumber }
+
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = En a lista de bloqueyo; codigo de fallo { $failureCode }
+
 d3d11layers-crash-guard = Compositor D3D11
 d3d11video-crash-guard = Decodificador de video D3D11
 d3d9video-crash-buard = Decodificador de video D3D9
+d3d9video-crash-guard = Decodificador de video D3D9
 glcontext-crash-guard = OpenGL
+
 reset-on-next-restart = Meter propiedatz por defecto en o siguient reinicio.
 gpu-process-kill-button = Rematar proceso GPU
+gpu-device-reset = Reinicio d'o driver
 gpu-device-reset-button = Reinicio d'o dispositivo activador
 uses-tiling = Fa servir mosaicos
 content-uses-tiling = Fa servir mosaicos (conteniu)
 off-main-thread-paint-enabled = S'ha activau lo Painting difuera d'o filo d'execución principal
 off-main-thread-paint-worker-count = Numero de workers de pintura defuera d'o filo principal
-audio-backend = Sistema de fondo d'audio
-max-audio-channels = Maximo numero de canals
-channel-layout = Esquema de canal preferiu
-sample-rate = Freqüencia de mostreyo preferida
+target-frame-rate = Freqüencia d'imachens deseyada
+
 min-lib-versions = S'asperaba una versión minima
 loaded-lib-versions = Versión en uso
+
 has-seccomp-bpf = Seccomp-BPF (Filtrau de Clamadas a o Sistema)
 has-seccomp-tsync = Sincronización de filos Seccomp
 has-user-namespaces = Espacios de nombres de l'usuario
@@ -234,6 +303,13 @@ effective-content-sandbox-level = Nivel efectivo d'a zona de prebatinas d'os pro
 sandbox-proc-type-content = conteniu
 sandbox-proc-type-file = conteniu d'o fichero
 sandbox-proc-type-media-plugin = plugin multimedia
+sandbox-proc-type-data-decoder = descodificador de datos
+
+launcher-process-status-0 = Activau
+launcher-process-status-1 = Desactivau per causa d'un fallo
+launcher-process-status-2 = Desactivau forzadament
+launcher-process-status-unknown = Estau desconoixiu
+
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -246,6 +322,7 @@ multi-process-status-6 = Desactivau por no estar soportada la dentrada de texto
 multi-process-status-7 = Desactivau por complementos
 multi-process-status-8 = Desactivar forzadament
 multi-process-status-unknown = Estau desconoixiu
+
 async-pan-zoom = Pan/Zoom asincronos
 apz-none = garra
 wheel-enabled = dentrada con rueda activada

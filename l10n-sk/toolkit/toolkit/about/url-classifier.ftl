@@ -31,7 +31,7 @@ url-classifier-cache-entries = Položky vo vyrovnávacej pamäti
 url-classifier-cache-prefix = Prefix
 url-classifier-cache-ncache-expiry = Záporná platnosť vo vyrovnávacej pamäti
 url-classifier-cache-fullhash = Plný hash
-url-classifier-cache-pcache-expiry = Kladná platnosť v medipamäti
+url-classifier-cache-pcache-expiry = Kladná platnosť vo vyrovnávacej pamäti
 url-classifier-debug-title = Ladenie
 url-classifier-debug-module-btn = Nastaviť moduly protokolu
 url-classifier-debug-file-btn = Nastaviť súbor protokolu
@@ -40,6 +40,7 @@ url-classifier-debug-sb-modules = Moduly protokolu pre službu Safe Browsing
 url-classifier-debug-modules = Aktuálne moduly protokolu
 url-classifier-debug-sbjs-modules = Protokol JS pre službu Safe Browsing
 url-classifier-debug-file = Aktuálny súbor protokolu
+
 url-classifier-trigger-update = Spustiť aktualizáciu
 url-classifier-not-available = N/A
 url-classifier-disable-sbjs-log = Zakázať denník JS služby Safe Browsing

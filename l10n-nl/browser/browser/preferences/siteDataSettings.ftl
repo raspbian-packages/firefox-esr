@@ -7,7 +7,7 @@
 
 site-data-settings-window =
     .title = Cookies en websitegegevens beheren
-    
+
 site-data-settings-description = De volgende websites bewaren cookies en websitegegevens op uw computer. { -brand-short-name } bewaart gegevens van websites met permanente opslag totdat u deze verwijdert, en verwijdert gegevens van websites met niet-permanente opslag zodra er ruimte nodig is.
 
 site-data-search-textbox =
@@ -23,6 +23,9 @@ site-data-column-storage =
 site-data-column-last-used =
     .label = Laatst gebruikt
 
+# This label is used in the "Host" column for local files, which have no host.
+site-data-local-file-host = (lokaal bestand)
+
 site-data-remove-selected =
     .label = Geselecteerde verwijderen
     .accesskey = v
@@ -34,12 +37,6 @@ site-data-button-cancel =
 site-data-button-save =
     .label = Wijzigingen opslaan
     .accesskey = s
-
-# Variables:
-#   $value (Number) - Value of the unit (for example: 4.6, 500)
-#   $unit (String) - Name of the unit (for example: "bytes", "KB")
-site-usage-pattern = { $value } { $unit }
-site-usage-persistent = { site-usage-pattern } (Permanent)
 
 # Variables:
 #   $value (Number) - Value of the unit (for example: 4.6, 500)

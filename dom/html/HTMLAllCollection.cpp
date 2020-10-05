@@ -8,18 +8,20 @@
 
 #include "mozilla/dom/HTMLAllCollectionBinding.h"
 #include "mozilla/dom/Nullable.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/dom/Element.h"
-#include "nsHTMLDocument.h"
+#include "nsContentList.h"
+#include "nsGenericHTMLElement.h"
 
 namespace mozilla {
 namespace dom {
 
-HTMLAllCollection::HTMLAllCollection(nsHTMLDocument* aDocument)
+HTMLAllCollection::HTMLAllCollection(mozilla::dom::Document* aDocument)
     : mDocument(aDocument) {
   MOZ_ASSERT(mDocument);
 }
 
-HTMLAllCollection::~HTMLAllCollection() {}
+HTMLAllCollection::~HTMLAllCollection() = default;
 
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(HTMLAllCollection, mDocument, mCollection,
                                       mNamedMap)

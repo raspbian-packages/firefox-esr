@@ -33,6 +33,7 @@ printpreview-of =
     .value = /
 printpreview-custom-prompt =
     .value = Özel ölçek…
+printpreview-custom-scale-prompt-title = Özel Ölçek
 printpreview-page-setup =
     .label = Sayfa düzeni…
     .accesskey = S
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Son sayfa
+

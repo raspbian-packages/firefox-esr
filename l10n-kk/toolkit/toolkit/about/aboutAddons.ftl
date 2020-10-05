@@ -4,6 +4,7 @@
 
 addons-window =
     .title = Қосымшалар басқарушысы
+addons-page-title = Қосымшалар басқарушысы
 search-header =
     .placeholder = addons.mozilla.org-ға іздеу
     .searchbuttonlabel = Іздеу
@@ -25,6 +26,8 @@ install-addon-from-file =
     .label = Файлдан қосымшаны орнату…
     .accesskey = Ф
 help-button = Қосымшаларды қолдау
+sidebar-help-button-title =
+    .title = Қосымшаларды қолдау
 preferences =
     { PLATFORM() ->
         [windows] { -brand-short-name } опциялары
@@ -32,6 +35,12 @@ preferences =
     }
 tools-menu =
     .tooltiptext = Барлық қосымшалар үшін құралдар
+sidebar-preferences-button-title =
+    .title =
+        { PLATFORM() ->
+            [windows] { -brand-short-name } опциялары
+           *[other] { -brand-short-name } баптаулары
+        }
 show-unsigned-extensions-button =
     .label = Кейбір кеңейтулерді растау мүмкін емес
 show-all-extensions-button =
@@ -98,9 +107,11 @@ detail-private-browsing-description2 = Рұқсат етілген кезде, �
 # cannot be overridden by the user.
 detail-private-disallowed-label = Жекелік шолу терезелерінде рұқсат етілмеген
 detail-private-disallowed-description = Бұл кеңейту жекелік шолу режимінде жасамайды. <label data-l10n-name="detail-private-browsing-learn-more">Көбірек білу</label>
+detail-private-disallowed-description2 = Бұл кеңейту жекелік шолу режимінде жасамайды. <a data-l10n-name="learn-more">Көбірек білу</a>
 # Some special add-ons are privileged, run in private windows automatically, and this permission can't be revoked
 detail-private-required-label = Жекелік терезелеріне қатынау рұқсатын талап етеді
 detail-private-required-description = Бұл кеңейту жекелік шолу кезінде сіздің желідегі әрекеттеріңізге қол жеткізе алады. <label data-l10n-name="detail-private-browsing-learn-more">Көбірек білу</label>
+detail-private-required-description2 = Бұл кеңейтудің жекелік шолу режимінде сіздің желідегі белсенділігіңізге қатынау рұқсаты бар. <a data-l10n-name="learn-more">Көбірек білу</a>
 detail-private-browsing-on =
     .label = Рұқсат ету
     .tooltiptext = Жекелік шолу режимінде іске қосу
@@ -150,9 +161,6 @@ legacy-extensions =
     .value = Ескірген кеңейтулер
 legacy-extensions-description = Бұл кеңейтулер { -brand-short-name } өнімінің ағымдағы стандартқа сай емес, сондықтан сөндірілді. <label data-l10n-name="legacy-learn-more">Қосымшалар өзгерістері туралы көбірек білу</label>
 private-browsing-description2 = { -brand-short-name } кеңейтулер жекелік шолуда қалай жасайтынын өзгертеді. { -brand-short-name } ішіне қосылған кез келген жаңа кеңейту жекелік терезелерінде орындалмайды. Оған баптаулар ішінен арнайы рұқсат бермесеңіз, кеңейту жекелік шолу режиміне жұмыс істемейді, және ол кездегі сіздің желілік белсенділікке қол жеткізе алмайды. Бұл өзгерісті жекелік шолуыңызды жеке қалдыру үшін жасадық.<label data-l10n-name="private-browsing-learn-more">Кеңейтудің баптауларын өзгерту тәсілі туралы көбірек білу.</label>
-extensions-view-discover =
-    .name = Қосымшаларды алу
-    .tooltiptext = { extensions-view-discover.name }
 extensions-view-discopane =
     .name = Ұсыныстар
     .tooltiptext = { extensions-view-discopane.name }
@@ -162,6 +170,30 @@ extensions-view-recent-updates =
 extensions-view-available-updates =
     .name = Қолжетерлік жаңартулар
     .tooltiptext = { extensions-view-available-updates.name }
+addon-category-discover = Ұсыныстар
+addon-category-discover-title =
+    .title = Ұсыныстар
+addon-category-extension = Кеңейтулер
+addon-category-extension-title =
+    .title = Кеңейтулер
+addon-category-theme = Темалар
+addon-category-theme-title =
+    .title = Темалар
+addon-category-plugin = Плагиндер
+addon-category-plugin-title =
+    .title = Плагиндер
+addon-category-dictionary = Сөздіктер
+addon-category-dictionary-title =
+    .title = Сөздіктер
+addon-category-locale = Тілдер
+addon-category-locale-title =
+    .title = Тілдер
+addon-category-available-updates = Қолжетерлік жаңартулар
+addon-category-available-updates-title =
+    .title = Қолжетерлік жаңартулар
+addon-category-recent-updates = Соңғы жаңартулар
+addon-category-recent-updates-title =
+    .title = Соңғы жаңартулар
 
 ## These are global warnings
 
@@ -183,6 +215,13 @@ extensions-warning-update-security-container =
 extensions-warning-update-security-enable =
     .label = Іске қосу
     .tooltiptext = Кеңейтулер жаңартуларын қауісіздікке тексеруді іске қосу
+extensions-warning-safe-mode = Барлық кеңейтулер қауіпсіз режимімен сөндірілген.
+extensions-warning-check-compatibility = Кеңейтулер үйлесімдігін тексеруді сөндіру. Сізде үйлесімсіз кеңейтулер бар болуы мүмкін.
+extensions-warning-check-compatibility-button = Іске қосу
+    .title = Кеңейтулер үйлесімдігін тексеруді іске қосу
+extensions-warning-update-security = Кеңейтулер жаңартуларын қауісіздікке тексеру сөндірулі. Жаңартулармен қор болуыңыз мүмкін.
+extensions-warning-update-security-button = Іске қосу
+    .title = Кеңейтулер жаңартуларын қауісіздікке тексеруді іске қосу
 
 ## Strings connected to add-on updates
 
@@ -192,12 +231,18 @@ extensions-updates-check-for-updates =
 extensions-updates-view-updates =
     .label = Соңғы жаңартуларды қарау
     .accesskey = о
+addon-updates-check-for-updates = Жаңартуларды тексеру
+    .accesskey = к
+addon-updates-view-updates = Соңғы жаңартуларды қарау
+    .accesskey = о
 
 # This menu item is a checkbox that toggles the default global behavior for
 # add-on update checking.
 
 extensions-updates-update-addons-automatically =
     .label = Кеңейтулерді автожаңарту
+    .accesskey = е
+addon-updates-update-addons-automatically = Кеңейтулерді автожаңарту
     .accesskey = е
 
 ## Specific add-ons can have custom update checking behaviors ("Manually",
@@ -211,6 +256,10 @@ extensions-updates-reset-updates-to-automatic =
     .accesskey = а
 extensions-updates-reset-updates-to-manual =
     .label = Барлық кеңейтулерді тек қолмен жаңартылатындай етіп қылу
+    .accesskey = о
+addon-updates-reset-updates-to-automatic = Барлық кеңейтулерді автожаңартылатындай етіп қылу
+    .accesskey = а
+addon-updates-reset-updates-to-manual = Барлық кеңейтулерді тек қолмен жаңартылатындай етіп қылу
     .accesskey = о
 
 ## Status messages displayed when updating add-ons
@@ -230,17 +279,34 @@ extensions-updates-manual-updates-found =
 extensions-updates-update-selected =
     .label = Жаңартуларды орнату
     .tooltiptext = Бұл тізімдегі қолжетерлік жаңартуларды орнату
+addon-updates-updating = Қосымшалар жаңартылуда
+addon-updates-installed = Қосымшаларыңыз жаңартылды.
+addon-updates-none-found = Жаңартулар табылмады
+addon-updates-manual-updates-found = Қолжетерлік жаңартуларды көрсету
+
+## Add-on install/debug strings for page options menu
+
+addon-install-from-file = Файлдан қосымшаны орнату…
+    .accesskey = Ф
+addon-install-from-file-dialog-title = Орнату үшін кеңейтуді таңдаңыз
+addon-install-from-file-filter-name = Қосымшалар
+addon-open-about-debugging = Қосымшаларды жөндеу
+    .accesskey = д
 
 ## Extension shortcut management
 
 manage-extensions-shortcuts =
     .label = Кеңейтудің пернетақта жарлықтарын басқару
     .accesskey = ж
+# This is displayed in the page options menu
+addon-manage-extensions-shortcuts = Кеңейтудің пернетақта жарлықтарын басқару
+    .accesskey = ж
 shortcuts-no-addons = Сізде ешқандай кеңейтулер орнатылмаған.
 shortcuts-no-commands = Келесі кеңейтулерде жарлықтар жоқ:
 shortcuts-input =
     .placeholder = Жарлықты теріңіз
 shortcuts-browserAction = Кеңейтуді белсендіру
+shortcuts-browserAction2 = Құралдар панелінің батырмасын белсендіру
 shortcuts-pageAction = Бет әрекетін белсендіру
 shortcuts-sidebarAction = Бүйір панелін көрсету/жасыру
 shortcuts-modifier-mac = Ctrl, Alt, немесе ⌘ қосыңыз
@@ -248,6 +314,12 @@ shortcuts-modifier-other = Ctrl немесе Alt қосыңыз
 shortcuts-invalid = Комбинация жарамсыз
 shortcuts-letter = Әріпті теріңіз
 shortcuts-system = { -brand-short-name } жарлығын қайта анықтау мүмкін емес
+# String displayed in warning label when there is a duplicate shortcut
+shortcuts-duplicate = Жарлықты қосарлау
+# String displayed when a keyboard shortcut is already assigned to more than one add-on
+# Variables:
+#   $shortcut (string) - Shortcut string for the add-on
+shortcuts-duplicate-warning-message = { $shortcut } бірден көп жерде жарлық ретінде қолданылуда. Қосарланған жарлықтар күтпеген мінез-құлығына әкеп соғуы мүмкін.
 # String displayed when a keyboard shortcut is already used by another add-on
 # Variables:
 #   $addon (string) - Name of the add-on
@@ -259,6 +331,8 @@ shortcuts-card-expand-button =
 shortcuts-card-collapse-button = Азырақ көрсету
 go-back-button =
     .tooltiptext = Артқа
+header-back-button =
+    .title = Артқа
 
 ## Recommended add-ons page
 
@@ -291,14 +365,24 @@ install-theme-button = Теманы орнату
 # the detailed add-on view is opened, from where the add-on can be managed.
 manage-addon-button = Басқару
 find-more-addons = Көбірек қосымшаларды табу
+# This is a label for the button to open the "more options" menu, it is only
+# used for screen readers.
+addon-options-button =
+    .aria-label = Көбірек опциялар
 
 ## Add-on actions
 
 report-addon-button = Хабарлау
 remove-addon-button = Өшіру
+# The link will always be shown after the other text.
+remove-addon-disabled-button = Өшіру мүмкін емес <a data-l10n-name="link">Неге?</a>
 disable-addon-button = Сөндіру
 enable-addon-button = Іске қосу
 expand-addon-button = Көбірек опциялар
+# This is used for the toggle on the extension card, it's a checkbox and this
+# is always its label.
+extension-enable-addon-button-label =
+    .aria-label = Іске қосу
 preferences-addon-button =
     { PLATFORM() ->
         [windows] Баптаулар
@@ -309,6 +393,16 @@ release-notes-addon-button = Шығарылым ескертпесі
 permissions-addon-button = Рұқсаттар
 addons-enabled-heading = Іске қосулы
 addons-disabled-heading = Сөндірілген
+extension-enabled-heading = Іске қосулы
+extension-disabled-heading = Сөндірілген
+theme-enabled-heading = Іске қосулы
+theme-disabled-heading = Сөндірілген
+plugin-enabled-heading = Іске қосулы
+plugin-disabled-heading = Сөндірілген
+dictionary-enabled-heading = Іске қосулы
+dictionary-disabled-heading = Сөндірілген
+locale-enabled-heading = Іске қосулы
+locale-disabled-heading = Сөндірілген
 ask-to-activate-button = Белсендіруді сұрау
 always-activate-button = Әрқашан белсендіру
 never-activate-button = Ешқашан белсендірмеу
@@ -350,6 +444,11 @@ install-update-button = Жаңарту
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed =
     .title = Жекелік терезелерінде рұқсат етілген
+# This is the tooltip text for the private browsing badge in about:addons. The
+# badge is the private browsing icon included next to the extension's name.
+addon-badge-private-browsing-allowed2 =
+    .title = Жекелік терезелерінде рұқсат етілген
+    .aria-label = { addon-badge-private-browsing-allowed2.title }
 addon-detail-private-browsing-help = Рұқсат етілген кезде, кеңейту жекелік шолу кезінде сіздің желілік белсенділігіңізге қол жеткізе алады. <a data-l10n-name="learn-more">Көбірек білу</a>
 addon-detail-private-browsing-allow = Рұқсат ету
 addon-detail-private-browsing-disallow = Рұқсат етпеу
@@ -358,6 +457,11 @@ addon-detail-private-browsing-disallow = Рұқсат етпеу
 addon-badge-recommended =
     .title = Ұсынылатын
     .alt = Ұсынылатын
+# This is the tooltip text for the recommended badge for an extension in about:addons. The
+# badge is a small icon displayed next to an extension when it is recommended on AMO.
+addon-badge-recommended2 =
+    .title = { -brand-product-name } тек біздің қауіпсіздік және өнімділік стандарттарына сай келетін кеңейтулерді ұсынады
+    .aria-label = { addon-badge-recommended2.title }
 available-updates-heading = Қолжетерлік жаңартулар
 recent-updates-heading = Соңғы жаңартулар
 release-notes-loading = Жүктелуде…
@@ -368,3 +472,19 @@ recommended-themes-heading = Ұсынылатын темалар
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Шабытты сезіп тұрсыз ба? <a data-l10n-name="link">Firefox Color көмегімен өз темаңызды жасаңыз.</a>
+
+## Page headings
+
+extension-heading = Кеңейтулерді басқару
+theme-heading = Темаларды басқару
+plugin-heading = Плагиндерді басқару
+dictionary-heading = Сөздіктерді басқару
+locale-heading = Тілдерді басқару
+updates-heading = Жаңартуларды басқару
+discover-heading = Өз { -brand-short-name } жеке қылыңыз
+shortcuts-heading = Кеңейтудің пернетақта жарлықтарын басқару
+default-heading-search-label = Көбірек қосымшаларды табу
+addons-heading-search-input =
+    .placeholder = addons.mozilla.org-ға іздеу
+addon-page-options-button =
+    .title = Барлық қосымшалар үшін құралдар

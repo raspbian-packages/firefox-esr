@@ -3,12 +3,49 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-## UI strings for the simplified onboarding modal
+### UI strings for the simplified onboarding modal / about:welcome
+### Various strings use a non-breaking space to avoid a single dangling /
+### widowed word, so test on various window sizes if you also want this.
+
+
+## These button action text can be split onto multiple lines, so use explicit
+## newlines in translations to control where the line break appears (e.g., to
+## avoid breaking quoted text).
 
 onboarding-button-label-try-now = ယခုပင် စမ်းကြည့်ပါ
 onboarding-button-label-get-started = စတင်ပါ
+
+## Welcome modal dialog strings
+
 onboarding-welcome-header = { -brand-short-name } မှကြိုဆိုပါတယ်
+
 onboarding-start-browsing-button-label = ရှာဖွေမှုစမည်
+
+onboarding-cards-dismiss =
+    .title = ပိတ်လိုက်ပါ
+    .aria-label = ပိတ်လိုက်ပါ
+
+## Welcome full page string
+
+## Firefox Sync modal dialog strings.
+
+onboarding-sync-welcome-header = { -brand-product-name } ကို သင်နှင့်အတူ ခေါ်ဆောင်ပါ
+onboarding-sync-welcome-learn-more-link = Firefox အကောင့်များအကြောင်း ပိုမိုလေ့လာရန်
+
+onboarding-sync-form-input =
+    .placeholder = အီးမေးလ်
+
+onboarding-sync-form-continue-button = ဆက်၍
+onboarding-sync-form-skip-login-button = ဒီအဆင့်ကို ကျော်ပါ
+
+## This is part of the line "Enter your email to continue to Firefox Sync"
+
+onboarding-sync-form-header = သင့်အီးမေလ်းအားထည့်ပါ
+
+
+## These are individual benefit messages shown with an image, title and
+## description.
+
 
 ## These strings belong to the individual onboarding messages.
 
@@ -19,18 +56,24 @@ onboarding-start-browsing-button-label = ရှာဖွေမှုစမည်
 
 onboarding-private-browsing-title = လုံခြုံစွာရှာဖွေခြင်း
 onboarding-private-browsing-text = မိမိကိုယ်တိုင် ရှာဖွေနိုင်သည်။ အကြောင်းအရာ စစ်ထုတ် တားဆီးခြင်းနှင့် လုံခြုံစွာရှာဖွေခြင်းသည် ဝဘ်တွင်ရှိတိုင်း နောက်ယောင်ခံလိုက်နေမည့် အွန်လိုင်းခြေရာခံကိရိယာများကို တားဆီးပါမည်။
+
 onboarding-screenshots-title = မျက်နှာပြင်ပုံရိပ်ဖမ်းချက်
 onboarding-screenshots-text = { -brand-short-name } ထံမှ ထွက်ခွာစရာ မလိုဘဲ မျက်နှာပြင် ပုံဖမ်းချက်များကို ရိုက်ကူးပါ၊ သိမ်းဆည်းပါ၊ ပြီးနောက် မျှဝေပါ။ နေရာတစ်ခု သို့မဟုတ် စာမျက်နှာတစ်ခုလုံးကို ဖမ်းယူပါ။ ထို့နောက် အလွယ်တကူ အသုံးပြုနိုင်ရန်နှင့် မျှဝေနိုင်ရန် ဝဘ်တွင် သိမ်းဆည်းပါ။
+
 onboarding-addons-title = အတ်အွန်များ
+
 onboarding-ghostery-title = Ghostery
 onboarding-ghostery-text = Ghostery  လို extension အသုံးပြုပြီးတော့ လျှင်မြန်၊ ဖျက်လက် လုံခြုံစိတ်ချစွာရှာဖွေပါ၊ Ghostery ကစိတ်ပျက်စရာကြော်ငြာတွေကိုတားစီးပေးပါတယ်။
+
 # Note: "Sync" in this case is a generic verb, as in "to synchronize"
 onboarding-fxa-title = ထပ်တူပြုရန်
 onboarding-fxa-text = { -fxaccount-brand-name } အတွက် အကောင့်အသစ်ဖွင့်ပြီး { -brand-short-name } သုံးမည့်နေရာတိုင်းတွင် သင့်စာမှတ်များ၊စာဝှက်များကို အသုံးချပြီးလျှင် တက်ဗ်များကို ဖွင့်ပါ
 
+
 ## Message strings belonging to the Return to AMO flow
 
 return-to-amo-sub-header = အကောင်းဆုံးဘဲ၊ { -brand-short-name } သင်ရသွားပြီ
+
 # <icon></icon> will be replaced with the icon belonging to the extension
 #
 # Variables:

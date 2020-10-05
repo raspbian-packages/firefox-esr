@@ -4,6 +4,7 @@
 
 about-private-browsing-learn-more = વિશે વધુ શીખો <a data-l10n-name="learn-more">ખાનગી બ્રાઉઝિંગ</a>.
 about-private-browsing-info-visited = મુલાકાત લીધેલા પૃષ્ઠો
+
 privatebrowsingpage-open-private-window-label = ખાનગી વિન્ડો ખોલો
     .accesskey = P
 about-private-browsing-info-notsaved = જ્યારે તમે એક { -brand-short-name } ખાનગી વિન્ડો મા બ્રાઉઝ કરો <strong>સાચવી નથી</strong>:
@@ -25,3 +26,7 @@ about-private-browsing =
 about-private-browsing-not-private = તમે હાલમાં ખાનગી વિન્ડો મા નથી.
 content-blocking-title = વસ્તુઓ અવરોધ
 content-blocking-description = કેટલીક વેબસાઇટ્સ ઇન્ટરનેટ પરની તમારી પ્રવૃત્તિઓ પર દેખરેખ રાખવા માટે ટ્રેકર્સનો ઉપયોગ કરે છે. ખાનગી વિન્ડોઝમાં { -brand-short-name } સામગ્રી અવરોધિત સ્વતઃ ઘણા ટ્રેકર્સને અવરોધિત કરે છે કે જે તમારાં બ્રાઉઝિંગ વર્તન વિશેની માહિતી ભેગી કરે છે.
+about-private-browsing-info-description = { -brand-short-name } જ્યારે તમે એપ્લિકેશન છોડો છો અથવા બધી ખાનગી બ્રાઉઝિંગ ટેબ્સ અને વિંડોઝ બંધ કરો છો ત્યારે તમારી શોધ અને બ્રાઉઝિંગ ઇતિહાસને સાફ કરે છે. આ તમને વેબસાઇટ્સ અથવા તમારા ઇન્ટરનેટ સર્વિસ પ્રોવાઇડરને અનામી બનાવતું નથી, પરંતુ આ કમ્પ્યુટરનો ઉપયોગ કરનાર અન્ય લોકોથી તમે ઑનલાઇન ખાનગી શું કરો છો તે સરળ બનાવે છે.
+
+about-private-browsing-search-banner-close-button =
+    .aria-label = બંધ

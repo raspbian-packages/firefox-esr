@@ -33,6 +33,7 @@ printpreview-of =
     .value = -
 printpreview-custom-prompt =
     .value = Eskala pertsonalizatua...
+printpreview-custom-scale-prompt-title = Eskala pertsonalizatua
 printpreview-page-setup =
     .label = Prestatu orria...
     .accesskey = u
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Azken orria
+

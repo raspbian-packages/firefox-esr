@@ -38,7 +38,7 @@
 <!ENTITY netOffline.longDesc2 "<p>Iminig itteddu deg uskar war tuqqna. Ur yezmir ara ad yeqqen ɣer tansa d-yettwamlen.</p><ul><li>Aselkim inek iqqen ɣer uẓeṭṭa urmid?</li><li>Sit ɣef &quot;Ɛreḍ tikelt nniḍen&quot; akken ad tuɣaleḍ ɣer uskar usrid u sali-d asebter-inek tiket nniḍen.</li></ul>">
 
 <!ENTITY contentEncodingError.title "Tuccḍa n usettengel n ugbur">
-<!ENTITY contentEncodingError.longDesc "<p>Asebter-agi i tebɣiḍ ad twaliḍ ur yizmir ara ad ittwasken, acku iseqdac tawsit usekkussem tarameɣtut neɣ ur yettusefraken ara.</p><ul><li>Ma ulac aɣilif nermes imawlan n usmel web ɣef ugur-agi.</li></ul>">
+<!ENTITY contentEncodingError.longDesc "<p>Asebter-agi i tebɣiḍ ad twaliḍ ur yizmir ara ad ittwasken, acku iseqdac tawsit uskussem tarameɣtut neɣ ur yettusefraken ara.</p><ul><li>Ma ulac aɣilif nermes imawlan n usmel web ɣef ugur-agi.</li></ul>">
 
 <!ENTITY unsafeContentType.title "Tawsit n ufaylu araɣelsan">
 <!ENTITY unsafeContentType.longDesc "<ul> <li>Ma ulac aɣilif, nermes imawlan n usmel web ɣef wugur-agi.</li> </ul> ">
@@ -75,6 +75,9 @@
 
 <!ENTITY cspBlocked.title "Tesweḥlit tsertit n tɣellist n ugbur">
 <!ENTITY cspBlocked.longDesc "<p>Iminig isewḥel asali n usebter-agi acku tasertit n tɣellist n ugbur ur tt-iǧǧi ara.</p>">
+
+<!ENTITY xfoBlocked.title "Tessewḥel-it tsertit X-Frame-Options">
+<!ENTITY xfoBlocked.longDesc "<p>Iminig isewḥel asali n usebter-a deg usatal-a acku asebter ɣur-s tasertit X-Frame-Options ur t-yeǧǧan ara.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Tuccḍa d yekkan seg ugbur yerẓen">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>Asebter-agi i tebɣiḍ ad twaliḍ ur yizmir ara ad ittwasken, acku tella tuccḍa di tuzzna n isefka.</p><ul><li>Ma ulac aɣilif nermes imawlan n usmel web ɣef ugur-agi.</li></ul>">

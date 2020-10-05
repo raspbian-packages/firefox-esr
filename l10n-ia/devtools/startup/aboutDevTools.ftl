@@ -7,12 +7,13 @@ enable-title = Activar le Utensiles de disveloppamento de Firefox
 enable-inspect-element-title = Activar le Utensiles de disveloppamento de Firefox pro usar Inspicer elemento
 enable-inspect-element-message = Examina e redige HTML e CSS le Inspector del utensiles de disveloppamento.
 enable-about-debugging-message = Disveloppa e depura WebExtensions, web workers, service workers e plus per le Utensiles de disveloppamento de Firefox.
-enable-key-shortcut-message = Tu ha activate un accesso directe al instrumentos de developpator. Si isto esseva un error, tu pote clauder iste scheda.
+enable-key-shortcut-message = Tu ha activate un accesso directe al instrumentos de disveloppamento. Si isto esseva un error, tu pote clauder iste scheda.
 enable-menu-message = Perfectiona le HTML, CSS, e JavaScript de tu sito web per utensiles como Inspector e Depurator.
 enable-common-message = Le Utensiles de disveloppamento de Firefox es disactivate normalmente pro dar te major controlo de tu navigator.
 enable-learn-more-link = Apprende plus re le Utensiles del disveloppamento
 enable-enable-button = Activar le Utensiles de disveloppamento
 enable-close-button = Clauder iste scheda
+
 welcome-title = Benvenite al Utensiles de disveloppamento de Firefox!
 newsletter-title = Littera del novas de disveloppamento de Mozilla
 newsletter-message = Recipe novas, artificios e ressources de disveloppamento inviate directemente a tu cassa de entrata.
@@ -22,9 +23,11 @@ newsletter-privacy-label = Io consenti con le tractamento per Mozilla de mi info
 newsletter-subscribe-button = Subscriber
 newsletter-thanks-title = Gratias!
 newsletter-thanks-message = Si tu non habeva antea confirmate un subscription a un newsletter re Mozilla tu pote facer lo. Per favor controla tu cassa de entrata o tu filtro del spam pro un e-posta ab nos.
+
 footer-title = Firefox Developer Edition
 footer-message = Cerca tu plus que justo Utensiles de disveloppamento? Controla le navigator Firefox create specificamente pro le disveloppatores e le fluxos de labor moderne.
 footer-learn-more-link = Saper plus
+
 features-learn-more = Saper plus
 features-inspector-title = Inspector
 features-inspector-desc = Inspecta e optimisa le codice pro construer dispositiones de pagina perfecte al pixel. <a data-l10n-name="learn-more">{ features-learn-more }</a>
@@ -51,4 +54,4 @@ newsletter-error-unknown = Un error non attendite occurreva.
 newsletter-error-timeout = Le demanda de abonamento es expirate.
 # Variables:
 #   $shortcut (String) - The keyboard shortcut used for the tool
-welcome-message = Tu ha activate con successo Utensiles de disveloppamento! Pro comenciar, explora le menu de Disveloppator de web o aperi le utensiles per { $shortcut }.
+welcome-message = Tu ha correctemente activate le Utensiles de disveloppamento! Pro comenciar, explora le menu "Disveloppator web" o aperi le utensiles per { $shortcut }.

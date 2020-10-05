@@ -18,6 +18,8 @@
 <!ENTITY newListCmd.accesskey			"L">
 <!ENTITY newAddressBookCmd.label		"アドレス帳...">
 <!ENTITY newAddressBookCmd.accesskey		"B">
+<!ENTITY newCardDAVBookCmd.label		"CardDAV アドレス帳...">
+<!ENTITY newCardDAVBookCmd.accesskey		"V">
 <!ENTITY newLDAPDirectoryCmd.label		"LDAP ディレクトリー...">
 <!ENTITY newLDAPDirectoryCmd.accesskey		"D">
 <!ENTITY newMessageCmd.label			"メッセージ">
@@ -164,6 +166,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY deleteButton2.accesskey		"D">
 
 <!-- Address Book Toolbar Tooltips -->
+<!ENTITY columnChooser.tooltip				"表示する列を選択します">
 <!ENTITY newContactButton.tooltip			"新しい連絡先を作成します">
 <!ENTITY newlistButton.tooltip				"新しいリストを作成します">
 <!ENTITY editPropertiesButton.tooltip			"選択したアイテムを編集します">

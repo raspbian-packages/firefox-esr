@@ -8,7 +8,7 @@ rights-intro-point-1 = { -brand-short-name } został udostępniony użytkownikow
 rights-intro-point-2 = Nie otrzymujesz żadnych licencji ani praw do znaków towarowych Mozilla Foundation i innych podmiotów, w tym w szczególności do nazwy i logotypu Firefox. Więcej informacji na ten temat znajdziesz <a data-l10n-name="mozilla-trademarks-link">tutaj</a>.
 rights-intro-point-3 = Niektóre funkcje programu { -brand-short-name }, takie jak zgłaszanie awarii, umożliwiają przesyłanie opinii do dostawcy oprogramowania ({ -vendor-short-name }). Przesyłając takie opinie, wyrażasz zgodę na używanie przez dostawcę oprogramowania ({ -vendor-short-name }) przesłanych opinii do celów ulepszenia jego produktów, publikowania tych opinii na stronach internetowych i do ich rozpowszechniania.
 rights-intro-point-4 = Informacje o tym, jak wykorzystujemy dane osobiste i opinie przesłane do dostawcy oprogramowania ({ -vendor-short-name }) przez program { -brand-short-name } zostały przedstawione w <a data-l10n-name="mozilla-privacy-policy-link">zasadach ochrony prywatności programu { -brand-short-name }</a>.
-rights-intro-point-4-unbranded = W tym miejscu powinny być wypisane wszelkie zbiory zasad ochrony prywatności związane z tym produktem.
+rights-intro-point-4-unbranded = W tym miejscu powinny być wypisane wszelkie zbiory zasad ochrony prywatności związane z tym produktem.
 rights-intro-point-5 = Niektóre funkcje programu { -brand-short-name } umożliwiają korzystanie z internetowych usług informacyjnych, jednakże nie możemy zagwarantować ich stuprocentowej dokładności ani bezbłędności. Szczegółowe informacje, w tym opis wyłączenia tych usług, można znaleźć w <a data-l10n-name="mozilla-service-terms-link">warunkach korzystania z tych usług</a>.
 rights-intro-point-5-unbranded = Jeśli ten produkt zawiera usługi WWW, odnośniki do wszelkich warunków korzystania z nich powinny znajdować się w sekcji <a data-l10n-name="mozilla-website-services-link">Usługi WWW</a>.
 rights-intro-point-6 = Aby odtwarzać niektóre treści wideo, { -brand-short-name } pobiera pewne moduły deszyfrowania treści od zewnętrznych podmiotów.
@@ -23,7 +23,7 @@ rights-safebrowsing-term-4 = Funkcja „Bezpieczne przeglądanie” zostanie wó
 rights-locationawarebrowsing = <strong>Udostępnianie witrynom położenia użytkownika: </strong>Ta funkcja przesyła dane tylko za zgodą użytkownika. Bez wyrażenia zgody żadne informacje geolokalizacyjne nie są przesyłane. Aby całkowicie wyłączyć tę funkcję:
 rights-locationawarebrowsing-term-1 = W pasku adresu wprowadź: <code>about:config</code>
 rights-locationawarebrowsing-term-2 = W polu filtru wpisz: „geo.enabled”
-rights-locationawarebrowsing-term-3 = Kliknij dwukrotnie opcję „geo.enabled”
+rights-locationawarebrowsing-term-3 = Kliknij podwójnie opcję „geo.enabled”
 rights-locationawarebrowsing-term-4 = Udostępnianie położenia geograficznego zostanie wyłączone
 rights-webservices-unbranded = W tym miejscu powinien znaleźć się opis usług WWW powiązanych z tym produktem, wraz z instrukcją ich wyłączenia, o ile jest potrzebna.
 rights-webservices-term-unbranded = W tym miejscu powinny zostać wymienione wszelkie mające zastosowanie dla tego produktu zasady korzystania z usług.

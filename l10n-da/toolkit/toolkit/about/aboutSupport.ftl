@@ -7,7 +7,6 @@ page-subtitle =
     Denne side indeholder teknisk information som måske kan være brugbar når du forsøger 
     at løse et problem. Hvis du leder efter svar på ofte spurgte spørgsmål om { -brand-short-name }, 
     kan du besøge vores <a data-l10n-name="support-link">supportwebsted</a>
-
 crashes-title = Fejlrapporter
 crashes-id = Rapport-ID
 crashes-send-date = Sendt
@@ -35,7 +34,10 @@ app-basics-title = Programinfo
 app-basics-name = Navn
 app-basics-version = Version
 app-basics-build-id = Build-ID
+app-basics-distribution-id = Distributions-ID
 app-basics-update-channel = Opdateringskanal
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
         [linux] Opdateringsmappe
@@ -60,12 +62,10 @@ app-basics-service-workers = Registrerede Service Workers
 app-basics-profiles = Profiler
 app-basics-launcher-process-status = Launcher Process
 app-basics-multi-process-support = Multiproces-vinduer
-app-basics-process-count = Webindholds-processer
 app-basics-remote-processes-count = Fjern-processer
 app-basics-enterprise-policies = Virksomheds-politikker
 app-basics-location-service-key-google = Google Location Service-nøgle
 app-basics-safebrowsing-key-google = Google Safebrowsing-nøgle
-app-basics-key-google = Google-nøgle
 app-basics-key-mozilla = Mozilla Location Service-nøgle
 app-basics-safe-mode = Fejlsikret tilstand
 show-dir-label =
@@ -93,6 +93,8 @@ graphics-crash-guards-title = Funktioner deaktiveret af Crash guard
 graphics-workarounds-title = Løsninger
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protokol for vinduer
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Skrivebordsmiljø
 place-database-title = Databasen Places
 place-database-integrity = Integritet
 place-database-verify-integrity = Bekræft integritet
@@ -117,6 +119,20 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumenter
 safe-mode-title = Prøv fejlsikret tilstand
 restart-in-safe-mode-label = Genstart med tilføjelser deaktiveret…
+
+clear-startup-cache-title = Prøv at rydde opstarts-cachen
+clear-startup-cache-label = Ryd opstarts-cachen…
+startup-cache-dialog-title = Ryd opstarts-cachen
+startup-cache-dialog-body = Genstart { -brand-short-name } for at rydde opstarts-cachen. Dette ændrer hverken dine indstillinger eller fjerner tilføjelser, du har installeret i { -brand-short-name }.
+restart-button-label = Genstart
+
+## Media titles
+
+audio-backend = Audio-backend
+max-audio-channels = Max antal kanaler
+channel-layout = Foretrukket kanal-layout
+sample-rate = Foretrukken sample-rate
+roundtrip-latency = Roundtrip-latens (standardafvigelse)
 media-title = Medieindhold
 media-output-devices-title = Output-enheder
 media-input-devices-title = Input-enheder
@@ -129,6 +145,12 @@ media-device-format = Format
 media-device-channels = Kanaler
 media-device-rate = Rate
 media-device-latency = Latenstid
+media-capabilities-title = Media-evner
+# List all the entries of the database.
+media-capabilities-enumerate = Vis database-poster
+
+##
+
 intl-title = Tilpasning til andre sprog og lande
 intl-app-title = Indstillinger for applikation
 intl-locales-requested = Forespurgte sprog
@@ -138,6 +160,21 @@ intl-locales-default = Standard-sprog
 intl-os-title = Operativsystem
 intl-os-prefs-system-locales = System-sprog
 intl-regional-prefs = Regionale indstillinger
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Remote debugging (Chromium-protokol)
+remote-debugging-accepting-connections = Accepterer forbindelser
+remote-debugging-url = URL
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -199,9 +236,9 @@ virtual-monitor-disp = Virtual Monitor Display
 ## The following strings indicate if an API key has been found.
 ## In some development versions, it's expected for some API keys that they are
 ## not found.
+
 found = Fundet
 missing = Mangler
-
 gpu-process-pid = GPUProcessPid
 gpu-process = GPUProcess
 gpu-description = Beskrivelse
@@ -234,7 +271,11 @@ unknown-failure = Blokeret; fejlkode { $failureCode }
 d3d11layers-crash-guard = D3D11-kompositoren
 d3d11video-crash-guard = D3D11-videodekoder
 d3d9video-crash-buard = D3D9-videodekoder
+d3d9video-crash-guard = D3D9-videodekoder
 glcontext-crash-guard = OpenGL
+
+wmfvpxvideo-crash-guard = WMF VPX-videodekoder
+
 reset-on-next-restart = Nulstil ved næste genstart
 gpu-process-kill-button = Afslut GPU-process
 gpu-device-reset = Device Reset
@@ -243,12 +284,7 @@ uses-tiling = Anvender tiling
 content-uses-tiling = Anvender tiling (indhold)
 off-main-thread-paint-enabled = Rasteriser sider i særskilt proces
 off-main-thread-paint-worker-count = Antal workers til rastering af sider i særskilt proces
-low-end-machine = Konstateret en maskine med lav ydelse.
 target-frame-rate = Mål for framerate
-audio-backend = Audio-backend
-max-audio-channels = Max antal kanaler
-channel-layout = Foretrukket kanal-layout
-sample-rate = Foretrukken sample-rate
 min-lib-versions = Forventet minimumsversion
 loaded-lib-versions = Version i brug
 has-seccomp-bpf = Seccomp-BPF (filtrering af systemkald)
@@ -262,14 +298,18 @@ effective-content-sandbox-level = Effective Content Process Sandbox Level
 sandbox-proc-type-content = indhold
 sandbox-proc-type-file = fil-indhold
 sandbox-proc-type-media-plugin = medie-plugin
-
 sandbox-proc-type-data-decoder = data-decoder
+
+startup-cache-title = Opstarts-cache
+startup-cache-disk-cache-path = Sti til disk-cache
+startup-cache-ignore-disk-cache = Ignorer disk-cache
+startup-cache-found-disk-cache-on-init = Fandt disk-cache på Init
+startup-cache-wrote-to-disk-cache = Skrev til disk-cache
 
 launcher-process-status-0 = Aktiveret
 launcher-process-status-1 = Deaktiveret på grund af en fejl
 launcher-process-status-2 = Deaktiveret
 launcher-process-status-unknown = Ukendt status
-
 # Variables
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -289,6 +329,8 @@ touch-enabled = input fra trykfølsom skærm
 drag-enabled = træk i rullebjælke
 keyboard-enabled = tastatur
 autoscroll-enabled = autoscroll
+
+zooming-enabled = smooth pinch-zoom 
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

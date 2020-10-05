@@ -14,7 +14,7 @@
 <!ENTITY lowPriorityCmd.label "Malalta">
 <!ENTITY normalPriorityCmd.label "Meza">
 <!ENTITY highPriorityCmd.label "Alta">
-<!ENTITY highestPriorityCmd.label "Plej malalta">
+<!ENTITY highestPriorityCmd.label "Plej alta">
 
 <!ENTITY contextDesc.label "Apliki filtrilon dum:">
 <!ENTITY contextIncomingMail.label "elŝuti retpoŝton:">
@@ -25,9 +25,8 @@
 <!ENTITY contextAfterCls.label "post filtri trudmesaĝojn">
 <!ENTITY contextOutgoing.label "post sendi">
 <!ENTITY contextOutgoing.accesskey "s">
-<!ENTITY contextArchive.label "arĥivigi">
+<!ENTITY contextArchive.label "arĥivi">
 <!ENTITY contextArchive.accesskey "a">
-
 
 <!ENTITY filterActionDesc.label "kaj plenumi:">
 <!ENTITY filterActionDesc.accesskey "k">

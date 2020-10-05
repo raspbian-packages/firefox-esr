@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Hata kodu: <a data-l10n-name="error-code-link">{ $
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Web siteleri, kimliklerini kanıtlamak için sertifika makamlarının düzenlediği sertifikaları kullanır. Çoğu tarayıcı GeoTrust, RapidSSL, Symantec, Thawte ve VeriSign tarafından düzenlenen sertifikalara artık güvenmeme kararı almıştır. { $hostname } bu makamlardan birine ait bir sertifika kullandığı için sitenin kimliğini doğrulayamıyoruz.
 cert-error-symantec-distrust-admin = Web sitesinin sahibine bu sorunla ilgili bilgi vermeyi deneyebilirsiniz.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
+cert-error-details-cert-chain-label = Sertifika zinciri:
+open-in-new-window-for-csp-or-xfo-error = Siteyi yeni pencerede aç
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Bu sayfayı başka bir site gömdüyse { $hostname } güvenliğinizi korumak için  { -brand-short-name } tarayıcınızın sayfayı görüntülemesine izin vermez. Bu sayfayı görmek için yeni bir pencerede açmanız gerekir.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Bağlanılamadı
+deniedPortAccess-title = Bu adrese erişim kısıtlanmış
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Aradığınız siteyi bulamıyoruz.
+fileNotFound-title = Dosya bulunamadı
+fileAccessDenied-title = Dosyaya erişim reddedildi
+generic-title = Hoppalaaa.
+captivePortal-title = Ağa giriş yap
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Bu adres gözümüze düzgün görünmedi.
+netInterrupt-title = Bağlantı kesildi
+notCached-title = Belge zaman aşımına uğradı
+netOffline-title = Çevrimdışı kip
+contentEncodingError-title = İçerik kodlama hatası
+unsafeContentType-title = Güvensiz dosya türü
+netReset-title = Bağlantı sıfırlandı
+netTimeout-title = Bağlantı zaman aşımına uğradı
+unknownProtocolFound-title = Adres anlaşılamadı
+proxyConnectFailure-title = Vekil sunucu bağlantı kabul etmiyor
+proxyResolveFailure-title = Vekil sunucu bulunamadı
+redirectLoop-title = Sayfa doğru bir şekilde yönlendirilmiyor
+unknownSocketType-title = Sunucudan beklenmeyen yanıt
+nssFailure2-title = Güvenli bağlantı kurulamadı
+cspBlocked-title = İçerik güvenliği ilkesi uyarınca engellendi
+xfoBlocked-title = X-Frame-Options ilkesi tarafından engellendi
+csp-xfo-error-title = { -brand-short-name } bu sayfayı açamıyor
+corruptedContentError-title = Hasarlı içerik hatası
+remoteXUL-title = Uzak XUL
+sslv3Used-title = Güvenli bağlantı kurulamadı
+inadequateSecurityError-title = Bağlantınız güvenli değil
+blockedByPolicy-title = Engellenmiş sayfa
+clockSkewError-title = Bilgisayarınızın saati yanlış
+networkProtocolError-title = Ağ Protokolü Hatası
+nssBadCert-title = Uyarı: Güvenlik riskiyle karşılaşabilirsiniz
+nssBadCert-sts-title = Bağlanılmadı: Olası Güvenlik Sorunu
+certerror-mitm-title = { -brand-short-name } başka bir yazılım nedeniyle bu siteye güvenli bağlantı kuramıyor

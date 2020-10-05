@@ -5,50 +5,66 @@
 permissions-window =
     .title = Wuwześa
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adresa websedła
     .accesskey = A
+
 permissions-block =
     .label = Blokěrowaś
     .accesskey = B
+
 permissions-session =
     .label = Za pósejźenje dowóliś
     .accesskey = p
+
 permissions-allow =
     .label = Dowóliś
     .accesskey = D
+
 permissions-site-name =
     .label = Websedło
+
 permissions-status =
     .label = Status
+
 permissions-remove =
     .label = Websedło wowónoźeś
     .accesskey = w
+
 permissions-remove-all =
-    .label = Wšykne sedła wótwónoźeś
+    .label = Wšykne websedła wótwónoźeś
     .accesskey = s
+
 permissions-button-cancel =
     .label = Pśetergnuś
     .accesskey = P
+
 permissions-button-ok =
     .label = Změny składowaś
     .accesskey = s
+
 permissions-autoplay-menu = Standard za wšykne websedła:
+
 permissions-searchbox =
     .placeholder = Websedło pytaś
+
 permissions-capabilities-autoplay-allow =
     .label = Awdio a wideo dowóliś
 permissions-capabilities-autoplay-block =
     .label = Awdio blokěrowaś
 permissions-capabilities-autoplay-blockall =
     .label = Awdio a wideo blokěrowaś
+
 permissions-capabilities-allow =
     .label = Dowóliś
 permissions-capabilities-block =
     .label = Blokěrowaś
 permissions-capabilities-prompt =
     .label = Pśecej se pšašaś
+
 permissions-capabilities-listitem-allow =
     .value = Dowóliś
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Wuwześa - Blokěrowanje wopśimjeśa
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Sćo znjemóžnił blokěrowanje wopśimjeśa na toś tych websedłach.
+
+permissions-exceptions-etp-window =
+    .title = Wuwześa za pólěpšony slědowański šćit
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Sćo znjemóžnił šćit na toś tych websedłach.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Slědujuce websedła su pominali pśistup k wa�
 permissions-site-location-disable-label =
     .label = Nowe pominanja za pśistupom na wašo městno blokěrowaś
 permissions-site-location-disable-desc = To buźo websedłam, kótarež górjejce w lisćinje pódane njejsu, pominanje za pśistupom k wašomu městnoju zajźowaś. Gaž pśistup k wašomu městnoju blokěrujośo, móžo se staś, až někotare funkcije websedła njefunkcioněruju.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Nastajenja - pšawa za wirtuelnu realitu
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Slědujuce websedła su pominali pśistup k wašym rědam wirtuelneje reality. Móžośo pódaś, kótare websedła maju pśistup k wašym rědam wirtuelneje reality. Móžośo teke nowe napšašanja za pśistupom k wašym rědam wirtuelneje reality blokěrowaś.
+permissions-site-xr-disable-label =
+    .label = Nowe napšašanja za pśistupom k wašym rědam wirtuelneje reality
+permissions-site-xr-disable-desc = To buźo websydłam, kótarež górjejce w lisćinje pódane njejsu, napšašowanje za pśistupom k wašym rědam wirtualneje reality zawoboraś. Gaž pśistup k swójim rědam wirtuelneje reality blokěrujośo, móžo se staś, až někotare funkcije websedła njefunkcioněruju.
 
 ## Site Permissions - Camera
 

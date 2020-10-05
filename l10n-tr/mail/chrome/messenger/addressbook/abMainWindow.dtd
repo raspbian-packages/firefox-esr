@@ -18,6 +18,8 @@
 <!ENTITY newListCmd.accesskey                           "L">
 <!ENTITY newAddressBookCmd.label                        "Adres defteri…">
 <!ENTITY newAddressBookCmd.accesskey                    "A">
+<!ENTITY newCardDAVBookCmd.label                        "CardDAV adres defteri…">
+<!ENTITY newCardDAVBookCmd.accesskey                    "V">
 <!ENTITY newLDAPDirectoryCmd.label                      "LDAP Dizini…">
 <!ENTITY newLDAPDirectoryCmd.accesskey                  "D">
 <!ENTITY newMessageCmd.label                            "İleti">
@@ -101,7 +103,7 @@
 <!ENTITY customizeToolbar.accesskey                     "z">
 <!ENTITY layoutMenu.label                               "Yerleşim">
 <!ENTITY layoutMenu.accesskey                           "l">
-<!ENTITY showDirectoryPane.label                        "Dizin Bölmesi">
+<!ENTITY showDirectoryPane.label                        "Dizin bölmesi">
 <!ENTITY showDirectoryPane.accesskey                    "D">
 <!ENTITY showContactPane2.label                         "Kişi Bölmesi">
 <!ENTITY showContactPane2.accesskey                     "K">
@@ -164,6 +166,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY deleteButton2.accesskey                        "S">
 
 <!-- Address Book Toolbar Tooltips -->
+<!ENTITY columnChooser.tooltip                          "Gösterilecek sütunları seç">
 <!ENTITY newContactButton.tooltip                       "Yeni adres defteri kişisi oluştur">
 <!ENTITY newlistButton.tooltip                          "Yeni bir liste oluştur">
 <!ENTITY editPropertiesButton.tooltip                   "Seçili ögeyi düzenle">
@@ -173,9 +176,6 @@ because displayed names don't have the comma in between. -->
 <!ENTITY newmsgButton.tooltip                           "E-posta iletisi gönder">
 <!ENTITY newIM.tooltip                                  "Anlık ileti gönder veya sohbet et">
 <!ENTITY deleteButton2.tooltip                          "Seçilmiş ögeyi sil">
-
-<!-- Dir Tree header -->
-<!ENTITY dirTreeHeader.label                            "Adres Defterleri">
 
 <!-- Search Bar -->
 <!ENTITY SearchNameOrEmail.label                        "Ad veya e-posta">

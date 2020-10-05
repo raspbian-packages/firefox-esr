@@ -20,7 +20,7 @@ copy-username-cmd =
     .label = Copiază numele de utilizator
     .accesskey = u
 edit-username-cmd =
-    .label = Editează nume utilizator
+    .label = Editează numele de utilizator
     .accesskey = d
 copy-password-cmd =
     .label = Copiază parola
@@ -54,6 +54,7 @@ import =
 close-button =
     .label = Închide
     .accesskey = c
+
 show-passwords =
     .label = Afișează parolele
     .accesskey = P

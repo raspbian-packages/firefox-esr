@@ -4,6 +4,7 @@
 
 about-telemetry-ping-data-source = Ping-gegevensboarne:
 about-telemetry-show-current-ping-data = Aktuele ping-gegevens
+about-telemetry-show-current-data = Aktuele gegevens
 about-telemetry-show-archived-ping-data = Argivearre ping-gegevens
 about-telemetry-show-subsession-data = Subsesjegegevens toane
 about-telemetry-choose-ping = Ping kieze:
@@ -32,13 +33,13 @@ about-telemetry-histograms-section = Histogrammen
 about-telemetry-keyed-histogram-section = Kaaihistogrammen
 about-telemetry-events-section = Eveneminten
 about-telemetry-simple-measurements-section = Ienfâldige mjittingen
-about-telemetry-slow-sql-section = Trage SQL Statements
+about-telemetry-slow-sql-section = Stadige SQL-ynstruksjes
 about-telemetry-addon-details-section = Add-on-details
 about-telemetry-captured-stacks-section = Opnommen stacks
 about-telemetry-late-writes-section = Lêste add-ons
 about-telemetry-raw-payload-section = Net bewurke nettolading
 about-telemetry-raw = Net bewurke JSON
-about-telemetry-full-sql-warning = NOTE: Trage SQL-debugging is ynskeakele. Folsleine SQL-strings kinne hjirûnder toand wurde, mar se sille net ferstjoerd wurde nei Telemetry.
+about-telemetry-full-sql-warning = NOTE: Stadige SQL-debugging is ynskeakele. Folsleine SQL-strings kinne hjirûnder toand wurde, mar se sille net ferstjoerd wurde nei Telemetry.
 about-telemetry-fetch-stack-symbols = Krij funksjenammen foar stacks
 about-telemetry-hide-stack-symbols = Toan rûge stackgegevens
 # Selects the correct release version
@@ -76,6 +77,7 @@ about-telemetry-settings-explanation = Telemetry sammelet { about-telemetry-data
 #   $timeStamp (String): ping localized timestamp, e.g. “2017/07/08 10:40:46”
 about-telemetry-ping-details = Elk stikje gegevens wurdt bondele yn ‘<a data-l10n-name="ping-link">pings</a>’ ferstjoerd. Jo sjogge nei de ping { $name }, { $timestamp }.
 about-telemetry-ping-details-current = Elk stikje gegevens wurdt bondele yn ‘<a data-l10n-name="ping-link">pings</a>’ ferstjoerd. Jo sjogge nei de ping aktuele.
+about-telemetry-data-details-current = Elk stikje ynformaasje wurdt bondele ferstjoerd yn ‘<a data-l10n-name="ping-link">pings</a>’. Jo sjogge nei de aktuele gegevens.
 # string used as a placeholder for the search field
 # More info about it can be found here:
 # https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/data/main-ping.html
@@ -102,13 +104,15 @@ about-telemetry-no-search-results-all = Sorry! Der binne gjin resultaten yn watf
 about-telemetry-no-data-to-display = Sorry! Der binne op dit stuit gjin gegevens beskikber yn ‘{ $sectionName }’
 # used as a tooltip for the “current” ping title in the sidebar
 about-telemetry-current-ping-sidebar = aktuele ping
+# used as a tooltip for the “current” ping title in the sidebar
+about-telemetry-current-data-sidebar = aktuele gegevens
 # used in the “Ping Type” select
 about-telemetry-telemetry-ping-type-all = alle
 # button label to copy the histogram
 about-telemetry-histogram-copy = Kopiearje
 # these strings are used in the “Slow SQL Statements” section
-about-telemetry-slow-sql-main = Trage SQL-statements op haadthread
-about-telemetry-slow-sql-other = Trage SQL-statements op helpthreads
+about-telemetry-slow-sql-main = Stadige SQL-ynstruksjes op haadthread
+about-telemetry-slow-sql-other = Stadige SQL-ynstruksjes op helpthreads
 about-telemetry-slow-sql-hits = Hits
 about-telemetry-slow-sql-average = Gem. tiid (ms)
 about-telemetry-slow-sql-statement = Statement

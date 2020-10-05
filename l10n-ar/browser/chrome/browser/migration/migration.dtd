@@ -13,6 +13,7 @@
 <!ENTITY importFromIE.accesskey         "م">
 <!ENTITY importFromEdge.label           "ميكروسوفت إدج">
 <!ENTITY importFromEdge.accesskey       "ج">
+<!ENTITY importFromEdgeBeta.label       "ميكروسوفت إدج بيتا">
 <!ENTITY importFromNothing.label        "لا تستورد أي شيء">
 <!ENTITY importFromNothing.accesskey    "ت">
 <!ENTITY importFromSafari.label         "سافاري">
@@ -27,8 +28,8 @@
 <!ENTITY importFromChromeDev.accesskey  "ط">
 <!ENTITY importFromChromium.label       "كروميوم">
 <!ENTITY importFromChromium.accesskey   "م">
-<!ENTITY importFromFirefox.label        "فَيَرفُكس">
-<!ENTITY importFromFirefox.accesskey    "ف">
+<!ENTITY importFromFirefox.label        "Firefox">
+<!ENTITY importFromFirefox.accesskey    "X">
 <!ENTITY importFrom360se.label          "متصفح ٣٦٠ الآمن">
 <!ENTITY importFrom360se.accesskey      "3">
 

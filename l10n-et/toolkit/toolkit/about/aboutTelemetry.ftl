@@ -4,6 +4,7 @@
 
 about-telemetry-ping-data-source = Andmete allikas:
 about-telemetry-show-current-ping-data = Praegused andmed
+about-telemetry-show-current-data = Praegused andmed
 about-telemetry-show-archived-ping-data = Arhiveeritud andmed
 about-telemetry-show-subsession-data = Kuvatakse alamseansside andmeid
 about-telemetry-choose-ping = Vali ping:
@@ -15,6 +16,7 @@ about-telemetry-option-group-older = Vanem
 about-telemetry-previous-ping = <<
 about-telemetry-next-ping = >>
 about-telemetry-page-title = Telemeetriaandmed
+about-telemetry-current-store = Current Store:
 about-telemetry-more-information = Soovid näha rohkem teavet?
 about-telemetry-firefox-data-doc = <a data-l10n-name="data-doc-link">Firefoxi andmete dokumentatsioon</a> sisaldab juhendeid selle kohta, kuidas meie andmetööriistu kasutada.
 about-telemetry-telemetry-client-doc = <a data-l10n-name="client-doc-link">Firefoxi telemeetriaandmete kliendidokumentatsioon</a> sisaldab definitsioone mõistete, API dokumentatsiooni ja andmespetsifikatsioonide kohta.
@@ -56,6 +58,16 @@ about-telemetry-upload-type =
         [enabled] lubatud
        *[disabled] keelatud
     }
+# Example Output: 1 sample, average = 0, sum = 0
+# Variables:
+#   $sampleCount (Integer): amount of histogram samples
+#   $prettyAverage (Integer): average of histogram samples
+#   $sum (Integer): sum of histogram samples
+about-telemetry-histogram-stats =
+    { $sampleCount ->
+        [one] { $sampleCount } sample, average = { $prettyAverage }, sum = { $sum }
+       *[other] { $sampleCount } samples, average = { $prettyAverage }, sum = { $sum }
+    }
 # Variables:
 #   $telemetryServerOwner (String): the value of the toolkit.telemetry.server_owner preference. Typically "Mozilla"
 about-telemetry-page-subtitle = See leht näitab Telemetry kogutud jõudluse, riistvara, funktsionaalsuse kasutamise ja kohandamiste andmeid. See teave saadetakse { $telemetryServerOwner }le, et aidata kaasa { -brand-full-name }i edasiarendamisele.
@@ -65,6 +77,7 @@ about-telemetry-settings-explanation = Telemetry kogub { about-telemetry-data-ty
 #   $timeStamp (String): ping localized timestamp, e.g. “2017/07/08 10:40:46”
 about-telemetry-ping-details = Iga killuke informatsiooni on saadetud pakituna “<a data-l10n-name="ping-link">pingude</a>” sisse. Sa oled vaatamas { $name }, { $timestamp } pingu.
 about-telemetry-ping-details-current = Iga killuke informatsiooni on saadetud pakituna “<a data-l10n-name="ping-link">pingude</a>“ sisse. Sa oled vaatamas käimasolevat pingu.
+about-telemetry-data-details-current = Iga killuke informatsiooni on saadetud pakituna “<a data-l10n-name="ping-link">pingude</a>“ sisse. Sa oled vaatamas praeguseid andmeid.
 # string used as a placeholder for the search field
 # More info about it can be found here:
 # https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/data/main-ping.html
@@ -91,6 +104,8 @@ about-telemetry-no-search-results-all = Vabandust! Ühestki sektsioonist ei leit
 about-telemetry-no-data-to-display = Vabandust! Sektsioonis “{ $sectionName }” pole praegu andmeid
 # used as a tooltip for the “current” ping title in the sidebar
 about-telemetry-current-ping-sidebar = käimasolev ping
+# used as a tooltip for the “current” ping title in the sidebar
+about-telemetry-current-data-sidebar = praegused andmed
 # used in the “Ping Type” select
 about-telemetry-telemetry-ping-type-all = kõik
 # button label to copy the histogram
@@ -125,3 +140,12 @@ about-telemetry-category-header = kategooria
 about-telemetry-method-header = meetod
 about-telemetry-object-header = objekt
 about-telemetry-extra-header = lisapäis
+about-telemetry-origin-section = Origin Telemetry
+about-telemetry-origin-origin = origin
+about-telemetry-origin-count = count
+# Variables:
+#   $telemetryServerOwner (String): the value of the toolkit.telemetry.server_owner preference. Typically "Mozilla"
+about-telemetry-origins-explanation = <a data-l10n-name="origin-doc-link">Firefox Origin Telemetry</a> encodes data before it is sent so that { $telemetryServerOwner } can count things, but not know whether or not any given { -brand-product-name } contributed to that count. (<a data-l10n-name="prio-blog-link">learn more</a>)
+# Variables:
+#  $process (String): type of process in subsection headers ( e.g. "content", "parent" )
+about-telemetry-process = { $process } process

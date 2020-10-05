@@ -27,7 +27,7 @@ pin-tab =
     .label = נעיצת לשונית
     .accesskey = נ
 unpin-tab =
-    .label = ביטול נעיצה של לשונית
+    .label = ביטול נעיצת לשונית
     .accesskey = ב
 pin-selected-tabs =
     .label = הצמדת לשוניות
@@ -56,6 +56,17 @@ move-to-new-window =
 undo-close-tab =
     .label = ביטול סגירת לשונית
     .accesskey = ב
+tab-context-close-multiple-tabs =
+    .label = סגירת לשוניות מרובות
+    .accesskey = מ
+tab-context-undo-close-tabs =
+    .label =
+        { $tabCount ->
+            [1] ביטול סגירת לשונית
+            [one] ביטול סגירת לשונית
+           *[other] ביטול סגירת לשוניות
+        }
+    .accesskey = י
 close-tab =
     .label = סגירת לשונית
     .accesskey = ס

@@ -33,6 +33,7 @@ printpreview-of =
     .value = din
 printpreview-custom-prompt =
     .value = Scală la alegere…
+printpreview-custom-scale-prompt-title = Scară personalizată
 printpreview-page-setup =
     .label = Aranjare în pagină…
     .accesskey = u
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Ultima pagină
+

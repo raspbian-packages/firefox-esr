@@ -5,7 +5,7 @@
 <!ENTITY firstrun_panel_title_welcome "مرحبا">
 <!ENTITY firstrun_urlbar_message2 "شكرا على اختيارك &brandShortName;">
 <!ENTITY newfirstrun_urlbar_message "مرحبًا في &brandShortName;">
-<!ENTITY firstrun_urlbar_subtext2 "متصفّح هواتف حديث من موزيلا، المؤسسة غير الربحية الملتزمة تجاه وِب حر ومفتوح.">
+<!ENTITY firstrun_urlbar_subtext2 "متصفّح هواتف حديث من Mozilla، المؤسسة غير الربحية الملتزمة تجاه وِب حر ومفتوح.">
 <!ENTITY newfirstrun_urlbar_subtext "سريع وخاص ويقف صفًا صفًا معك.">
 <!ENTITY firstrun_panel_title_privacy "الخصوصية">
 <!ENTITY firstrun_privacy_message "تصفح و لا أحد يراقبك">
@@ -21,17 +21,16 @@
 <!ENTITY firstrun_data_message "بيانات أقل، توفير أكبر">
 <!ENTITY firstrun_data_subtext2 "عطّل الصور لتوفير البيانات في كل موقع تزوره.">
 <!ENTITY firstrun_sync_title "تزامُن">
-<!ENTITY firstrun_sync_message2 "أكمل من حيث انتهيت.">
+<!ENTITY firstrun_sync_message3 "زامِن العلامات والتأريخ وكلمات السر إلى هاتفك.">
 <!ENTITY firstrun_sync_subtext2 "استعمل «تزامن» لتجد العلامات، وكلمات السر وغيرها من الأمور التي تحفظها في &brandShortName; على أجهزتك.">
-<!ENTITY newfirstrun_sync_subtext "زامِن ما حفظته على المحمول في فَيَرفُكس على سطح المكتب، بكل أمان وأقصى خصوصية.">
-<!ENTITY updatednewfirstrun_sync_subtext "لِج إلى حسابك لتستفد أقصى استفادة من &brandShortName;">
+<!ENTITY newfirstrun_sync_subtext "زامِن ما حفظته على المحمول في Firefox على سطح المكتب، بكل أمان وأقصى خصوصية.">
+<!ENTITY firstrun_sendtab_title "أرسِل الألسنة">
+<!ENTITY firstrun_sendtab_message "شارِك الألسنة بين المحمول وسطح المكتب، في لحظة.">
 <!ENTITY firstrun_signin_message "اتصل لتبدأ">
-<!ENTITY firstrun_signin_button "لِج إلى «المزامنة»">
-<!ENTITY newfirstrun_signin_button "فعّل «تزامُن»">
-<!ENTITY updatednewfirstrun_signin_button "لِج إلى &brandShortName;">
-<!ENTITY  onboard_start_button_browser "ابدأ التصفح">
+<!ENTITY onboard_start_button_browser "ابدأ التصفح">
 <!ENTITY firstrun_button_notnow "ليس الآن">
 <!ENTITY firstrun_button_next "التالي">
+<!ENTITY firstrun_signup_button "اخرج">
 
 <!ENTITY firstrun_tabqueue_title "الروابط">
 
@@ -68,6 +67,11 @@
 <!ENTITY  sending_crash_report "يرسل بلاغ الانهيار\u2026">
 <!ENTITY  crash_close_label "أغلق">
 <!ENTITY  crash_restart_label "أعِد تشغيل &brandShortName;">
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "انهار &brandShortName;">
+<!ENTITY  crash_notification_message "انقر لإبلاغ &vendorShortName; بالانهيار">
+<!ENTITY  crash_notification_negative_button_text "تجاهل">
 
 <!ENTITY url_bar_default_text2 "ابحث أو أدخل عنوانا">
 
@@ -110,6 +114,9 @@
 <!ENTITY bookmark_folder_updated "حُدّث المجلد">
 <!ENTITY bookmark_parent_folder "المجلد الأب">
 <!ENTITY bookmark_add_folder "أضِف مجلدا جديدا">
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(بلا عنوان)">
 
 <!ENTITY reader_saved_offline "حُفظ للاستخدام دون اتصال">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -191,7 +198,7 @@
 <!-- Localization note (overlay_no_synced_devices) : Used when the menu option
      to send a tab to a synced device is pressed and no other synced devices
      are found. -->
-<!ENTITY overlay_no_synced_devices "لم يُعثر على أيّ جهاز مربوط بحساب فيرفكس">
+<!ENTITY overlay_no_synced_devices "لم يُعثر على أيّ جهاز مربوط بحساب Firefox">
 
 <!ENTITY pref_category_search3 "البحث">
 <!ENTITY pref_category_search_summary2 "أضف، و حدد المبدئي، و أظهر الاقتراحات">
@@ -269,6 +276,7 @@
 <!ENTITY pref_cookies_menu "الكعكات">
 <!ENTITY pref_cookies_accept_all "مفعّلة">
 <!ENTITY pref_cookies_not_accept_foreign "مفعّلة، باستثناء الأطراف الخارجية">
+<!ENTITY pref_cookies_not_accept_trackers "مفعّل (كعكات التعقّب مستثناة)">
 <!ENTITY pref_cookies_disabled "مُعطّلة">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -330,11 +338,6 @@
 <!ENTITY pref_pwa "تطبيقات الوِب التدريجية">
 <!ENTITY pref_pwa_summary "اسمح بإضافة التطبيقات إلى شاشة البداية">
 
-<!ENTITY tracking_protection_prompt_title "الآن مع حماية من التعقّب">
-<!ENTITY tracking_protection_prompt_text "يحجب عناصر التعقب لئلا تقلق بشأنها.">
-<!ENTITY tracking_protection_prompt_tip_text "طالع إعدادات الخصوصية للاطلاع على المزيد">
-<!ENTITY tracking_protection_prompt_action_button "فهمت">
-
 <!ENTITY tab_queue_toast_message3 "حُفظ اللسان في &brandShortName;">
 <!ENTITY tab_queue_toast_action "افتح الآن">
 <!ENTITY tab_queue_prompt_title "أأفتح الألسنة المتعدّدة هذه؟">
@@ -395,7 +398,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY pref_qrcode_enabled_summary2 "اسمح بماسح باركود في شريط المسار">
 
 <!ENTITY pref_use_master_password "استخدم كلمة سر رئيسة">
-<!ENTITY pref_sync_default_title "حساب فَيَرفُكس">
+<!ENTITY pref_sync_default_title "حساب Firefox">
 <!ENTITY pref_sync2 "لِج">
 <!ENTITY pref_sync_summary2 "زامن الألسنة، و العلامات، و جلسات الولوج و التأريخ">
 <!ENTITY pref_search_suggestions "اعرض اقتراحات البحث">
@@ -420,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "انقر ”تطبيق المتصفح“ واختر &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "زُر موقع دعم موزيلا">
 <!ENTITY pref_about_firefox "عن &brandShortName;">
 <!ENTITY pref_vendor_faqs "الأسئلة الأكثر شيوعًا">
 <!ENTITY pref_vendor_feedback "أخبرنا بتعليقاتك">
@@ -470,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "خدمات التموضع من &vendorShortName; تعمل">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "التحديثات التلقائية">
-<!ENTITY pref_update_autodownload_wifi "عبر واي فاي فقط">
-<!ENTITY pref_update_autodownload_never "أبدًا">
-<!ENTITY pref_update_autodownload_always "دائمًا">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "مساعدة">
 
@@ -491,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "شارِك">
 <!ENTITY share_title "شارك عبر">
 <!ENTITY share_image_failed "تعّذرت مشاركة هذا الموقع">
+<!ENTITY share_error_toast_message "تعذّرت المشاركة مع التطبيق المنتقى">
 <!ENTITY save_as_pdf "احفظ ك‍ PDF">
 <!ENTITY print "اطبع">
 <!ENTITY view_page_source "اعرض مصدر الصفحة">
@@ -591,6 +586,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "المكان">
 <!ENTITY bookmark_edit_keyword "كلمة مفتاحية">
 <!ENTITY bookmark_select_folder "اختر مجلدًا">
+<!ENTITY bookmark_edit_undo "تراجَع">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -679,7 +675,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "اختر أو سجل صوتًا">
 <!ENTITY filepicker_image_title "اختر أو التقط صورة">
 <!ENTITY filepicker_video_title "اختر أو سجل فديو">
-
+<!ENTITY filepicker_permission_denied "لم يحصل التطبيق على التصاريح المطلوبة. سيعود الآن إلى منتقي الملفات للنظام.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "تتصل ب‍">
@@ -740,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "ابحث في &formatS1; عن &formatS2;">
 
 <!ENTITY searchable_description "العلامات والتأريخ">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "يتوفر تحديث &brandShortName;">
-<!ENTITY updater_start_select2 "المس لبدء التنزيل">
-
-<!ENTITY updater_downloading_title2 "ينزّل &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "فشل التنزيل">
-<!ENTITY updater_downloading_select2 "المس لتطبيق التحديث بمجرد تنزيله">
-<!ENTITY updater_downloading_retry2 "المس لإعادة المحاولة">
-
-<!ENTITY updater_apply_title3 "تم تنزيل تحديث &brandShortName;">
-<!ENTITY updater_apply_select3 "المس للتنصيب">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "لتنزيل الملفات و التحديثات، اسمح ل‍ &brandShortName; بالوصول إلى مساحة التخزين.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "اسمح">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "جلسة ضيف جديدة">
@@ -825,7 +802,7 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!-- Localization note: These are features the device owner (e.g. parent) can enable or disable for
      a restricted profile (e.g. child). Used inside the Android settings UI. -->
 <!ENTITY restrictable_feature_addons_installation "الإضافات">
-<!ENTITY restrictable_feature_addons_installation_description "أضف مزايا أو خصائص إلى فيرفكس. ملاحظة: يمكن للإضافات تعطيل قيود معينة.">
+<!ENTITY restrictable_feature_addons_installation_description "أضف مزايا أو خصائص إلى Firefox. ملاحظة: يمكن للإضافات تعطيل قيود معينة.">
 <!ENTITY restrictable_feature_private_browsing "التصفح الخاص">
 <!ENTITY restrictable_feature_private_browsing_description "يسمح لأفراد العائلة بالتصفح بدون حفظ معلومات المواقع و الصفحات التي يزورونها.">
 <!ENTITY restrictable_feature_clear_history "امسح التأريخ">
@@ -839,15 +816,15 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 
 <!-- Default Bookmarks titles-->
 <!-- LOCALIZATION NOTE (bookmarks_about_browser): link title for about:fennec -->
-<!ENTITY bookmarks_about_browser "فَيَرفُكس: عن متصفحك">
+<!ENTITY bookmarks_about_browser "‏Firefox: عن متصفحك">
 <!-- LOCALIZATION NOTE (bookmarks_addons): link title for https://addons.mozilla.org/en-US/mobile -->
-<!ENTITY bookmarks_addons "فَيَرفُكس: خصّص من خلال الإضافات">
+<!ENTITY bookmarks_addons "‏Firefox: خصّص من خلال الإضافات">
 <!-- LOCALIZATION NOTE (bookmarks_support): link title for https://support.mozilla.org/ -->
-<!ENTITY bookmarks_support "فَيَرفُكس: الدعم">
+<!ENTITY bookmarks_support "‏Firefox: الدعم">
 <!-- LOCALIZATION NOTE (bookmarks_restricted_support): link title for https://support.mozilla.org/kb/controlledaccess -->
-<!ENTITY bookmarks_restricted_support2 "مساعدة و دعم فيَرفُكس لملفات الإعدادات المقيّدَة على ألواح أندرويد">
+<!ENTITY bookmarks_restricted_support2 "مساعدة و دعم Firefox لملفات الإعدادات المقيّدَة على ألواح أندرويد">
 <!-- LOCALIZATION NOTE (bookmarks_restricted_webmaker):link title for https://webmaker.org -->
-<!ENTITY bookmarks_restricted_webmaker "تعلم الوب: صانع الوب من موزيلا">
+<!ENTITY bookmarks_restricted_webmaker "تعلم الوب: صانع الوب من Mozilla">
 
 <!-- LOCALIZATION NOTE (unsupported_sdk_version): The user installed a build of this app that does not support
      the Android version of this device. the formatS1 is replaced by the CPU ABI (e.g., ARMv7); the formatS2 is
@@ -869,6 +846,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_title "متاح بدون اتصال">
 <!ENTITY helper_triple_readerview_open_message "علّم عناصر منظور القارئ لقراءتهم دون اتصال.">
 <!ENTITY helper_triple_readerview_open_button "أضِف إلى العلامات">
+
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "مرحبًا بك مع &brandShortName;">
+<!ENTITY activity_stream_signin_description "اشرع الآن بمزامنة العلامات وكلمات السر وغيرها الكثير عبر حساب فَيَرفُكس.">
+<!ENTITY activity_stream_signup_button "اخرج">
+<!ENTITY activity_stream_signin_prompt "ألديك حساب أساسا؟">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "لِج.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "متصفّحك Firefox الجديد، قريبًا في 2020">
+<!ENTITY activity_stream_firefox_promo_description "قريبًا: أداء أفضل وحماية من التعقّب محسّنة، وغيرها من الميزات المصمّمة خصيصًا لك لتجد ما تحبّه في بحر الإنترنت، وتحفظه وتشاركه مع من تريد.">
+<!ENTITY activity_stream_firefox_promo_button "ألقِ نظرة سريعة">
 
 <!ENTITY activity_stream_topsites "المواقع الأكثر زيارة">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
@@ -927,8 +921,8 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "الصوت والڤديو">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "فوائد وخُدع لِ‍‍ &vendorShortName;">
-<!ENTITY updater_notification_channel "تحديثات التطبيق">
 <!ENTITY synced_tabs_notification_channel "الألسنة المُزامنة">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->
 <!ENTITY site_notifications_channel "تنبيهات المواقع">
+<!ENTITY crash_handler_notifications_channel "مبلغ انهيارات &brandShortName;">

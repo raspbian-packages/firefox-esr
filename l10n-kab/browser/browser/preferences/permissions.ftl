@@ -5,50 +5,66 @@
 permissions-window =
     .title = Tisuraf
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Tansa n usmel web
     .accesskey = d
+
 permissions-block =
     .label = Sewḥel
     .accesskey = S
+
 permissions-session =
     .label = Sireg i tɣimit
     .accesskey = S
+
 permissions-allow =
     .label = Sireg
     .accesskey = i
+
 permissions-site-name =
     .label = Asmel Web
+
 permissions-status =
     .label = Addad
+
 permissions-remove =
     .label = Kkes asmel web
     .accesskey = Z
+
 permissions-remove-all =
     .label = Kkes akk ismal web
     .accesskey = w
+
 permissions-button-cancel =
     .label = Sefsex
     .accesskey = S
+
 permissions-button-ok =
     .label = Sekles asnifel
     .accesskey = S
+
 permissions-autoplay-menu = S wudem amezwer i yismal meṛṛa:
+
 permissions-searchbox =
     .placeholder = Nadi asmel web
+
 permissions-capabilities-autoplay-allow =
     .label = Sireg ameslaw d uvidyu
 permissions-capabilities-autoplay-block =
     .label = Sewḥel imesli
 permissions-capabilities-autoplay-blockall =
     .label = Sewḥel imesli d uvidyu
+
 permissions-capabilities-allow =
     .label = Sireg
 permissions-capabilities-block =
     .label = Sewḥel
 permissions-capabilities-prompt =
     .label = Sutur yal tikkelt
+
 permissions-capabilities-listitem-allow =
     .value = Sireg
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Tisuraf - Asewḥel n ugbur
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Tsenseḍ asewḥel n ugbur i yesmal-agi.
+
+permissions-exceptions-etp-window =
+    .title = Tisuraf i ummesten yettwaseǧhed mgal aḍfaṛ
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Tsenseḍ ammesten ɣef yismal-a.
 
 ## Exceptions - Cookies
 
@@ -130,12 +151,22 @@ permissions-site-location-disable-label =
     .label = Sewḥel isuturen imaynuten n unekcum γer wadig
 permissions-site-location-disable-desc = Aya ad isewḥel asuter n tsirag n n unekcum γer wadig inek i yusmal ur nelli deg tebdart. asewḥel n unekcum γer wadig izmer ad iṛeẓ timahaltin n usmel.
 
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Iɣewwaṛen - Tisirag n tilawt tuhlist
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Ismal-agi web sutren-d anekcum ɣer yibenkan-ik n tilawt tuhlist. tzemreḍ ad tferneḍ anwa ismal ad ikecmen ɣer wyibenkan-ik n tilawt tulist. Tzemreḍ daɣen ad tesweḥleḍ asuter n unekcum amaynut ɣyibenkan-ik n tilawt tuhlist.
+permissions-site-xr-disable-label =
+    .label = Sewḥel asuter amaynut n unekcum ɣer yibenkan-ik n tilawt tuhlist
+permissions-site-xr-disable-desc = Aya ad isewḥel meṛṛa ismal ur d-yettwabedren ara nnig-a seg usuter n tsirag n unekcum ɣeryibenkan-ik n tilawt tuhlist. Asewḥel n unekcum ɣer yibenkan-ik n tilawt tuhlist izmer ad iṛeẓ tmahilin n usmel.
+
 ## Site Permissions - Camera
 
 permissions-site-camera-window =
     .title = Iɣewwaṛen - Tisirag n tkamirat
     .style = { permissions-window.style }
-permissions-site-camera-desc = Ismal-agi web sutren anekcum γer tkamiṛat inek. Tzemreḍ ad tferneḍ anwa ismal ad ikecmen γer tkamiṛat inek. Tzemreḍ daγen ad teswaḥleḍ anekcum γer tkamiṛat.
+permissions-site-camera-desc = Ismal-agi web sutren anekcum γer tkamiṛat-inek. Tzemreḍ ad tferneḍ anwa ismal ad ikecmen γer tkamiṛat-inek. Tzemreḍ daγen ad tesweḥleḍ anekcum γer tkamiṛat.
 permissions-site-camera-disable-label =
     .label = Sewḥel isuturen imaynuten n unekcum ɣer tkamiṛat
 permissions-site-camera-disable-desc = Aya ad isewḥel asuter n tsirag n unekcum γer tkamiṛat inek i yusmal ur nelli deg tebdart. asewḥel n unekcum γer tkamiṛat izmer ad iṛeẓ timahaltin n usmel.

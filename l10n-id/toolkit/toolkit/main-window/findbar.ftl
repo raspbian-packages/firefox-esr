@@ -9,12 +9,10 @@ findbar-next =
     .tooltiptext = Temukan hasil berikutnya
 findbar-previous =
     .tooltiptext = Temukan hasil sebelumnya
+
 findbar-find-button-close =
     .tooltiptext = Tutup bilah pencarian
-findbar-highlight-all =
-    .label = Sorot Semuanya
-    .accesskey = a
-    .tooltiptext = Sorot semua hasil yang ditemukan
+
 findbar-highlight-all2 =
     .label = Sorot Semua
     .accesskey =
@@ -23,10 +21,17 @@ findbar-highlight-all2 =
            *[other] t
         }
     .tooltiptext = Sorot semua frasa tersebut
+
 findbar-case-sensitive =
     .label = Cocokkan BESAR/kecil
     .accesskey = C
     .tooltiptext = Cari sesuai dengan BESAR/kecilnya huruf
+
+findbar-match-diacritics =
+    .label = Pencocokan Diakritik
+    .accesskey = i
+    .tooltiptext = Bedakan antara huruf dengan diakritik dengan huruf dasarnya (misalnya saat mencari “resume” maka teks “résumé” tidak akan dicocokkan)
+
 findbar-entire-word =
     .label = Seluruh Teks
     .accesskey = S

@@ -48,7 +48,7 @@
 <!ENTITY forwardButton.label          "Vpřed">
 <!ENTITY forwardButton.tooltip        "Přejde na následující stránku">
 <!ENTITY reloadButton.label           "Obnovit">
-<!ENTITY reloadButton.tooltip         "Aktualizuje načtenou stránku">
+<!ENTITY reloadButton.tooltip         "Obnoví načtenou stránku">
 <!ENTITY stopButton.label             "Zastavit">
 <!ENTITY stopButton.tooltip           "Zastaví načítání stránky">
 <!ENTITY searchButton.label           "Hledat">
@@ -59,6 +59,8 @@
 <!ENTITY printButton.tooltip          "Vytiskne tuto stránku">
 
 <!ENTITY throbber.tooltip             "Přejde na domovskou stránku aplikace &vendorShortName;">
+
+<!ENTITY throbber.tooltip2            "Přejde na domovskou stránku aplikace &brandShortName;">
 
 <!ENTITY locationBar.tooltip          "Vložení vyhledávací podmínky, klíčového slova nebo webové adresy">
 <!ENTITY locationBar.accesskey        "D">

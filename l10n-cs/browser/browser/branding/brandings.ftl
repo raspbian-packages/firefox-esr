@@ -9,13 +9,81 @@
 ## - Transliterated.
 ## - Translated.
 
--facebook-container-brand-name = Facebook Container
+-facebook-container-brand-name =
+    { $case ->
+       *[nom] Facebook Container
+        [gen] Facebook Containeru
+        [dat] Facebook Containeru
+        [acc] Facebook Container
+        [voc] Facebook Containere
+        [loc] Facebook Containeru
+        [ins] Facebook Containerem
+    }
     .gender = masculine
--lockwise-brand-name = Firefox Lockwise
+-lockwise-brand-name =
+    { $case ->
+       *[nom] Firefox Lockwise
+        [gen] Firefoxu Lockwise
+        [dat] Firefoxu Lockwise
+        [acc] Firefox Lockwise
+        [voc] Firefoxe Lockwise
+        [loc] Firefoxu Lockwise
+        [ins] Firefoxem Lockwise
+    }
     .gender = masculine
--monitor-brand-name = Firefox Monitor
+-lockwise-brand-short-name =
+    { $case ->
+       *[nom] Lockwise
+        [gen] Lockwisu
+        [dat] Lockwisu
+        [acc] Lockwise
+        [voc] Lockwise
+        [loc] Lockwisu
+        [ins] Lockwisem
+    }
     .gender = masculine
--pocket-brand-name = Pocket
+-monitor-brand-name =
+    { $case ->
+       *[nom] Firefox Monitor
+        [gen] Firefox Monitoru
+        [dat] Firefox Monitoru
+        [acc] Firefox Monitor
+        [voc] Firefox Monitore
+        [loc] Firefox Monitoru
+        [ins] Firefox Monitorem
+    }
     .gender = masculine
--send-brand-name = Firefox Send
+-monitor-brand-short-name =
+    { $case ->
+       *[nom] Monitor
+        [gen] Monitoru
+        [dat] Monitoru
+        [acc] Monitor
+        [voc] Monitore
+        [loc] Monitoru
+        [ins] Monitorem
+    }
     .gender = masculine
+-pocket-brand-name =
+    { $case ->
+       *[nom] Pocket
+        [gen] Pocketu
+        [dat] Pocketu
+        [acc] Pocket
+        [voc] Pocket
+        [loc] Pocketu
+        [ins] Pocketem
+    }
+    .gender = masculine
+-send-brand-name =
+    { $case ->
+       *[nom] Firefox Send
+        [gen] Firefoxu Send
+        [dat] Firefoxu Send
+        [acc] Firefox Send
+        [voc] Firefoxe Send
+        [loc] Firefoxu Send
+        [ins] Firefoxem Send
+    }
+    .gender = masculine
+-screenshots-brand-name = Firefox Screenshots

@@ -85,7 +85,7 @@ about-debugging-setup-intro = Configurez la méthode de connexion avec laquelle 
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
 about-debugging-setup-this-firefox = Utilisez <a>{ about-debugging-this-firefox-runtime-name }</a> pour déboguer des onglets, extensions et service workers sur cette version de { -brand-shorter-name }.
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
-about-debugging-setup-this-firefox2 = Utilisez <a>{ about-debugging-this-firefox-runtime-name }</a> pour déboguer des onglets, extensions et service workers sur cette version de { -brand-shorter-name }.
+about-debugging-setup-this-firefox2 = Utilisez <a>{ about-debugging-this-firefox-runtime-name }</a> pour déboguer des extensions et service workers sur cette version de { -brand-shorter-name }.
 # Title of the heading Connect section of the Setup page.
 about-debugging-setup-connect-heading = Connecter un appareil
 # USB section of the Setup page
@@ -175,7 +175,7 @@ about-debugging-runtime-profile-button2 = Profiler les performances
 # https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
 about-debugging-runtime-service-workers-not-compatible = La configuration de votre navigateur n’est pas compatible avec les Service Workers. <a>En savoir plus</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Le navigateur connecté dispose d’une ancienne version ({ $runtimeVersion }). La version minimale prise en charge est ({ $minVersion }). Il s’agit d’une configuration non prise en charge qui peut entraîner des problèmes avec les outils de développement. Veuillez mettre à jour le navigateur connecté. <a>Diagnostic de connexion</a>
@@ -186,8 +186,11 @@ about-debugging-browser-version-too-old = Le navigateur connecté dispose d’un
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 about-debugging-browser-version-too-old-67-debugger = Le panneau du débogueur risque de ne pas fonctionner avec le navigateur connecté. Veuillez utiliser Firefox { $runtimeVersion } si vous avez besoin d’utiliser le débogueur avec ce navigateur.
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = Cette version de Firefox ne peut pas déboguer Firefox pour Android (68). Nous vous recommandons d’installer Firefox pour Android Nightly sur votre téléphone pour les tests. <a>Plus de détails</a>
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -263,6 +266,15 @@ about-debugging-extension-id =
 about-debugging-worker-action-push = Push
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = Démarrer
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = Push
+    .disabledTitle = Le Service Worker Push est actuellement désactivé pour le mode multiprocessus de { -brand-shorter-name }
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = Start
+    .disabledTitle = Le démarrage du Service Worker est actuellement désactivé pour le mode multiprocessus de { -brand-shorter-name }
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = Désinscrire
 # Displayed for service workers in runtime pages that listen to Fetch events.
@@ -287,12 +299,23 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Service Push
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+    .title = L’inspection du Service Worker est actuellement désactivée pour le mode multiprocessus de { -brand-shorter-name }
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = L’onglet n’est pas complètement chargé et ne peut pas être inspecté
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Processus principal
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Processus principal pour le navigateur cible
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = Boîte à outils multiprocessus
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = Processus principal et processus de contenu pour le navigateur cible
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =
     .alt = Fermer le message

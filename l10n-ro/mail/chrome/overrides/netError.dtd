@@ -94,11 +94,10 @@
 <!ENTITY nssFailure2.longDesc2 "<ul> <li>Pagina pe care încerci să o vezi nu poate fi afișată deoarece autenticitatea datelor primite nu poate fi verificată.</li> <li>Te rugăm să contactezi proprietarii site-ului web pentru a-i informa despre această problemă.</li> </ul>">
 
 <!ENTITY nssBadCert.title "Conexiunea securizată a eșuat">
-<!ENTITY nssBadCert.longDesc2 "
-<ul>
-  <li>Aceasta ar putea fi din cauza unei probleme în configurația serverului sau
-ar putea să fie cineva care încearcă să uzurpe identitatea serverului.</li>
-  <li>Dacă te-ai conectat cu succes în trecut la acest server, eroarea poate fi
+<!ENTITY nssBadCert.longDesc2 "<ul>
+  <li>Ar putea fi din cauza unei probleme în configurația serverului sau
+cineva încearcă să uzurpe identitatea serverului.</li>
+  <li>Dacă înainte te conectai cu succes la acest server, poate fi o eroare
 temporară și poți încerca din nou mai târziu.</li>
 </ul>">
 
@@ -115,6 +114,9 @@ temporară și poți încerca din nou mai târziu.</li>
 <!ENTITY cspBlocked.title "Blocat de politica de securitate asupra conținutului">
 <!ENTITY cspBlocked.longDesc "<p>&brandShortName; a împiedicat această pagină să se încarce în acest mod deoarece pagina are o politică de securitate asupra conținutului ce nu permite asta.</p>">
 
+<!ENTITY xfoBlocked.title "Blocat de politica de opțiuni X-Frame">
+<!ENTITY xfoBlocked.longDesc "<p>&brandShortName; a împiedicat încărcarea paginii în acest context deoarece pagina are o politică de opțiuni X-Frame care nu o permite.</p>">
+
 <!ENTITY corruptedContentErrorv2.title "Eroare cauzată de conținut corupt">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>Conținutul pe care încerci să-l vezi nu poate fi afișat deoarece a fost detectată o eroare în transmisia de date.</p><ul><li>Te rugăm să contactezi proprietarii site-ului pentru a-i informa despre această problemă.</li></ul>">
 
@@ -127,7 +129,12 @@ contents of the <button> tags. It uses strings already defined above. The
 button is included here (instead of netError.xhtml) because it exposes
 functionality specific to thunderbird. -->
 
-<!ENTITY securityOverride.warningContent "<p>Nu ar trebui să adaugi o excepție dacă folosești o conexiune la internet în care nu ai încredere în totalitate sau dacă nu ești obișnuit să vezi un avertisment pentru acest server.</p>  <button id='getMeOutOfHereButton'>&securityOverride.getMeOutOfHereButton;</button> <button id='exceptionDialogButton'>&securityOverride.exceptionButtonLabel;</button>">
+<!ENTITY securityOverride.warningContent "
+<p>Nu trebuie să adaugi o excepție dacă folosești o conexiune la internet în care nu ai încredere completă sau dacă nu primești frecvent avertismente legate de acest server.</p>
+
+<button id='getMeOutOfHereButton'>&securityOverride.getMeOutOfHereButton;</button>
+<button id='exceptionDialogButton'>&securityOverride.exceptionButtonLabel;</button>
+">
 
 <!ENTITY remoteXUL.title "XUL la distanță">
 <!ENTITY remoteXUL.longDesc "<p><ul><li>Te rugăm să contactezi proprietarii site-ului web pentru a-i informa despre această problemă.</li></ul></p>">

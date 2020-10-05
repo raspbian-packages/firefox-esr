@@ -33,6 +33,7 @@ printpreview-of =
     .value = барлығы
 printpreview-custom-prompt =
     .value = Масштабты баптау…
+printpreview-custom-scale-prompt-title = Таңдауыңызша масштаб
 printpreview-page-setup =
     .label = Парақ баптаулары…
     .accesskey = П
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Соңғы парақ
+

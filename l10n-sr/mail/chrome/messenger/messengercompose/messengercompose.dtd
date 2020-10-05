@@ -70,7 +70,7 @@
 <!ENTITY cutCmd.label "Исеци">
 <!ENTITY cutCmd.key "X">
 <!ENTITY cutCmd.accesskey "с">
-<!ENTITY copyCmd.label "Ископирај">
+<!ENTITY copyCmd.label "Копирај">
 <!ENTITY copyCmd.key "C">
 <!ENTITY copyCmd.accesskey "о">
 <!ENTITY pasteCmd.label "Налепи">
@@ -89,14 +89,7 @@
 <!ENTITY reorderAttachmentsCmd.accesskey "г">
 <!ENTITY reorderAttachmentsCmd.key "x">
 <!ENTITY toggleAttachmentPaneCmd.label "Површ за прилоге">
-<!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.accesskey):
-     For better mnemonics, toggleAttachmentPaneCmd.accesskey should be the same
-     as attachments.accesskey. -->
 <!ENTITY toggleAttachmentPaneCmd.accesskey "а">
-<!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.key):
-     As Mac does not have access keys, this key defines a Mac-only, cross-l10n
-     shortcut key (Ctrl+M). Typically, this key should not be translated unless
-     otherwise required by specific needs of the localization. -->
 <!ENTITY toggleAttachmentPaneCmd.key "m">
 <!ENTITY selectAllCmd.label "Изабери све">
 <!ENTITY selectAllCmd.accesskey "з">
@@ -259,6 +252,11 @@
     Subject: rows. It should be larger than the largest Header label  -->
 <!ENTITY headersSpace.style "width: 9em;">
 <!ENTITY fromAddr.label "Шаље:">
+<!--LOCALIZATION NOTE headersSpaces.style is for aligning  the From:, To: and
+    Subject: rows. It should be larger than the largest Header label  -->
+<!ENTITY headersSpace2.style "width: 8em;">
+<!ENTITY extraRecipients.tooltip "Друге врсте поља за адресирање">
+<!ENTITY fromAddr2.label "Шаље">
 <!ENTITY fromAddr.accesskey "а">
 <!ENTITY toAddr.label "Прима:">
 <!ENTITY ccAddr.label "Коп:">
@@ -267,7 +265,14 @@
 <!ENTITY newsgroupsAddr.label "Новинска-група:">
 <!ENTITY followupAddr.label "Праћење-за:">
 <!ENTITY subject.label "Наслов:">
-<!ENTITY subject.accesskey "Н">
+<!ENTITY toAddr2.label "За">
+<!ENTITY ccAddr2.label "Коп">
+<!ENTITY bccAddr2.label "сКоп">
+<!ENTITY replyAddr2.label "Одговори на">
+<!ENTITY newsgroupsAddr2.label "Интересна група">
+<!ENTITY followupAddr2.label "Настави на">
+<!ENTITY subject2.label "Тема">
+<!ENTITY subject.accesskey "м">
 <!-- LOCALIZATION NOTE (attachments.accesskey) This access key character should
      be taken from the strings of attachmentCount in composeMsgs.properties.
      Please ensure that this access key is unique: Do not duplicate any other
@@ -278,7 +283,7 @@
 <!ENTITY attachmentBucketHeader.tooltip "Површ за прилоге">
 <!ENTITY attachmentBucketCloseButton.tooltip "Сакриј површ за прилоге">
 
-<!-- Format Toolbar, imported from editorAppShell.xul -->
+<!-- Format Toolbar, imported from editorAppShell.xhtml -->
 <!ENTITY SmileButton.tooltip "Убаците смајли">
 <!ENTITY smiley1Cmd.label "Смајли који се смешка">
 <!ENTITY smiley2Cmd.label "Намрштени смајли">

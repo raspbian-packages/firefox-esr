@@ -14,14 +14,21 @@ be replaced at runtime with the name of the server to which the user
 was trying to connect. -->
 <!ENTITY certerror.introPara1 "თქვენ &brandShortName; მოსთხოვეთ უსაფრთხოდ
 დაგაკავშიროთ სერვერთან <b>#1</b>, მაგრამ ჩვენ ვერ დავადასტურებთ, რომ კავშირი უსაფრთხოა.">
+
+<!-- Localization note (certerror.introPara1a) - The text content of the span
+tag will be replaced at runtime with the name of the server to which the user
+was trying to connect. -->
+<!ENTITY certerror.introPara1a "თქვენ მოითხოვეთ, რომ &brandShortName; დაუკავშირდეს
+უსაფრთხოდ მისამართს <span class='hostname'/>, მაგრამ ჩვენ ვერ ვადასტურებთ კავშირის
+დაცულობას.">
 <!ENTITY certerror.introPara2 "ჩვეულებრივ, როცა უსაფრთხო დაკავშირებას ცდილობთ,
 საიტები წარმოადგენენ სანდო საბუთს იმის დასამტკიცებლად, რომ მართებულ
 მისამართზე მოხვდით. თუმცა, ამ საიტის ნამდვილობის დამოწმება ვერ ხერხდება.">
 
 <!ENTITY certerror.whatShouldIDo.heading "რა უნდა მოვიმოქმედო?">
 <!ENTITY certerror.whatShouldIDo.content "თუ ამ საიტს ჩვეულებრივ
-უპრობლემოდ უკავშირდებოდით, ეს შეცდომა შესაძლოა ნიშნავდეს, რომ ვიღაც
-ცდილობს საიტის თავად გასაღება, ასეთ შემთხვევაში აღარ გააგრძელოთ.">
+უხარვეზოდ უკავშირდებოდით, ეს შეცდომა შესაძლოა ნიშნავდეს, რომ ვიღაც
+სხვა საიტად გასაღებას ცდილობდეს და სჯობს აღარ განაგრძოთ.">
 <!ENTITY certerror.whatShouldIDo.badStsCertExplanation "ეს საიტი იყენებს HTTP
 Strict Transport Security (HSTS) შეერთებას, რომ &brandShortName; მხოლოდ დაცულად
 დაუკავშირდეს. ამის გამო, შეუძლებელია მოცემული სერტიფიკატისთვის გამონაკლისის 
@@ -38,3 +45,6 @@ Strict Transport Security (HSTS) შეერთებას, რომ &brandSh
 <!ENTITY certerror.addException.label "გამონაკლისის დამატება…">
 
 <!ENTITY certerror.technical.heading "ტექნიკური დეტალები">
+
+<!ENTITY dnsNotFound.pageTitle "სერვერი ვერ მოიძებნა">
+<!ENTITY malformedURI.pageTitle "არასწორი URL">

@@ -5,49 +5,70 @@
 permissions-window =
     .title = Excepcions
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Adreça del site web
     .accesskey = d
+
 permissions-block =
     .label = Blocar
     .accesskey = B
+
 permissions-session =
     .label = Autorizar pendent la session
     .accesskey = s
+
 permissions-allow =
     .label = Autorizar
     .accesskey = A
+
 permissions-site-name =
     .label = Site web
+
 permissions-status =
     .label = Estat
+
 permissions-remove =
     .label = Suprimir lo site web
     .accesskey = S
+
 permissions-remove-all =
     .label = Suprimir totes los sites web
     .accesskey = e
+
 permissions-button-cancel =
     .label = Anullar
     .accesskey = A
+
 permissions-button-ok =
     .label = Enregistrar las modificacions
     .accesskey = E
+
+permissions-autoplay-menu = Per defaut per tose los sites web :
+
 permissions-searchbox =
     .placeholder = Recercar un site web
+
+permissions-capabilities-autoplay-allow =
+    .label = Autorizar l’àudio e la vidèo
+permissions-capabilities-autoplay-block =
+    .label = Blocar l’àudio
+permissions-capabilities-autoplay-blockall =
+    .label = Blocar l’àudio e la vidèo
+
 permissions-capabilities-allow =
     .label = Autorizar
 permissions-capabilities-block =
     .label = Blocar
 permissions-capabilities-prompt =
     .label = Totjorn demandar
+
 permissions-capabilities-listitem-allow =
     .value = Autorizar
 permissions-capabilities-listitem-block =
     .value = Blocar
-permissions-capabilities-listitem-allow-first-party =
-    .value = Domeni principal sol
 permissions-capabilities-listitem-allow-session =
     .value = Autorizar pendent la session
 
@@ -58,14 +79,15 @@ permissions-invalid-uri-label = Picatz un nom d'òste valid
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = Excepcions - Proteccion contra lo seguiment
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = Avètz desactivat la proteccion contra lo seguiment sus aqueles sites web.
 permissions-exceptions-content-blocking-window =
     .title = Excepcions - Blocatge de contengut
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Avètz desactivat lo blocatge de contengut per aquestes sites.
+
+permissions-exceptions-etp-window =
+    .title = Excepcions per la proteccion contra lo seguiment
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Avètz desactivat las proteccions per aquestes sites web.
 
 ## Exceptions - Cookies
 
@@ -102,6 +124,13 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = Podètz indicar quines sites web an totjorn o jamai l’autorizacion de lançar un mèdia amb son. Picatz las adreças dels sites que volètz gerir e causissètz Blocar o Autorizar.
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = Paramètres - Lectura automatica
+    .style = { permissions-window.style }
+permissions-site-autoplay-desc = Podètz gerir aquí los sites que seguisson pas vòstres paramètres de lectura automatica per defaut.
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -121,6 +150,16 @@ permissions-site-location-desc = Los sites seguents an demandat l’accès a vò
 permissions-site-location-disable-label =
     .label = Blocar las novèlas demandas d’accès a vòstra adreça
 permissions-site-location-disable-desc = Aquò empacha quin que siá site pas listat dessús de demandar vòstra adreça. Lo blocatge d’aquel accès pòt copar de foncionalitats de sites.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Paramètres - Permission de realitat virtuala
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Los sites seguents an demandat l’accès a vòstre periferic de realitat virtuala. Podètz causir quines sites pòdon i accedir. Podètz tanben blocar de novèlas demandas d’accès a vòstre periferic de realitat virtuala.
+permissions-site-xr-disable-label =
+    .label = Blocar las novèlas demandas d’accès a vòstre periferic de realitat virtuala
+permissions-site-xr-disable-desc = Aquò empacha quin que siá site pas listat dessús de demandar l’accès a vòstres periferics de realitat virtuala. Lo blocatge d’aquel accès pòt copar de foncionalitats de sites.
 
 ## Site Permissions - Camera
 

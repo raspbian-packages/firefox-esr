@@ -18,6 +18,13 @@ process-type-file = Τοπικό αρχείο
 # process used to isolate webpages that requested special
 # permission to allocate large amounts of memory
 process-type-weblargeallocation = Μεγάλη κατανομή
+# process used to isolate a webpage from other web pages
+# to improve security
+process-type-webisolated = Απομονωμένο διαδικτυακό περιεχόμενο
 # process used to communicate with the GPU for
 # graphics acceleration
 process-type-gpu = GPU
+# process used to perform network operations
+process-type-socket = Υποδοχή
+# process preallocated; may change to other types
+process-type-prealloc = Προκατανεμημένο

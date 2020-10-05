@@ -31,9 +31,19 @@ app-basics-title = Informasi Dasar Aplikasi
 app-basics-name = Nama
 app-basics-version = Versi
 app-basics-build-id = ID Build
+app-basics-distribution-id = ID Distribusi
 app-basics-update-channel = Kanal Pemutakhiran
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Pemutakhiran Direktori
+       *[other] Pemutakhiran Folder
+    }
 app-basics-update-history = Riwayat Pemutakhiran
 app-basics-show-update-history = Tampilkan Riwayat Pemutakhiran
+# Represents the path to the binary used to start the application.
+app-basics-binary = Biner Aplikasi
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Direktori Profil
@@ -49,7 +59,6 @@ app-basics-service-workers = Service Worker Terdaftar
 app-basics-profiles = Profil
 app-basics-launcher-process-status = Proses Peluncur
 app-basics-multi-process-support = Jendela Multiproses
-app-basics-process-count = Proses Konten Web
 app-basics-remote-processes-count = Proses Jarak Jauh
 app-basics-enterprise-policies = Kebijakan Perusahaan
 app-basics-location-service-key-google = Google Location Service Key
@@ -79,6 +88,10 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Log Keputusan
 graphics-crash-guards-title = Fitur Penjaga Kerusakan yang Dinonaktifkan
 graphics-workarounds-title = Solusi sementara
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = Protokol Jendela
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Lingkungan Desktop
 place-database-title = Basis Data Places
 place-database-integrity = Integritas
 place-database-verify-integrity = Verifikasikan Integritas
@@ -103,6 +116,19 @@ sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumen
 safe-mode-title = Coba Mode Aman
 restart-in-safe-mode-label = Mulai Ulang dengan Pengaya Dinonaktifkan…
+clear-startup-cache-title = Coba bersihkan tembolok permulaan
+clear-startup-cache-label = Hapus tembolok permulaan...
+startup-cache-dialog-title = Hapus tembolok permulaan
+startup-cache-dialog-body = Mulai ulang { -brand-short-name } untuk menghapus tembolok permulaan. Ini tidak adakan mengubah pengaturan Anda atau menghapus ekstensi yang Anda tambahkan ke { -brand-short-name }.
+restart-button-label = Mulai Ulang
+
+## Media titles
+
+audio-backend = Backend Audio
+max-audio-channels = Kanal Maksimal
+channel-layout = Tata Letak Saluran Pilihan
+sample-rate = Tingkat Sampel Pilihan
+roundtrip-latency = Roundtrip latency (standar deviasi)
 media-title = Media
 media-output-devices-title = Peranti Keluaran
 media-input-devices-title = Peranti Masukan
@@ -115,6 +141,12 @@ media-device-format = Format
 media-device-channels = Kanal
 media-device-rate = Nilai
 media-device-latency = Latensi
+media-capabilities-title = Kemampuan Media
+# List all the entries of the database.
+media-capabilities-enumerate = Daftar basis data
+
+##
+
 intl-title = Pelokalan dan Internasional
 intl-app-title = Setelan Aplikasi
 intl-locales-requested = Bahasa yang Diminta
@@ -124,6 +156,22 @@ intl-locales-default = Bahasa Baku
 intl-os-title = Sistem Operasi
 intl-os-prefs-system-locales = Bahasa Sistem
 intl-regional-prefs = Pengaturan Regional
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Debugging Jarak Jauh (Protokol Chromium)
+remote-debugging-accepting-connections = Menerima Koneksi
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days = Laporan Kerusakan dalam { $days } Hari Terakhir
@@ -176,6 +224,7 @@ gpu-device-id = ID Perangkat
 gpu-subsys-id = ID Subsistem
 gpu-drivers = Driver
 gpu-ram = RAM
+gpu-driver-vendor = Vendor Driver
 gpu-driver-version = Versi Penggerak
 gpu-driver-date = Tanggal Penggerak
 gpu-active = Aktif
@@ -199,7 +248,9 @@ unknown-failure = Dicekal: kode kegagalan { $failureCode }
 d3d11layers-crash-guard = Compositor D3D11
 d3d11video-crash-guard = Pendekode Video D3D11
 d3d9video-crash-buard = Pendekode Video D3D9
+d3d9video-crash-guard = Pendekode Video D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX Video Decoder
 reset-on-next-restart = Setel Ulang pada Mulai Ulang Berikutnya
 gpu-process-kill-button = Matikan Proses GPU
 gpu-device-reset = Reset Perangkat
@@ -208,12 +259,7 @@ uses-tiling = Gunakan Tiling
 content-uses-tiling = Gunakan Tiling (Konten)
 off-main-thread-paint-enabled = Off Main Thread Painting Diaktifkan
 off-main-thread-paint-worker-count = Jumlah Off Main Thread Painting Worker
-low-end-machine = Mesin yang berkinerja kurang telah terdeteksi
 target-frame-rate = Tingkat Target Bingkai
-audio-backend = Backend Audio
-max-audio-channels = Kanal Maksimal
-channel-layout = Tata Letak Saluran Pilihan
-sample-rate = Tingkat Sampel Pilihan
 min-lib-versions = Versi minimum diharapkan
 loaded-lib-versions = Versi yang digunakan
 has-seccomp-bpf = Seccomp-BPF (Pemfilteran Pemanggilan Sistem - System Call Filtering)
@@ -228,6 +274,11 @@ sandbox-proc-type-content = konten
 sandbox-proc-type-file = konten berkas
 sandbox-proc-type-media-plugin = plugin media
 sandbox-proc-type-data-decoder = dekoder data
+startup-cache-title = Tembolok Permulaan
+startup-cache-disk-cache-path = Jalur Tembolok Disk
+startup-cache-ignore-disk-cache = Abaikan Tembolok Disk
+startup-cache-found-disk-cache-on-init = Tembolok Disk di Init ditemukan
+startup-cache-wrote-to-disk-cache = Menulis ke Tembolok Disk
 launcher-process-status-0 = Diaktifkan
 launcher-process-status-1 = Dinonaktifkan karena kegagalan
 launcher-process-status-2 = Dinonaktifkan secara paksa
@@ -251,6 +302,7 @@ touch-enabled = input sentuh diaktifkan
 drag-enabled = penyeretan bilah penggulung aktif
 keyboard-enabled = papan tik diaktifkan
 autoscroll-enabled = gulir otomatis diaktifkan
+zooming-enabled = pinch-zoom halus diaktifkan
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

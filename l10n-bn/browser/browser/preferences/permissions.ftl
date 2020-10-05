@@ -5,49 +5,70 @@
 permissions-window =
     .title = ব্যতিক্রম
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = ওয়েবসাইটের ঠিকানা
     .accesskey = d
+
 permissions-block =
     .label = প্রতিরোধ করা হবে
     .accesskey = B
+
 permissions-session =
     .label = সেশনের জন্য অনুমোদন করা হবে
     .accesskey = S
+
 permissions-allow =
     .label = অনুমোদন
     .accesskey = A
+
 permissions-site-name =
     .label = ওয়েবসাইট
+
 permissions-status =
     .label = অবস্থা
+
 permissions-remove =
     .label = ওয়েবসাইট অপসারণ
     .accesskey = R
+
 permissions-remove-all =
     .label = সব ওয়েবসাইট অপসারণ কর
     .accesskey = e
+
 permissions-button-cancel =
     .label = বাতিল
     .accesskey = C
+
 permissions-button-ok =
     .label = পরিবর্তন সংরক্ষণ
     .accesskey = S
+
+permissions-autoplay-menu = সব ওয়েবসাইটের জন্য ডিফল্ট:
+
 permissions-searchbox =
     .placeholder = ওয়েবসাইট খুঁজুন
+
+permissions-capabilities-autoplay-allow =
+    .label = অডিও ও ভিডিও অনুমোদন দিন
+permissions-capabilities-autoplay-block =
+    .label = অডিও ব্লক
+permissions-capabilities-autoplay-blockall =
+    .label = অডিও ও ভিডিও ব্লক
+
 permissions-capabilities-allow =
     .label = অনুমোদন করা হবে
 permissions-capabilities-block =
     .label = প্রতিরোধ করা হবে
 permissions-capabilities-prompt =
     .label = সর্বদা জিজ্ঞাসা কর
+
 permissions-capabilities-listitem-allow =
     .value = অনুমোদন করা হবে
 permissions-capabilities-listitem-block =
     .value = প্রতিরোধ করা হবে
-permissions-capabilities-listitem-allow-first-party =
-    .value = শুধুমাত্র প্রথম পক্ষকে অনুমোদন করা হবে
 permissions-capabilities-listitem-allow-session =
     .value = সেশনের জন্য অনুমোদন করা হবে
 
@@ -58,14 +79,15 @@ permissions-invalid-uri-label = অনুগ্রহ করে কার্য�
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-tracking-protection-window =
-    .title = ব্যতিক্রমসমূহ - ট্রাকিং সুরক্ষা
-    .style = { permissions-window.style }
-permissions-exceptions-tracking-protection-desc = এই সমস্ত ওয়েবসাইটে আপনি ট্র্যাকিং সুরক্ষা নিষ্ক্রিয় করে রেখেছেন।
 permissions-exceptions-content-blocking-window =
     .title = ব্যতিক্রম - কন্টেন্ট ব্লকিং
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = আপনি এই ওয়েবসাইটগুলোতে কন্টেন্ট ব্লকিং নিস্ক্রিয় করেছেন।
+
+permissions-exceptions-etp-window =
+    .title = বর্ধিত ট্র্যাকিং সুরক্ষার জন্য ব্যতিক্রম
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = আপনি এই ওয়েবসাইটে সুরক্ষা বন্ধ করেছেন।
 
 ## Exceptions - Cookies
 
@@ -102,6 +124,13 @@ permissions-exceptions-autoplay-media-window2 =
     .style = { permissions-window.style }
 permissions-exceptions-autoplay-media-desc2 = কোন ওয়েবসাইট সবসময় মাল্টিমিডিয়া সাউন্ড স্বয়ংচালনা করবে অথবা কোনটি কখনই করবে না তা আপনি নির্দিষ্ট করতে পারেন। ওয়েব সাইটের সঠিক ঠিকানা টাইপ করুন এবং তারপরে ব্লক করুন, সেশনের জন্য অনুমতি দিন, বা অনুমতি দিন।
 
+## Site Permissions - Autoplay
+
+permissions-site-autoplay-window =
+    .title = সেটিংস - অটোপ্লে
+    .style = { permissions-window.style }
+permissions-site-autoplay-desc = আপনার ডিফল্ট অটোপ্লে সেটিংস অনুসরণ করে না এমন সাইট আপনি এখানে পরিচালনা করতে পারেন।
+
 ## Site Permissions - Notifications
 
 permissions-site-notification-window =
@@ -121,6 +150,12 @@ permissions-site-location-desc = নিচের ওয়েবসাইট সম
 permissions-site-location-disable-label =
     .label = আপনার অবস্থানের তথ্য জানার নতুন অনুরোধ ব্লক করুন
 permissions-site-location-disable-desc = এতে করে, উপরের তালিকায় না থাকা ওয়েবসাইট, আপনার অবস্থান জানতে চেয়ে অনুরোধ করতে পারবে না। যদিও অবস্থান জানতে না দিলে ওয়েবসাইটের কিছু বৈশিষ্ট্যে ব্যাঘাত ঘটতে পারে।
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = সেটিংস - ভার্চুয়াল রিয়েলিটির অনুমতি
+    .style = { permissions-window.style }
 
 ## Site Permissions - Camera
 

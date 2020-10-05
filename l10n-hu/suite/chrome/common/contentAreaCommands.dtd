@@ -53,6 +53,8 @@
 <!ENTITY reloadImageCmd.accesskey     "j">
 <!ENTITY viewImageCmd.label           "Kép megjelenítése">
 <!ENTITY viewImageCmd.accesskey       "g">
+<!ENTITY viewImageInfoCmd.label       "Képadatok megjelenítése">
+<!ENTITY viewImageInfoCmd.accesskey   "K">
 <!ENTITY viewVideoCmd.label           "Videó megtekintése">
 <!ENTITY viewVideoCmd.accesskey       "m">
 <!ENTITY viewBGImageCmd.label         "Háttérkép megjelenítése">
@@ -153,6 +155,16 @@ items are mutually exclusive. -->
 <!ENTITY spellDictionaries.accesskey    "N">
 <!ENTITY spellAddDictionaries.label     "További szótárak letöltése…">
 <!ENTITY spellAddDictionaries.accesskey "T">
+
+<!ENTITY fillLoginMenu.label          "Bejelentkezés kitöltése">
+<!ENTITY fillLoginMenu.accesskey      "B">
+<!ENTITY fillPasswordMenu.label       "Jelszó kitöltése">
+<!ENTITY fillPasswordMenu.accesskey   "J">
+<!ENTITY fillUsernameMenu.label       "Felhasználónév kitöltése">
+<!ENTITY fillUsernameMenu.accesskey   "F">
+<!ENTITY noLoginSuggestions.label     "(Nincs bejelentkezési javaslat)">
+<!ENTITY viewSavedLogins.label        "Mentett bejelentkezések megjelenítése">
+
 <!-- Developer Tools -->
 <!ENTITY devtoolsInspect.label          "Elem vizsgálata">
 <!ENTITY devtoolsInspect.accesskey      "v">

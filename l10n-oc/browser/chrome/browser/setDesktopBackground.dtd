@@ -4,12 +4,18 @@
 
 <!ENTITY position.label             "Posicion :">
 <!ENTITY tile.label                 "Mosaïca">
-<!ENTITY center.label               "Centrat">
+<!ENTITY center.label               "Centrar">
 <!ENTITY stretch.label              "Estirar">
 <!ENTITY fill.label                 "Emplenar">
 <!ENTITY fit.label                  "Ajustar">
-<!ENTITY preview.label              "Apercebut">
+<!-- LOCALIZATION NOTE (span.label): This refers to the wallpaper "spanning"
+                       multiple monitors when the user has more than one. Only
+                       some of the entire image will be on each monitor.
+                       This should ideally match the wording in Windows' own
+                       Desktop Background settings page. -->
+<!ENTITY span.label                 "Espandir">
 <!ENTITY color.label                "Color :">
-<!ENTITY setDesktopBackground.title "Definir lo fons del burèu">
+<!ENTITY setDesktopBackground.title "Definir lo fons d‘ecran">
 <!ENTITY openDesktopPrefs.label     "Dobrir las preferéncias del burèu">
 <!ENTITY closeWindow.key            "w">
+<!ENTITY previewUnavailable         "Apercebut indisponible">

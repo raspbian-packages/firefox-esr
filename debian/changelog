@@ -1,4 +1,4 @@
-firefox-esr (68.11.0esr-1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (78.3.0esr-2+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -12,140 +12,347 @@ firefox-esr (68.11.0esr-1+rpi1) bullseye-staging; urgency=medium
   * Disable webrtc, it seems to fail to build on raspbian.
   * Try to disable Neon
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 13 Aug 2020 18:03:38 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 28 Sep 2020 10:24:13 +0000
 
-firefox-esr (68.11.0esr-1) unstable; urgency=medium
+firefox-esr (78.3.0esr-2) unstable; urgency=medium
+
+  * third-party/rust/authenticator/src/linux/ioctl_mips*.rs: Add missing
+    bindings for mips*.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 23 Sep 2020 12:53:29 +0900
+
+firefox-esr (78.3.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-43, also known as:
+    CVE-2020-15677, CVE-2020-15676, CVE-2020-15678, CVE-2020-15673.
+
+  * js/src/jit/mips-shared/CodeGenerator-mips-shared.cpp: Add
+    CodeGenerator::visitWasmRegisterResult function. bz#1649655.
+  * js/src/jit/none/MacroAssembler-none.h: Bump CodeAlignment to 8.
+    bz#1666646.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 23 Sep 2020 07:25:27 +0900
+
+firefox-esr (78.2.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-32 and mfsa2020-38, also known as:
+    CVE-2020-15652, CVE-2020-6514, CVE-2020-15655, CVE-2020-15653,
+    CVE-2020-6463, CVE-2020-15656, CVE-2020-15658, CVE-2020-15654,
+    CVE-2020-15659, CVE-2020-15664, CVE-2020-15670.
+
+ -- Mike Hommey <glandium@debian.org>  Thu, 03 Sep 2020 09:30:52 +0900
+
+firefox (78.0.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fix for mfsa2020-28.
+
+ -- Mike Hommey <glandium@debian.org>  Fri, 10 Jul 2020 09:37:04 +0900
+
+firefox (78.0.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+  * debian/rules:
+    - Replace --disable-ion with --disable-jit.
+    - Don't generated the ICU data file for big-endian manually.
+
+  * js/src/jit/mips-shared/MacroAssembler-mips-shared-inl.h,
+    js/src/jit/mips64/MacroAssembler-mips64-inl.h: Add branchTestSymbol
+    and fallibleUnboxPtr. bz#1642265.
+  * config/external/icu/data/*icudata*, config/external/icu/data/moz.build,
+    js/moz.configure: Unify the includion of the ICU data file. bz#1650299.
+  * config/external/icu/common/moz.build,
+    config/external/icu/common/sources.mozbuild,
+    config/external/icu/data/convert_icudata.py,
+    config/external/icu/data/moz.build,
+    config/external/icu/defs.mozbuild,
+    config/external/icu/i18n/moz.build,
+    config/external/icu/i18n/sources.mozbuild,
+    config/external/icu/icupkg/moz.build,
+    config/external/icu/icupkg/sources.mozbuild,
+    config/external/icu/moz.build,
+    config/external/icu/toolutil/moz.build,
+    config/external/icu/toolutil/sources.mozbuild,
+    config/recurse.mk,
+    intl/icu_sources_data.py: Automatically convert the little-endian ICU data
+    file for big-endian builds.
+
+ -- Mike Hommey <glandium@debian.org>  Fri, 03 Jul 2020 17:07:38 +0900
+
+firefox (78.0-1) unstable; urgency=medium
 
   * New upstream release
-  * Fixes for mfsa2020-31, also known as:
-    CVE-2020-15652, CVE-2020-6514, CVE-2020-6463, CVE-2020-15659.
+  * Fixes for mfsa2020-24, also known as:
+    CVE-2020-12415, CVE-2020-12416, CVE-2020-12417, CVE-2020-12418,
+    CVE-2020-12419, CVE-2020-12420, CVE-2020-12421, CVE-2020-12422,
+    CVE-2020-12424, CVE-2020-12425, CVE-2020-12426.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 29 Jul 2020 07:23:16 +0900
+  * debian/control*: Bump nss build dependency.
+  * debian/control*, debian/rules: Remove build dependency on python2.7.
+  * debian/browser.mozconfig.in: Remove obsolete configure options.
 
-firefox-esr (68.10.0esr-1) unstable; urgency=medium
+  * build/virtualenv_packages.txt: Don't install enum and enum34 virtualenv
+    packages in python3 virtualenvs. bz#1632429.
 
-  * New upstream release
-  * Fixes for mfsa2020-25, also known as:
-    CVE-2020-12417, CVE-2020-12418, CVE-2020-12419, CVE-2020-12420,
-    CVE-2020-12421.
+ -- Mike Hommey <glandium@debian.org>  Wed, 01 Jul 2020 10:14:06 +0900
 
- -- Mike Hommey <glandium@debian.org>  Wed, 01 Jul 2020 09:08:58 +0900
-
-firefox-esr (68.9.0esr-1) unstable; urgency=medium
-
-  * New upstream release
-  * Fixes for mfsa2020-21, also known as:
-    CVE-2020-12399, CVE-2020-12405, CVE-2020-12406, CVE-2020-12410.
-
-  * debian/rules: Force using old PKCS11 API when building against newer NSS
-    releases. Closes: #961762.
-  * debian/control*: Bump nss build dependencies.
-
- -- Mike Hommey <glandium@debian.org>  Wed, 03 Jun 2020 06:11:28 +0900
-
-firefox-esr (68.8.0esr-1) unstable; urgency=medium
+firefox (77.0-1) unstable; urgency=medium
 
   * New upstream release
-  * Fixes for mfsa2020-17, also known as:
-    CVE-2020-12387, CVE-2020-6831, CVE-2020-12392, CVE-2020-12395.
+  * Fixes for mfsa2020-20, also known as:
+    CVE-2020-12399, CVE-2020-12405, CVE-2020-12406, CVE-2020-12407,
+    CVE-2020-12408, CVE-2020-12409, CVE-2020-12410, CVE-2020-12411.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 06 May 2020 05:29:30 +0900
+  * debian/l10n/gen, debian/l10n_revs.py, debian/latest_nightly.py,
+    debian/rules, debian/symbols.mk: Convert to python 3.
+  * debian/control*: Bump nss and cbindgen build dependencies.
+  * debian/rules:
+    - Revert PKCS11 API change from 76.0.1-1 because the new API is
+      now explicitly used by upstream code.
+    - Stop passing -fno-schedule-insns2 -fno-lifetime-dse and
+      -fno-delete-null-pointer-checks to GCC.
 
-firefox-esr (68.7.0esr-1) unstable; urgency=medium
+ -- Mike Hommey <glandium@debian.org>  Wed, 03 Jun 2020 07:53:04 +0900
+
+firefox (76.0.1-2) unstable; urgency=medium
+
+  * debian/browser.mozconfig.in: Allow addon sideload. Closes: #960084.
+  * debian/control*: Bump nasm build dependency to 2.14.
+
+ -- Mike Hommey <glandium@debian.org>  Fri, 15 May 2020 09:10:36 +0900
+
+firefox (76.0.1-1) unstable; urgency=medium
 
   * New upstream release
-  * Fixes for mfsa2020-13, also known as:
-    CVE-2020-6821, CVE-2020-6822, CVE-2020-6825.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 08 Apr 2020 07:54:16 +0900
+  * debian/rules: Force using old PKCS11 API when building against newer
+    NSS releases. Closes: #960012.
 
-firefox-esr (68.6.1esr-1) unstable; urgency=medium
+ -- Mike Hommey <glandium@debian.org>  Wed, 13 May 2020 09:09:57 +0900
+
+firefox (76.0-2) unstable; urgency=medium
+
+  * Cargo.lock, third_party/rust/typenum/*: Upgrade typename to 1.12.0.
+    bz#1635671. Fixes FTBFS on i386.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 06 May 2020 14:27:30 +0900
+
+firefox (76.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Fixes for mfsa2020-16, also known as:
+    CVE-2020-12387, CVE-2020-6831, CVE-2020-12390, CVE-2020-12391,
+    CVE-2020-12392, CVE-2020-12394, CVE-2020-12395, CVE-2020-12396.
+
+  * debian/control*: Bump nss build dependency.
+  * debian/browser.install.in: Don't install blocklist.xml, it's not there
+    anymore.
+
+  * config/recurse.mk: Don't depend on in-tree NSS/NSPR when building against
+    system NSS/NSPR. bz#1634926.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 06 May 2020 05:41:56 +0900
+
+firefox (75.0-2) unstable; urgency=medium
+
+  * build/moz.configure/util.configure: In configure, pass extra compiler
+    flags after source path. Fixes FTBFS with --with-system-libvpx with
+    gcc-9 >= 9-20190125-2.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 19 Apr 2020 09:03:28 +0900
+
+firefox (75.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Fixes for mfsa2020-12, also known as:
+    CVE-2020-6821, CVE-2020-6822, CVE-2020-6823, CVE-2020-6824,
+    CVE-2020-6825, CVE-2020-6826.
+
+  * debian/control*: Bump nss, rustc, cargo, cbindgen and nodejs build
+    dependencies.
+  * debian/control*, debian/rules: Build against libvpx >= 1.8. We used
+    to build-conflicts with that version, but that's not necessary now
+    that upstream needs that version.
+  * debian/browser.install.in: Don't install .chk files, they aren't
+    produced anymore.
+  * debian/browser.install.in, debian/browser.mozconfig.in, debian/control*,
+    debian/rules: Don't build against system sqlite. This is not supported
+    anymore.
+
+  * python/mozbuild/mozbuild/nodeutil.py: Allow to build with older
+    versions of nodejs 10.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 08 Apr 2020 09:41:38 +0900
+
+firefox (74.0.1-1) unstable; urgency=medium
 
   * New upstream release
   * Fixes for mfsa2020-11, also known as: CVE-2020-6819, CVE-2020-6820.
 
- -- Mike Hommey <glandium@debian.org>  Sat, 04 Apr 2020 06:41:17 +0900
+ -- Mike Hommey <glandium@debian.org>  Sat, 04 Apr 2020 06:42:37 +0900
 
-firefox-esr (68.6.0esr-1) unstable; urgency=medium
+firefox (74.0-1) unstable; urgency=medium
 
-  * New upstream release
-  * Fixes for mfsa2020-09, also known as:
-    CVE-2020-6805, CVE-2020-6806, CVE-2020-6807, CVE-2020-6811,
-    CVE-2019-20503, CVE-2020-6812, CVE-2020-6814.
+  * New upstream release.
+  * Fixes for mfsa2020-08, also known as:
+    CVE-2020-6805, CVE-2020-6806, CVE-2020-6807, CVE-2020-6808,
+    CVE-2020-6809, CVE-2020-6810, CVE-2020-6811, CVE-2019-20503,
+    CVE-2020-6812, CVE-2020-6813, CVE-2020-6814, CVE-2020-6815.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 11 Mar 2020 06:59:57 +0900
+  * debian/rules:
+    - Use the -o flag to redirect preprocessor output rather than shell
+      redirection to work around bz#1621465.
+    - Remove obj-*/.mozbuild on clean.
+  * debian/control*: Bump nspr, nss, sqlite and cbindgen build dependencies.
 
-firefox-esr (68.5.0esr-1) unstable; urgency=medium
+  * config/mozunit/mozunit/mozunit.py,
+    python/mozbuild/mozbuild/action/langpack_manifest.py,
+    python/mozbuild/mozbuild/jar.py, python/mozbuild/mozbuild/preprocessor.py,
+    python/mozbuild/mozbuild/test/backend/test_build.py: Use io.open() rather
+    than open() in mozbuild/preprocessor.py. bz#1613263.
+  * dom/canvas/ClientWebGLContext.h, dom/canvas/WebGLContext.h: Fix build
+    errors with -Werror=format-security with GCC.
 
-  * New upstream release
-  * Fixes for mfsa2020-06, also known as:
-    CVE-2020-6796, CVE-2020-6798, CVE-2020-6800.
+ -- Mike Hommey <glandium@debian.org>  Wed, 11 Mar 2020 12:15:37 +0900
 
- -- Mike Hommey <glandium@debian.org>  Wed, 12 Feb 2020 06:50:33 +0900
-
-firefox-esr (68.4.2esr-1) unstable; urgency=medium
+firefox (73.0.1-1) unstable; urgency=medium
 
   * New upstream release.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 22 Jan 2020 12:02:13 +0900
+  * gfx/2d/SwizzleNEON.cpp: Fix NEON compile error with gcc and RGB unpacking.
+    bz#1610814.
 
-firefox-esr (68.4.1esr-1) unstable; urgency=medium
+ -- Mike Hommey <glandium@debian.org>  Thu, 20 Feb 2020 09:07:58 +0900
+
+firefox (73.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-05, also known as:
+    CVE-2020-6796, CVE-2020-6798, CVE-2020-6800, CVE-2020-6801.
+
+  * debian/control*: Bump nss, rustc, cargo and cbindgen build dependencies.
+  * debian/browser.install.in: Do not install now removed chrome.manifest
+    and libnssdbm3.* files.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 12 Feb 2020 06:57:23 +0900
+
+firefox (72.0.2-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 22 Jan 2020 12:06:25 +0900
+
+firefox (72.0.1-1) unstable; urgency=medium
 
   * New upstream release.
   * Fix for mfsa2020-03, also known as CVE-2019-17026.
 
- -- Mike Hommey <glandium@debian.org>  Thu, 09 Jan 2020 06:40:28 +0900
+ -- Mike Hommey <glandium@debian.org>  Thu, 09 Jan 2020 06:46:44 +0900
 
-firefox-esr (68.4.0esr-1) unstable; urgency=medium
+firefox (72.0-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2020-02, also known as:
-    CVE-2019-17016, CVE-2019-17017, CVE-2019-17022, CVE-2019-17024.
+  * Fixes for mfsa2020-01, also known as:
+    CVE-2019-17016, CVE-2019-17017, CVE-2019-17020, CVE-2019-17022,
+    CVE-2019-17023, CVE-2019-17024, CVE-2019-17025.
 
-  * debian/rules: Don't build with --compress-debug-sections on jessie.
-  * debian/rules: Use sourcestamp.txt for MOZ_BUILD_DATE. Closes: #946193.
+  * debian/rules:
+    - Don't build with --compress-debug-sections on jessie.
+    - Use sourcestamp.txt for MOZ_BUILD_DATE.
+    - Avoid running dh_update_autotools_config. We're dealing with this
+      manually and we don't want config.* files being touched under
+      third_party/rust.
+  * debian/control*:
+    - Bump nspr, nss and sqlite build dependencies.
+    - Add missing dependency on libdrm-dev.
+  * debian/browser.mozconfig.in: Explicitly build with wayland support
+    enabled.
 
-  * sourcestamp.txt: Fill with the missing info.
   * intl/icu_sources_data.py: Don't build ICU in parallel.
   * gfx/skia/skia/third_party/skcms/src/Transform_inl.h: Work around older
-    GCC ICEs on arm.
+    GCC ICE on arm.
     (Thanks Emilio Pozuelo Monfort)
 
  -- Mike Hommey <glandium@debian.org>  Wed, 08 Jan 2020 08:54:04 +0900
 
-firefox-esr (68.3.0esr-1) unstable; urgency=medium
+firefox (71.0-2) unstable; urgency=medium
+
+  * dom/indexedDB/ActorsParent.cpp: Work around lack of support for
+    http://eel.is/c++draft/class.temporary#6.7 in compilers. bz#1601707
+    Closes: #946249, #946547.
+  * layout/generic/WritingModes.h, servo/ports/geckolib/cbindgen.toml:
+    Fix build with newer cbindgen. bz#1602358.
+
+ -- Mike Hommey <glandium@debian.org>  Thu, 12 Dec 2019 09:38:33 +0900
+
+firefox (71.0-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2019-37, also known as:
-    CVE-2019-17008, CVE-2019-11745, CVE-2019-17010, CVE-2019-17005,
-    CVE-2019-17011, CVE-2019-17012.
+  * Fixes for mfsa2019-36, also known as:
+    CVE-2019-11756, CVE-2019-17008, CVE-2019-11745, CVE-2019-17014,
+    CVE-2019-17010, CVE-2019-17005, CVE-2019-17011, CVE-2019-17012,
+    CVE-2019-17013.
 
-  * debian/control*: Bump nss build dependencies.
+  * debian/l10n/gen: Add support for ca-valencia.
+  * debian/control*: Bump nspr, nss, rustc and cargo build dependencies.
   * debian/rules, debian/control.in:
     - Build with nodejs-mozilla on jessie and stretch.
     - Build with nasm-mozilla on jessie and stretch.
     - Don't build with system libvpx on stretch.
     (Thanks Emilio Pozuelo Monfort)
 
- -- Mike Hommey <glandium@debian.org>  Wed, 04 Dec 2019 08:56:07 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 04 Dec 2019 10:09:38 +0900
 
-firefox-esr (68.2.0esr-1) unstable; urgency=medium
+firefox (70.0.1-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2019-33, also known as:
-    CVE-2019-15903, CVE-2019-11757, CVE-2019-11758, CVE-2019-11759,
+
+ -- Mike Hommey <glandium@debian.org>  Sat, 09 Nov 2019 07:53:49 +0900
+
+firefox (70.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-34, also known as:
+    CVE-2018-6156, CVE-2019-15903, CVE-2019-11757, CVE-2019-11759,
     CVE-2019-11760, CVE-2019-11761, CVE-2019-11762, CVE-2019-11763,
+    CVE-2019-11765, CVE-2019-17000, CVE-2019-17001, CVE-2019-17002,
     CVE-2019-11764.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 23 Oct 2019 06:50:01 +0900
+  * debian/control*: Bump nss, sqlite, rustc, cargo, and cbindgen build
+    dependencies.
 
-firefox-esr (68.1.0esr-1) unstable; urgency=medium
+ -- Mike Hommey <glandium@debian.org>  Wed, 23 Oct 2019 07:30:42 +0900
+
+firefox (69.0.2-1) unstable; urgency=medium
 
   * New upstream release.
-  * Fixes for mfsa2019-26, also known as
+
+ -- Mike Hommey <glandium@debian.org>  Tue, 08 Oct 2019 08:06:31 +0900
+
+firefox (69.0.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fix for mfsa2019-31, also known as CVE-2019-11754.
+
+  * debian/control*:
+    - Bump nss, rustc, cargo and cbindgen build dependencies. Closes: #939412.
+    - Remove build dependency versions where Debian has had the right version
+      since Jessie.
+  * debian/source/lintian-overrides: Adjust DotZlib.chm path.
+
+ -- Mike Hommey <glandium@debian.org>  Tue, 24 Sep 2019 06:39:36 +0900
+
+firefox (69.0-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2019-25, also known as:
     CVE-2019-11746, CVE-2019-11744, CVE-2019-11742, CVE-2019-11752,
-    CVE-2019-9812, CVE-2019-11743, CVE-2019-11748, CVE-2019-11749,
-    CVE-2019-11750, CVE-2019-11738, CVE-2019-11747, CVE-2019-11735,
+    CVE-2019-9812, CVE-2019-11741, CVE-2019-11743, CVE-2019-11748,
+    CVE-2019-11749, CVE-2019-5849, CVE-2019-11750, CVE-2019-11737,
+    CVE-2019-11738, CVE-2019-11747, CVE-2019-11734, CVE-2019-11735,
     CVE-2019-11740.
 
   * debian/upstream.mk: Read source repo and revision from json when
@@ -155,17 +362,22 @@ firefox-esr (68.1.0esr-1) unstable; urgency=medium
     - Remove unused build dependency against python-ply.
     - Remove python-minimal build dependency. All supported versions
       of Debian have a new enough version.
+    - Remove build dependency against libjsoncpp-dev.
   * debian/l10n/gen, debian/latest_nightly.py, debian/rules,
     debian/symbols.mk, debian/upstream.mk, debian/watch: Use explicit
     python2.7 instead of python.
+  * debian/rules: Use `mach python --no-virtualenv` to invoke the
+    preprocessor.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 04 Sep 2019 10:22:21 +0900
+  * config/system-headers,
+    toolkit/crashreporter/jsoncpp/src/lib_json/moz.build,
+    toolkit/crashreporter/minidump-analyzer/moz.build: Revert hack to
+    build against libjsoncpp. It was fine when it was only used by
+    the crash reporter, but that's not the case anymore, and it breaks
+    the build. Also, the bundled version is newer than what is available
+    in Debian.
 
-firefox-esr (68.0.2esr-1) unstable; urgency=medium
-
-  * New upstream ESR release.
-
- -- Mike Hommey <glandium@debian.org>  Sun, 18 Aug 2019 22:27:52 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 04 Sep 2019 13:48:54 +0900
 
 firefox (68.0.2-3) unstable; urgency=medium
 

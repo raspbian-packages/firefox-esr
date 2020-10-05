@@ -33,6 +33,7 @@ printpreview-of =
     .value = de
 printpreview-custom-prompt =
     .value = Personecigita skalo…
+printpreview-custom-scale-prompt-title = Personecigita skalo
 printpreview-page-setup =
     .label = Agordi paĝon…
     .accesskey = a
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Lasta paĝo
+

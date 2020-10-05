@@ -33,6 +33,7 @@ printpreview-of =
     .value = av
 printpreview-custom-prompt =
     .value = Eigendefinert skala …
+printpreview-custom-scale-prompt-title = Tilpassa skala
 printpreview-page-setup =
     .label = Utskriftsformat…
     .accesskey = m
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Siste side
+

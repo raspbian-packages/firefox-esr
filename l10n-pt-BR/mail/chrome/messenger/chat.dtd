@@ -2,8 +2,8 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!ENTITY onlineContactsHeader.label    "Contatos on-line">
-<!ENTITY offlineContactsHeader.label   "Contatos off-line">
+<!ENTITY onlineContactsHeader.label    "Contatos online">
+<!ENTITY offlineContactsHeader.label   "Contatos offline">
 <!ENTITY conversationsHeader.label     "Conversas">
 <!ENTITY searchResultConversation.label "Resultado da pesquisa">
 <!ENTITY chat.noConv.title             "As conversas serão exibidas aqui">
@@ -26,8 +26,8 @@
 <!ENTITY closeConversationCmd.accesskey "F">
 <!ENTITY aliasCmd.label                "Renomear">
 <!ENTITY aliasCmd.accesskey            "R">
-<!ENTITY deleteCmd.label               "Excluir contato">
-<!ENTITY deleteCmd.accesskey           "x">
+<!ENTITY deleteCmd.label               "Remover contato">
+<!ENTITY deleteCmd.accesskey           "v">
 
 <!ENTITY openConversationButton.tooltip  "Iniciar uma conversa">
 <!ENTITY closeConversationButton.tooltip "Fechar conversa">
@@ -37,7 +37,7 @@
 <!ENTITY chatAccountsButton.label      "Mostrar conta">
 
 <!ENTITY status.available          "Disponível">
-<!ENTITY status.unavailable        "Ocupado">
+<!ENTITY status.unavailable        "Não disponível">
 <!ENTITY status.offline            "Desconectado">
 
 <!ENTITY openLinkCmd.label            "Abrir link…">

@@ -4,13 +4,16 @@
 
 <!ENTITY firstrun_panel_title_welcome "Afáyate">
 <!ENTITY firstrun_urlbar_message2 "Gracies por escoyer &brandShortName;">
+<!ENTITY newfirstrun_urlbar_message "Afáyate en &brandShortName;">
 <!ENTITY firstrun_urlbar_subtext2 "Un restolador web móvil y modernu de Mozilla, la organización ensin ánimu de llucru comprometida con una web llibre y abierta.">
+<!ENTITY newfirstrun_urlbar_subtext "La rapidez y privacidá acompáñente.">
 <!ENTITY firstrun_panel_title_privacy "Privacidá">
 <!ENTITY firstrun_privacy_message "Restola ensin que naide te mire">
 <!ENTITY firstrun_privacy_subtext "El restolar en privao con proteición de rastrexu bloquia los rastrexadores entrín restoles y nun recordará\&apos;l to historial cuando termines de restolar.">
+<!ENTITY newfirstrun_privacy_subtext "El restolar en privao bloquia los rastrexadores que te siguen en llinia.">
 <!ENTITY firstrun_panel_title_customize "Personalización">
 <!ENTITY firstrun_customize_message "Fai &brandShortName; de to.">
-<!ENTITY firstrun_customize_subtext "Personaliza &brandShortName; colos add-ons. Bloquia anuncios, amiesta carauterístiques o escueyi un tema nuevu que reflexe la to personalidá.">
+<!ENTITY firstrun_customize_subtext "Personaliza &brandShortName; colos add-ons. Bloquia anuncios, amiesta carauterístiques o escueyi un estilu nuevu que reflexe la to personalidá.">
 <!ENTITY firstrun_bookmarks_title "Historial">
 <!ENTITY firstrun_bookmarks_message "Los favoritos, al frente y nel centru">
 <!ENTITY firstrun_bookmarks_subtext "Consigui resultaos de los marcadores ya historial al guetar.">
@@ -18,13 +21,12 @@
 <!ENTITY firstrun_data_message "Menos datos, más aforru">
 <!ENTITY firstrun_data_subtext2 "Desactiva les imáxenes pa nun marafundiar datos en cada sitiu que visites.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY firstrun_sync_message2 "Volvi ande lo dexesti.">
 <!ENTITY firstrun_sync_subtext2 "Usa Sync p\&apos;alcontrar los marcadores, contraseñes y otres coses que guardares en &brandShortName; dende tolos tos preseos.">
 <!ENTITY firstrun_signin_message "Conéutate, entama">
-<!ENTITY firstrun_signin_button "Aniciar sesión en Sync">
 <!ENTITY  onboard_start_button_browser "Entamar a restolar">
 <!ENTITY firstrun_button_notnow "Agora non">
 <!ENTITY firstrun_button_next "Siguiente">
+
 
 <!ENTITY firstrun_tabqueue_title "Enllaces">
 
@@ -61,6 +63,8 @@
 <!ENTITY  sending_crash_report "Unviando informe del casque\u2026">
 <!ENTITY  crash_close_label "Zarrar">
 <!ENTITY  crash_restart_label "Reaniciar &brandShortName;">
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 
 <!ENTITY url_bar_default_text2 "Guetar o introducir direición">
 
@@ -100,6 +104,8 @@
 <!ENTITY bookmark_folder_updated "Anovóse la carpeta">
 <!ENTITY bookmark_parent_folder "Carpeta pá">
 <!ENTITY bookmark_add_folder "Amestar carpeta nueva">
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
 
 <!ENTITY reader_saved_offline "Guardóse fuera de llinia">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -319,11 +325,6 @@
 <!ENTITY pref_pwa "Aplicaciones web progresives">
 <!ENTITY pref_pwa_summary "Permite que les aplicaciones web s\&apos;amiesten a la pantalla d\&apos;aniciu">
 
-<!ENTITY tracking_protection_prompt_title "Agora con proteición de rastrexu">
-<!ENTITY tracking_protection_prompt_text "Bloquia activamente los elementos de rastrexu pa que nun t\&apos;esmolezas.">
-<!ENTITY tracking_protection_prompt_tip_text "Visita los axustes de privacidá pa deprender más">
-<!ENTITY tracking_protection_prompt_action_button "¡Coyío!">
-
 <!ENTITY tab_queue_toast_message3 "Guardóse la llingüeta en &brandShortName;">
 <!ENTITY tab_queue_toast_action "Abrir agora">
 <!ENTITY tab_queue_prompt_title "¿Abrir enllaces múltiples?">
@@ -337,6 +338,8 @@
 <!-- Localization note (tab_queue_prompt_settings_button): This button is shown if the user needs to
      enable a permission in Android's setting in order to enable tab queues. -->
 <!ENTITY tab_queue_prompt_settings_button "Dir a Axustes">
+<!-- Localization note (tab_queue_notification_prompt): This is the text of the default notification
+shown from Android O while a tab is being queued.-->
 <!ENTITY tab_queue_notification_title "&brandShortName;">
 <!-- Localization note (tab_queue_notification_text_plural2) : The
      formatD is replaced with the number of tabs queued.  The
@@ -401,8 +404,9 @@
 <!ENTITY pref_private_data_downloadFiles2 "Descargues">
 <!ENTITY pref_private_data_syncedTabs "Llingüetes sincronizaes">
 
-<!ENTITY pref_default_browser "Predeterminar restolador">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Visita\&apos;l sofitu de Mozilla">
+<!-- LOCALIZATION NOTE (default_browser_system_settings_toast):
+    Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
+    and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY pref_about_firefox "Tocante a &brandShortName;">
 <!ENTITY pref_vendor_faqs "FAQs">
 <!ENTITY pref_vendor_feedback "Dar feedback">
@@ -451,14 +455,6 @@
      of the notification shown whenever the user has enabled data reporting and the stumbler
      service is running. -->
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Anovamientos automáticos">
-<!ENTITY pref_update_autodownload_wifi "Namái na Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Enxamás">
-<!ENTITY pref_update_autodownload_always "Siempres">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Ayuda">
 
@@ -495,6 +491,9 @@
 <!ENTITY find_prev "Previu">
 <!ENTITY find_next "Siguiente">
 <!ENTITY find_close "Zarrar">
+
+<!-- Localization note (find_error) : Error message shown when there is no result for the
+     searched for text in this webpage -->
 
 <!-- Localization note (media_sending_to, media_play, media_pause, media_stop) : These strings are used
      as alternate text for accessibility. They are not visible in the UI. -->
@@ -720,25 +719,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 
 <!ENTITY searchable_description "Marcadores ya historial">
 
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Anovamientu disponible pa &brandShortName;">
-<!ENTITY updater_start_select2 "Toca pa baxar">
-
-<!ENTITY updater_downloading_title2 "Baxando &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Falló la descarga">
-<!ENTITY updater_downloading_select2 "Toca p\&apos;aplicar l\&apos;anovamientu namái baxalu">
-<!ENTITY updater_downloading_retry2 "Toca pa retentar">
-
-<!ENTITY updater_apply_title3 "Anovamientu baxáu pa &brandShortName;">
-<!ENTITY updater_apply_select3 "Toca pa instalar">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Pa baxar ficheros y anovamientos, da-y el permisu d\&apos;accesu d\&apos;almacenamientu a &brandShortName;.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Permitir">
-
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Sesión de convidáu nueva">
 <!ENTITY exit_guest_session "Colar de sesión de convidáu">
@@ -849,6 +829,13 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Marca elementos de la to vista de llectura pa lleelos ensin conexón.">
 <!ENTITY helper_triple_readerview_open_button "Amestar a Marcadores">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signin_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Afáyate en &brandShortName;">
+<!ENTITY activity_stream_signin_prompt "¿Yá tienes una cuenta?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+
+
 <!ENTITY activity_stream_topsites "Sitios más visitaos">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Aconséyalo &brandPocket;">
@@ -899,6 +886,8 @@ Picture-in-picture mini window -->
 <!ENTITY pip_pause_button_description "Posa la reproducción">
 
 <!-- Notification channels names -->
+<!ENTITY default_notification_channel2 "Restolador">
+<!ENTITY mls_notification_channel "Serviciu d\&apos;allugamientos de &vendorShortName;">
 <!ENTITY download_notification_channel "Descargues">
 <!ENTITY media_notification_channel2 "Soníu y videu">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
@@ -906,3 +895,4 @@ Picture-in-picture mini window -->
 <!ENTITY synced_tabs_notification_channel "Llingüetes sincronizaes">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->
+<!ENTITY crash_handler_notifications_channel "Informador de fallos de &brandShortName;">

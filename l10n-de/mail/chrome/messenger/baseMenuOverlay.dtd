@@ -9,24 +9,32 @@
                        for the help button in the menubar but Gnome does not.   -->
 <!ENTITY helpMenuWin.label     "Hilfe">
 <!ENTITY helpMenuWin.accesskey "H">
+<!ENTITY aboutProduct2.label "Über &brandShorterName;">
+<!ENTITY aboutProduct2.accesskey "e">
 <!ENTITY helpTroubleshootingInfo.label      "Informationen zur Fehlerbehebung">
 <!ENTITY helpTroubleshootingInfo.accesskey  "z">
 <!ENTITY helpSafeMode.label     "Mit deaktivierten Add-ons neu starten…">
 <!ENTITY helpSafeMode.accesskey "d">
-<!ENTITY releaseCmd2.label "Versionshinweise">
-<!ENTITY releaseCmd2.accesskey "V">
-<!ENTITY whatsNewCmd.label     "Neuigkeiten">
-<!ENTITY whatsNewCmd.accesskey "N">
-<!ENTITY openHelp.label        "Hilfethemen">
-<!ENTITY openHelp.accesskey    "H">
-<!ENTITY openHelp.commandkey   "VK_F1">
-<!ENTITY openHelpMac.label     "&brandShortName;-Hilfe">
-<!ENTITY openHelpMac2.label "&brandFullName;-Hilfe">
-<!ENTITY openHelpMac2.commandkey   "?">
-<!ENTITY openHelpMac2.modifiers    "accel">
+<!ENTITY helpSafeMode.stop.label     "Mit aktivierten Add-ons neu starten">
+<!ENTITY helpSafeMode.stop.accesskey "a">
+<!ENTITY productHelp.label "&brandShortName; - Hilfe">
+<!ENTITY productHelp.accesskey "H">
+<!ENTITY productHelp.commandkey "VK_F1">
+<!ENTITY productHelpMac.commandkey "?">
+<!ENTITY productHelpMac.modifiers "accel">
 
-<!ENTITY aboutMenuCmd.label      "Über &brandShortName;">
-<!ENTITY aboutMenuCmd.accesskey  "Ü">
+<!ENTITY helpKeyboardShortcuts.label "Tastenkombinationen">
+<!ENTITY helpKeyboardShortcuts.accesskey "T">
 
-<!ENTITY aboutMenuCmd2.label "Über &brandFullName;">
-<!ENTITY aboutMenuCmd2.accesskey "Ü">
+<!ENTITY helpFeedbackPage.label "Feedback senden…">
+<!ENTITY helpFeedbackPage.accesskey "s">
+
+<!ENTITY helpShowTour2.label "Tour durch &brandShorterName;">
+<!ENTITY helpShowTour2.accesskey "o">
+
+<!ENTITY helpGetInvolvedPage.label "Mitmachen">
+<!ENTITY helpGetInvolvedPage.accesskey "M">
+
+<!ENTITY helpDonationsPage.label "Finanziell unterstützen">
+<!ENTITY helpDonationsPage.accesskey "u">
+

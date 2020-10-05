@@ -33,6 +33,7 @@ printpreview-of =
     .value = з
 printpreview-custom-prompt =
     .value = Выбарачнае павялічэнне…
+printpreview-custom-scale-prompt-title = Выбарачнае павелічэнне
 printpreview-page-setup =
     .label = Уладкаваць старонку…
     .accesskey = л
@@ -58,3 +59,4 @@ printpreview-nextarrow =
 printpreview-endarrow =
     .label = { $arrow }
     .tooltiptext = Апошняя старонка
+

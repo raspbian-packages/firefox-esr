@@ -4,6 +4,7 @@
 
 about-telemetry-ping-data-source = Podatkovni vir pinga:
 about-telemetry-show-current-ping-data = Trenutni podatki pinga
+about-telemetry-show-current-data = Trenutni podatki
 about-telemetry-show-archived-ping-data = Arhivirani podatki pinga
 about-telemetry-show-subsession-data = Prikaži podatke podseje
 about-telemetry-choose-ping = Izberite ping:
@@ -78,6 +79,7 @@ about-telemetry-settings-explanation = Telemetrija zbira { about-telemetry-data-
 #   $timeStamp (String): ping localized timestamp, e.g. “2017/07/08 10:40:46”
 about-telemetry-ping-details = Vsak podatek je poslan skupaj s “<a data-l10n-name="ping-link">pingi</a>”. Prikazan je ping { $name }, { $timestamp }.
 about-telemetry-ping-details-current = Vsak podatek je poslan skupaj s “<a data-l10n-name="ping-link">pingi</a>”. Prikazan je ping trenutni.
+about-telemetry-data-details-current = Vsak podatek je poslan skupaj s “<a data-l10n-name="ping-link">pingi</a>”. Prikazani so trenutni podatki.
 # string used as a placeholder for the search field
 # More info about it can be found here:
 # https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/telemetry/data/main-ping.html
@@ -104,6 +106,8 @@ about-telemetry-no-search-results-all = Oprostite! V nobenem odseku ni zadetkov 
 about-telemetry-no-data-to-display = Oprostite! V “{ $sectionName }” trenutno ni podatkov.
 # used as a tooltip for the “current” ping title in the sidebar
 about-telemetry-current-ping-sidebar = trenutni ping
+# used as a tooltip for the “current” ping title in the sidebar
+about-telemetry-current-data-sidebar = trenutni podatki
 # used in the “Ping Type” select
 about-telemetry-telemetry-ping-type-all = vse
 # button label to copy the histogram

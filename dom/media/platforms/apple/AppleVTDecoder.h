@@ -15,7 +15,6 @@
 #include "TimeUnits.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/gfx/Types.h"
-#include "nsIThread.h"
 
 namespace mozilla {
 
@@ -68,6 +67,7 @@ class AppleVTDecoder : public MediaDataDecoder,
   // Access from the taskqueue and the decoder's thread.
   // OutputFrame is thread-safe.
   void OutputFrame(CVPixelBufferRef aImage, AppleFrameRef aFrameRef);
+  void OnDecodeError(OSStatus aError);
 
  private:
   virtual ~AppleVTDecoder();
@@ -75,6 +75,7 @@ class AppleVTDecoder : public MediaDataDecoder,
   RefPtr<DecodePromise> ProcessDrain();
   void ProcessShutdown();
   void ProcessDecode(MediaRawData* aSample);
+  void MaybeResolveBufferedFrames();
 
   void AssertOnTaskQueueThread() {
     MOZ_ASSERT(mTaskQueue->IsCurrentThreadIn());
@@ -89,6 +90,7 @@ class AppleVTDecoder : public MediaDataDecoder,
   const uint32_t mDisplayWidth;
   const uint32_t mDisplayHeight;
   const gfx::YUVColorSpace mColorSpace;
+  const gfx::ColorRange mColorRange;
 
   // Method to set up the decompression session.
   MediaResult InitializeSession();
@@ -108,7 +110,7 @@ class AppleVTDecoder : public MediaDataDecoder,
   // Protects mReorderQueue and mPromise.
   Monitor mMonitor;
   ReorderQueue mReorderQueue;
-  MozPromiseHolder<DecodePromise> mPromise;
+  MozMonitoredPromiseHolder<DecodePromise> mPromise;
 
   // Decoded frame will be dropped if its pts is smaller than this
   // value. It shold be initialized before Input() or after Flush(). So it is

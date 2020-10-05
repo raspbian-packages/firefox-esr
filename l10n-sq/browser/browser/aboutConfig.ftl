@@ -4,20 +4,54 @@
 
 # An old map warning, see https://en.wikipedia.org/wiki/Here_be_dragons
 about-config-warning-title = Hic sunt leones!
-about-config-warning-text = Ndryshimi i këtyre rregullimeve të thelluara mund të jetë i dëmshëm për qëndrueshmërinë, sigurinë dhe funksionimin e këtij aplikacioni. Do të duhej të vazhdonit vetëm nëse jeni i sigurt për atë çka po bëni.
+about-config-warning-text = Ndryshimi i vlerave për këto rregullime të mëtejshme mund të jetë i dëmshëm për qëndrueshmërinë, sigurinë, dhe funksionimin e këtij aplikacioni. Duhet të vazhdoni vetëm nëse jeni i sigurt për çka po bëni.
 about-config-warning-checkbox = Bezdismëni prapë, ju lutem!
 about-config-warning-button = E pranoj rrezikun
-about-config-title = about:config
+
 about-config2-title = Formësime të Thelluara
+
 about-config-search-input =
     .placeholder = Kërkoni
+
+## These strings appear on the warning you see when first visiting about:config.
+
+about-config-intro-warning-title = Vazhdoni me Kujdes
+about-config-intro-warning-text = Ndryshimi i parapëlqimeve për formësim të mëtejshëm mund të ketë ndikim në funksionimin dhe sigurinë e { -brand-short-name }-it.
+about-config-intro-warning-checkbox = Sinjalizomë kur provoj të hyj në këto parapëlqime
+about-config-intro-warning-button = Pranoni Rrezikun dhe Vazhdoni
+
+
+
+##
+
+# This is shown on the page before searching but after the warning is accepted.
+about-config-caution-text = Ndryshimi i këtyre parapëlqimeve mund të ketë ndikim në funksionimin dhe sigurinë e { -brand-short-name }-it.
+
+about-config-page-title = Parapëlqime të Mëtejshme
+
+about-config-search-input1 =
+    .placeholder = Kërkoni për emër parapëlqimi
 about-config-show-all = Shfaqi Krejt
+
 about-config-pref-add = Shtoje
-about-config-pref-toggle = Shfaqe/Fshihe
+about-config-pref-toggle = Këmbeje
 about-config-pref-edit = Përpunojeni
 about-config-pref-save = Ruaje
 about-config-pref-reset = Riktheje te parazgjedhjet
 about-config-pref-delete = Fshije
+
+about-config-pref-add-button =
+    .title = Shtoni
+about-config-pref-toggle-button =
+    .title = Këmbeje
+about-config-pref-edit-button =
+    .title = Përpunojeni
+about-config-pref-save-button =
+    .title = Ruaje
+about-config-pref-reset-button =
+    .title = Riktheje te parazgjedhjet
+about-config-pref-delete-button =
+    .title = Fshije
 
 ## Labels for the type selection radio buttons shown when adding preferences.
 

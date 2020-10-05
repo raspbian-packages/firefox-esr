@@ -4,7 +4,7 @@
 
 <!ENTITY addressbookWindow.title                        "Carnet d’adresses">
 <!ENTITY blankResultsPaneMessage.label                  "Ce carnet d’adresses affiche uniquement les contacts lorsque vous effectuez une recherche">
-<!ENTITY localResultsOnlyMessage.label                  "Les contacts des carnets d’adresses distants ne sont pas affichés tant que vous n’effectuez pas de recherche">
+<!ENTITY localResultsOnlyMessage.label                  "Les contacts des carnets d’adresses distants n’apparaissent que lorsque vous effectuez une recherche">
 
 <!-- File Menu -->
 <!ENTITY fileMenu.label                                 "Fichier">
@@ -18,6 +18,8 @@
 <!ENTITY newListCmd.accesskey                           "l">
 <!ENTITY newAddressBookCmd.label                        "Carnet d’adresses…">
 <!ENTITY newAddressBookCmd.accesskey                    "c">
+<!ENTITY newCardDAVBookCmd.label                        "Carnet d’adresses CardDAV…">
+<!ENTITY newCardDAVBookCmd.accesskey                    "V">
 <!ENTITY newLDAPDirectoryCmd.label                      "Annuaire LDAP…">
 <!ENTITY newLDAPDirectoryCmd.accesskey                  "A">
 <!ENTITY newMessageCmd.label                            "Message">
@@ -164,6 +166,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY deleteButton2.accesskey                        "S">
 
 <!-- Address Book Toolbar Tooltips -->
+<!ENTITY columnChooser.tooltip                          "Choisir les colonnes à afficher">
 <!ENTITY newContactButton.tooltip                       "Créer un nouveau contact">
 <!ENTITY newlistButton.tooltip                          "Créer une nouvelle liste de diffusion">
 <!ENTITY editPropertiesButton.tooltip                   "Modifier l’élément sélectionné">
@@ -173,9 +176,6 @@ because displayed names don't have the comma in between. -->
 <!ENTITY newmsgButton.tooltip                           "Écrire un courrier à la sélection">
 <!ENTITY newIM.tooltip                                  "Envoyer un message instantané ou lancer une discussion">
 <!ENTITY deleteButton2.tooltip                          "Supprimer l’élément sélectionné">
-
-<!-- Dir Tree header -->
-<!ENTITY dirTreeHeader.label                            "Carnets d’adresses">
 
 <!-- Search Bar -->
 <!ENTITY SearchNameOrEmail.label                        "Le nom ou l’adresse">

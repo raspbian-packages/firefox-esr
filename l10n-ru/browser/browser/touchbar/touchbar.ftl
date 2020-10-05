@@ -9,6 +9,7 @@ forward = Вперёд
 reload = Обновить
 home = Домой
 fullscreen = Полный экран
+touchbar-fullscreen-exit = Выйти из полноэкранного режима
 find = Найти
 new-tab = Новая вкладка
 add-bookmark = Добавить закладку
@@ -18,3 +19,21 @@ reader-view = Вид для чтения
 open-location = Введите запрос или адрес
 share = Поделиться
 close-window = Закрыть окно
+open-sidebar = Боковые панели
+
+# This string describes shortcuts for search.
+search-popover = Значки поисковых систем
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = Искать в:
+
+## Various categories of shortcuts for search.
+
+search-bookmarks = Закладки
+search-history = История
+search-opentabs = Открытые вкладки
+search-tags = Метки
+search-titles = Заголовки
+
+##
+

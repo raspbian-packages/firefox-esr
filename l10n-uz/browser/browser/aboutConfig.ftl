@@ -7,17 +7,51 @@ about-config-warning-title = Bu yerda ajdarholar bor!
 about-config-warning-text = Qoʻshimcha moslamalarni oʻzgartirsangiz, ushbu ilova dasturning barqarorligi, xavfsizligi  va ishlashiga zarar yetkazishi mumkin. Toʻliq ishionchingiz komil boʻlsa, davom ettiring.
 about-config-warning-checkbox = Bu haqida menga keyingi safar eslatilsin!
 about-config-warning-button = Xavfda qolishga roziman
-about-config-title = about:config
+
 about-config2-title = Qoʻshimcha sozlamalar
+
 about-config-search-input =
     .placeholder = Qidirish
+
+## These strings appear on the warning you see when first visiting about:config.
+
+about-config-intro-warning-title = Ehtiyotkorlik bilan davom eting
+about-config-intro-warning-text = Qoʻshimcha sozlamalarni oʻzgartirsangiz, { -brand-short-name } samaradorligi yoki xavfsizligiga taʼsir qilishi mumkin.
+about-config-intro-warning-checkbox = Bu parametrlarga kirishga harakat qilganimda, meni ogohlantir
+about-config-intro-warning-button = Xavfni oʻz zimmamga olaman va davom etaman
+
+
+
+##
+
+# This is shown on the page before searching but after the warning is accepted.
+about-config-caution-text = Bu parametlarni oʻzgartirsangiz, { -brand-short-name } samaradorligi yoki xavfsizligiga taʼsir qilishi mumkin.
+
+about-config-page-title = Qoʻshimcha parametrlar
+
+about-config-search-input1 =
+    .placeholder = Parametr nomini izlash
 about-config-show-all = Hammasini koʻrsatish
+
 about-config-pref-add = Qoʻshish
 about-config-pref-toggle = Almashish
 about-config-pref-edit = Tahrirlash
 about-config-pref-save = Saqlash
 about-config-pref-reset = Tiklash
 about-config-pref-delete = Oʻchirish
+
+about-config-pref-add-button =
+    .title = Qoʻshish
+about-config-pref-toggle-button =
+    .title = Almashish
+about-config-pref-edit-button =
+    .title = Tahrirlash
+about-config-pref-save-button =
+    .title = Saqlash
+about-config-pref-reset-button =
+    .title = Tiklash
+about-config-pref-delete-button =
+    .title = Oʻchirish
 
 ## Labels for the type selection radio buttons shown when adding preferences.
 

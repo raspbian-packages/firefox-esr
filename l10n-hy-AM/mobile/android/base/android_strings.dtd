@@ -21,17 +21,16 @@
 <!ENTITY firstrun_data_message "Քիչ տվյալ, շատ պահումներ">
 <!ENTITY firstrun_data_subtext2 "Անջատել պատկերները՝ կայքեր այցելելիս քիչ տվյալներ ծախսելու համար:">
 <!ENTITY firstrun_sync_title "Սինք">
-<!ENTITY firstrun_sync_message2 "Շարունակեք այնտեղից, որտեղ ընդհատել եք:">
+<!ENTITY firstrun_sync_message3 "Համաժամեցրեք ձեր էջանիշերը, պատմությունը և գաղտնաբառերը ձեր հեռախոսում:">
 <!ENTITY firstrun_sync_subtext2 "Օգտագործեք համաժամեցում՝ գտնելու համար էջանիշները, գաղտնաբառերը և այլն, որոնք պահպանել եք &brandShortName;-ում՝ ցանկացած սարքում:">
 <!ENTITY newfirstrun_sync_subtext "Համաժամեցրեք Firefox-ի բոլոր տարբերակները՝ գաղտնի և ապահով:">
-<!ENTITY updatednewfirstrun_sync_subtext "Մուտք գործեք ձեր հաշիվ՝ ավլին ստանալու համար &brandShortName;-ից">
+<!ENTITY firstrun_sendtab_title "Ուղարկել ներդիրը">
+<!ENTITY firstrun_sendtab_message "Համօգտագործել բջջայինից դեսքթոփ — ակնթարթորեն">
 <!ENTITY firstrun_signin_message "Եղեք կապակցված, սկսեք">
-<!ENTITY firstrun_signin_button "Մուտք գործեք՝ Սինքը սկսելու համար">
-<!ENTITY newfirstrun_signin_button "Միացնել Սինքը">
-<!ENTITY updatednewfirstrun_signin_button "Մուտք գործել &brandShortName;">
-<!ENTITY  onboard_start_button_browser "Սկսել">
+<!ENTITY onboard_start_button_browser "Սկսել">
 <!ENTITY firstrun_button_notnow "Ոչ հիմա">
 <!ENTITY firstrun_button_next "Հաջորդ">
+<!ENTITY firstrun_signup_button "Գրանցվել">
 
 <!ENTITY firstrun_tabqueue_title "Հղումներ">
 
@@ -68,6 +67,11 @@
 <!ENTITY  sending_crash_report "Վթարման զեկույցը ուղարկվում է\u2026">
 <!ENTITY  crash_close_label "Փակել">
 <!ENTITY  crash_restart_label "Վերամեկնարկել &brandShortName; -ը">
+<!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
+     Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "&brandShortName;-ը ձախողվեց">
+<!ENTITY  crash_notification_message "Հպեք՝ &vendorShortName;-ին զեկուցելու համար">
+<!ENTITY  crash_notification_negative_button_text "Անտեսել">
 
 <!ENTITY url_bar_default_text2 "Մուտքագրեք կայքի հասցե կամ որոնում">
 
@@ -110,6 +114,9 @@
 <!ENTITY bookmark_folder_updated "Թղթապանակը թարմացվել է">
 <!ENTITY bookmark_parent_folder "Ծնող թղթապանակ">
 <!ENTITY bookmark_add_folder "Ավելացնել նոր թղթապանակ">
+<!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
+     one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(առանց անվանման)">
 
 <!ENTITY reader_saved_offline "Պահվել է առցանց">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -154,7 +161,7 @@
 <!ENTITY settings "Կարգավորումներ">
 <!ENTITY settings_title "Կարգավորումներ">
 <!ENTITY pref_category_general "Գլխավոր">
-<!ENTITY pref_category_general_summary3 "Տուն, լեզուն, ներդիրների հերթը">
+<!ENTITY pref_category_general_summary3 "Տուն, լեզու, ներդիրների հերթը">
 
 <!-- Localization note (pref_category_language) : This is the preferences
      section in which the user picks the locale in which to display Firefox
@@ -269,6 +276,7 @@
 <!ENTITY pref_cookies_menu "Cookie-ներ">
 <!ENTITY pref_cookies_accept_all "Միացնել">
 <!ENTITY pref_cookies_not_accept_foreign "Միացված՝ բացառելով երրորդ կողմի կայքերը">
+<!ENTITY pref_cookies_not_accept_trackers "Միացված, բացառությամբ հետագծման cookie-ների">
 <!ENTITY pref_cookies_disabled "Անջատել">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -329,11 +337,6 @@
 
 <!ENTITY pref_pwa "Առաջադիմական վեբ հավելվածներ">
 <!ENTITY pref_pwa_summary "Թույլատրել վեբ հավելվածներին ավելացվել տուն էկրանին">
-
-<!ENTITY tracking_protection_prompt_title "Այժմ պաշտպանություն հետագծումից">
-<!ENTITY tracking_protection_prompt_text "Արգելափակում է հետագծող տարրերը:">
-<!ENTITY tracking_protection_prompt_tip_text "Մանրամասները՝ Գաղտնիության կարգավորումներում">
-<!ENTITY tracking_protection_prompt_action_button "Հասկացա">
 
 <!ENTITY tab_queue_toast_message3 "Ներդիրները պահպանվել են &brandShortName;-ում">
 <!ENTITY tab_queue_toast_action "Բացել հիմա">
@@ -420,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Հպեք զննիչ հավելվածին և ընտրեք &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Այցելել Mozilla Support">
 <!ENTITY pref_about_firefox "&brandShortName;-ի մասին">
 <!ENTITY pref_vendor_faqs "ՀՏՀ">
 <!ENTITY pref_vendor_feedback "Ձեր Արձագանքը">
@@ -470,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName;-ի տեղադրության ծառայությունը աշխատեցված է">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Ինքնաշխատ թարմացումներ">
-<!ENTITY pref_update_autodownload_wifi "Միայն Wi-Fi-ով">
-<!ENTITY pref_update_autodownload_never "Երբեք">
-<!ENTITY pref_update_autodownload_always "Միշտ">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Օգնություն">
 
@@ -491,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Համօգտագործել">
 <!ENTITY share_title "Համօգտագործել՝">
 <!ENTITY share_image_failed "Հնարավոր չեղավ համօգտագործել պատկերը">
+<!ENTITY share_error_toast_message "Հնարավոր չէ համօգտագործել նշված հավելվածը">
 <!ENTITY save_as_pdf "Պահել որպես PDF">
 <!ENTITY print "Տպել">
 <!ENTITY view_page_source "Դիտել էջի աղբյուրը">
@@ -591,6 +586,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Տեղադրությունը">
 <!ENTITY bookmark_edit_keyword "Հիմնաբառ">
 <!ENTITY bookmark_select_folder "Ընտրել թղթապանակ">
+<!ENTITY bookmark_edit_undo "Հետարկել">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -679,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Ընտրեք կամ ձայնագրեք">
 <!ENTITY filepicker_image_title "Ընտրեք կամ նկարեք">
 <!ENTITY filepicker_video_title "Ընտրեք կամ տեսագրեք տեսանյութ">
-
 <!ENTITY filepicker_permission_denied "Պահանջվող թույլտվությունները տրամադրված չեն, վերադարձվում է ֆայլային համակարգի հավաքիչին:">
 
 <!-- Site identity popup -->
@@ -741,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "Որոնել &formatS2;-ը &formatS1;-ում">
 
 <!ENTITY searchable_description "Էջանիշներ և Պատմություն">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Հասանելի է &brandShortName;-ի թարմացում">
-<!ENTITY updater_start_select2 "Դիպչեք՝ բեռնելու համար">
-
-<!ENTITY updater_downloading_title2 "&brandShortName;-ի ներբեռնում">
-<!ENTITY updater_downloading_title_failed2 "Ներբեռնումը ձախողվեց">
-<!ENTITY updater_downloading_select2 "Դիպչեք՝ բեռնելուց հետո թարմացումը կիրառելու համար">
-<!ENTITY updater_downloading_retry2 "Դիպչեք՝ կրկնելու համար">
-
-<!ENTITY updater_apply_title3 "Թարմացումը ներբեռնվել է &brandShortName;-ի համար">
-<!ENTITY updater_apply_select3 "Հպեք՝ տեղադրելու համար">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Ֆայլեր և թարմացումներ ներբեռնելու համար թույլատրեք &brandShortName;-ին մատչում պահեստին:">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Թույլատրել">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Հյուրի աշխատաշրջան">
@@ -871,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Էջանշեք Ընթերցելու եղանակի միույթները՝ դրանք անցանց ընթերցելու համար:">
 <!ENTITY helper_triple_readerview_open_button "Անցնել Էջանիշերին">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Բարի գալուստ &brandShortName;">
+<!ENTITY activity_stream_signin_description "Համաժամեցրեք էջանիշերը, գաղտնաբառերը և ավելին ձեր Firefox հաշվով:">
+<!ENTITY activity_stream_signup_button "Գրանցվել">
+<!ENTITY activity_stream_signin_prompt "Արդեն ունե՞ք հաշիվ">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Մուտք գործել:">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "Ձեր լիովին նոր Firefox-ը կգա 2020-ին">
+<!ENTITY activity_stream_firefox_promo_description "Շուտով. Լավարկված արտադրողականություն: Ընդլայնված հետագծման պաշտպանություն: Եվ յուրահատկություններ, որոնք նախագծված են, որպեսզի դուք կարողանաք գտնել, պահպանել և համօգտագործել ավելին այն ամենից, ինչ սիրում եք առցանց:">
+<!ENTITY activity_stream_firefox_promo_button "Աչքի անցկացրեք">
+
 <!ENTITY activity_stream_topsites "Լավագույն կայքեր">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Հանձնարարելի &brandPocket;-ի կողմից">
@@ -896,9 +889,9 @@ is simply hidden from the Activity Stream panel. -->
 <!ENTITY activity_stream_remove "Հեռացնել">
 <!ENTITY activity_stream_delete_history "Ջնջել Պատմությունից">
 
-<!ENTITY private_tab_panel_title "Գաղտնի Դիտարկում + ՀԵտագծման պաշտպանություն">
-<!ENTITY private_tab_panel_description "&brandShortName;-ը արգելափակում է էջերի մասերը, որոնք կարող են հետագծել դիտարկումների ձեր ակտիվությունը:">
-<!ENTITY private_tab_panel_description2 "Մենք չենք հիշի որևէ պատմություն, բայց ներբեռնված ֆայլերը և նոր էջանիշերը դեռ կպահպանվեն ձեր սարքում:">
+<!ENTITY private_tab_panel_title "Գաղտնի Դիտարկում + Հետագծման պաշտպանություն">
+<!ENTITY private_tab_panel_description "&brandShortName;-ը արգելափակում է էջերի այն մասերը, որոնք կարող են հետագծել դիտարկումների ձեր ակտիվությունը:">
+<!ENTITY private_tab_panel_description2 "Չի պահվի այցելությունների պատմությունը, բայց ներբեռնված ֆայլերը և նոր էջանիշերը կպահպանվեն ձեր սարքում:">
 <!ENTITY private_tab_learn_more "Ցանկանու՞մ եք իմանալ ավելին:">
 
 <!ENTITY fullscreen_warning "Մուտք լիաէկրան">
@@ -928,8 +921,8 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Ձայն և տեսանյութ">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName;-ի խորհուրդներ և հնարքներ">
-<!ENTITY updater_notification_channel "Թարմացումներ">
 <!ENTITY synced_tabs_notification_channel "Համաժամեցված ներդիրներ">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->
 <!ENTITY site_notifications_channel "Կայքի ծանուցումները">
+<!ENTITY crash_handler_notifications_channel "&brandShortName;-ի Վթարի զեկուցիչ">

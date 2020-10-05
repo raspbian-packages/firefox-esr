@@ -10,7 +10,6 @@
 #  include "mozilla/Span.h"
 
 #  include <stdint.h>
-#  define VPX_DONT_DEFINE_STDINT_TYPES
 #  include "mozilla/gfx/Types.h"
 #  include "vpx/vp8dx.h"
 #  include "vpx/vpx_codec.h"
@@ -110,6 +109,10 @@ class VPXDecoder : public MediaDataDecoder,
       No restriction on Y, U, V values.
     */
     bool mFullRange = false;
+
+    gfx::ColorRange ColorRange() const {
+      return mFullRange ? gfx::ColorRange::FULL : gfx::ColorRange::LIMITED;
+    }
 
     /*
       Sub-sampling, used only for non sRGB colorspace.

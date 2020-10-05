@@ -18,6 +18,8 @@
 <!ENTITY newListCmd.accesskey                           "L">
 <!ENTITY newAddressBookCmd.label                        "Libër Adresash…">
 <!ENTITY newAddressBookCmd.accesskey                    "A">
+<!ENTITY newCardDAVBookCmd.label                        "Libër Adresash CardDAV…">
+<!ENTITY newCardDAVBookCmd.accesskey                    "V">
 <!ENTITY newLDAPDirectoryCmd.label                      "Drejtori LDAP…">
 <!ENTITY newLDAPDirectoryCmd.accesskey                  "D">
 <!ENTITY newMessageCmd.label                            "Mesazh">
@@ -164,6 +166,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY deleteButton2.accesskey                        "F">
 
 <!-- Address Book Toolbar Tooltips -->
+<!ENTITY columnChooser.tooltip                          "Përzgjidhni shtylla që të shfaqen">
 <!ENTITY newContactButton.tooltip                       "Krijoni një kontakt të ri libri adresash">
 <!ENTITY newlistButton.tooltip                          "Krijoni një listë të re">
 <!ENTITY editPropertiesButton.tooltip                   "Përpunoni objektin e përzgjedhur">
@@ -173,9 +176,6 @@ because displayed names don't have the comma in between. -->
 <!ENTITY newmsgButton.tooltip                           "Dërgojini një mesazh poste">
 <!ENTITY newIM.tooltip                                  "Dërgojini një mesazh të atypëratyshëm ose fjalosuni me të">
 <!ENTITY deleteButton2.tooltip                          "Fshijeni objektin e përzgjedhur">
-
-<!-- Dir Tree header -->
-<!ENTITY dirTreeHeader.label                            "Libra Adresash">
 
 <!-- Search Bar -->
 <!ENTITY SearchNameOrEmail.label                        "Emër ose Email">
@@ -197,7 +197,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY Company.accesskey                              "E">
 <!ENTITY NickName.label                                 "Nofkash">
 <!ENTITY NickName.accesskey                             "N">
-<!ENTITY SecondEmail.label                              "Email-esh Shtesë">
+<!ENTITY SecondEmail.label                              "Email Shtesë">
 <!ENTITY SecondEmail.accesskey                          "S">
 <!ENTITY Department.label                               "Degësh">
 <!ENTITY Department.accesskey                           "D">

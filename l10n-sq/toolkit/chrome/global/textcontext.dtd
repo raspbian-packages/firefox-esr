@@ -2,14 +2,14 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
-<!ENTITY cutCmd.accesskey "P">
 <!ENTITY cutCmd.label "Prije">
-<!ENTITY copyCmd.accesskey "K">
+<!ENTITY cutCmd.accesskey "P">
 <!ENTITY copyCmd.label "Kopjoje">
-<!ENTITY pasteCmd.accesskey "N">
+<!ENTITY copyCmd.accesskey "K">
 <!ENTITY pasteCmd.label "Ngjite">
-<!ENTITY undoCmd.accesskey "z">
+<!ENTITY pasteCmd.accesskey "N">
 <!ENTITY undoCmd.label "Zhbëje">
+<!ENTITY undoCmd.accesskey "z">
 <!ENTITY selectAllCmd.label "Përzgjidhe Krejt">
 <!ENTITY selectAllCmd.accesskey "i">
 <!ENTITY deleteCmd.label "Fshije">
@@ -21,11 +21,11 @@
 <!ENTITY spellUndoAddToDictionary.accesskey "ë">
 <!ENTITY spellCheckToggle.label "Kontroll Drejtshkrimi">
 <!ENTITY spellCheckToggle.accesskey "D">
-<!ENTITY spellNoSuggestions.label "(Pa Këshillime Drejtshkrimi)">
+<!ENTITY spellNoSuggestions.label "(Pa Sugjerime Drejtshkrimi)">
 <!ENTITY spellDictionaries.label "Gjuhë">
 <!ENTITY spellDictionaries.accesskey "G">
 
-<!ENTITY searchTextBox.clear.label "Pastroje">
+<!ENTITY searchTextBox.clear.label "Spastroje">
 
 <!ENTITY fillLoginMenu.label          "Jepni Kredenciale Hyrjeje">
 <!ENTITY fillLoginMenu.accesskey      "J">
@@ -33,5 +33,5 @@
 <!ENTITY fillPasswordMenu.accesskey   "J">
 <!ENTITY fillUsernameMenu.label       "Jepni Emër Përdoruesi">
 <!ENTITY fillUsernameMenu.accesskey   "J">
-<!ENTITY noLoginSuggestions.label     "(Pa Këshillime Hyrjeje)">
+<!ENTITY noLoginSuggestions.label     "(Pa Sugjerim Kredencialesh Hyrjeje)">
 <!ENTITY viewSavedLogins.label        "Shihni Kredenciale të Ruajtura">

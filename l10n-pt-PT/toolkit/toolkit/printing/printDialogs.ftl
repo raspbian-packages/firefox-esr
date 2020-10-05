@@ -43,10 +43,10 @@ margin-top =
 margin-top-invisible =
     .value = Topo:
 margin-bottom =
-    .value = Fundo:
+    .value = Fim:
     .accesskey = F
 margin-bottom-invisible =
-    .value = Fundo:
+    .value = Fim:
 margin-left =
     .value = Esquerda:
     .accesskey = E
@@ -103,6 +103,7 @@ print-window =
     .title = A imprimir
 print-complete =
     .value = A impressão está concluída.
+
 # Variables
 # $percent (integer) - Number of printed percentage
 print-percent =

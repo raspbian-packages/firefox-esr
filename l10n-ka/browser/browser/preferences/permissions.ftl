@@ -5,56 +5,72 @@
 permissions-window =
     .title = გამონაკლისები
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = საიტის მისამართი
     .accesskey = მ
+
 permissions-block =
     .label = აკრძალვა
     .accesskey = კ
+
 permissions-session =
     .label = სეანსზე დაშვება
     .accesskey = ს
+
 permissions-allow =
     .label = დაშვება
     .accesskey = დ
+
 permissions-site-name =
     .label = საიტი
+
 permissions-status =
     .label = მდგომარეობა
+
 permissions-remove =
     .label = საიტის მოცილება
     .accesskey = მ
+
 permissions-remove-all =
     .label = ყველა საიტის მოცილება
     .accesskey = ყ
+
 permissions-button-cancel =
     .label = გაუქმება
     .accesskey = გ
+
 permissions-button-ok =
     .label = ცვლილებების შენახვა
     .accesskey = შ
+
 permissions-autoplay-menu = ნაგულისხმევი ყველა საიტისთვის:
+
 permissions-searchbox =
     .placeholder = საიტის ძიება
+
 permissions-capabilities-autoplay-allow =
     .label = ხმისა და ვიდეოს დაშვება
 permissions-capabilities-autoplay-block =
     .label = ხმის შეზღუდვა
 permissions-capabilities-autoplay-blockall =
     .label = ხმისა და ვიდეოს შეზღუდვა
+
 permissions-capabilities-allow =
     .label = ნებადართული
 permissions-capabilities-block =
     .label = შეზღუდული
 permissions-capabilities-prompt =
     .label = შეკითხვა ყოველ ჯერზე
+
 permissions-capabilities-listitem-allow =
-    .value = ნებართვა
+    .value = ნებადართული
 permissions-capabilities-listitem-block =
-    .value = აკრძალვა
+    .value = შეზღუდული
 permissions-capabilities-listitem-allow-session =
-    .value = ნებართვა ამ სეანსზე
+    .value = ნებადართული ამ სეანსზე
 
 ## Invalid Hostname Dialog
 
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = გამონაკლისები – შიგთავსის შეზღუდვა
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = თქვენ ამ ვებგვერდებზე შიგთავსის შეზღუდვა გამორთული გაქვთ.
+
+permissions-exceptions-etp-window =
+    .title = გამონაკლისები, თვალთვალისგან გაძლიერებული დაცვის
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = ამ საიტებისთვის, დაცვა გამორთული გაქვთ
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = მოცემული ვებსაიტ�
 permissions-site-location-disable-label =
     .label = მდებარეობის მონაცემებთან წვდომის ახალი მოთხოვნების შეზღუდვა
 permissions-site-location-disable-desc = შედეგად, ყველა ვებსაიტს, რომელიც ზემოთ არ იქნება მითითებული, აეკრძალება თქვენი მდებარეობის მონაცემებთან წვდომა. მდებარეობის მონაცემებთან წვდომის შეზღუდვის გამო, შესაძლოა ვებსაიტის ზოგიერთმა შესაძლებლობამ, ვერ იმუშაოს.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = პარამეტრები – წარმოსახვითი სინამდვილის ნებართვები
+    .style = { permissions-window.style }
+permissions-site-xr-desc = მოცემული ვებსაიტები ითხოვს წარმოსახვითი სინამდვილის თქვენს მოწყობილობებთან წვდომის ნებართვას. შეგიძლიათ მიუთითოთ, ნებადართული საიტები. ამასთან, შეგიძლიათ საერთოდ შეზღუდოთ, წარმოსახვითი სინამდვილის მოწყობილობებთან წვდომის ახალი მოთხოვნები.
+permissions-site-xr-disable-label =
+    .label = წარმოსახვითი სინამდვილის მოწყობილობებთან წვდომის ახალი მოთხოვნების შეზღუდვა
+permissions-site-xr-disable-desc = შედეგად, ყველა ვებსაიტს, რომელიც ზემოთ არ იქნება მითითებული, აეკრძალება წარმოსახვითი სინამდვილის თქვენს მოწყობილობებთან წვდომა. წარმოსახვითი სინამდვილის მოწყობილობებთან წვდომის შეზღუდვის გამო, შესაძლოა ვებსაიტის ზოგიერთმა შესაძლებლობამ, ვერ იმუშაოს.
 
 ## Site Permissions - Camera
 

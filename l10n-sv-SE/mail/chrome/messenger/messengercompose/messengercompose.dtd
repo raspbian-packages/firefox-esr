@@ -89,14 +89,7 @@
 <!ENTITY reorderAttachmentsCmd.accesskey "O">
 <!ENTITY reorderAttachmentsCmd.key "x">
 <!ENTITY toggleAttachmentPaneCmd.label "Bifogningsfönstret">
-<!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.accesskey):
-     For better mnemonics, toggleAttachmentPaneCmd.accesskey should be the same
-     as attachments.accesskey. -->
 <!ENTITY toggleAttachmentPaneCmd.accesskey "g">
-<!-- LOCALIZATION NOTE (toggleAttachmentPaneCmd.key):
-     As Mac does not have access keys, this key defines a Mac-only, cross-l10n
-     shortcut key (Ctrl+M). Typically, this key should not be translated unless
-     otherwise required by specific needs of the localization. -->
 <!ENTITY toggleAttachmentPaneCmd.key "m">
 <!ENTITY selectAllCmd.label "Markera allt">
 <!ENTITY selectAllCmd.accesskey "M">
@@ -259,6 +252,11 @@
     Subject: rows. It should be larger than the largest Header label  -->
 <!ENTITY headersSpace.style "width: 9em;">
 <!ENTITY fromAddr.label "Från:">
+<!--LOCALIZATION NOTE headersSpaces.style is for aligning  the From:, To: and
+    Subject: rows. It should be larger than the largest Header label  -->
+<!ENTITY headersSpace2.style "width: 8em;">
+<!ENTITY extraRecipients.tooltip "Andra typer av adressfält">
+<!ENTITY fromAddr2.label "Från">
 <!ENTITY fromAddr.accesskey "n">
 <!ENTITY toAddr.label "Till:">
 <!ENTITY ccAddr.label "Kopia:">
@@ -267,6 +265,13 @@
 <!ENTITY newsgroupsAddr.label "Diskussionsgrupp:">
 <!ENTITY followupAddr.label "Uppföljning-till:">
 <!ENTITY subject.label "Ämne:">
+<!ENTITY toAddr2.label "Till">
+<!ENTITY ccAddr2.label "Kopia">
+<!ENTITY bccAddr2.label "Dold kopia">
+<!ENTITY replyAddr2.label "Svar till">
+<!ENTITY newsgroupsAddr2.label "Diskussionsgrupp">
+<!ENTITY followupAddr2.label "Uppföljning till">
+<!ENTITY subject2.label "Ämne">
 <!ENTITY subject.accesskey "e">
 <!-- LOCALIZATION NOTE (attachments.accesskey) This access key character should
      be taken from the strings of attachmentCount in composeMsgs.properties.
@@ -278,7 +283,7 @@
 <!ENTITY attachmentBucketHeader.tooltip "Bifogningsfönstret">
 <!ENTITY attachmentBucketCloseButton.tooltip "Dölj bifogningsfönstret">
 
-<!-- Format Toolbar, imported from editorAppShell.xul -->
+<!-- Format Toolbar, imported from editorAppShell.xhtml -->
 <!ENTITY SmileButton.tooltip "Infoga en smilis">
 <!ENTITY smiley1Cmd.label "Ler">
 <!ENTITY smiley2Cmd.label "Bister">
@@ -334,7 +339,7 @@
 <!ENTITY attachCloud.label "Filelink…">
 <!ENTITY attachCloud.accesskey "i">
 <!ENTITY convertCloud.label "Konvertera till…">
-<!ENTITY convertCloud.accesskey "K">
+<!ENTITY convertCloud.accesskey "v">
 <!ENTITY cancelUpload.label "Avbryt överföring">
 <!ENTITY cancelUpload.accesskey "A">
 <!ENTITY convertRegularAttachment.label "Vanlig bilaga">

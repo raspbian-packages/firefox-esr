@@ -14,6 +14,7 @@
                        for the help button in the menubar but Gnome does not.   -->
 <!ENTITY helpMenuWin.label        "Көмек"> 
 <!ENTITY helpMenuWin.accesskey    "К">
+
 <!ENTITY aboutProduct2.label      "&brandShorterName; туралы">
 <!ENTITY aboutProduct2.accesskey  "а">
 <!ENTITY productHelp2.label       "&brandShorterName; көмегі">
@@ -27,9 +28,6 @@
 <!ENTITY helpSafeMode.accesskey   "р">
 <!ENTITY helpSafeMode.stop.label       "Сөндірілген кеңейтулермен қайта қосу">
 <!ENTITY helpSafeMode.stop.accesskey   "р">
-
-<!ENTITY healthReport2.label      "&brandShorterName; денсаулық есептемесі">
-<!ENTITY healthReport2.accesskey  "е">
 
 <!ENTITY helpTroubleshootingInfo.label      "Техникалық ақпарат">
 <!ENTITY helpTroubleshootingInfo.accesskey  "а">
@@ -52,3 +50,5 @@
 <!ENTITY hideOtherAppsCmdMac.commandkey "H">
 
 <!ENTITY showAllAppsCmdMac.label        "Барлығын көрсету">
+
+<!ENTITY touchBarCmdMac.label           "Сенсорлық панельді баптау…">

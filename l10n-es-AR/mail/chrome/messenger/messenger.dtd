@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "m">
 <!ENTITY  newContactCmd.label "Contacto de la libreta de direcciones…">
 <!ENTITY  newContactCmd.accesskey "C">
+<!ENTITY openMenuCmd.label "Abrir">
+<!ENTITY openMenuCmd.accesskey "O">
 <!ENTITY openMessageFileCmd.label "Abrir mensaje guardado…">
 <!ENTITY openMessageFileCmd.accesskey "A">
 <!ENTITY saveAsMenu.label "Guardar como">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "c">
 <!ENTITY folderPaneBar.label "Barra de vista de tareas">
 <!ENTITY folderPaneBar.accesskey "t">
-<!ENTITY folderModeSelector.label "Vistas de carpeta">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Ordenar por">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Buscar mensajes…">
 <!ENTITY searchMailCmd.accesskey "M">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Búsqueda global…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Buscar direcciones…">
 <!ENTITY searchAddressesCmd.accesskey "S">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Archivar mensaje seleccionado">
 <!ENTITY archiveButton.tooltip "Archivar mensajes seleccionados">
 <!ENTITY openConversationButton.tooltip "Mostrar conversación de mensajes seleccionados">
+<!ENTITY openMsgConversationButton.tooltip "Mostrar conversación del mensaje seleccionado">
 <!ENTITY nextButton.tooltip "Ir al siguiente mensaje no leído">
 <!ENTITY nextMsgButton.tooltip "Ir al siguiente mensaje">
 <!ENTITY previousButton.tooltip "Ir al anterior mensaje no leído">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Etiquetar mensajes">
 <!ENTITY compactButton.tooltip "Eliminar mensajes borrados de la carpeta actual">
 <!ENTITY appmenuButton1.tooltip "Mostrar el menú de &brandShortName;">
-
 <!ENTITY addonsButton.tooltip "Administrar complementos">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Guardar el criterio de búsqueda como una carpeta…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Seleccionar mensajes">
 <!ENTITY threadColumn.label "Conversación">
 <!ENTITY fromColumn.label "De">
 <!ENTITY recipientColumn.label "Destinatario">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Orden de recepción">
 <!ENTITY attachmentColumn.label "Adjuntos">
 
+<!ENTITY deleteColumn.label "Eliminar">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Seleccionar las columnas a mostrar">
+<!ENTITY selectColumn.tooltip "Intercambiar seleccionar todos los mensajes">
 <!ENTITY threadColumn2.tooltip "Mostrar los mensajes agrupados por conversaciones">
 <!ENTITY fromColumn2.tooltip "Ordenar por remitente">
 <!ENTITY recipientColumn2.tooltip "Ordenar por destinatario">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Ordenar por ubicación">
 <!ENTITY idColumn2.tooltip "Ordenar por orden de recepción">
 <!ENTITY attachmentColumn2.tooltip "Ordenar por adjuntos">
+
+<!ENTITY deleteColumn.tooltip "Eliminar un mensaje">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Nuevo mensaje desde plantilla">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Opciones de ícono de aplicación…">
 <!ENTITY writeNewMessageDock.label      "Escribir un nuevo mensaje">
 <!ENTITY openAddressBookDock.label      "Abrir libreta de direcciones">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Retroceder una página">
+<!ENTITY browseForwardButton.tooltip "Avanzar una página">

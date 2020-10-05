@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "M">
 <!ENTITY  newContactCmd.label "Adressebogskontakt…">
 <!ENTITY  newContactCmd.accesskey "K">
+<!ENTITY openMenuCmd.label "Åbn">
+<!ENTITY openMenuCmd.accesskey "Å">
 <!ENTITY openMessageFileCmd.label "Åbn gemt meddelelse…">
 <!ENTITY openMessageFileCmd.accesskey "g">
 <!ENTITY saveAsMenu.label "Gem som">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "K">
 <!ENTITY folderPaneBar.label "Værktøjslinje for mapper">
 <!ENTITY folderPaneBar.accesskey "æ">
-<!ENTITY folderModeSelector.label "Mappevisninger">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Sorter efter">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Søg i meddelelser…">
 <!ENTITY searchMailCmd.accesskey "S">
 <!ENTITY searchMailCmd.key "ø">
+<!ENTITY glodaSearchCmd.label "Global søgning…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Søg i adresser…">
 <!ENTITY searchAddressesCmd.accesskey "ø">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Gem den valgte meddelelse">
 <!ENTITY archiveButton.tooltip "Arkiver valgte meddelelser">
 <!ENTITY openConversationButton.tooltip "Vis den valgte meddelelses samtale">
+<!ENTITY openMsgConversationButton.tooltip "Vis den valgte meddelelses samtale">
 <!ENTITY nextButton.tooltip "Gå til næste ulæste meddelelse">
 <!ENTITY nextMsgButton.tooltip "Gå til den næste meddelelse">
 <!ENTITY previousButton.tooltip "Gå til forrige ulæste meddelelse">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Marker meddelelser">
 <!ENTITY compactButton.tooltip "Fjern slettede meddelelser fra valgte mappe">
 <!ENTITY appmenuButton1.tooltip "Vis &brandShortName;-menuen">
-
 <!ENTITY addonsButton.tooltip "Håndter dine tilføjelser">
 
 <!-- Toolbar Button Popup -->
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Gem som virtuel mappe…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Marker meddelelser">
 <!ENTITY threadColumn.label "Tråd">
 <!ENTITY fromColumn.label "Fra">
 <!ENTITY recipientColumn.label "Til">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Modtagelsesorden">
 <!ENTITY attachmentColumn.label "Vedhæftede filer">
 
+<!ENTITY deleteColumn.label "Slet">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Vælg hvilke kolonner der skal vises">
+<!ENTITY selectColumn.tooltip "Marker/afmarker alle meddelelser">
 <!ENTITY threadColumn2.tooltip "Vis meddelelser i tråde">
 <!ENTITY fromColumn2.tooltip "Sorter efter afsender">
 <!ENTITY recipientColumn2.tooltip "Sorter efter modtager">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Sorter efter placering">
 <!ENTITY idColumn2.tooltip "Sorter efter modtagelsesorden">
 <!ENTITY attachmentColumn2.tooltip "Sorter efter vedhæftede filer">
+
+<!ENTITY deleteColumn.tooltip "Slet en meddelelse">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Ny meddelelse fra skabelon">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Indstillinger for app-ikon…">
 <!ENTITY writeNewMessageDock.label      "Skriv ny meddelelse">
 <!ENTITY openAddressBookDock.label      "Åbn adressebog">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Gå en side tilbage">
+<!ENTITY browseForwardButton.tooltip "Gå en side frem">

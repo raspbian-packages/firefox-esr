@@ -23,6 +23,8 @@
 <!ENTITY  http.accesskey                "x">
 <!ENTITY  ssl.label                     "SSL-proxy:">
 <!ENTITY  ssl.accesskey                 "S">
+<!ENTITY  https.label                   "HTTPS-proxy:">
+<!ENTITY  https.accesskey               "S">
 <!ENTITY  socks.label                   "SOCKS-värd:">
 <!ENTITY  socks.accesskey               "C">
 <!ENTITY  socks4.label                  "SOCKS v4">
@@ -40,6 +42,12 @@
 <!ENTITY  noproxyExplain.label          "Exempel: .mozilla.org, .sunet.se, 192.168.1.0/24">
 <!ENTITY  shareproxy.label              "Använd denna proxy för alla protokoll">
 <!ENTITY  shareproxy.accesskey          "ä">
+<!-- LOCALIZATION NOTE (noproxyLocalhostDesc.label): Do not translate
+  localhost, 127.0.0.1 and ::1.
+-->
+<!ENTITY  noproxyLocalhostDesc.label    "Anslutning till localhost 127.0.0.1 och ::1 går aldrig via proxy.">
+<!ENTITY  proxyHttpSharing.label        "Använd också denna proxy för HTTPS">
+<!ENTITY  proxyHttpSharing.accesskey    "x">
 <!ENTITY  autologinproxy.label          "Fråga inte efter autentisering om lösenordet är sparat">
 <!ENTITY  autologinproxy.accesskey      "o">
 <!ENTITY  autologinproxy.tooltip        "Detta alternativ autentiserar dig automatiskt till proxier när du har sparat inloggningsuppgifter för dem. Du kommer att bli tillfrågad om autentiseringen misslyckas.">
@@ -47,12 +55,4 @@
 <!ENTITY  socksRemoteDNS.accesskey      "d">
 <!ENTITY  dnsOverHttps.label            "Aktivera DNS över HTTPS">
 <!ENTITY  dnsOverHttps.accesskey        "v">
-<!ENTITY  dnsOverHttpsUrl.label         "URL">
-<!ENTITY  dnsOverHttpsUrl.accesskey     "R">
-<!ENTITY  dnsOverHttpsUrl.tooltip       "URL för att lösa DNS över HTTPS">
-<!ENTITY  dnsOverHttpsUrlDefault.label     "Använd standard">
-<!ENTITY  dnsOverHttpsUrlDefault.accesskey "s">
 <!ENTITY  dnsOverHttpsUrlDefault.tooltip   "Använd standard-URL för att lösa DNS över HTTPS">
-<!ENTITY  dnsOverHttpsUrlCustom.label      "Anpassad">
-<!ENTITY  dnsOverHttpsUrlCustom.accesskey  "p">
-<!ENTITY  dnsOverHttpsUrlCustom.tooltip    "Ange önskad URL för att lösa DNS över HTTPS">

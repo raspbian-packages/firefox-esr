@@ -23,7 +23,7 @@ security-software-name = Nome
 security-software-antivirus = Antivírus
 security-software-antispyware = Antispyware
 security-software-firewall = Firewall
-features-title = Funcionalidades do { -brand-short-name }
+features-title = Recursos do { -brand-short-name }
 features-name = Nome
 features-version = Versão
 features-id = ID
@@ -34,11 +34,14 @@ app-basics-title = Informações básicas sobre o aplicativo
 app-basics-name = Nome
 app-basics-version = Versão
 app-basics-build-id = ID da compilação
+app-basics-distribution-id = ID da distribuição
 app-basics-update-channel = Canal de atualização
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir =
     { PLATFORM() ->
-        [linux] Atualizar diretório
-       *[other] Atualizar pasta
+        [linux] Diretório de atualização
+       *[other] Pasta de atualização
     }
 app-basics-update-history = Histórico de atualizações
 app-basics-show-update-history = Mostrar histórico de atualizações
@@ -52,14 +55,13 @@ app-basics-profile-dir =
 app-basics-enabled-plugins = Plugins ativados
 app-basics-build-config = Configuração da compilação
 app-basics-user-agent = User Agent
-app-basics-os = OS
+app-basics-os = Sistema operacional
 app-basics-memory-use = Uso de memória
 app-basics-performance = Desempenho
 app-basics-service-workers = Service Workers registrados
 app-basics-profiles = Perfis
 app-basics-launcher-process-status = Processo de lançamento
 app-basics-multi-process-support = Janelas multiprocessadas
-app-basics-process-count = Processos de conteúdo web
 app-basics-remote-processes-count = Processos remotos
 app-basics-enterprise-policies = Políticas empresariais
 app-basics-location-service-key-google = Chave do Serviço de Localização do Google
@@ -70,7 +72,7 @@ show-dir-label =
     { PLATFORM() ->
         [macos] Mostrar no Finder
         [windows] Abrir pasta
-       *[other] Abrir pasta
+       *[other] Abrir diretório
     }
 modified-key-prefs-title = Preferências importantes modificadas
 modified-prefs-name = Nome
@@ -91,6 +93,8 @@ graphics-crash-guards-title = Recursos desativados da proteção contra travamen
 graphics-workarounds-title = Soluções alternativas
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Protocolo de janelas
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Ambiente de trabalho
 place-database-title = Base de dados de lugares
 place-database-integrity = Integridade
 place-database-verify-integrity = Verificar integridade
@@ -99,7 +103,7 @@ js-incremental-gc = GC incremental
 a11y-title = Acessibilidade
 a11y-activated = Ativado
 a11y-force-disabled = Bloquear acessibilidade
-a11y-handler-used = Identificador Acessível Utilizado
+a11y-handler-used = Manipulador de acessibilidade usado
 a11y-instantiator = Instanciador de Acessibilidade
 library-version-title = Versões de bibliotecas
 copy-text-to-clipboard-label = Copiar como texto
@@ -113,8 +117,21 @@ sandbox-sys-call-tid = TID
 sandbox-sys-call-proc-type = Tipo de processo
 sandbox-sys-call-number = Chamadas de sistema
 sandbox-sys-call-args = Argumentos
-safe-mode-title = Experimentar o modo de segurança
+safe-mode-title = Experimente o modo de segurança
 restart-in-safe-mode-label = Reiniciar com extensões desativadas…
+clear-startup-cache-title = Experimente limpar o cache de inicialização
+clear-startup-cache-label = Limpar cache de inicialização…
+startup-cache-dialog-title = Limpar cache de inicialização
+startup-cache-dialog-body = Reinicie o { -brand-short-name } para limpar o cache de inicialização. Isso não altera suas configurações nem remove extensões que você adicionou ao { -brand-short-name }.
+restart-button-label = Reiniciar
+
+## Media titles
+
+audio-backend = Infraestrutura de Áudio
+max-audio-channels = Máximo de Canais
+channel-layout = Formato de Canal Preferido
+sample-rate = Taxa de amostragem preferida
+roundtrip-latency = Latência de ida e volta (desvio padrão)
 media-title = Mídia
 media-output-devices-title = Dispositivos de Saída
 media-input-devices-title = Dispositivos de Entrada
@@ -127,7 +144,13 @@ media-device-format = Formato
 media-device-channels = Canais
 media-device-rate = Taxa
 media-device-latency = Latência
-intl-title = Internacionalização & Localização
+media-capabilities-title = Capacidades de mídia
+# List all the entries of the database.
+media-capabilities-enumerate = Enumeração de banco de dados
+
+##
+
+intl-title = Internacionalização e localização
 intl-app-title = Configurações do aplicativo
 intl-locales-requested = Idiomas solicitados
 intl-locales-available = Idiomas disponíveis
@@ -136,6 +159,22 @@ intl-locales-default = Idioma padrão
 intl-os-title = Sistema operacional
 intl-os-prefs-system-locales = Idiomas do sistema
 intl-regional-prefs = Preferências regionais
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Depuração remota (protocolo Chromium)
+remote-debugging-accepting-connections = Aceitando conexões
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -188,7 +227,7 @@ try-newer-driver = Bloqueado para a versão do seu driver gráfico. Tentar atual
 clear-type-parameters = Parâmetros ClearType
 compositing = Composição
 hardware-h264 = Decodificação H264 por hardware
-main-thread-no-omtc = tópico principal, sem OMTC
+main-thread-no-omtc = thread principal, sem OMTC
 yes = Sim
 no = Não
 unknown = Desconhecido
@@ -232,7 +271,9 @@ unknown-failure = Bloqueado; código de erro { $failureCode }
 d3d11layers-crash-guard = Compositor D3D11
 d3d11video-crash-guard = Decodificador de vídeo D3D11
 d3d9video-crash-buard = Decodificador de vídeo D3D9
+d3d9video-crash-guard = Decodificador de vídeo D3D9
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = Decodificador de vídeo WMF VPX
 reset-on-next-restart = Redefinir na próxima reinicialização
 gpu-process-kill-button = Finalizar processo GPU
 gpu-device-reset = Redefinir dispositivo
@@ -240,17 +281,12 @@ gpu-device-reset-button = Ativar a Redefinição de Dispositivo
 uses-tiling = Usa mosaicos
 content-uses-tiling = Usa mosaicos (conteúdo)
 off-main-thread-paint-enabled = Ativado o desenho fora do processo principal
-off-main-thread-paint-worker-count = Contagem de desenho fora do tópico principal
-low-end-machine = Detectada máquina com desempenho inferior
+off-main-thread-paint-worker-count = Contagem de desenho fora do thread principal
 target-frame-rate = Alvo de taxa de atualização
-audio-backend = Infraestrutura de Áudio
-max-audio-channels = Máximo de Canais
-channel-layout = Formato de Canal Preferido
-sample-rate = Taxa de amostragem preferida
 min-lib-versions = Versão mínima esperada
 loaded-lib-versions = Versão em uso
 has-seccomp-bpf = Seccomp-BPF (Sistema de filtragem de chamadas)
-has-seccomp-tsync = Sincronização do Tópico Seccomp
+has-seccomp-tsync = Sincronização do thread Seccomp
 has-user-namespaces = Espaço de nomes do usuário
 has-privileged-user-namespaces = Espaço de nomes do usuário para processos privilegiados
 can-sandbox-content = Isolamento de processamento de conteúdo
@@ -261,6 +297,11 @@ sandbox-proc-type-content = conteúdo
 sandbox-proc-type-file = conteúdo do arquivo
 sandbox-proc-type-media-plugin = plugin de mídia
 sandbox-proc-type-data-decoder = decodificador de dados
+startup-cache-title = Cache ao iniciar
+startup-cache-disk-cache-path = Caminho do cache em disco
+startup-cache-ignore-disk-cache = Ignorar cache em disco
+startup-cache-found-disk-cache-on-init = Cache em disco encontrado ao iniciar
+startup-cache-wrote-to-disk-cache = Gravado no cache em disco
 launcher-process-status-0 = Ativado
 launcher-process-status-1 = Desativado devido a falha
 launcher-process-status-2 = Desativado à força
@@ -284,6 +325,7 @@ touch-enabled = entrada touch ativada
 drag-enabled = arrasto da barra de rolagem ativado
 keyboard-enabled = teclado ativado
 autoscroll-enabled = rolagem automática ativada
+zooming-enabled = zoom suave com gesto de pinça ativado
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

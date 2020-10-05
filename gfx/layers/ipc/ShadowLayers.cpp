@@ -14,12 +14,11 @@
 #include "RenderTrace.h"        // for RenderTraceScope
 #include "gfx2DGlue.h"          // for Moz2D transition helpers
 #include "gfxPlatform.h"        // for gfxImageFormat, gfxPlatform
-#include "gfxPrefs.h"
+
 //#include "gfxSharedImageSurface.h"      // for gfxSharedImageSurface
 #include "ipc/IPCMessageUtils.h"  // for gfxContentType, null_t
 #include "IPDLActor.h"
-#include "mozilla/Assertions.h"  // for MOZ_ASSERT, etc
-#include "mozilla/dom/TabGroup.h"
+#include "mozilla/Assertions.h"                 // for MOZ_ASSERT, etc
 #include "mozilla/gfx/Point.h"                  // for IntSize
 #include "mozilla/layers/CompositableClient.h"  // for CompositableClient, etc
 #include "mozilla/layers/CompositorBridgeChild.h"
@@ -41,6 +40,7 @@
 #include "nsTArray.h"                      // for AutoTArray, nsTArray, etc
 #include "nsXULAppAPI.h"                   // for XRE_GetProcessType, etc
 #include "mozilla/ReentrantMonitor.h"
+#include "mozilla/StaticPrefs_layers.h"
 
 namespace mozilla {
 namespace ipc {
@@ -152,7 +152,7 @@ void KnowsCompositor::IdentifyTextureHost(
 
 KnowsCompositor::KnowsCompositor() : mSerial(++sSerialCounter) {}
 
-KnowsCompositor::~KnowsCompositor() {}
+KnowsCompositor::~KnowsCompositor() = default;
 
 KnowsCompositorMediaProxy::KnowsCompositorMediaProxy(
     const TextureFactoryIdentifier& aIdentifier) {
@@ -163,7 +163,7 @@ KnowsCompositorMediaProxy::KnowsCompositorMediaProxy(
   mSyncObject = mThreadSafeAllocator->GetSyncObject();
 }
 
-KnowsCompositorMediaProxy::~KnowsCompositorMediaProxy() {}
+KnowsCompositorMediaProxy::~KnowsCompositorMediaProxy() = default;
 
 TextureForwarder* KnowsCompositorMediaProxy::GetTextureForwarder() {
   return mThreadSafeAllocator->GetTextureForwarder();
@@ -189,15 +189,13 @@ RefPtr<KnowsCompositor> ShadowLayerForwarder::GetForMedia() {
 ShadowLayerForwarder::ShadowLayerForwarder(
     ClientLayerManager* aClientLayerManager)
     : mClientLayerManager(aClientLayerManager),
-      mMessageLoop(MessageLoop::current()),
+      mThread(NS_GetCurrentThread()),
       mDiagnosticTypes(DiagnosticTypes::NO_DIAGNOSTIC),
       mIsFirstPaint(false),
-      mWindowOverlayChanged(false),
       mNextLayerHandle(1) {
   mTxn = new Transaction();
-  if (TabGroup* tabGroup = mClientLayerManager->GetTabGroup()) {
-    mEventTarget = tabGroup->EventTargetFor(TaskCategory::Other);
-  }
+  mEventTarget = GetMainThreadSerialEventTarget();
+
   MOZ_ASSERT(mEventTarget || !XRE_IsContentProcess());
   mActiveResourceTracker = MakeUnique<ActiveResourceTracker>(
       1000, "CompositableForwarder", mEventTarget);
@@ -404,8 +402,7 @@ void ShadowLayerForwarder::UpdateTextureRegion(
 
 void ShadowLayerForwarder::UseTextures(
     CompositableClient* aCompositable,
-    const nsTArray<TimedTextureClient>& aTextures,
-    const Maybe<wr::RenderRoot>& aRenderRoot) {
+    const nsTArray<TimedTextureClient>& aTextures) {
   MOZ_ASSERT(aCompositable);
 
   if (!aCompositable->IsConnected()) {
@@ -484,8 +481,7 @@ bool ShadowLayerForwarder::DestroyInTransaction(
 }
 
 void ShadowLayerForwarder::RemoveTextureFromCompositable(
-    CompositableClient* aCompositable, TextureClient* aTexture,
-    const Maybe<wr::RenderRoot>& aRenderRoot) {
+    CompositableClient* aCompositable, TextureClient* aTexture) {
   MOZ_ASSERT(aCompositable);
   MOZ_ASSERT(aTexture);
   MOZ_ASSERT(aTexture->GetIPDLActor());
@@ -502,9 +498,7 @@ void ShadowLayerForwarder::RemoveTextureFromCompositable(
 }
 
 bool ShadowLayerForwarder::InWorkerThread() {
-  return MessageLoop::current() &&
-         (GetTextureForwarder()->GetMessageLoop()->id() ==
-          MessageLoop::current()->id());
+  return GetTextureForwarder()->GetThread()->IsOnCurrentThread();
 }
 
 void ShadowLayerForwarder::StorePluginWidgetConfigurations(
@@ -535,7 +529,7 @@ bool ShadowLayerForwarder::EndTransaction(
     const mozilla::TimeStamp& aRefreshStart,
     const mozilla::TimeStamp& aTransactionStart, bool aContainsSVG,
     const nsCString& aURL, bool* aSent,
-    const InfallibleTArray<CompositionPayload>& aPayload) {
+    const nsTArray<CompositionPayload>& aPayload) {
   *aSent = false;
 
   TransactionInfo info;
@@ -546,7 +540,7 @@ bool ShadowLayerForwarder::EndTransaction(
   }
 
   Maybe<TimeStamp> startTime;
-  if (gfxPrefs::LayersDrawFPS()) {
+  if (StaticPrefs::layers_acceleration_draw_fps()) {
     startTime = Some(TimeStamp::Now());
   }
 
@@ -564,9 +558,6 @@ bool ShadowLayerForwarder::EndTransaction(
   if (mDiagnosticTypes != diagnostics) {
     mDiagnosticTypes = diagnostics;
     mTxn->AddEdit(OpSetDiagnosticTypes(diagnostics));
-  }
-  if (mWindowOverlayChanged) {
-    mTxn->AddEdit(OpWindowOverlayChanged());
   }
 
   AutoTxnEnd _(mTxn);
@@ -635,9 +626,10 @@ bool ShadowLayerForwarder::EndTransaction(
       common.maskLayer() = LayerHandle();
     }
     common.compositorAnimations().id() = mutant->GetCompositorAnimationsId();
-    common.compositorAnimations().animations() = mutant->GetAnimations();
+    common.compositorAnimations().animations() =
+        mutant->GetAnimations().Clone();
     common.invalidRegion() = mutant->GetInvalidRegion().GetRegion();
-    common.scrollMetadata() = mutant->GetAllScrollMetadata();
+    common.scrollMetadata() = mutant->GetAllScrollMetadata().Clone();
     for (size_t i = 0; i < mutant->GetAncestorMaskLayerCount(); i++) {
       auto layer =
           Shadow(mutant->GetAncestorMaskLayerAt(i)->AsShadowableLayer());
@@ -660,16 +652,14 @@ bool ShadowLayerForwarder::EndTransaction(
     return true;
   }
 
-  mWindowOverlayChanged = false;
-
   info.cset() = std::move(mTxn->mCset);
   info.setSimpleAttrs() = std::move(setSimpleAttrs);
   info.setAttrs() = std::move(setAttrs);
   info.paints() = std::move(mTxn->mPaints);
-  info.toDestroy() = mTxn->mDestroyedActors;
+  info.toDestroy() = mTxn->mDestroyedActors.Clone();
   info.fwdTransactionId() = GetFwdTransactionId();
   info.id() = aId;
-  info.plugins() = mPluginWindowData;
+  info.plugins() = mPluginWindowData.Clone();
   info.isFirstPaint() = mIsFirstPaint;
   info.focusTarget() = mFocusTarget;
   info.scheduleComposite() = aScheduleComposite;
@@ -684,7 +674,7 @@ bool ShadowLayerForwarder::EndTransaction(
 #if defined(ENABLE_FRAME_LATENCY_LOG)
   info.fwdTime() = TimeStamp::Now();
 #endif
-  info.payload() = aPayload;
+  info.payload() = aPayload.Clone();
 
   TargetConfig targetConfig(mTxn->mTargetBounds, mTxn->mTargetRotation,
                             mTxn->mTargetOrientation, aRegionToClear);
@@ -716,10 +706,6 @@ bool ShadowLayerForwarder::EndTransaction(
     mPaintTiming.sendMs() =
         (TimeStamp::Now() - startTime.value()).ToMilliseconds();
     mShadowManager->SendRecordPaintTimes(mPaintTiming);
-  }
-
-  if (recordreplay::IsRecordingOrReplaying()) {
-    recordreplay::child::NotifyPaintStart();
   }
 
   *aSent = true;

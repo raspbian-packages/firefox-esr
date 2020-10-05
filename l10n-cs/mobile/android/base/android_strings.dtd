@@ -9,8 +9,8 @@
 <!ENTITY newfirstrun_urlbar_subtext "Rychlý, soukromý a vždy na vaší straně.">
 <!ENTITY firstrun_panel_title_privacy "Soukromí">
 <!ENTITY firstrun_privacy_message "Prohlížejte web, jako když se nikdo nedívá">
-<!ENTITY firstrun_privacy_subtext "Anonymní prohlížení s funkcí Ochrana proti sledování blokuje sledovací prvky, zatímco prohlížíte web, a nebude si pamatovat vaši historii.">
-<!ENTITY newfirstrun_privacy_subtext "Anonymní prohlížení blokuje sledující reklamy, které sledují vaše chování na internetu.">
+<!ENTITY firstrun_privacy_subtext "Anonymní prohlížení s funkcí Ochrana proti sledování blokuje sledující prvky, zatímco prohlížíte web, a nebude si pamatovat vaši historii.">
+<!ENTITY newfirstrun_privacy_subtext "Anonymní prohlížení blokuje reklamy, které sledují vaše chování na internetu.">
 <!ENTITY firstrun_panel_title_customize "Přizpůsobení">
 <!ENTITY firstrun_customize_message "Udělejte si aplikaci &brandShortName; podle sebe.">
 <!ENTITY firstrun_customize_subtext "Přizpůsobte si aplikaci &brandShortName; s doplňky. Blokujte reklamy, přidávejte funkce, nebo si vyberte nový vzhled, který bude odrazem vaší osobnosti.">
@@ -21,15 +21,16 @@
 <!ENTITY firstrun_data_message "Méně přenesených dat, větší úspora">
 <!ENTITY firstrun_data_subtext2 "Vypnutím obrázků přenesete méně dat na každé stránce, kterou navštívíte.">
 <!ENTITY firstrun_sync_title "Synchronizace">
-<!ENTITY firstrun_sync_message2 "Pokračujte tam, kde jste skončili.">
+<!ENTITY firstrun_sync_message3 "Synchronizujte své záložky, historii prohlížení a hesla na svém telefonu.">
 <!ENTITY firstrun_sync_subtext2 "Používejte Sync k nalezení záložek, hesel a dalších věcí uložených v aplikaci &brandShortName; na všech vašich zařízeních.">
 <!ENTITY newfirstrun_sync_subtext "Synchronizujte věci, které ukládáte na mobilu, s Firefoxem pro počítač – soukromě a bezpečně.">
+<!ENTITY firstrun_sendtab_title "Posílání panelů">
+<!ENTITY firstrun_sendtab_message "Sdílejte své panely mezi svým mobilem a počítačem.">
 <!ENTITY firstrun_signin_message "Připojte se a začněte">
-<!ENTITY firstrun_signin_button "Přihlásit se ke službě Sync">
-<!ENTITY newfirstrun_signin_button "Zapnout synchronizaci">
-<!ENTITY  onboard_start_button_browser "Začít prohlížet">
+<!ENTITY onboard_start_button_browser "Začít prohlížet">
 <!ENTITY firstrun_button_notnow "Nyní ne">
 <!ENTITY firstrun_button_next "Další">
+<!ENTITY firstrun_signup_button "Přihlásit se">
 
 <!ENTITY firstrun_tabqueue_title "Odkazy">
 
@@ -66,11 +67,13 @@
 <!ENTITY  sending_crash_report "Odesílání hlášení o pádu\u2026">
 <!ENTITY  crash_close_label "Zavřít">
 <!ENTITY  crash_restart_label "Restartovat &brandShortName;">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
+<!ENTITY  crash_notification_title "Aplikace &brandShortName; spadla">
+<!ENTITY  crash_notification_message "Klepnutím pád nahlásíte společnosti &vendorShortName;">
+<!ENTITY  crash_notification_negative_button_text "Ignorovat">
 
-<!ENTITY url_bar_default_text2 "Zadejte adresu nebo dotaz pro vyhledávač">
+<!ENTITY url_bar_default_text2 "Zadejte hledání nebo adresu">
 
 <!-- Localization note: this text will be displayed in the Search Widget -->
 <!ENTITY search_widget_default_text "Vyhledat na webu">
@@ -111,9 +114,9 @@
 <!ENTITY bookmark_folder_updated "Složka aktualizována">
 <!ENTITY bookmark_parent_folder "Nadřazená složka">
 <!ENTITY bookmark_add_folder "Přidat novou složku">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
+<!ENTITY bookmark_default_folder_title "(bez titulku)">
 
 <!ENTITY reader_saved_offline "Uloženo offline">
 <!-- Localization note (reader_switch_to_bookmarks) : This
@@ -258,7 +261,7 @@
      particular radio button, a text field will appear below the radio button and allow the
      user to insert an address of their choice. This string is the hint text to that
      text field. -->
-<!ENTITY home_homepage_hint_user_address "Zadejte adresu nebo dotaz pro vyhledávač">
+<!ENTITY home_homepage_hint_user_address "Zadejte hledání nebo adresu">
 
 <!-- Localization note: These are shown in the left sidebar on tablets -->
 <!ENTITY pref_header_general "Obecné">
@@ -272,7 +275,8 @@
 
 <!ENTITY pref_cookies_menu "Cookies">
 <!ENTITY pref_cookies_accept_all "Povolit">
-<!ENTITY pref_cookies_not_accept_foreign "Povolit mimo 3. stran">
+<!ENTITY pref_cookies_not_accept_foreign "Povolit kromě třetích stran">
+<!ENTITY pref_cookies_not_accept_trackers "Povolit kromě sledovacích">
 <!ENTITY pref_cookies_disabled "Zakázat">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -333,11 +337,6 @@
 
 <!ENTITY pref_pwa "Progresivní webové aplikace">
 <!ENTITY pref_pwa_summary "Povolit webovým aplikacím přidání na domovskou obrazovku">
-
-<!ENTITY tracking_protection_prompt_title "Nyní s Ochranou proti sledování">
-<!ENTITY tracking_protection_prompt_text "Aktivně blokuje prvky, které vás mohou sledovat, abyste se o ně nemuseli starat.">
-<!ENTITY tracking_protection_prompt_tip_text "Pro více informací se navštivte nastavení Soukromí">
-<!ENTITY tracking_protection_prompt_action_button "Rozumím">
 
 <!ENTITY tab_queue_toast_message3 "Panel uložen do aplikace &brandShortName;">
 <!ENTITY tab_queue_toast_action "Otevřít nyní">
@@ -424,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "Klepněte na „Prohlížeč“ a vyberte &brandShortName;">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Navštivte nápovědu">
 <!ENTITY pref_about_firefox "O aplikaci &brandShortName;">
 <!ENTITY pref_vendor_faqs "Časté otázky">
 <!ENTITY pref_vendor_feedback "Zpětná vazba">
@@ -474,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "Geolokační služba &vendorShortName; běží">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "Automatické aktualizace">
-<!ENTITY pref_update_autodownload_wifi "Pouze přes Wi-Fi">
-<!ENTITY pref_update_autodownload_never "Nikdy">
-<!ENTITY pref_update_autodownload_always "Vždy">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "Nápověda">
 
@@ -495,11 +485,12 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "Sdílet">
 <!ENTITY share_title "Sdílet pomocí">
 <!ENTITY share_image_failed "Obrázek se nepodařilo sdílet">
+<!ENTITY share_error_toast_message "Do této aplikace nelze sdílet">
 <!ENTITY save_as_pdf "Uložit jako PDF">
 <!ENTITY print "Tisk">
 <!ENTITY view_page_source "Zobrazit zdrojový kód stránky">
 <!ENTITY find_in_page "Najít na stránce">
-<!ENTITY desktop_mode "Verze stránky pro počítač">
+<!ENTITY desktop_mode "Verze pro počítač">
 <!ENTITY page "Stránka">
 <!ENTITY tools "Nástroje">
 <!ENTITY new_tab "Nový panel">
@@ -595,7 +586,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "Adresa">
 <!ENTITY bookmark_edit_keyword "Klíčové slovo">
 <!ENTITY bookmark_select_folder "Vybrat složku">
-
+<!ENTITY bookmark_edit_undo "Vrátit změny">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
      dialog that appears after selecting the "Edit Site Settings" context menu item. -->
@@ -684,7 +675,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "Vyberte nebo nahrajte zvuk">
 <!ENTITY filepicker_image_title "Vyberte nebo vyfoťte obrázek">
 <!ENTITY filepicker_video_title "Vyberte nebo natočte video">
-
+<!ENTITY filepicker_permission_denied "Požadovaná oprávnění nebyla udělena, bude použit systémový výběr souborů.">
 
 <!-- Site identity popup -->
 <!ENTITY identity_connected_to "Jste připojeni k">
@@ -746,37 +737,18 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 
 <!ENTITY searchable_description "Záložky a historie">
 
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "Dostupná aktualizace aplikace &brandShortName;">
-<!ENTITY updater_start_select2 "Klepněte pro stažení aktualizace">
-
-<!ENTITY updater_downloading_title2 "Stahování aplikace &brandShortName;">
-<!ENTITY updater_downloading_title_failed2 "Stahování skončilo chybou">
-<!ENTITY updater_downloading_select2 "Klepněte pro instalaci aktualizace po stažení">
-<!ENTITY updater_downloading_retry2 "Klepněte pro opakování stažení">
-
-<!ENTITY updater_apply_title3 "Aktualizace pro aplikaci &brandShortName; byla stažena">
-<!ENTITY updater_apply_select3 "Dotkněte se pro instalaci">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "Pro stahování souborů a aktualizací povolte prohlížeči &brandShortName; přístup k úložišti.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "Povolit">
-
     <!-- Guest mode -->
 <!ENTITY new_guest_session "Nová relace pro hosty">
 <!ENTITY exit_guest_session "Ukončit relaci pro hosty">
 <!ENTITY guest_session_dialog_continue "Pokračovat">
 <!ENTITY guest_session_dialog_cancel "Zrušit">
 <!ENTITY new_guest_session_title "Aplikace &brandShortName; bude nyní restartována">
-<!ENTITY new_guest_session_text2 "Osoba používající tento režim nebude moci vidět vaše osobní data o prohlížení (jako jsou uložená přihlášení, historie či záložky).\n\nJakmile ukončí režim pro hosty, budou jeho data smazána a vaše relace bude obnovena.">
+<!ENTITY new_guest_session_text2 "Osoba používající tento režim nebude moci vidět vaše soukromá data (jako jsou uložená přihlášení, historie či záložky).\n\nJakmile ukončí režim pro hosty, budou jeho data smazána a vaše relace bude obnovena.">
 <!ENTITY guest_browsing_notification_title "Prohlížení pro hosty je povoleno">
 <!ENTITY guest_browsing_notification_text "Klepněte pro ukončení">
 
 <!ENTITY exit_guest_session_title "Aplikace &brandShortName; bude nyní restartována">
-<!ENTITY exit_guest_session_text "Data o prohlížení z této relace budou smazána.">
+<!ENTITY exit_guest_session_text "Soukromá data z této relace budou smazána.">
 
 <!-- Miscellaneous -->
 <!-- LOCALIZATION NOTE (ellipsis): This text is appended to a piece of text that does not fit in the
@@ -875,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "Založte si položky Zobrazení čtečky pro jejich čtení offline.">
 <!ENTITY helper_triple_readerview_open_button "Přidat do záložek">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "Vítá vás &brandShortName;">
+<!ENTITY activity_stream_signin_description "S účtem Firefoxu můžete synchronizovat záložky, hesla i další svá data.">
+<!ENTITY activity_stream_signup_button "Přihlásit se">
+<!ENTITY activity_stream_signin_prompt "Už máte účet?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "Přihlásit se.">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "V roce 2020 se můžete těšit na zcela nový Firefox">
+<!ENTITY activity_stream_firefox_promo_description "Již brzy: Výkonnější, rychlejší, s vylepšenou ochranou proti sledování. A také nové funkce, které vám pomohou najít, uložit a sdílet více obsahu, který máte rádi.">
+<!ENTITY activity_stream_firefox_promo_button "Podívejte se">
+
 <!ENTITY activity_stream_topsites "Top stránky">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "Doporučení ze služby &brandPocket;">
@@ -932,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "Zvuk a video">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "Tipy pro &vendorShortName;">
-<!ENTITY updater_notification_channel "Aktualizace aplikace">
 <!ENTITY synced_tabs_notification_channel "Synchronizované panely">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

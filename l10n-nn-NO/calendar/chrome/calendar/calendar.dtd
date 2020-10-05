@@ -10,6 +10,7 @@
 <!ENTITY calendar.newtask.button.tooltip          "Lag ny oppgåve" >
 
 <!ENTITY calendar.unifinder.todoitems.label       "Oppgåver" >
+
 <!ENTITY calendar.unifinder.showcompletedtodos.label "Vis fullførte oppgåver">
 
 <!ENTITY calendar.today.button.label          "I dag">
@@ -179,7 +180,7 @@
 <!ENTITY calendar.context.attendance.menu.accesskey             "D">
 <!ENTITY calendar.context.attendance.occurrence.label           "Denne førekomsten">
 <!ENTITY calendar.context.attendance.all2.label                 "Komplett serie">
-<!ENTITY calendar.context.attendance.send.label                 "Send et varsel no">
+<!ENTITY calendar.context.attendance.send.label                 "Send eit varsel no">
 <!ENTITY calendar.context.attendance.send.accesskey             "S">
 <!ENTITY calendar.context.attendance.dontsend.label             "Ikkje send eit varsel">
 <!ENTITY calendar.context.attendance.dontsend.accesskey         "d">
@@ -364,6 +365,7 @@
 <!ENTITY calendarproperties.firealarms.label               "Vis alarmar">
 <!ENTITY calendarproperties.cache3.label                   "Fråkopla støtte">
 <!ENTITY calendarproperties.enabled.label                  "Slå på denne kalenderen">
+<!ENTITY calendarproperties.enabled2.label                 "Aktiver denne kalenderen">
 <!ENTITY calendarproperties.forceDisabled.label            "Fann ikkje tilbydaren av denne kalenderen. Dette skjer ofte om du har slått av eller avinstallert enkelte utvidingar.">
 <!ENTITY calendarproperties.unsubscribe.label              "Stopp abonnement">
 <!ENTITY calendarproperties.unsubscribe.accesskey          "S">

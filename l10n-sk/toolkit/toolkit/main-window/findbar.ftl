@@ -9,12 +9,10 @@ findbar-next =
     .tooltiptext = Vyhľadá ďalší výskyt reťazca
 findbar-previous =
     .tooltiptext = Vyhľadá predchádzajúci výskyt reťazca
+
 findbar-find-button-close =
     .tooltiptext = Zavrie panel vyhľadávania
-findbar-highlight-all =
-    .label = Zvýrazniť všetky výskyty
-    .accesskey = v
-    .tooltiptext = Zvýrazní všetky výskyty hľadaného reťazca
+
 findbar-highlight-all2 =
     .label = Zvýrazniť všetky výskyty
     .accesskey =
@@ -23,10 +21,17 @@ findbar-highlight-all2 =
            *[other] a
         }
     .tooltiptext = Zvýrazní všetky výskyty hľadaného reťazca
+
 findbar-case-sensitive =
     .label = Rozlišovať veľkosť písmen
     .accesskey = R
     .tooltiptext = Vyhľadáva s rozlišovaním malých a veľkých písmen
+
+findbar-match-diacritics =
+    .label = Rozlišovať diakritiku
+    .accesskey = i
+    .tooltiptext = Zohľadní rozdiely medzi písmenami s diakritickými znamienkami a bez nich (napríklad pri hľadaní slova „diéta“ nebude ponúknuté slovo „dieťa“.
+
 findbar-entire-word =
     .label = Celé slová
     .accesskey = C

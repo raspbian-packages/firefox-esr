@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 reload-tab =
-    .label = Obnovit panel
-    .accesskey = O
+    .label = Znovu načíst panel
+    .accesskey = o
 select-all-tabs =
     .label = Vybrat všechny panely
     .accesskey = a
@@ -21,8 +21,8 @@ close-other-tabs =
     .label = Zavřít ostatní panely
     .accesskey = v
 reload-tabs =
-    .label = Obnovit panely
-    .accesskey = O
+    .label = Znovu načíst panely
+    .accesskey = o
 pin-tab =
     .label = Připnout panel
     .accesskey = a
@@ -55,6 +55,18 @@ move-to-new-window =
     .accesskey = k
 undo-close-tab =
     .label = Obnovit zavřený panel
+    .accesskey = t
+tab-context-close-multiple-tabs =
+    .label = Zavřít několik panelů
+    .accesskey = k
+tab-context-undo-close-tabs =
+    .label =
+        { $tabCount ->
+            [1] Obnovit zavřený panel
+            [one] Obnovit zavřený panel
+            [few] Obnovit zavřené panely
+           *[other] Obnovit zavřené panely
+        }
     .accesskey = t
 close-tab =
     .label = Zavřít panel

@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Szinkronizált lapok
 synced-tabs-sidebar-noclients-subtitle = Szeretné a más eszközein megnyitott lapjait itt látni?
 synced-tabs-sidebar-notsignedin = Jelentkezzen be a más készülékeiről származó lapok listájának megjelenítéséhez.
+synced-tabs-sidebar-intro = Tekintse meg a más eszközökről származó lapok listáját.
 synced-tabs-sidebar-unverified = A fiókját ellenőrizni kell.
 synced-tabs-sidebar-notabs = Nincsenek nyitott lapok
 synced-tabs-sidebar-openprefs = A { -sync-brand-short-name } beállításainak megnyitása
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Eszközök kezelése…
     .accesskey = E
+synced-tabs-context-sync-now =
+    .label = Szinkronizálás
+    .accesskey = S
 fxa-sign-in = Bejelentkezés a { -sync-brand-short-name }be
+turn-on-sync = A { -sync-brand-short-name } bekapcsolása

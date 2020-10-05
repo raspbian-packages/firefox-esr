@@ -78,6 +78,9 @@
 <!ENTITY cspBlocked.title "Rhwystrwyd gan Bolisi Diogelwch Cynnwys">
 <!ENTITY cspBlocked.longDesc "<p>Mae &brandShortName; wedi rhwystro'r dudalen rhag llwytho yn y ffordd yma gan fod gan y dudalen bolisi diogelwch cynnwys sy'n atal hynny.</p>">
 
+<!ENTITY xfoBlocked.title "Wedi'i rwystro gan Bolisi X-Frame-Options">
+<!ENTITY xfoBlocked.longDesc "<p>Mae &brandShortName; wedi atal y dudalen hon rhag llwytho yn y cyd-destun hwn oherwydd bod gan y dudalen bolisi X-Frame-Options sy'n ei gwrthod.</p>">
+
 <!ENTITY corruptedContentErrorv2.title "Gwall Cynnwys Llygredig">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>Nid oes modd dangos y dudalen rydych yn ceisio ei gweld yn sgil canfod gwall trosglwyddo data.</p><ul><li>Cysylltwch â pherchnogion y wefan i'w hysbysu o'r anhawster.</li></ul>">
 
@@ -103,4 +106,4 @@ functionality specific to thunderbird. -->
 <!ENTITY blockedByPolicy.title "Tudalen wedi ei Rhwystro">
 
 <!ENTITY networkProtocolError.title "Gwall Protocol Rhwydwaith">
-<!ENTITY networkProtocolError.longDesc "<p>Nid oes modd dangos y dudalen rydych chi'n ceisio'i weld oherwydd canfuwyd gwall yn y protocol rhwydwaith.</p><ul><li> Cysylltwch â pherchenogion y wefan i roi gwybod iddynt am y broblem hon.</li></ul>">
+<!ENTITY networkProtocolError.longDesc "<p>Nid oes modd dangos y dudalen rydych yn ceisio'i gweld oherwydd canfuwyd gwall yn y protocol rhwydwaith.</p><ul><li>Cysylltwch â pherchenogion y wefan i roi gwybod iddynt am y broblem hon.</li></ul>">

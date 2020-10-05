@@ -5,7 +5,7 @@
 <!ENTITY itemGeneral.label       "Γενικά">
 <!ENTITY dataChoicesTab.label    "Επιλογές δεδομένων">
 <!ENTITY itemUpdate.label        "Ενημέρωση">
-<!ENTITY itemNetworking.label    "Δίκτυο &amp; αποθηκευτικός χώρος">
+<!ENTITY itemNetworking.label    "Δίκτυο &amp; χώρος δίσκου">
 <!ENTITY itemCertificates.label  "Πιστοποιητικά">
 
 <!-- General Settings -->
@@ -37,7 +37,7 @@
 <!ENTITY configEdit.label              "Επεξεργασία ρυθμίσεων…">
 <!ENTITY configEdit.accesskey          "θ">
 <!ENTITY returnReceiptsInfo.label      "Καθορίστε τον τρόπο διαχείρισης των βεβαιώσεων ανάγνωσης από το &brandShortName;">
-<!ENTITY showReturnReceipts.label      "Βεβαιώσεις ανάγνωσης…">
+<!ENTITY showReturnReceipts.label      "Αποδεικτικά ανάγνωσης…">
 <!ENTITY showReturnReceipts.accesskey  "Β">
 
 <!-- Data Choices -->
@@ -85,12 +85,12 @@
 <!ENTITY showSettings.accesskey        "Θ">
 <!ENTITY proxiesConfigure.label        "Ρύθμιση του τρόπου σύνδεσης του &brandShortName; στο διαδίκτυο">
 <!ENTITY connectionsInfo.caption       "Σύνδεση">
-<!ENTITY offlineInfo.caption           "Εργασία χωρίς σύνδεση">
+<!ENTITY offlineInfo.caption           "Εκτός σύνδεσης">
 <!ENTITY offlineInfo.label             "Ρυθμίσεις εργασίας χωρίς σύνδεση">
-<!ENTITY showOffline.label             "Χωρίς σύνδεση…">
+<!ENTITY showOffline.label             "Εκτός σύνδεσης…">
 <!ENTITY showOffline.accesskey         "Χ">
 
-<!ENTITY Diskspace                       "Αποθηκευτικός χώρος">
+<!ENTITY Diskspace                       "Χώρος δίσκου">
 <!ENTITY offlineCompactFolders.label     "Συμπίεση φακέλων πάνω από">
 <!ENTITY offlineCompactFolders.accesskey "π">
 <!ENTITY offlineCompactFoldersMB.label   "MB στο σύνολο">
@@ -104,16 +104,16 @@
 <!ENTITY useCacheBefore.label            "Χρήση μέχρι">
 <!ENTITY useCacheBefore.accesskey        "μ">
 <!ENTITY useCacheAfter.label             "MB χώρου για την προσωρινή μνήμη">
-<!ENTITY overrideSmartCacheSize.label    "Παράκαμψη αυτόματης διαχείρισης cache">
+<!ENTITY overrideSmartCacheSize.label    "Παράκαμψη αυτόματης διαχείρισης προσωρινής μνήμης">
 <!ENTITY overrideSmartCacheSize.accesskey "ψ">
 <!ENTITY clearCacheNow.label             "Εκκαθάριση τώρα">
 <!ENTITY clearCacheNow.accesskey         "θ">
 
 <!-- Certificates -->
 <!ENTITY certSelection.description       "Όταν ένας διακομιστής ζητά ένα πιστοποιητικό:">
-<!ENTITY certs.auto                      "Να επιλέγεται ένα αυτόματα">
+<!ENTITY certs.auto                      "Αυτόματη επιλογή">
 <!ENTITY certs.auto.accesskey            "λ">
-<!ENTITY certs.ask                       "Να γίνεται ερώτηση κάθε φορά">
+<!ENTITY certs.ask                       "Ερώτηση κάθε φορά">
 <!ENTITY certs.ask.accesskey             "γ">
 <!ENTITY enableOCSP.label                "Ερώτηση στους διακομιστές για OCSP ανταπόκριση ώστε να επιβεβαιωθεί η τρέχουσα εγκυρότητα των πιστοποιητικών">
 <!ENTITY enableOCSP.accesskey            "δ">
@@ -122,3 +122,8 @@
 <!ENTITY manageCertificates.accesskey "Π">
 <!ENTITY viewSecurityDevices.label "Συσκευές ασφαλείας">
 <!ENTITY viewSecurityDevices.accesskey "υ">
+
+<!ENTITY manageCertificates2.label "Διαχείριση πιστοποιητικών…">
+<!ENTITY manageCertificates2.accesskey "Δ">
+<!ENTITY viewSecurityDevices2.label "Συσκευές ασφαλείας…">
+<!ENTITY viewSecurityDevices2.accesskey "Σ">

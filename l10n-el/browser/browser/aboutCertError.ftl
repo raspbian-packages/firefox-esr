@@ -48,3 +48,55 @@ cert-error-code-prefix-link = Κωδικός σφάλματος: <a data-l10n-na
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Οι ιστοσελίδες αποδεικνύουν την ταυτότητά τους μέσω πιστοποιητικών, τα οποία εκδίδονται από αρχές πιστοποιητικών. Τα περισσότερα προγράμματα περιήγησης δεν εμπιστεύονται πλέον πιστοποιητικά από τις GeoTrust, RapidSSL, Symantec, Thawte και VeriSign. Το { $hostname } χρησιμοποιεί ένα πιστοποιητικό από μία από αυτές τις αρχές και για το λόγο αυτό, η ταυτότητα της ιστοσελίδας δεν μπορεί να αποδειχθεί.
 cert-error-symantec-distrust-admin = Μπορείτε να ειδοποιήσετε το διαχειριστή της ιστοσελίδας σχετικά με αυτό το πρόβλημα.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
+cert-error-details-cert-chain-label = Ακολουθία πιστοποιητικού:
+open-in-new-window-for-csp-or-xfo-error = Άνοιγμα ιστοσελίδας σε νέο παράθυρο
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = Για τη δική σας ασφάλεια, το { $hostname } δεν θα επιτρέψει στο { -brand-short-name } την εμφάνιση της σελίδας αν κάποια άλλη ιστοσελίδα την έχει ενσωματώσει. Για να δείτε αυτή τη σελίδα, πρέπει να την ανοίξετε σε νέο παράθυρο.
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Αδυναμία σύνδεσης
+deniedPortAccess-title = Αυτή η διεύθυνση είναι περιορισμένη
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Χμ. Έχουμε πρόβλημα στην εύρεση του ιστοτόπου.
+fileNotFound-title = Το αρχείο δεν βρέθηκε
+fileAccessDenied-title = Άρνηση πρόσβασης στο αρχείο
+generic-title = Ωχ!
+captivePortal-title = Σύνδεση στο δίκτυο
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Χμ. Η διεύθυνση δεν φαίνεται να είναι σωστή.
+netInterrupt-title = Η σύνδεση διακόπηκε
+notCached-title = Το έγγραφο έληξε
+netOffline-title = Λειτουργία εκτός σύνδεσης
+contentEncodingError-title = Σφάλμα κωδικοποίησης περιεχομένου
+unsafeContentType-title = Επισφαλής τύπος αρχείου
+netReset-title = Έγινε επαναφορά της σύνδεσης
+netTimeout-title = Το χρονικό όριο σύνδεσης έληξε
+unknownProtocolFound-title = Η διεύθυνση δεν έγινε κατανοητή
+proxyConnectFailure-title = Ο διαμεσολαβητής αρνείται συνδέσεις
+proxyResolveFailure-title = Δεν ήταν δυνατή η εύρεση διαμεσολαβητή
+redirectLoop-title = Η σελίδα δεν ανακατευθύνει σωστά
+unknownSocketType-title = Απρόσμενη απάντηση από τον εξυπηρετητή
+nssFailure2-title = Αποτυχία ασφαλούς σύνδεσης
+cspBlocked-title = Έχει φραγεί από την πολιτική προστασίας περιεχομένου
+xfoBlocked-title = Αποκλείστηκε από τις επιλογές πολιτικής X-Frame
+csp-xfo-error-title = Το { -brand-short-name } δεν μπορεί να ανοίξει τη σελίδα
+corruptedContentError-title = Σφάλμα κατεστραμμένου περιεχομένου
+remoteXUL-title = Απομακρυσμένο XUL
+sslv3Used-title = Αδύνατη η ασφαλής σύνδεση
+inadequateSecurityError-title = Η σύνδεσή σας δεν είναι ασφαλής
+blockedByPolicy-title = Αποκλεισμένη σελίδα
+clockSkewError-title = Το ρολόι του υπολογιστή σας είναι λάθος
+networkProtocolError-title = Σφάλμα πρωτοκόλλου δικτύου
+nssBadCert-title = Προειδοποίηση: Πιθανός κίνδυνος ασφαλείας
+nssBadCert-sts-title = Δεν έγινε σύνδεση: Πιθανό ζήτημα ασφαλείας
+certerror-mitm-title = Κάποιο λογισμικό εμποδίζει την ασφαλή σύνδεση του { -brand-short-name } με αυτή την ιστοσελίδα

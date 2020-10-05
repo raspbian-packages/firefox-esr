@@ -5,6 +5,7 @@
 synced-tabs-sidebar-title = Tab yang Disinkronkan
 synced-tabs-sidebar-noclients-subtitle = Ingin melihat tab dari perangkat Anda yang lain di sini?
 synced-tabs-sidebar-notsignedin = Masuk untuk melihat daftar tab dari perangkat lainnya.
+synced-tabs-sidebar-intro = Lihat daftar tab dari perangkat Anda lainnya.
 synced-tabs-sidebar-unverified = Akun Anda perlu diverifikasi.
 synced-tabs-sidebar-notabs = Tidak ada tab terbuka
 synced-tabs-sidebar-openprefs = Buka preferensi { -sync-brand-short-name }
@@ -36,4 +37,8 @@ synced-tabs-context-open-all-in-tabs =
 synced-tabs-context-manage-devices =
     .label = Kelola Perangkat…
     .accesskey = D
+synced-tabs-context-sync-now =
+    .label = Sinkronkan Sekarang
+    .accesskey = S
 fxa-sign-in = Masuk ke { -sync-brand-short-name }
+turn-on-sync = Aktifkan { -sync-brand-short-name }

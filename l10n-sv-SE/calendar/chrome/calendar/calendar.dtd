@@ -10,6 +10,7 @@
 <!ENTITY calendar.newtask.button.tooltip          "Skapa ny uppgift" >
 
 <!ENTITY calendar.unifinder.todoitems.label       "Uppgifter" >
+
 <!ENTITY calendar.unifinder.showcompletedtodos.label "Visa slutförda Uppgifter">
 
 <!ENTITY calendar.today.button.label          "Idag">
@@ -178,8 +179,6 @@
 <!ENTITY calendar.context.attendance.menu.label                 "Närvaro">
 <!ENTITY calendar.context.attendance.menu.accesskey             "N">
 <!ENTITY calendar.context.attendance.occurrence.label           "Denna händelse">
-<!ENTITY calendar.context.attendance.all.label        "Alla händelser" >
-
 <!ENTITY calendar.context.attendance.all2.label                 "Komplett serie">
 <!ENTITY calendar.context.attendance.send.label                 "Skicka en avisering nu">
 <!ENTITY calendar.context.attendance.send.accesskey             "S">
@@ -316,7 +315,7 @@
 <!ENTITY calendar.tasks.view.minimonth.label           "Mini-månad">
 <!ENTITY calendar.tasks.view.minimonth.accesskey       "M">
 
-<!ENTITY calendar.tasks.view.calendarlist.label        "Kalender">
+<!ENTITY calendar.tasks.view.calendarlist.label        "Kalenderlista">
 <!ENTITY calendar.tasks.view.calendarlist.accesskey    "K">
 
 <!ENTITY calendar.tasks.view.filtertasks.label           "Sortera uppgifter">
@@ -366,6 +365,7 @@
 <!ENTITY calendarproperties.firealarms.label               "Visa påminnelse">
 <!ENTITY calendarproperties.cache3.label                   "Offline support">
 <!ENTITY calendarproperties.enabled.label                  "Slå på denna kalender">
+<!ENTITY calendarproperties.enabled2.label                 "Aktivera den här kalendern">
 <!ENTITY calendarproperties.forceDisabled.label            "Leverantören för den här kalendern kunde inte hittas. Detta händer ofta om du har inaktiverat eller avinstallerat vissa addons.">
 <!ENTITY calendarproperties.unsubscribe.label              "Avsluta prenumeration">
 <!ENTITY calendarproperties.unsubscribe.accesskey          "U">

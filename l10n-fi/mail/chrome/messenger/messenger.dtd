@@ -42,6 +42,8 @@
 <!ENTITY  newMessageCmd.accesskey "V">
 <!ENTITY  newContactCmd.label "Osoitekirjan yhteyshenkilö…">
 <!ENTITY  newContactCmd.accesskey "y">
+<!ENTITY openMenuCmd.label "Avaa">
+<!ENTITY openMenuCmd.accesskey "A">
 <!ENTITY openMessageFileCmd.label "Avaa tallennettu viesti…">
 <!ENTITY openMessageFileCmd.accesskey "A">
 <!ENTITY saveAsMenu.label "Tallenna nimellä">
@@ -172,7 +174,6 @@
 <!ENTITY compactVersion.accesskey "T">
 <!ENTITY folderPaneBar.label "Kansiopaneelin työkalupalkki">
 <!ENTITY folderPaneBar.accesskey "p">
-<!ENTITY folderModeSelector.label "Kansionäkymät">
 
 <!-- Sort Menu -->
 <!ENTITY sortMenu.label "Järjestelyperuste">
@@ -288,6 +289,8 @@
 <!ENTITY searchMailCmd.label "Etsi viesteistä…">
 <!ENTITY searchMailCmd.accesskey "v">
 <!ENTITY searchMailCmd.key "f">
+<!ENTITY glodaSearchCmd.label "Globaali haku…">
+<!ENTITY glodaSearchCmd.accesskey "G">
 <!ENTITY searchAddressesCmd.label "Etsi osoitekirjasta…">
 <!ENTITY searchAddressesCmd.accesskey "o">
 
@@ -587,6 +590,7 @@
 <!ENTITY fileButton.tooltip "Tallenna valittu viesti">
 <!ENTITY archiveButton.tooltip "Arkistoi valitut viestit">
 <!ENTITY openConversationButton.tooltip "Näytä valitun viestin keskustelu">
+<!ENTITY openMsgConversationButton.tooltip "Näytä valitun viestin keskustelu">
 <!ENTITY nextButton.tooltip "Siirry seuraavaan lukematta olevaan viestiin">
 <!ENTITY nextMsgButton.tooltip "Siirry seuraavaan viestiin">
 <!ENTITY previousButton.tooltip "Siirry edelliseen lukematta olevaan viestiin">
@@ -605,7 +609,6 @@
 <!ENTITY tagButton.tooltip "Aseta viesteihin tunnuksia">
 <!ENTITY compactButton.tooltip "Poista poistettu viesti valitusta kansiosta">
 <!ENTITY appmenuButton1.tooltip "Avaa &brandShortName;-valikko">
-
 <!ENTITY addonsButton.tooltip "Hallinnoi lisäosia">
 
 <!-- Toolbar Button Popup -->
@@ -630,7 +633,7 @@
 
 <!-- AppMenu Popup -->
 <!ENTITY appmenuNewMsgCmd.label "Uusi viesti">
-<!ENTITY appmenuNewContactCmd.label "Osoitekirjan yhteistyö…">
+<!ENTITY appmenuNewContactCmd.label "Osoitekirjan yhteyshenkilö…">
 <!ENTITY appmenuEditMenu.label "Muokkaa">
 <!ENTITY appmenuToolbarLayout.label "Työkalupalkin asettelu…">
 <!ENTITY appmenuSelectThread.label "Valitse viestiketju">
@@ -707,6 +710,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Tallenna haku kansiona…">
 
 <!-- Thread Pane -->
+<!ENTITY selectColumn.label "Valitse viestit">
 <!ENTITY threadColumn.label "Viestiketju">
 <!ENTITY fromColumn.label "Lähettäjä">
 <!ENTITY recipientColumn.label "Vastaanottaja">
@@ -728,8 +732,11 @@
 <!ENTITY idColumn.label "Saapumisjärjestys">
 <!ENTITY attachmentColumn.label "Liitteet">
 
+<!ENTITY deleteColumn.label "Poista">
+
 <!-- Thread Pane Tooltips -->
 <!ENTITY columnChooser2.tooltip "Valitse näkyvät sarakkeet">
+<!ENTITY selectColumn.tooltip "Valitse kaikki viestit tai poista valinta">
 <!ENTITY threadColumn2.tooltip "Näytä viestiketjut">
 <!ENTITY fromColumn2.tooltip "Järjestä lähettäjän mukaan">
 <!ENTITY recipientColumn2.tooltip "Järjestä vastaanottajan mukaan">
@@ -750,6 +757,8 @@
 <!ENTITY locationColumn2.tooltip "Järjestä sijainnin mukaan">
 <!ENTITY idColumn2.tooltip "Järjestä saapumisjärjestyksen mukaan">
 <!ENTITY attachmentColumn2.tooltip "Järjestä liitteiden mukaan">
+
+<!ENTITY deleteColumn.tooltip "Poista viesti">
 
 <!-- Thread Pane Context Menu -->
 <!ENTITY contextNewMsgFromTemplate.label "Uusi viesti mallista">
@@ -970,3 +979,7 @@
 <!ENTITY dockOptions.label              "Sovelluskuvakkeen asetukset…">
 <!ENTITY writeNewMessageDock.label      "Kirjoita uusi viesti">
 <!ENTITY openAddressBookDock.label      "Avaa osoitekirja">
+
+<!-- Content tab Navigation buttons -->
+<!ENTITY browseBackButton.tooltip    "Siirry sivu taaksepäin">
+<!ENTITY browseForwardButton.tooltip "Siirry sivu eteenpäin">

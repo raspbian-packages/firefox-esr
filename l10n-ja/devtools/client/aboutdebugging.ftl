@@ -99,7 +99,7 @@ about-debugging-refresh-usb-devices-button = デバイスを再検索
 about-debugging-setup-title = セットアップ
 
 # Introduction text in the Setup page to explain how to configure remote debugging.
-about-debugging-setup-intro = リモートデバッグを行うデバイスの接続方法を設定します。
+about-debugging-setup-intro = リモートデバッグを行うデバイスの接続方式を設定します。
 
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
 about-debugging-setup-this-firefox = このバージョンの { -brand-shorter-name } でタブと拡張機能、Service Worker をデバッグするには、<a>{ about-debugging-this-firefox-runtime-name }</a> を使用します。
@@ -118,10 +118,10 @@ about-debugging-setup-usb-disabled = 有効にすると Android USB デバッグ
 
 # Text of the button displayed in the USB section of the setup page when USB debugging is disabled.
 # Clicking on it will download components needed to debug USB Devices remotely.
-about-debugging-setup-usb-enable-button = USB デバイスを有効にする
+about-debugging-setup-usb-enable-button = USB デバイスを有効化
 
 # Text of the button displayed in the USB section of the setup page when USB debugging is enabled.
-about-debugging-setup-usb-disable-button = USB デバイスを無効にする
+about-debugging-setup-usb-disable-button = USB デバイスを無効化
 
 # Text of the button displayed in the USB section of the setup page while USB debugging
 # components are downloaded and installed.
@@ -136,10 +136,10 @@ about-debugging-setup-usb-status-updating = 更新中...
 about-debugging-setup-usb-step-enable-dev-menu2 = Android 端末の開発者向けオプションを有効にします。
 
 # USB section step by step guide
-about-debugging-setup-usb-step-enable-debug2 = Android 端末の開発者向けオプションの USB デバッグを有効にします。
+about-debugging-setup-usb-step-enable-debug2 = Android 端末の開発者向けオプションで USB デバッグを有効にします。
 
 # USB section step by step guide
-about-debugging-setup-usb-step-enable-debug-firefox2 = Android 端末の Firefox の USB デバッグを有効にします。
+about-debugging-setup-usb-step-enable-debug-firefox2 = Android 端末上の Firefox で USB デバッグを有効にします。
 
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Android 端末をコンピューターに接続します。
@@ -210,7 +210,7 @@ about-debugging-runtime-processes =
 
 # Label of the button opening the performance profiler panel in runtime pages for remote
 # runtimes.
-about-debugging-runtime-profile-button2 = プロファイルパフォーマンス
+about-debugging-runtime-profile-button2 = パフォーマンスのプロファイル
 
 # This string is displayed in the runtime page if the current configuration of the
 # target runtime is incompatible with service workers. "Learn more" points to MDN.
@@ -218,7 +218,7 @@ about-debugging-runtime-profile-button2 = プロファイルパフォーマン�
 about-debugging-runtime-service-workers-not-compatible = このブラウザーの設定は Service Worker と互換性がありません。<a>詳細</a>
 
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = 接続したブラウザーのバージョン ({ $runtimeVersion }) が古いです。サポートされている最低バージョンは ({ $minVersion }) です。この組み合わせはサポートされてないため、開発ツールでエラーが発生する可能性があります。接続ブラウザーを更新してください。<a>トラブルシューティング</a>
@@ -229,10 +229,14 @@ about-debugging-browser-version-too-old = 接続したブラウザーのバー�
 # Those are normally in range for DevTools compatibility policy, but specific non
 # backward compatible changes broke the debugger in those scenarios (Bug 1528219).
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
-about-debugging-browser-version-too-old-67-debugger = 接続したブラウザーではデバッガーパネルが動作しないようです。このブラウザーでデバッガーを利用したい場合は、 Firefox { $runtimeVersion } を使用してください。
+about-debugging-browser-version-too-old-67-debugger = 接続したブラウザーではデバッガーパネルが動作しないようです。このブラウザーでデバッガーを利用したい場合は、Firefox { $runtimeVersion } を使用してください。
+
+# Dedicated message for a backward compatibility issue that occurs when connecting:
+# from Fx 70+ to the old Firefox for Android (aka Fennec) which uses Fx 68.
+about-debugging-browser-version-too-old-fennec = このバージョンの Firefox は Android 版 Firefox (68) をデバッグできません。携帯電話でのテストには Android 版 Firefox Nightly のインストールをお勧めします。<a>詳細</a>
 
 # This string is displayed in the runtime page if the remote browser version is too recent.
-# "Troubleshooting" link points to https://developer.mozilla.org/en-US/docs/Tools/WebIDE/Troubleshooting
+# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
 # { $runtimeID } is the build ID of the remote browser (for instance "20181231", format is yyyyMMdd)
 # { $localID } is the build ID of the current Firefox instance (same format)
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
@@ -277,10 +281,10 @@ about-debugging-debug-target-inspect-button = 調査
 
 # Text of a button displayed in the "This Firefox" page, in the Temporary Extension
 # section. Clicking on the button will open a file picker to load a temporary extension
-about-debugging-tmp-extension-install-button = 一時的なアドオンの読み込み中...
+about-debugging-tmp-extension-install-button = 一時的なアドオンを読み込む...
 
 # Text displayed when trying to install a temporary extension in the "This Firefox" page.
-about-debugging-tmp-extension-install-error = 一時的なアドオンのインストールでエラーがありました。
+about-debugging-tmp-extension-install-error = 一時的なアドオンのインストール中にエラーがありました。
 
 # Text of a button displayed for a temporary extension loaded in the "This Firefox" page.
 # Clicking on the button will reload the extension.
@@ -323,23 +327,34 @@ about-debugging-extension-id =
 # to a service worker.
 # Notes, this relates to the "Push" API, which is normally not localized so it is
 # probably better to not localize it.
-about-debugging-worker-action-push = Push
+about-debugging-worker-action-push = プッシュ通知
 
 # This string is displayed as a label of the button that starts a service worker.
 about-debugging-worker-action-start = 開始
+
+# This string is displayed as a label of the button that pushes a test payload
+# to a service worker.
+# Note this relates to the "Push" API, which is normally not localized so it is
+# probably better to not localize it.
+about-debugging-worker-action-push2 = プッシュ通知
+  .disabledTitle = Service Worker プッシュ通知は、現在のマルチプロセス { -brand-shorter-name } では無効化されています。
+
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = 開始
+  .disabledTitle = Service Worker の開始は、現在のマルチプロセス { -brand-shorter-name } では無効化されています。
 
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = 解除
 
 # Displayed for service workers in runtime pages that listen to Fetch events.
 about-debugging-worker-fetch-listening =
-  .label = フェッチ
-  .value = フェッチイベントの監視中
+  .label = Fetch
+  .value = Fetch イベントを監視中
 
 # Displayed for service workers in runtime pages that do not listen to Fetch events.
 about-debugging-worker-fetch-not-listening =
-  .label = フェッチ
-  .value = フェッチイベント監視の休止中
+  .label = Fetch
+  .value = Fetch イベントの監視を休止中
 
 # Displayed for service workers in runtime pages that are currently running (service
 # worker instance is active).
@@ -358,7 +373,15 @@ about-debugging-worker-scope =
 # Displayed for service workers in runtime pages, to label the push service endpoint (url)
 # of a worker
 about-debugging-worker-push-service =
-  .label = Push Service
+  .label = Push サービス
+
+# Displayed as title of the inspect button when service worker debugging is disabled.
+about-debugging-worker-inspect-action-disabled =
+  .title = Service Worker の調査は、現在のマルチプロセス { -brand-shorter-name } では無効化されています。
+
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+  .title = タブの読み込みが完了してないため調査できません。
 
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
@@ -367,6 +390,13 @@ about-debugging-main-process-name = メインプロセス
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = ターゲットブラウザーのメインプロセス
+
+# Displayed instead of the Main Process debug target when the preference
+# `devtools.browsertoolbox.fission` is true.
+about-debugging-multiprocess-toolbox-name = マルチプロセスツールボックス
+
+# Description for the Multiprocess Toolbox target.
+about-debugging-multiprocess-toolbox-description = ターゲットブラウザーのメインプロセスとコンテンツプロセス
 
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =

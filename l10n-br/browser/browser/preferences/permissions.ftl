@@ -5,50 +5,66 @@
 permissions-window =
     .title = Nemedennoù
     .style = width: 45em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Chomlec'h al lec'hienn
     .accesskey = C
+
 permissions-block =
     .label = Herzel
     .accesskey = H
+
 permissions-session =
     .label = Aotren evit an estez
     .accesskey = A
+
 permissions-allow =
     .label = Aotren
     .accesskey = A
+
 permissions-site-name =
     .label = Lec'hienn
+
 permissions-status =
     .label = Stad
+
 permissions-remove =
     .label = Lemel kuit al lec'hienn
     .accesskey = L
+
 permissions-remove-all =
     .label = Lemel kuit an holl lec'hiennoù
     .accesskey = h
+
 permissions-button-cancel =
     .label = Nullañ
     .accesskey = N
+
 permissions-button-ok =
     .label = Enrollañ ar c'hemmoù
     .accesskey = E
+
 permissions-autoplay-menu = Dre ziouer evit an holl lec'hiennoù:
+
 permissions-searchbox =
     .placeholder = Klask lec'hiennoù
+
 permissions-capabilities-autoplay-allow =
     .label = Aotren aodio ha video
 permissions-capabilities-autoplay-block =
     .label = Stankañ an aodio
 permissions-capabilities-autoplay-blockall =
     .label = Stankañ an aodio ha video
+
 permissions-capabilities-allow =
     .label = Aotren
 permissions-capabilities-block =
     .label = Herzel
 permissions-capabilities-prompt =
     .label = Goulenn bewech
+
 permissions-capabilities-listitem-allow =
     .value = Aotren
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Nemedennoù - stankadur endalc'had
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Diweredekaet ho peus ar stankadur endalc'had war al lec'hiennoù-mañ.
+
+permissions-exceptions-etp-window =
+    .title = Nemedennoù evit ar gwarez heuliañ araokaet.
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Diweredekaet ho peus ar gwarez war al lec'hiennoù-mañ.
 
 ## Exceptions - Cookies
 
@@ -129,6 +150,16 @@ permissions-site-location-desc = Goulennet eo bet gant al lec'hiennoù da-heul g
 permissions-site-location-disable-label =
     .label = Stankañ ar goulennoù gouzout ho lec'hiadur nevez
 permissions-site-location-disable-desc = Herzel a raio al lec'hiennoù ha n'int ket er roll a-us da c'houlenn diganeoc'h gouzout ho lec'hiadur. Kement-se a c'hall terriñ keweriusterioù 'zo el lec'hiennoù.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Arventennoù - Aotreoù ar gwirvoud galloudel
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Al lec'hiennoù da heul o deus goulennet haeziñ ho trevnadoù gwirvoud galloudel. Gallout a rit dibab pe lec'hiennoù a zo aotreet da haeziñ ho trevnadoù gwirvoud galloudel. Gallout a rit ivez stankañ ar goulennoù haeziñ nevez.
+permissions-site-xr-disable-label =
+    .label = Stankañ ar goulennoù nevez evit haeziñ ho trevnadoù gwirvoud galloudel
+permissions-site-xr-disable-desc = Mirout a raio kement lec'hienn n'emañ ket er roll a-us da c'houlenn diganeoc'h haeziñ ho trevnadoù gwirvoud galloudel. Stankañ an haeziñ d'ar gwirvoud galloudel a c'hall lakaat lec'hiennoù 'zo da chom hep mont en-dro.
 
 ## Site Permissions - Camera
 

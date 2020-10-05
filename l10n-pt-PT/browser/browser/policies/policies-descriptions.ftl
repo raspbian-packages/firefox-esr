@@ -11,6 +11,7 @@
 ## in the documentation section in about:policies.
 
 policy-3rdparty = Definir políticas que WebExtensions podem aceder via chrome.storage.managed.
+policy-AppAutoUpdate = Ativar ou desativar atualizações automáticas de aplicações.
 policy-AppUpdateURL = Definir um URL personalizado de atualização da aplicação.
 policy-Authentication = Configurar autenticação integrada para os sites que a suportem.
 policy-BlockAboutAddons = Bloquear acesso ao Gestor de extras (about:addons).
@@ -21,9 +22,11 @@ policy-Bookmarks = Criar marcadores na barra de ferramentas de marcadores, menus
 policy-CaptivePortal = Ativar ou desativar o suporte ao portal cativo.
 policy-CertificatesDescription = Adicionar certificados ou utilizar certificados integrados.
 policy-Cookies = Permitir ou negar que os sites definam cookies.
+policy-DisabledCiphers = Desativar cifras.
 policy-DefaultDownloadDirectory = Definir o diretório de transferências predefinido.
 policy-DisableAppUpdate = Impedir o navegador de ser atualizado.
 policy-DisableBuiltinPDFViewer = Desativar o PDF.js, o leitor de PDF incorporado no { -brand-short-name }.
+policy-DisableDefaultBrowserAgent = Impedir que o agente do navegador predefinido execute qualquer ação. Aplicável apenas ao Windows; as outras plataformas não dispõem deste agente.
 policy-DisableDeveloperTools = Bloquear acesso às ferramentas de programador.
 policy-DisableFeedbackCommands = Desativar comandos para enviar comentários a partir do menu de Ajuda (enviar feedback e reportar sites fraudulentos)
 policy-DisableFirefoxAccounts = Desativar os serviços baseados na { -fxaccount-brand-name }, incluindo o Sync.
@@ -33,6 +36,7 @@ policy-DisableFirefoxStudies = Impedir o { -brand-short-name } de executar estud
 policy-DisableForgetButton = Impedir o acesso ao botão Esquecer.
 policy-DisableFormHistory = Não guardar histórico de pesquisas ou de formulários.
 policy-DisableMasterPasswordCreation = Se verdadeiro, não poderá ser criada uma palavra-passe mestra.
+policy-DisablePasswordReveal = Impedir que as palavras-passe sejam reveladas nas credenciais guardadas.
 policy-DisablePocket = Desativar a funcionalidade de guardar páginas web no Pocket.
 policy-DisablePrivateBrowsing = Desativar a Navegação privada.
 policy-DisableProfileImport = Desativar o menu de comando para importar dados de outro navegador.
@@ -49,6 +53,8 @@ policy-DontCheckDefaultBrowser = Desativar verificação por navegador predefini
 policy-DownloadDirectory = Definir e bloquear o diretório de transferências predefinido.
 # “lock” means that the user won’t be able to change this setting
 policy-EnableTrackingProtection = Ativar ou desativar o Bloqueio de conteúdo e bloqueá-lo opcionalmente.
+# “lock” means that the user won’t be able to change this setting
+policy-EncryptedMediaExtensions = Ativar ou desativar as Extensões de multimédia encriptada e, opcionalmente, bloquear esta definição.
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
@@ -57,24 +63,39 @@ policy-ExtensionSettings = Gerir todos os aspetos de instalação de extensões.
 policy-ExtensionUpdate = Ativar ou desativar atualizações automáticas de extensões.
 policy-FirefoxHome = Configurar o Firefox Home.
 policy-FlashPlugin = Permitir ou negar a utilização do plugin Flash.
+policy-Handlers = Configurar as aplicações operadoras predefinidas.
 policy-HardwareAcceleration = Se falso, desligar aceleração de hardware.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Definir e bloquear opcionalmente a página inicial.
-policy-InstallAddonsPermission = Permitir a certos websites instalar extras.
-policy-LocalFileLinks = Permitir a websites específicos ligar a ficheiros locais.
+policy-InstallAddonsPermission = Permitir a instalação de extras a determinados sites.
+policy-LegacyProfiles = Desativar a funcionalidade de forçar um perfil separado para cada instalação
+
+## Do not translate "SameSite", it's the name of a cookie attribute.
+
+policy-LegacySameSiteCookieBehaviorEnabled = Ative a definição legada de comportamento predefinido para a cookie SameSite.
+policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Reverta para o comportamento legado de SameSite para as cookies nos sites especificados.
+
+##
+
+policy-LocalFileLinks = Permitir que determinados sites estabeleçam ligações a ficheiros locais.
+policy-MasterPassword = Exigir ou impedir a utilização de uma palavra-passe mestra.
 policy-NetworkPrediction = Ativar ou desativar a previsão de rede (pré-obtenção de DNS).
 policy-NewTabPage = Ativar ou desativar a página de novo separador.
 policy-NoDefaultBookmarks = Desativar a criação de marcadores predefinidos empacotados com o { -brand-short-name }, e os Marcadores inteligentes (Mais visitados, Etiquetas recentes). Nota: esta política é apenas eficaz se utilizada antes da primeira execução do perfil.
-policy-OfferToSaveLogins = Forçar a definição para permitir ao { -brand-short-name } oferecer para memorizar credenciais guardadas e palavras-passe. Ambos os valores true e false são aceites.
+policy-OfferToSaveLogins = Forçar a definição para permitir que { -brand-short-name } se ofereça para memorizar as credenciais e as palavras-passe guardadas. São aceites ambos os valores, "true" e "false".
+policy-OfferToSaveLoginsDefault = Defina o valor predefinido para permitir que o { -brand-short-name } sugira credenciais e palavras-passe guardadas. São aceites ambos os valores, true e false.
 policy-OverrideFirstRunPage = Sobrepor a página de primeira execução. Defina esta política para blank se pretende desativar a página de primeira execução.
 policy-OverridePostUpdatePage = Sobrepor a página "Novidades" pós-atualização. Defina esta política para blank se pretende desativar a página pós-atualização.
-policy-Permissions = Configurar permissões para a câmara, microfone, localização e notificações.
-policy-PopupBlocking = Permitir certos websites de mostrar popups por predefinição.
+policy-PasswordManagerEnabled = Ativar a opção de guardar as palavras-passe no gestor de palavras-passe.
+# PDF.js and PDF should not be translated
+policy-PDFjs = Desativar ou configurar o PDF.js, o visualizador integrado de PDF do { -brand-short-name }.
+policy-Permissions2 = Configurar as permissões para a câmara, microfone, localização, notificações e reprodução automática.
+policy-PictureInPicture = Ativar ou desativar o vídeo em janela flutuante.
+policy-PopupBlocking = Permitir que determinados sites mostrem pop-ups por predefinição.
 policy-Preferences = Definir e bloquear o valor para um subconjunto de preferências.
 policy-PromptForDownloadLocation = Perguntar onde guardar os ficheiros durante a transferência.
 policy-Proxy = Configurar definições proxy.
 policy-RequestedLocales = Definir a lista de idiomas solicitados para a aplicação por ordem de preferência.
-policy-SanitizeOnShutdown = Limpar todos os dados de navegação ao desligar.
 policy-SanitizeOnShutdown2 = Limpar dados de navegação ao desligar.
 policy-SearchBar = Definir a localização predefinida da barra de pesquisa. O utilizador ainda tem permissão para a personalizar.
 policy-SearchEngines = Configurar as definições de motor de pesquisa. Esta política é apenas disponível na versão Extended Support Release (ESR).
@@ -84,5 +105,6 @@ policy-SecurityDevices = Instalar módulos PKCS #11.
 policy-SSLVersionMax = Definir a versão máxima de SSL.
 policy-SSLVersionMin = Definir a versão mínima de SSL.
 policy-SupportMenu = Adicionar um item de menu de suporte personalizado ao menu de ajuda.
+policy-UserMessaging = Não mostrar determinadas mensagens ao utilizador.
 # “format” refers to the format used for the value of this policy.
-policy-WebsiteFilter = Bloquear websites de serem visitados. Veja a documentação para mais detalhes sobre o formato.
+policy-WebsiteFilter = Impedir que sites sejam visitados. Consulte a documentação para mais detalhes sobre o formato.

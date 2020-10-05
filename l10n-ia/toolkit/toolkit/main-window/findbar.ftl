@@ -9,12 +9,10 @@ findbar-next =
     .tooltiptext = Trovar le successive occurrentia del phrase
 findbar-previous =
     .tooltiptext = Trovar le previe occurrentia del phrase
+
 findbar-find-button-close =
     .tooltiptext = Clauder barra de recerca
-findbar-highlight-all =
-    .label = Evidentiar toto
-    .accesskey = E
-    .tooltiptext = Evidentiar le occurrentia successive del phrase
+
 findbar-highlight-all2 =
     .label = Evidentiar toto
     .accesskey =
@@ -23,10 +21,17 @@ findbar-highlight-all2 =
            *[other] t
         }
     .tooltiptext = Evidentia tote le occurrentias del phrase
+
 findbar-case-sensitive =
-    .label = Distinger majusculas/minusculas
+    .label = Distinguer majusculas/minusculas
     .accesskey = D
     .tooltiptext = Cercar distinguente inter majusculas e minusculas
+
+findbar-match-diacritics =
+    .label = Distinguer diacriticos
+    .accesskey = i
+    .tooltiptext = Differentiar inter litteras accentuate e lor litteras de base (per exemplo, si tu cerca “resume”, “résumé” non es trovate)
+
 findbar-entire-word =
     .label = Parolas integre
     .accesskey = i

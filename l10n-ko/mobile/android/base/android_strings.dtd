@@ -21,18 +21,16 @@
 <!ENTITY firstrun_data_message "더 적은 데이터, 더 많은 절약">
 <!ENTITY firstrun_data_subtext2 "데이터 사용량을 줄이기 위해 방문하는 모든 사이트에서 이미지를 가져오지 않습니다.">
 <!ENTITY firstrun_sync_title "Sync">
-<!ENTITY updatednewfirstrun_sync_title "계정">
-<!ENTITY firstrun_sync_message2 "중단했던 지점에서 다시 시작하세요.">
+<!ENTITY firstrun_sync_message3 "휴대폰에 북마크나 방문기록, 비밀번호를 동기화 하세요.">
 <!ENTITY firstrun_sync_subtext2 "Sync를 이용해서 즐겨찾기나 비밀번호, &brandShortName;에 저장한 다른 설정을 사용하는 모든 기기에서 찾아보세요.">
 <!ENTITY newfirstrun_sync_subtext "사적으로 안전하게 모바일 환경에서 저장한 것을 데스크탑용 Firefox와 동기화하세요.">
-<!ENTITY updatednewfirstrun_sync_subtext "&brandShortName;를 최대한 활용하려면 계정에 로그인하세요.">
+<!ENTITY firstrun_sendtab_title "탭 보내기">
+<!ENTITY firstrun_sendtab_message "모바일에서 데스크톱으로 탭을 즉시 공유해보세요.">
 <!ENTITY firstrun_signin_message "연결 및 시작하기">
-<!ENTITY firstrun_signin_button "Sync 로그인">
-<!ENTITY newfirstrun_signin_button "Sync 켜기">
-<!ENTITY updatednewfirstrun_signin_button "&brandShortName;에 로그인">
-<!ENTITY  onboard_start_button_browser "브라우징 시작">
+<!ENTITY onboard_start_button_browser "브라우징 시작">
 <!ENTITY firstrun_button_notnow "다음에">
 <!ENTITY firstrun_button_next "다음">
+<!ENTITY firstrun_signup_button "회원 가입">
 
 <!ENTITY firstrun_tabqueue_title "링크">
 
@@ -69,7 +67,6 @@
 <!ENTITY  sending_crash_report "문제 보내기\u2026">
 <!ENTITY  crash_close_label "닫기">
 <!ENTITY  crash_restart_label "&brandShortName; 다시 시작">
-
 <!-- Localization note (crash_notification_title, crash_notification_message, crash_notification_negative_button_text)
      Text displayed in a system notification to allow starting the Crash Reporter (Android Q and later).-->
 <!ENTITY  crash_notification_title "&brandShortName; 충돌됨">
@@ -117,7 +114,6 @@
 <!ENTITY bookmark_folder_updated "폴더 업데이트됨">
 <!ENTITY bookmark_parent_folder "상위 폴더">
 <!ENTITY bookmark_add_folder "새 폴더 추가">
-
 <!-- Localization note (bookmark_default_folder_title): Default title is used if user doesn't specify
      one when he is creating a bookmark folder -->
 <!ENTITY bookmark_default_folder_title "(제목 없음)">
@@ -280,6 +276,7 @@
 <!ENTITY pref_cookies_menu "쿠키">
 <!ENTITY pref_cookies_accept_all "사용">
 <!ENTITY pref_cookies_not_accept_foreign "사용 (제3자 쿠키 제외)">
+<!ENTITY pref_cookies_not_accept_trackers "추적 쿠키를 제외하고 활성화됨">
 <!ENTITY pref_cookies_disabled "사용 안 함">
 
 <!-- Localization note (pref_category_data_saver): “data saver” in this
@@ -340,11 +337,6 @@
 
 <!ENTITY pref_pwa "프로그레시브 웹 앱">
 <!ENTITY pref_pwa_summary "홈스크린에 웹앱이 추가되도록 허용">
-
-<!ENTITY tracking_protection_prompt_title "추적 방지 시작">
-<!ENTITY tracking_protection_prompt_text "적극적으로 추적 요소들을 차단합니다. 더 이상 걱정할 필요 없습니다.">
-<!ENTITY tracking_protection_prompt_tip_text "더 자세한 내용은 사생활 설정에서 확인하세요">
-<!ENTITY tracking_protection_prompt_action_button "알겠습니다!">
 
 <!ENTITY tab_queue_toast_message3 "&brandShortName;에 저장된 탭">
 <!ENTITY tab_queue_toast_action "지금 열기">
@@ -431,7 +423,6 @@ shown from Android O while a tab is being queued.-->
     Message of an Android Toast that appears after our app opens "Android System Settings -> Apps -> Default apps"
     and instruct users to tap on the "Browser app" option on that settings screen to choose a default browser app. -->
 <!ENTITY default_browser_system_settings_toast "브라우저 앱을 탭하고 &brandShortName;를 선택하세요">
-<!ENTITY pref_default_browser_mozilla_support_tablet "Mozilla 도움말 방문">
 <!ENTITY pref_about_firefox "&brandShortName; 정보">
 <!ENTITY pref_vendor_faqs "FAQ">
 <!ENTITY pref_vendor_feedback "피드백 보내기">
@@ -481,14 +472,6 @@ shown from Android O while a tab is being queued.-->
      service is running. -->
 <!ENTITY datareporting_stumbler_notification_title "&vendorShortName; 위치 기반 서비스 작동중">
 
-<!-- Localization note (pref_update_autodownload2) : This should mention downloading
-     specifically, since the pref only prevents automatic downloads and not the
-     actual notification that an update is available. -->
-<!ENTITY pref_update_autodownload3 "자동 업데이트">
-<!ENTITY pref_update_autodownload_wifi "Wi-Fi에서만 사용함">
-<!ENTITY pref_update_autodownload_never "사용 안 함">
-<!ENTITY pref_update_autodownload_always "항상 사용함">
-
 <!-- Localization note (help_menu) : This string is used in the main menu-->
 <!ENTITY help_menu "도움말">
 
@@ -502,6 +485,7 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY share "공유">
 <!ENTITY share_title "공유 방법 선택">
 <!ENTITY share_image_failed "이미지 공유하지 않기">
+<!ENTITY share_error_toast_message "표시된 앱과 공유할 수 없음">
 <!ENTITY save_as_pdf "PDF로 저장">
 <!ENTITY print "인쇄">
 <!ENTITY view_page_source "페이지 소스 보기">
@@ -602,7 +586,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY bookmark_edit_location "위치">
 <!ENTITY bookmark_edit_keyword "키워드">
 <!ENTITY bookmark_select_folder "폴더 선택">
-
 <!ENTITY bookmark_edit_undo "실행 취소">
 
 <!-- Localization note (site_settings_*) : These strings are used in the "Site Settings"
@@ -692,7 +675,6 @@ shown from Android O while a tab is being queued.-->
 <!ENTITY filepicker_audio_title "음성 선택 또는 녹음">
 <!ENTITY filepicker_image_title "사진 선택 또는 촬영">
 <!ENTITY filepicker_video_title "동영상 선택 또는 녹화">
-
 <!ENTITY filepicker_permission_denied "필요한 권한이 부여되지 않아 시스템 파일 선택기로 되돌아갑니다.">
 
 <!-- Site identity popup -->
@@ -754,25 +736,6 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY suggestion_for_engine "&formatS1;에서 &formatS2; 검색">
 
 <!ENTITY searchable_description "북마크 및 방문 기록">
-
- <!-- Updater notifications -->
-<!ENTITY updater_start_title2 "&brandShortName; 업데이트 가능">
-<!ENTITY updater_start_select2 "다운로드 하기">
-
-<!ENTITY updater_downloading_title2 "&brandShortName; 다운로드 중">
-<!ENTITY updater_downloading_title_failed2 "다운로드 실패">
-<!ENTITY updater_downloading_select2 "다운로드된 업데이트 적용">
-<!ENTITY updater_downloading_retry2 "재시도">
-
-<!ENTITY updater_apply_title3 "다운로드된 &brandShortName; 업데이트">
-<!ENTITY updater_apply_select3 "터치해서 설치">
-
-<!-- Localization note (updater_permission_text): This text is shown in a notification and as a snackbar
-     if the app requires a runtime permission to download updates. Currently, the updater only sees
-     remotely advertised updates in the Nightly and Aurora channels. -->
-<!ENTITY updater_permission_text "파일을 다운로드 받고 업데이트하기 위해, &brandShortName; 가 저장소에 접근하는 것을 허가합니다.">
-<!-- LOCALIZATION NOTE (updater_permission_allow): This action is shown in a snackbar along with updater_permission_text. -->
-<!ENTITY updater_permission_allow "허용">
 
     <!-- Guest mode -->
 <!ENTITY new_guest_session "새 손님 세션">
@@ -884,6 +847,23 @@ just addresses the organization to follow, e.g. "This site is run by " -->
 <!ENTITY helper_triple_readerview_open_message "오프라인에서 읽을 수 있도록 읽기 모드 항목들을 북마크합니다.">
 <!ENTITY helper_triple_readerview_open_button "북마크에 추가">
 
+<!-- LOCALIZATION NOTE (activity_stream_signin_title, activity_stream_signin_description, activity_stream_signup_button,
+activity_stream_signin_prompt, activity_stream_signin_prompt_button):
+- These labels are shown in the Activity Stream recommending the user to sign in. -->
+<!ENTITY activity_stream_signin_title "&brandShortName;에 오신 것을 환영합니다.">
+<!ENTITY activity_stream_signin_description "Firefox 계정으로 북마크, 비밀번호 등을 동기화하세요.">
+<!ENTITY activity_stream_signup_button "회원 가입">
+<!ENTITY activity_stream_signin_prompt "계정이 이미 있으신가요?">
+<!-- LOCALIZATION NOTE (activity_stream_signin_prompt_button): To be used in continuation of activity_stream_signin_prompt. -->
+<!ENTITY activity_stream_signin_prompt_button "로그인">
+
+<!-- LOCALIZATION NOTE (activity_stream_firefox_promo_title,
+     activity_stream_firefox_promo_description, activity_stream_firefox_promo_button):
+     These labels are shown in an Activity Stream banner. -->
+<!ENTITY activity_stream_firefox_promo_title "2020년에 출시 된 완전히 새로운 Firefox">
+<!ENTITY activity_stream_firefox_promo_description "출시 임박: 성능 향상, 향상된 추적 보호, 온라인에서 좋아하는 것을 더 많이 찾고 저장하고 공유 할 수 있도록 설계된 기능을 제공합니다.">
+<!ENTITY activity_stream_firefox_promo_button "살짝 알아보기">
+
 <!ENTITY activity_stream_topsites "상위 사이트">
 <!-- LOCALIZATION NOTE (activity_stream_topstories): &brandPocket is the brand of the company, Pocket, that is being used to provide suggestions for articles. -->
 <!ENTITY activity_stream_topstories "&brandPocket; 추천">
@@ -941,7 +921,6 @@ Picture-in-picture mini window -->
 <!ENTITY media_notification_channel2 "사운드와 비디오">
 <!-- These push notifications come without a specific channel and/or name from Leanplum -->
 <!ENTITY leanplum_default_notifications_channel2 "&vendorShortName; 팁과 트릭">
-<!ENTITY updater_notification_channel "앱 업데이트">
 <!ENTITY synced_tabs_notification_channel "동기화된 탭">
 <!-- LOCALIZATION NOTE (site_notifications_channel): This is for system notifications displayed by
 web sites through the HTML Notifications API. -->

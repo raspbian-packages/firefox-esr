@@ -5,50 +5,66 @@
 permissions-window =
     .title = Poikkeukset
     .style = width: 36em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Sivuston osoite
     .accesskey = i
+
 permissions-block =
     .label = Estä
     .accesskey = E
+
 permissions-session =
     .label = Salli istunnon ajaksi
     .accesskey = i
+
 permissions-allow =
     .label = Salli
     .accesskey = a
+
 permissions-site-name =
     .label = Sivusto
+
 permissions-status =
     .label = Tila
+
 permissions-remove =
     .label = Poista sivusto
     .accesskey = P
+
 permissions-remove-all =
     .label = Poista kaikki sivustot
     .accesskey = k
+
 permissions-button-cancel =
     .label = Peruuta
     .accesskey = P
+
 permissions-button-ok =
     .label = Tallenna muutokset
     .accesskey = T
+
 permissions-autoplay-menu = Oletus kaikille sivustoille:
+
 permissions-searchbox =
     .placeholder = Etsi sivustoa
+
 permissions-capabilities-autoplay-allow =
     .label = Salli ääni ja video
 permissions-capabilities-autoplay-block =
     .label = Estä ääni
 permissions-capabilities-autoplay-blockall =
     .label = Estä ääni ja video
+
 permissions-capabilities-allow =
     .label = Salli
 permissions-capabilities-block =
     .label = Estä
 permissions-capabilities-prompt =
     .label = Kysy aina
+
 permissions-capabilities-listitem-allow =
     .value = Salli
 permissions-capabilities-listitem-block =
@@ -67,6 +83,11 @@ permissions-exceptions-content-blocking-window =
     .title = Poikkeukset - Sisällön esto
     .style = { permissions-window.style }
 permissions-exceptions-content-blocking-desc = Olet poistanut käytöstä sisällön eston näillä sivustoilla.
+
+permissions-exceptions-etp-window =
+    .title = Tehostetun seurannan suojauksen poikkeukset
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Olet poistanut suojaukset käytöstä näillä sivustoilla.
 
 ## Exceptions - Cookies
 
@@ -108,6 +129,7 @@ permissions-exceptions-autoplay-media-desc2 = Voit valita, mitkä sivustot saava
 permissions-site-autoplay-window =
     .title = Asetukset - Automaattinen toisto
     .style = { permissions-window.style }
+permissions-site-autoplay-desc = Tässä voit hallita sivustoja, jotka eivät noudata automaattisen toiston oletusasetuksia.
 
 ## Site Permissions - Notifications
 
@@ -128,6 +150,16 @@ permissions-site-location-desc = Seuraavat sivustot ovat pyytäneet lupaa käytt
 permissions-site-location-disable-label =
     .label = Estä uudet lupapyynnöt sijainnin käyttämiseksi
 permissions-site-location-disable-desc = Tämä estää kaikki yllä mainitsemattomat sivustot pyytämästä lupaa käyttää sijaintia. Sijainnin käytön estäminen voi rikkoa joitain sivuston ominaisuuksia.
+
+## Site Permissions - Virtual Reality
+
+permissions-site-xr-window =
+    .title = Asetukset - Virtuaalitodellisuuden oikeudet
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Seuraavat sivustot ovat pyytäneet lupaa käyttää virtuaalitodellisuuslaitteitasi. Voit valita, mitkä sivustot saavat käyttää virtuaalitodellisuuslaitteitasi. Voit myös estää uudet lupapyynnöt laitteiden käyttämiseksi.
+permissions-site-xr-disable-label =
+    .label = Estä uudet lupapyynnöt virtuaalitodellisuuslaitteiden käyttämiseksi
+permissions-site-xr-disable-desc = Tämä estää kaikki yllä mainitsemattomat sivustot pyytämästä lupaa käyttää virtuaalitodellisuuslaitteitasi. Virtuaalitodellisuuslaitteitesi käytön estäminen voi rikkoa joitain sivuston ominaisuuksia.
 
 ## Site Permissions - Camera
 

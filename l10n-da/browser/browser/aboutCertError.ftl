@@ -48,3 +48,57 @@ cert-error-code-prefix-link = Fejlkode: <a data-l10n-name="error-code-link">{ $e
 # $hostname (String) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Websteder bekræfter deres identitet ved hjælp af sikkerhedscertifikater, der er udstedt af certifikat-autoriteter. De fleste browsere stoler ikke længere på certifikater udstedt af GeoTrust, RapidSSL, Symantec, Thawte, og VeriSign. { $hostname } bruger et certifikat fra én af disse autoriteter, og webstedets identitet kan derfor ikke bekræftes.
 cert-error-symantec-distrust-admin = Du kan prøve at kontakte webstedets administrator for at gøre opmærksom på problemet.
+# Variables:
+# $hasHSTS (Boolean) - Indicates whether HSTS header is present.
+cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
+# Variables:
+# $hasHPKP (Boolean) - Indicates whether HPKP header is present.
+cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
+cert-error-details-cert-chain-label = Certifikatkæde:
+
+open-in-new-window-for-csp-or-xfo-error = Åbn websted i et nyt vindue
+
+# Variables:
+# $hostname (String) - Hostname of the website blocked by csp or xfo error.
+csp-xfo-blocked-long-desc = For at beskytte din sikkerhed vil { $hostname } ikke tillade, at { -brand-short-name } viser siden, hvis et andet websted har indlejret den. Du skal åbne siden i et nyt vindue for at se den. 
+
+## Messages used for certificate error titles
+
+connectionFailure-title = Ude af stand til at oprette forbindelse
+deniedPortAccess-title = Adgang til denne adresse er underlagt begrænsninger
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm. Den side kan vi ikke finde…
+fileNotFound-title = Fil ikke fundet
+fileAccessDenied-title = Filen kunne ikke tilgås
+generic-title = Hovsa.
+captivePortal-title = Login til netværk
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+malformedURI-title = Hmm. Den adresse ser ikke rigtig ud.
+netInterrupt-title = Forbindelsen blev afbrudt
+notCached-title = Siden er udløbet
+netOffline-title = Offline-tilstand
+contentEncodingError-title = Indholdskodningsfejl
+unsafeContentType-title = Usikker filtype
+netReset-title = Forbindelsen blev nulstillet
+netTimeout-title = Forbindelsens tidsfrist udløb
+unknownProtocolFound-title = Adressen kunne ikke forstås
+proxyConnectFailure-title = Proxyserveren afviser forbindelser
+proxyResolveFailure-title = Kunne ikke finde proxyserveren
+redirectLoop-title = Denne side viderestiller ikke forespørgslen korrekt
+unknownSocketType-title = Uventet svar fra server
+nssFailure2-title = Sikker forbindelse mislykkedes
+cspBlocked-title = Blokeret grundet indholdssikkerhedspolitik
+xfoBlocked-title = Blokeret af politik for X-Frame-Options
+csp-xfo-error-title = { -brand-short-name } kan ikke åbne denne side
+corruptedContentError-title = Fejlbehæftet indhold
+remoteXUL-title = Remote XUL
+sslv3Used-title = Kan ikke oprette sikker forbindelse
+inadequateSecurityError-title = Din forbindelse er ikke sikker
+blockedByPolicy-title = Blokeret side
+clockSkewError-title = Uret i din computer er indstillet forkert
+networkProtocolError-title = Fejl i netværksprotokol
+nssBadCert-title = Advarsel: Mulig sikkerhedsrisiko
+nssBadCert-sts-title = Oprettede ikke forbindelse: Muligt sikkerhedsproblem
+certerror-mitm-title = Et program forhindrer { -brand-short-name } i at oprette en sikker forbindelse til dette websted.

@@ -24,14 +24,26 @@ features-title = { -brand-short-name } Timahilin
 features-name = Isem
 features-version = Lqem
 features-id = ID
+processes-title = Ikalan inmeggagen
+processes-type = Tawsit
 processes-count = Amḍan
 app-basics-title = Iɣewwaṛen izaduren n usnas
 app-basics-name = Isem
 app-basics-version = Lqem
 app-basics-build-id = Asulay n usefsu
+app-basics-distribution-id = Tussa ID
 app-basics-update-channel = Abadu n uleqqem
-app-basics-update-history = Amazray n ileqman
-app-basics-show-update-history = Sken amazray n ileqman
+# This message refers to the folder used to store updates on the device,
+# as in "Folder for updates". "Update" is a noun, not a verb.
+app-basics-update-dir =
+    { PLATFORM() ->
+        [linux] Akaram n Ileqman
+       *[other] Akaram n Ileqman
+    }
+app-basics-update-history = Azray n ileqman
+app-basics-show-update-history = Sken azray n ileqman
+# Represents the path to the binary used to start the application.
+app-basics-binary = Timsint n usnas
 app-basics-profile-dir =
     { PLATFORM() ->
         [linux] Akaram n umaɣnu
@@ -47,9 +59,10 @@ app-basics-service-workers = Tanfa Workers iţwaklesen
 app-basics-profiles = Imeɣna
 app-basics-launcher-process-status = Akala n tnekra
 app-basics-multi-process-support = Isfuyla agetakala
-app-basics-process-count = Ikalan n ugbur web
+app-basics-remote-processes-count = Ikalan inmeggagen
 app-basics-enterprise-policies = Tasertit n tkebbanit
 app-basics-location-service-key-google = Tasarutt n umeẓlu n wadi Google
+app-basics-safebrowsing-key-google = Tasarut Google Safebrowsing
 app-basics-key-mozilla = Tasarutt n umeẓlu n wadi Mozilla
 app-basics-safe-mode = Askar aɣelsan
 show-dir-label =
@@ -75,6 +88,10 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Aɣmis n ugemmen
 graphics-crash-guards-title = Timhalin ur nermid ara n uɛessas n uɣelluy
 graphics-workarounds-title = Tifrat n usellek
+# Windowing system in use on Linux (e.g. X11, Wayland).
+graphics-window-protocol = Aneggaf n usfaylu
+# Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
+graphics-desktop-environment = Tawennaḍt n tnarit
 place-database-title = Taffa n isefka n idigen
 place-database-integrity = Timmad
 place-database-verify-integrity = Senqed timmad
@@ -99,6 +116,19 @@ sandbox-sys-call-number = Asiwel n unagraw
 sandbox-sys-call-args = Tiɣiriyin
 safe-mode-title = Ɛreḍ deg uskar aɣelsan
 restart-in-safe-mode-label = Ales asenker s izegrar irurmiden…
+clear-startup-cache-title = Ɛreḍ ad tsefḍeḍ tanekkra tuffirt
+clear-startup-cache-label = Sfeḍ tanekkra tuffirt…
+startup-cache-dialog-title = Sfeḍ tanekkra tuffirt
+startup-cache-dialog-body = Ales asenker { -brand-short-name } i usfaḍ n tnekkra tuffirt. Ayagi ur yettbeddil ara deg yiɣewwaren-inek/inem, ur itekkes ara izegrar i terniḍ ɣer { -brand-short-name }.
+restart-button-label = Ales asenker
+
+## Media titles
+
+audio-backend = Ameslaw ɣer deffir
+max-audio-channels = Amḍan afellay n ibuda
+channel-layout = Taneɣruft n udabu i tebɣiḍ
+sample-rate = Afmiḍi n imedyaten i tebɣiḍ
+roundtrip-latency = Akud n ugani s tirza d tuɣalin (Amgared tizeɣt)
 media-title = Allalen n teγwalt
 media-output-devices-title = Ibenkan n tuffɣa
 media-input-devices-title = Ibenkan n n unekcum
@@ -111,6 +141,12 @@ media-device-format = Amasal
 media-device-channels = Ibuda
 media-device-rate = Afmiḍi
 media-device-latency = Akud n ugani
+media-capabilities-title = Tazmert n umidya
+# List all the entries of the database.
+media-capabilities-enumerate = Snirem taffa n yisefka
+
+##
+
 intl-title = Asegreɣlen & Asideg
 intl-app-title = Iɣewwaṛen n usnas
 intl-locales-requested = Tutlayin ittwasutren
@@ -120,6 +156,22 @@ intl-locales-default = Tutlayt tamezwert
 intl-os-title = Anagraw n wammud
 intl-os-prefs-system-locales = Tutlayin n unagraw
 intl-regional-prefs = Ismenyifen n temnaḍt
+
+## Remote Debugging
+##
+## The Firefox remote protocol provides low-level debugging interfaces
+## used to inspect state and control execution of documents,
+## browser instrumentation, user interaction simulation,
+## and for subscribing to browser-internal events.
+##
+## See also https://firefox-source-docs.mozilla.org/remote/
+
+remote-debugging-title = Tamseɣtayt tanmeggagt (Aneggaf Chromium )
+remote-debugging-accepting-connections = Aqbal n tuqqniwin
+remote-debugging-url = URL
+
+##
+
 # Variables
 # $days (Integer) - Number of days of crashes to log
 report-crash-for-days =
@@ -192,6 +244,7 @@ gpu-device-id = Asulay n yibenk
 gpu-subsys-id = Asulay n adanagraw
 gpu-drivers = Inuḍafen
 gpu-ram = RAM
+gpu-driver-vendor = Amaẓrag n unuḍaf
 gpu-driver-version = Lqem n unuḍaf
 gpu-driver-date = Azemz n unuḍaf
 gpu-active = Urmid
@@ -215,7 +268,9 @@ unknown-failure = Yettusewḥel; tangalt n tuccḍa { $failureCode }
 d3d11layers-crash-guard = Amsuddes D3D11
 d3d11video-crash-guard = D3D11 Video Decoder
 d3d9video-crash-buard = D3D9 Video Decoder
+d3d9video-crash-guard = D3D9 Video Decoder
 glcontext-crash-guard = OpenGL
+wmfvpxvideo-crash-guard = WMF VPX Video Decoder
 reset-on-next-restart = Ales awennez deg usenker d-itteddun
 gpu-process-kill-button = Seḥbes akala GPU
 gpu-device-reset = Awennez n ibenk
@@ -224,12 +279,7 @@ uses-tiling = Iseqdac akallaj
 content-uses-tiling = Seqdec asebleḍ (Agbur)
 off-main-thread-paint-enabled = Painting beṛṛa n tnelli n uselkem agejdan yermed
 off-main-thread-paint-worker-count = Uṭṭun n iseqdacen Painting beṛṛa n tnelli
-low-end-machine = Aff timacinin yesεan tamellit d afeelayt
 target-frame-rate = Afmiḍi n n ukatar asaḍas
-audio-backend = Ameslaw ɣer deffir
-max-audio-channels = Amḍan afellay n ibuda
-channel-layout = Taneɣruft n udabu i tebɣiḍ
-sample-rate = Afmiḍi n imedyaten i tebɣiḍ
 min-lib-versions = Lqem adday itturajun
 loaded-lib-versions = Lqem ittuseqdacen
 has-seccomp-bpf = Seccomp-BPF (Azizdeg n isawalen n unagraw)
@@ -243,6 +293,12 @@ effective-content-sandbox-level = Aswir n usersu n ukala n ugbur
 sandbox-proc-type-content = agbur
 sandbox-proc-type-file = agbur n ufaylu
 sandbox-proc-type-media-plugin = asiɣzef n wallen n teywalt
+sandbox-proc-type-data-decoder = akestengal n yisefka
+startup-cache-title = Tanekkra tuffirt
+startup-cache-disk-cache-path = Abrid n uḍbsi n tuffra
+startup-cache-ignore-disk-cache = Eǧǧ aḍebsi n tuffra
+startup-cache-found-disk-cache-on-init = Aḍebsi n tuffra yettwaf deg Init
+startup-cache-wrote-to-disk-cache = Aru deg uḍebsi n tuffra
 launcher-process-status-0 = Irmed
 launcher-process-status-1 = Yensa ɣef sebba n tuccḍa
 launcher-process-status-2 = Arurmid s tedusi
@@ -266,6 +322,7 @@ touch-enabled = anekcum amennalan irmed
 drag-enabled = Adrurem nufeggag yettwarmed
 keyboard-enabled = anasiw yermed
 autoscroll-enabled = Adrurem awurman yermed
+zooming-enabled = smooth pinch-zoom yermed
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

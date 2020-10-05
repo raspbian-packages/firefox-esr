@@ -58,9 +58,9 @@
 <!ENTITY renameFolder.label "Byt namn på mapp…">
 <!ENTITY renameFolder.accesskey "B">
 <!ENTITY compactFolders.label "Komprimera mappar">
-<!ENTITY compactFolders.accesskey		"K">
+<!ENTITY compactFolders.accesskey "K">
 <!ENTITY emptyTrashCmd.label "Töm papperskorgen">
-<!ENTITY emptyTrashCmd.accesskey		"T">
+<!ENTITY emptyTrashCmd.accesskey "T">
 <!ENTITY offlineMenu.label "Arbeta i nedkopplat läge">
 <!ENTITY offlineMenu.accesskey "i">
 <!ENTITY synchronizeOfflineCmd.label "Hämta/Synkronisera nu…">
@@ -94,6 +94,8 @@
 <!ENTITY selectThreadCmd.key "a">
 <!ENTITY selectFlaggedCmd.label "Flaggade meddelanden">
 <!ENTITY selectFlaggedCmd.accesskey "F">
+<!ENTITY menuFavoriteFolder.label "Favoritmapp">
+<!ENTITY menuFavoriteFolder.accesskey "v">
 <!ENTITY folderPropsCmd.label "Egenskaper…">
 <!ENTITY folderPropsFolderCmd.label "Mappegenskaper">
 <!ENTITY folderPropsNewsgroupCmd.label "Diskussionsgruppegenskaper">
@@ -133,6 +135,10 @@
 <!ENTITY showThreadPaneCmd.accesskey "T">
 <!ENTITY showFolderPaneCmd.label "Mappyta">
 <!ENTITY showFolderPaneCmd.accesskey "a">
+
+<!-- LOCALIZATION NOTE (toggleFolderPaneCmd.key): This is only used on the
+     mac platform, other platforms use VK_F9. -->
+<!ENTITY toggleFolderPaneCmd.key "S">
 
 <!-- sortMenu is also used by addressbook -->
 <!ENTITY sortMenu.label "Ordna efter">
@@ -272,6 +278,8 @@
 <!ENTITY goForwardCmd.commandKey "ä">
 <!ENTITY prevFlaggedMsgCmd.label "Flaggade meddelande">
 <!ENTITY prevFlaggedMsgCmd.accesskey "F">
+<!ENTITY folderMenu.label "Mapp">
+<!ENTITY folderMenu.accesskey "p">
 <!ENTITY startPageCmd.label "Startsida för E-post">
 <!ENTITY startPageCmd.accesskey "S">
 
@@ -284,23 +292,23 @@
 <!ENTITY newNewMsgCmd.accesskey "M">
 <!ENTITY replyMsgCmd.label "Svara">
 <!ENTITY replyMsgCmd.accesskey "r">
-<!ENTITY replyMsgCmd.key	"r">
+<!ENTITY replyMsgCmd.key "r">
 <!ENTITY replyListCmd.label "Svar till lista">
 <!ENTITY replyListCmd.accesskey "l">
 <!ENTITY replyNewsgroupCmd.label "Svar till diskussionsgruppen">
-<!ENTITY replyNewsgroupCmd.accesskey	"v">
+<!ENTITY replyNewsgroupCmd.accesskey "v">
 <!ENTITY replySenderCmd.label "Svara endast avsändaren">
 <!ENTITY replySenderCmd.accesskey "r">
 <!ENTITY replyToAllMsgCmd.label "Svar till alla">
-<!ENTITY replyToAllMsgCmd.accesskey	"a">
-<!ENTITY replyToAllMsgCmd.key	"r">
+<!ENTITY replyToAllMsgCmd.accesskey "a">
+<!ENTITY replyToAllMsgCmd.key "r">
 <!ENTITY replyToSenderAndNewsgroupCmd.label "Svar till avsändaren och gruppen">
 <!ENTITY replyToSenderAndNewsgroupCmd.accesskey "g">
 <!ENTITY replyToAllRecipientsCmd.label "Svar till alla mottagare">
 <!ENTITY replyToAllRecipientsCmd.accesskey "a">
 <!ENTITY forwardMsgCmd.label "Vidarebefordra">
 <!ENTITY forwardMsgCmd.accesskey "i">
-<!ENTITY forwardMsgCmd.key	"l">
+<!ENTITY forwardMsgCmd.key "l">
 <!ENTITY forwardAsMenu.label "Vidarebefordra som">
 <!ENTITY forwardAsMenu.accesskey "o">
 <!ENTITY forwardAsInline.label "Infogat">
@@ -417,6 +425,7 @@
 <!ENTITY deleteButton.label "Ta bort">
 <!ENTITY undeleteButton.label "Ångra ta bort">
 <!ENTITY markButton.label "Märk">
+<!ENTITY printButton.label "Skriv ut">
 <!ENTITY stopButton.label "Stopp">
 <!ENTITY junkButton.label "Skräppost">
 <!ENTITY notJunkButton.label "Ej skräppost">
@@ -440,8 +449,10 @@
 <!ENTITY deleteButton.tooltip "Ta bort markerat meddelande eller mapp">
 <!ENTITY undeleteButton.tooltip "Ångra ta bort markerat meddelande">
 <!ENTITY markButton.tooltip "Märk meddelanden">
+<!ENTITY printButton.tooltip "Skriv ut detta meddelande">
 <!ENTITY stopButton.tooltip "Avbryt pågående överföring">
 <!ENTITY throbber.tooltip "Gå till &vendorShortName;s webbplats">
+<!ENTITY throbber.tooltip2 "Gå till &brandShortName;s webbplats">
 <!ENTITY junkButton.tooltip "Märk de markerade meddelandena som skräppost">
 <!ENTITY notJunkButton.tooltip "Märk de markerade meddelandena som Ej skräppost">
 
@@ -495,6 +506,8 @@
 <!-- Folder Pane Context Menu -->
 <!ENTITY folderContextGetMessages.label "Hämta meddelanden för detta konto">
 <!ENTITY folderContextGetMessages.accesskey "H">
+<!ENTITY folderContextMarkAllFoldersRead.label "Märk alla mappar som lästa">
+<!ENTITY folderContextMarkAllFoldersRead.accesskey "a">
 <!ENTITY folderContextOpenNewWindow.label "Öppna i nytt e-postklientfönster">
 <!ENTITY folderContextOpenNewWindow.accesskey "Ö">
 <!ENTITY folderContextOpenNewTab.label "Öppna i ny flik">
@@ -525,6 +538,8 @@
 <!ENTITY folderContextSearchMessages.accesskey "S">
 <!ENTITY folderContextProperties.label "Egenskaper…">
 <!ENTITY folderContextProperties.accesskey "a">
+<!ENTITY folderContextFavoriteFolder.label "Favoritmapp">
+<!ENTITY folderContextFavoriteFolder.accesskey "a">
 <!ENTITY folderContextSettings.label "Inställningar…">
 <!ENTITY folderContextSettings.accesskey "I">
 
