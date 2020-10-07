@@ -283,6 +283,7 @@ override_dh_auto_clean::
 	dh_auto_clean --builddirectory=build-l10n
 	find . -name "*.pyc" -o -name "*.pyo" | xargs --no-run-if-empty rm -f
 	rm -rf obj-*/.mozbuild
+	find . -name __pycache__ -delete
 
 override_dh_clean:
 	dh_clean -XCargo.toml.orig
