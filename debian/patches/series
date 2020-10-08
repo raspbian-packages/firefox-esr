@@ -31,3 +31,4 @@ debian-hacks/Allow-to-build-with-older-versions-of-nodejs-10.patch
 raspbian-rust-triplet-hack.patch
 try-to-disable-neon.patch
 try-harder-to-disable-neon.patch
+disable-neon-in-qcms.patch
