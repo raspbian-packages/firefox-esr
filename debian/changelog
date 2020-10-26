@@ -1,4 +1,4 @@
-firefox-esr (78.3.0esr-2+rpi1) bullseye-staging; urgency=medium
+firefox-esr (78.4.0esr-1~deb10u2+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -16,16 +16,41 @@ firefox-esr (78.3.0esr-2+rpi1) bullseye-staging; urgency=medium
   * Clean up pycache directories.
   * Disable neon in qcms.
 
- -- Raspbian forward porter <root@raspbian.org>  Wed, 07 Oct 2020 09:12:23 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 26 Oct 2020 17:26:51 +0000
 
-firefox-esr (78.3.0esr-2) unstable; urgency=medium
+firefox-esr (78.4.0esr-1~deb10u2) buster-security; urgency=medium
 
+  * debian/rules: Restore parts of debian/rules that were removed by mistake
+    in 78.4.0esr-1~deb10u1, causing FTBFS on at least amd64.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 21 Oct 2020 13:19:24 +0900
+
+firefox-esr (78.4.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-46, also known as:
+    CVE-2020-15969, CVE-2020-15683.
+
+  [Emilio Pozuelo Monfort]
+  * debian/browser.bug-presubj.in, debian/control.in, debian/rules,
+    debian/symbols.mk, debian/upstream.mk: Remove support for jessie.
+  * debian/control.in, debian/rules: stretch: build with LLVM 7, 4.0 doesn't
+    support -std=gnu++17.
+  * debian/rules:
+    - stretch: build with GCC 7 from gcc-mozilla.
+    - Call python with -B when regenerating the control files, so as to not
+      generate bytecode files.
+    - Call debian/l10n/gen with C.UTF-8 as the locale, otherwise it fails
+    in stretch when opening the iso-codes files.
+    - stretch: don't set NASM on !x86.
+
+  [Mike Hommey]
   * third-party/rust/authenticator/src/linux/ioctl_mips*.rs: Add missing
     bindings for mips*.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 23 Sep 2020 12:53:29 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 21 Oct 2020 06:35:35 +0900
 
-firefox-esr (78.3.0esr-1) unstable; urgency=medium
+firefox-esr (78.3.0esr-1~deb10u1) buster-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2020-43, also known as:
@@ -35,8 +60,10 @@ firefox-esr (78.3.0esr-1) unstable; urgency=medium
     CodeGenerator::visitWasmRegisterResult function. bz#1649655.
   * js/src/jit/none/MacroAssembler-none.h: Bump CodeAlignment to 8.
     bz#1666646.
+  * third-party/rust/authenticator/src/linux/ioctl_mips*.rs: Add missing
+    bindings for mips*.
 
- -- Mike Hommey <glandium@debian.org>  Wed, 23 Sep 2020 07:25:27 +0900
+ -- Mike Hommey <glandium@debian.org>  Wed, 23 Sep 2020 12:53:29 +0900
 
 firefox-esr (78.2.0esr-1) unstable; urgency=medium
 
