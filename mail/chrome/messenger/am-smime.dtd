@@ -1,0 +1,77 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!ENTITY securityTitle.label "Қауіпсіздік">
+<!ENTITY securityTab.label "Қауіпсіздік">
+<!ENTITY securityHeading.label "Цифрлық қолтаңбасы бар немесе шифрленген хабарламаларды жіберу және қабылдау үшін, сізге цифрлық қолтаңбаны қою сертификатын және шифрлеу сертификатын көрсету керек.">
+<!ENTITY encryptionGroupTitle.label "Шифрлеу">
+<!ENTITY encryptionChoiceLabel.label "Хабарламаларды жіберу кезінде негізгі шифрлеу баптауы:">
+<!ENTITY neverEncrypt.label "Ешқашан (шифрлеуді қолданбау)">
+<!ENTITY neverEncrypt.accesskey "н">
+<!ENTITY alwaysEncryptMessage.label "Міндетті (барлық алушыларда сертификаттар болған кезде ғана жіберуге болады)">
+<!ENTITY alwaysEncryptMessage.accesskey "д">
+<!ENTITY encryptionCert.message "Бұл сертификатты шифрлеу және сізге жіберілген хабарламаларды дешифрлеу үшін қолдану:">
+
+<!ENTITY e2eTitle.label "Өтпелі шифрлеу">
+<!ENTITY e2eIntro.description "Шифрленген немесе цифрлық қолтаңбасы бар хабарламаларды жіберу үшінғ сізге OpenPGP немесе S/MIME сияқты шифрлеу технологиясын баптау керек.">
+<!ENTITY e2eLearnMore.label "Көбірек білу">
+
+<!ENTITY e2eEnc.description "Өтпелі шифрлеусіз хабарламалардың мазмұны эл. пошта провайдеріне және жаппай бақылау қызметтеріне оңай түрде қолжетімді.">
+<!ENTITY e2eeReqWarning.description "Егер сіз шифрлеуді талап етсеңіз, хабарламаны жіберу үшін, сізде әр алушының ашық кілті немесе сертификаты болуы тиіс.">
+
+<!ENTITY e2eSigning.description "Цифрлық қолтаңба алушыларға хабарламаны сіз жібергенін және мазмұн өзгермегенін тексеруге мүмкіндік береді.">
+<!ENTITY e2eTechPref.description "Қалайтын шифрлеу технологиясы:">
+
+<!ENTITY doNotEncrypt.label "Үнсіз келісім бойынша шифрлеуді іске қоспау">
+<!ENTITY doNotEncrypt.accesskey "п">
+<!ENTITY requireEncryptMessage.label "Үнсіз келісім бойынша шифрлеуді талап ету">
+<!ENTITY requireEncryptMessage.accesskey "у">
+<!ENTITY encryptionCert2.message "Шифрлеу үшін жеке сертификат:">
+<!ENTITY digitalSign.certificate.button "Таңдау…">
+<!ENTITY digitalSign.certificate.accesskey "с">
+<!ENTITY digitalSign.certificate_clear.button "Тазарту">
+<!ENTITY digitalSign.certificate_clear.accesskey "з">
+<!ENTITY encryption.certificate.button "Таңдау…">
+<!ENTITY encryption.certificate.accesskey "т">
+<!ENTITY encryption.certificate_clear.button "Тазарту">
+<!ENTITY encryption.certificate_clear.accesskey "е">
+<!ENTITY signingGroupTitle.label "Цифрлық қолтаңбаларды қою">
+<!ENTITY signMessage.label "Хабарламаларға цифрлық қолтаңбаларды қою (үнсіз келісім бойынша)">
+<!ENTITY signMessage2.label "Үнсіз келісім бойынша менің цифрлық қолтаңбамды қосу">
+<!ENTITY signMessage.accesskey "ц">
+<!ENTITY signingCert.message "Бұл сертификатты сіз жіберетін хабарламаларға цифрлық қолтаңба қою үшін қолдану:">
+
+<!ENTITY certificates.label "Сертификаттар">
+<!ENTITY manageCerts2.label "Сертификаттарды басқару">
+<!ENTITY manageCerts2.accesskey "б">
+<!ENTITY manageDevices.label "Қорғаныс жабдықтары">
+<!ENTITY manageDevices.accesskey "ж">
+
+<!ENTITY signingCert2.message "Цифрлық қолтаңба қою үшін жеке сертификат:">
+
+<!ENTITY sendingDefaults.label "Хабарламаларды жіберу үшін үнсіз келісім баптаулары">
+
+<!ENTITY technologyAutomatic.label "Қолжетімді кілттер немесе сертификаттарға байланысты автоматты түрде таңдау">
+
+<!ENTITY certificates2.label "S/MIME">
+<!ENTITY manageCerts3.label "S/MIME сертификаттарын басқару">
+<!ENTITY manageCerts3.accesskey "е">
+<!ENTITY manageDevices2.label "S/MIME қауіпсіздік құрылғылары">
+<!ENTITY manageDevices2.accesskey "у">
+
+<!ENTITY technologySMIME.label "S/MIME қалау">
+<!ENTITY technologyOpenPGP.label "OpenPGP қалау">
+
+<!ENTITY openpgpKeys.label "OpenPGP">
+<!ENTITY manageKeys.label "OpenPGPкілттерін басқару">
+<!ENTITY manageKeys.accesskey "к">
+
+<!-- Strings for the cert picker dialog -->
+<!ENTITY certPicker.title "Сертификатты таңдау">
+<!ENTITY certPicker.info  "Сертификат:">
+<!ENTITY certPicker.detailsLabel "Таңдалған сертификат ақпараты:">
+
+<!ENTITY openpgpKey.message "Шифрлеу және цифрлық қолтаңба қою үшін жеке кілт:">
+<!ENTITY openpgpKey.button "Жеке кілтті орнату…">
+<!ENTITY openpgpKey.accesskey "е">
