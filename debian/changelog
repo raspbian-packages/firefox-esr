@@ -1,4 +1,4 @@
-firefox-esr (78.3.0esr-2+rpi1) bullseye-staging; urgency=medium
+firefox-esr (78.6.0esr-1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -16,7 +16,68 @@ firefox-esr (78.3.0esr-2+rpi1) bullseye-staging; urgency=medium
   * Clean up pycache directories.
   * Disable neon in qcms.
 
- -- Raspbian forward porter <root@raspbian.org>  Wed, 07 Oct 2020 09:12:23 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 21 Dec 2020 15:32:59 +0000
+
+firefox-esr (78.6.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-55, also known as:
+    CVE-2020-16042, CVE-2020-26971, CVE-2020-26973, CVE-2020-26974,
+    CVE-2020-26978, CVE-2020-35111, CVE-2020-35113.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 16 Dec 2020 05:57:15 +0900
+
+firefox-esr (78.5.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-51, also known as:
+    CVE-2020-26951, CVE-2020-16012, CVE-2020-26953, CVE-2020-26956,
+    CVE-2020-26958, CVE-2020-26959, CVE-2020-26960, CVE-2020-26961,
+    CVE-2020-26965, CVE-2020-26968.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 18 Nov 2020 06:23:03 +0900
+
+firefox-esr (78.4.1esr-2) unstable; urgency=medium
+
+  * Cargo.lock, third_party/rust/proc-macro2, third_party/rust/syn: Update
+    to fix FTBFS with rustc 1.47. bz#1663715.
+
+ -- Mike Hommey <glandium@debian.org>  Tue, 10 Nov 2020 10:23:12 +0900
+
+firefox-esr (78.4.1esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-49, also known as CVE-2020-26950.
+
+ -- Mike Hommey <glandium@debian.org>  Tue, 10 Nov 2020 07:27:07 +0900
+
+firefox-esr (78.4.0esr-2) unstable; urgency=medium
+
+  * debian/rules: Restore parts of debian/rules that were removed by mistake
+    in 78.4.0esr-1, causing FTBFS on at least amd64.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 21 Oct 2020 13:19:24 +0900
+
+firefox-esr (78.4.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2020-46, also known as:
+    CVE-2020-15969, CVE-2020-15683.
+
+  [Emilio Pozuelo Monfort]
+  * debian/browser.bug-presubj.in, debian/control.in, debian/rules,
+    debian/symbols.mk, debian/upstream.mk: Remove support for jessie.
+  * debian/control.in, debian/rules: stretch: build with LLVM 7, 4.0 doesn't
+    support -std=gnu++17.
+  * debian/rules:
+    - stretch: build with GCC 7 from gcc-mozilla.
+    - Call python with -B when regenerating the control files, so as to not
+      generate bytecode files.
+    - Call debian/l10n/gen with C.UTF-8 as the locale, otherwise it fails
+    in stretch when opening the iso-codes files.
+    - stretch: don't set NASM on !x86.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 21 Oct 2020 06:35:35 +0900
 
 firefox-esr (78.3.0esr-2) unstable; urgency=medium
 

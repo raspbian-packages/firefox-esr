@@ -375,6 +375,14 @@ already_AddRefed<nsFrameLoader> nsFrameLoader::Create(
       CreateBrowsingContext(aOwner, aOpenWindowInfo);
   NS_ENSURE_TRUE(context, nullptr);
 
+  if (XRE_IsParentProcess() && aOpenWindowInfo) {
+    MOZ_ASSERT(context->IsTopContent());
+    if (RefPtr<BrowsingContext> crossGroupOpener =
+            aOpenWindowInfo->GetParent()) {
+      context->Canonical()->SetCrossGroupOpenerId(crossGroupOpener->Id());
+    }
+  }
+
   // Determine the initial RemoteType from the load environment. An empty or
   // void remote type denotes a non-remote frame, while a named remote type
   // denotes a remote frame.
@@ -1432,14 +1440,13 @@ nsresult nsFrameLoader::SwapWithOtherLoader(nsFrameLoader* aOther,
   bool ourFullscreenAllowed =
       ourContent->IsXULElement() ||
       (OwnerIsMozBrowserFrame() &&
-       (ourContent->HasAttr(kNameSpaceID_None, nsGkAtoms::allowfullscreen) ||
-        ourContent->HasAttr(kNameSpaceID_None, nsGkAtoms::mozallowfullscreen)));
+       (ourContent->HasAttr(nsGkAtoms::allowfullscreen) ||
+        ourContent->HasAttr(nsGkAtoms::mozallowfullscreen)));
   bool otherFullscreenAllowed =
       otherContent->IsXULElement() ||
       (aOther->OwnerIsMozBrowserFrame() &&
-       (otherContent->HasAttr(kNameSpaceID_None, nsGkAtoms::allowfullscreen) ||
-        otherContent->HasAttr(kNameSpaceID_None,
-                              nsGkAtoms::mozallowfullscreen)));
+       (otherContent->HasAttr(nsGkAtoms::allowfullscreen) ||
+        otherContent->HasAttr(nsGkAtoms::mozallowfullscreen)));
   if (ourFullscreenAllowed != otherFullscreenAllowed) {
     return NS_ERROR_NOT_IMPLEMENTED;
   }

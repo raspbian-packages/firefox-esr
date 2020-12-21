@@ -243,14 +243,29 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
     auto path = reinterpret_cast<const char*>(aArgs.args[1]);
     auto buf = reinterpret_cast<statstruct*>(aArgs.args[2]);
     auto flags = static_cast<int>(aArgs.args[3]);
+
+    if (fd != AT_FDCWD && (flags & AT_EMPTY_PATH) != 0 &&
+        strcmp(path, "") == 0) {
+#ifdef __NR_fstat64
+      return DoSyscall(__NR_fstat64, fd, buf);
+#else
+      return DoSyscall(__NR_fstat, fd, buf);
+#endif
+    }
+
+    if (!broker) {
+      return BlockedSyscallTrap(aArgs, nullptr);
+    }
+
     if (fd != AT_FDCWD && path[0] != '/') {
       SANDBOX_LOG_ERROR("unsupported fd-relative fstatat(%d, \"%s\", %p, %d)",
                         fd, path, buf, flags);
       return BlockedSyscallTrap(aArgs, nullptr);
     }
-    if ((flags & ~AT_SYMLINK_NOFOLLOW) != 0) {
+    if ((flags & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT)) != 0) {
       SANDBOX_LOG_ERROR("unsupported flags %d in fstatat(%d, \"%s\", %p, %d)",
-                        (flags & ~AT_SYMLINK_NOFOLLOW), fd, path, buf, flags);
+                        (flags & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT)), fd,
+                        path, buf, flags);
       return BlockedSyscallTrap(aArgs, nullptr);
     }
     return (flags & AT_SYMLINK_NOFOLLOW) == 0 ? broker->Stat(path, buf)
@@ -436,7 +451,7 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
     // If a file broker client was provided, route syscalls to it;
     // otherwise, fall through to the main policy, which will deny
     // them.
-    if (mBroker != nullptr) {
+    if (mBroker) {
       switch (sysno) {
         case __NR_open:
           return Trap(OpenTrap, mBroker);
@@ -474,6 +489,13 @@ class SandboxPolicyCommon : public SandboxPolicyBase {
           return Trap(ReadlinkTrap, mBroker);
         case __NR_readlinkat:
           return Trap(ReadlinkAtTrap, mBroker);
+      }
+    } else {
+      // In the absence of a broker we still need to handle the
+      // fstat-equivalent subset of fstatat; see bug 1673770.
+      switch (sysno) {
+      CASES_FOR_fstatat:
+        return Trap(StatAtTrap, nullptr);
       }
     }
 
