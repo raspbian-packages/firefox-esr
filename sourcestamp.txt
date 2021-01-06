@@ -1,0 +1,2 @@
+20210105204613
+https://hg.mozilla.org/releases/mozilla-esr78/rev/df0581e37d875577ff1f2be1d5943e0d03c9e796
