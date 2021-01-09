@@ -1,4 +1,4 @@
-firefox-esr (78.6.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
+firefox-esr (78.6.1esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -16,7 +16,14 @@ firefox-esr (78.6.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
   * Clean up pycache directories.
   * Disable neon in qcms.
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 18 Dec 2020 05:41:18 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sat, 09 Jan 2021 14:39:59 +0000
+
+firefox-esr (78.6.1esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2021-01, also known as CVE-2020-16044.
+
+ -- Mike Hommey <glandium@debian.org>  Thu, 07 Jan 2021 07:38:33 +0900
 
 firefox-esr (78.6.0esr-1~deb10u1) buster-security; urgency=medium
 
