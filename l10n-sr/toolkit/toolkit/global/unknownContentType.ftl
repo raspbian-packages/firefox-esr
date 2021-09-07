@@ -1,0 +1,13 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+unknowncontenttype-handleinternally =
+    .label = Отвори преко { -brand-short-name }
+    .accesskey = е
+unknowncontenttype-settingschange =
+    .value =
+        { PLATFORM() ->
+            [windows] Подешавања могу да се промене у { -brand-short-name } поставкама.
+           *[other] Подешавања могу да се промене у { -brand-short-name } поставкама.
+        }
