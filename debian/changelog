@@ -1,4 +1,4 @@
-firefox-esr (78.13.0esr-1+rpi1) bookworm-staging; urgency=medium
+firefox-esr (78.14.0esr-1+rpi1) bookworm-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -16,7 +16,16 @@ firefox-esr (78.13.0esr-1+rpi1) bookworm-staging; urgency=medium
   * Clean up pycache directories.
   * Disable neon in qcms.
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 26 Aug 2021 23:37:49 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Wed, 22 Sep 2021 20:12:57 +0000
+
+firefox-esr (78.14.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2021-39, also known as CVE-2021-38493.
+
+  * debian/import-tar.py, debian/repack.py: Fixed for python 3.9.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 08 Sep 2021 06:35:55 +0900
 
 firefox-esr (78.13.0esr-1) unstable; urgency=medium
 
