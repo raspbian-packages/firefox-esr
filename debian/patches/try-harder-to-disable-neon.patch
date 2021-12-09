@@ -12,10 +12,10 @@ Subject: Try harder to disable neon.
      return arm_arch >= 700
  
  
--set_config('BUILD_ARM_NEON', build_arm_neon)
--set_define('BUILD_ARM_NEON', build_arm_neon)
-+#set_config('BUILD_ARM_NEON', build_arm_neon)
-+#set_define('BUILD_ARM_NEON', build_arm_neon)
+-set_config("BUILD_ARM_NEON", build_arm_neon)
+-set_define("BUILD_ARM_NEON", build_arm_neon)
++#set_config("BUILD_ARM_NEON", build_arm_neon)
++#set_define("BUILD_ARM_NEON", build_arm_neon)
  
  
- set_config('ARM_ARCH', depends(arm_target.arm_arch)(lambda x: str(x)))
+ set_config("ARM_ARCH", depends(arm_target.arm_arch)(lambda x: str(x)))
