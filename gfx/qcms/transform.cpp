@@ -1240,7 +1240,7 @@ qcms_transform* qcms_transform_create(
 #endif
 		    } else
 #endif
-#if 0 // defined(__arm__) || defined(__aarch64__)
+#if defined(__arm__) || defined(__aarch64__)
                     if (qcms_supports_neon) {
 			    if (in_type == QCMS_DATA_RGB_8) {
 				    transform->transform_fn = qcms_transform_data_rgb_out_lut_neon;

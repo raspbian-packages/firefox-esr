@@ -493,11 +493,11 @@ void GfxQcms_ProfilePairBase::TransformPrecachePlatformExt() {
     EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgb_out_lut_avx));
   }
 #endif
-//#ifdef MOZILLA_MAY_SUPPORT_NEON
-//  if (mozilla::supports_neon()) {
-//    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgb_out_lut_neon));
-//  }
-//#endif
+#ifdef MOZILLA_MAY_SUPPORT_NEON
+  if (mozilla::supports_neon()) {
+    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgb_out_lut_neon));
+  }
+#endif
 
   // Verify RGBA transforms.
   ASSERT_TRUE(SetBuffers(QCMS_DATA_RGBA_8));
@@ -518,11 +518,11 @@ void GfxQcms_ProfilePairBase::TransformPrecachePlatformExt() {
     EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgba_out_lut_avx));
   }
 #endif
-//#ifdef MOZILLA_MAY_SUPPORT_NEON
-//  if (mozilla::supports_neon()) {
-//    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgba_out_lut_neon));
-//  }
-//#endif
+#ifdef MOZILLA_MAY_SUPPORT_NEON
+  if (mozilla::supports_neon()) {
+    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgba_out_lut_neon));
+  }
+#endif
 
   // Verify BGRA transforms.
   ASSERT_TRUE(SetBuffers(QCMS_DATA_BGRA_8));
@@ -543,11 +543,11 @@ void GfxQcms_ProfilePairBase::TransformPrecachePlatformExt() {
     EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_bgra_out_lut_avx));
   }
 #endif
-//#ifdef MOZILLA_MAY_SUPPORT_NEON
-//  if (mozilla::supports_neon()) {
-//    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_bgra_out_lut_neon));
-//  }
-//#endif
+#ifdef MOZILLA_MAY_SUPPORT_NEON
+  if (mozilla::supports_neon()) {
+    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_bgra_out_lut_neon));
+  }
+#endif
 }
 
 class GfxQcms_sRGB_To_sRGB : public GfxQcms_ProfilePairBase {
