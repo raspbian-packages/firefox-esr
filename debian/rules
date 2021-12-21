@@ -1,4 +1,6 @@
 #!/usr/bin/make -f
+export HOME=$(CURDIR)/fakehome
+
 TESTDIR = $(shell dh_testdir || echo no)
 ifeq (,$(TESTDIR))
 include debian/make.mk
@@ -132,7 +134,7 @@ endif
 ifneq (,$(filter i386 amd64 armel armhf,$(DEB_HOST_ARCH)))
 	CRASH_REPORTER = 1
 endif
-ifneq (,$(filter mips%,$(DEB_HOST_ARCH)))
+ifneq (,$(filter armhf mips%,$(DEB_HOST_ARCH)))
 	CONFIGURE_FLAGS += --disable-webrtc
 endif
 
@@ -196,6 +198,7 @@ debian/iceweasel-l10n-%.maintscript: debian/removed_conffiles
 endif
 
 override_dh_auto_configure:
+	mkdir -p fakehome
 
 configure js/src/configure:
 	cp -f $@.in $@ && chmod +x $@
@@ -276,12 +279,16 @@ override_dh_auto_clean::
 	rm -f $(filter-out debian/control,$(GENERATED_FILES))
 	rm -f $$(cat debian/extra-clean 2>/dev/null) debian/extra-clean old-configure js/src/old-configure
 	rm -rf stamps l10n $(CARGO_HOME)
+	rm -f third_party/python/psutil/psutil/*.so
+	rm -rf third_party/python/psutil/build/temp*
+	rm -rf third_party/python/psutil/build/lib*
 	debian/rules debian/control TESTDIR=
 
 	dh_auto_clean --builddirectory=build-$(PRODUCT)
 	dh_auto_clean --builddirectory=build-l10n
 	find . -name "*.pyc" -o -name "*.pyo" | xargs --no-run-if-empty rm -f
 	rm -rf obj-*/.mozbuild
+	find . -name __pycache__ -delete
 
 override_dh_clean:
 	dh_clean -XCargo.toml.orig
@@ -290,6 +297,8 @@ override_dh_clean:
 			sed -i '2!b;/^exec "/ d' $$dir/$$file; \
 		done; \
 	done
+	rm -rf build-browser
+	rm -rf fakehome
 
 override_dh_auto_install-arch: stamps/install-$(PRODUCT)
 override_dh_auto_install-indep:
@@ -344,3 +353,4 @@ $(ALL_STAMPS)::
 	@mkdir -p stamps
 	$(if $(wildcard $@),,touch $@)
 endif
+

@@ -1,3 +1,23 @@
+firefox-esr (91.4.0esr-1+rpi1) bookworm-staging; urgency=medium
+
+  [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
+  * Hack broken rust target selection so it produces the right target
+    on raspbian.
+  * Fix clean target.
+
+  [changes introduce in 60.8.0esr-1+rpi1 by Peter Michael Green]
+  * Use a fake homedir for build (Closes: 933757).
+
+  [changes introduced in 68.2.0esr-1+rpi1 by Peter Michael Green]
+  * Disable webrtc, it seems to fail to build on raspbian.
+  * Try to disable Neon
+
+  [changes introduced in 78.3.0esr-2+rpi1 by Peter Michael Green]
+  * Clean up pycache directories.
+  * Disable neon in qcms.
+
+ -- Raspbian forward porter <root@raspbian.org>  Wed, 22 Sep 2021 20:12:57 +0000
+
 firefox-esr (91.4.0esr-1) unstable; urgency=medium
 
   * New upstream release.

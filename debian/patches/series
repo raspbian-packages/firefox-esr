@@ -19,3 +19,7 @@ debian-hacks/Use-build-id-as-langpack-version-for-reproducibility.patch
 debian-hacks/Allow-to-build-with-older-versions-of-nodejs-10.patch
 debian-hacks/Allow-to-build-with-cargo-in-Debian-unstable.patch
 debian-hacks/Fix-math_private.h-for-i386-FTBFS.patch
+raspbian-rust-triplet-hack.patch
+try-to-disable-neon.patch
+try-harder-to-disable-neon.patch
+disable-neon-in-qcms.patch

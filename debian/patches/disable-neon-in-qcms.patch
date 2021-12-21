@@ -1,0 +1,105 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Date: Wed, 7 Oct 2020 19:41:49 +0000
+X-Dgit-Generated: 78.3.0esr-2+rpi1 b1f30fd7ea0b729a7bbc7dc1e804e2a0cc0c573a
+Subject: Disable neon in qcms.
+
+
+---
+
+--- firefox-esr-78.3.0esr.orig/gfx/qcms/qcmsint.h
++++ firefox-esr-78.3.0esr/gfx/qcms/qcmsint.h
+@@ -344,18 +344,18 @@ void qcms_transform_data_bgra_out_lut_al
+                                               unsigned char *dest,
+                                               size_t length);
+ 
+-void qcms_transform_data_rgb_out_lut_neon(const qcms_transform *transform,
+-                                          const unsigned char *src,
+-                                          unsigned char *dest,
+-                                          size_t length);
+-void qcms_transform_data_rgba_out_lut_neon(const qcms_transform *transform,
+-                                           const unsigned char *src,
+-                                           unsigned char *dest,
+-                                           size_t length);
+-void qcms_transform_data_bgra_out_lut_neon(const qcms_transform *transform,
+-                                           const unsigned char *src,
+-                                           unsigned char *dest,
+-                                           size_t length);
++//void qcms_transform_data_rgb_out_lut_neon(const qcms_transform *transform,
++//                                          const unsigned char *src,
++//                                          unsigned char *dest,
++//                                          size_t length);
++//void qcms_transform_data_rgba_out_lut_neon(const qcms_transform *transform,
++//                                           const unsigned char *src,
++//                                           unsigned char *dest,
++//                                           size_t length);
++//void qcms_transform_data_bgra_out_lut_neon(const qcms_transform *transform,
++//                                           const unsigned char *src,
++//                                           unsigned char *dest,
++//                                           size_t length);
+ 
+ extern bool qcms_supports_iccv4;
+ extern bool qcms_supports_neon;
+--- firefox-esr-78.3.0esr.orig/gfx/qcms/transform.cpp
++++ firefox-esr-78.3.0esr/gfx/qcms/transform.cpp
+@@ -1240,7 +1240,7 @@ qcms_transform* qcms_transform_create(
+ #endif
+ 		    } else
+ #endif
+-#if defined(__arm__) || defined(__aarch64__)
++#if 0 // defined(__arm__) || defined(__aarch64__)
+                     if (qcms_supports_neon) {
+ 			    if (in_type == QCMS_DATA_RGB_8) {
+ 				    transform->transform_fn = qcms_transform_data_rgb_out_lut_neon;
+--- firefox-esr-78.3.0esr.orig/gfx/tests/gtest/TestQcms.cpp
++++ firefox-esr-78.3.0esr/gfx/tests/gtest/TestQcms.cpp
+@@ -493,11 +493,11 @@ void GfxQcms_ProfilePairBase::TransformP
+     EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgb_out_lut_avx));
+   }
+ #endif
+-#ifdef MOZILLA_MAY_SUPPORT_NEON
+-  if (mozilla::supports_neon()) {
+-    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgb_out_lut_neon));
+-  }
+-#endif
++//#ifdef MOZILLA_MAY_SUPPORT_NEON
++//  if (mozilla::supports_neon()) {
++//    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgb_out_lut_neon));
++//  }
++//#endif
+ 
+   // Verify RGBA transforms.
+   ASSERT_TRUE(SetBuffers(QCMS_DATA_RGBA_8));
+@@ -518,11 +518,11 @@ void GfxQcms_ProfilePairBase::TransformP
+     EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgba_out_lut_avx));
+   }
+ #endif
+-#ifdef MOZILLA_MAY_SUPPORT_NEON
+-  if (mozilla::supports_neon()) {
+-    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgba_out_lut_neon));
+-  }
+-#endif
++//#ifdef MOZILLA_MAY_SUPPORT_NEON
++//  if (mozilla::supports_neon()) {
++//    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_rgba_out_lut_neon));
++//  }
++//#endif
+ 
+   // Verify BGRA transforms.
+   ASSERT_TRUE(SetBuffers(QCMS_DATA_BGRA_8));
+@@ -543,11 +543,11 @@ void GfxQcms_ProfilePairBase::TransformP
+     EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_bgra_out_lut_avx));
+   }
+ #endif
+-#ifdef MOZILLA_MAY_SUPPORT_NEON
+-  if (mozilla::supports_neon()) {
+-    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_bgra_out_lut_neon));
+-  }
+-#endif
++//#ifdef MOZILLA_MAY_SUPPORT_NEON
++//  if (mozilla::supports_neon()) {
++//    EXPECT_TRUE(ProduceVerifyOutput(qcms_transform_data_bgra_out_lut_neon));
++//  }
++//#endif
+ }
+ 
+ class GfxQcms_sRGB_To_sRGB : public GfxQcms_ProfilePairBase {
