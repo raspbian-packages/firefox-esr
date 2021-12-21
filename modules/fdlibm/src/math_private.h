@@ -35,7 +35,7 @@ typedef long double      __double_t;
 #else
 typedef double      __double_t;
 #endif
-typedef __double_t  double_t;
+#define double_t __double_t
 typedef float       __float_t;
 
 /*
