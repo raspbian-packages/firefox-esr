@@ -16,6 +16,10 @@ firefox-esr (91.4.0esr-1+rpi1) bookworm-staging; urgency=medium
   * Clean up pycache directories.
   * Disable neon in qcms.
 
+  [changes brought over from thunderbird 1:91.3.2-1+rpi1 by Peter Michael Green]
+  * Use a #define instead of a typedef for double_t in fdlibm to prevent conflicting
+    definitions error.
+
  -- Raspbian forward porter <root@raspbian.org>  Wed, 22 Sep 2021 20:12:57 +0000
 
 firefox-esr (91.4.0esr-1) unstable; urgency=medium
