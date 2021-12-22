@@ -1,4 +1,4 @@
-firefox-esr (91.4.0esr-1+rpi1) bookworm-staging; urgency=medium
+firefox-esr (91.4.1esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -20,7 +20,18 @@ firefox-esr (91.4.0esr-1+rpi1) bookworm-staging; urgency=medium
   * Use a #define instead of a typedef for double_t in fdlibm to prevent conflicting
     definitions error.
 
- -- Raspbian forward porter <root@raspbian.org>  Wed, 22 Sep 2021 20:12:57 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Wed, 22 Dec 2021 21:10:23 +0000
+
+firefox-esr (91.4.1esr-1~deb11u1) bullseye-security; urgency=medium
+
+  * New upstream release.
+
+  * debian/rules: Build against embedded nspr and nss on bullseye.
+  * debian/control*: Build against rustc-mozilla/cargo-mozilla on relevant
+    older release.
+  * debian/upstream.mk: Add definitions for newer releases of Debian.
+
+ -- Mike Hommey <glandium@debian.org>  Sun, 19 Dec 2021 06:44:45 +0900
 
 firefox-esr (91.4.0esr-1) unstable; urgency=medium
 
