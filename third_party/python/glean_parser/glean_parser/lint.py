@@ -52,10 +52,10 @@ def _english_list(items: List[str]) -> str:
     if len(items) == 0:
         return ""
     elif len(items) == 1:
-        return f"'{items[0]}'"
+        return "'{}'".format((items[0]))
     else:
         return "{}, or '{}'".format(
-            ", ".join([f"'{x}'" for x in items[:-1]]), items[-1]
+            ", ".join(["'{}'".format((x)) for x in items[:-1]]), items[-1]
         )
 
 
@@ -98,10 +98,10 @@ def check_common_prefix(
     if i > 0:
         common_prefix = "_".join(first[:i])
         yield (
-            f"Within category '{category_name}', all metrics begin with "
-            f"prefix '{common_prefix}'."
+            "Within category '{}', all metrics begin with "
+            "prefix '{}'."
             "Remove the prefixes on the metric names and (possibly) "
-            "rename the category."
+            "rename the category.".format((category_name), (common_prefix))
         )
 
 
@@ -141,17 +141,17 @@ def check_unit_in_name(
             or unit_in_name == time_unit.name
         ):
             yield (
-                f"Suffix '{unit_in_name}' is redundant with time_unit "
-                f"'{time_unit.name}'. Only include time_unit."
+                "Suffix '{}' is redundant with time_unit "
+                "'{}'. Only include time_unit.".format((unit_in_name), (time_unit.name))
             )
         elif (
             unit_in_name in TIME_UNIT_ABBREV.keys()
             or unit_in_name in TIME_UNIT_ABBREV.values()
         ):
             yield (
-                f"Suffix '{unit_in_name}' doesn't match time_unit "
-                f"'{time_unit.name}'. "
-                "Confirm the unit is correct and only include time_unit."
+                "Suffix '{}' doesn't match time_unit "
+                "'{}'. "
+                "Confirm the unit is correct and only include time_unit.".format((unit_in_name), (time_unit.name))
             )
 
     elif memory_unit is not None:
@@ -160,26 +160,26 @@ def check_unit_in_name(
             or unit_in_name == memory_unit.name
         ):
             yield (
-                f"Suffix '{unit_in_name}' is redundant with memory_unit "
-                f"'{memory_unit.name}'. "
-                "Only include memory_unit."
+                "Suffix '{}' is redundant with memory_unit "
+                "'{}'. "
+                "Only include memory_unit.".format((unit_in_name), (memory_unit.name))
             )
         elif (
             unit_in_name in MEMORY_UNIT_ABBREV.keys()
             or unit_in_name in MEMORY_UNIT_ABBREV.values()
         ):
             yield (
-                f"Suffix '{unit_in_name}' doesn't match memory_unit "
-                f"{memory_unit.name}'. "
-                "Confirm the unit is correct and only include memory_unit."
+                "Suffix '{}' doesn't match memory_unit "
+                "{}'. "
+                "Confirm the unit is correct and only include memory_unit.".format((unit_in_name), (memory_unit.name))
             )
 
     elif unit is not None:
         if unit_in_name == unit:
             yield (
-                f"Suffix '{unit_in_name}' is redundant with unit param "
-                f"'{unit}'. "
-                "Only include unit."
+                "Suffix '{}' is redundant with unit param "
+                "'{}'. "
+                "Only include unit.".format((unit_in_name), (unit))
             )
 
 
@@ -193,8 +193,8 @@ def check_category_generic(
 
     if category_name in GENERIC_CATEGORIES:
         yield (
-            f"Category '{category_name}' is too generic. "
-            f"Don't use {_english_list(GENERIC_CATEGORIES)} for category names"
+            "Category '{}' is too generic. "
+            "Don't use {} for category names".format((category_name), (_english_list(GENERIC_CATEGORIES)))
         )
 
 
@@ -205,10 +205,10 @@ def check_bug_number(
 
     if len(number_bugs):
         yield (
-            f"For bugs {', '.join(number_bugs)}: "
+            "For bugs {}: "
             "Bug numbers are deprecated and should be changed to full URLs. "
-            f"For example, use 'http://bugzilla.mozilla.org/{number_bugs[0]}' "
-            f"instead of '{number_bugs[0]}'."
+            "For example, use 'http://bugzilla.mozilla.org/{}' "
+            "instead of '{}'.".format((', '.join(number_bugs)), (number_bugs[0]), (number_bugs[0]))
         )
 
 
@@ -231,7 +231,7 @@ def check_misspelled_pings(
         for builtin in pings.RESERVED_PING_NAMES:
             distance = _hamming_distance(ping, builtin)
             if distance == 1:
-                yield f"Ping '{ping}' seems misspelled. Did you mean '{builtin}'?"
+                yield "Ping '{}' seems misspelled. Did you mean '{}'?".format((ping), (builtin))
 
 
 def check_user_lifetime_expiration(
@@ -305,8 +305,8 @@ class GlinterNit:
 
     def format(self):
         return (
-            f"{self.check_type.name.upper()}: {self.check_name}: "
-            f"{self.name}: {self.msg}"
+            "{}: {}: "
+            "{}: {}".format((self.check_type.name.upper()), (self.check_name), (self.name), (self.msg))
         )
 
 
@@ -439,7 +439,7 @@ def lint_yaml_files(
     if len(nits):
         print("Sorry, Glean found some glinter nits:", file=file)
         for (path, p) in nits:
-            print(f"{path} ({p.line}:{p.column}) - {p.message}", file=file)
+            print("{} ({}:{}) - {}".format((path), (p.line), (p.column), (p.message)), file=file)
         print("", file=file)
         print("Please fix the above nits to continue.", file=file)
 
