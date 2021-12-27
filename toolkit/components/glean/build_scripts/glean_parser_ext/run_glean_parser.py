@@ -117,7 +117,7 @@ def gifft_map(output_fd, *args):
     # Otherwise we won't compile.
     if probe_type == "Event":
         output_path = Path(os.path.dirname(output_fd.name))
-        with FileAvoidWrite(output_path / "EventExtraGIFFTMaps.cpp") as cpp_fd:
+        with FileAvoidWrite(str(output_path / "EventExtraGIFFTMaps.cpp")) as cpp_fd:
             output_gifft_map(output_fd, probe_type, all_objs, cpp_fd)
     else:
         output_gifft_map(output_fd, probe_type, all_objs, None)
