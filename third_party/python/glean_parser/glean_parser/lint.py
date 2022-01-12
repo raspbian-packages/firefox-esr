@@ -264,9 +264,7 @@ def check_expired_metric(
 
 # The checks that operate on an entire category of metrics:
 #    {NAME: (function, is_error)}
-CATEGORY_CHECKS: Dict[
-    str, Tuple[Callable[[str, Iterable[metrics.Metric]], LintGenerator], CheckType]
-] = {
+CATEGORY_CHECKS = {
     "COMMON_PREFIX": (check_common_prefix, CheckType.error),
     "CATEGORY_GENERIC": (check_category_generic, CheckType.error),
 }
@@ -274,9 +272,7 @@ CATEGORY_CHECKS: Dict[
 
 # The checks that operate on individual metrics:
 #     {NAME: (function, is_error)}
-METRIC_CHECKS: Dict[
-    str, Tuple[Callable[[metrics.Metric, dict], LintGenerator], CheckType]
-] = {
+METRIC_CHECKS = {
     "UNIT_IN_NAME": (check_unit_in_name, CheckType.error),
     "BUG_NUMBER": (check_bug_number, CheckType.error),
     "BASELINE_PING": (check_valid_in_baseline, CheckType.error),
@@ -289,9 +285,7 @@ METRIC_CHECKS: Dict[
 
 # The checks that operate on individual pings:
 #     {NAME: (function, is_error)}
-PING_CHECKS: Dict[
-    str, Tuple[Callable[[pings.Ping, dict], LintGenerator], CheckType]
-] = {
+PING_CHECKS = {
     "BUG_NUMBER": (check_bug_number, CheckType.error),
 }
 
@@ -314,7 +308,7 @@ def _lint_pings(
     category: Dict[str, Union[metrics.Metric, pings.Ping]],
     parser_config: Dict[str, Any],
 ):
-    nits: List[GlinterNit] = []
+    nits = []
 
     for (ping_name, ping) in sorted(list(category.items())):
         assert isinstance(ping, pings.Ping)
@@ -350,7 +344,7 @@ def lint_metrics(
     if parser_config is None:
         parser_config = {}
 
-    nits: List[GlinterNit] = []
+    nits = []
     for (category_name, category) in sorted(list(objs.items())):
         if category_name == "pings":
             nits.extend(_lint_pings(category, parser_config))
@@ -423,7 +417,7 @@ def lint_yaml_files(
 
     # Generic type since the actual type comes from yamllint, which we don't
     # control.
-    nits: List = []
+    nits = []
     for path in input_filepaths:
         if not path.is_file() and parser_config.get("allow_missing_files", False):
             continue
