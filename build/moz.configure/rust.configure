@@ -664,7 +664,7 @@ def rust_compile_flags(
         # before our required minimum Rust version, so there's no need to
         # feature-detect or gate on versions.
         for old, new in path_remappings:
-            flags.append(f"--remap-path-prefix={old}={new}")
+            flags.append("--remap-path-prefix={}={}".format(old, new))
 
     return flags
 
