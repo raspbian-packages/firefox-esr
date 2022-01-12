@@ -121,7 +121,7 @@ def load_yaml_or_json(path: Path):
         with path.open("r", encoding="utf-8") as fd:
             return yaml_load(fd)
     else:
-        raise ValueError(f"Unknown file extension {path.suffix}")
+        raise ValueError("Unknown file extension {}".format((path.suffix)))
 
 
 def ensure_list(value: Any) -> Sequence[Any]:
@@ -327,9 +327,9 @@ def format_error(filepath: Union[str, Path], header: str, content: str) -> str:
     else:
         filepath = "<string>"
     if header:
-        return f"{filepath}: {header}\n{_utils.indent(content)}"
+        return "{}: {}\n{}".format((filepath), (header), (_utils.indent(content)))
     else:
-        return f"{filepath}:\n{_utils.indent(content)}"
+        return "{}:\n{}".format((filepath), (_utils.indent(content)))
 
 
 def parse_expires(expires: str) -> datetime.date:
@@ -347,8 +347,8 @@ def parse_expires(expires: str) -> datetime.date:
             return datetime.date.fromisoformat(expires)
     except ValueError:
         raise ValueError(
-            f"Invalid expiration date '{expires}'. "
-            "Must be of the form yyyy-mm-dd in UTC."
+            "Invalid expiration date '{}'. "
+            "Must be of the form yyyy-mm-dd in UTC.".format((expires))
         )
 
 
@@ -378,7 +378,7 @@ def validate_expires(expires: str) -> None:
     max_date = datetime.datetime.now() + datetime.timedelta(days=730)
     if date > max_date.date():
         raise ValueError(
-            f"'{expires}' is more than 730 days (~2 years) in the future.",
+            "'{}' is more than 730 days (~2 years) in the future.".format((expires)),
             "Please make sure this is intentional.",
             "You can supress this warning by adding EXPIRATION_DATE_TOO_FAR to no_lint",
             "See: https://mozilla.github.io/glean_parser/metrics-yaml.html#no_lint",
