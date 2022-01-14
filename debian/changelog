@@ -1,4 +1,4 @@
-firefox-esr (91.4.1esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (91.5.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -20,7 +20,17 @@ firefox-esr (91.4.1esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
   * Use a #define instead of a typedef for double_t in fdlibm to prevent conflicting
     definitions error.
 
- -- Raspbian forward porter <root@raspbian.org>  Wed, 22 Dec 2021 21:10:23 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 14 Jan 2022 01:06:58 +0000
+
+firefox-esr (91.5.0esr-1~deb11u1) bullseye-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2022-02, also known as:
+    CVE-2022-22743, CVE-2022-22742, CVE-2022-22741, CVE-2022-22740,
+    CVE-2022-22738, CVE-2022-22737, CVE-2021-4140, CVE-2022-22748,
+    CVE-2022-22745, CVE-2022-22747, CVE-2022-22739, CVE-2022-22751.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 12 Jan 2022 06:58:53 +0900
 
 firefox-esr (91.4.1esr-1~deb11u1) bullseye-security; urgency=medium
 
