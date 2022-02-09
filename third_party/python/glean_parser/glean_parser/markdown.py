@@ -73,7 +73,7 @@ def metrics_docs(obj_name: str) -> str:
     if obj_name.startswith("labeled_"):
         fixedup_name += "s"
 
-    return f"https://mozilla.github.io/glean/book/user/metrics/{fixedup_name}.html"
+    return "https://mozilla.github.io/glean/book/user/metrics/{}.html".format((fixedup_name))
 
 
 def ping_docs(ping_name: str) -> str:
@@ -84,7 +84,7 @@ def ping_docs(ping_name: str) -> str:
     if ping_name not in pings.RESERVED_PING_NAMES:
         return ""
 
-    return f"https://mozilla.github.io/glean/book/user/pings/{ping_name}.html"
+    return "https://mozilla.github.io/glean/book/user/pings/{}.html".format((ping_name))
 
 
 def if_empty(
@@ -137,11 +137,11 @@ def ping_review_title(data_url: str, index: int) -> str:
     short_url = path[1:].replace("/pull/", "#")
 
     if params and params["id"]:
-        return f"Bug {params['id'][0]}"
+        return "Bug {}".format((params['id'][0]))
     elif url_object.netloc == "github.com":
         return short_url
 
-    return f"Review {index}"
+    return "Review {}".format((index))
 
 
 def ping_bugs(

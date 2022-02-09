@@ -85,8 +85,8 @@ def transform_metrics(objects):
     for denominator_name, numerator_names in numerators_by_denominator.items():
         if denominator_name not in counters:
             print(
-                f"No `counter` named {denominator_name} found to be used as"
-                "denominator for {numerator_names}",
+                "No `counter` named {} found to be used as"
+                "denominator for {}".format((denominator_name), (numerator_names)),
                 file=sys.stderr,
             )
             return 1
@@ -161,7 +161,7 @@ def translate_metrics(
                 for filepath in output_dir.glob(clear_pattern):
                     filepath.unlink()
             if len(list(output_dir.iterdir())):
-                print(f"Extra contents found in '{output_dir}'.")
+                print("Extra contents found in '{}'.".format((output_dir)))
 
         # We can't use shutil.copytree alone if the directory already exists.
         # However, if it doesn't exist, make sure to create one otherwise
@@ -201,7 +201,7 @@ def translate(
     format_desc = OUTPUTTERS.get(output_format, None)
 
     if format_desc is None:
-        raise ValueError(f"Unknown output format '{output_format}'")
+        raise ValueError("Unknown output format '{}'".format((output_format)))
 
     return translate_metrics(
         input_filepaths,

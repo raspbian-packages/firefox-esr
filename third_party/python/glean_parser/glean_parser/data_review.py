@@ -43,7 +43,7 @@ def generate(
         return 1
 
     # I tried [\W\Z] but it complained. So `|` it is.
-    reobj = re.compile(f"\\W{bug}\\W|\\W{bug}$")
+    reobj = re.compile("\\W{}\\W|\\W{}$".format((bug), (bug)))
     durations = set()
     metrics_table = ""
     for category_name, metrics in all_objects.value.items():
@@ -56,8 +56,8 @@ def generate(
             one_line_desc = metric.description.replace("\n", " ")
             sensitivity = ", ".join([s.name for s in metric.data_sensitivity])
             last_bug = metric.bugs[-1]
-            metrics_table += f"{category_name}.{metric_name} | "
-            metrics_table += f"{one_line_desc} | {sensitivity} | {last_bug}\n"
+            metrics_table += "{}.{} | ".format((category_name), (metric_name))
+            metrics_table += "{} | {} | {}\n".format((one_line_desc), (sensitivity), (last_bug))
 
             durations.add(metric.expires)
 
@@ -66,10 +66,10 @@ def generate(
         if duration == "never":
             collection_duration = "This collection will be collected permanently."
         else:
-            collection_duration = f"This collection has expiry '{duration}'"
+            collection_duration = "This collection has expiry '{}'".format((duration))
     else:
         collection_duration = "Parts of this collection expire at different times: "
-        collection_duration += f"{durations}"
+        collection_duration += "{}".format((durations))
 
     if "never" in durations:
         collection_duration += "\n**TODO: identify at least one individual here** "
