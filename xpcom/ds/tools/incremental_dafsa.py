@@ -14,12 +14,6 @@ from typing import List, Dict, Optional, Callable
 
 
 class Node:
-    children: Dict[str, "Node"]
-    parents: Dict[str, List["Node"]]
-    character: str
-    is_root_node: bool
-    is_end_node: bool
-
     def __init__(self, character, is_root_node=False, is_end_node=False):
         self.children = {}
         self.parents = {}
@@ -156,9 +150,6 @@ class Node:
 
 
 class SuffixCursor:
-    index: int  # Current position of the cursor within the DAFSA.
-    node: Node
-
     def __init__(self, index, node):
         self.index = index
         self.node = node
@@ -228,15 +219,6 @@ class DafsaAppendStateMachine:
     The current suffix index is "10".
     The next suffix node we'll attempt to find is at index "9".
     """
-
-    root_node: Node
-    prefix_index: int
-    suffix_cursor: SuffixCursor
-    stack: List[Node]
-    word: str
-    suffix_overlaps_prefix: bool
-    first_fork_index: Optional[int]
-    _state: Callable
 
     def __init__(self, word, root_node, end_node):
         self.root_node = root_node
@@ -475,9 +457,6 @@ def _duplicate_fork_nodes(stack, fork_index, prefix_index, remove_parent_link=Tr
 
 
 class Dafsa:
-    root_node: Node
-    end_node: Node
-
     def __init__(self):
         self.root_node = Node(None, is_root_node=True)
         self.end_node = Node(None, is_end_node=True)

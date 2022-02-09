@@ -70,7 +70,7 @@ def transform_metrics(objects):
     external.
     """
     counters = {}
-    numerators_by_denominator: Dict[str, Any] = {}
+    numerators_by_denominator = {}
     for category_val in objects.values():
         for metric in category_val.values():
             fqmn = metric.identifier()
