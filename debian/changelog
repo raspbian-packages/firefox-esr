@@ -1,4 +1,4 @@
-firefox-esr (91.5.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (91.6.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -20,7 +20,24 @@ firefox-esr (91.5.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
   * Use a #define instead of a typedef for double_t in fdlibm to prevent conflicting
     definitions error.
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 14 Jan 2022 01:06:58 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 10 Feb 2022 20:43:29 +0000
+
+firefox-esr (91.6.0esr-1~deb11u1) bullseye-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2022-05, also known as:
+    CVE-2022-22754, CVE-2022-22756, CVE-2022-22759, CVE-2022-22760,
+    CVE-2022-22761, CVE-2022-22763, CVE-2022-22764.
+
+  * netwerk/base/SimpleChannel.*, netwerk/base/nsBaseChannel.*,
+    netwerk/protocol/res/ExtensionProtocolHandler.cpp,
+    netwerk/protocol/res/PageThumbProtocolHandler.cpp,
+    toolkit/components/places/nsAnnoProtocolHandler.cpp,
+    dom/file/ipc/RemoteLazyInputStream.cpp: Apply upstream patches to fix
+    excessive CPU usage in web extensions. bz#1706594, bz#1735899.
+    Closes: #1002868.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 09 Feb 2022 07:37:27 +0900
 
 firefox-esr (91.5.0esr-1~deb11u1) bullseye-security; urgency=medium
 
