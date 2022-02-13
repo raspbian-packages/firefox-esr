@@ -1,4 +1,4 @@
-firefox-esr (91.6.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (91.6.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -20,9 +20,9 @@ firefox-esr (91.6.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
   * Use a #define instead of a typedef for double_t in fdlibm to prevent conflicting
     definitions error.
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 10 Feb 2022 20:43:29 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sun, 13 Feb 2022 13:05:44 +0000
 
-firefox-esr (91.6.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (91.6.0esr-1~deb10u1) buster-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2022-05, also known as:
@@ -39,7 +39,7 @@ firefox-esr (91.6.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 09 Feb 2022 07:37:27 +0900
 
-firefox-esr (91.5.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (91.5.0esr-1~deb10u1) buster-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2022-02, also known as:
@@ -49,7 +49,7 @@ firefox-esr (91.5.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 12 Jan 2022 06:58:53 +0900
 
-firefox-esr (91.4.1esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (91.4.1esr-1~deb10u1) buster-security; urgency=medium
 
   * New upstream release.
 
