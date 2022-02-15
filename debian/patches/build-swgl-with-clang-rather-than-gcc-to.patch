@@ -1,0 +1,23 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Date: Tue, 15 Feb 2022 04:46:48 +0000
+X-Dgit-Generated: 91.6.0esr-1~deb10u1+rpi1 19366e4892794b06a3aa6d9087c2e92a6c246dee
+Subject: Build swgl with clang rather than gcc to avoid internal compiler error.
+
+
+---
+
+--- firefox-esr-91.6.0esr.orig/gfx/wr/swgl/build.rs
++++ firefox-esr-91.6.0esr/gfx/wr/swgl/build.rs
+@@ -129,6 +129,12 @@ fn main() {
+ 
+     shaders.sort();
+ 
++    // force build with clang to work around internal compiler error in gcc
++    if let Ok(target) = std::env::var("TARGET") {
++        std::env::set_var(format!("CC_{}", target),"clang");
++        std::env::set_var(format!("CXX_{}", target),"clang++");
++    }
++
+     // We need to ensure that the C preprocessor does not pull compiler flags from
+     // the host or target environment. Set up a SWGLPP target with empty flags to
+     // work around this.
