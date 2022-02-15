@@ -129,6 +129,12 @@ fn main() {
 
     shaders.sort();
 
+    // force build with clang to work around internal compiler error in gcc
+    if let Ok(target) = std::env::var("TARGET") {
+        std::env::set_var(format!("CC_{}", target),"clang");
+        std::env::set_var(format!("CXX_{}", target),"clang++");
+    }
+
     // We need to ensure that the C preprocessor does not pull compiler flags from
     // the host or target environment. Set up a SWGLPP target with empty flags to
     // work around this.
