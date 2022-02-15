@@ -22,6 +22,8 @@ firefox-esr (91.6.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes introduced in 91.6.0esr-1~deb10u1+rpi1 by Peter Michael Green]
   * Build swgl with clang rather than gcc to avoid internal compiler error.
+  * Cast parameters to makestack to uintptr_t which is not always the same
+    as unsigned long.
 
  -- Peter Michael Green <plugwash@raspbian.org>  Tue, 15 Feb 2022 04:45:41 +0000
 

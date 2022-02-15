@@ -87,10 +87,10 @@ TEST(CombinedStacks, Combine)
   //     02 modZ+2000
   //     03 base+4000
   const ProcessedStack testStacks[] = {
-      MakeStack(moduleSet1, {100ul, 200ul, 300ul}),
-      MakeStack(moduleSet1, {1000ul, 2000ul, 3000ul}),
-      MakeStack(moduleSet2, {100ul, 200ul, 300ul, 400ul}),
-      MakeStack(moduleSet2, {1000ul, 2000ul, 3000ul, 4000ul}),
+      MakeStack(moduleSet1, {(uintptr_t)100ul, (uintptr_t)200ul, (uintptr_t)300ul}),
+      MakeStack(moduleSet1, {(uintptr_t)1000ul, (uintptr_t)2000ul, (uintptr_t)3000ul}),
+      MakeStack(moduleSet2, {(uintptr_t)100ul, (uintptr_t)200ul, (uintptr_t)300ul, (uintptr_t)400ul}),
+      MakeStack(moduleSet2, {(uintptr_t)1000ul, (uintptr_t)2000ul, (uintptr_t)3000ul, (uintptr_t)4000ul}),
   };
 
   // combined1 <-- testStacks[0] + testStacks[1]
