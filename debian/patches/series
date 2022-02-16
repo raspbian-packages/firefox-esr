@@ -27,3 +27,4 @@ try-harder-to-disable-neon.patch
 disable-neon-in-qcms.patch
 use-a-define-instead-of-a-typedef-for-do.patch
 build-swgl-with-clang-rather-than-gcc-to.patch
+cast-parameters-to-makestack-to-uintptr_.patch
