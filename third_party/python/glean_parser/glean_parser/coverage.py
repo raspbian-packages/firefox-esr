@@ -122,7 +122,7 @@ def coverage(
         parser_config = {}
 
     if output_format not in OUTPUTTERS:
-        raise ValueError(f"Unknown outputter {output_format}")
+        raise ValueError("Unknown outputter {}".format((output_format)))
 
     metrics_files = util.ensure_list(metrics_files)
 
