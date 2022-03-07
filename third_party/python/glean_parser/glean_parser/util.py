@@ -265,7 +265,7 @@ def fetch_remote_url(url: str, cache: bool = True):
             if key in dc:
                 return dc[key]
 
-    contents: str = urllib.request.urlopen(url).read()
+    contents = urllib.request.urlopen(url).read()
 
     if cache:
         with diskcache.Cache(cache_dir) as dc:
