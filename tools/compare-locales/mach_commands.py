@@ -107,7 +107,7 @@ the output file, pass "-" to serialize to stdout and hide the default output.
 def _positive_int(value):
     value = int(value)
     if value <= 0:
-        raise argparse.ArgumentTypeError(f"{value} must be a positive integer.")
+        raise argparse.ArgumentTypeError("{} must be a positive integer.".format(value))
     return value
 
 
@@ -242,7 +242,7 @@ class CrossChannel(MachCommandBase):
                 self._clone_hg_repo(VCT_URL, VCT_PATH)
                 hgrc_content = [
                     "[extensions]",
-                    f"firefoxtree = {FXTREE_PATH}",
+                    "firefoxtree = {}".format(FXTREE_PATH),
                     "",
                     "[ui]",
                     "username = trybld",
@@ -250,7 +250,7 @@ class CrossChannel(MachCommandBase):
                 if ssh_key_file:
                     hgrc_content.extend(
                         [
-                            f"ssh = ssh -i {ssh_key_file} -l {ssh_key_secret['user']}",
+                            "ssh = ssh -i {} -l {}".format(ssh_key_file, ssh_key_secret['user']),
                         ]
                     )
                 HGRC_PATH.write_text("\n".join(hgrc_content))
@@ -265,7 +265,7 @@ class CrossChannel(MachCommandBase):
                     command.append(head)
                     status = self._retry_run_process(command, ensure_exit_code=False)
                     if status not in (0, 255):  # 255 on pull with no changes
-                        raise RetryError(f"Failure on pull: status {status}!")
+                        raise RetryError("Failure on pull: status {}!".format(status))
                     if repo_config.get("update_on_pull"):
                         command = [
                             "hg",
@@ -280,7 +280,7 @@ class CrossChannel(MachCommandBase):
                             command, ensure_exit_code=False
                         )
                         if status not in (0, 255):  # 255 on pull with no changes
-                            raise RetryError(f"Failure on update: status {status}!")
+                            raise RetryError("Failure on update: status {}!".format(status))
                 self._check_hg_repo(
                     repo_config["path"], heads=repo_config.get("heads", {}).keys()
                 )
@@ -291,7 +291,7 @@ class CrossChannel(MachCommandBase):
                     repo_config["path"], heads=repo_config.get("heads", {}).keys()
                 )
             if self._check_outgoing(strings_path):
-                raise RetryError(f"check: Outgoing changes in {strings_path}!")
+                raise RetryError("check: Outgoing changes in {}!".format(strings_path))
 
         if "create" in actions:
             try:
@@ -332,7 +332,7 @@ class CrossChannel(MachCommandBase):
         if status == 1:
             return False
         raise RetryError(
-            f"Outgoing check in {strings_path} returned unexpected {status}!"
+            "Outgoing check in {} returned unexpected {}!".format(strings_path, status)
         )
 
     def _strip_outgoing(self, strings_path):
@@ -357,7 +357,7 @@ class CrossChannel(MachCommandBase):
         with open(path, "w") as fh:
 
             def writeln(line):
-                fh.write(f"{line}\n")
+                fh.write("{}\n".format(line))
 
             self._retry_run_process(
                 [
@@ -381,12 +381,12 @@ class CrossChannel(MachCommandBase):
 
     def _check_hg_repo(self, path, heads=None):
         if not (path.is_dir() and (path / ".hg").is_dir()):
-            raise RetryError(f"{path} is not a Mercurial repository")
+            raise RetryError("{} is not a Mercurial repository".format(path))
         if heads:
             for head in heads:
                 self._retry_run_process(
                     ["hg", "--cwd", str(path), "log", "-r", head],
-                    error_msg=f"check: {path} has no head {head}!",
+                    error_msg="check: {} has no head {}!".format(path, head),
                 )
 
     def _clone_hg_repo(self, url, path):
