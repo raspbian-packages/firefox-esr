@@ -8,16 +8,26 @@
 Classes for managing the description of pings.
 """
 
+import sys
 from typing import Dict, List, Optional
 
 
 from . import util
 
 
+# Import a backport of PEP487 to support __init_subclass__
+if sys.version_info < (3, 6):
+    import pep487  # type: ignore
+
+    base_object = pep487.PEP487Object  # type: ignore
+else:
+    base_object = object
+
+
 RESERVED_PING_NAMES = ["baseline", "metrics", "events", "deletion-request"]
 
 
-class Ping:
+class Ping(base_object):
     def __init__(
         self,
         name: str,
