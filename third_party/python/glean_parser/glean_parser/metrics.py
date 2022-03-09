@@ -147,7 +147,7 @@ class Metric:
 
         metric_type = metric_info["type"]
         if not isinstance(metric_type, str):
-            raise TypeError(f"Unknown metric type {metric_type}")
+            raise TypeError("Unknown metric type {}".format((metric_type)))
         return cls.metric_types[metric_type](
             category=category,
             name=name,

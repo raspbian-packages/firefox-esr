@@ -115,7 +115,7 @@ def output(
     platform = options.get("platform", "webext")
     if platform not in ["qt", "webext"]:
         raise ValueError(
-            f"Unknown platform: {platform}. Accepted platforms are qt and webext."
+            "Unknown platform: {}. Accepted platforms are qt and webext.".format((platform))
         )
     version = options.get("version")
     if platform == "qt" and version is None:
