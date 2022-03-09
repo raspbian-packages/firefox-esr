@@ -132,11 +132,11 @@ def output_gifft_map(output_fd, probe_type, all_objs, cpp_fd):
                 hasattr(metric, "telemetry_mirror")
                 and metric.telemetry_mirror is not None
             ):
-                info = (metric.telemetry_mirror, f"{category_name}.{metric.name}")
+                info = (metric.telemetry_mirror, "{}.{}".format(category_name, metric.name))
                 if metric.type in GIFFT_TYPES[probe_type]:
                     if info in ids_to_probes.values():
                         print(
-                            f"Telemetry mirror {metric.telemetry_mirror} already registered",
+                            "Telemetry mirror {} already registered".format(metric.telemetry_mirror),
                             file=sys.stderr,
                         )
                         sys.exit(1)
@@ -149,8 +149,8 @@ def output_gifft_map(output_fd, probe_type, all_objs, cpp_fd):
                     ]
                 ):
                     print(
-                        f"Glean metric {category_name}.{metric.name} is of type {metric.type}"
-                        " which can't be mirrored (we don't know how).",
+                        "Glean metric {}.{} is of type {}"
+                        " which can't be mirrored (we don't know how).".format(category_name, metric.name, metric.type),
                         file=sys.stderr,
                     )
                     sys.exit(1)
