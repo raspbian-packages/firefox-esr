@@ -44,7 +44,7 @@ def _update_validator(validator):
         if len(missing_properties):
             missing_properties = sorted(list(missing_properties))
             yield ValidationError(
-                f"Missing required properties: {', '.join(missing_properties)}"
+                "Missing required properties: {}".format((', '.join(missing_properties)))
             )
 
     validator.VALIDATORS["required"] = required
@@ -71,7 +71,7 @@ def _load_file(
         return {}, None
 
     if content is None:
-        yield util.format_error(filepath, "", f"'{filepath}' file can not be empty.")
+        yield util.format_error(filepath, "", "'{}' file can not be empty.".format((filepath)))
         return {}, None
 
     if not isinstance(content, dict):
@@ -82,7 +82,7 @@ def _load_file(
 
     schema_key = content.get("$schema")
     if not isinstance(schema_key, str):
-        raise TypeError(f"Invalid schema key {schema_key}")
+        raise TypeError("Invalid schema key {}".format((schema_key)))
 
     filetype: Optional[str] = None
     try:
@@ -130,7 +130,7 @@ def _get_schema(
             util.format_error(
                 filepath,
                 "",
-                f"$schema key must be one of {', '.join(schemas.keys())}",
+                "$schema key must be one of {}".format((', '.join(schemas.keys()))),
             )
         )
     return schemas[schema_id]
@@ -202,7 +202,7 @@ def _instantiate_metrics(
         if not config.get("allow_reserved") and category_key.split(".")[0] == "glean":
             yield util.format_error(
                 filepath,
-                f"For category '{category_key}'",
+                "For category '{}'".format((category_key)),
                 "Categories beginning with 'glean' are reserved for "
                 "Glean internal use.",
             )
@@ -210,7 +210,7 @@ def _instantiate_metrics(
         all_objects.setdefault(category_key, OrderedDict())
 
         if not isinstance(category_val, dict):
-            raise TypeError(f"Invalid content for {category_key}")
+            raise TypeError("Invalid content for {}".format((category_key)))
 
         for metric_key, metric_val in category_val.items():
             try:
@@ -220,7 +220,7 @@ def _instantiate_metrics(
             except Exception as e:
                 yield util.format_error(
                     filepath,
-                    f"On instance {category_key}.{metric_key}",
+                    "On instance {}.{}".format((category_key), (metric_key)),
                     str(e),
                 )
                 metric_obj = None
@@ -231,7 +231,7 @@ def _instantiate_metrics(
                 ):
                     yield util.format_error(
                         filepath,
-                        f"On instance {category_key}.{metric_key}",
+                        "On instance {}.{}".format((category_key), (metric_key)),
                         'Only internal metrics may specify "all-pings" '
                         'in "send_in_pings"',
                     )
@@ -250,8 +250,8 @@ def _instantiate_metrics(
                     filepath,
                     "",
                     (
-                        f"Duplicate metric name '{category_key}.{metric_key}' "
-                        f"already defined in '{already_seen}'"
+                        "Duplicate metric name '{}.{}' "
+                        "already defined in '{}'".format((category_key), (metric_key), (already_seen))
                     ),
                 )
             else:
@@ -282,12 +282,12 @@ def _instantiate_pings(
             if ping_key in RESERVED_PING_NAMES:
                 yield util.format_error(
                     filepath,
-                    f"For ping '{ping_key}'",
-                    f"Ping uses a reserved name ({RESERVED_PING_NAMES})",
+                    "For ping '{}'".format((ping_key)),
+                    "Ping uses a reserved name ({})".format((RESERVED_PING_NAMES)),
                 )
                 continue
         if not isinstance(ping_val, dict):
-            raise TypeError(f"Invalid content for ping {ping_key}")
+            raise TypeError("Invalid content for ping {}".format((ping_key)))
         ping_val["name"] = ping_key
         try:
             ping_obj = Ping(
@@ -296,7 +296,7 @@ def _instantiate_pings(
                 **ping_val,
             )
         except Exception as e:
-            yield util.format_error(filepath, f"On instance '{ping_key}'", str(e))
+            yield util.format_error(filepath, "On instance '{}'".format((ping_key)), str(e))
             continue
 
         if ping_obj is not None:
@@ -311,8 +311,8 @@ def _instantiate_pings(
             yield util.format_error(
                 filepath,
                 "",
-                f"Duplicate ping name '{ping_key}' "
-                f"already defined in '{already_seen}'",
+                "Duplicate ping name '{}' "
+                "already defined in '{}'".format((ping_key), (already_seen)),
             )
         else:
             all_objects.setdefault("pings", {})[ping_key] = ping_obj
