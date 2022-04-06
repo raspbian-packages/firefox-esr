@@ -9,11 +9,21 @@ Classes for each of the high-level metric types.
 """
 
 import enum
+import sys
 from typing import Any, Dict, List, Optional, Type, Union  # noqa
 
 
 from . import pings
 from . import util
+
+
+# Import a backport of PEP487 to support __init_subclass__
+if sys.version_info < (3, 6):
+    import pep487  # type: ignore
+
+    base_object = pep487.PEP487Object  # type: ignore
+else:
+    base_object = object
 
 
 # Important: if the values are ever changing here, make sure
@@ -32,7 +42,7 @@ class DataSensitivity(enum.Enum):
     highly_sensitive = 4
 
 
-class Metric:
+class Metric(base_object):
     typename = "ERROR"
     glean_internal_metric_cat = "glean.internal.metrics"
     metric_types = {}
