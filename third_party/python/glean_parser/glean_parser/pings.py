@@ -56,7 +56,7 @@ class Ping:
         # _validated indicates whether this metric has already been jsonschema
         # validated (but not any of the Python-level validation).
         if not _validated:
-            data: Dict[str, util.JSONType] = {
+            data = {
                 "$schema": parser.PINGS_ID,
                 self.name: self._serialize_input(),
             }
