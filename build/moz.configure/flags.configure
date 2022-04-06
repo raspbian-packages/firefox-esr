@@ -86,8 +86,8 @@ def file_prefix_map_flags(path_remapping, path_remappings, compiler):
         compiler.type in ("clang", "clang-cl") and compiler.version < "10.0.0"
     ):
         die(
-            f"Compiler of type {compiler.type} and version {compiler.version} "
-            "does not support --enable-path-remapping."
+            "Compiler of type {} and version {} "
+            "does not support --enable-path-remapping.".format(compiler.type, compiler.version)
         )
 
     flags = []
@@ -95,7 +95,7 @@ def file_prefix_map_flags(path_remapping, path_remappings, compiler):
         # We would prefer to use just -ffile-prefix-map, but clang-cl doesn't
         # seem to recognize it.
         for flag in ("-fdebug-prefix-map", "-fmacro-prefix-map"):
-            flag = f"{flag}={old}={new}"
+            flag = "{}={}={}".format(flag, old, new)
             if compiler.type in ("gcc", "clang"):
                 flags.append(flag)
             elif compiler.type == "clang-cl":
