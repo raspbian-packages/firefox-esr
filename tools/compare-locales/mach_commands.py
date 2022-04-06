@@ -175,7 +175,7 @@ class CrossChannel(MachCommandBase):
         actions,
         attempts,
         ssh_secret,
-        **kwargs,
+        **kwargs
     ):
         # This can be any path, as long as the name of the directory is en-US.
         # Not entirely sure where this is a requirement; perhaps in l10n
