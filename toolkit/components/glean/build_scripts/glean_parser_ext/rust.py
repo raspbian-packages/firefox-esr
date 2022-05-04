@@ -197,7 +197,7 @@ def output_rust(objs, output_fd, options={}):
 
                 metric_name = util.snake_case(metric.name)
                 category_name = util.snake_case(category_name)
-                full_path = f"{category_name}::{metric_name}"
+                full_path = "{}::{}".format(category_name, metric_name)
 
                 if metric.type == "event":
                     events_by_id[get_metric_id(metric)] = full_path
