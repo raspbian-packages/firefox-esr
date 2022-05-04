@@ -30,7 +30,7 @@ def _outputter_codecovio(metrics: ObjectTree, output_path: Path):
         `_annotate_coverage`.
     :param output_path: The file to output to.
     """
-    coverage: Dict[str, List] = {}
+    coverage = {}
     for category in metrics.values():
         for metric in category.values():
             defined_in = metric.defined_in

@@ -204,8 +204,8 @@ def output_markdown(
     # }
     #
     # This also builds a dictionary of custom pings, if available.
-    custom_pings_cache: Dict[str, pings.Ping] = defaultdict()
-    metrics_by_pings: Dict[str, List[metrics.Metric]] = defaultdict(list)
+    custom_pings_cache = defaultdict()
+    metrics_by_pings = defaultdict(list)
     for _category_key, category_val in objs.items():
         for obj in category_val.values():
             # Filter out custom pings. We will need them for extracting
