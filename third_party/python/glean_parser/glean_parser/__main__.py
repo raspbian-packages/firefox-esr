@@ -239,7 +239,7 @@ def main_wrapper(args=None):
         main(args=args)
     except SystemExit as e:
         if e.code != 0:
-            print(f"ERROR running glean_parser v{glean_parser.__version__}")
+            print("ERROR running glean_parser v{}".format((glean_parser.__version__)))
         raise
 
 
