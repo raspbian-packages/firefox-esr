@@ -155,7 +155,7 @@ class EntryPoint(
     following the attr, and following any extras.
     """
 
-    dist: Optional['Distribution'] = None
+    dist = None
 
     def load(self):
         """Load the entry point from its definition. If only a module
