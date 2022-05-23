@@ -5,6 +5,12 @@ __all__ = ['install', 'NullFinder', 'PyPy_repr', 'Protocol']
 
 
 try:
+    ModuleNotFoundError = builtins.FileNotFoundError
+except (NameError, AttributeError):  # pragma: nocover
+    ModuleNotFoundError = ImportError  # type: ignore
+
+
+try:
     from typing import Protocol
 except ImportError:  # pragma: no cover
     """
