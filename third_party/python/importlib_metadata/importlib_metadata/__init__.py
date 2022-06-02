@@ -20,6 +20,7 @@ from ._compat import (
     Protocol,
     PyPy_repr,
     install,
+    ModuleNotFoundError,
 )
 from ._functools import method_cache
 from ._itertools import unique_everseen
