@@ -68,7 +68,7 @@ def metric_identifier(category, metric_name):
     """
     The metric's unique identifier, including the category and name
     """
-    return f"{category}.{util.camelize(metric_name)}"
+    return "{}.{}".format(category, util.camelize(metric_name))
 
 
 def type_name(obj):
