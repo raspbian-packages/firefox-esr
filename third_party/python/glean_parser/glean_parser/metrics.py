@@ -33,10 +33,10 @@ class DataSensitivity(enum.Enum):
 
 
 class Metric:
-    typename: str = "ERROR"
-    glean_internal_metric_cat: str = "glean.internal.metrics"
-    metric_types: Dict[str, Any] = {}
-    default_store_names: List[str] = ["metrics"]
+    typename = "ERROR"
+    glean_internal_metric_cat = "glean.internal.metrics"
+    metric_types = {}
+    default_store_names = ["metrics"]
 
     def __init__(
         self,
