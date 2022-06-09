@@ -1,4 +1,4 @@
-firefox-esr (91.9.1esr-1~deb10u1+rpi1) buster-staging; urgency=medium
+firefox-esr (91.10.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -25,7 +25,16 @@ firefox-esr (91.9.1esr-1~deb10u1+rpi1) buster-staging; urgency=medium
   * Cast parameters to makestack to uintptr_t which is not always the same
     as unsigned long.
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 27 May 2022 00:03:14 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 09 Jun 2022 22:38:16 +0000
+
+firefox-esr (91.10.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2022-21, also known as:
+    CVE-2022-31736, CVE-2022-31737, CVE-2022-31738, CVE-2022-31740,
+    CVE-2022-31741, CVE-2022-31742, CVE-2022-31747.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 01 Jun 2022 05:24:22 +0900
 
 firefox-esr (91.9.1esr-1~deb10u1) buster-security; urgency=medium
 
@@ -99,7 +108,7 @@ firefox-esr (91.4.1esr-1~deb10u1) buster-security; urgency=medium
 
   * New upstream release.
 
-  * debian/rules: Build against embedded nspr and nss on buster.
+  * debian/rules: Build against embedded nspr and nss on bullseye.
   * debian/control*: Build against rustc-mozilla/cargo-mozilla on relevant
     older release.
   * debian/upstream.mk: Add definitions for newer releases of Debian.
