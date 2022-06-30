@@ -86,11 +86,15 @@ TEST(CombinedStacks, Combine)
   //     01 <no module>+3000
   //     02 modZ+2000
   //     03 base+4000
+  uintptr_t args1[] = {100, 200, 300};
+  uintptr_t args2[] = {1000, 2000, 3000};
+  uintptr_t args3[] = {100, 200, 300, 400};
+  uintptr_t args4[] = {1000, 2000, 3000, 4000};
   const ProcessedStack testStacks[] = {
-      MakeStack(moduleSet1, {100ul, 200ul, 300ul}),
-      MakeStack(moduleSet1, {1000ul, 2000ul, 3000ul}),
-      MakeStack(moduleSet2, {100ul, 200ul, 300ul, 400ul}),
-      MakeStack(moduleSet2, {1000ul, 2000ul, 3000ul, 4000ul}),
+      MakeStack(moduleSet1, args1),
+      MakeStack(moduleSet1, args2),
+      MakeStack(moduleSet2, args3),
+      MakeStack(moduleSet2, args4),
   };
 
   // combined1 <-- testStacks[0] + testStacks[1]
