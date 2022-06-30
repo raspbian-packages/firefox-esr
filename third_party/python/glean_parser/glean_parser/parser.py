@@ -84,7 +84,7 @@ def _load_file(
     if not isinstance(schema_key, str):
         raise TypeError("Invalid schema key {}".format((schema_key)))
 
-    filetype: Optional[str] = None
+    filetype = None
     try:
         filetype = schema_key.split("/")[-2]
     except IndexError:
@@ -379,8 +379,8 @@ def parse_objects(
     if config is None:
         config = {}
 
-    all_objects: ObjectTree = OrderedDict()
-    sources: Dict[Any, Path] = {}
+    all_objects = OrderedDict()
+    sources = {}
     filepaths = util.ensure_list(filepaths)
     for filepath in filepaths:
         content, filetype = yield from _load_file(filepath, config)
