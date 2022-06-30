@@ -149,6 +149,8 @@ impl BuilderExt for Builder {
             builder = builder.with_rustfmt(path);
         }
 
+        builder = builder.clang_arg("--gcc-toolchain=/usr/lib/gcc-mozilla");
+
         for dir in SEARCH_PATHS.iter() {
             builder = builder.clang_arg("-I").clang_arg(dir.to_str().unwrap());
         }
