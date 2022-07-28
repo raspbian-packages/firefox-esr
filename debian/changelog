@@ -1,4 +1,4 @@
-firefox-esr (91.11.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
+firefox-esr (91.12.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -25,7 +25,15 @@ firefox-esr (91.11.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
   * Cast parameters to makestack to uintptr_t which is not always the same
     as unsigned long.
 
- -- Raspbian forward porter <root@raspbian.org>  Sun, 03 Jul 2022 12:59:19 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 28 Jul 2022 23:24:23 +0000
+
+firefox-esr (91.12.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2022-29, also known as:
+    CVE-2022-36319, CVE-2022-36318.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 27 Jul 2022 09:08:20 +0900
 
 firefox-esr (91.11.0esr-1~deb10u1) buster-security; urgency=medium
 
