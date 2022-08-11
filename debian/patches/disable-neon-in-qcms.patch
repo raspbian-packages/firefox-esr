@@ -1,16 +1,9 @@
 From: Peter Michael Green <plugwash@raspbian.org>
-Date: Wed, 7 Oct 2020 19:41:49 +0000
-X-Dgit-Generated: 78.3.0esr-2+rpi1 b1f30fd7ea0b729a7bbc7dc1e804e2a0cc0c573a
 Subject: Disable neon in qcms.
 
-
----
-
-diff --git a/gfx/qcms/qcmsint.h b/gfx/qcms/qcmsint.h
-index b08fc9490b..3f5ad40145 100644
---- a/gfx/qcms/qcmsint.h
-+++ b/gfx/qcms/qcmsint.h
-@@ -96,18 +96,18 @@ void qcms_transform_data_bgra_out_lut_altivec(const qcms_transform *transform,
+--- thunderbird-102.1.1.orig/gfx/qcms/qcmsint.h
++++ thunderbird-102.1.1/gfx/qcms/qcmsint.h
+@@ -96,18 +96,18 @@ void qcms_transform_data_bgra_out_lut_al
                                                unsigned char *dest,
                                                size_t length);
  
@@ -41,11 +34,9 @@ index b08fc9490b..3f5ad40145 100644
  
  extern bool qcms_supports_iccv4;
  extern bool qcms_supports_neon;
-diff --git a/gfx/qcms/src/lib.rs b/gfx/qcms/src/lib.rs
-index 7987ae2f31..d432ab5e5a 100644
---- a/gfx/qcms/src/lib.rs
-+++ b/gfx/qcms/src/lib.rs
-@@ -62,8 +62,8 @@ pub use transform::DataType;
+--- thunderbird-102.1.1.orig/gfx/qcms/src/lib.rs
++++ thunderbird-102.1.1/gfx/qcms/src/lib.rs
+@@ -64,8 +64,8 @@ pub use transform::DataType;
  pub use transform::Transform;
  #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
  mod transform_avx;
@@ -56,14 +47,12 @@ index 7987ae2f31..d432ab5e5a 100644
  #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
  mod transform_sse2;
  mod transform_util;
-diff --git a/gfx/qcms/src/transform.rs b/gfx/qcms/src/transform.rs
-index f3d9e8b4c4..b5e5351837 100644
---- a/gfx/qcms/src/transform.rs
-+++ b/gfx/qcms/src/transform.rs
+--- thunderbird-102.1.1.orig/gfx/qcms/src/transform.rs
++++ thunderbird-102.1.1/gfx/qcms/src/transform.rs
 @@ -21,11 +21,11 @@
- // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  
+ #![allow(clippy::missing_safety_doc)]
 -#[cfg(all(any(target_arch = "arm", target_arch = "aarch64"), feature = "neon"))]
 +/*#[cfg(all(any(target_arch = "arm", target_arch = "aarch64"), feature = "neon"))]
  use crate::transform_neon::{
@@ -74,7 +63,7 @@ index f3d9e8b4c4..b5e5351837 100644
  use crate::{
      chain::chain_transform,
      double_to_s15Fixed16Number,
-@@ -1364,7 +1364,7 @@ pub fn transform_create(
+@@ -1369,7 +1369,7 @@ pub fn transform_create(
                  }
              }
  
@@ -83,7 +72,7 @@ index f3d9e8b4c4..b5e5351837 100644
              let neon_supported = is_arm_feature_detected!("neon");
              #[cfg(all(target_arch = "aarch64", feature = "neon"))]
              let neon_supported = is_aarch64_feature_detected!("neon");
-@@ -1378,7 +1378,7 @@ pub fn transform_create(
+@@ -1383,7 +1383,7 @@ pub fn transform_create(
                  } else if in_type == BGRA8 {
                      transform.transform_fn = Some(qcms_transform_data_bgra_out_lut_neon)
                  }
