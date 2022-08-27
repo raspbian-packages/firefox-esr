@@ -53,13 +53,13 @@ else:
         'yuv_row_other.cpp',
     ]
 
-if CONFIG['CPU_ARCH'] == 'arm' and CONFIG['HAVE_ARM_NEON']:
-    SOURCES += [
-        'yuv_row_arm.s',
-    ]
-    SOURCES += [
-        'yuv_convert_arm.cpp',
-    ]
+#if CONFIG['CPU_ARCH'] == 'arm' and CONFIG['HAVE_ARM_NEON']:
+#    SOURCES += [
+#        'yuv_row_arm.s',
+#    ]
+#    SOURCES += [
+#        'yuv_convert_arm.cpp',
+#    ]
 
 LOCAL_INCLUDES += ['/media/libyuv/libyuv/include']
 
