@@ -106,15 +106,15 @@ list(APPEND AOM_DSP_COMMON_INTRIN_AVX2
             "${AOM_ROOT}/third_party/SVT-AV1/EbMemory_SSE4_1.h"
             "${AOM_ROOT}/third_party/SVT-AV1/synonyms.h")
 
-list(APPEND AOM_DSP_COMMON_INTRIN_NEON
-            "${AOM_ROOT}/aom_dsp/arm/aom_convolve_copy_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/aom_convolve8_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/fwd_txfm_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/loopfilter_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/intrapred_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/subtract_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/avg_pred_neon.c")
+#list(APPEND AOM_DSP_COMMON_INTRIN_NEON
+#            "${AOM_ROOT}/aom_dsp/arm/aom_convolve_copy_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/aom_convolve8_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/fwd_txfm_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/loopfilter_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/intrapred_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/subtract_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/avg_pred_neon.c")
 
 list(APPEND AOM_DSP_COMMON_INTRIN_NEON_DOTPROD
             "${AOM_ROOT}/aom_dsp/arm/aom_convolve8_neon_dotprod.c")
