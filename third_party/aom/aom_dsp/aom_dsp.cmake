@@ -96,12 +96,12 @@ list(APPEND AOM_DSP_COMMON_INTRIN_AVX2
             "${AOM_ROOT}/aom_dsp/x86/intrapred_avx2.c"
             "${AOM_ROOT}/aom_dsp/x86/blend_a64_mask_avx2.c")
 
-list(APPEND AOM_DSP_COMMON_INTRIN_NEON
-            "${AOM_ROOT}/aom_dsp/arm/fwd_txfm_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/loopfilter_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/intrapred_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/subtract_neon.c"
-            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c")
+#list(APPEND AOM_DSP_COMMON_INTRIN_NEON
+#            "${AOM_ROOT}/aom_dsp/arm/fwd_txfm_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/loopfilter_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/intrapred_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/subtract_neon.c"
+#            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c")
 
 list(APPEND AOM_DSP_COMMON_INTRIN_DSPR2
             "${AOM_ROOT}/aom_dsp/mips/common_dspr2.c"
