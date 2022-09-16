@@ -261,11 +261,11 @@ set_define("HAVE_ARM_NEON", have_arm_neon)
 # This matches media/webrtc/trunk/webrtc/build/common.gypi.
 @depends(arm_target.arm_arch, when=have_arm_neon)
 def build_arm_neon(arm_arch):
-    return arm_arch >= 700
+    return arm_arch >= 7
 
 
-#set_config("BUILD_ARM_NEON", build_arm_neon)
-#set_define("BUILD_ARM_NEON", build_arm_neon)
+set_config("BUILD_ARM_NEON", build_arm_neon)
+set_define("BUILD_ARM_NEON", build_arm_neon)
 
 
 set_config("ARM_ARCH", depends(arm_target.arm_arch)(lambda x: str(x)))
