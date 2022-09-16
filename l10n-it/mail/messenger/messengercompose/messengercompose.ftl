@@ -3,7 +3,25 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+compose-send-format-menu =
+    .label = Formato di invio
+    .accesskey = F
+compose-send-auto-menu-item =
+    .label = Automatico
+    .accesskey = A
+compose-send-both-menu-item =
+    .label = HTML e testo semplice
+    .accesskey = H
+compose-send-html-menu-item =
+    .label = Solo HTML
+    .accesskey = S
+compose-send-plain-menu-item =
+    .label = Solo testo semplice
+    .accesskey = t
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -30,6 +48,13 @@ pill-tooltip-not-in-address-book = { $email } non è presente nella rubrica
 pill-action-edit =
     .label = Modifica indirizzo
     .accesskey = M
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = Seleziona tutti gli indirizzi in { $type }
+    .accesskey = u
+pill-action-select-all-pills =
+    .label = Seleziona tutti gli indirizzi
+    .accesskey = u
 pill-action-move-to =
     .label = Sposta in A
     .accesskey = S
@@ -43,7 +68,7 @@ pill-action-expand-list =
     .label = Espandi elenco
     .accesskey = E
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -59,9 +84,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Allega
     .tooltiptext = Aggiungi un allegato ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Aggiungi allegato…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Aggiungi allegato…
     .accesskey = A
@@ -74,16 +96,19 @@ context-menuitem-attach-files =
     .label = Allega file…
     .accesskey = f
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
+# Note: Do not translate the term 'vCard'.
+context-menuitem-attach-vcard =
+    .label = La mia vCard
+    .accesskey = C
+context-menuitem-attach-openpgp-key =
+    .label = La mia chiave pubblica OpenPGP
+    .accesskey = O
 #   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
+attachment-bucket-count-value =
     { $count ->
-        [1] { $count } allegato
+        [one] { $count } allegato
        *[other] { $count } allegati
     }
-expand-attachment-pane-tooltip =
-    .tooltiptext = Mostra il pannello degli allegati ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Nascondi il pannello degli allegati ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-show =
     .title = Mostra il pannello degli allegati ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-hide =
@@ -99,7 +124,7 @@ drop-file-label-inline =
        *[other] Aggiungi in linea
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = Sposta all’inizio
@@ -113,47 +138,67 @@ button-return-receipt =
     .label = Ricevuta
     .tooltiptext = Richiedi una ricevuta di ritorno per questo messaggio
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = Firma il messaggio
-message-to-be-encrypted-icon =
-    .alt = Critta il messaggio
-
-# Addressing Area
-
-to-compose-address-row-label =
-    .value = A
-#   $key (String) - the shortcut key for this field
-to-compose-show-address-row-menuitem =
-    .label = Campo { to-compose-address-row-label.value }
-    .accesskey = a
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-to-compose-show-address-row-label =
-    .value = { to-compose-address-row-label.value }
-    .tooltiptext = Mostra campo { to-compose-address-row-label.value } ({ to-compose-show-address-row-menuitem.acceltext })
-cc-compose-address-row-label =
-    .value = Cc
-#   $key (String) - the shortcut key for this field
-cc-compose-show-address-row-menuitem =
-    .label = Campo { cc-compose-address-row-label.value }
+encryption-menu =
+    .label = Sicurezza
+    .accesskey = S
+encryption-toggle =
+    .label = Critta
+    .tooltiptext = Utilizza crittografia end-to-end per questo messaggio
+encryption-options-openpgp =
+    .label = OpenPGP
+    .tooltiptext = Visualizza o modifica le impostazioni della crittografia OpenPGP
+encryption-options-smime =
+    .label = S/MIME
+    .tooltiptext = Visualizza o modifica le impostazioni della crittografia S/MIME
+signing-toggle =
+    .label = Firma
+    .tooltiptext = Utilizza la firma digitale per questo messaggio
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
+    .accesskey = S
+menu-encrypt =
+    .label = Critta
     .accesskey = C
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-cc-compose-show-address-row-label =
-    .value = { cc-compose-address-row-label.value }
-    .tooltiptext = Mostra campo { cc-compose-address-row-label.value } ({ cc-compose-show-address-row-menuitem.acceltext })
-bcc-compose-address-row-label =
-    .value = Ccn
-#   $key (String) - the shortcut key for this field
-bcc-compose-show-address-row-menuitem =
-    .label = Campo { bcc-compose-address-row-label.value }
-    .accesskey = m
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-bcc-compose-show-address-row-label =
-    .value = { bcc-compose-address-row-label.value }
-    .tooltiptext = Mostra campo { bcc-compose-address-row-label.value } ({ bcc-compose-show-address-row-menuitem.acceltext })
-#   $count (Number) - the count of addresses in the "To" and "Cc" fields.
-many-public-recipients-info = I { $count } destinatari inseriti nei campi A e Cc possono vedere i rispettivi indirizzi. Puoi evitare di mostrare gli indirizzi dei destinatari utilizzando Ccn.
+menu-encrypt-subject =
+    .label = Critta l’oggetto
+    .accesskey = o
+menu-sign =
+    .label = Apponi firma digitale
+    .accesskey = f
+menu-manage-keys =
+    .label = Assistente chiavi
+    .accesskey = A
+menu-view-certificates =
+    .label = Visualizza certificati dei destinatari
+    .accesskey = V
+menu-open-key-manager =
+    .label = Gestore chiavi
+    .accesskey = G
+openpgp-key-issue-notification-one = Per utilizzare la crittografia end-to-end è necessario risolvere i problemi con la chiave per { $addr }
+openpgp-key-issue-notification-many = Per utilizzare la crittografia end-to-end è necessario risolvere i problemi con la chiave per { $count } destinatari.
+smime-cert-issue-notification-one = Per utilizzare la crittografia end-to-end è necessario risolvere i problemi con il certificato per { $addr }
+smime-cert-issue-notification-many = Per utilizzare la crittografia end-to-end è necessario risolvere i problemi con il certificato per { $count } destinatari.
+key-notification-disable-encryption =
+    .label = Non crittare
+    .accesskey = N
+    .tooltiptext = Disattiva la crittografia end-to-end
+key-notification-resolve =
+    .label = Risolvi…
+    .accesskey = R
+    .tooltiptext = Apri l’assistente chiavi OpenPGP
+can-encrypt-smime-notification = È possibile utilizzare la crittografia end-to-end S/MIME.
+can-encrypt-openpgp-notification = È possibile utilizzare la crittografia end-to-end OpenPGP.
+can-e2e-encrypt-button =
+    .label = Critta
+    .accesskey = C
+
+## Addressing Area
+
 to-address-row-label =
     .value = A
 #   $key (String) - the shortcut key for this field
@@ -238,3 +283,95 @@ encrypted-bcc-ignore-button = Ho capito
 
 compose-tool-button-remove-text-styling =
     .tooltiptext = Rimuovi stili di testo
+
+## Filelink
+
+# A text used in a tooltip of Filelink attachments, whose account has been
+# removed or is unknown.
+cloud-file-unknown-account-tooltip = Caricato su un account Filelink sconosciuto.
+
+# Placeholder file
+
+# Title for the html placeholder file.
+# $filename - name of the file
+cloud-file-placeholder-title = { $filename } - Allegato Filelink
+# A text describing that the file was attached as a Filelink and can be downloaded
+# from the link shown below.
+# $filename - name of the file
+cloud-file-placeholder-intro = Il file { $filename } è stato allegato come Filelink. Può essere scaricato dal link sottostante.
+
+# Template
+
+# A line of text describing how many uploaded files have been appended to this
+# message. Emphasis should be on sharing as opposed to attaching. This item is
+# used as a header to a list, hence the colon.
+cloud-file-count-header =
+    { $count ->
+        [one] Ho collegato { $count } file a questa email:
+       *[other] Ho collegato { $count } file a questa email:
+    }
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service provider.
+# $link (string) - html a-tag for a link pointing to the web page of the provider
+cloud-file-service-provider-footer-single = Ulteriori informazioni su { $link }.
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service providers. Links for the used providers are
+# split into a comma separated list of the first n-1 providers and a single entry
+# at the end.
+# $firstLinks (string) - comma separated list of html a-tags pointing to web pages
+#                        of the first n-1 used providers
+# $lastLink (string) - html a-tag pointing the web page of the n-th used provider
+cloud-file-service-provider-footer-multiple = Ulteriori informazioni su { $firstLinks } e { $lastLink }.
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Collegamento protetto da password
+# Used in a list of stats about a specific file
+# Service - the used service provider to host the file (Filelink Service: BOX.com)
+# Size - the size of the file (Size: 4.2 MB)
+# Link - the link to the file (Link: https://some.provider.com)
+# Expiry Date - stating the date the link will expire (Expiry Date: 12.12.2022)
+# Download Limit - stating the maximum allowed downloads, before the link becomes invalid
+#                  (Download Limit: 6)
+cloud-file-template-service-name = Servizio Filelink:
+cloud-file-template-size = Dimensione:
+cloud-file-template-link = Collegamento:
+cloud-file-template-password-protected-link = Collegamento protetto da password:
+cloud-file-template-expiry-date = Data di scadenza:
+cloud-file-template-download-limit = Limite di download:
+
+# Messages
+
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-connection-error-title = Errore di connessione
+cloud-file-connection-error = { -brand-short-name } non è in linea. Impossibile connettersi a { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was uploaded and caused the error
+cloud-file-upload-error-with-custom-message-title = Impossibile caricare { $filename } su { $provider }
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-title = Errore nella ridenominazione
+cloud-file-rename-error = Si è verificato un problema durante la ridenominazione di { $filename } su { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-with-custom-message-title = Impossibile rinominare { $filename } su { $provider }
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-rename-not-supported = { $provider } non supporta la ridenominazione di file già caricati.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-attachment-error-title = Errore con l’allegato Filelink
+cloud-file-attachment-error = Non è stato possibile aggiornare l’allegato Filelink { $filename } in quanto il relativo file locale è stato spostato o eliminato.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-account-error-title = Errore con l’account Filelink
+cloud-file-account-error = Non è stato possibile aggiornare l’allegato Filelink { $filename } in quanto il relativo account Filelink è stato eliminato.
+
+## Link Preview
+
+link-preview-title = Anteprima del link
+link-preview-description = { -brand-short-name } può incorporare un’anteprima quando viene inserito un link.
+link-preview-autoadd = Aggiungi automaticamente un’anteprima dei link quando possibile
+link-preview-replace-now = Aggiungere un’anteprima per questo link?
+link-preview-yes-replace = Sì
+
+## Dictionary selection popup
+
+spell-add-dictionaries =
+    .label = Aggiungi dizionari…
+    .accesskey = z

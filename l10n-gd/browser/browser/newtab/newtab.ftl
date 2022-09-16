@@ -8,7 +8,6 @@
 newtab-page-title = Taba ùr
 newtab-settings-button =
     .title = Gnàthaich duilleag nan tabaichean ùra agad
-
 newtab-personalize-icon-label =
     .title = Gnàthaich an taba ùr
     .aria-label = Gnàthaich an taba ùr
@@ -37,11 +36,7 @@ newtab-search-box-handoff-input-no-engine =
     .title = Dèan lorg no cuir a-steach seòladh
     .aria-label = Dèan lorg no cuir a-steach seòladh
 
-newtab-search-box-search-the-web-input =
-    .placeholder = Lorg air an lìon
-    .title = Lorg air an lìon
-    .aria-label = Lorg air an lìon
-
+newtab-search-box-text = Lorg air an lìon
 newtab-search-box-input =
     .placeholder = Lorg air an lìon
     .aria-label = Lorg air an lìon
@@ -49,7 +44,6 @@ newtab-search-box-input =
 ## Top Sites - General form dialog.
 
 newtab-topsites-add-search-engine-header = Cuir einnsean-luirg ris
-newtab-topsites-add-topsites-header = Brod làraich ùr
 newtab-topsites-add-shortcut-header = Ath-ghoirid ùr
 newtab-topsites-edit-topsites-header = Deasaich am brod làraich
 newtab-topsites-edit-shortcut-header = Deasaich an ath-ghoirid
@@ -179,6 +173,12 @@ newtab-label-sponsored = { $sponsorOrSource } · Sponsairichte
 #  $sponsor (String): This is the name of a sponsor
 newtab-label-sponsored-by = ’Ga sponsaireadh le { $sponsor }
 
+# This string is used under the image of story cards to indicate source and time to read
+# Variables:
+#  $source (String): This is the name of a company or their domain
+#  $timeToRead (Number): This is the estimated number of minutes to read this story
+newtab-label-source-read-time = { $source } · { $timeToRead } mion
+
 ## Section Menu: These strings are displayed in the section context menu and are
 ## meant as a call to action for the given section.
 
@@ -203,7 +203,6 @@ newtab-section-expand-section-label =
 ## Section Headers.
 
 newtab-section-header-topsites = Brod nan làrach
-newtab-section-header-highlights = Sàr-roghainn
 newtab-section-header-recent-activity = Gnìomhachd o chionn goirid
 # Variables:
 #  $provider (String): Name of the corresponding content provider.
@@ -218,7 +217,6 @@ newtab-empty-section-highlights = Tòisich air brabhsadh is seallaidh sinn dhut 
 #  $provider (String): Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Sin na naidheachdan uile o { $provider } an-dràsta ach bidh barrachd ann a dh’aithghearr. No thoir sùil air cuspair air a bheil fèill mhòr is leugh na tha a’ dol mun cuairt air an lìon an-dràsta.
 
-
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
 newtab-discovery-empty-section-topstories-header = Chan eil naidheachd eile ann!
@@ -232,10 +230,27 @@ newtab-discovery-empty-section-topstories-timed-out = Ìoc, tha sinn cha mhòr a
 
 # This is shown at the bottom of the trending stories section and precedes a list of links to popular topics.
 newtab-pocket-read-more = Cuspairean fèillmhor:
+newtab-pocket-new-topics-title = A bheil thu ag iarraidh fiù barrachd? Thoir sùil air na cuspairean seo o { -pocket-brand-name } air a bheil fèill mhòr
 newtab-pocket-more-recommendations = Barrachd mholaidhean
 newtab-pocket-learn-more = Barrachd fiosrachaidh
 newtab-pocket-cta-button = Faigh { -pocket-brand-name }
 newtab-pocket-cta-text = Sàbhail na sgeulachdan as fhearr leat ann am { -pocket-brand-name } is faigh toileachas inntinn san leughadh.
+newtab-pocket-pocket-firefox-family = Tha { -pocket-brand-name } ’na phàirt de theaghlach bathar { -brand-product-name }
+
+# A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-save-to-pocket = Sàbhail ann am { -pocket-brand-name }
+newtab-pocket-saved-to-pocket = Air a shàbhaladh ann am { -pocket-brand-name }
+
+# This is a button shown at the bottom of the Pocket section that loads more stories when clicked.
+newtab-pocket-load-more-stories-button = Luchdaich barrachd sgeulachdan
+
+## Pocket Final Card Section.
+## This is for the final card in the Pocket grid.
+
+newtab-pocket-last-card-title = Chan eil naidheachd eile ann!
+newtab-pocket-last-card-desc = Till an-seo an ceann greis airson barrachd.
+newtab-pocket-last-card-image =
+    .alt = Chan eil naidheachd eile ann!
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -261,5 +276,4 @@ newtab-custom-pocket-sponsored = Sgeulachdan sponsairichte
 newtab-custom-recent-title = Gnìomhachd o chionn goirid
 newtab-custom-recent-subtitle = Roghainn de làraichean is susbaint faisg ort
 newtab-custom-close-button = Dùin
-
 newtab-custom-settings = Stiùirich barrachd roghainnean

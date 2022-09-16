@@ -19,6 +19,9 @@ auth-waiting = Wachten tot het contact de verificatie heeft voltooid…
 finger-verify = Verifiëren
 finger-verify-access-key = V
 
+finger-ignore = Negeren
+finger-ignore-access-key = g
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = OTR-vingerafdruk toevoegen
 
@@ -43,7 +46,6 @@ finger-unseen = De identiteit van { $name } is nog niet geverifieerd. Eenvoudig 
 finger-seen = { $name } neemt contact met u op vanaf een onbekende computer. Eenvoudig afluisteren is niet mogelijk, maar met wat moeite kan iemand meeluisteren. Voorkom afluisteren door de identiteit van het contact te verifiëren.
 
 state-not-private = Het huidige gesprek is niet privé.
-
 state-generic-not-private = Het huidige gesprek is niet privé.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = U hebt de identiteit van { $name } geverifieerd.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = De identiteit van { $name } is niet geverifieerd.
-
-verify-title = De identiteit van uw contact verifiëren
-error-title = Fout
-success-title = End-to-end-versleuteling
-success-them-title = Verifieer de identiteit van uw contact
-fail-title = Kan niet verifiëren
-waiting-title = Verificatieverzoek verzonden
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

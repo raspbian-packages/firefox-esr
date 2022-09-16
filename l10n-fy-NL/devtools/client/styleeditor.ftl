@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Ymportearje en pas ta op in besteand stylblêd op it dokumint
     .accesskey = Y
+styleeditor-filter-input =
+    .placeholder = Styblêden filterje
 styleeditor-visibility-toggle =
     .tooltiptext = Sichtberheid fan stylblêd yn-/útskeakelje
     .accesskey = s
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Keppeling iepenje yn nij ljepblêd
 styleeditor-copy-url =
     .label = URL kopiearje
+styleeditor-go-to-line =
+    .label = Ljep nei rigel…
+    .accesskey = L
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Der is gjin oerienkommend stylblêd fûn.

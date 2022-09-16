@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = אתרים מוכיחים את זהו
 
 cert-error-symantec-distrust-admin = באפשרותך להודיע למנהל האתר על אודות בעיה זו.
 
+cert-error-old-tls-version = ייתכן שאתר זה אינו תומך בפרוטוקול TLS 1.2, שהוא הגרסה המינימלית הנתמכת על־ידי { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = אבטחת תעבורה מחמירה של HTTP ‏(HSTS): { $hasHSTS }
@@ -114,7 +116,6 @@ unknownSocketType-title = תגובה לא צפויה מהשרת
 nssFailure2-title = חיבור מאובטח נכשל
 csp-xfo-error-title = ‏{ -brand-short-name } לא יכול לפתוח דף זה
 corruptedContentError-title = שגיאת תוכן פגום
-remoteXUL-title = XUL מרוחק
 sslv3Used-title = לא ניתן להתחבר באופן מאובטח
 inadequateSecurityError-title = החיבור שלך אינו מאובטח
 blockedByPolicy-title = עמוד חסום

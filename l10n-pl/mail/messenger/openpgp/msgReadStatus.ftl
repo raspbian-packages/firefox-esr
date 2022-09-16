@@ -22,6 +22,7 @@ openpgp-view-your-encryption-key =
 openpgp-openpgp = OpenPGP
 
 openpgp-no-sig = Brak podpisu cyfrowego
+openpgp-no-sig-info = Wiadomość nie zawiera podpisu cyfrowego nadawcy. Brak podpisu cyfrowego może oznaczać, że wiadomość została wysłana przez kogoś kto udaje, że posługuje się tym adresem e-mail. Jest także możliwe, że wiadomość została zmieniona podczas przesyłania przez sieć Internet.
 openpgp-uncertain-sig = Niepewny podpis cyfrowy
 openpgp-invalid-sig = Nieprawidłowy podpis cyfrowy
 openpgp-good-sig = Dobry podpis cyfrowy
@@ -40,6 +41,17 @@ openpgp-sig-key-id-with-subkey-id = Identyfikator klucza osoby podpisującej: { 
 
 openpgp-enc-key-id = Identyfikator Twojego klucza odszyfrowywania: { $key }
 openpgp-enc-key-with-subkey-id = Identyfikator Twojego klucza odszyfrowywania: { $key } (identyfikator klucza podrzędnego: { $subkey })
+
+openpgp-enc-none = Wiadomość nie jest zaszyfrowana
+openpgp-enc-none-label = Wiadomość nie została zaszyfrowana przed wysłaniem. Informacje przesyłane przez Internet bez uprzedniego szyfrowania mogą zostać odczytane przez inne osoby.
+
+openpgp-enc-invalid-label = Wiadomość nie może być odszyfrowana
+openpgp-enc-invalid = Wiadomość została zaszyfrowana przed wysłaniem, jednakże nie może zostać odszyfrowana.
+
+openpgp-enc-clueless = Wystąpił nieznany problem z zaszyfrowaną wiadomością.
+
+openpgp-enc-valid-label = Wiadomość jest zaszyfrowana
+openpgp-enc-valid = Wiadomość została zaszyfrowana przed wysłaniem. Szyfrowanie zapewnia, że wiadomość może być odczytana tylko przez odbiorców, dla których była przeznaczona.
 
 openpgp-unknown-key-id = Nieznany klucz
 

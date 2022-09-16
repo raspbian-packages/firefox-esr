@@ -23,7 +23,7 @@ browser-main-window =
 # there is no content title:
 #
 # "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox - (Private Browsing)"
+# "private" - "Mozilla Firefox — (Private Browsing)"
 #
 # The last two are for use when there *is* a content title.
 # Do not use the brand name in the last two attributes, as we do on non-macOS.
@@ -107,15 +107,19 @@ urlbar-tip-icon-description =
 ## Variables:
 ##  $engineName (String): The name of the user's default search engine. e.g. "Google" or "DuckDuckGo".
 
-urlbar-search-tips-onboard = কম লিখে, বেশি অনুসন্ধান ফলাফল পান: ঠিকানাবার থেকেই { $engineName } খুঁজুন।
+urlbar-search-tips-onboard = কম লিখে, বেশি ফলাফল পান: ঠিকানাদণ্ড থেকেই { $engineName }-এ খুঁজুন।
+urlbar-search-tips-redirect-2 = আপনার ব্রাউজিং ইতিহাস এবং { $engineName } থেকে পরামর্শ দেখতে ঠিকানাদণ্ডে আপনার অনুসন্ধান শুরু করুন।
 
 ## Local search mode indicator labels in the urlbar
 
+urlbar-search-mode-bookmarks = বুকমার্ক
 
 ##
 
 urlbar-geolocation-blocked =
     .tooltiptext = আপনি এই ওয়েবসাইটের জন্য অবস্থানগত তথ্য ব্লক করেছেন
+urlbar-xr-blocked =
+    .tooltiptext = আপনি এই ওয়েবসাইটের জন্য ভার্চুয়াল রিয়েলিটি ডিভাইস এক্সেস ব্লক করেছেন।
 urlbar-web-notifications-blocked =
     .tooltiptext = আপনি এই ওয়েব সাইটের জন্য ঘোষণা ব্লক করেছেন।
 urlbar-camera-blocked =
@@ -139,11 +143,11 @@ urlbar-install-blocked =
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
 urlbar-star-edit-bookmark =
-    .tooltiptext = এই বুকমার্কটি সম্পাদনা ({ $shortcut })
+    .tooltiptext = এই বুকমার্কটি সম্পাদনা করুন ({ $shortcut })
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 urlbar-star-add-bookmark =
-    .tooltiptext = পাতাটি বুকমার্ক করুন ({ $shortcut })
+    .tooltiptext = এই পাতাটি বুকমার্ক করুন ({ $shortcut })
 
 ## Page Action Context Menu
 
@@ -192,6 +196,7 @@ search-one-offs-add-engine-menu =
 
 ## Bookmark Panel
 
+bookmarks-add-bookmark = বুকমার্ক যোগ করুন
 bookmark-panel-cancel =
     .label = বাতিল
     .accesskey = C
@@ -200,13 +205,15 @@ bookmark-panel-cancel =
 bookmark-panel-remove =
     .label =
         { $count ->
-            [one] বুকমার্ক মুছে ফেলা হবে
-           *[other] বুকমার্কগুলো মুছে ফেলা হবে { $count }
+            [one] বুকমার্ক সরান
+           *[other] { $count }টি বুকমার্ক সরান
         }
     .accesskey = R
 bookmark-panel-show-editor-checkbox =
-    .label = সংরক্ষণ করার সময় সম্পাদক দেখাও
+    .label = সংরক্ষণ করার সময় সম্পাদক দেখান
     .accesskey = S
+bookmark-panel-save-button =
+    .label = সংরক্ষণ করুন
 # Width of the bookmark panel.
 # Should be large enough to fully display the Done and
 # Cancel/Remove Bookmark buttons.
@@ -283,6 +290,9 @@ browser-window-close-button =
 
 ## Bookmarks toolbar items
 
+browser-import-button2 =
+    .label = বুকমার্ক আমদানি করুন…
+    .tooltiptext = অন্য ব্রাউজার থেকে { -brand-short-name }-এ বুকমার্ক আমদানি করুন
 
 ## WebRTC Pop-up notifications
 
@@ -300,7 +310,23 @@ enable-devtools-popup-description = F12 শর্টকাট ব্যবহা
 # This placeholder is used when not in search mode and the user's default search
 # engine is unknown.
 urlbar-placeholder =
-    .placeholder = অনুসন্ধান বা ঠিকানা দিন
+    .placeholder = অনুসন্ধান করুন বা ঠিকানা দিন
+# This placeholder is used in search mode with search engines that search the
+# entire web.
+# Variables
+#  $name (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-placeholder-search-mode-web-2 =
+    .placeholder = ওয়েবে অনুসন্ধান করুন
+    .aria-label = { $name } দ্বারা অনুসন্ধান করুন
+# This placeholder is used in search mode with search engines that search a
+# specific site (e.g., Amazon).
+# Variables
+#  $name (String): the name of a search engine that searches a specific site
+#  (e.g. Amazon).
+urlbar-placeholder-search-mode-other-engine =
+    .placeholder = অনুসন্ধানের পদ লিখুন
+    .aria-label = { $name } অনুসন্ধান করুন
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
@@ -335,11 +361,28 @@ urlbar-result-action-search-in-private = ব্যক্তিগত উইন�
 urlbar-result-action-search-w-engine = { $engine } দিয়ে অনুসন্ধান করা হবে
 urlbar-result-action-switch-tab = ট্যাবে যান
 urlbar-result-action-visit = পরিদর্শন করুন
+# Directs a user to press the Tab key to perform a search with the specified
+# engine.
+# Variables
+#  $engine (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-result-action-before-tabtosearch-web = { $engine } দ্বারা অনুসন্ধান করতে ট্যাব টিপুন
+# Directs a user to press the Tab key to perform a search with the specified
+# engine.
+# Variables
+#  $engine (String): the name of a search engine that searches a specific site
+#  (e.g. Amazon).
+urlbar-result-action-before-tabtosearch-other = { $engine } অনুসন্ধান করতে ট্যাব টিপুন
+# Variables
+#  $engine (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-result-action-tabtosearch-web = ঠিকানাদণ্ড থেকে সরাসরি { $engine } দ্বারা অনুসন্ধান করুন।
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
 ## In these actions "Search" is a verb, followed by where the search is performed.
 
+urlbar-result-action-search-bookmarks = বুকমার্ক অনুসন্ধান করুন
 
 ## Labels shown above groups of urlbar results
 
@@ -390,28 +433,31 @@ bookmarks-tools-toolbar-visibility-menuitem =
 bookmarks-tools-menu-button-visibility =
     .label =
         { $isVisible ->
-            [true] টুলবার থেকে বুকমার্ক মেনু অপসারণ
-           *[other] টুলবারে বুকমার্ক মেনু যোগ করুন
+            [true] সরঞ্জামদণ্ড থেকে বুকমার্ক মেনু সরান
+           *[other] সরঞ্জামদণ্ডে বুকমার্ক মেনু যোগ করুন
         }
 bookmarks-search =
     .label = বুকমার্ক অনুসন্ধান
 bookmarks-tools =
-    .label = বুকমার্ক টুলসমূহ
+    .label = বুকমার্কের সরঞ্জাম
 bookmarks-bookmark-edit-panel =
     .label = বুকমার্ক সম্পাদনা
 # The aria-label is a spoken label that should not include the word "toolbar" or
 # such, because screen readers already know that this container is a toolbar.
 # This avoids double-speaking.
 bookmarks-toolbar =
-    .toolbarname = বুকমার্ক টুলবার B
+    .toolbarname = বুকমার্কের সরঞ্জামদণ্ড
     .accesskey = B
-    .aria-label = বুকমার্ক
+    .aria-label = বুকমার্কসমূহ
 bookmarks-toolbar-menu =
-    .label = বুকমার্ক টুলবার B
+    .label = বুকমার্কের সরঞ্জামদণ্ড
 bookmarks-toolbar-placeholder =
     .title = বুকমার্ক টুলবারের আইটেম
 bookmarks-toolbar-placeholder-button =
     .label = বুকমার্ক টুলবারের আইটেম
+# "Bookmark" is a verb, as in "Add current tab to bookmarks".
+bookmarks-current-tab =
+    .label = বর্তমান ট্যাবটি বুকমার্ক করুন
 
 ## Library Panel items
 
@@ -429,12 +475,11 @@ save-to-pocket-button =
 
 ## Customize Toolbar Buttons
 
-
-## More items
-
-more-menu-go-offline =
-    .label = অফলাইন অবস্থায় কাজ k
-    .accesskey = k
+# Variables:
+#  $shortcut (String): keyboard shortcut to open the add-ons manager
+toolbar-addons-themes-button =
+    .label = অ্যাড-অন ও থিম
+    .tooltiptext = আপনার অ্যাড-অন ও থিম পরিচালনা করুন ({ $shortcut })
 toolbar-overflow-customize-button =
     .label = কাস্টোমাইজ টুলবার…
     .accesskey = C
@@ -470,9 +515,6 @@ eme-notifications-drm-content-playing = এই সাইটের কিছু �
 ## Add-on removal warning
 
 
-## Remote / Synced tabs
-
-
 ##
 
 ui-tour-info-panel-close =
@@ -497,6 +539,13 @@ picture-in-picture-hide-toggle =
     .label = পিকচার-ইন-পিকচার টগল লুকান
     .accesskey = H
 
+## Since the default position for PiP controls does not change for RTL layout,
+## right-to-left languages should use "Left" and "Right" as in the English strings,
+
+
+##
+
+
 # Navigator Toolbox
 
 # This string is a spoken label that should not include
@@ -507,15 +556,12 @@ navbar-accessible =
 navbar-downloads =
     .label = ডাউনলোড
 navbar-overflow =
-    .tooltiptext = আরও টুল…
+    .tooltiptext = আরও সরঞ্জাম…
 # Variables:
 #   $shortcut (String): keyboard shortcut to print the page
 navbar-print =
     .label = মুদ্রণ
     .tooltiptext = এই পাতাটি মুদ্রণ করুন… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = মুদ্রণ
-    .tooltiptext = এই পাতা মুদ্রণ
 navbar-home =
     .label = নীড়
     .tooltiptext = { -brand-short-name } নীড় পাতা
@@ -532,7 +578,19 @@ navbar-accessibility-indicator =
 tabs-toolbar =
     .aria-label = ব্রাউজার ট্যাব
 tabs-toolbar-new-tab =
-    .label = নতুন ট্যাব T
+    .label = নতুন ট্যাব
 tabs-toolbar-list-all-tabs =
     .label = সব ট্যাবের তালিকা
     .tooltiptext = সব ট্যাবের তালিকা
+
+## Infobar shown at startup to suggest session-restore
+
+# <img data-l10n-name="icon"/> will be replaced by the application menu icon
+restore-session-startup-suggestion-message = <strong>পূর্ববর্তী ট্যাবগুলি খুলবেন?</strong> আপনি { -brand-short-name } অ্যাপ্লিকেশন মেনুতে গিয়ে <img data-l10n-name="icon"/>, ইতিহাস থেকে আপনার আগের সেশন পুনরুদ্ধার করতে পারেন।
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } স্বয়ংক্রিয়ভাবে { -vendor-short-name } কে কিছু তথ্য প্রেরণ করে যাতে আমরা আপনার অভিজ্ঞতা উন্নত করতে পারি।
+data-reporting-notification-button =
+    .label = আমি কি শেয়ার করি তা নির্বাচন করুন
+    .accesskey = C

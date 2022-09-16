@@ -27,6 +27,10 @@ pane-privacy-title = Maxfiylik va xavfsizlik
 category-privacy =
     .tooltiptext = { pane-privacy-title }
 
+pane-sync-title3 = Sinxronizatsiya
+category-sync3 =
+    .tooltiptext = { pane-sync-title3 }
+
 pane-experimental-search-results-header = { -brand-short-name } Tajriba: Ehtiyotkorlik bilan foydalaning
 
 help-button-label = { -brand-short-name } yordami
@@ -79,9 +83,9 @@ set-as-my-default-browser =
     .label = Asosiy sifatida o‘rnatish
     .accesskey = A
 
-startup-restore-previous-session =
-    .label = Oldingi seansni tiklash
-    .accesskey = t
+startup-restore-windows-and-tabs =
+    .label = Oldingi oyna va varaqlarni ochish
+    .accesskey = O
 
 startup-restore-warn-on-quit =
     .label = Brauzerdan chiqishda sizni ogohlantiradi
@@ -99,13 +103,17 @@ open-new-link-as-tabs =
     .label = Havolalarni yangi oynalarning varaqlarida ochish
     .accesskey = w
 
-warn-on-close-multiple-tabs =
-    .label = Bir nechta varaqlar yopilayotganda ogohlantirilsin
-    .accesskey = m
+confirm-on-close-multiple-tabs =
+    .label = Bir nechta varaqlarni yopishdan oldin tasdiqlash
+    .accesskey = B
 
 warn-on-open-many-tabs =
     .label = { -brand-short-name }ni sekinlashtirishi mumkin bo‘lgan bir necha varaqlar ochilayotganda ogohlantirilsin
     .accesskey = o
+
+switch-to-new-tabs =
+    .label = Ochilgan havola, rasm yoki mediaga oʻtish
+    .accesskey = O
 
 show-tabs-in-taskbar =
     .label = Varaqlarning umumiy koʻrinishini vazifalar panelida koʻrsatish
@@ -152,8 +160,6 @@ containers-remove-cancel-button = Bu konteyner olib tahlanmasin
 
 language-and-appearance-header = Til va interfeys
 
-fonts-and-colors-header = Shriftlar va ranglar
-
 default-font = Standart shrift
     .accesskey = S
 default-font-size = Hajmi
@@ -163,9 +169,18 @@ advanced-fonts =
     .label = Qo‘shimcha…
     .accesskey = Q
 
-colors-settings =
-    .label = Ranglar…
-    .accesskey = R
+# Zoom is a noun, and the message is used as header for a group of options
+preferences-zoom-header = Masshtab
+
+preferences-default-zoom = Standart masshtab
+    .accesskey = S
+
+preferences-default-zoom-value =
+    .label = { $percentage }%
+
+preferences-zoom-text-only =
+    .label = Faqat matnni kattalashtirish
+    .accesskey = t
 
 language-header = Til
 
@@ -174,6 +189,11 @@ choose-language-description = Sahifalar ko‘rinishi kerak bo‘lgan til
 choose-button =
     .label = Tanlash…
     .accesskey = T
+
+choose-browser-language-description = { -brand-short-name } menyusi, xabarlar va bildirishnomalari chiqadigan tillarni tanlang.
+manage-browser-languages-button =
+    .label = Muqobillarini tanlash…
+    .accesskey = l
 
 translate-web-pages =
     .label = Veb saytni tarjima qilish
@@ -199,6 +219,9 @@ download-header = Yuklab olishlar
 
 download-save-to =
     .label = Fayllarni saqlash manzili:
+    .accesskey = s
+
+download-save-where = Fayllarni saqlash manzili:
     .accesskey = s
 
 download-choose-folder =
@@ -330,6 +353,8 @@ update-application-use-service =
     .label = Yangilanishlarni oʻrnatish uchun orqa fon xizmatidan foydalanish
     .accesskey = o
 
+update-in-progress-title = Yangilanmoqda
+
 update-in-progress-ok-button = &Rad etish
 # Continue is the cancel button so pressing escape or using a platform standard
 # method of closing the UI will not discard the update.
@@ -459,9 +484,6 @@ home-prefs-content-description = Firefox bosh sahifasida qaysi kontent chiqishi 
 
 home-prefs-search-header =
     .label = Internetdan qidirish
-home-prefs-topsites-header =
-    .label = Ommabop saytlar
-home-prefs-topsites-description = Tez-tez tashrif buyuradigan saytlaringiz
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -475,9 +497,6 @@ home-prefs-recommended-by-learn-more = U qanday ishlaydi
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Homiylik maqolalari
 
-home-prefs-highlights-header =
-    .label = Ajratilgan saytlar
-home-prefs-highlights-description = Saqlangan yoki tashrif buyurgan saralangan saytlaringiz
 home-prefs-highlights-option-visited-pages =
     .label = Kirilgan sahifalar
 home-prefs-highlights-options-bookmarks =
@@ -493,7 +512,6 @@ home-prefs-highlights-option-saved-to-pocket =
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Parchalar
-home-prefs-snippets-description = { -vendor-short-name } va { -brand-product-name } yangilanishlari
 
 home-prefs-sections-rows-option =
     .label =
@@ -580,6 +598,11 @@ containers-remove-button =
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Internet doim siz bilan birga
+sync-signedout-description2 = Xatchoʻplar, tarix, varaqlar, parollar, qoʻshimcha dasturlar va boshqa sozlamalarni barcha qurilmalaringizga sinxronlang.
+
+sync-signedout-account-signin3 =
+    .label = Sinxronlash uchun kiring…
+    .accesskey = i
 
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
@@ -624,10 +647,43 @@ prefs-syncing-on = Sinxronizatsiya: YONIQ
 
 prefs-syncing-off = Sinxronizatsiya: OʻCHIQ
 
+prefs-sync-turn-on-syncing =
+    .label = Sinxronizatsiyani yoqish
+    .accesskey = S
+
+prefs-sync-offer-setup-label2 = Xatchoʻplar, tarix, varaqlar, parollar, qoʻshimcha dasturlar va boshqa sozlamalarni barcha qurilmalaringizga sinxronlang.
+
+prefs-sync-now =
+    .labelnotsyncing = Sinxronlash
+    .accesskeynotsyncing = N
+    .labelsyncing = Sinxronlanmoqda…
+
 ## The list of things currently syncing.
 
+sync-currently-syncing-heading = Siz hozir quyidagilarni sinxronlayapsiz:
+
+sync-currently-syncing-bookmarks = Xatchoʻplar
+sync-currently-syncing-history = Tarix
+sync-currently-syncing-tabs = Ochiq varaqlar
+sync-currently-syncing-logins-passwords = Login va parollar
+sync-currently-syncing-addresses = Manzillar
+sync-currently-syncing-creditcards = Kredit kartalari
+sync-currently-syncing-addons = Qoʻshimcha dasturlar
+sync-currently-syncing-settings = Sozlamalar
+
+sync-change-options =
+    .label = Oʻzgartirish…
+    .accesskey = O
 
 ## The "Choose what to sync" dialog.
+
+sync-choose-what-to-sync-dialog =
+    .title = Nimani sinxronlashni tanlang
+    .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Oʻzgarishlarni saqlash
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Uzish…
+    .buttonaccesskeyextra2 = D
 
 sync-engine-bookmarks =
     .label = Xatchoʻplar
@@ -641,6 +697,11 @@ sync-engine-tabs =
     .label = Ochiq varaqlar
     .tooltiptext = Barcha sinxronlangan qurilmalardagi ochiq ichki oynalar ro‘yxati
     .accesskey = O
+
+sync-engine-logins-passwords =
+    .label = Login va parollar
+    .tooltiptext = Siz saqlagan foydalanuvchi nomi va parollar
+    .accesskey = L
 
 sync-engine-addresses =
     .label = Manzillar
@@ -657,6 +718,11 @@ sync-engine-addons =
     .tooltiptext = Kompyuter uchun Firefox kengaytma va mavzulari
     .accesskey = Q
 
+sync-engine-settings =
+    .label = Sozlamalar
+    .tooltiptext = Siz oʻzgartirgan umumiy, maxfiy va xavfsizlik sozlamalari
+    .accesskey = s
+
 ## The device name controls.
 
 sync-device-name-header = Qurilma nomi
@@ -672,6 +738,8 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Saqlash
     .accesskey = S
+
+sync-connect-another-device = Boshqa qurilmani ulash
 
 ## Privacy Section
 
@@ -825,10 +893,6 @@ permissions-notification-pause =
 permissions-block-popups =
     .label = Paydo bo‘luvchi oynalarni bloklash
     .accesskey = P
-
-permissions-block-popups-exceptions =
-    .label = Istisnolar…
-    .accesskey = I
 
 permissions-addon-install-warning =
     .label = Saytlar qo‘shimcha dasturlarni o‘rnatishga uringanda menga ogohlantirish ko‘rsatilsin

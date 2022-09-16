@@ -19,6 +19,9 @@ auth-waiting = Yn aros i'r cyswllt gwblhau'r gwiriad...
 finger-verify = Gwirio
 finger-verify-access-key = G
 
+finger-ignore = Anwybyddu
+finger-ignore-access-key = A
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Ychwanegu Bysbrint OTR
 
@@ -43,7 +46,6 @@ finger-unseen = Nid yw hunaniaeth { $name } wedi'i wirio eto. Nid yw'n bosibl i 
 finger-seen = Mae { $name } yn cysylltu â chi o gyfrifiadur heb ei adnabod. Nid yw'n bosibl clustfeinio'n achlysurol, ond gyda pheth ymdrech gall rhywun fod yn gwrando. Rhwystrwch wyliadwriaeth trwy wirio hunaniaeth y cyswllt hwn.
 
 state-not-private = Nid yw'r sgwrs gyfredol yn breifat.
-
 state-generic-not-private = Nid yw'r sgwrs gyfredol yn breifat.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Rydych wedi gwirio hunaniaeth { $name }.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = Nid yw hunaniaeth { $name } wedi'i wirio.
-
-verify-title = Gwirio hunaniaeth eich cyswllt
-error-title = Gwall
-success-title = Amgryptio Pen-i-Ben
-success-them-title = Gwiriwch hunaniaeth eich cyswllt
-fail-title = Methu gwirio
-waiting-title = Cais dilysu wedi'i anfon
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

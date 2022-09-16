@@ -41,6 +41,11 @@ options-collapse-attrs-label = Potong atribut DOM
 options-collapse-attrs-tooltip =
     .title = Potong atribut panjang pada inspektur
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Klik dan seret untuk mengedit nilai ukuran
+options-inspector-draggable-properties-tooltip =
+    .title = Klik dan seret untuk mengedit nilai ukuran dalam tampilan rule inspektur.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Unit warna baku
@@ -48,6 +53,7 @@ options-default-color-unit-authored = Sesuai Penyusun
 options-default-color-unit-hex = Heksa
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = MHB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Nama Warna
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Aktifkan pendebugan jarak jauh
 options-enable-remote-tooltip2 =
     .title = Mengaktifkan opsi ini akan memungkinkan untuk mendebug instans peramban ini dari jarak jauh
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Aktifkan pemformat khusus
+options-enable-custom-formatters-tooltip =
+    .title = Mengaktifkan opsi ini akan memungkinkan situs menentukan pemformat khusus untuk objek DOM
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Aktifkan Service Worker lewat HTTP (saat kotak alat terbuka)

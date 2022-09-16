@@ -23,6 +23,10 @@ account-setup-success-secondary-description = Tezmreḍ ad tesnerniḍ tirmit-ik
 account-setup-name-label = Isem-ik·m ummid
     .accesskey = I
 
+# Note: "John Doe" is a multiple-use name that is used when the true name of a person is unknown. We use this fake name as an input placeholder. Translators should update this to reflect the placeholder name of their language/country.
+account-setup-name-input =
+    .placeholder = John Doe
+
 account-setup-name-info-icon =
     .title = Isem-ik·im, akken tettwalin wiyaḍ
 
@@ -32,6 +36,9 @@ account-setup-name-warning-icon =
 
 account-setup-email-label = Tansa n yimayl
     .accesskey = T
+
+account-setup-email-input =
+    .placeholder = john.doe@example.com
 
 account-setup-email-info-icon =
     .title = Tansa-inek·inem n yimayl yellan
@@ -46,8 +53,11 @@ account-setup-password-label = Awal uffir
 account-provisioner-button = Awi tansa n yimayl tamaynut
     .accesskey = A
 
-account-setup-password-toggle =
-    .title = Sken/Ffer awal uffir
+account-setup-password-toggle-show =
+    .title = Sken awal uffir deg uḍris isefḍen
+
+account-setup-password-toggle-hide =
+    .title = Ffer awal uffir
 
 account-setup-remember-password = Cfu ɣef awal uffir
     .accesskey = f
@@ -169,18 +179,9 @@ account-setup-results-area-title =
        *[other] Tawila yellan
     }
 
-# Note: IMAP is the name of a protocol.
-account-setup-result-imap = IMAP
-
 account-setup-result-imap-description = Ḥrez ikaramen d yimaylen inek·inem mtawan ɣef uqeddac-inek·inem
 
-# Note: POP3 is the name of a protocol.
-account-setup-result-pop = POP3
-
 account-setup-result-pop-description = Eǧǧ ikaramen d yimaylen ɣef uselkim-inek·inem
-
-# Note: Exchange is the name of a product.
-account-setup-result-exchange = Exchange
 
 # Note: Exchange, Office365 are the name of products.
 account-setup-result-exchange2-description = Seqdec aqeddac Microsoft Exange neɣ iqeddacen n tagut n Office365
@@ -192,8 +193,6 @@ account-setup-outgoing-title = Ad yeffeɣ
 account-setup-username-title = Isem n useqdac
 
 account-setup-exchange-title = Aqeddac
-
-account-setup-result-smtp = SMTP
 
 account-setup-result-no-encryption = Ulac awgelhen
 
@@ -219,6 +218,8 @@ account-setup-find-settings-failed = { -brand-short-name } ur yessaweḍ ara ad 
 
 account-setup-exchange-config-unverifiable = Ur nessaweḍ ara ad nsenqed tawila. Ma yella isem-inek/inem n useqdac d wawal uffis d imeɣta, yezmer anedbal n uqeddac isens tawila yettwafernen i umiḍan-inek/inem. Ɛreḍ ad tferneḍ aneggaf-nniḍen.
 
+account-setup-provisioner-error = Tella-d tuccḍa lawan n usesteb n umiḍan-ik·im amay deg { -brand-short-name }. Ma ulac aɣilif, ɛreḍ ad tsestbeḍ s ufus amiḍan-ik·im s yinekcam-ik•im.
+
 ## Manual configuration area
 
 account-setup-manual-config-title = Tawila n usefsu
@@ -227,16 +228,12 @@ account-setup-incoming-server-legend = Aqeddac ukcim
 
 account-setup-protocol-label = Aneggaf:
 
-protocol-imap-option = { account-setup-result-imap }
-
-protocol-pop-option = { account-setup-result-pop }
-
-protocol-exchange-option = { account-setup-result-exchange }
-
 account-setup-hostname-label = Asenneftaɣ:
 
 account-setup-port-label = Tawwurt:
     .title = Sbadu amḍan n tewwurt ɣer 0 i tifin tawurmant
+
+account-setup-auto-description = { -brand-short-name } yettaɛraḍ ad d-yaf s wudem awurman urtiyen yeqqimen d ilmawen.
 
 account-setup-ssl-label = Taɣellist n tuqqna:
 
@@ -280,6 +277,8 @@ account-setup-warning-cleartext-details = Iqeddacen n tirawt ur nelli ara d iɣa
 account-setup-insecure-server-checkbox = Gziɣ d acu ara d-yeḍrun
     .accesskey = G
 
+account-setup-insecure-description = { -brand-short-name } yezmer ak-isireg akken ad tawiḍ imayl inek s useqdec n twila d-ittunefken. Acu kan,  yessefk ad tenermseḍ anebdal-inek neɣ win i k-d-imudden imayl inek s tuqqniwin ur nwata yara. Wali <a data-l10n-name="thunderbird-faq-link">Isteqsiyen FAQ</a> i wugar n telɣut.
+
 insecure-dialog-cancel-button = Snifel tawila
     .accesskey = S
 
@@ -288,11 +287,28 @@ insecure-dialog-confirm-button = Sentem
 
 ## Warning Exchange confirmation dialog
 
+# Variables:
+#  $domain (String): The name of the server where the configuration was found, e.g. rackspace.com.
+exchange-dialog-question = { -brand-short-name } yufa-d talɣut n twila n umiḍan-ik deg { $domain }. Tebɣiḍ ad tkemmleḍ daɣen ad tazneḍ talɣut n usulu ?
+
 exchange-dialog-confirm-button = Kcem
 
 exchange-dialog-cancel-button = Sefsex
 
 ## Dismiss account creation dialog
+
+exit-dialog-title = Ulac amiḍan n yimayl yettusawlen
+
+exit-dialog-description = D tidet tebɣiḍ ad tesfesxeḍ akala n usesteb? Ur { -brand-short-name } mazal yezmer ad yettuseqdec s war amiḍan n yimayl, maca aṭas n tmahilin ur ttilint ara.
+
+account-setup-no-account-checkbox = Seqdec { -brand-short-name } s war amiḍan n yimayl
+    .accesskey = S
+
+exit-dialog-cancel-button = Kemmel tawila
+    .accesskey = K
+
+exit-dialog-confirm-button = Eǧǧ tawila
+    .accesskey = E
 
 ## Alert dialogs
 
@@ -309,6 +325,8 @@ account-setup-confirm-advanced-description = Adiwenni-a ad imdel, amaɣnu s yiɣ
 account-setup-addon-install-title = Sebded
 
 account-setup-addon-install-intro = Azegrir wis tlata ad k-yeǧǧ ad tkecmeḍ ɣer umiḍan-ik n tirawt ɣef uqeddac-a:
+
+account-setup-addon-no-protocol = Nesḥassef, aqeddac-a n yimayl ur issefrak ara ineggafen yeldin. { account-setup-addon-install-intro }
 
 ## Success view
 
@@ -331,6 +349,22 @@ account-setup-linked-services-title = Qqen ɣer yimeẓla-inek·inem yeqqnen
 account-setup-linked-services-description = { -brand-short-name } yufa-d imeɣla-nniḍen yeqqnen ɣer umiḍan-ik·im n yimayl.
 
 account-setup-no-linked-description = Sesteb imeẓla-nniḍen i wakken ad tfaṛseḍ ugar seg termit n { -brand-short-name }.
+
+# Variables:
+# $count (Number) - The number of address books found during autoconfig.
+account-setup-found-address-books-description =
+    { $count ->
+        [one] { -brand-short-name } yufa-d yiwen umedlis n tansiwin yeqqen ɣer umiḍan-ik·im n yimayl.
+       *[other] { -brand-short-name } yufa-d { $count } yimedlisen n tansiwin qqnen ɣer umiḍan-ik·im n yimayl.
+    }
+
+# Variables:
+# $count (Number) - The number of calendars found during autoconfig.
+account-setup-found-calendars-description =
+    { $count ->
+        [one] { -brand-short-name } yufa-d yiwen uwitay yeqqen ɣer umiḍan-ik·im n yimayl.
+       *[other] { -brand-short-name } yufa-d { $count } yiwitayen qqnen ɣer umiḍan-ik·im n yimayl.
+    }
 
 account-setup-button-finish = Fak
     .accesskey = F

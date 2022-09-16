@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Prijava dodatka { $addon-name }
 
 abuse-report-title-extension = Prijavi to razširitev organizaciji { -vendor-short-name }
+abuse-report-title-sitepermission = Prijavi ta dodatek za dovoljenja strani organizaciji { -vendor-short-name }
 abuse-report-title-theme = Prijavi to temo organizaciji { -vendor-short-name }
 abuse-report-subtitle = Kje je težava?
 
@@ -37,12 +37,6 @@ abuse-report-goback-button = Nazaj
 abuse-report-submit-button = Pošlji
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Pošiljanje poročila za <span data-l10n-na
 abuse-report-messagebar-submitted = Hvala za prijavo. Ali želite odstraniti <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Hvala za prijavo.
 abuse-report-messagebar-removed-extension = Hvala, ker ste nam poslali prijavo. Razširitev <span data-l10n-name="addon-name">{ $addon-name }</span> ste odstranili.
+abuse-report-messagebar-removed-sitepermission = Hvala, ker ste nam poslali prijavo. Dodatek za dovoljenja strani <span data-l10n-name="addon-name">{ $addon-name }</span> ste odstranili.
 abuse-report-messagebar-removed-theme = Hvala za prijavo. Temo <span data-l10n-name="addon-name">{ $addon-name }</span> ste odstranili.
 abuse-report-messagebar-error = Pri pošiljanju poročila za <span data-l10n-name="addon-name">{ $addon-name }</span> je prišlo do napake.
 abuse-report-messagebar-error-recent-submit = Poročilo za <span data-l10n-name="addon-name">{ $addon-name }</span> ni bilo poslano, ker je bilo pred kratkim poslano drugo poročilo.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Poročilo za <span data-l10n-name=
 
 abuse-report-messagebar-action-remove-extension = Da, odstrani
 abuse-report-messagebar-action-keep-extension = Ne, želim jo obdržati
+abuse-report-messagebar-action-remove-sitepermission = Da, odstrani
+abuse-report-messagebar-action-keep-sitepermission = Ne, želim jo obdržati
 abuse-report-messagebar-action-remove-theme = Da, odstrani
 abuse-report-messagebar-action-keep-theme = Ne, želim jo obdržati
 abuse-report-messagebar-action-retry = Poskusi znova
@@ -82,12 +79,17 @@ abuse-report-deceptive-reason-v2 = Izdaja se za nekaj drugega
 abuse-report-deceptive-example = Na primer: zavajajoč opis ali slike
 
 abuse-report-broken-reason-extension-v2 = Ne deluje, kvari spletne strani ali upočasnjuje { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Ne deluje, kvari spletne strani ali upočasnjuje { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Ne deluje ali pokvari zaslon brskalnika
 abuse-report-broken-example = Primer: Zmogljivosti so počasne, težke za uporabo ali ne delujejo. Deli spletnih mest se ne naložijo ali izgledajo nenavadno
 abuse-report-broken-suggestions-extension =
     Zdi se, da ste odkrili napako. Za razrešitev težave vam poleg pošiljanja poročila priporočamo,
     da se obrnete na razvijalca razširitve. Podatke o razvijalcu lahko najdete na
     <a data-l10n-name="support-link"> spletnem mestu razširitve </a>.
+abuse-report-broken-suggestions-sitepermission =
+    Zdi se, da ste odkrili napako. Za razrešitev težave vam poleg pošiljanja poročila priporočamo,
+    da se obrnete na razvijalca spletnega mesta. Podatke o razvijalcu lahko najdete na
+    <a data-l10n-name="support-link"> spletnem mestu</a>.
 abuse-report-broken-suggestions-theme =
     Zdi se, da ste odkrili napako. Za razrešitev težave vam poleg pošiljanja poročila priporočamo,
     da se obrnete na razvijalca teme. Podatke o razvijalcu lahko najdete na
@@ -102,4 +104,3 @@ abuse-report-unwanted-reason-v2 = Nikoli je nisem želel in se je ne znam znebit
 abuse-report-unwanted-example = Na primer: namestil jo je drug program brez mojega dovoljenja
 
 abuse-report-other-reason = Nekaj drugega
-

@@ -29,50 +29,40 @@ downloads-cmd-cancel =
     .tooltiptext = キャンセル
 downloads-cmd-cancel-panel =
     .aria-label = キャンセル
-# This message is only displayed on Windows and Linux devices
-downloads-cmd-show-menuitem =
-    .label = 保存フォルダーを開く
-    .accesskey = F
-# This message is only displayed on macOS devices
-downloads-cmd-show-menuitem-mac =
-    .label = Finder に表示
-    .accesskey = F
 
 downloads-cmd-show-menuitem-2 =
     .label = { PLATFORM() ->
         [macos] Finder に表示
-       *[other] フォルダーに表示
+       *[other] 保存フォルダーを開く
     }
     .accesskey = F
 
+## Displayed in the downloads context menu for files that can be opened.
+## Variables:
+##   $handler (String) - The name of the mime type's default file handler.
+##   Example: "Notepad", "Acrobat Reader DC", "7-Zip File Manager"
+
 downloads-cmd-use-system-default =
     .label = システムのビューアーで開く
-    .accesskey = V
+    .accesskey = I
+# This version is shown when the download's mime type has a valid file handler.
+downloads-cmd-use-system-default-named =
+  .label = { $handler } で開く
+  .accesskey = I
 
 # We can use the same accesskey as downloads-cmd-always-open-similar-files.
 # Both should not be visible in the downloads context menu at the same time.
 downloads-cmd-always-use-system-default =
     .label = 常にシステムのビューアーで開く
     .accesskey = w
+# We can use the same accesskey as downloads-cmd-always-open-similar-files.
+# Both should not be visible in the downloads context menu at the same time.
+# This version is shown when the download's mime type has a valid file handler.
+downloads-cmd-always-use-system-default-named =
+    .label = 常に { $handler } で開く
+    .accesskey = w
 
-downloads-cmd-show-button =
-    .tooltiptext =
-        { PLATFORM() ->
-            [macos] Finder に表示
-           *[other] 保存フォルダーを開く
-        }
-downloads-cmd-show-panel =
-    .aria-label =
-        { PLATFORM() ->
-            [macos] Finder に表示
-           *[other] 保存フォルダーを開く
-        }
-downloads-cmd-show-description =
-    .value =
-        { PLATFORM() ->
-            [macos] Finder に表示
-           *[other] 保存フォルダーを開く
-        }
+##
 
 # We can use the same accesskey as downloads-cmd-always-use-system-default.
 # Both should not be visible in the downloads context menu at the same time.
@@ -83,18 +73,18 @@ downloads-cmd-always-open-similar-files =
 downloads-cmd-show-button-2 =
     .tooltiptext = { PLATFORM() ->
         [macos] Finder に表示
-       *[other] フォルダーに表示
+       *[other] 保存フォルダーを開く
     }
 
 downloads-cmd-show-panel-2 =
     .aria-label = { PLATFORM() ->
         [macos] Finder に表示
-       *[other] フォルダーに表示
+       *[other] 保存フォルダーを開く
     }
 downloads-cmd-show-description-2 =
     .value = { PLATFORM() ->
         [macos] Finder に表示
-       *[other] フォルダーに表示
+       *[other] 保存フォルダーを開く
     }
 
 downloads-cmd-show-downloads =
@@ -117,7 +107,11 @@ downloads-cmd-clear-list =
     .accesskey = a
 downloads-cmd-clear-downloads =
     .label = ダウンロード履歴をすべて消去
+    .accesskey = C
+downloads-cmd-delete-file =
+    .label = 削除
     .accesskey = D
+
 # This command is shown in the context menu when downloads are blocked.
 downloads-cmd-unblock =
     .label = ダウンロードを許可
@@ -163,6 +157,8 @@ downloading-file-opens-in-minutes = { $minutes } 分後に開きます...
 downloading-file-opens-in-minutes-and-seconds = { $minutes } 分 { $seconds } 秒後に開きます...
 downloading-file-opens-in-seconds = { $seconds } 秒後に開きます...
 downloading-file-opens-in-some-time = ダウンロードが完了したら開きます...
+downloading-file-click-to-open =
+  .value = ダウンロードが完了したら開きます
 
 ##
 
@@ -184,6 +180,21 @@ downloads-history =
 # that we are showing the details of a single download.
 downloads-details =
     .title = ダウンロードの詳細
+
+## Displayed when a site attempts to automatically download many files.
+## Variables:
+##   $num (number) - Number of blocked downloads.
+##   $url (string) - The url of the suspicious site, stripped of http, https and www prefix.
+
+downloads-files-not-downloaded = { $num ->
+    [one] ファイルのダウンロードを中止しました。
+   *[other] {$num} 個のファイルのダウンロードを中止しました。
+}
+downloads-blocked-from-url = { $url } からのダウンロードをブロックしました。
+downloads-blocked-download-detailed-info = { $url } は複数のファイルを自動的にダウンロードさせようとしました。このサイトは壊れているか、スパムファイルをあなたの端末に保存させようとしています。
+
+##
+
 downloads-clear-downloads-button =
     .label = ダウンロード履歴を消去
     .tooltiptext = 完了、キャンセル、失敗したすべてのダウンロード履歴を消去します

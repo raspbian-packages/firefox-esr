@@ -10,7 +10,7 @@ sanitize-prefs-style =
     .style = width: 17em
 
 dialog-title =
-    .title = מחיקת היסטוריה אחרונה
+    .title = ניקוי היסטוריה אחרונה
     .style = width: 34em
 
 # When "Time range to clear" is set to "Everything", this message is used for the
@@ -77,10 +77,6 @@ item-form-search-history =
     .accesskey = ט
 
 data-section-label = נתונים
-
-item-site-preferences =
-    .label = העדפות אתר
-    .accesskey = ה
 
 item-site-settings =
     .label = הגדרות אתרים

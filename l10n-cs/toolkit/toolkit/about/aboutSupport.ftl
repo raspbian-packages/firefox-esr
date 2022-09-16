@@ -79,6 +79,14 @@ app-basics-location-service-key-google = Klíč služby Google Location Service
 app-basics-safebrowsing-key-google = Klíč služby Google Safebrowsing
 app-basics-key-mozilla = Klíč Mozilla Location Service
 app-basics-safe-mode = Nouzový režim
+app-basics-memory-size = Velikost paměti (RAM)
+app-basics-disk-available = Dostupné místo na disku
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Zobrazit ve Finderu
@@ -362,6 +370,7 @@ fission-status-experiment-control = Zakázáno experimentem
 fission-status-experiment-treatment = Povoleno experimentem
 fission-status-disabled-by-e10s-env = Zakázáno prostředím
 fission-status-enabled-by-env = Povoleno prostředím
+fission-status-disabled-by-env = Zakázáno prostředím
 fission-status-disabled-by-safe-mode = Zakázáno v nouzovém režimu
 fission-status-enabled-by-default = Povoleno ve výchozím nastavení
 fission-status-disabled-by-default = Zakázáno ve výchozím nastavení

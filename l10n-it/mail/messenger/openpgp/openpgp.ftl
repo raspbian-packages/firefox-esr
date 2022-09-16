@@ -4,8 +4,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 e2e-intro-description = Per inviare messaggi crittati o con firma digitale, configurare una tecnologia di crittografia OpenPGP o S/MIME.
-
 e2e-intro-description-more = Selezionare la propria chiave personale per utilizzare OpenPGP o il proprio certificato personale per utilizzare S/MIME. Per una chiave personale o un certificato si deve possedere la chiave segreta corrispondente.
+
+e2e-signing-description = La firma digitale consente ai destinatari di verificare che il messaggio sia stato inviato dal mittente e che il contenuto non sia stato modificato. I messaggi crittati sono sempre firmati per impostazione predefinita.
+
+e2e-sign-message =
+    .label = Firma messaggi non crittati
+    .accesskey = F
+
+e2e-disable-enc =
+    .label = Disattiva la crittografia per i nuovi messaggi
+    .accesskey = D
+e2e-enable-enc =
+    .label = Attiva la crittografia per i nuovi messaggi
+    .accesskey = A
+e2e-enable-description = Sarà possibile disattivare la crittografia per i singoli messaggi.
 
 e2e-advanced-section = Impostazioni avanzate
 e2e-attach-key =
@@ -48,6 +61,9 @@ openpgp-generate-key =
 openpgp-advanced-prefs-button-label =
     .label = Avanzate…
 openpgp-keygen-desc = <a data-l10n-name="openpgp-keygen-desc-link">NOTA: il completamento del processo di generazione della chiave potrebbe richiedere alcuni minuti.</a> Non uscire dall’applicazione mentre è in corso la generazione della chiave. Navigare attivamente o eseguire operazioni a uso intensivo del disco durante la generazione delle chiavi incrementerà il livello di casualità e accelererà il processo. Quando il processo di generazione della chiave sarà completato, si riceverà un avviso.
+
+openpgp-key-created-label =
+    .label = Data di creazione
 
 openpgp-key-expiry-label =
     .label = Scadenza
@@ -192,6 +208,11 @@ openpgp-key-man-reload =
 openpgp-key-man-change-expiry =
     .label = Modifica la data di scadenza
     .accesskey = M
+openpgp-key-man-refresh-online =
+    .label = Aggiorna in linea
+    .accesskey = A
+openpgp-key-man-ignored-ids =
+    .label = Indirizzi email
 openpgp-key-man-del-key =
     .label = Elimina chiavi
     .accesskey = m
@@ -240,20 +261,37 @@ openpgp-key-man-select-all-key =
 openpgp-key-man-key-details-key =
     .key = I
 
+openpgp-ign-addr-intro = Accetti di utilizzare questa chiave per i seguenti indirizzi email selezionati:
+
 openpgp-key-details-title =
     .title = Proprietà chiave
+
+openpgp-key-details-doc-title = Proprietà chiave
 openpgp-key-details-signatures-tab =
     .label = Certificazioni
 openpgp-key-details-structure-tab =
     .label = Struttura
 openpgp-key-details-uid-certified-col =
     .label = ID utente/Certificato da
+openpgp-key-details-key-id-label = ID chiave
 openpgp-key-details-user-id2-label = Presunto proprietario della chiave
+openpgp-key-details-user-id3-label = Proprietario della chiave dichiarato
 openpgp-key-details-id-label =
     .label = ID
 openpgp-key-details-key-type-label = Tipo
 openpgp-key-details-key-part-label =
     .label = Parte della chiave
+
+openpgp-key-details-attr-ignored = Attenzione: questa chiave potrebbe non funzionare come previsto, poiché alcune delle sue proprietà non sono sicure e potrebbero essere ignorate.
+openpgp-key-details-attr-upgrade-sec = Dovresti aggiornare le proprietà non sicure.
+openpgp-key-details-attr-upgrade-pub = Dovresti chiedere al proprietario di questa chiave di aggiornare le proprietà non sicure.
+
+openpgp-key-details-upgrade-unsafe =
+    .label = Aggiorna proprietà non sicure
+    .accesskey = s
+
+openpgp-key-details-upgrade-ok = La chiave è stata aggiornata correttamente. Si consiglia di condividere la chiave pubblica aggiornata con i propri corrispondenti.
+
 openpgp-key-details-algorithm-label =
     .label = Algoritmo
 openpgp-key-details-size-label =
@@ -267,10 +305,10 @@ openpgp-key-details-expiry-header = Scadenza
 openpgp-key-details-usage-label =
     .label = Uso
 openpgp-key-details-fingerprint-label = Impronta digitale
+openpgp-key-details-legend-secret-missing = Per le chiavi contrassegnate con (!) non è disponibile la chiave segreta.
 openpgp-key-details-sel-action =
     .label = Seleziona azione...
     .accesskey = z
-openpgp-key-details-also-known-label = Presunte identità alternative del proprietario della chiave:
 openpgp-card-details-close-window-label =
     .buttonlabelaccept = Chiudi
 openpgp-acceptance-label =
@@ -286,7 +324,6 @@ openpgp-acceptance-verified-label =
 key-accept-personal =
     Per questa chiave, si possiede sia la parte pubblica che quella segreta. È possibile utilizzarla come chiave personale.
     Se questa chiave è stata fornita da qualcun altro, non utilizzarla come chiave personale.
-key-personal-warning = Hai creato questa chiave personalmente e la chiave visualizzata è di tua proprietà?
 openpgp-personal-no-label =
     .label = No, non utilizzarla come chiave personale.
 openpgp-personal-yes-label =
@@ -297,13 +334,15 @@ openpgp-copy-cmd-label =
 
 ## e2e encryption settings
 
+#   $identity (String) - the email address of the currently selected identity
+openpgp-description-no-key = { -brand-short-name } non ha una chiave personale OpenPGP per <b>{ $identity }</b>
+
 #   $count (Number) - the number of configured keys associated with the current identity
 #   $identity (String) - the email address of the currently selected identity
-openpgp-description =
+openpgp-description-has-keys =
     { $count ->
-        [0] Thunderbird non dispone di una chiave personale OpenPGP per <b>{ $identity }</b>
-        [one] Thunderbird ha trovato { $count } chiave personale OpenPGP associata a <b>{ $identity }</b>
-       *[other] Thunderbird ha trovato { $count } chiavi personali OpenPGP associate a <b>{ $identity }</b>
+        [one] { -brand-short-name } ha trovato una chiave personale OpenPGP associata a <b>{ $identity }</b>
+       *[other] { -brand-short-name } ha trovato { $count } chiavi personali OpenPGP associate a <b>{ $identity }</b>
     }
 
 #   $key (String) - the currently selected OpenPGP key
@@ -383,7 +422,7 @@ key-expired-date = La chiave è scaduta il { $keyExpiry }
 key-expired-simple = La chiave è scaduta
 key-revoked-simple = La chiave è stata revocata
 key-do-you-accept = Accettare questa chiave per la verifica delle firme digitali e per la crittatura dei messaggi?
-key-accept-warning = Evitare di accettare una chiave sconosciuta. Utilizzare un canale di comunicazione diverso dalle email per verificare l’impronta digitale della chiave del corrispondente.
+key-verification = Verifica l’impronta digitale della chiave con un canale di comunicazione sicuro diverso dall’email per assicurarti che sia davvero la chiave di { $addr }.
 
 # Strings enigmailMsgComposeOverlay.js
 cannot-use-own-key-because = Impossibile inviare il messaggio perché si è verificato un problema con la chiave personale. { $problem }
@@ -391,7 +430,6 @@ cannot-encrypt-because-missing = Impossibile inviare questo messaggio con la cri
 window-locked = La finestra di composizione è bloccata; invio annullato
 
 # Strings in mimeDecrypt.jsm
-mime-decrypt-encrypted-part-attachment-label = Parte crittata del messaggio
 mime-decrypt-encrypted-part-concealed-data = Questa è una parte crittata del messaggio. È necessario aprirlo in una finestra separata facendo clic sull’allegato.
 
 # Strings in keyserver.jsm
@@ -417,27 +455,6 @@ converter-decrypt-body-failed =
     Impossibile decrittare il messaggio con l’oggetto
     { $subject }.
     Riprovare con una passphrase diversa o saltare il messaggio?
-
-# Strings in gpg.jsm
-unknown-signing-alg = Algoritmo di firma sconosciuto (ID: { $id })
-unknown-hash-alg = Hash crittografico sconosciuto (ID: { $id })
-
-# Strings in keyUsability.jsm
-expiry-key-expires-soon =
-    La propria chiave { $desc } scadrà tra meno di { $days } giorni.
-    Si consiglia di creare una nuova coppia di chiavi e configurare gli account corrispondenti per utilizzarla.
-expiry-keys-expire-soon =
-    Le seguenti chiavi scadranno tra meno di { $days } giorni: { $desc }.
-    Si consiglia di creare nuove chiavi e configurare gli account corrispondenti per utilizzarle.
-expiry-key-missing-owner-trust =
-    L’affidabilità non è specificata per la chiave privata { $desc }.
-    Impostare “assoluta” nelle proprietà della chiave alla voce “Affidabilità certificati”.
-expiry-keys-missing-owner-trust =
-    L’affidabilità non è specificata per le seguenti chiavi segrete.
-    { $desc }.
-    Impostare “assoluta” nelle proprietà della chiave alla voce “Affidabilità certificati”.
-expiry-open-key-manager = Apri il gestore delle chiavi OpenPGP
-expiry-open-key-properties = Apri le proprietà della chiave
 
 # Strings filters.jsm
 filter-folder-required = Selezionare la cartella di destinazione.
@@ -579,6 +596,10 @@ need-online = La funzione selezionata non è disponibile in modalità non in lin
 # Strings used in keyRing.jsm & keyLookupHelper.jsm
 no-key-found = Impossibile trovare chiavi corrispondenti ai criteri di ricerca specificati.
 
+# Strings used in keyRing.jsm & keyLookupHelper.jsm
+no-key-found2 = Impossibile trovare chiavi utilizzabili che corrispondono ai criteri di ricerca specificati.
+no-update-found = Hai già le chiavi che sono state trovate online.
+
 # Strings used in keyRing.jsm & GnuPGCryptoAPI.jsm
 fail-key-extract = Errore: comando di estrazione chiave non riuscito
 
@@ -657,7 +678,7 @@ msg-compose-partially-encrypted-inlinePGP =
 msg-compose-cannot-save-draft = Errore durante il salvataggio della bozza
 msg-compose-partially-encrypted-short = Attenzione alla fuga di informazioni sensibili: l’email è solo parzialmente crittata.
 quoted-printable-warn =
-    È stata attivata la codifica “quoted-printable” per l'invio dei messaggi. Questo potrebbe causare errori durante la decrittazione o la verifica del messaggio.
+    È stata attivata la codifica “quoted-printable” per l’invio dei messaggi. Questo potrebbe causare errori durante la decrittazione o la verifica del messaggio.
     Disattivare l’invio di messaggi “quoted-printable”?
 minimal-line-wrapping =
     Il ritorno a capo è impostato a { $width } caratteri. Per crittare o firmare correttamente, questo valore deve essere di almeno 68 caratteri.
@@ -670,19 +691,9 @@ send-to-news-warning =
     Questo operazione è sconsigliata perché ha senso solo se tutti i membri del gruppo possono decrittare il messaggio, ovvero il messaggio deve essere crittato con le chiavi di tutti i partecipanti al gruppo. Inviare questo messaggio solo se si sa esattamente che cosa si sta facendo.
     Continuare?
 save-attachment-header = Salva allegato decrittato
-no-temp-dir =
-    Impossibile trovare una directory temporanea in cui scrivere
-    Impostare la variabile di ambiente TEMP
 possibly-pgp-mime = Probabilmente il messaggio è crittato o firmato con PGP/MIME: utilizzare la funzione “Decritta/Verifica“
 cannot-send-sig-because-no-own-key = Impossibile firmare digitalmente questo messaggio perché non è stata ancora configurata la crittografia end-to-end per <{ $key }>
 cannot-send-enc-because-no-own-key = Impossibile inviare questo messaggio crittato perché non è stata ancora configurata la crittografia end-to-end per <{ $key }>
-
-compose-menu-attach-key =
-    .label = Allega la mia chiave pubblica
-    .accesskey = u
-compose-menu-encrypt-subject =
-    .label = Crittografia oggetto
-    .accesskey = o
 
 # Strings used in decryption.jsm
 do-import-multiple =
@@ -695,7 +706,7 @@ key-in-message-body = È stata trovata una chiave nel corpo del messaggio. Fare 
 sig-mismatch = Errore: mancata corrispondenza della firma
 invalid-email = Errore: indirizzo email non valido
 attachment-pgp-key =
-    L'allegato “{ $name }” che si sta aprendo sembra essere un file della chiave OpenPGP.
+    L’allegato “{ $name }” che si sta aprendo sembra essere un file della chiave OpenPGP.
     Fare clic su “Importa” per importare le chiavi contenute o su “Visualizza” per visualizzare il contenuto del file in una finestra del browser
 dlg-button-view = &Visualizza
 

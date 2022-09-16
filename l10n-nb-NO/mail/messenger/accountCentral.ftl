@@ -46,7 +46,7 @@ newsgroups-label = Temagrupper
 newsgroups-description = { -brand-short-name } lar deg koble til alle temagruppene du ønsker.
 
 import-title = Importer fra et annet program
-import-paragraph = { -brand-short-name } lar deg importere e-post, adressebøker, innstillinger og/eller filtre fra andre e-postprogrammer og vanlige adressebokformater.
+import-paragraph2 = { -brand-short-name } lar deg importere e-post, adressebøker, innstillinger og/eller filtre fra andre e-postprogrammer og vanlige adressebokformater.
 
 import-label = Importer
     .aria-label = Importer data fra andre programmer

@@ -2,6 +2,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Свернуть
+messenger-window-maximize-button =
+    .tooltiptext = Развернуть
+messenger-window-restore-down-button =
+    .tooltiptext = Свернуть в окно
+messenger-window-close-button =
+    .tooltiptext = Закрыть
+
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -83,11 +95,16 @@ redirect-msg-menuitem =
     .label = Перенаправить
     .accesskey = н
 
+menu-file-save-as-file =
+    .label = Файл…
+    .accesskey = а
+
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
+appmenu-save-as-file =
+    .label = Файл…
+
+appmenu-settings =
     .label = Настройки
 
 appmenu-addons-and-themes =
@@ -110,10 +127,32 @@ appmenu-redirect-msg =
 context-menu-redirect-msg =
     .label = Перенаправить
 
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Удалить выбранное сообщение
+            [few] Удалить выбранные сообщения
+           *[many] Удалить выбранные сообщения
+        }
+
+context-menu-decrypt-to-folder =
+    .label = Копировать в расшифрованном виде в
+    .accesskey = ш
+
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Перенаправить
+
+message-header-msg-flagged =
+    .title = Отмечено звёздочкой
+    .aria-label = Отмечено звёздочкой
+
+message-header-msg-not-flagged =
+    .title = Не отмечено звёздочкой
+    .aria-label = Не отмечено звёздочкой
+
+## Message header cutomize panel
 
 ## Action Button Context Menu
 
@@ -153,3 +192,15 @@ repair-text-encoding-button =
 no-reply-title = Ответ не поддерживается
 no-reply-message = Адрес для ответа ({ $email }) не похож на отслеживаемый адрес. Сообщения, отправленные по этому адресу, скорее всего никто не прочитает.
 no-reply-reply-anyway-button = Все равно ответить
+
+## error messages
+
+
+## Spaces toolbar
+
+
+## Spaces toolbar pinned tab menupopup
+
+
+## Spaces toolbar customize panel
+

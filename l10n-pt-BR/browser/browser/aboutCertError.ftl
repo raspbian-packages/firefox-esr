@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Sites comprovam sua identidade atrav�
 
 cert-error-symantec-distrust-admin = Você pode notificar o administrador do site a respeito deste problema.
 
+cert-error-old-tls-version = Este site pode não suportar o protocolo TLS 1.2, versão mínima suportada pelo { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,11 +117,10 @@ unknownSocketType-title = Resposta não esperada do servidor
 nssFailure2-title = Falha na conexão segura
 csp-xfo-error-title = O { -brand-short-name } não pode abrir esta página
 corruptedContentError-title = Erro de conteúdo corrompido
-remoteXUL-title = XUL remoto
 sslv3Used-title = Não foi possível conectar com segurança
 inadequateSecurityError-title = Sua conexão não é segura
 blockedByPolicy-title = Página bloqueada
-clockSkewError-title = O relógio do seu computador está errado
+clockSkewError-title = O relógio deste computador está errado
 networkProtocolError-title = Erro de protocolo de rede
 nssBadCert-title = Alerta: Potencial risco de segurança à frente
 nssBadCert-sts-title = Não conectou: Potencial problema de segurança

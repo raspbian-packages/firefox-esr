@@ -5,8 +5,6 @@
 
 about-logins-page-title = Přihlašovací údaje
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Hledat přihlašovací údaje
 
@@ -72,7 +70,6 @@ about-logins-list-item-breach-icon =
     .title = Na tomto serveru došlo k úniku dat
 about-logins-list-item-vulnerable-password-icon =
     .title = Zranitelné heslo
-
 about-logins-list-section-breach = Servery, kde došlo k úniku dat
 about-logins-list-section-vulnerable = Zranitelná hesla
 about-logins-list-section-nothing = Žádná upozornění
@@ -93,8 +90,14 @@ login-intro-description =
     }, ale na jiném zařízení, můžete je zde získat takto:
 login-intro-instructions-fxa = Vytvořte nebo se přihlaste k { -fxaccount-brand-name(case: "dat", capitalization: "lower") } na zařízení, kde máte přihlašovací údaje uložené.
 login-intro-instructions-fxa-settings = Otevřete Nastavení > Synchronizace > Zapnout synchronizaci… a vyberte položku Přihlašovací údaje.
-login-intro-instructions-fxa-help = Pro další pomoc navštivte <a data-l10n-name="help-link">nápovědu { -lockwise-brand-short-name(case: "gen") }</a>.
-about-logins-intro-import = Pokud máte přihlašovací údaje uložené v jiném prohlížeči, můžete je <a data-l10n-name="import-link">naimportovat do { -lockwise-brand-short-name(case: "gen") }</a>
+login-intro-instructions-fxa-passwords-help = Navštivte <a data-l10n-name="passwords-help-link">nápovědu pro hesla</a>.
+about-logins-intro-browser-only-import =
+    Pokud máte přihlašovací údaje uložené v jiném prohlížeči, můžete je <a data-l10n-name="import-link">naimportovat do { -brand-product-name.gender ->
+        [masculine] { -brand-product-name(case: "acc") }
+        [feminine] { -brand-product-name(case: "acc") }
+        [neuter] { -brand-product-name(case: "acc") }
+       *[other] aplikace { -brand-product-name }
+    } </a>
 about-logins-intro-import2 = Pokud máte přihlašovací údaje uložené mimo { -brand-product-name(case: "acc") }, můžete je <a data-l10n-name="import-browser-link">naimportovat z jiného prohlížeče</a> nebo <a data-l10n-name="import-file-link">ze souboru</a>
 
 ## Login
@@ -149,8 +152,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Pro zkopírování hesla
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = zkopírovat uložené heslo
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Pro export přihlašovacích údajů prosím zadejte své přihlašovací údaje k systému Windows. Toto opatření pomáhá v zabezpečení vašich účtů.
 # This message can be seen when attempting to export a password in about:logins
@@ -163,8 +164,6 @@ about-logins-primary-password-notification-message = Pro zobrazení uložených 
 master-password-reload-button =
     .label = Přihlásit se
     .accesskey = P
-
-## Password Sync notification
 
 ## Dialogs
 

@@ -35,8 +35,8 @@ devmgr-button-load =
     .accesskey = к
 
 devmgr-button-unload =
-    .label = Жүктелуден босату
-    .accesskey = б
+    .label = Жадыдан түсіру
+    .accesskey = с
 
 devmgr-button-enable-fips =
     .label = FIPS қолдану

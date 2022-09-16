@@ -12,33 +12,25 @@ cfr-doorhanger-feature-heading = Препоръчана възможност
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Защо го виждам?
-
 cfr-doorhanger-extension-cancel-button = Не сега
     .accesskey = н
-
 cfr-doorhanger-extension-ok-button = Добавяне
     .accesskey = д
-
 cfr-doorhanger-extension-manage-settings-button = Управление на настройки за препоръки
     .accesskey = н
-
 cfr-doorhanger-extension-never-show-recommendation = Не ми показвайте тази препоръка
     .accesskey = н
-
 cfr-doorhanger-extension-learn-more-link = Научете повече
-
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = от { $name }
-
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Препоръка
 cfr-doorhanger-extension-notification2 = Препоръчано
     .tooltiptext = Препоръка за разширение
     .a11y-announcement = Налична е препоръка за разширение
-
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Препоръка
@@ -65,9 +57,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } потребителя
     }
 
-## These messages are steps on how to use the feature and are shown together.
-
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Синхронизирайте отметките си навсякъде.
@@ -88,60 +77,28 @@ cfr-protections-panel-link-text = Научете повече
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Нова възможност:
-
 cfr-whatsnew-button =
     .label = Какво е новото
     .tooltiptext = Новото в това издание
-
 cfr-whatsnew-release-notes-link-text = Прочетете бележките към изданието
-
-## Search Bar
-
-## Search bar
-
-## Picture-in-Picture
-
-## Permission Prompt
-
-## Fingerprinter Counter
-
-## Bookmark Sync
-
-## Login Sync
-
-## Send Tab
-
-## Firefox Send
-
-## Social Tracking Protection
 
 ## Enhanced Tracking Protection Milestones
 
+# Variables:
+#   $blockedCount (Number) - The total count of blocked trackers. This number will always be greater than 1.
+#   $date (Datetime) - The date we began recording the count of blocked trackers
+cfr-doorhanger-milestone-heading2 =
+    { $blockedCount ->
+       *[other] { -brand-short-name } е спрял повече от <b>{ $blockedCount }</b> проследявания от { DATETIME($date, month: "long", year: "numeric") }
+    }
 cfr-doorhanger-milestone-ok-button = Показване на всички
     .accesskey = с
-
-## What’s New Panel Content for Firefox 76
-
-
-## Lockwise message
-
-## Vulnerable Passwords message
-
-## Picture-in-Picture fullscreen message
-
-## Protections Dashboard message
-
-## Better PDF message
-
-
 cfr-doorhanger-milestone-close-button = Затваряне
     .accesskey = З
 
-## What’s New Panel Content for Firefox 76
-## Protections Dashboard message
-
 ## DOH Message
 
+cfr-doorhanger-doh-header = По-сигурни, криптирани заявки към DNS
 cfr-doorhanger-doh-primary-button-2 = Добре
     .accesskey = о
 cfr-doorhanger-doh-secondary-button = Изключване
@@ -149,25 +106,11 @@ cfr-doorhanger-doh-secondary-button = Изключване
 
 ## Fission Experiment Message
 
+cfr-doorhanger-fission-header = Изолирана страница
 cfr-doorhanger-fission-primary-button = Добре, разбрах
     .accesskey = Д
 cfr-doorhanger-fission-secondary-button = Научете повече
     .accesskey = Н
-
-## What's new: Cookies message
-
-## What's new: Media controls message
-
-## What's new: Search shortcuts
-
-
-## What's new: Cookies protection
-
-
-## What's new: Better bookmarking
-
-## What's new: Cross-site cookie tracking
-
 
 ## Full Video Support CFR message
 
@@ -175,9 +118,31 @@ cfr-doorhanger-video-support-header = Обновете { -brand-short-name } з�
 cfr-doorhanger-video-support-primary-button = Обновяване
     .accesskey = б
 
+## Spotlight modal shared strings
+
+spotlight-learn-more-collapsed = Научете повече
+    .title = Отворете, за да научите повече
+spotlight-learn-more-expanded = Научете повече
+    .title = Затваряне
+
 ## VPN promotion dialog for public Wi-Fi users
 ##
 ## If a user is detected to be on a public Wi-Fi network, they are given a
 ## bit of info about how to improve their privacy and then offered a button
 ## to the Mozilla VPN page and a link to dismiss the dialog.
 
+# This header text can be explicitly wrapped.
+spotlight-public-wifi-vpn-header = Изглежда, че използвате обществена безжична мрежа
+spotlight-public-wifi-vpn-primary-button = Запазете поверителността си с { -mozilla-vpn-brand-name }
+    .accesskey = З
+spotlight-public-wifi-vpn-link = Не сега
+    .accesskey = Н
+
+## Total Cookie Protection Rollout
+
+spotlight-total-cookie-protection-secondary-button = Не сега
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = По-добрият интернет започва с вас
+spotlight-pin-secondary-button = Не сега

@@ -73,6 +73,14 @@ app-basics-location-service-key-google = Nyckel Google Location Service
 app-basics-safebrowsing-key-google = Nyckel Google Safe browsing
 app-basics-key-mozilla = Nyckel Mozilla Location Service
 app-basics-safe-mode = Felsäkert läge
+app-basics-memory-size = Minnesstorlek (RAM)
+app-basics-disk-available = Tillgängligt diskutrymme
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Visa i Finder
@@ -340,6 +348,7 @@ fission-status-experiment-control = Inaktiverad av experiment
 fission-status-experiment-treatment = Aktiverad av experiment
 fission-status-disabled-by-e10s-env = Inaktiverad av miljön
 fission-status-enabled-by-env = Aktiverad av miljön
+fission-status-disabled-by-env = Inaktiverad av miljön
 fission-status-disabled-by-safe-mode = Inaktiverat av säkert läge
 fission-status-enabled-by-default = Aktiverad som standard
 fission-status-disabled-by-default = Inaktiverad som standard

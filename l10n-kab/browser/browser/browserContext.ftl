@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Sekles aseɣwen ɣer { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Nɣel tansa imayl
     .accesskey = t
+
+main-context-menu-copy-phone =
+    .label = Nɣel uṭṭun n tiliɣri
+    .accesskey = ɣ
 
 main-context-menu-copy-link-simple =
     .label = Nɣel aseɣwen
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Ldi aseɣwen deg yiccer amaynut { $containerName }
     .accesskey = I
+
+main-context-menu-reveal-password =
+    .label = Sken awal uffir
+    .accesskey = S

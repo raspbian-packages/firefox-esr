@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Meglévő stíluslap importálása és dokumentumhoz fűzése
     .accesskey = I
+styleeditor-filter-input =
+    .placeholder = Stíluslapok szűrése
 styleeditor-visibility-toggle =
     .tooltiptext = Stíluslap láthatóságának átváltása
     .accesskey = s
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Hivatkozás megnyitása új lapon
 styleeditor-copy-url =
     .label = URL másolása
+styleeditor-go-to-line =
+    .label = Ugrás sorra…
+    .accesskey = U
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Nem található egyező stíluslap.

@@ -5,8 +5,6 @@
 
 about-logins-page-title = Saio-hasierak eta pasahitzak
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Bilatu saio-hasierak
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Datu-urratzea izandako webgunea
 about-logins-list-item-vulnerable-password-icon =
     .title = Pasahitz ahula
-
 about-logins-list-section-breach = Datu-urratzea izandako webguneak
 about-logins-list-section-vulnerable = Pasahitz ahulak
 about-logins-list-section-nothing = Alertarik ez
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Ez da sinkronizatuta saio-hasierari
 login-intro-description = Saio-hasierarik gorde baduzu beste gailu bateko { -brand-product-name }(e)n, jarraian dituzu hauek hemen eskuratzeko urratsak:
 login-intro-instructions-fxa = Sortu edo hasi saioa zure { -fxaccount-brand-name(kasua: "n") } saio-hasierak gordeta dituzun gailuan
 login-intro-instructions-fxa-settings = Zoaz Ezarpenak > Sinkronizazioa > Gaitu sinkronizazioa… menu-aukerara eta hautatu 'Saio-hasierak eta pasahitzak' kontrol-laukia.
-login-intro-instructions-fxa-help = Laguntza jasotzeko, bisitatu <a data-l10n-name="help-link">{ -lockwise-brand-short-name } laguntza</a>.
-about-logins-intro-import = Zure saio-hasierak beste nabigatzaile batean gordeta badituzu, <a data-l10n-name="import-link">{ -lockwise-brand-short-name }(e)n inporta ditzakezu</a>
+login-intro-instructions-fxa-passwords-help = Laguntza gehiagorako, bisitatu <a data-l10n-name="passwords-help-link">pasahitzen laguntza</a>.
+about-logins-intro-browser-only-import = Zure saio-hasierak beste nabigatzaile batean gordeta badituzu, <a data-l10n-name="import-link">{ -brand-product-name }(e)n inporta ditzakezu</a>
 about-logins-intro-import2 = Zure saio-hasierak { -brand-product-name }(e)tik kanpo badaude gordeta, <a data-l10n-name="import-browser-link">beste nabigatzaile batetik</a> edo <a data-l10n-name="import-file-link">fitxategi batetik</a> inporta ditzakezu
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Zure pasahitza kopiatzek
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = kopiatu gordetako pasahitza
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Zure saio-hasierak esportatzeko, idatzi Windowseko zure saio-hasiera kredentzialak. Zure kontuen segurtasuna babesten laguntzen du honek.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Idatzi zure pasahitz nagusi
 master-password-reload-button =
     .label = Hasi saioa
     .accesskey = H
-
-## Password Sync notification
 
 ## Dialogs
 

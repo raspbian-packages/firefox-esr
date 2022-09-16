@@ -63,7 +63,6 @@ protections-panel-not-found-label = Ni zaznanih
 ##
 
 protections-panel-settings-label = Nastavitve zaščite
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Nadzorna plošča zaščit
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -83,7 +82,7 @@ protections-panel-site-not-working-view-send-report = Pošlji poročilo
 
 ##
 
-protections-panel-cross-site-tracking-cookies = Ti piškotki vas spremljajo po straneh in zbirajo podatke o tem, kaj počnete na spletu. Namestijo jih tretje strani, kot so oglaševalci in analitična podjetja.
+protections-panel-cross-site-tracking-cookies = Ti piškotki vas spremljajo od enega spletnega mesta do drugega in zbirajo podatke o tem, kaj počnete na spletu. Namestijo jih tretje strani, kot so oglaševalci in analitična podjetja.
 protections-panel-cryptominers = Kriptorudarji izrabljajo zmogljivost vašega računalnika za rudarjenje digitalnega denarja. Rudarski skripti vam praznijo baterijo, upočasnjujejo računalnik in zasolijo račun za elektriko.
 protections-panel-fingerprinters = Sledilci prstnih odtisov zbirajo nastavitve vašega brskalnika in računalnika, da si ustvarijo vaš profil. S pomočjo digitalnega prstnega odtisa vam lahko sledijo na različnih spletnih straneh.
 protections-panel-tracking-content = Spletne strani lahko naložijo zunanje oglase, videoposnetke in drugo vsebino s kodo za sledenje. Zavračanje sledilne vsebine lahko pospeši nalaganje spletnih strani, vendar nekateri gumbi in obrazci morda ne bodo delovali.

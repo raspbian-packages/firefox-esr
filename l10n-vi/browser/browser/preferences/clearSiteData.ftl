@@ -37,7 +37,7 @@ clear-site-data-cookies-info = Bạn có thể bị đăng xuất khỏi trang w
 #   $amount (Number) - Amount of cache currently stored on disk
 #   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
 clear-site-data-cache-with-data =
-    .label = Nội dung web lưu vào cache ({ $amount } { $unit })
+    .label = Nội dung web lưu vào bộ nhớ đệm ({ $amount } { $unit })
     .accesskey = W
 
 # This string is a placeholder for while the data used to fill

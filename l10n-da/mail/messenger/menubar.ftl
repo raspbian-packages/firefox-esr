@@ -2,14 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## View Menu
+toolbar-context-menu-menu-bar =
+    .toolbarname = Menulinje
+    .accesskey = e
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
+menu-tools-settings =
     .label = Indstillinger
     .accesskey = n
 
@@ -70,5 +69,12 @@ mail-uidensity-touch =
     .label = Touch
     .accesskey = T
 
+menu-spaces-toolbar-button =
+    .label = Værktøjslinjen områder
+    .accesskey = o
+
 ## File
 
+file-new-newsgroup-account =
+    .label = Nyhedsgruppekonto…
+    .accesskey = y

@@ -16,17 +16,21 @@ about-processes-shutdown-process =
 about-processes-shutdown-tab =
     .title = Tutup tab
 
+# Profiler icons
+# Variables:
+#    $duration (Number) The time in seconds during which the profiler will be running.
+#                       The value will be an integer, typically less than 10.
+about-processes-profile-process =
+    .title =
+        { $duration ->
+           *[other] Profil semua utas dari proses ini selama { $duration } detik
+        }
+
 ## Column headers
 
 about-processes-column-name = Nama
 about-processes-column-memory-resident = Memori
 about-processes-column-cpu-total = CPU
-
-## Process names
-## Variables:
-##    $pid (String) The process id of this process, assigned by the OS.
-##    $origin (String) The domain name for this process.
-##    $type (String) The raw type for this process. Used for unknown processes.
 
 ## Process names
 ## Variables:
@@ -48,6 +52,8 @@ about-processes-remote-sandbox-broker-process = Broker Kotak Pasir Daring ({ $pi
 about-processes-fork-server-process = Server Fork ({ $pid })
 about-processes-preallocated-process = Praalokasi ({ $pid })
 
+about-processes-utility-process = Utilitas ({ $pid })
+
 # Unknown process names
 # Variables:
 #    $pid (String) The process id of this process, assigned by the OS.
@@ -60,10 +66,9 @@ about-processes-unknown-process = Lainnya: { $type } ({ $pid })
 ##    $origin (String) The domain name for this process.
 
 about-processes-web-isolated-process = { $origin } ({ $pid })
-about-processes-web-large-allocation-process = { $origin } ({ $pid }, besar)
+about-processes-web-serviceworker = { $origin } ({ $pid }, serviceworker)
 about-processes-with-coop-coep-process = { $origin } ({ $pid }, terisolasi cross-origin)
 about-processes-web-isolated-process-private = { $origin } — Pribadi ({ $pid })
-about-processes-web-large-allocation-process-private = { $origin } — Pribadi ({ $pid }, besar)
 about-processes-with-coop-coep-process-private = { $origin } — Pribadi ({ $pid }, terisolasi cross-origin)
 
 ## Details within processes
@@ -118,6 +123,10 @@ about-processes-frame-name-one = Subframe: { $url }
 #   $shortUrl (String) The shared prefix for the subframes in the group.
 about-processes-frame-name-many = Subframe ({ $number }): { $shortUrl }
 
+# Utility process actor names
+about-processes-utility-actor-unknown = Aktor tidak dikenal
+about-processes-utility-actor-audio-decoder = Dekoder Audio
+
 ## Displaying CPU (percentage and total)
 ## Variables:
 ##    $percent (Number) The percentage of CPU used by the process or thread.
@@ -134,9 +143,14 @@ about-processes-cpu = { NUMBER($percent, maximumSignificantDigits: 2, style: "pe
 # Special case: data is not available yet.
 about-processes-cpu-user-and-kernel-not-ready = (mengukur)
 
+# Special case: process or thread is almost idle (using less than 0.1% of a CPU core).
+# This case only occurs on Windows where the precision of the CPU times is low.
+about-processes-cpu-almost-idle = < 0.1%
+    .title = Total waktu CPU: { NUMBER($total, maximumFractionDigits: 0) }{ $unit }
+
 # Special case: process or thread is currently idle.
-about-processes-cpu-idle = menganggur
-    .title = Waktu CPU total: { NUMBER($total, maximumFractionDigits: 2) }{ $unit }
+about-processes-cpu-fully-idle = menganggur
+    .title = Total waktu CPU: { NUMBER($total, maximumFractionDigits: 0) }{ $unit }
 
 ## Displaying Memory (total and delta)
 ## Variables:

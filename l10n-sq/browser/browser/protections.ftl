@@ -65,22 +65,20 @@ cryptominer-tab-content = Nxjerrësit e kriptomonedhave e përdorin fuqinë për
 protections-close-button2 =
     .aria-label = Mbylle
     .title = Mbylle
-  
+
 mobile-app-title = Bllokoni gjurmues reklamash nëpër më shumë pajisje
 mobile-app-card-content = Përdorni shfletuesin për celular me mbrojtje të brendshme kundër gjurmuesve të reklamave
 mobile-app-links = Shfletuesi { -brand-product-name } për <a data-l10n-name="android-mobile-inline-link">Android</a> dhe <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 
 lockwise-title = Mos harroni kurrë më një fjalëkalim
-lockwise-title-logged-in2 = Administrim Fjalëkalimesh
-lockwise-header-content = { -lockwise-brand-name } depoziton në mënyrë të sigurt fjalëkalimet tuaj në shfletuesin tuaj.
+passwords-title-logged-in = Administroni fjalëkalimet tuaja
+passwords-header-content = { -brand-product-name } depoziton në mënyrë të sigurt fjalëkalimet tuaj në shfletuesin tuaj.
 lockwise-header-content-logged-in = Depozitoni dhe njëkohësoni në mënyrë të sigurt fjalëkalimet tuaj në krejt pajisjet tuaja.
-protection-report-save-passwords-button = Ruaj Fjalëkalime
-    .title = Ruajini Fjalëkalimet në { -lockwise-brand-short-name }
-protection-report-manage-passwords-button = Administroni Fjalëkalime
-    .title = Administroni Fjalëkalime në { -lockwise-brand-short-name }
-lockwise-mobile-app-title = Merrini fjalëkalimet tuaja kudo
-lockwise-no-logins-card-content = Përdorni në çfarëdo pajisje fjalëkalime të ruajtur në { -brand-short-name }.
-lockwise-app-links = { -lockwise-brand-name } për <a data-l10n-name="lockwise-android-inline-link">Android</a> dhe <a data-l10n-name="lockwise-ios-inline-link">iOS</a>
+protection-report-passwords-save-passwords-button = Ruaji Fjalëkalimet
+    .title = Ruani Fjalëkalimet
+protection-report-passwords-manage-passwords-button = Administroni Fjalëkalime
+    .title = Administroni Fjalëkalime
+
 
 # Variables:
 # $count (Number) - Number of passwords exposed in data breaches.

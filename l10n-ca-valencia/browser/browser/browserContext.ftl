@@ -164,12 +164,7 @@ main-context-menu-save-link =
 
 main-context-menu-save-link-to-pocket =
     .label = Guarda l'enllaç al { -pocket-brand-name }
-    .accesskey = o
-
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
+    .accesskey = l
 
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
@@ -205,7 +200,7 @@ main-context-menu-media-mute =
 
 main-context-menu-media-unmute =
     .label = No silencies
-    .accesskey = N
+    .accesskey = s
 
 main-context-menu-media-play-speed-2 =
     .label = Velocitat
@@ -423,6 +418,10 @@ main-context-menu-take-screenshot =
     .label = Fes una captura de pantalla
     .accesskey = F
 
+main-context-menu-take-frame-screenshot =
+    .label = Fes una captura de pantalla
+    .accesskey = F
+
 main-context-menu-view-page-source =
     .label = Codi font de la pàgina
     .accesskey = f
@@ -445,4 +444,10 @@ main-context-menu-inspect-a11y-properties =
 main-context-menu-eme-learn-more =
     .label = Més informació sobre DRM…
     .accesskey = D
+
+# Variables
+#   $containerName (String): The name of the current container
+main-context-menu-open-link-in-container-tab =
+    .label = Obri l'enllaç en una pestanya nova de { $containerName }
+    .accesskey = O
 

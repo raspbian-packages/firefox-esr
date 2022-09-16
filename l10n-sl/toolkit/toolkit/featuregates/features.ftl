@@ -17,7 +17,11 @@ experimental-features-css-constructable-stylesheets =
 experimental-features-abouthome-startup-cache =
     .label = Zagonski predpomnilnik about:home
 
-# Support for having multiple Picture-in-Picture windows open simultaneously
-experimental-features-multi-pip =
-    .label = Podpora za več slik v sliki
+experimental-features-cookie-samesite-schemeful-description = Obravnavaj piškotke iste domene, a z različnimi shemami (npr. http://example.com in https://example.com) kot piškotke več spletnih mest, ne le enega. Izboljša varnost, vendar lahko povzroči nedelovanje nekaterih strani.
+
+# "Service Worker" is an API name and is usually not translated.
+experimental-features-devtools-serviceworker-debugger-support =
+    .label = Orodja za razvijalce: Razhroščevanje Service Workerjev
+# "Service Worker" is an API name and is usually not translated.
+experimental-features-devtools-serviceworker-debugger-support-description = Omogoči poskusno podporo za Service Workerje na plošči razhroščevalnika. Ta zmožnost lahko upočasni razvojna orodja in poveča porabo pomnilnika.
 

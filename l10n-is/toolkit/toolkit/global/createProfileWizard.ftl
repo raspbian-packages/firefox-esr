@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 create-profile-window =
-    .title = Hjálp við að búa til notanda
+    .title = Leiðarvísir við að búa til notanda
     .style = width: 45em; height: 32em;
 
 ## First wizard page
@@ -14,7 +14,7 @@ create-profile-first-page-header =
        *[other] Vertu velkomin í { create-profile-window.title }
     }
 
-profile-creation-explanation-1 = { -brand-short-name } geymir þínar stillingar í persónulegum notanda stillingum.
+profile-creation-explanation-1 = { -brand-short-name } geymir stillingar þínar í persónulegum notandastillingum þínum.
 
 profile-creation-explanation-2 = Ef þú ert að deila { -brand-short-name } með öðrum notendum, geturðu notað notendur til að halda stillingum hjá hverjum notenda sér. Til að þetta sé mögulegt verður hver notandi að búa til sína eigin notanda.
 

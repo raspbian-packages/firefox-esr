@@ -19,6 +19,9 @@ auth-waiting = En attente de vérification par votre contact…
 finger-verify = Vérifier
 finger-verify-access-key = V
 
+finger-ignore = Ignorer
+finger-ignore-access-key = I
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Ajouter une empreinte OTR
 
@@ -43,7 +46,6 @@ finger-unseen = L’identité de { $name } n’a pas encore été vérifiée. L�
 finger-seen = { $name } vous contacte depuis un ordinateur non reconnu. L’interception passive de vos conversations n’est pas possible, mais avec un peu d’effort, quelqu’un pourrait avoir accès à leur contenu. Empêchez toute surveillance en vérifiant l’identité de ce contact.
 
 state-not-private = La conversation en cours n’est pas privée.
-
 state-generic-not-private = La conversation actuelle n’est pas privée.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Vous avez vérifié l’identité de { $name }.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = L’identité de { $name } n’a pas été vérifiée.
-
-verify-title = Vérifier l’identité de votre contact
-error-title = Erreur
-success-title = Chiffrement de bout en bout
-success-them-title = Vérifiez l’identité de votre contact
-fail-title = Impossible de vérifier
-waiting-title = Demande de vérification envoyée
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

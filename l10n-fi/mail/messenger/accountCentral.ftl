@@ -42,7 +42,7 @@ newsgroups-label = Uutisryhmät
 newsgroups-description = { -brand-short-name }in avulla voit muodostaa yhteyden kaikkiin haluamiisi uutisryhmiin.
 
 import-title = Tuo toisesta ohjelmasta
-import-paragraph = { -brand-short-name }in avulla voit tuoda sähköpostiviestejä, osoitekirjamerkintöjä, syötteiden tilauksia, asetuksia ja/tai suodattimia muista postiohjelmista ja yleisistä osoitekirjamuodoista.
+import-paragraph2 = { -brand-short-name }in avulla voit tuoda sähköpostiviestejä, osoitekirjamerkintöjä, syötteiden tilauksia, asetuksia ja/tai suodattimia muista postiohjelmista ja yleisistä osoitekirjamuodoista.
 
 import-label = Tuonti
     .aria-label = Tuo tietoja muista ohjelmista

@@ -19,6 +19,7 @@ perftools-heading-features-default = Trajtoj (rekomenditaj aŭ norme aktivaj)
 perftools-heading-features-disabled = Malaktivaj trajtoj
 perftools-heading-features-experimental = Eksperimentaj funkcioj
 perftools-heading-threads = Fadenoj
+perftools-heading-threads-jvm = Fadenoj de JVM
 perftools-heading-local-build = Loka versio
 
 ##
@@ -42,7 +43,6 @@ perftools-devtools-settings-label = Agordoj
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice = La rulanalizilo estas malaktiva dum privata retumo. Fermu ĉiujn fenestrojn de privata retumo por reaktivigi la rulanalizilon.
 perftools-status-recording-stopped-by-another-tool = La registro estis haltigita de alia ilo.
 perftools-status-restart-required = Por aktivigi tiun ĉi trajton vi devas restartigi la retumilon.
 
@@ -88,6 +88,18 @@ perftools-thread-dns-resolver =
     .title = Serĉoj de DNS okazas en tiu ĉi fadeno
 perftools-thread-task-controller =
     .title = Fadenoj de la grupo de fadenoj de TaskController
+perftools-thread-jvm-gecko =
+    .title = La ĉefa fadeno JVM de Gecko
+perftools-thread-jvm-nimbus =
+    .title = La ĉefaj fadenoj por la SKD de eksperimentoj Nimbus
+perftools-thread-jvm-default-dispatcher =
+    .title = La norma disdonilo por la biblioteko de kunprogramoj de Kotlin
+perftools-thread-jvm-glean =
+    .title = La ĉefaj fadenoj por la SDK de telemezuro de Glean
+perftools-thread-jvm-arch-disk-io =
+    .title = La disdonilo de eneligo por la biblioteko de kunprogramoj de Kotlin
+perftools-thread-jvm-pool =
+    .title = Fadenoj kreitaj en sennoma aro de fadenoj
 
 ##
 
@@ -98,6 +110,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Nova</b>: { -profiler-brand-name } estas integrita al la iloj por programistoj. Jen <a>pli da informo</a> pri tiu pova nova ilo.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -114,15 +130,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Teksaĵa programisto
 perftools-presets-web-developer-description = Rekomendita agordaro por la senerarigo de la plimulto de teksaĵaj programoj, kun malmulte da aldona kromprocezado.
-perftools-presets-firefox-platform-label = Platformo Firefox
-perftools-presets-firefox-platform-description = Rekomendita agordaro por interna senerarigo de la platformo de Firefox.
-perftools-presets-firefox-front-end-label = Fasado de Firefox
-perftools-presets-firefox-front-end-description = Rekomendita agordaro por interna senerarigo de la fasado de Firefox.
-perftools-presets-firefox-graphics-label = Grafikoj de Firefox
-perftools-presets-firefox-graphics-description = Rekomendita agordaro por esplori la efikecon de la grafikoj de Firefox.
+perftools-presets-firefox-label = { -brand-shorter-name }
+perftools-presets-firefox-description = Rekomendita agordaro por rulanalizo de { -brand-shorter-name }
 perftools-presets-graphics-label = Grafikoj
+perftools-presets-graphics-description = Rekomendita agordaro por senerarigo de grafikoj en { -brand-shorter-name }.
 perftools-presets-media-label = Aŭdvidaĵo
-perftools-presets-media-description = Rekomendita agordaro por diagnozi aŭdajn kaj videajn problemojn.
+perftools-presets-media-description2 = Rekomendita agordaro por senerarigo de sono kaj video en { -brand-shorter-name }.
+perftools-presets-networking-label = Reto
+perftools-presets-networking-description = Rekomendita agordaro por esploro de retaj eraroj en { -brand-shorter-name }.
 perftools-presets-custom-label = Personecigita
 
 ##

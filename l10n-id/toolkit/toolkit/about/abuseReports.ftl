@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Laporan untuk { $addon-name }
 
 abuse-report-title-extension = Laporkan Ekstensi Ini ke { -vendor-short-name }
+abuse-report-title-sitepermission = Laporkan pengaya Izin Situs Ini ke { -vendor-short-name }
 abuse-report-title-theme = Laporkan Tema Ini ke { -vendor-short-name }
 abuse-report-subtitle = Apa masalahnya?
 
@@ -37,12 +37,6 @@ abuse-report-goback-button = Kembali
 abuse-report-submit-button = Kirim
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Mengirim laporan untuk <span data-l10n-name
 abuse-report-messagebar-submitted = Terima kasih telah mengirimkan laporan. Apakah Anda ingin menghapus <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Terima kasih telah mengirimkan laporan.
 abuse-report-messagebar-removed-extension = Terima kasih telah mengirimkan laporan. Anda telah menghapus ekstensi <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Terima kasih telah mengirimkan laporan. Anda telah menghapus pengaya Izin Situs <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Terima kasih telah mengirimkan laporan. Anda telah menghapus tema <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Terjadi kesalahan saat mengirim laporan untuk <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Laporan untuk <span data-l10n-name="addon-name">{ $addon-name }</span> tidak terkirim karena laporan lain telah dikirimkan baru-baru ini.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Laporan untuk <span data-l10n-name
 
 abuse-report-messagebar-action-remove-extension = Ya, Hapus
 abuse-report-messagebar-action-keep-extension = Tidak, Saya akan Menyimpannya
+abuse-report-messagebar-action-remove-sitepermission = Ya, Hapus
+abuse-report-messagebar-action-keep-sitepermission = Tidak, Saya Akan Mempertahankannya
 abuse-report-messagebar-action-remove-theme = Ya, Hapus
 abuse-report-messagebar-action-keep-theme = Tidak, Saya akan Menyimpannya
 abuse-report-messagebar-action-retry = Ulangi
@@ -82,12 +79,17 @@ abuse-report-deceptive-reason-v2 = Berpura-pura menjadi sesuatu
 abuse-report-deceptive-example = Contoh: Deskripsi atau gambar yang menyesatkan
 
 abuse-report-broken-reason-extension-v2 = Ini tidak berfungsi, tampilan situs web rusak, atau memperlambat { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Ini tidak berfungsi, tampilan situs web rusak, atau memperlambat { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Ini tidak berfungsi atau merusak tampilan peramban
 abuse-report-broken-example = Contoh: Fitur lambat, sulit digunakan, atau tidak berfungsi; bagian dari situs web tidak bisa dimuat atau terlihat aneh
 abuse-report-broken-suggestions-extension =
     Sepertinya Anda telah menemukan bug. Selain mengirimkan laporan di sini, cara terbaik
     untuk menyelesaikan masalah fungsionalitas adalah menghubungi pengembang ekstensi.
     <a data-l10n-name="support-link">Kunjungi situs web ekstensi</a> untuk mendapatkan informasi pengembang.
+abuse-report-broken-suggestions-sitepermission =
+    Sepertinya Anda telah menemukan bug. Selain mengirimkan laporan di sini, cara terbaik
+    untuk menyelesaikan masalah fungsionalitas adalah menghubungi pengembang situs web.
+    <a data-l10n-name="support-link">Kunjungi situs web</a> untuk mendapatkan informasi pengembang.
 abuse-report-broken-suggestions-theme =
     Sepertinya Anda telah menemukan bug. Selain mengirimkan laporan di sini, cara terbaik
     untuk menyelesaikan masalah fungsionalitas adalah menghubungi pengembang tema.
@@ -100,4 +102,3 @@ abuse-report-unwanted-reason-v2 = Saya tidak pernah menginginkannya dan tidak ta
 abuse-report-unwanted-example = Contoh: Sebuah aplikasi memasang sesuatu tanpa izin saya
 
 abuse-report-other-reason = Lainnya
-

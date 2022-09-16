@@ -114,7 +114,7 @@ font-monospace-label =
     .accesskey = L
 
 font-min-size-label =
-    .value = Taille minimale de la police :
+    .value = Taille minimale des polices :
     .accesskey = m
 
 min-size-none =

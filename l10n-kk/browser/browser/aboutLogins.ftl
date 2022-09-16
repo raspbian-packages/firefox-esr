@@ -5,8 +5,6 @@
 
 about-logins-page-title = Логиндер және парольдер
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Логиндерден іздеу
 
@@ -60,7 +58,6 @@ about-logins-list-item-breach-icon =
     .title = Шабуылданған сайт
 about-logins-list-item-vulnerable-password-icon =
     .title = Осал пароль
-
 about-logins-list-section-breach = Шабуылданған веб-сайттар
 about-logins-list-section-vulnerable = Осал парольдер
 about-logins-list-section-nothing = Ескерту жоқ
@@ -75,8 +72,8 @@ about-logins-login-intro-heading-logged-in = Синхрондалған логи
 login-intro-description = Логиндерді басқа құрылғыдағы { -brand-product-name } ішіне сақтасаңыз, оларды осында келесідей алуға болады:
 login-intro-instructions-fxa = Логиндеріңіз сақталған құрылғыда { -fxaccount-brand-name } тіркелгісін жасаңыз немесе оған кіріңіз.
 login-intro-instructions-fxa-settings = Баптаулар > Синхрондау > Синхрондауды іске қосу… таңдаңыз. Логиндер және парольдер жалаушасын орнатыңыз.
-login-intro-instructions-fxa-help = Көбірек білу үшін, <a data-l10n-name="help-link">{ -lockwise-brand-short-name } қолдау көрсету сайтын</a> шолыңыз.
-about-logins-intro-import = Егер сіздің логиндеріңіз басқа браузерде сақталған болса, оларды <a data-l10n-name="import-link">{ -lockwise-brand-short-name } ішіне импорттай аласыз</a>
+login-intro-instructions-fxa-passwords-help = Көбірек білу үшін, <a data-l10n-name="passwords-help-link">парольдер бойынша қолдау көрсету</a> адресін шолыңыз.
+about-logins-intro-browser-only-import = Егер сіздің логиндеріңіз басқа браузерде сақталған болса, оларды <a data-l10n-name="import-link">{ -brand-product-name } ішіне импорттай аласыз</a>
 about-logins-intro-import2 = Егер сіздің логиндеріңіз { -brand-product-name } сыртында сақталса, оларды <a data-l10n-name="import-browser-link">басқа браузерден</a> немесе <a data-l10n-name="import-file-link">файлдан</a> импорттауға болады
 
 ## Login
@@ -131,8 +128,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Пароліңізді �
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = сақталған парольді көшіру
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Логиндеріңізді экспорттау үшін, Windows ішіне кірудің есептік жазба мәліметтерін енгізіңіз. Бұл тіркелгілеріңіздің қауіпсіздігін қорғауға көмектеседі.
 # This message can be seen when attempting to export a password in about:logins
@@ -145,8 +140,6 @@ about-logins-primary-password-notification-message = Сақталған логи
 master-password-reload-button =
     .label = Кіру
     .accesskey = к
-
-## Password Sync notification
 
 ## Dialogs
 

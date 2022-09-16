@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Minimizar
+messenger-window-maximize-button =
+    .tooltiptext = Maximizar
+messenger-window-restore-down-button =
+    .tooltiptext = Restaurar tamanho
+messenger-window-close-button =
+    .tooltiptext = Fechar
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -76,10 +87,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Preferências
 appmenu-save-as-file =
     .label = Arquivo…
 appmenu-settings =
@@ -91,7 +98,7 @@ appmenu-help-enter-troubleshoot-mode =
 appmenu-help-exit-troubleshoot-mode =
     .label = Desativar modo de solução de problemas
 appmenu-help-more-troubleshooting-info =
-    .label = Mais informações para resolver problemas
+    .label = Informações técnicas
 appmenu-redirect-msg =
     .label = Redirecionar
 
@@ -99,15 +106,55 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Redirecionar
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Excluir mensagem
+           *[other] Excluir mensagens selecionadas
+        }
+context-menu-decrypt-to-folder =
+    .label = Copiar como descriptografado para
+    .accesskey = d
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Redirecionar
-message-header-msg-is-flagged =
-    .title = Mensagem marcada com estrela
+message-header-msg-flagged =
+    .title = Com estrela
+    .aria-label = Com estrela
 message-header-msg-not-flagged =
     .title = Mensagem não marcada com estrela
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Foto do perfil de { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Configurações do cabeçalho de mensagens
+message-header-customize-button-style =
+    .value = Estilo de botões
+    .accesskey = b
+message-header-button-style-default =
+    .label = Ícones e texto
+message-header-button-style-text =
+    .label = Texto
+message-header-button-style-icons =
+    .label = Ícones
+message-header-show-sender-full-address =
+    .label = Sempre mostrar o endereço completo do remetente
+    .accesskey = c
+message-header-show-sender-full-address-description = O endereço de email é exibido abaixo do nome de exibição.
+message-header-show-recipient-avatar =
+    .label = Mostrar foto de perfil do remetente
+    .accesskey = p
+message-header-hide-label-column =
+    .label = Ocultar coluna de rótulos
+    .accesskey = O
+message-header-large-subject =
+    .label = Campo de assunto grande
+    .accesskey = s
 
 ## Action Button Context Menu
 
@@ -117,13 +164,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Remover extensão
     .accesskey = v
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = O endereço está no catálogo de endereços
-message-header-address-not-in-address-book-icon =
-    .alt = O endereço não está no catálogo de endereços
 
 ## Add-on removal warning
 
@@ -144,3 +184,91 @@ repair-text-encoding-button =
 no-reply-title = Sem suporte a resposta
 no-reply-message = O endereço de resposta ({ $email }) parece não ser um endereço monitorado. Mensagens para este endereço provavelmente não serão lidas por ninguém.
 no-reply-reply-anyway-button = Responder assim mesmo
+
+## error messages
+
+decrypt-and-copy-failures = { $failures } de { $total } mensagens não puderam ser descriptografadas e não foram copiadas.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Barra de áreas
+    .aria-label = Barra de áreas
+    .aria-description = Barra de ferramentas vertical para alternar entre áreas diferentes. Use as teclas de setas para navegar nos botões disponíveis.
+spaces-toolbar-button-mail2 =
+    .title = Email
+spaces-toolbar-button-address-book2 =
+    .title = Catálogo de endereços
+spaces-toolbar-button-calendar2 =
+    .title = Agenda
+spaces-toolbar-button-tasks2 =
+    .title = Tarefas
+spaces-toolbar-button-chat2 =
+    .title = Conversa
+spaces-toolbar-button-overflow =
+    .title = Mais áreas…
+spaces-toolbar-button-settings2 =
+    .title = Configurações
+spaces-toolbar-button-hide =
+    .title = Ocultar barra de áreas
+spaces-toolbar-button-show =
+    .title = Exibir barra de áreas
+spaces-context-new-tab-item =
+    .label = Abrir em nova aba
+spaces-context-new-window-item =
+    .label = Abrir em nova janela
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Mudar para { $tabName }
+settings-context-open-settings-item2 =
+    .label = Configurações
+settings-context-open-account-settings-item2 =
+    .label = Configurações de contas
+settings-context-open-addons-item2 =
+    .label = Extensões e temas
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Menu de áreas
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] Uma mensagem não lida
+           *[other] { $count } mensagens não lidas
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Personalizar…
+spaces-customize-panel-title = Configurações da barra de áreas
+spaces-customize-background-color = Cor de fundo
+spaces-customize-icon-color = Cor dos botões
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Cor de fundo do botão selecionado
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Cor do botão selecionado
+spaces-customize-button-restore = Restaurar padrão
+    .accesskey = R
+customize-panel-button-save = Pronto
+    .accesskey = P

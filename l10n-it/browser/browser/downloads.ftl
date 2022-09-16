@@ -30,16 +30,6 @@ downloads-cmd-cancel =
 downloads-cmd-cancel-panel =
     .aria-label = Annulla
 
-# This message is only displayed on Windows and Linux devices
-downloads-cmd-show-menuitem =
-    .label = Apri cartella di destinazione
-    .accesskey = A
-
-# This message is only displayed on macOS devices
-downloads-cmd-show-menuitem-mac =
-    .label = Mostra nel Finder
-    .accesskey = F
-
 downloads-cmd-show-menuitem-2 =
   .label = { PLATFORM() ->
       [macos] Mostra nel Finder
@@ -47,13 +37,28 @@ downloads-cmd-show-menuitem-2 =
   }
   .accesskey = n
 
+## Displayed in the downloads context menu for files that can be opened.
+## Variables:
+##   $handler (String) - The name of the mime type's default file handler.
+##   Example: "Notepad", "Acrobat Reader DC", "7-Zip File Manager"
+
 downloads-cmd-use-system-default =
   .label = Apri nel visualizzatore del sistema
-  .accesskey = v
+  .accesskey = n
+
+downloads-cmd-use-system-default-named =
+  .label = Apri in { $handler }
+  .accesskey = n
 
 downloads-cmd-always-use-system-default =
   .label = Apri sempre nel visualizzatore del sistema
   .accesskey = m
+
+downloads-cmd-always-use-system-default-named =
+  .label = Apri sempre in { $handler }
+  .accesskey = m
+
+##
 
 # We can use the same accesskey as downloads-cmd-always-use-system-default.
 # Both should not be visible in the downloads context menu at the same time.
@@ -61,31 +66,13 @@ downloads-cmd-always-open-similar-files =
   .label = Apri sempre file simili a questo
   .accesskey = m
 
-downloads-cmd-show-button =
-    .tooltiptext =
-        { PLATFORM() ->
-            [macos] Mostra nel Finder
-           *[other] Apri cartella di destinazione
-        }
-downloads-cmd-show-panel =
-    .aria-label =
-        { PLATFORM() ->
-            [macos] Mostra nel Finder
-           *[other] Apri cartella di destinazione
-        }
-downloads-cmd-show-description =
-    .value =
-        { PLATFORM() ->
-            [macos] Mostra nel Finder
-           *[other] Apri cartella di destinazione
-        }
-
 downloads-cmd-show-button-2 =
     .tooltiptext =
         { PLATFORM() ->
             [macos] Mostra nel Finder
            *[other] Mostra nella cartella
         }
+
 downloads-cmd-show-panel-2 =
     .aria-label =
         { PLATFORM() ->
@@ -120,6 +107,9 @@ downloads-cmd-clear-list =
 downloads-cmd-clear-downloads =
     .label = Cancella elenco download
     .accesskey = n
+downloads-cmd-delete-file =
+    .label = Elimina
+    .accesskey = E
 
 # This command is shown in the context menu when downloads are blocked.
 downloads-cmd-unblock =
@@ -174,6 +164,8 @@ downloading-file-opens-in-minutes = Verrà aperto in { $minutes }m…
 downloading-file-opens-in-minutes-and-seconds = Verrà aperto in { $minutes }m { $seconds }s…
 downloading-file-opens-in-seconds = Verrà aperto in { $seconds }s…
 downloading-file-opens-in-some-time = Verrà aperto non appena completato…
+downloading-file-click-to-open =
+  .value = Apri non appena completato
 
 ##
 

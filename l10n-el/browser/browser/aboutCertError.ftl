@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Οι ιστότοποι αποδει�
 
 cert-error-symantec-distrust-admin = Μπορείτε να ειδοποιήσετε τον διαχειριστή του ιστοτόπου σχετικά με αυτό το πρόβλημα.
 
+cert-error-old-tls-version = Αυτός ο ιστότοπος ενδέχεται να μην υποστηρίζει το πρωτόκολλο TLS 1.2, που είναι η ελάχιστη έκδοση που υποστηρίζεται από το { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Απρόσμενη απάντηση από τον δι
 nssFailure2-title = Αποτυχία ασφαλούς σύνδεσης
 csp-xfo-error-title = Το { -brand-short-name } δεν μπορεί να ανοίξει τη σελίδα
 corruptedContentError-title = Σφάλμα κατεστραμμένου περιεχομένου
-remoteXUL-title = Απομακρυσμένο XUL
 sslv3Used-title = Αδυναμία ασφαλούς σύνδεσης
 inadequateSecurityError-title = Η σύνδεσή σας δεν είναι ασφαλής
 blockedByPolicy-title = Αποκλεισμένη σελίδα

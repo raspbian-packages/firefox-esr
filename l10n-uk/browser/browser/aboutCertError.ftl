@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Сайти підтверджують
 
 cert-error-symantec-distrust-admin = Ви можете сповістити про цю проблему адміністратора вебсайту.
 
+cert-error-old-tls-version = Цей вебсайт може не підтримувати протокол TLS 1.2, що є мінімальною версією, яку підтримує { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = Примусове захищене з'єднання HTTP: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Неочікувана відповідь сервер
 nssFailure2-title = Не вдалося встановити безпечне з’єднання
 csp-xfo-error-title = { -brand-short-name } не може відкрити цю сторінку
 corruptedContentError-title = Помилка пошкодженого вмісту
-remoteXUL-title = Віддалений XUL
 sslv3Used-title = Неможливо безпечно з’єднатися
 inadequateSecurityError-title = Ваше з'єднання незахищене
 blockedByPolicy-title = Заблокована сторінка

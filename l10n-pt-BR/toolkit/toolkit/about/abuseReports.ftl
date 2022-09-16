@@ -10,6 +10,7 @@
 abuse-report-dialog-title = Relatório de { $addon-name }
 
 abuse-report-title-extension = Denunciar esta extensão para a { -vendor-short-name }
+abuse-report-title-sitepermission = Denunciar esta extensão de permissões de sites para a { -vendor-short-name }
 abuse-report-title-theme = Denunciar este tema para a { -vendor-short-name }
 abuse-report-subtitle = Qual é o problema?
 
@@ -34,12 +35,6 @@ abuse-report-goback-button = Voltar
 abuse-report-submit-button = Enviar
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -49,6 +44,7 @@ abuse-report-messagebar-submitting = Enviando denúncia de <span data-l10n-name=
 abuse-report-messagebar-submitted = Obrigado por enviar uma denúncia. Quer remover <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Obrigado por enviar uma denúncia.
 abuse-report-messagebar-removed-extension = Obrigado por enviar uma denúncia. Você removeu a extensão <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Obrigado por enviar uma denúncia. Você removeu a extensão de permissões de sites <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Obrigado por enviar uma denúncia. Você removeu o tema <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Houve um erro ao enviar a denúncia de <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = A denúncia de <span data-l10n-name="addon-name">{ $addon-name }</span> não foi enviada porque outra denúncia foi enviado recentemente.
@@ -57,6 +53,8 @@ abuse-report-messagebar-error-recent-submit = A denúncia de <span data-l10n-nam
 
 abuse-report-messagebar-action-remove-extension = Sim, remover
 abuse-report-messagebar-action-keep-extension = Não, manter
+abuse-report-messagebar-action-remove-sitepermission = Sim, remover
+abuse-report-messagebar-action-keep-sitepermission = Não, manter
 abuse-report-messagebar-action-remove-theme = Sim, remover
 abuse-report-messagebar-action-keep-theme = Não, manter
 abuse-report-messagebar-action-retry = Tentar novamente
@@ -79,12 +77,16 @@ abuse-report-deceptive-reason-v2 = Alega ser algo que não é
 abuse-report-deceptive-example = Exemplo: descrição ou imagens enganosas
 
 abuse-report-broken-reason-extension-v2 = Não funciona, atrapalha sites, ou faz o { -brand-product-name } ficar mais lento
+abuse-report-broken-reason-sitepermission-v2 = Não funciona, atrapalha sites, ou faz o { -brand-product-name } ficar mais lento
 abuse-report-broken-reason-theme-v2 = Não funciona ou atrapalha a exibição do navegador
 abuse-report-broken-example = Exemplo: recursos são lentos, difíceis de usar, ou não funcionam; partes de sites não são carregadas ou aparecem erradas
 abuse-report-broken-suggestions-extension =
     Parece que você identificou um bug. Além de enviar um relato aqui, a melhor maneira de
     ter um problema de funcionalidade resolvido é entrar em contato com o desenvolvedor da extensão.
     <a data-l10n-name="support-link">Visite o site da extensão</a> para obter informações do desenvolvedor.
+abuse-report-broken-suggestions-sitepermission =
+    Parece que você identificou um bug. Além de enviar um relato aqui, a melhor maneira de ter um problema de funcionalidade resolvido é entrar em contato com o desenvolvedor do site.
+    <a data-l10n-name="support-link">Visite o site</a> para obter informações do desenvolvedor.
 abuse-report-broken-suggestions-theme =
     Parece que você identificou um bug. Além de enviar um relato aqui, a melhor maneira de
     ter um problema de funcionalidade resolvido é entrar em contato com o desenvolvedor do tema.
@@ -99,4 +101,3 @@ abuse-report-unwanted-reason-v2 = Eu nunca quis e não sei como me livrar disso
 abuse-report-unwanted-example = Exemplo: uma aplicação instalou sem minha permissão
 
 abuse-report-other-reason = Outra coisa
-

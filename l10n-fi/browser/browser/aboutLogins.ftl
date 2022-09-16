@@ -5,8 +5,6 @@
 
 about-logins-page-title = Käyttäjätunnukset ja salasanat
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Etsi kirjautumistietoja
 
@@ -57,7 +55,6 @@ about-logins-list-item-breach-icon =
     .title = Tietovuodon kokenut sivusto
 about-logins-list-item-vulnerable-password-icon =
     .title = Vaarantunut salasana
-
 about-logins-list-section-breach = Tietovuodon kokeneet sivustot
 about-logins-list-section-vulnerable = Vaarantuneet salasanat
 about-logins-list-section-nothing = Ei hälytystä
@@ -72,8 +69,8 @@ about-logins-login-intro-heading-logged-in = Synkronoituja kirjautumistietoja ei
 login-intro-description = Jos tallensit kirjautumistietosi { -brand-product-name }-selaimeen toisella laitteella, saat ne käyttöön seuraavasti:
 login-intro-instructions-fxa = Kirjaudu { -fxaccount-brand-name(case: "allative") } tai luo tili laitteella, jolle kirjautumistietosi on tallennettu.
 login-intro-instructions-fxa-settings = Avaa Asetukset > Synkronointi > Ota synkronointi käyttöön… Valitse valintaruutu ”Käyttäjätunnukset ja salasanat”.
-login-intro-instructions-fxa-help = Siirry <a data-l10n-name="help-link">{ -lockwise-brand-short-name }-tukeen</a> saadaksesi ohjeita.
-about-logins-intro-import = Jos kirjautumistietosi on tallennettu toiseen selaimeen, voit <a data-l10n-name="import-link">tuoda ne { -lockwise-brand-short-name }en</a>
+login-intro-instructions-fxa-passwords-help = Käy <a data-l10n-name="passwords-help-link">salasanatuessa</a> saadaksesi lisätietoja.
+about-logins-intro-browser-only-import = Jos kirjautumistietojasi on tallennettu toiseen selaimeen, voit <a data-l10n-name="import-link">tuoda ne { -brand-product-name }iin</a>
 about-logins-intro-import2 = Jos kirjautumistietosi on tallennettu { -brand-product-name }-selaimen ulkopuolelle, voit <a data-l10n-name="import-browser-link">tuoda ne toisesta selaimesta</a> tai <a data-l10n-name="import-file-link">tiedostosta</a>
 
 ## Login
@@ -128,8 +125,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Kopioi salasana kirjoitt
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = kopioida tallennetun salasanan
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Jatka kirjautumistietojesi vientiin kirjoittamalla Windows-kirjautumistiedot. Tämä auttaa suojaamaan tilejäsi.
 # This message can be seen when attempting to export a password in about:logins
@@ -142,8 +137,6 @@ about-logins-primary-password-notification-message = Kirjoita pääsalasana näh
 master-password-reload-button =
     .label = Kirjaudu
     .accesskey = K
-
-## Password Sync notification
 
 ## Dialogs
 

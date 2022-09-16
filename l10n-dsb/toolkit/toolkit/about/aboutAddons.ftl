@@ -35,6 +35,8 @@ detail-version =
     .label = Wersija
 detail-last-updated =
     .label = Slědny raz zaktualizěrowany
+addon-detail-description-expand = Wěcej pokazaś
+addon-detail-description-collapse = Mjenjej pokazaś
 detail-contributions-description = Wuwijaŕ toś togo dodanka pšosy, aby wy pomagał, jogo stawne wuwiśe pódpěraś, z tym až pósćiwaśo mały pśinosk.
 detail-contributions-button = Pśinosowaś
     .title = K wuwijanjeju toś togo dodanka pśinosowaś
@@ -136,6 +138,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Nowe aktualizacije
 addon-category-recent-updates-title =
     .title = Nowe aktualizacije
+addon-category-sitepermission = Sedłowe pšawa
+addon-category-sitepermission-title =
+    .title = Sedłowe pšawa
 
 ## These are global warnings
 
@@ -278,14 +283,18 @@ extension-enabled-heading = Zmóžnjony
 extension-disabled-heading = Znjemóžnjony
 theme-enabled-heading = Zmóžnjony
 theme-disabled-heading = Znjemóžnjony
+theme-disabled-heading2 = Skłaźone drastwy
 theme-monochromatic-heading = Barwowe kombinacije
 theme-monochromatic-subheading = Žywe nowe barwowe kombinacije z { -brand-product-name }. Za wobgranicowany cas k dispoziciji.
+theme-colorways-button = Barwowe kombinacije wopytowaś
 plugin-enabled-heading = Zmóžnjony
 plugin-disabled-heading = Znjemóžnjony
 dictionary-enabled-heading = Zmóžnjony
 dictionary-disabled-heading = Znjemóžnjony
 locale-enabled-heading = Zmóžnjony
 locale-disabled-heading = Znjemóžnjony
+sitepermission-enabled-heading = Zmóžnjony
+sitepermission-disabled-heading = Znjemóžnjony
 always-activate-button = Pśecej aktiwěrowaś
 never-activate-button = Nigda njeaktiwěrowaś
 addon-detail-author-label = Awtor
@@ -364,6 +373,7 @@ addon-permissions-optional = Opcionalne pšawa za pśidanu funkcionalnosć:
 addon-permissions-learnmore = Dalšne informacije wó pšawach
 recommended-extensions-heading = Dopórucone rozšyrjenja
 recommended-themes-heading = Dopórucone drastwy
+addon-sitepermissions-required = Garantěrujo <span data-l10n-name="hostname">{ $hostname }</span> slědujuce zamóžnosći:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Cujośo se kreatiwny? <a data-l10n-name="link">Napórajśo swójsku drastwu z Firefox Color.</a>
@@ -376,6 +386,7 @@ plugin-heading = Waše tykace zastojaś
 dictionary-heading = Waše słowniki zastojaś
 locale-heading = Waše rěcy zastojaś
 updates-heading = Waše aktualizacije zastojaś
+sitepermission-heading = Waše sedłowe pšawa zastojaś
 discover-heading = Personalizěrujśo swój { -brand-short-name }
 shortcuts-heading = Tastowe skrotconki rozšyrjenjow zastojaś
 default-heading-search-label = Woglědajśo se dalšne dodanki
@@ -383,3 +394,20 @@ addons-heading-search-input =
     .placeholder = Na addons.mozilla.org pytaś
 addon-page-options-button =
     .title = Rědy za wšykne dodanki
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } njejo z kompatibelny z { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = { $name } njedajo se za wužywanje w { -brand-short-name } wobkšuśiś a jo se znjemóžnił.
+details-notification-unsigned-and-disabled-link = Dalšne informacije
+details-notification-unsigned = { $name } njedajo se za wužywanje w { -brand-short-name } wobkšuśiś. Pókšacujśo z glědanim.
+details-notification-unsigned-link = Dalšne informacije
+details-notification-blocked = { $name } jo se dla problemow wěstoty abo stabilnosći znjemóžnił.
+details-notification-blocked-link = Dalšne informacije
+details-notification-softblocked = { $name } jo za to znaty, až zawinujo problemy wěstoty abo stabilnosći.
+details-notification-softblocked-link = Dalšne informacije
+details-notification-gmp-pending = { $name } buźo se skóro instalěrowaś.

@@ -5,7 +5,7 @@
 account-encryption =
     .label = End to end-kryptering
 account-otr-label = Off the Record-chats (OTR)
-account-otr-description = { -brand-short-name } understøtter end to end-kryptering af en til en-samtaler. Dette forhindrer tredjeparter i at smuglytte til en samtale. End to end-kryptering kan kun bruges, når den anden person også bruger software, der understøtter OTR.
+account-otr-description2 = { -brand-short-name } understøtter end to end-kryptering af en til en-samtaler baseret på OTR. Dette forhindrer tredjeparter i at aflytte en samtale. Denne form for end to end-kryptering kan kun bruges, når den anden person også bruger software, der understøtter OTR.
 otr-encryption-title = Bekræftet kryptering
 otr-encryption-caption = For at gøre det muligt for andre at bekræfte din identitet i OTR-chats, skal du dele dit eget OTR-fingeraftryk ved hjælp af en ekstern kommunikationskanal.
 otr-fingerprint-label = Dit fingeraftryk:
@@ -13,9 +13,6 @@ view-fingerprint-button =
     .label = Håndter kontakters fingeraftryk
     .accesskey = f
 otr-settings-title = OTR-indstillinger
-otr-log =
-    .label = Inkluder OTR-krypterede meddelelser i samtalelogger
-
 otr-require-encryption =
     .label = Kræv end to end-kryptering ved en til en-samtaler
 otr-require-encryption-info =

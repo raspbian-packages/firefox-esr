@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Importera och lägg till en befintlig stilmall till dokumentet
     .accesskey = m
+styleeditor-filter-input =
+    .placeholder = Filtrera stilmallar
 styleeditor-visibility-toggle =
     .tooltiptext = Växla visning av stilmall
     .accesskey = V
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Öppna länk i ny flik
 styleeditor-copy-url =
     .label = Kopiera URL
+styleeditor-go-to-line =
+    .label = Gå till rad…
+    .accesskey = G
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Ingen matchande stilmall har hittats.

@@ -521,7 +521,7 @@ urlbar-result-action-search-tabs = Tabbladen doorzoeken
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
 # A label shown above the search suggestions group in the urlbar results. It
-# should use title case.
+# should use sentence case.
 # Variables
 #  $engine (String): the name of the search engine providing the suggestions
 urlbar-group-search-suggestions =
@@ -653,12 +653,6 @@ toolbar-settings-button =
             [macos] Instellingen openen ({ $shortcut })
            *[other] Instellingen openen
         }
-
-## More items
-
-more-menu-go-offline =
-    .label = Offline werken
-    .accesskey = f
 toolbar-overflow-customize-button =
     .label = Werkbalk aanpassen…
     .accesskey = a
@@ -704,12 +698,6 @@ panel-save-update-password = Wachtwoord
 addon-removal-title = { $name } verwijderen?
 addon-removal-abuse-report-checkbox = Deze extensie rapporteren aan { -vendor-short-name }
 
-## Remote / Synced tabs
-
-remote-tabs-manage-account =
-    .label = Account beheren
-remote-tabs-sync-now = Nu synchroniseren
-
 ##
 
 # "More" item in macOS share menu
@@ -737,7 +725,7 @@ edit-popup-settings =
     .label = Pop-upinstellingen beheren…
     .accesskey = b
 picture-in-picture-hide-toggle =
-    .label = Picture-in-Picture-knop verbergen
+    .label = Picture-in-picture-knop verbergen
     .accesskey = v
 
 ## Since the default position for PiP controls does not change for RTL layout,
@@ -769,9 +757,6 @@ navbar-overflow =
 navbar-print =
     .label = Afdrukken
     .tooltiptext = Deze pagina afdrukken… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = Afdrukken
-    .tooltiptext = Deze pagina afdrukken
 navbar-home =
     .label = Startpagina
     .tooltiptext = { -brand-short-name }-startpagina
@@ -798,3 +783,10 @@ tabs-toolbar-list-all-tabs =
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
 restore-session-startup-suggestion-message = <strong>Eerdere tabbladen openen?</strong> U kunt uw vorige sessie herstellen vanuit het toepassingsmenu van { -brand-short-name } <img data-l10n-name="icon"/>, onder Geschiedenis.
 restore-session-startup-suggestion-button = Tonen hoe
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } verzendt automatisch een aantal gegevens naar { -vendor-short-name }, zodat we uw ervaring kunnen verbeteren.
+data-reporting-notification-button =
+    .label = Kiezen wat ik deel
+    .accesskey = K

@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Ελαχιστοποίηση
+messenger-window-maximize-button =
+    .tooltiptext = Μεγιστοποίηση
+messenger-window-restore-down-button =
+    .tooltiptext = Επαναφορά κάτω
+messenger-window-close-button =
+    .tooltiptext = Κλείσιμο
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -38,7 +49,7 @@ folder-pane-toolbar =
     .toolbarname = Γραμμή περιοχής φακέλων
     .accesskey = Γ
 folder-pane-toolbar-options-button =
-    .tooltiptext = Επιλογές προβολής φακέλων
+    .tooltiptext = Επιλογές περιοχής φακέλων
 folder-pane-header-label = Φάκελοι
 
 ## Folder Toolbar Header Popup
@@ -76,10 +87,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Προτιμήσεις
 appmenu-save-as-file =
     .label = Αρχείο…
 appmenu-settings =
@@ -99,15 +106,52 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Ανακατεύθυνση
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Διαγραφή μηνύματος
+           *[other] Διαγραφή επιλεγμένων μηνυμάτων
+        }
+context-menu-decrypt-to-folder =
+    .label = Αντιγραφή ως αποκρυπτογραφημένο σε
+    .accesskey = γ
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Ανακατεύθυνση
-message-header-msg-is-flagged =
-    .title = Μήνυμα με αστέρι
+message-header-msg-flagged =
+    .title = Με αστέρι
+    .aria-label = Με αστέρι
 message-header-msg-not-flagged =
     .title = Μήνυμα χωρίς αστέρι
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Εικόνα προφίλ του { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Ρυθμίσεις κεφαλίδας μηνυμάτων
+message-header-customize-button-style =
+    .value = Στυλ κουμπιών
+    .accesskey = κ
+message-header-button-style-default =
+    .label = Εικονίδια και κείμενο
+message-header-button-style-text =
+    .label = Κείμενο
+message-header-button-style-icons =
+    .label = Εικονίδια
+message-header-show-sender-full-address-description = Η διεύθυνση email θα προβάλλεται κάτω από το εμφανιζόμενο όνομα.
+message-header-show-recipient-avatar =
+    .label = Εμφάνιση εικόνας προφίλ αποστολέα
+    .accesskey = φ
+message-header-hide-label-column =
+    .label = Απόκρυψη στήλης ετικετών
+    .accesskey = π
+message-header-large-subject =
+    .label = Μεγάλο θέμα
+    .accesskey = γ
 
 ## Action Button Context Menu
 
@@ -117,13 +161,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Αφαίρεση επέκτασης
     .accesskey = φ
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Η διεύθυνση βρίσκεται στο ευρετήριο
-message-header-address-not-in-address-book-icon =
-    .alt = Η διεύθυνση δεν βρίσκεται στο ευρετήριο
 
 ## Add-on removal warning
 
@@ -144,3 +181,91 @@ repair-text-encoding-button =
 no-reply-title = Δεν υποστηρίζεται απάντηση
 no-reply-message = Η διεύθυνση απάντησης ({ $email }) δεν φαίνεται να είναι εποπτεύεται. Τα μηνύματα σε αυτήν τη διεύθυνση πιθανότατα δεν θα διαβαστούν από κανέναν.
 no-reply-reply-anyway-button = Απάντηση ούτως ή άλλως
+
+## error messages
+
+decrypt-and-copy-failures = Δεν ήταν δυνατή η αποκρυπτογράφηση και αντιγραφή { $failures } από { $total } μηνύματα.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Γραμμή χώρων
+    .aria-label = Γραμμή χώρων
+    .aria-description = Κάθετη γραμμή εργαλείων για την εναλλαγή μεταξύ διαφορετικών χώρων. Χρησιμοποιήστε τα πλήκτρα βελών για να πλοηγηθείτε στα διαθέσιμα κουμπιά.
+spaces-toolbar-button-mail2 =
+    .title = Αλληλογραφία
+spaces-toolbar-button-address-book2 =
+    .title = Ευρετήριο
+spaces-toolbar-button-calendar2 =
+    .title = Ημερολόγιο
+spaces-toolbar-button-tasks2 =
+    .title = Εργασίες
+spaces-toolbar-button-chat2 =
+    .title = Συνομιλία
+spaces-toolbar-button-overflow =
+    .title = Περισσότεροι χώροι…
+spaces-toolbar-button-settings2 =
+    .title = Ρυθμίσεις
+spaces-toolbar-button-hide =
+    .title = Απόκρυψη γραμμής χώρων
+spaces-toolbar-button-show =
+    .title = Εμφάνιση γραμμής χώρων
+spaces-context-new-tab-item =
+    .label = Άνοιγμα σε νέα καρτέλα
+spaces-context-new-window-item =
+    .label = Άνοιγμα σε νέο παράθυρο
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Εναλλαγή σε { $tabName }
+settings-context-open-settings-item2 =
+    .label = Ρυθμίσεις
+settings-context-open-account-settings-item2 =
+    .label = Ρυθμίσεις λογαριασμού
+settings-context-open-addons-item2 =
+    .label = Πρόσθετα και θέματα
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Άνοιγμα μενού χώρων
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail2.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book2.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar2.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks2.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat2.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] Ένα μη αναγνωσμένο μήνυμα
+           *[other] { $count } μη αναγνωσμένα μηνύματα
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Προσαρμογή…
+spaces-customize-panel-title = Ρυθμίσεις γραμμής χώρων
+spaces-customize-background-color = Χρώμα φόντου
+spaces-customize-icon-color = Χρώμα κουμπιού
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Επιλεγμένο χρώμα φόντου κουμπιού
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Επιλεγμένο χρώμα κουμπιού
+spaces-customize-button-restore = Επαναφορά προεπιλογών
+    .accesskey = φ
+customize-panel-button-save = Τέλος
+    .accesskey = Τ

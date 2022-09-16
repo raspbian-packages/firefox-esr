@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Веб-сайттар өздерін�
 
 cert-error-symantec-distrust-admin = Веб-сайт әкімшісіне бұл мәселе туралы хабарлай аласыз.
 
+cert-error-old-tls-version = Бұл веб-сайт TLS 1.2 хаттамасына қолдау көрсетпеуі мүмкін, бұл { -brand-short-name } қолдайтын ең төменгі нұсқа.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Сервердің жауабы күтпеген тү�
 nssFailure2-title = Қорғалған байланысты орнату сәтсіз аяқталды
 csp-xfo-error-title = { -brand-short-name } бұл парақты аша алмайды
 corruptedContentError-title = Зақымдалған құрама қатесі
-remoteXUL-title = Қашықтағы XUL
 sslv3Used-title = Қауіпсіз түрде байланысу мүмкін емес
 inadequateSecurityError-title = Сіздің байланысыңыз қауіпсіз емес
 blockedByPolicy-title = Бұғатталған бет

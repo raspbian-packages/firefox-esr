@@ -43,6 +43,7 @@ category-experimental =
     .tooltiptext = Опити с { -brand-short-name }
 pane-experimental-subtitle = Продължете с повишено внимание
 pane-experimental-search-results-header = Опити с { -brand-short-name }: Продължете с повишено внимание
+pane-experimental-description2 = Промяната на разширените настройки може да повлияе на производителността или сигурността на { -brand-short-name }.
 pane-experimental-reset =
     .label = Стандартни настройки
     .accesskey = С
@@ -72,18 +73,21 @@ restart-later = Рестартиране по-късно
 ## Variables:
 ##   $name (String): name of the extension
 
+# This string is shown to notify the user that the password manager setting
+# is being controlled by an extension
+extension-controlling-password-saving = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ управлява тази настройка.
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
-extension-controlled-web-notifications = Разширението „<img data-l10n-name="icon"/> { $name }“ управлява настройката.
+extension-controlling-web-notifications = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ управлява тази настройка.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlled-privacy-containers = Разширението „<img data-l10n-name="icon"/> { $name }“ има изискване за изолирани раздели.
+extension-controlling-privacy-containers = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ има изискване за изолирани раздели.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
-extension-controlled-websites-content-blocking-all-trackers = Разширението „<img data-l10n-name="icon"/> { $name }“ управлява настройката.
+extension-controlling-websites-content-blocking-all-trackers = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ управлява тази настройка.
 # This string is shown to notify the user that their proxy configuration preferences
 # are being controlled by an extension.
-extension-controlled-proxy-config = Разширението „<img data-l10n-name="icon"/> { $name }“ управлява как { -brand-short-name } се свързва с интернет.
+extension-controlling-proxy-config = Разширението „<img data-l10n-name="icon"/> <strong>{ $name }</strong>“ управлява как { -brand-short-name } се свързва с интернет.
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -100,7 +104,7 @@ search-results-help-link = Имате нужда от помощ? Посетет
 
 ## General Section
 
-startup-header = Начална страница
+startup-header = Стартиране
 always-check-default =
     .label = Проверяване дали { -brand-short-name } е стандартният четец
     .accesskey = ч
@@ -109,9 +113,9 @@ is-not-default = { -brand-short-name } не е вашият стандартен
 set-as-my-default-browser =
     .label = Задаване като стандартен…
     .accesskey = с
-startup-restore-previous-session =
-    .label = Възстановяване на предишната сесия
-    .accesskey = с
+startup-restore-windows-and-tabs =
+    .label = Отваряне на последните прозорци и раздели
+    .accesskey = п
 startup-restore-warn-on-quit =
     .label = Предупреждаване при затваряне на четеца
 disable-extension =
@@ -123,12 +127,23 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Отваряне на препратките в раздели вместо в нови прозорци
     .accesskey = р
-warn-on-close-multiple-tabs =
-    .label = Предупреждаване при затваряне на няколко раздела
-    .accesskey = п
+confirm-on-close-multiple-tabs =
+    .label = Потвърждаване при затваряне на няколко раздела
+    .accesskey = д
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (String) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+confirm-on-quit-with-key =
+    .label = Потвърждаване при изход с { $quitKey }
+    .accesskey = х
 warn-on-open-many-tabs =
     .label = Предупреждаване, ако отваряне на няколко раздела може да забави { -brand-short-name }
     .accesskey = а
+switch-to-new-tabs =
+    .label = При отваряне на препратка, изображение или медия в нов раздел, той става активен
+    .accesskey = т
 show-tabs-in-taskbar =
     .label = Преглед на разделите в лентата със задачите на Windows
     .accesskey = с
@@ -165,7 +180,29 @@ containers-remove-cancel-button = Запазване
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Език и изглед
-fonts-and-colors-header = Шрифтове и цветове
+preferences-web-appearance-header = Изглед на страниците
+preferences-web-appearance-description = Някои страници адаптират цветовете си въз основа на вашите предпочитания. Изберете цветовата схема, която да бъде използвана за такива страници.
+preferences-web-appearance-choice-browser = Тема на { -brand-short-name }
+preferences-web-appearance-choice-system = Спрямо системата
+preferences-web-appearance-choice-light = Светла
+preferences-web-appearance-choice-dark = Тъмна
+preferences-web-appearance-choice-tooltip-light =
+    .title = Да се ползва светъл външен вид за фон и съдържание на страниците.
+preferences-web-appearance-choice-tooltip-dark =
+    .title = Да се ползва тъмен външен вид за фон и съдържание на страниците.
+preferences-web-appearance-choice-input-browser =
+    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
+preferences-web-appearance-choice-input-system =
+    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-light =
+    .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
+preferences-web-appearance-choice-input-dark =
+    .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+preferences-colors-header = Цветове
+preferences-colors-manage-button =
+    .label = Управление на цветове…
+    .accesskey = ц
+preferences-fonts-header = Шрифтове
 default-font = Стандартен шрифт
     .accesskey = С
 default-font-size = Големина
@@ -173,9 +210,6 @@ default-font-size = Големина
 advanced-fonts =
     .label = Разширени…
     .accesskey = Р
-colors-settings =
-    .label = Цветове…
-    .accesskey = Ц
 # Zoom is a noun, and the message is used as header for a group of options
 preferences-zoom-header = Мащабиране
 preferences-default-zoom = Мащабиране по подразбиране
@@ -199,6 +233,7 @@ confirm-browser-language-change-button = Прилагане и рестарти�
 translate-web-pages =
     .label = Превеждане на съдържанието на страниците
     .accesskey = П
+fx-translate-web-pages = { -translations-brand-name }
 # The <img> element is replaced by the logo of the provider
 # used to provide machine translations for web pages.
 translate-attribution = Превод от <img data-l10n-name="logo"/>
@@ -217,8 +252,7 @@ check-user-spelling =
 
 files-and-applications-title = Файлове и приложения
 download-header = Изтегляния
-download-save-to =
-    .label = Запазване на файловете в
+download-save-where = Запазване на файловете в
     .accesskey = З
 download-choose-folder =
     .label =
@@ -282,7 +316,9 @@ applications-file-ending-with-type = { applications-file-ending } ({ $type })
 # Variables:
 #   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
 applications-use-plugin-in =
-    .label = Използване на { $plugin-name } (в { -brand-short-name })
+    .label = Използване на { $plugin-name } (от { -brand-short-name })
+applications-open-inapp =
+    .label = Отваряне в { -brand-short-name }
 
 ## The strings in this group are used to populate
 ## selected label element based on the string from
@@ -294,6 +330,8 @@ applications-action-save-label =
     .value = { applications-action-save.label }
 applications-use-app-label =
     .value = { applications-use-app.label }
+applications-open-inapp-label =
+    .value = { applications-open-inapp.label }
 applications-always-ask-label =
     .value = { applications-always-ask.label }
 applications-use-app-default-label =
@@ -305,6 +343,10 @@ applications-use-os-default-label =
 
 ##
 
+applications-handle-new-file-types-description = Какво да направи { -brand-short-name } с другите файлове?
+applications-save-for-new-types =
+    .label = Запазване на файлове
+    .accesskey = з
 drm-content-header = Съдържание с цифрови права (DRM)
 play-drm-content =
     .label = Изпълняване на съдържание под DRM
@@ -333,6 +375,9 @@ update-application-warning-cross-user-setting = Тази настройка ще
 update-application-use-service =
     .label = Използване на услуга във фонов режим за инсталиране на обновявания
     .accesskey = у
+update-application-suppress-prompts =
+    .label = Показване на по-малко известия за обновяване
+    .accesskey = м
 update-setting-write-failure-title2 = Грешка при запазване на настройки
 # Variables:
 #   $path (String) - Path to the configuration file
@@ -378,6 +423,9 @@ browsing-use-autoscroll =
 browsing-use-smooth-scrolling =
     .label = Плавно плъзгане
     .accesskey = л
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Лентите за превъртане да са винаги видими
+    .accesskey = Л
 browsing-use-onscreen-keyboard =
     .label = Показване на клавиатура за докосване, при необходимост
     .accesskey = д
@@ -455,11 +503,6 @@ home-prefs-content-header = Начална страница на Firefox
 home-prefs-content-description = Изберете съдържанието, което искате да виждате на началната страница на Firefox.
 home-prefs-search-header =
     .label = Търсене в Мрежата
-home-prefs-topsites-header =
-    .label = Предпочитани страници
-home-prefs-topsites-description = Най-посещаваните от вас страници
-home-prefs-topsites-by-option-sponsored =
-    .label = Платени препратки
 home-prefs-shortcuts-header =
     .label = Бързи клавиши
 home-prefs-shortcuts-description = Страници за преглед по-късно
@@ -471,7 +514,6 @@ home-prefs-shortcuts-by-option-sponsored =
 
 home-prefs-recommended-by-header =
     .label = Препоръчано от { $provider }
-home-prefs-recommended-by-description-update = Изключително съдържание от цялата мрежа, подбрано от { $provider }
 home-prefs-recommended-by-description-new = Изключително съдържание, подбрано от { $provider } част от семейството на { -brand-product-name }
 
 ##
@@ -479,9 +521,6 @@ home-prefs-recommended-by-description-new = Изключително съдър�
 home-prefs-recommended-by-learn-more = Как работи
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Платени публикации
-home-prefs-highlights-header =
-    .label = Акценти
-home-prefs-highlights-description = Избрани страници, които сте запазили или посетили
 home-prefs-highlights-option-visited-pages =
     .label = Посетени страници
 home-prefs-highlights-options-bookmarks =
@@ -499,7 +538,6 @@ home-prefs-recent-activity-description = Избрани страници и съ
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Изрезки
-home-prefs-snippets-description = Новости от { -vendor-short-name } и { -brand-product-name }
 home-prefs-snippets-description-new = Съвети и новини от { -vendor-short-name } и { -brand-product-name }
 home-prefs-sections-rows-option =
     .label =
@@ -605,7 +643,7 @@ sync-profile-picture =
 sync-sign-out =
     .label = Излизане…
     .accesskey = з
-sync-manage-account = Управление на сметката
+sync-manage-account = Управление на профила
     .accesskey = У
 sync-signedin-unverified = { $email } не е проверен.
 sync-signedin-login-failure = Моля, впишете се, за да се свържете наново { $email }
@@ -613,7 +651,7 @@ sync-resend-verification =
     .label = Повторно изпращане на потвърждение
     .accesskey = в
 sync-remove-account =
-    .label = Премахване на сметка
+    .label = Премахване на профил
     .accesskey = п
 sync-sign-in =
     .label = Вписване
@@ -740,12 +778,20 @@ forms-primary-pw-learn-more-link = Научете повече
 # when searching for the old name. The accesskey is unused.
 forms-master-pw-change =
     .label = Промяна на главна парола…
-    .accesskey = л
+    .accesskey = г
 forms-primary-pw-change =
     .label = Промяна на главна парола…
     .accesskey = П
+# Leave this message empty if the translation for "Primary Password" matches
+# "Master Password" in your language. If you're editing the FTL file directly,
+# use { "" } as the value.
+forms-primary-pw-former-name = ""
 forms-primary-pw-fips-title = В момента сте в режим на FIPS. FIPS изисква главна парола.
 forms-master-pw-fips-desc = Грешка при промяна на паролата
+forms-windows-sso =
+    .label = Позволява еднократно вписване от Windows за профили в Microsoft, за работа и за училище
+forms-windows-sso-learn-more-link = Научете повече
+forms-windows-sso-desc = Управление на профили в настройките на устройството
 
 ## OS Authentication dialog
 
@@ -822,8 +868,6 @@ sitedata-block-desc = Вид на ограничения ресурс
     .accesskey = в
 sitedata-option-block-cross-site-trackers =
     .label = Проследяване в различни сайтове
-sitedata-option-block-cross-site-and-social-media-trackers =
-    .label = Проследяване в различни сайтове и социални медии
 sitedata-option-block-unvisited =
     .label = Бисквитки от непосетени страници
 sitedata-option-block-all-third-party =
@@ -890,8 +934,10 @@ enhanced-tracking-protection-setting-custom =
 content-blocking-etp-standard-desc = Баланс между защита и бързодействие. Страниците ще се зареждат нормално.
 content-blocking-etp-strict-desc = По-високо ниво на защита, но някои страници може да не работят.
 content-blocking-etp-custom-desc = Изберете какво проследяване и кои скриптове да спрете.
+content-blocking-etp-blocking-desc = { -brand-short-name } спира следните:
 content-blocking-private-windows = Проследяващо съдържание в поверителните прозорци
 content-blocking-cross-site-tracking-cookies = Бисквитки за следене в различни сайтове
+content-blocking-all-cross-site-cookies-private-windows = Междусайтови бисквитки в поверителни прозорци
 content-blocking-social-media-trackers = Проследяване от социални мрежи
 content-blocking-all-cookies = Всички бисквитки
 content-blocking-unvisited-cookies = Бисквитки от непосетени страници
@@ -899,8 +945,8 @@ content-blocking-all-windows-tracking-content = Проследяващо съд�
 content-blocking-all-third-party-cookies = Всички странични бисквитки
 content-blocking-cryptominers = Добиване на криптовалути
 content-blocking-fingerprinters = Снемане на цифров отпечатък
+content-blocking-etp-standard-tcp-rollout-learn-more = Научете повече
 content-blocking-warning-title = Внимание!
-content-blocking-and-isolating-etp-warning-description = Спирането на проследяване и изолирането на бисквитки може да се повлияе на възможностите на някои страници. Презаредете страница с проследяване, за да зареди цялото съдържание.
 content-blocking-warning-learn-how = Научете как
 content-blocking-reload-description = За да бъдат приложени промените, разделите трябва да бъдат презаредени.
 content-blocking-reload-tabs-button =
@@ -971,9 +1017,12 @@ permissions-autoplay-settings =
 permissions-block-popups =
     .label = Спиране на изскачащите прозорци
     .accesskey = С
-permissions-block-popups-exceptions =
+# "popup" is a misspelling that is more popular than the correct spelling of
+# "pop-up" so it's included as a search keyword, not displayed in the UI.
+permissions-block-popups-exceptions-button =
     .label = Изключения…
     .accesskey = з
+    .searchkeywords = popup
 permissions-addon-install-warning =
     .label = Предупреждаване при опит на страница да инсталира добавки
     .accesskey = д
@@ -1046,7 +1095,3 @@ httpsonly-learn-more = Научете повече
 desktop-folder-name = Плот
 downloads-folder-name = Изтегляния
 choose-download-folder-title = Избиране на папка за изтегляне:
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Запазване на файла в { $service-name }

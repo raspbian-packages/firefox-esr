@@ -35,6 +35,8 @@ detail-version =
     .label = Версія
 detail-last-updated =
     .label = Востаннє оновлено
+addon-detail-description-expand = Показати більше
+addon-detail-description-collapse = Показати менше
 detail-contributions-description = Розробник цього додатка просить вас посприяти його подальшому розвитку невеликим внеском.
 detail-contributions-button = Посприяти
     .title = Посприяти розвитку цього додатка
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Недавні оновлення
 addon-category-recent-updates-title =
     .title = Недавні оновлення
+addon-category-sitepermission = Дозволи сайтів
+addon-category-sitepermission-title =
+    .title = Дозволи сайтів
 
 ## These are global warnings
 
@@ -283,14 +288,18 @@ extension-enabled-heading = Увімкнено
 extension-disabled-heading = Вимкнено
 theme-enabled-heading = Увімкнено
 theme-disabled-heading = Вимкнено
+theme-disabled-heading2 = Збережені теми
 theme-monochromatic-heading = Забарвлення
 theme-monochromatic-subheading = Сповнені життя нові барви від { -brand-product-name }. Доступні впродовж обмеженого часу.
+theme-colorways-button = Спробуйте Colorways
 plugin-enabled-heading = Увімкнено
 plugin-disabled-heading = Вимкнено
 dictionary-enabled-heading = Увімкнено
 dictionary-disabled-heading = Вимкнено
 locale-enabled-heading = Увімкнено
 locale-disabled-heading = Вимкнено
+sitepermission-enabled-heading = Увімкнено
+sitepermission-disabled-heading = Вимкнено
 always-activate-button = Завжди активувати
 never-activate-button = Ніколи не активувати
 addon-detail-author-label = Автор
@@ -368,6 +377,7 @@ addon-permissions-optional = Необов’язкові дозволи для �
 addon-permissions-learnmore = Докладніше про дозволи
 recommended-extensions-heading = Рекомендовані розширення
 recommended-themes-heading = Рекомендовані теми
+addon-sitepermissions-required = Надає для <span data-l10n-name="hostname">{ $hostname }</span> такі можливості:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Відчуваєте творче натхнення? <a data-l10n-name="link">Створіть власну тему за допомогою Firefox Color.</a>
@@ -380,6 +390,7 @@ plugin-heading = Керуйте своїми плагінами
 dictionary-heading = Керуйте своїми словниками
 locale-heading = Керуйте своїми мовами
 updates-heading = Керуйте своїми оновленнями
+sitepermission-heading = Керувати дозволами сайтів
 discover-heading = Персоналізуйте свій { -brand-short-name }
 shortcuts-heading = Керувати комбінаціями клавіш розширень
 default-heading-search-label = Знайти більше додатків
@@ -387,3 +398,20 @@ addons-heading-search-input =
     .placeholder = Пошук на addons.mozilla.org
 addon-page-options-button =
     .title = Інструменти для всіх додатків
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } несумісний з { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = Додаток { $name } не був перевірений для використання в { -brand-short-name } і був вимкнений.
+details-notification-unsigned-and-disabled-link = Докладніше
+details-notification-unsigned = Додаток { $name } не був перевірений для використання в { -brand-short-name }. Продовжуйте з обережністю.
+details-notification-unsigned-link = Докладніше
+details-notification-blocked = { $name } було вимкнено, у зв'язку з проблемами безпеки чи стабільності.
+details-notification-blocked-link = Докладніше
+details-notification-softblocked = В { $name } є відомі проблеми з безпекою та стабільністю.
+details-notification-softblocked-link = Докладніше
+details-notification-gmp-pending = { $name } незабаром буде встановлено.

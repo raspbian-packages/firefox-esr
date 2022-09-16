@@ -4,6 +4,7 @@
 
 close-button =
     .aria-label = Cerrar
+preferences-doc-title2 = Ajustes
 category-list =
     .aria-label = Categorías
 pane-general-title = General
@@ -82,6 +83,8 @@ update-in-progress-ok-button = &Descartar
 # Continue is the cancel button so pressing escape or using a platform standard
 # method of closing the UI will not discard the update.
 update-in-progress-cancel-button = &Continuar
+account-button = Configuración de la cuenta
+open-addons-sidebar-button = Complementos y temas
 
 ## OS Authentication dialog
 
@@ -112,15 +115,16 @@ restore-default-label =
     .label = Rest. valores predet.
     .accesskey = R
 default-search-engine = Buscador predeterminado
-add-search-engine =
-    .label = Añadir desde archivo
-    .accesskey = s
 add-web-search-engine =
     .label = Agregar…
     .accesskey = A
 remove-search-engine =
     .label = Eliminar
     .accesskey = l
+add-opensearch-provider-title = Añadir proveedor OpenSearch
+add-opensearch-provider-text = Introduzca la URL del proveedor de OpenSearch a añadir. Utilice la URL directa del archivo de descripción de OpenSearch o una URL donde se pueda descubrir automáticamente.
+adding-opensearch-provider-failed-title = No se ha podido añadir el proveedor OpenSearch
+adding-opensearch-provider-failed-text = No se ha podido añadir el proveedor OpenSearch para { $url }.
 minimize-to-tray-label =
     .label = Cuando se minimiza { -brand-short-name }, moverlo a la bandeja del sistema
     .accesskey = m
@@ -139,13 +143,19 @@ change-dock-icon = Cambiar preferencias del icono de la aplicación
 app-icon-options =
     .label = Opciones del icono de la aplicación…
     .accesskey = c
-notification-settings = Las alertas y el sonido predeterminado pueden desactivarse en el panel Notificaciones de las preferencias del sistema.
+notification-settings2 = Las alertas y el sonido predeterminado se pueden desactivar en el panel de notificaciones de los ajustes del sistema.
 animated-alert-label =
     .label = Mostrar una alerta
     .accesskey = M
 customize-alert-label =
     .label = Personalizar…
     .accesskey = P
+biff-use-system-alert =
+    .label = Usar la notificación del sistema
+tray-icon-unread-label =
+    .label = Mostrar un icono en la barra de tareas para mensajes no leídos
+    .accesskey = t
+tray-icon-unread-description = Recomendado cuando se utilizan botones pequeños en la barra de tareas
 mail-system-sound-label =
     .label = Sonido del sistema predeterminado para correo nuevo
     .accesskey = S
@@ -177,6 +187,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Usar desplazamiento suave
     .accesskey = d
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Mostrar siempre las barras de desplazamiento
+    .accesskey = z
 system-integration-legend = Integración con el sistema
 always-check-default =
     .label = Comprobar siempre al iniciar si { -brand-short-name } es el cliente de correo por omisión
@@ -234,6 +247,9 @@ diskspace-legend = Espacio en disco
 offline-compact-folder =
     .label = Compactar todas las carpetas cuando se ahorren más de
     .accesskey = C
+offline-compact-folder-automatically =
+    .label = Preguntar siempre vez antes de compactar
+    .accesskey = P
 compact-folder-size =
     .value = MB en total
 
@@ -296,12 +312,10 @@ smaller-size-item =
 quoted-text-color =
     .label = Color:
     .accesskey = o
-type-column-label =
-    .label = Tipo de contenido
-    .accesskey = T
-action-column-label =
-    .label = Acción
-    .accesskey = A
+search-handler-table =
+    .placeholder = Filtrar tipos de contenido y acciones
+type-column-header = Tipo de contenido
+action-column-header = Acción
 save-to-label =
     .label = Guardar archivos en
     .accesskey = G
@@ -392,6 +406,9 @@ auto-save-end = minutos
 warn-on-send-accel-key =
     .label = Confirmar al usar el atajo de teclado para envío de mensajes
     .accesskey = n
+add-link-previews =
+    .label = Añadir vistas previas de enlaces al pegar direcciones URL
+    .accesskey = i
 spellcheck-label =
     .label = Comprobar la ortografía antes de enviar
     .accesskey = C
@@ -423,10 +440,19 @@ restore-html-label =
 default-format-label =
     .label = Usar formato de párrafo en lugar de cuerpo de texto por omisión
     .accesskey = P
-format-description = Configurar comportamiento del formato de texto
-send-options-label =
-    .label = Opciones de envío…
-    .accesskey = v
+compose-send-format-title = Formato de envío
+compose-send-automatic-option =
+    .label = Automático
+compose-send-automatic-description = Si no se utiliza ningún estilo en el mensaje, enviar texto sin formato. De lo contrario, enviar con formato HTML con respaldo de texto sin formato.
+compose-send-both-option =
+    .label = HTML y texto sin formato
+compose-send-both-description = La aplicación de correo electrónico del destinatario determinará qué versión mostrar.
+compose-send-html-option =
+    .label = Solo HTML
+compose-send-html-description = Es posible que algunos destinatarios no puedan leer el mensaje sin un respaldo de texto sin formato.
+compose-send-plain-option =
+    .label = Solo texto sin formato
+compose-send-plain-description = Algunos estilos se convertirán en una alternativa simple y se desactivarán otras funciones de composición.
 autocomplete-description = Al enviar mensajes, buscar entradas coincidentes en:
 ab-label =
     .label = Libretas de direcciones locales
@@ -640,8 +666,8 @@ chat-browse-sound-button =
 theme-label =
     .value = Tema:
     .accesskey = T
-style-thunderbird =
-    .label = Thunderbird
+style-mail =
+    .label = { -brand-short-name }
 style-bubbles =
     .label = Burbujas
 style-dark =
@@ -654,19 +680,27 @@ preview-label = Vista preliminar:
 no-preview-label = No está disponible la vista preliminar
 no-preview-description = Este tema no es válido o no está actualmente disponible (complemento desactivado, modo seguro…).
 chat-variant-label =
-    .value = Vaiante:
+    .value = Variante:
     .accesskey = V
-
-## Preferences UI Search Results
-
+# This is used to determine the width of the search field in about:preferences,
+# in order to make the entire placeholder string visible
+#
+# Please keep the placeholder string short to avoid truncation.
+#
+# Notice: The value of the `.style` attribute is a CSS string, and the `width`
+# is the name of the CSS property. It is intended only to adjust the element's width.
+# Do not translate.
+search-preferences-input2 =
+    .style = width: 15.4em
+    .placeholder = Buscar en ajustes
 
 ## Settings UI Search Results
 
 search-results-header = Resultados de la búsqueda
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
+search-results-empty-message2 =
     { PLATFORM() ->
-        [windows] ¡Lo sentimos! No hay resultados en Opciones para “<span data-l10n-name="query"></span>”.
-       *[other] ¡Lo sentimos! No hay resultados en Preferencias para “<span data-l10n-name="query"></span>”.
+        [windows] ¡Lo sentimos! No hay resultados para "<span data-l10n-name="query"></span>" en los ajustes.
+       *[other] ¡Lo sentimos! No hay resultados para "<span data-l10n-name="query"></span>" en los ajustes.
     }
 search-results-help-link = ¿Necesita ayuda? Visite la ayuda de <a data-l10n-name="url">{ -brand-short-name }</a>

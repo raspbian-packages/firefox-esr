@@ -21,6 +21,7 @@ perftools-heading-features-default = Мүмкіндіктер (бастапқы�
 perftools-heading-features-disabled = Сөндірілген мүмкіндіктер
 perftools-heading-features-experimental = Сынамалы
 perftools-heading-threads = Ағындар
+perftools-heading-threads-jvm = JVM ағындары
 perftools-heading-local-build = Жергілікті жинақ
 
 ##
@@ -49,9 +50,6 @@ perftools-devtools-settings-label = Баптаулар
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Жекелік шолу режимі іске қосылған кезінде профильдеуші сөндіріледі.
-    Профильдеушіні қайта іске қосу үшін, барлық жекелік шолу терезелерін жабыңыз
 perftools-status-recording-stopped-by-another-tool = Жазбаны басқа құрал тоқтатты.
 perftools-status-restart-required = Бұл мүмкіндікті іске қосу үшін браузер қайта іске қосылуы керек.
 
@@ -95,6 +93,10 @@ perftools-thread-img-decoder =
     .title = Суреттерді декодтау ағындары
 perftools-thread-dns-resolver =
     .title = DNS шешуі бұл ағында орын алады
+perftools-thread-task-controller =
+    .title = TaskController ағындар пулының ағындары
+perftools-thread-jvm-gecko =
+    .title = Негізгі Gecko JVM ағыны
 
 ##
 
@@ -105,6 +107,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Жаңа</b>: { -profiler-brand-name } енді әзірлеуші құралдарына ендірілген. Бұл мүмкіндігі көп жаңа құрал туралы <a>көбірек біліңіз</a>.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -120,14 +126,15 @@ perftools-onboarding-close-button =
 # The same labels and descriptions are also defined in appmenu.ftl.
 
 perftools-presets-web-developer-label = Веб-әзірлеуші
-perftools-presets-firefox-platform-label = Firefox платформасы
-perftools-presets-firefox-platform-description = Firefox платформасын ішкі жөндеу үшін ұсынылған баптаулар.
-perftools-presets-firefox-front-end-label = Firefox клиент бөлігі
-perftools-presets-firefox-front-end-description = Firefox клиент бөілігін ішкі жөндеу үшін ұсынылған баптаулар.
-perftools-presets-firefox-graphics-label = Firefox графикасы
-perftools-presets-firefox-graphics-description = Firefox графикасы өнімділігін тексеру үшін ұсынылған баптаулар.
+perftools-presets-web-developer-description = Веб-қолданбалардың көбін жөндеуге арналған, қосымша шығындары аз баптаулар жиынтығы.
+perftools-presets-firefox-label = { -brand-shorter-name }
+perftools-presets-firefox-description = { -brand-shorter-name } профильдеу үшін ұсынылатын баптаулар жиынтығы.
+perftools-presets-graphics-label = Графика
+perftools-presets-graphics-description = { -brand-shorter-name } ішінде графика ақаулықтарын зерттеуге арналған баптаулар жиынтығы.
 perftools-presets-media-label = Медиа
-perftools-presets-media-description = Аудио және видео мәселелерін диагностикалау үшін ұсынылған баптаулар.
+perftools-presets-media-description2 = { -brand-shorter-name } ішінде аудио және видео ақаулықтарын зерттеуге арналған баптаулар жиынтығы.
+perftools-presets-networking-label = Желі
+perftools-presets-networking-description = { -brand-shorter-name } ішінде желі ақаулықтарын зерттеуге арналған баптаулар жиынтығы.
 perftools-presets-custom-label = Таңдауыңызша
 
 ##

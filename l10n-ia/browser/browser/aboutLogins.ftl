@@ -5,8 +5,6 @@
 
 about-logins-page-title = Contos e contrasignos
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Cercar credentiales
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Sito web violate
 about-logins-list-item-vulnerable-password-icon =
     .title = Contrasigno vulnerabile
-
 about-logins-list-section-breach = Sitos web violate
 about-logins-list-section-vulnerable = Contrasignos vulnerabile
 about-logins-list-section-nothing = Nulle alerta
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Nulle credentiales synchronisate tr
 login-intro-description = Si tu ha salvate tu credentiales in { -brand-product-name } sur un altere apparato, ecce como render los disponibile hic:
 login-intro-instructions-fxa = Aperi session o crea un { -fxaccount-brand-name } sur le apparato ubi se trova tu credentiales.
 login-intro-instructions-fxa-settings = Va a Parametros > Sync > Activar synchronisation… Selige le quadrato ‘Contos e contrasignos’.
-login-intro-instructions-fxa-help = Visita <a data-l10n-name="help-link">{ -lockwise-brand-short-name } Support</a> pro obtener adjuta.
-about-logins-intro-import = Si tu credentiales es salvate in un altere navigator, tu pote <a data-l10n-name="import-link">importar los in { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Visita <a data-l10n-name="passwords-help-link">supporto pro contrasignos</a> pro adjuta ulterior.
+about-logins-intro-browser-only-import = Si tu credentiales es salvate in un altere navigator, tu pote <a data-l10n-name="import-link">importar los in { -brand-product-name }</a>
 about-logins-intro-import2 = Si tu credentiales es salvate foras de { -brand-product-name }, tu pote <a data-l10n-name="import-browser-link">importar los ab un altere navigator</a> o <a data-l10n-name="import-file-link">ab un file</a>
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Pro copiar le contrasign
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = copiar le contrasigno salvate
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Pro exportar tu credentiales de accesso, insere tu credentiales de accesso Windows. Isto adjuta proteger le securitate de tu contos.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Insere tu contrasigno prima
 master-password-reload-button =
     .label = Aperir session
     .accesskey = A
-
-## Password Sync notification
 
 ## Dialogs
 

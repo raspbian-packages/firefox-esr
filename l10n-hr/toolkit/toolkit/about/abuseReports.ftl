@@ -36,13 +36,6 @@ abuse-report-goback-button = Idi natrag
 abuse-report-submit-button = Pošalji
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -60,6 +53,8 @@ abuse-report-messagebar-error-recent-submit = Prijava za <span data-l10n-name="a
 
 abuse-report-messagebar-action-remove-extension = Da, ukloni
 abuse-report-messagebar-action-keep-extension = Ne, zadržat ću
+abuse-report-messagebar-action-remove-sitepermission = Da, ukloni
+abuse-report-messagebar-action-keep-sitepermission = Ne, zadržat ću
 abuse-report-messagebar-action-remove-theme = Da, ukloni
 abuse-report-messagebar-action-keep-theme = Ne, zadržat ću
 abuse-report-messagebar-action-retry = Pokušaj ponovo
@@ -82,6 +77,7 @@ abuse-report-deceptive-reason-v2 = Tvrdi da je nešto što nije
 abuse-report-deceptive-example = Primjer: Obmanjujući opis ili slike
 
 abuse-report-broken-reason-extension-v2 = Ne radi, slama web-stranice ili usporava { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Ne radi, ne prikazuje web-stranice ispravno ili usporava { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Ne radi ili slama prikaz preglednika
 abuse-report-broken-example = Primjer: Funkcije su spore, teško ih je koristiti ili ne rade, dijelovi web stranica se ne mogu učitati ili čudno izgledaju
 abuse-report-broken-suggestions-extension =
@@ -102,4 +98,3 @@ abuse-report-unwanted-reason-v2 = Nisam to želio i ne znam kako to ukloniti
 abuse-report-unwanted-example = Primjer: Aplikacija instalirana bez mog dopuštenja
 
 abuse-report-other-reason = Nešto drugo
-

@@ -5,6 +5,21 @@
 
 e2e-intro-description = For at sende krypterede eller digitalt signerede meddelelser, skal du konfigurere en krypteringsteknologi, enten OpenPGP eller S/MIME.
 e2e-intro-description-more = Vælg din personlige nøgle for at aktivere brugen af OpenPGP, eller dit personlige certifikat for at aktivere brugen af S/MIME. Du ejer selv den tilsvarende hemmelige nøgle til en personlig nøgle eller et certifikat.
+
+e2e-signing-description = Med en digital signatur kan modtagere af en meddelelse kontrollere, at meddelelsen kommer fra dig, og at dens indhold ikke er blevet ændret. Krypterede meddelelser er altid signeret.
+
+e2e-sign-message =
+    .label = Signer ukrypterede meddelelser
+    .accesskey = u
+
+e2e-disable-enc =
+    .label = Deaktiver kryptering for nye meddelelser
+    .accesskey = D
+e2e-enable-enc =
+    .label = Aktiver kryptering for nye meddelelser
+    .accesskey = A
+e2e-enable-description = Du kan deaktivere kryptering for individuelle meddelelser.
+
 e2e-advanced-section = Avancerede indstillinger
 e2e-attach-key =
     .label = Vedhæft min offentlige nøgle, når jeg tilføjer en OpenPGP digital signatur
@@ -46,6 +61,9 @@ openpgp-generate-key =
 openpgp-advanced-prefs-button-label =
     .label = Avanceret…
 openpgp-keygen-desc = <a data-l10n-name="openpgp-keygen-desc-link">OBS: Nøglegenerering kan tage flere minutter.</a> Luk ikke programmet mens nøglegenereringen er i gang. Hvis du aktivt browser eller udfører diskintensive operationer, mens nøglegenereringen står på, fylder du ‘tilfældigheds-puljen’ op, hvilket får processen til at gå hurtigere. Du får besked, når nøglen er færdig.
+
+openpgp-key-created-label =
+    .label = Oprettet
 
 openpgp-key-expiry-label =
     .label = Udløbsdato
@@ -240,18 +258,21 @@ openpgp-key-man-key-details-key =
 
 openpgp-key-details-title =
     .title = Nøgleegenskaber
+
 openpgp-key-details-signatures-tab =
     .label = Certificeringer
 openpgp-key-details-structure-tab =
     .label = Struktur
 openpgp-key-details-uid-certified-col =
     .label = Bruger-id / Certificeret af
+openpgp-key-details-key-id-label = Nøgle-ID
 openpgp-key-details-user-id2-label = Angivet nøgleejer
 openpgp-key-details-id-label =
     .label = Id
 openpgp-key-details-key-type-label = Type
 openpgp-key-details-key-part-label =
     .label = Nøgledel
+
 openpgp-key-details-algorithm-label =
     .label = Algoritme
 openpgp-key-details-size-label =
@@ -265,10 +286,10 @@ openpgp-key-details-expiry-header = Udløb
 openpgp-key-details-usage-label =
     .label = Brug
 openpgp-key-details-fingerprint-label = Fingeraftryk
+openpgp-key-details-legend-secret-missing = For nøgler markeret med (!) er den hemmelige nøgle ikke tilgængelig.
 openpgp-key-details-sel-action =
     .label = Vælg handling...
     .accesskey = V
-openpgp-key-details-also-known-label = Nøgleejerens angivne alternative identiteter:
 openpgp-card-details-close-window-label =
     .buttonlabelaccept = Luk
 openpgp-acceptance-label =
@@ -284,7 +305,6 @@ openpgp-acceptance-verified-label =
 key-accept-personal =
     Til denne nøgle har du både den offentlige og den hemmelige del. Du kan bruge den som en personlig nøgle.
     Hvis du har fået denne nøgle af en anden, skal du ikke bruge den som en personlig nøgle.
-key-personal-warning = Oprettede du selv denne nøgle, og henviser det viste nøgleejerskab til dig selv?
 openpgp-personal-no-label =
     .label = Nej, brug den ikke som min personlige nøgle.
 openpgp-personal-yes-label =
@@ -294,15 +314,6 @@ openpgp-copy-cmd-label =
     .label = Kopier
 
 ## e2e encryption settings
-
-#   $count (Number) - the number of configured keys associated with the current identity
-#   $identity (String) - the email address of the currently selected identity
-openpgp-description =
-    { $count ->
-        [0] Thunderbird har ingen personlig OpenPGP-nøgle for <b>{ $identity }</b>
-        [one] Thunderbird fandt { $count } personlig OpenPGP-nøgle knyttet til <b>{ $identity }</b>
-       *[other] Thunderbird fandt { $count } personlige OpenPGP-nøgler knyttet til <b>{ $identity }</b>
-    }
 
 #   $key (String) - the currently selected OpenPGP key
 openpgp-selection-status-have-key = Din nuværende konfiguration bruger nøgle-id <b>{ $key }</b>
@@ -381,7 +392,7 @@ key-expired-date = Nøglen udløb den { $keyExpiry }
 key-expired-simple = Nøglen er udløbet
 key-revoked-simple = Nøglen er blevet tilbagekaldt
 key-do-you-accept = Accepterer du, at denne nøgle bruges til verificering af digitale signaturer og kryptering af meddelelser?
-key-accept-warning = Undgå at acceptere en uberegnelig nøgle. Brug en anden kommunikationskanal end mail til at bekræfte fingeraftrykket på din korrespondents nøgle.
+key-verification = Bekræft nøglens fingeraftryk gennem en sikker kommunikationskanal (ikke e-mail) for at sikre dig, at nøglen faktisk tilhører { $addr }.
 
 # Strings enigmailMsgComposeOverlay.js
 cannot-use-own-key-because = Kunne ikke sende meddelelsen, fordi der er et problem med din personlige nøgle. { $problem }
@@ -389,7 +400,6 @@ cannot-encrypt-because-missing = Kunne ikke sende denne meddelelse med end to en
 window-locked = Skrivevinduet er låst; afsendelse annulleret
 
 # Strings in mimeDecrypt.jsm
-mime-decrypt-encrypted-part-attachment-label = Krypteret meddelelsesdel
 mime-decrypt-encrypted-part-concealed-data = Dette er en krypteret meddelelsesdel. Du skal åbne det i et separat vindue ved at klikke på den vedhæftede fil.
 
 # Strings in keyserver.jsm
@@ -415,27 +425,6 @@ converter-decrypt-body-failed =
     Kunne ikke dekryptere meddelelsen med emnet
     { $subject }.
     Vil du prøve igen med et andet adgangsudtryk, eller vil du springe meddelelsen over?
-
-# Strings in gpg.jsm
-unknown-signing-alg = Ukendt signeringsalgoritme (ID: { $id })
-unknown-hash-alg = Ukendt kryptografisk hash (ID: { $id })
-
-# Strings in keyUsability.jsm
-expiry-key-expires-soon =
-    Din nøgle { $desc } udløber om mindre end { $days } dage.
-    Vi anbefaler, at du opretter et nyt nøglepar og indstiller de tilsvarende konti til at bruge det.
-expiry-keys-expire-soon =
-    De følgende af dine nøgler udløber om mindre end { $days } dage: { $desc }.
-    Vi anbefaler, at du opretter nye nøgler og indstiller de tilsvarende konti til at bruge dem.
-expiry-key-missing-owner-trust =
-    Din hemmelige nøgle { $desc } har manglende tillid.
-    Vi anbefaler, at du sætter "Du stoler på certificeringer" til "ultimativ" i nøgleegenskaber.
-expiry-keys-missing-owner-trust =
-    De følgende af dine hemmelige nøgler har manglende tillid.
-    { $desc }.
-    Vi anbefaler, at du indstiller "Du stoler på certificeringer" til "ultimativ" i nøgleegenskaber.
-expiry-open-key-manager = Åbn OpenPGP Nøgleadministration
-expiry-open-key-properties = Åbn nøgleegenskaber
 
 # Strings filters.jsm
 filter-folder-required = Du skal vælge en destinationsmappe.
@@ -669,19 +658,9 @@ send-to-news-warning =
     Dette frarådes, fordi det kun giver mening, hvis alle medlemmer af gruppen kan dekryptere meddelelsen, dvs. meddelelsen skal krypteres med nøglerne til alle gruppedeltagere. Send kun denne meddelelse, hvis du ved præcis, hvad du laver.
     Fortsæt?
 save-attachment-header = Gem dekrypteret vedhæftet fil
-no-temp-dir =
-    Kunne ikke finde en midlertidig mappe at skrive til
-    Indstil venligst TEMP-miljøvariablen
 possibly-pgp-mime = Mulig PGP/MIME-krypteret eller underskrevet meddelelse; brug funktionen 'Dekrypter/Verificer' for at verificere
 cannot-send-sig-because-no-own-key = Kan ikke signere denne meddelelse digitalt, fordi du endnu ikke har konfigureret end to end-kryptering for <{ $key }>
 cannot-send-enc-because-no-own-key = Kan ikke sende denne meddelelse krypteret, fordi du endnu ikke har konfigureret end to end-kryptering for <{ $key }>
-
-compose-menu-attach-key =
-    .label = Vedhæft min offentlige nøgle
-    .accesskey = V
-compose-menu-encrypt-subject =
-    .label = Emnekryptering
-    .accesskey = m
 
 # Strings used in decryption.jsm
 do-import-multiple =

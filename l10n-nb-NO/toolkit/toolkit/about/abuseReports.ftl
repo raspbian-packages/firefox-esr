@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Rapport for { $addon-name }
 
 abuse-report-title-extension = Rapporter denne utvidelsen til { -vendor-short-name }
+abuse-report-title-sitepermission = Rapporter dette tillegget for nettstedstillatelser til { -vendor-short-name }
 abuse-report-title-theme = Rapporter dette temaet til { -vendor-short-name }
 abuse-report-subtitle = Hva er problemet?
 
@@ -37,12 +37,6 @@ abuse-report-goback-button = Gå tilbake
 abuse-report-submit-button = Send
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Sender rapport for <span data-l10n-name="ad
 abuse-report-messagebar-submitted = Takk for at du sendte inn en rapport. Vil du fjerne <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Takk for at du sendte inn en rapport.
 abuse-report-messagebar-removed-extension = Takk for at du sendte inn en rapport. Du har fjernet utvidelsen <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Takk for at du sendte inn en rapport. Du har fjernet dette tillegget for nettstedstillatelser <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Takk for at du sendte inn en rapport. Du har fjernet temaet <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Det oppsto en feil ved sending av rapporten for <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Rapporten for <span data-l10n-name="addon-name">{ $addon-name }</span> ble ikke sendt fordi en annen rapport ble sendt inn nylig.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Rapporten for <span data-l10n-name
 
 abuse-report-messagebar-action-remove-extension = Ja, fjern den
 abuse-report-messagebar-action-keep-extension = Nei, jeg vil beholde den
+abuse-report-messagebar-action-remove-sitepermission = Ja, fjern den
+abuse-report-messagebar-action-keep-sitepermission = Nei, jeg vil beholde den
 abuse-report-messagebar-action-remove-theme = Ja, fjern den
 abuse-report-messagebar-action-keep-theme = Nei, jeg vil beholde den
 abuse-report-messagebar-action-retry = Prøv igjen
@@ -82,12 +79,17 @@ abuse-report-deceptive-reason-v2 = Den gir seg ut for å være noe den ikke er
 abuse-report-deceptive-example = Eksempel: Villedende beskrivelse eller bilder
 
 abuse-report-broken-reason-extension-v2 = Den fungerer ikke, ødelegger nettsteder, eller gjør { -brand-product-name } treg
+abuse-report-broken-reason-sitepermission-v2 = Den fungerer ikke, ødelegger nettsteder, eller gjør { -brand-product-name } treg
 abuse-report-broken-reason-theme-v2 = Den virker ikke eller ødelegger nettsidens utseende
 abuse-report-broken-example = For eksempel: Funksjoner er trege, vanskelig å bruke, eller fungerer ikke; deler av nettsteder vil ikke laste eller ser uvanlige ut
 abuse-report-broken-suggestions-extension =
     Det høres ut som om du har identifisert en feil. I tillegg til å sende inn en rapport her, så er den beste måten
     for å få en funksjonell feil løst på er å kontakte utvidelsesutvikleren.
     <a data-l10n-name="support-link">Besøk utvidelsens nettsted</a> for å få informasjon om utvikleren.
+abuse-report-broken-suggestions-sitepermission =
+    Det høres ut som om du har identifisert en feil. I tillegg til å sende inn en rapport her, så er den beste måten
+    for å få en funksjonell feil løst på er å kontakte nettstedsutvikleren.
+    <a data-l10n-name="support-link">Besøk nettstedet</a> for å få informasjon om utvikleren.
 abuse-report-broken-suggestions-theme =
     Det høres ut som om du har identifisert en feil. I tillegg til å sende inn en rapport her, så er den beste måten
     for å få en funksjonell feil løst på er å kontakte temautvikleren.
@@ -103,4 +105,3 @@ abuse-report-unwanted-reason-v2 = Jeg har aldri ønsket den og jeg vet ikke hvor
 abuse-report-unwanted-example = Eksempel: Et program installerte den uten min tillatelse
 
 abuse-report-other-reason = Noe annet
-

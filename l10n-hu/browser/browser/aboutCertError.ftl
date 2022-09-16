@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = A weboldalak tanúsítványokkal bizo
 
 cert-error-symantec-distrust-admin = Értesítheti a webhely rendszergazdáját a problémáról.
 
+cert-error-old-tls-version = Előfordulhat, hogy ez a webhely nem támogatja a TLS 1.2 protokollt, amely a { -brand-short-name } által támogatott legalacsonyabb verzió.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Váratlan válasz a kiszolgálótól
 nssFailure2-title = A biztonságos kapcsolat sikertelen
 csp-xfo-error-title = A { -brand-short-name } nem tudja megnyitni ezt az oldalt
 corruptedContentError-title = Sérült tartalom hiba
-remoteXUL-title = Távoli XUL
 sslv3Used-title = Nem lehet biztonságosan kapcsolódni
 inadequateSecurityError-title = A kapcsolat nem biztonságos
 blockedByPolicy-title = Blokkolt oldal

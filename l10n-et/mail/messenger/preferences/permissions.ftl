@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Erandid
     .style = width: 36em;
 
+permission-preferences-close-window =
+    .key = w
+
 website-address-label =
     .value = Veebilehe aadress:
     .accesskey = d

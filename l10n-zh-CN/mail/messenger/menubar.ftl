@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = 菜单栏
+    .accesskey = M
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = 首选项
-    .accesskey = P
 menu-tools-settings =
     .label = 设置
     .accesskey = e
@@ -52,6 +50,9 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = 字号
+    .accesskey = o
 mail-uidensity-label =
     .label = 密度
     .accesskey = D
@@ -64,6 +65,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = 触控
     .accesskey = T
+menu-spaces-toolbar-button =
+    .label = 侧工具栏
+    .accesskey = S
 
 ## File
 

@@ -73,6 +73,14 @@ app-basics-location-service-key-google = Tasarutt n umeẓlu n wadi Google
 app-basics-safebrowsing-key-google = Tasarut Google Safebrowsing
 app-basics-key-mozilla = Tasarutt n umeẓlu n wadi Mozilla
 app-basics-safe-mode = Askar aɣelsan
+app-basics-memory-size = Teɣzi n takatut (RAM)
+app-basics-disk-available = Tallunt n uḍebsi yellan
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Ldi di Finder
@@ -340,6 +348,7 @@ fission-status-experiment-control = Yettwasens s termit
 fission-status-experiment-treatment = Yermed n termit
 fission-status-disabled-by-e10s-env = Yettwasens s twennaḍt
 fission-status-enabled-by-env = yetturmed s twennaḍt
+fission-status-disabled-by-env = Yensa s twennaḍt
 fission-status-disabled-by-safe-mode = Yettwasens s uskar aɣellsan
 fission-status-enabled-by-default = Yetturmed s umezwer
 fission-status-disabled-by-default = Yensa s wudem amezwer

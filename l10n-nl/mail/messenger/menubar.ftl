@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Menubalk
+    .accesskey = M
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Voorkeuren
-    .accesskey = V
 menu-tools-settings =
     .label = Instellingen
     .accesskey = e
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Lettergrootte
+    .accesskey = o
+menuitem-font-size-enlarge =
+    .label = Lettergrootte vergroten
+    .accesskey = v
+menuitem-font-size-reduce =
+    .label = Lettergrootte verkleinen
+    .accesskey = k
+menuitem-font-size-reset =
+    .label = Lettergrootte opnieuw instellen
+    .accesskey = n
 mail-uidensity-label =
     .label = Dichtheid
     .accesskey = D
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Aanraking
     .accesskey = A
+menu-spaces-toolbar-button =
+    .label = Taakbalk
+    .accesskey = T
 
 ## File
 

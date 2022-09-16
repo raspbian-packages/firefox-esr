@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Nahlásenie doplnku { $addon-name }
 
 abuse-report-title-extension = Nahlásiť toto rozšírenie spoločnosti { -vendor-short-name }
+abuse-report-title-sitepermission = Nahlásiť tento doplnok pre oprávnenia stránok spoločnosti { -vendor-short-name }
 abuse-report-title-theme = Nahlásiť túto tému vzhľadu spoločnosti { -vendor-short-name }
 abuse-report-subtitle = V čom je problém?
 
@@ -35,12 +35,6 @@ abuse-report-goback-button = Naspäť
 abuse-report-submit-button = Odoslať
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -50,6 +44,7 @@ abuse-report-messagebar-submitting = Odosielanie hlásenia o doplnku <span data-
 abuse-report-messagebar-submitted = Ďakujeme vám za hlásenie. Chcete doplnok <span data-l10n-name="addon-name">{ $addon-name }</span> odstrániť?
 abuse-report-messagebar-submitted-noremove = Ďakujeme vám za hlásenie.
 abuse-report-messagebar-removed-extension = Ďakujeme vám za hlásenie. Rozšírenie <span data-l10n-name="addon-name">{ $addon-name }</span> bolo odstránené.
+abuse-report-messagebar-removed-sitepermission = Ďakujeme vám za hlásenie. Doplnok oprávnení stránok <span data-l10n-name="addon-name">{ $addon-name }</span> bol odstránený.
 abuse-report-messagebar-removed-theme = Ďakujeme vám za hlásenie. Téma vzhľadu <span data-l10n-name="addon-name">{ $addon-name }</span> bolo odstránené.
 abuse-report-messagebar-error = Pri odosielaní hlásenia o doplnku <span data-l10n-name="addon-name">{ $addon-name }</span> nastala chyba.
 abuse-report-messagebar-error-recent-submit = Hlásenie o doplnku <span data-l10n-name="addon-name">{ $addon-name }</span> nebolo odoslané, pretože ste ho už nedávno nahlásili.
@@ -58,6 +53,8 @@ abuse-report-messagebar-error-recent-submit = Hlásenie o doplnku <span data-l10
 
 abuse-report-messagebar-action-remove-extension = Áno, odstrániť
 abuse-report-messagebar-action-keep-extension = Nie, ponechať
+abuse-report-messagebar-action-remove-sitepermission = Áno, odstrániť
+abuse-report-messagebar-action-keep-sitepermission = Nie, ponechať
 abuse-report-messagebar-action-remove-theme = Áno, odstrániť
 abuse-report-messagebar-action-keep-theme = Nie, ponechať
 abuse-report-messagebar-action-retry = Skúsiť znova
@@ -80,9 +77,11 @@ abuse-report-deceptive-reason-v2 = Vydáva sa za niečo iné
 abuse-report-deceptive-example = Príklad: zavádzajúci popis alebo náhľady
 
 abuse-report-broken-reason-extension-v2 = Nefunguje, rozbíja webové stránky alebo spomaľuje { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Nefunguje, rozbíja webové stránky alebo spomaľuje { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Nefunguje alebo rozbíja rozhranie prehliadača
 abuse-report-broken-example = Príklad: funkcie sú pomalé, ťažko sa používa, nefunguje, obmedzuje fungovanie alebo zobrazovanie webových stránok
 abuse-report-broken-suggestions-extension = Zdá sa, že ste objavili chybu. Okrem odoslania hlásenia nám v riešení problému pomôže, ak kontaktujete aj autora rozšírenia. <a data-l10n-name="support-link">Navštívte stránky rozšírenia</a>, kde na autora nájdete kontakt.
+abuse-report-broken-suggestions-sitepermission = Zdá sa, že ste objavili chybu. Okrem odoslania hlásenia nám v riešení problému pomôže, ak kontaktujete aj autora webovej stránky. <a data-l10n-name="support-link">Navštívte webovú stránku</a>, kde na autora nájdete kontakt.
 abuse-report-broken-suggestions-theme = Zdá sa, že ste objavili chybu. Okrem odoslania hlásenia nám v riešení problému pomôže, ak kontaktujete aj autora témy vzhľadu. <a data-l10n-name="support-link">Navštívte stránky témy vzhľadu</a>, kde na autora nájdete kontakt.
 
 abuse-report-policy-reason-v2 = Obsahuje nenávistný, násilný alebo nelegálny obsah
@@ -92,4 +91,3 @@ abuse-report-unwanted-reason-v2 = Nevyžiadané rozšírenie, ktoré neviem odst
 abuse-report-unwanted-example = Príklad: nainštalované cudzou aplikáciou bez môjho vedomia
 
 abuse-report-other-reason = V niečom inom
-

@@ -105,8 +105,8 @@ disabled-unsigned-devinfo = Programuotojai, norintys atlikti savo priedų patikr
 plugin-deprecation-description = Kažko trūksta? Kai kurie papildiniai daugiau nepalaikomi „{ -brand-short-name }“. <label data-l10n-name="learn-more">Sužinoti daugiau.</label>
 legacy-warning-show-legacy = Rodyti pasenusius plėtinius
 legacy-extensions =
-    .value = Pasenę plėtiniai
-legacy-extensions-description = Šie plėtiniai neatitinka esamų „{ -brand-short-name }“ standartų, tad buvo išjungti. <label data-l10n-name="legacy-learn-more">Sužinokite apie priedų pokyčius</label>
+    .value = Pasenę priedai
+legacy-extensions-description = Šie priedai neatitinka esamų „{ -brand-short-name }“ standartų, tad buvo išjungti. <label data-l10n-name="legacy-learn-more">Sužinokite apie priedų pokyčius</label>
 private-browsing-description2 =
     „{ -brand-short-name }“ keičia priedų veikimą privačiojo naršymo languose. Visi nauji priedai, kuriuos pridėsite į
     „{ -brand-short-name }“, neveiks privačiojo naršymo languose. Nebent leisite tai per nuostatas, priedas
@@ -116,9 +116,9 @@ private-browsing-description2 =
 addon-category-discover = Rekomendacijos
 addon-category-discover-title =
     .title = Rekomendacijos
-addon-category-extension = Plėtiniai
+addon-category-extension = Priedai
 addon-category-extension-title =
-    .title = Plėtiniai
+    .title = Priedai
 addon-category-theme = Grafiniai apvalkalai
 addon-category-theme-title =
     .title = Grafiniai apvalkalai
@@ -137,6 +137,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Paskiausiai atnaujinti
 addon-category-recent-updates-title =
     .title = Paskiausiai atnaujinti
+addon-category-sitepermission = Svetainių leidimai
+addon-category-sitepermission-title =
+    .title = Svetainių leidimai
 
 ## These are global warnings
 
@@ -282,18 +285,20 @@ preferences-addon-button =
 details-addon-button = Išsamiau
 release-notes-addon-button = Laidos apžvalga
 permissions-addon-button = Leidimai
-extension-enabled-heading = Įjungtas
-extension-disabled-heading = Išjungtas
-theme-enabled-heading = Įjungtas
-theme-disabled-heading = Išjungtas
+extension-enabled-heading = Įjungta
+extension-disabled-heading = Išjungta
+theme-enabled-heading = Įjungta
+theme-disabled-heading = Išjungta
 theme-monochromatic-heading = Spalvų rinkiniai
 theme-monochromatic-subheading = Ryškūs ir nauji spalvų rinkiniai iš „{ -brand-product-name }“. Pasiekiami ribotą laiką.
-plugin-enabled-heading = Įjungtas
-plugin-disabled-heading = Išjungtas
-dictionary-enabled-heading = Įjungtas
-dictionary-disabled-heading = Išjungtas
+plugin-enabled-heading = Įjungta
+plugin-disabled-heading = Išjungta
+dictionary-enabled-heading = Įjungta
+dictionary-disabled-heading = Išjungta
 locale-enabled-heading = Įjungta
 locale-disabled-heading = Išjungta
+sitepermission-enabled-heading = Įjungta
+sitepermission-disabled-heading = Išjungta
 always-activate-button = Visada aktyvinti
 never-activate-button = Niekada neaktyvinti
 addon-detail-author-label = Autorius
@@ -371,6 +376,7 @@ addon-permissions-optional = Papildomam funkcionalumui reikalingi leidimai:
 addon-permissions-learnmore = Sužinokite apie leidimus daugiau
 recommended-extensions-heading = Rekomenduojami priedai
 recommended-themes-heading = Rekomenduojami grafiniai apvalkalai
+addon-sitepermissions-required = Suteikia šias galimybes <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Jaučiatės kūrybiškai? <a data-l10n-name="link">Sukurkite savo grafinį apvalkalą su „Firefox Color“.</a>
@@ -383,6 +389,7 @@ plugin-heading = Tvarkykite savo papildinius
 dictionary-heading = Tvarkykite savo žodynus
 locale-heading = Tvarkykite savo kalbas
 updates-heading = Tvarkykite savo naujinimus
+sitepermission-heading = Tvarkykite savo svetainių leidimus
 discover-heading = Individualizuokite savo „{ -brand-short-name }“
 shortcuts-heading = Tvarkyti sparčiuosius klavišus priedams
 default-heading-search-label = Rasti daugiau priedų
@@ -390,3 +397,20 @@ addons-heading-search-input =
     .placeholder = Ieškoti per addons.mozilla.org
 addon-page-options-button =
     .title = Visiems priedams taikomos priemonės
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = Priedas „{ $name }“ yra nesuderinamas su „{ -brand-short-name } { $version }“.
+details-notification-unsigned-and-disabled = Nepavyko patikrinti „{ $name }“ suderinamumo su „{ -brand-short-name }“, tad jis buvo išjungtas.
+details-notification-unsigned-and-disabled-link = Daugiau informacijos
+details-notification-unsigned = Nepavyko patikrinti „{ $name }“ suderinamumo su „{ -brand-short-name }“. Elkitės atsargiai.
+details-notification-unsigned-link = Daugiau informacijos
+details-notification-blocked = Priedas „{ $name }“ išjungtas saugumo arba stabilumo sumetimais.
+details-notification-blocked-link = Plačiau
+details-notification-softblocked = Yra duomenų, jog priedas „{ $name }“ sukelia saugumo arba stabilumo problemas.
+details-notification-softblocked-link = Plačiau
+details-notification-gmp-pending = „{ $name }“ bus netrukus įdiegtas.

@@ -47,6 +47,8 @@ detail-version =
     .label = Verze
 detail-last-updated =
     .label = Poslední aktualizace
+addon-detail-description-expand = Zobrazit více
+addon-detail-description-collapse = Zobrazit méně
 detail-contributions-description = Vývojář tohoto doplňku vás žádá o malý příspěvek, kterým pomůžete podpořit další vývoj.
 detail-contributions-button = Přispět
     .title = Přispějte a pomozte s vývojem tohoto rozšíření
@@ -158,6 +160,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Aktualizováno
 addon-category-recent-updates-title =
     .title = Aktualizováno
+addon-category-sitepermission = Oprávnění serverů
+addon-category-sitepermission-title =
+    .title = Oprávnění serverů
 
 ## These are global warnings
 
@@ -323,6 +328,7 @@ extension-enabled-heading = Povolená rozšíření
 extension-disabled-heading = Zakázaná rozšíření
 theme-enabled-heading = Aktivní vzhled
 theme-disabled-heading = Zakázané vzhledy
+theme-disabled-heading2 = Uložené vzhledy
 theme-monochromatic-heading = Palety barev
 theme-monochromatic-subheading =
     Nové palety barev pro { -brand-product-name.gender ->
@@ -331,12 +337,15 @@ theme-monochromatic-subheading =
         [neuter] { -brand-product-name(case: "acc") }
        *[other] aplikaci { -brand-product-name }
     } dostupné po omezenou dobu.
+theme-colorways-button = Vyzkoušet palety barev
 plugin-enabled-heading = Povolené moduly
 plugin-disabled-heading = Zakázané moduly
 dictionary-enabled-heading = Povolené slovníky
 dictionary-disabled-heading = Zakázané slovníky
 locale-enabled-heading = Povolené jazyky
 locale-disabled-heading = Zakázané jazyky
+sitepermission-enabled-heading = Povolená oprávnění
+sitepermission-disabled-heading = Nepovolená oprávnění
 always-activate-button = Vždy spustit
 never-activate-button = Nespouštět
 addon-detail-author-label = Autor
@@ -420,6 +429,7 @@ addon-permissions-optional = Volitelná oprávnění pro dodatečné funkce:
 addon-permissions-learnmore = Zjistit více o oprávněních
 recommended-extensions-heading = Doporučená rozšíření
 recommended-themes-heading = Doporučené vzhledy
+addon-sitepermissions-required = Uděluje serveru <span data-l10n-name="hostname">{ $hostname }</span> následující oprávnění:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Jste tvořiví? <a data-l10n-name="link">Vyrobte si vlastní vzhled pomocí Firefox Color.</a>
@@ -432,6 +442,7 @@ plugin-heading = Správa zásuvných modulů
 dictionary-heading = Správa slovníků
 locale-heading = Správa jazyků
 updates-heading = Správa aktualizací
+sitepermission-heading = Správa oprávnění serverů
 discover-heading =
     Přizpůsobte si { -brand-short-name.gender ->
         [masculine] { -brand-short-name(case: "acc") }
@@ -445,3 +456,38 @@ addons-heading-search-input =
     .placeholder = Vyhledat na addons.mozilla.org
 addon-page-options-button =
     .title = Nástroje doplňků
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible =
+    { -brand-short-name.gender ->
+        [masculine] Doplněk { $name } není s { -brand-short-name(case: "ins") } { $version } kompatibilní.
+        [feminine] Doplněk { $name } není s { -brand-short-name(case: "ins") } { $version } kompatibilní.
+        [neuter] Doplněk { $name } není s { -brand-short-name(case: "ins") } { $version } kompatibilní.
+       *[other] Doplněk { $name } není s aplikací { -brand-short-name } { $version } kompatibilní.
+    }
+details-notification-unsigned-and-disabled =
+    { -brand-short-name.gender ->
+        [masculine] Doplněk { $name } nemohl být pro použití ve { -brand-short-name(case: "loc") } ověřen a byl zakázán.
+        [feminine] Doplněk { $name } nemohl být pro použití v { -brand-short-name(case: "loc") } ověřen a byl zakázán.
+        [neuter] Doplněk { $name } nemohl být pro použití v { -brand-short-name(case: "loc") } ověřen a byl zakázán.
+       *[other] Doplněk { $name } nemohl být pro použití v aplikaci { -brand-short-name } ověřen a byl zakázán.
+    }
+details-notification-unsigned-and-disabled-link = Více informací
+details-notification-unsigned =
+    { -brand-short-name.gender ->
+        [masculine] Doplněk { $name } nemohl být pro použití ve { -brand-short-name(case: "loc") } ověřen. Používejte ho obezřetně.
+        [feminine] Doplněk { $name } nemohl být pro použití v { -brand-short-name(case: "loc") } ověřen. Používejte ho obezřetně.
+        [neuter] Doplněk { $name } nemohl být pro použití v { -brand-short-name(case: "loc") } ověřen. Používejte ho obezřetně.
+       *[other] Doplněk { $name } nemohl být pro použití v aplikaci { -brand-short-name } ověřen. Používejte ho obezřetně.
+    }
+details-notification-unsigned-link = Více informací
+details-notification-blocked = Doplněk { $name } byl zakázán kvůli problémům se zabezpečením nebo stabilitou.
+details-notification-blocked-link = Více informací
+details-notification-softblocked = Doplněk { $name } způsobuje bezpečnostní a výkonnostní problémy.
+details-notification-softblocked-link = Více informací
+details-notification-gmp-pending = { $name } bude brzy nainstalován.

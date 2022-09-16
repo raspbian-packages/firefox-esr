@@ -19,11 +19,12 @@ browser-main-window =
     .data-title-private = { -brand-full-name } (निजी ब्राउजिङ्ग)
     .data-content-title-default = { $content-title } - { -brand-full-name }
     .data-content-title-private = { $content-title } - { -brand-full-name } (निजी ब्राउजिङ्ग)
+
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
 # "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox - (Private Browsing)"
+# "private" - "Mozilla Firefox — (Private Browsing)"
 #
 # The last two are for use when there *is* a content title.
 # Do not use the brand name in the last two attributes, as we do on non-macOS.
@@ -38,6 +39,7 @@ browser-main-window-mac =
     .data-title-private = { -brand-full-name } - (निजी ब्राउजिङ्ग)
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } - (निजी ब्राउजिङ्ग)
+
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
@@ -94,6 +96,7 @@ urlbar-addons-notification-anchor =
 
 ## Local search mode indicator labels in the urlbar
 
+urlbar-search-mode-bookmarks = बुकमार्कहरु
 
 ##
 
@@ -115,14 +118,16 @@ urlbar-canvas-blocked =
     .tooltiptext = तपाईँले यो वेबसाइटको लागि क्यानभस डाटाको निकास अवरुद्ध गर्नु भएको छ।
 urlbar-midi-blocked =
     .tooltiptext = तपाईँले यो वेबसाइटको लागि MIDI अवरुद्ध गर्नु भएको छ।
+
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
 urlbar-star-edit-bookmark =
-    .tooltiptext = यस ({ $shortcut }) पुस्तकचिनोलाई सम्पादन गर्नुहोस्
+    .tooltiptext = यो बुकमार्क सम्पादन गर्नुहोस् ({ $shortcut })
+
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 urlbar-star-add-bookmark =
-    .tooltiptext = यस पृष्ठ ({ $shortcut }) मा पुस्तकचिनो लगाउनुहोस्
+    .tooltiptext = यो पृष्ठ बुकमार्क गर्नुहोस् ({ $shortcut })
 
 ## Page Action Context Menu
 
@@ -142,12 +147,14 @@ full-screen-exit =
 
 search-one-offs-change-settings-compact-button =
     .tooltiptext = खोज सेटिङ परिवर्तन गर्नुहोस्
+
 search-one-offs-context-open-new-tab =
     .label = नयाँ ट्याबमा खोज्नुहोस्
     .accesskey = T
 search-one-offs-context-set-as-default =
     .label = पूर्वनिर्धारित खोजी इन्जिन बनाउनुहोस्
     .accesskey = D
+
 # When more than 5 engines are offered by a web page, they are grouped in a
 # submenu using this as its label.
 search-one-offs-add-engine-menu =
@@ -160,9 +167,41 @@ search-one-offs-add-engine-menu =
 ##    restrict their searches to certain sources (e.g., "*" to search only
 ##    bookmarks).
 
+search-one-offs-bookmarks =
+    .tooltiptext = बुकमार्कहरू ({ $restrict })
+search-one-offs-tabs =
+    .tooltiptext = ट्याबहरू ({ $restrict })
+search-one-offs-history =
+    .tooltiptext = इतिहास ({ $restrict })
 
 ## Bookmark Panel
 
+bookmarks-add-bookmark = बुकमार्क थप्नुहोस्
+bookmarks-edit-bookmark = बुकमार्क सम्पादन गर्नुहोस्
+bookmark-panel-cancel =
+    .label = रद्द गर्नुहोस्
+    .accesskey = C
+# Variables:
+#  $count (number): number of bookmarks that will be removed
+bookmark-panel-remove =
+    .label =
+        { $count ->
+            [1] बुकमार्क हटाउनुहोस्
+            [one] { $count } बुकमार्कहरू हटाउनुहोस्
+           *[other] { $count } बुकमार्कहरू हटाउनुहोस्
+        }
+    .accesskey = R
+bookmark-panel-show-editor-checkbox =
+    .label = सङ्ग्रह गर्दा सम्पादक देखाउनुहोस्
+    .accesskey = S
+bookmark-panel-save-button =
+    .label = सङ्ग्रह गर्नुहोस्
+
+# Width of the bookmark panel.
+# Should be large enough to fully display the Done and
+# Cancel/Remove Bookmark buttons.
+bookmark-panel =
+    .style = min-width: 23em
 
 ## Identity Panel
 
@@ -174,6 +213,7 @@ identity-passive-loaded = यो पृष्ठको भागहरू सु
 identity-active-loaded = तपाईँले यो पृष्ठमा संरक्षण अक्षम गर्नुभएको छ।
 identity-weak-encryption = यो पेजले कमजोर इन्क्रिप्सन प्रयोग गर्छ।
 identity-insecure-login-forms = यस पृष्ठमा प्रविष्ट लगिन जानकारी सुरक्षित छैन र सम्झौता हुन सक्छ।
+
 identity-permissions-reload-hint = परिवर्तनहरू लागू हुन पेज पुनः लोड गर्नुहोस्
 identity-remove-cert-exception =
     .label = एक्सेप्सन हटाउनुहोस्
@@ -229,17 +269,23 @@ popup-all-windows-shared = तपाईँको स्क्रिन मा �
 
 ## URL Bar
 
+# This placeholder is used when not in search mode and the user's default search
+# engine is unknown.
 urlbar-placeholder =
     .placeholder = खोज वा ठेगाना राखनुहोस्।
+
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
     .placeholder = { $name } सँग खोज्नुहोस् वा ठेगाना राखनुहोस्।
+
 urlbar-switch-to-tab =
     .value = यस ट्याबमा स्विच गर्नुहोस्:
+
 # Used to indicate that a selected autocomplete entry is provided by an extension.
 urlbar-extension =
     .value = एक्सटेन्सन:
+
 urlbar-go-button =
     .tooltiptext = लोकेसन बारमा भएको स्थानमा जानुहोस्
 urlbar-page-action-button =
@@ -260,9 +306,14 @@ urlbar-result-action-visit = भ्रमण गर्नुहोस्
 ## string or the url, like "result value - action text".
 ## In these actions "Search" is a verb, followed by where the search is performed.
 
+urlbar-result-action-search-bookmarks = बुकमार्कहरू खोज्नुहोस्
 
 ## Labels shown above groups of urlbar results
 
+# A label shown above the "Firefox Suggest" (bookmarks/history) group in the
+# urlbar results.
+urlbar-group-firefox-suggest =
+    .label = { -firefox-suggest-brand-name }
 
 ## Full Screen and Pointer Lock UI
 
@@ -271,9 +322,12 @@ urlbar-result-action-visit = भ्रमण गर्नुहोस्
 #  $domain (String): the domain that is full screen, e.g. "mozilla.org"
 fullscreen-warning-domain = <span data-l10n-name="domain">{ $domain }</span> पुरा स्क्रिन अहिले भयो
 fullscreen-warning-no-domain = तपाईँको खाता पुरा पर्दाको भएको छ
+
+
 fullscreen-exit-button = पुरा पर्दाबाट निस्कनुहोस् (Esc)
 # "esc" is lowercase on mac keyboards, but uppercase elsewhere.
 fullscreen-exit-mac-button = पुरा स्क्रिनबाट निस्कनुहोस (esc)
+
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
 # Variables
 #  $domain (String): the domain that is using pointer-lock, e.g. "mozilla.org"
@@ -285,16 +339,19 @@ pointerlock-warning-no-domain = तपाईँको पोइन्टर य�
 
 ## Bookmarks panels, menus and toolbar
 
+bookmarks-manage-bookmarks =
+    .label = बुकमार्कहरू प्रबन्ध गर्नुहोस्
+bookmarks-recent-bookmarks-panel-subheader = हालका बुकमार्कहरू
 bookmarks-toolbar-chevron =
-    .tooltiptext = अरू पुस्तकचिनोहरू देखाउनुहोस्
+    .tooltiptext = थप बुकमार्कहरू देखाउनुहोस्
 bookmarks-sidebar-content =
-    .aria-label = पुस्तकचिनोहरू
+    .aria-label = बुकमार्कहरु
 bookmarks-menu-button =
-    .label = पुस्तकचिनोहरूको मेनु
+    .label = बुकमार्क मेनु
 bookmarks-other-bookmarks-menu =
-    .label = अन्य पुस्तकचिनोहरू
+    .label = अन्य बुकमार्कहरू
 bookmarks-mobile-bookmarks-menu =
-    .label = मोबाइल पुस्तकचिनोहरू
+    .label = मोबाइल बुकमार्कहरू
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -319,6 +376,7 @@ bookmarks-tools =
     .label = पुस्तकचिनो लगाउने उपकरणहरू
 bookmarks-bookmark-edit-panel =
     .label = यो पुस्तकचिनोलाई सम्पादन गर्नुहोस्
+
 bookmarks-toolbar-menu =
     .label = पुस्तकचिनो उपकरणपट्टि
 bookmarks-toolbar-placeholder =
@@ -342,28 +400,30 @@ library-bookmarks-menu =
 
 ## More items
 
-more-menu-go-offline =
-    .label = अफलाइन कार्य गर्नुहोस्
-    .accesskey = k
 toolbar-overflow-customize-button =
     .label = उपकरणपट्टि अनुकुलन गर्नुहोस्…
     .accesskey = C
+
 toolbar-button-email-link =
     .label = लिङ्कलाई इमेल गर्नुहोस्
     .tooltiptext = यस पृष्ठ को लिङ्क इमेल गर्नुहोस्
+
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
     .label = पृष्ठ सङ्ग्रह गर्नुहोस्
     .tooltiptext = यस पृष्ठ ({ $shortcut })लाई सङ्ग्रह गर्नुहोस्
+
 # Variables:
 #  $shortcut (String): keyboard shortcut to open a local file
 toolbar-button-open-file =
     .label = फाइल खोल्नुहोस्
     .tooltiptext = ({ $shortcut }) फाइल खोल्नुहोस्
+
 toolbar-button-synced-tabs =
     .label = Sync गरिएको ट्याबहरू
     .tooltiptext = अन्य यन्त्रमा भएका टयाबहरू देखाउनुहोस्
+
 # Variables
 # $shortcut (string) - Keyboard shortcut to open a new private browsing window
 toolbar-button-new-private-window =
@@ -394,6 +454,7 @@ ui-tour-info-panel-close =
 popups-infobar-allow =
     .label = { $uriHost } लाई पप-अपको स्विकृति दिनुहोस्।
     .accesskey = p
+
 popups-infobar-block =
     .label = { $uriHost } को लागि पप-अपहरू रोक्नुहोस्
     .accesskey = p
@@ -404,34 +465,56 @@ popups-infobar-dont-show-message =
     .label = पप-अपहरू रोकिएका बेलामा यो सन्देश नदेखाउनुहोस्
     .accesskey = D
 
+## Since the default position for PiP controls does not change for RTL layout,
+## right-to-left languages should use "Left" and "Right" as in the English strings,
+
+
+##
+
+
 # Navigator Toolbox
 
 navbar-downloads =
     .label = डाउनलोडहरू
+
 navbar-overflow =
     .tooltiptext = अरु सामग्रीहरू...
+
 # Variables:
 #   $shortcut (String): keyboard shortcut to print the page
 navbar-print =
     .label = मुद्रण गर्नुहोस्
     .tooltiptext = यो पृष्ठ छाप्नुहोस्… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = मुद्रण गर्नुहोस्
-    .tooltiptext = यो पृष्ठ मुद्रण गर्नुहोस्
+
 navbar-library =
     .label = Library
     .tooltiptext = इतिहास, संग्रह गरिएका पुस्तकचिनोहरू, र अन्य हेर्नुहोस्
+
 navbar-search =
     .title = खोजी गर्नुहोस्
+
 navbar-accessibility-indicator =
     .tooltiptext = उपलब्धता सुविधा सक्षम गरियो
+
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
 tabs-toolbar =
     .aria-label = ब्राउजर ट्याबहरू
+
 tabs-toolbar-new-tab =
     .label = नयाँ ट्याब
+
 tabs-toolbar-list-all-tabs =
     .label = सब ट्याबहरूको सूचि बनाउनुहोस्
     .tooltiptext = सब ट्याबहरूको सूचि बनाउनुहोस्
+
+## Infobar shown at startup to suggest session-restore
+
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } ले केही डाटा आफै { -vendor-short-name } मा पठाउँछ अनि हामी तपाईँको अनुभव सुधार्न सक्छौँ।
+data-reporting-notification-button =
+    .label = मैले बाँड्ने कुराहरू छान्छु
+    .accesskey = C

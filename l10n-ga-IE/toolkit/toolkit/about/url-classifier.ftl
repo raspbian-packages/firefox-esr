@@ -2,6 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+url-classifier-search-title = Cuardaigh
+url-classifier-search-result-title = Torthaí
+url-classifier-search-result-uri = URI: { $uri }
+url-classifier-search-input = URL
+url-classifier-search-error-invalid-url = URL neamhbhailí
+url-classifier-search-btn = Tosaigh ag cuardach
+url-classifier-search-features = Gnéithe
 url-classifier-provider-title = Soláthraí
 url-classifier-provider = Soláthraí
 url-classifier-provider-last-update-time = Nuashonrú is déanaí

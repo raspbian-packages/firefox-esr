@@ -41,6 +41,11 @@ options-collapse-attrs-label = DOM özniteliklerini kısalt
 options-collapse-attrs-tooltip =
     .title = Denetçideki uzun öznitelikleri kısaltır
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Boyut değerlerini düzenlemek için tıklayıp sürükleyin
+options-inspector-draggable-properties-tooltip =
+    .title = Denetçi kuralları görünümünde boyut değerlerini düzenlemek için tıklayıp sürükleyin.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Varsayılan renk birimi
@@ -48,6 +53,7 @@ options-default-color-unit-authored = Yazıldığı gibi
 options-default-color-unit-hex = On altılık
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Renk adları
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Uzaktan hata ayıklamayı etkinleştir
 options-enable-remote-tooltip2 =
     .title = Bu seçeneği açarsanız bu tarayıcıda uzaktan hata ayıklamaya izin verilir
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Özel biçimlendiricileri etkinleştir
+options-enable-custom-formatters-tooltip =
+    .title = Bu seçeneği açmak, sitelerin DOM nesneleri için özel biçimlendiriciler tanımlamasına olanak tanır
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = HTTP üzerinden Service Worker’ları etkinleştir (araç kutusu açıkken)

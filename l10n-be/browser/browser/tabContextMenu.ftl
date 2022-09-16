@@ -75,8 +75,6 @@ tab-context-close-multiple-tabs =
 tab-context-share-url =
     .label = Падзяліцца
     .accesskey = П
-tab-context-share-more =
-    .label = Больш…
 
 ## Variables:
 ##  $tabCount (Number): the number of tabs that are affected by the action.
@@ -84,21 +82,12 @@ tab-context-share-more =
 tab-context-reopen-closed-tabs =
     .label =
         { $tabCount ->
-            [1] Перааадкрыць закрытыя карткі
-            [one] Перааадкрыць закрытую картку
-            [few] Перааадкрыць закрытыя карткі
-           *[many] Перааадкрыць закрытыя карткі
+            [1] Пераадкрыць закрытую картку
+            [one] Пераадкрыць закрытую картку
+            [few] Пераадкрыць закрытыя карткі
+           *[many] Пераадкрыць закрытыя карткі
         }
     .accesskey = з
-tab-context-close-tabs =
-    .label =
-        { $tabCount ->
-            [1] Закрыць картку
-            [one] Закрыць картку
-            [few] Закрыць карткі
-           *[many] Закрыць карткі
-        }
-    .accesskey = З
 tab-context-close-n-tabs =
     .label =
         { $tabCount ->
@@ -117,6 +106,7 @@ tab-context-move-tabs =
            *[many] Перамясціць карткі
         }
     .accesskey = м
+
 tab-context-send-tabs-to-device =
     .label =
         { $tabCount ->

@@ -76,6 +76,8 @@ cert-error-symantec-distrust-description = Webové stránky prokazují svou toto
 
 cert-error-symantec-distrust-admin = Informujte o tomto problému správce webové stránky.
 
+cert-error-old-tls-version = Tento server zřejmě nepodporuje protokol TLS 1.2, což je minimální verze, kterou { -brand-short-name } vyžaduje.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -127,7 +129,6 @@ unknownSocketType-title = Neplatná odpověď serveru
 nssFailure2-title = Chyba zabezpečeného spojení
 csp-xfo-error-title = { -brand-short-name } tuto stránku nemůže otevřít
 corruptedContentError-title = Chyba v obsahu stránky
-remoteXUL-title = Vzdálené XUL
 sslv3Used-title = Nelze navázat zabezpečené spojení
 inadequateSecurityError-title = Vaše připojení není zabezpečené
 blockedByPolicy-title = Zablokovaná stránka

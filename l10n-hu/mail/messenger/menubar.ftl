@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Menüsor
+    .accesskey = M
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Beállítások
-    .accesskey = B
 menu-tools-settings =
     .label = Beállítások
     .accesskey = B
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Betűméret
+    .accesskey = m
+menuitem-font-size-enlarge =
+    .label = Betűméret növelése
+    .accesskey = n
+menuitem-font-size-reduce =
+    .label = Betűméret csökkentése
+    .accesskey = c
+menuitem-font-size-reset =
+    .label = Betűméret visszaállítása
+    .accesskey = v
 mail-uidensity-label =
     .label = Sűrűség
     .accesskey = S
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Érintőképernyős
     .accesskey = r
+menu-spaces-toolbar-button =
+    .label = Helyek eszköztár
+    .accesskey = H
 
 ## File
 

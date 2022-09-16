@@ -75,19 +75,19 @@ restart-later = Później
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
-extension-controlled-password-saving = Rozszerzenie „{ $name }” <img data-l10n-name="icon"/> kontroluje to ustawienie.
+extension-controlling-password-saving = Rozszerzenie <img data-l10n-name="icon"/> <strong>{ $name }</strong> kontroluje to ustawienie.
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
-extension-controlled-web-notifications = Rozszerzenie „{ $name }” <img data-l10n-name="icon"/> kontroluje to ustawienie.
+extension-controlling-web-notifications = Rozszerzenie <img data-l10n-name="icon"/> <strong>{ $name }</strong> kontroluje to ustawienie.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlled-privacy-containers = Rozszerzenie „{ $name }” <img data-l10n-name="icon"/> wymaga włączonych „Kart z kontekstem”.
+extension-controlling-privacy-containers = Rozszerzenie <img data-l10n-name="icon"/> <strong>{ $name }</strong> wymaga włączonych „Kart z kontekstem”.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
-extension-controlled-websites-content-blocking-all-trackers = Rozszerzenie „{ $name }” <img data-l10n-name="icon"/> kontroluje to ustawienie.
+extension-controlling-websites-content-blocking-all-trackers = Rozszerzenie <img data-l10n-name="icon"/> <strong>{ $name }</strong> kontroluje to ustawienie.
 # This string is shown to notify the user that their proxy configuration preferences
 # are being controlled by an extension.
-extension-controlled-proxy-config = Rozszerzenie „{ $name }” <img data-l10n-name="icon"/> kontroluje, jak { -brand-short-name } łączy się z Internetem.
+extension-controlling-proxy-config = Rozszerzenie <img data-l10n-name="icon"/> <strong>{ $name }</strong> kontroluje, jak { -brand-short-name } łączy się z Internetem.
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -113,9 +113,6 @@ is-not-default = { -brand-short-name } nie jest obecnie domyślną przeglądark�
 set-as-my-default-browser =
     .label = Ustaw jako domyślną…
     .accesskey = U
-startup-restore-previous-session =
-    .label = Przywracanie poprzedniej sesji
-    .accesskey = P
 startup-restore-windows-and-tabs =
     .label = Otwieranie poprzednich okien i kart
     .accesskey = w
@@ -130,9 +127,6 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Otwieranie odnośników w kartach zamiast w nowych oknach
     .accesskey = O
-warn-on-close-multiple-tabs =
-    .label = Ostrzeganie przed zamknięciem wielu kart
-    .accesskey = a
 confirm-on-close-multiple-tabs =
     .label = Pytanie o potwierdzenie przed zamknięciem wielu kart
     .accesskey = a
@@ -189,7 +183,40 @@ containers-remove-cancel-button = Nie usuwaj
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Język i wygląd
-fonts-and-colors-header = Czcionki i kolory
+preferences-web-appearance-header = Wygląd witryn internetowych
+preferences-web-appearance-description = Część witryn dostosowuje swój schemat kolorów na podstawie preferencji użytkownika. Wybierz schemat kolorów używany na tych witrynach.
+preferences-web-appearance-choice-browser = Motyw przeglądarki { -brand-short-name }
+preferences-web-appearance-choice-system = Motyw systemu
+preferences-web-appearance-choice-light = Jasny
+preferences-web-appearance-choice-dark = Ciemny
+preferences-web-appearance-choice-tooltip-browser =
+    .title = Używaj ustawień motywu przeglądarki { -brand-short-name } do teł i treści witryn.
+preferences-web-appearance-choice-tooltip-system =
+    .title = Używaj ustawień systemu do teł i treści witryn.
+preferences-web-appearance-choice-tooltip-light =
+    .title = Używaj jasnego wyglądu teł i treści witryn.
+preferences-web-appearance-choice-tooltip-dark =
+    .title = Używaj ciemnego wyglądu teł i treści witryn.
+preferences-web-appearance-choice-input-browser =
+    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
+preferences-web-appearance-choice-input-system =
+    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-light =
+    .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
+preferences-web-appearance-choice-input-dark =
+    .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning = Wybrane kolory mają pierwszeństwo przed ustawieniami wyglądu witryn. <a data-l10n-name="colors-link">Zarządzaj kolorami</a>
+# This message contains one link. It can be moved within the sentence as needed
+# to adapt to your language, but should not be changed.
+preferences-web-appearance-footer = Zarządzaj motywami przeglądarki { -brand-short-name } w <a data-l10n-name="themes-link">Rozszerzenia i motywy</a>
+preferences-colors-header = Kolory
+preferences-colors-description = Zastąp domyślne kolory przeglądarki { -brand-short-name } dla tekstu, teł witryn i odnośników.
+preferences-colors-manage-button =
+    .label = Zarządzaj kolorami…
+    .accesskey = k
+preferences-fonts-header = Czcionki
 default-font = Domyślna czcionka:
     .accesskey = D
 default-font-size = Rozmiar:
@@ -197,9 +224,6 @@ default-font-size = Rozmiar:
 advanced-fonts =
     .label = Zaawansowane…
     .accesskey = s
-colors-settings =
-    .label = Kolory…
-    .accesskey = K
 # Zoom is a noun, and the message is used as header for a group of options
 preferences-zoom-header = Powiększenie
 preferences-default-zoom = Domyślne powiększenie:
@@ -242,8 +266,7 @@ check-user-spelling =
 
 files-and-applications-title = Pliki i aplikacje
 download-header = Pobieranie
-download-save-to =
-    .label = Pobierane pliki zapisuj do:
+download-save-where = Pobierane pliki zapisuj do:
     .accesskey = o
 download-choose-folder =
     .label =
@@ -334,6 +357,13 @@ applications-use-os-default-label =
 
 ##
 
+applications-handle-new-file-types-description = Co { -brand-short-name } ma robić z innymi plikami?
+applications-save-for-new-types =
+    .label = Zapisuj pliki
+    .accesskey = s
+applications-ask-before-handling =
+    .label = Pytaj, czy otworzyć lub zapisać pliki
+    .accesskey = P
 drm-content-header = Treści DRM (Digital Rights Management)
 play-drm-content =
     .label = Odtwarzanie treści chronionych przez DRM.
@@ -362,6 +392,9 @@ update-application-warning-cross-user-setting = To ustawienie będzie obowiązyw
 update-application-use-service =
     .label = Używaj usługi instalowania aktualizacji działającej w tle
     .accesskey = U
+update-application-suppress-prompts =
+    .label = Pokazuj mniej powiadomień o aktualizacjach
+    .accesskey = P
 update-setting-write-failure-title2 = Błąd podczas zachowywania ustawień aktualizacji
 # Variables:
 #   $path (String) - Path to the configuration file
@@ -407,6 +440,9 @@ browsing-use-autoscroll =
 browsing-use-smooth-scrolling =
     .label = Używaj płynnego przewijania
     .accesskey = n
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Zawsze widoczne paski przewijania
+    .accesskey = p
 browsing-use-onscreen-keyboard =
     .label = Wyświetlaj klawiaturę ekranową, gdy zachodzi taka potrzeba
     .accesskey = e
@@ -484,11 +520,6 @@ home-prefs-content-header = Strona startowa Firefoksa
 home-prefs-content-description = Wybierz, co wyświetlać na stronie startowej Firefoksa.
 home-prefs-search-header =
     .label = Pasek wyszukiwania
-home-prefs-topsites-header =
-    .label = Popularne
-home-prefs-topsites-description = Najczęściej odwiedzane strony.
-home-prefs-topsites-by-option-sponsored =
-    .label = Sponsorowane popularne witryny
 home-prefs-shortcuts-header =
     .label = Skróty
 home-prefs-shortcuts-description = Zachowane i odwiedzane strony.
@@ -500,7 +531,6 @@ home-prefs-shortcuts-by-option-sponsored =
 
 home-prefs-recommended-by-header =
     .label = Polecane przez { $provider }
-home-prefs-recommended-by-description-update = Wyjątkowe rzeczy z całego Internetu, wybrane przez { $provider }.
 home-prefs-recommended-by-description-new = Wyjątkowe rzeczy wybrane przez { $provider }, część rodziny produktów { -brand-product-name }.
 
 ##
@@ -508,9 +538,6 @@ home-prefs-recommended-by-description-new = Wyjątkowe rzeczy wybrane przez { $p
 home-prefs-recommended-by-learn-more = Jak to działa?
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Sponsorowane artykuły
-home-prefs-highlights-header =
-    .label = Wyróżnione
-home-prefs-highlights-description = Wybierane z zachowanych i odwiedzonych stron.
 home-prefs-highlights-option-visited-pages =
     .label = Historia
 home-prefs-highlights-options-bookmarks =
@@ -528,7 +555,6 @@ home-prefs-recent-activity-description = Wybierane z ostatnio odwiedzanych stro
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Od Mozilli
-home-prefs-snippets-description = Informacje od organizacji { -vendor-short-name } i przeglądarki { -brand-product-name }.
 home-prefs-snippets-description-new = Wskazówki i aktualności od organizacji { -vendor-short-name } i przeglądarki { -brand-product-name }.
 home-prefs-sections-rows-option =
     .label =
@@ -631,7 +657,7 @@ sync-mobile-promo = Firefox na <a data-l10n-name="android-link">Androida</a> <
 ## Firefox Account - Signed in
 
 sync-profile-picture =
-    .tooltiptext = Zmień obraz przypisany do konta
+    .tooltiptext = Zmień zdjęcie profilowe
 sync-sign-out =
     .label = Wyloguj się…
     .accesskey = W
@@ -862,14 +888,10 @@ sitedata-block-desc = Blokowanie:
     .accesskey = B
 sitedata-option-block-cross-site-trackers =
     .label = śledzące między witrynami
-sitedata-option-block-cross-site-and-social-media-trackers =
-    .label = śledzące między witrynami i serwisów społecznościowych
-sitedata-option-block-cross-site-tracking-cookies-including-social-media =
-    .label = ciasteczka śledzące między witrynami — w tym ciasteczka serwisów społecznościowych
-sitedata-option-block-cross-site-cookies-including-social-media =
-    .label = ciasteczka między witrynami — w tym ciasteczka serwisów społecznościowych
-sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
-    .label = śledzące między witrynami i serwisów społecznościowych oraz izolowanie pozostałych ciasteczek
+sitedata-option-block-cross-site-tracking-cookies =
+    .label = ciasteczka śledzące między witrynami
+sitedata-option-block-cross-site-cookies =
+    .label = ciasteczka śledzące między witrynami i izolowanie innych ciasteczek między witrynami
 sitedata-option-block-unvisited =
     .label = nieodwiedzonych witryn
 sitedata-option-block-all-third-party =
@@ -959,7 +981,6 @@ content-blocking-etp-standard-tcp-rollout-checkbox =
 content-blocking-etp-standard-tcp-rollout-description = Całkowita ochrona ciasteczek ogranicza ciasteczka do odwiedzanej witryny, więc elementy śledzące nie mogą ich używać do śledzenia Cię między witrynami.
 content-blocking-etp-standard-tcp-rollout-learn-more = Więcej informacji
 content-blocking-warning-title = Ostrzeżenie
-content-blocking-and-isolating-etp-warning-description = Blokowanie elementów śledzących i izolowanie ciasteczek może wpłynąć na funkcjonowanie niektórych stron. Odśwież stronę z włączonymi elementami śledzącymi, aby wyświetlić całą jej zawartość.
 content-blocking-and-isolating-etp-warning-description-2 = To ustawienie może spowodować niepoprawne działanie lub wyświetlanie niektórych stron. Jeśli dana strona wydaje się niewłaściwie działać, możesz wyłączyć dla niej ochronę przed śledzeniem, aby wczytać ją w całości.
 content-blocking-warning-learn-how = Więcej informacji
 content-blocking-reload-description = Zastosowanie tych zmian wymaga odświeżenia kart.
@@ -1031,9 +1052,6 @@ permissions-autoplay-settings =
 permissions-block-popups =
     .label = Blokowanie wyskakujących okien
     .accesskey = B
-permissions-block-popups-exceptions =
-    .label = Wyjątki…
-    .accesskey = t
 # "popup" is a misspelling that is more popular than the correct spelling of
 # "pop-up" so it's included as a search keyword, not displayed in the UI.
 permissions-block-popups-exceptions-button =
@@ -1123,7 +1141,3 @@ httpsonly-radio-disabled =
 desktop-folder-name = Pulpit
 downloads-folder-name = Pobrane
 choose-download-folder-title = Wybór folderu dla pobieranych plików
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Wysyłanie plików do usługi { $service-name }

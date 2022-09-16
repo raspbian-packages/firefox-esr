@@ -21,6 +21,7 @@ perftools-heading-features-default = Funkcie (predvolene odporúčané zapnuté)
 perftools-heading-features-disabled = Zakázané funkcie
 perftools-heading-features-experimental = Experimentálne
 perftools-heading-threads = Vlákna
+perftools-heading-threads-jvm = Vlákna JVM
 perftools-heading-local-build = Lokálne zostavenie
 
 ##
@@ -46,9 +47,6 @@ perftools-devtools-settings-label = Nastavenia
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Ak je povolené súkromné prehliadanie, nástroj na profilovanie je zakázaný.
-    Zatvorením všetkých súkromných okien ho opätovne povolíte.
 perftools-status-recording-stopped-by-another-tool = Nahrávanie bolo zastavené iným nástrojom.
 perftools-status-restart-required = Na aktiváciu tejto funkcie je potrebné reštartovať prehliadač.
 
@@ -94,6 +92,18 @@ perftools-thread-dns-resolver =
     .title = V tomto vlákne sa deje preklad DNS
 perftools-thread-task-controller =
     .title = Vlákna súboru vlákien TaskController
+perftools-thread-jvm-gecko =
+    .title = Hlavné vlákno Gecko JVM
+perftools-thread-jvm-nimbus =
+    .title = Hlavné vlákna súpravy Nimbus experiments SDK
+perftools-thread-jvm-default-dispatcher =
+    .title = Predvolený dispečer pre knižnicu coroutines Kotlin
+perftools-thread-jvm-glean =
+    .title = Hlavné vlákna pre Glean telemetry SDK
+perftools-thread-jvm-arch-disk-io =
+    .title = Dispečer IO pre knižnicu coroutines Kotlin
+perftools-thread-jvm-pool =
+    .title = Vlákna vytvorené v nepomenovanom fonde vlákien
 
 ##
 
@@ -104,6 +114,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Novinka</b>: { -profiler-brand-name } je teraz integrovaný do Nástrojov pre vývojárov. <a>Pozrite si ďalšie informácie</a> o tomto novom výkonnom nástroji.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -120,19 +134,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Webový vývojár
 perftools-presets-web-developer-description = Odporúčaná predvoľba pre väčšinu ladení webových aplikácií s nízkymi nárokmi na výkon.
-perftools-presets-firefox-platform-label = Platforma Firefox
-perftools-presets-firefox-platform-description = Odporúčaná predvoľba pre ladenie internej platformy Firefox.
-perftools-presets-firefox-front-end-label = Klientske rozhranie Firefoxu
-perftools-presets-firefox-front-end-description = Odporúčaná predvoľba pre vnútorné ladenie klientskeho rozhrania Firefoxu.
-perftools-presets-firefox-graphics-label = Grafika vo Firefoxe
-perftools-presets-firefox-graphics-description = Odporúčaná predvoľba na skúmanie výkonu grafiky vo Firefoxe.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Odporúčaná predvoľba pre profilovanie { -brand-shorter-name(case: "gen") }.
 perftools-presets-graphics-label = Grafika
 perftools-presets-graphics-description = Predvoľba na diagnostiku grafických chýb v prehliadači { -brand-shorter-name }.
 perftools-presets-media-label = Médiá
-perftools-presets-media-description = Odporúčaná predvoľba na diagnostiku problémov so zvukom a videom.
 perftools-presets-media-description2 = Predvoľba na diagnostiku problémov so zvukom a videom v prehliadači { -brand-shorter-name }.
+perftools-presets-networking-label = Sieťová aktivita
+perftools-presets-networking-description = Predvoľba pre diagnostiku sieťovej aktivity v prehliadači { -brand-shorter-name }.
 perftools-presets-custom-label = Vlastné
 
 ##

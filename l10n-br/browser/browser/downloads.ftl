@@ -16,13 +16,9 @@ downloads-panel =
 # The style attribute has the width of the Downloads Panel expressed using
 # a CSS unit. The longest labels that should fit are usually those of
 # in-progress and blocked downloads.
-downloads-panel-list =
-    .style = width: 70ch
-# The style attribute has the width of the Downloads Panel expressed using
-# a CSS unit. The longest labels that should fit are usually those of
-# in-progress and blocked downloads.
 downloads-panel-items =
     .style = width: 40em
+
 downloads-cmd-pause =
     .label = Ehan
     .accesskey = E
@@ -33,14 +29,7 @@ downloads-cmd-cancel =
     .tooltiptext = Nullañ
 downloads-cmd-cancel-panel =
     .aria-label = Nullañ
-# This message is only displayed on Windows and Linux devices
-downloads-cmd-show-menuitem =
-    .label = Digeriñ an teuliad a endalc'h ar restr
-    .accesskey = D
-# This message is only displayed on macOS devices
-downloads-cmd-show-menuitem-mac =
-    .label = Diskouez e-barzh Finder
-    .accesskey = F
+
 downloads-cmd-show-menuitem-2 =
     .label =
         { PLATFORM() ->
@@ -48,43 +37,47 @@ downloads-cmd-show-menuitem-2 =
            *[other] Diskouez en teuliad
         }
     .accesskey = D
+
+## Displayed in the downloads context menu for files that can be opened.
+## Variables:
+##   $handler (String) - The name of the mime type's default file handler.
+##   Example: "Notepad", "Acrobat Reader DC", "7-Zip File Manager"
+
 downloads-cmd-use-system-default =
     .label = Digeriñ e gwelerez ar sistem
     .accesskey = D
+# This version is shown when the download's mime type has a valid file handler.
+downloads-cmd-use-system-default-named =
+    .label = Digeriñ e { $handler }
+    .accesskey = D
+
 # We can use the same accesskey as downloads-cmd-always-open-similar-files.
 # Both should not be visible in the downloads context menu at the same time.
 downloads-cmd-always-use-system-default =
     .label = Digeriñ bewech e gwelerez ar sistem
     .accesskey = b
-downloads-cmd-show-button =
-    .tooltiptext =
-        { PLATFORM() ->
-            [macos] Diskouez e-barzh Finder
-           *[other] Digeriñ an teuliad a endalc'h ar restr
-        }
-downloads-cmd-show-panel =
-    .aria-label =
-        { PLATFORM() ->
-            [macos] Diskouez e-barzh Finder
-           *[other] Digeriñ an teuliad a endalc'h ar restr
-        }
-downloads-cmd-show-description =
-    .value =
-        { PLATFORM() ->
-            [macos] Diskouez e-barzh Finder
-           *[other] Digeriñ an teuliad a endalc'h ar restr
-        }
+# We can use the same accesskey as downloads-cmd-always-open-similar-files.
+# Both should not be visible in the downloads context menu at the same time.
+# This version is shown when the download's mime type has a valid file handler.
+downloads-cmd-always-use-system-default-named =
+    .label = Atav digeriñ e { $handler }
+    .accesskey = A
+
+##
+
 # We can use the same accesskey as downloads-cmd-always-use-system-default.
 # Both should not be visible in the downloads context menu at the same time.
 downloads-cmd-always-open-similar-files =
     .label = Digeriñ ar restroù heñvel bepred
     .accesskey = D
+
 downloads-cmd-show-button-2 =
     .tooltiptext =
         { PLATFORM() ->
             [macos] Diskouez e Finder
            *[other] Diskouez en teuliad
         }
+
 downloads-cmd-show-panel-2 =
     .aria-label =
         { PLATFORM() ->
@@ -97,6 +90,7 @@ downloads-cmd-show-description-2 =
             [macos] Diskouez e Finder
            *[other] Diskouez en teuliad
         }
+
 downloads-cmd-show-downloads =
     .label = Diskouez teuliad ar pellgargadurioù
 downloads-cmd-retry =
@@ -118,33 +112,45 @@ downloads-cmd-clear-list =
 downloads-cmd-clear-downloads =
     .label = Skarzhañ roll ar pellgargadurioù
     .accesskey = p
+downloads-cmd-delete-file =
+    .label = Dilemel
+    .accesskey = D
+
 # This command is shown in the context menu when downloads are blocked.
 downloads-cmd-unblock =
     .label = Aotren ar pellgargañ
     .accesskey = o
+
 # This is the tooltip of the action button shown when malware is blocked.
 downloads-cmd-remove-file =
     .tooltiptext = Dile&mel ar restr
+
 downloads-cmd-remove-file-panel =
     .aria-label = Dile&mel ar restr
+
 # This is the tooltip of the action button shown when potentially unwanted
 # downloads are blocked. This opens a dialog where the user can choose
 # whether to unblock or remove the download. Removing is the default option.
 downloads-cmd-choose-unblock =
     .tooltiptext = Dilemel ar restr pe aotren ar pellgargañ
+
 downloads-cmd-choose-unblock-panel =
     .aria-label = Dilemel ar restr pe aotren ar pellgargañ
+
 # This is the tooltip of the action button shown when uncommon downloads are
 # blocked.This opens a dialog where the user can choose whether to open the
 # file or remove the download. Opening is the default option.
 downloads-cmd-choose-open =
     .tooltiptext = Digeriñ pe dilemel ar restr
+
 downloads-cmd-choose-open-panel =
     .aria-label = Digeriñ pe dilemel ar restr
+
 # Displayed when hovering a blocked download, indicates that it's possible to
 # show more information for user to take the next action.
 downloads-show-more-information =
     .value = Diskouez muioc'h a ditouroù
+
 # Displayed when hovering a complete download, indicates that it's possible to
 # open the file using an app available in the system.
 downloads-open-file =
@@ -163,6 +169,8 @@ downloading-file-opens-in-minutes = Digeriñ a raio a-benn { $minutes }m...
 downloading-file-opens-in-minutes-and-seconds = Digeriñ a raio a-benn { $minutes }e { $seconds }m...
 downloading-file-opens-in-seconds = Digeriñ a raio a-benn { $seconds }eil...
 downloading-file-opens-in-some-time = Digeriñ pa va leuniet…
+downloading-file-click-to-open =
+    .value = Digeriñ pa vo echuet
 
 ##
 
@@ -170,30 +178,55 @@ downloading-file-opens-in-some-time = Digeriñ pa va leuniet…
 # indicates that it's possible to download this file again.
 downloads-retry-download =
     .value = Adklask ar bellgargañ
+
 # Displayed when hovering a download which is able to be cancelled by users,
 # indicates that it's possible to cancel and stop the download.
 downloads-cancel-download =
     .value = Nullañ ar bellgargañ
+
 # This string is shown at the bottom of the Downloads Panel when all the
 # downloads fit in the available space, or when there are no downloads in
 # the panel at all.
 downloads-history =
     .label = Diskouez an holl bellgargadurioù
     .accesskey = k
+
 # This string is shown at the top of the Download Details Panel, to indicate
 # that we are showing the details of a single download.
 downloads-details =
     .title = Munudoù ar bellgargardenn
+
+## Displayed when a site attempts to automatically download many files.
+## Variables:
+##   $num (number) - Number of blocked downloads.
+##   $url (string) - The url of the suspicious site, stripped of http, https and www prefix.
+
+downloads-files-not-downloaded =
+    { $num ->
+        [one] N'eo ket bet pellgarget ar restr.
+        [two] { $num } restr n'int ket bet pellgarget.
+        [few] { $num } restr n'int ket bet pellgarget.
+        [many] { $num } a restroù n'int ket bet pellgarget.
+       *[other] { $num } restr n'int ket bet pellgarget.
+    }
+downloads-blocked-from-url = Pellgargadennoù stanket eus { $url }.
+downloads-blocked-download-detailed-info = { $url } he deus klasket pellgargañ meur a restr ent emgefreek. Gallout a rafe bezañ torret al lec'hienn pe o klask lakaat restroù lastez en o trevnad.
+
+##
+
 downloads-clear-downloads-button =
     .label = Skarzhañ roll ar pellgargadurioù
     .tooltiptext = Skarzhet eo bet ar pellgargadurioù peurechu, nullet ha c'hwitet
+
 # This string is shown when there are no items in the Downloads view, when it
 # is displayed inside a browser tab.
 downloads-list-empty =
     .value = N'eus pellgargadur ebet.
+
 # This string is shown when there are no items in the Downloads Panel.
 downloads-panel-empty =
     .value = Pellgargadur ebet evit an estez-mañ.
+
 # This is displayed in an item at the bottom of the Downloads Panel when there
 # are more downloads than can fit in the list in the panel.
 #   $count (number) - number of files being downloaded that are not shown in the

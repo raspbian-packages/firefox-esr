@@ -50,6 +50,7 @@ about-processes-socket-process = Reto ({ $pid })
 about-processes-remote-sandbox-broker-process = Agento por mallokaj izolejoj  ({ $pid })
 about-processes-fork-server-process = Forka servilo ({ $pid })
 about-processes-preallocated-process = Antaŭasignado ({ $pid })
+about-processes-utility-process = Utilaĵo ({ $pid })
 # Unknown process names
 # Variables:
 #    $pid (String) The process id of this process, assigned by the OS.
@@ -63,10 +64,8 @@ about-processes-unknown-process = Aliaj: { $type } ({ $pid })
 
 about-processes-web-isolated-process = { $origin } ({ $pid })
 about-processes-web-serviceworker = { $origin } ({ $pid }, serviceworker)
-about-processes-web-large-allocation-process = { $origin } ({ $pid }, granda)
 about-processes-with-coop-coep-process = { $origin } ({ $pid }, malsamorigina izolejo)
 about-processes-web-isolated-process-private = { $origin } — Privata ({ $pid })
-about-processes-web-large-allocation-process-private = { $origin } — Privata ({ $pid }, granda)
 about-processes-with-coop-coep-process-private = { $origin } — Privata ({ $pid }, malsamorigina izolejo)
 
 ## Details within processes
@@ -117,6 +116,9 @@ about-processes-frame-name-one = Subkadro: { $url }
 #   $number (Number) The number of subframes in this group. Always ≥ 1.
 #   $shortUrl (String) The shared prefix for the subframes in the group.
 about-processes-frame-name-many = Subkadroj ({ $number }): { $shortUrl }
+# Utility process actor names
+about-processes-utility-actor-unknown = Nekonata agento
+about-processes-utility-actor-audio-decoder = Sona malkodilo
 
 ## Displaying CPU (percentage and total)
 ## Variables:
@@ -132,9 +134,6 @@ about-processes-cpu = { NUMBER($percent, maximumSignificantDigits: 2, style: "pe
     .title = Tempo de CPU: { NUMBER($total, maximumFractionDigits: 0) }{ $unit }
 # Special case: data is not available yet.
 about-processes-cpu-user-and-kernel-not-ready = (mezurata)
-# Special case: process or thread is currently idle.
-about-processes-cpu-idle = senokupa
-    .title = Tempo de CPU: { NUMBER($total, maximumFractionDigits: 2) }{ $unit }
 # Special case: process or thread is almost idle (using less than 0.1% of a CPU core).
 # This case only occurs on Windows where the precision of the CPU times is low.
 about-processes-cpu-almost-idle = < 0.1%

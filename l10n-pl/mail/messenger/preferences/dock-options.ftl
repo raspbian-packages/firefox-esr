@@ -27,4 +27,4 @@ count-new-messages-radio =
     .label = nowych wiadomości
     .accesskey = h
 
-notification-settings-info = Można wyłączyć plakietkę w panelu Powiadomienia Preferencji systemowych.
+notification-settings-info2 = Można wyłączyć plakietkę w panelu Powiadomienia Ustawień systemowych.

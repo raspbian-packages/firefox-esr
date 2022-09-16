@@ -2,6 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+fonts-window-close =
+    .key = w
+
+# Variables:
+#   $name {string, "Arial"} - Name of the default font
+fonts-label-default =
+    .label = Sjálfgefið ({ $name })
+fonts-label-default-unnamed =
+    .label = Sjálfgefið
+
 fonts-encoding-dialog-title =
     .title = Leturgerð og stafatöflur
 
@@ -17,49 +27,49 @@ fonts-proportional-label =
 
 # Note: Translate "Latin" as the name of Latin (Roman) script, not as the name of the Latin language.
 font-language-group-latin =
-    .label = Latin
+    .label = Latneskt
 font-language-group-japanese =
-    .label = Japanska
+    .label = Japanskt
 font-language-group-trad-chinese =
-    .label = Hefðbundin kínverska (Taívan)
+    .label = Hefðbundið kínverskt (Taívan)
 font-language-group-simpl-chinese =
-    .label = Einfölduð kínverska
+    .label = Einfaldað kínverskt
 font-language-group-trad-chinese-hk =
-    .label = Hefðbundin kínverska (Hong Kong)
+    .label = Hefðbundið kínverskt (Hong Kong)
 font-language-group-korean =
-    .label = Kóreska
+    .label = Kóreskt
 font-language-group-cyrillic =
     .label = Kýrillískt
 font-language-group-el =
-    .label = Gríska
+    .label = Grískt
 font-language-group-other =
     .label = Önnur ritunarkerfi
 font-language-group-thai =
-    .label = Tælenska
+    .label = Tælenskt
 font-language-group-hebrew =
-    .label = Hebreska
+    .label = Hebreskt
 font-language-group-arabic =
-    .label = Arabíska
+    .label = Arabískt
 font-language-group-devanagari =
     .label = Devanagari
 font-language-group-tamil =
     .label = Tamíl
 font-language-group-armenian =
-    .label = Armensíska
+    .label = Armensískt
 font-language-group-bengali =
-    .label = Bengalska
+    .label = Bengalskt
 font-language-group-canadian =
-    .label = Unified Canadian Syllabary
+    .label = Samræmd Kanadísk atkvæðatákn
 font-language-group-ethiopic =
     .label = Eþíópískt
 font-language-group-georgian =
-    .label = Georgíska
+    .label = Georgískt
 font-language-group-gujarati =
     .label = Gujarati
 font-language-group-gurmukhi =
     .label = Gurmukhi
 font-language-group-khmer =
-    .label = Kmer
+    .label = Kmerískt
 font-language-group-malayalam =
     .label = Malayanskt
 font-language-group-math =
@@ -73,7 +83,7 @@ font-language-group-kannada =
 font-language-group-sinhala =
     .label = Sinhala
 font-language-group-tibetan =
-    .label = Tibetan
+    .label = Tíbetskt
 
 ## Default font type
 
@@ -83,9 +93,13 @@ default-font-serif =
 default-font-sans-serif =
     .label = Sans Serif
 
+font-size-proportional-label =
+    .value = Stærð:
+    .accesskey = t
+
 font-size-monospace-label =
     .value = Stærð:
-    .accesskey = i
+    .accesskey = r
 
 font-serif-label =
     .value = Serif:
@@ -96,12 +110,12 @@ font-sans-serif-label =
     .accesskey = n
 
 font-monospace-label =
-    .value = Jafnstórt:
+    .value = Jafnbreitt:
     .accesskey = J
 
 font-min-size-label =
     .value = Lágmarks leturstærð:
-    .accesskey = æ
+    .accesskey = g
 
 min-size-none =
     .label = Engin
@@ -133,5 +147,5 @@ font-incoming-email-label =
     .accesskey = I
 
 default-font-reply-checkbox =
-    .label = Ef hægt er, nota sjálfgefna textakóðun í svörum
+    .label = Ef hægt er skal nota sjálfgefna textakóðun í svörum
     .accesskey = h

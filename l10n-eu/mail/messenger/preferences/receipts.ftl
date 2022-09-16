@@ -5,33 +5,33 @@
 receipts-dialog-window =
     .title = Hartu-agiriak
 
-return-receipt-checkbox =
+return-receipt-checkbox-control =
     .label = Eskatu beti hartu-agiria mezuak bidaltzean
-    .acceskey = h
+    .accesskey = E
 
 receipt-arrive-label = Hartu-agiri bat iristean:
 
-receipt-leave-radio =
+receipt-leave-radio-control =
     .label = Utzi nire sarrera-ontzian
-    .acceskey = s
+    .accesskey = s
 
-receipt-move-radio =
+receipt-move-radio-control =
     .label = Aldatu lekuz "Bidalitakoak" karpetara
-    .acceskey = A
+    .accesskey = l
 
 receipt-request-label = Hartu-agiri baten eskaera jasotzen dudanean:
 
-receipt-return-never-radio =
-    .label = Ez bidali inoiz hartu-agiririk
-    .acceskey = n
+receipt-return-never-radio-control =
+    .label = Ez bidali inoiz hartu-agiria
+    .accesskey = h
 
-receipt-return-some-radio =
+receipt-return-some-radio-control =
     .label = Baimendu hartu-agiriak mezu batzuentzat
-    .acceskey = r
+    .accesskey = m
 
-receipt-not-to-cc =
+receipt-not-to-cc-label =
     .value = Ez banago mezuaren Nori edo Cc eremuetan:
-    .acceskey = N
+    .accesskey = e
 
 receipt-send-never-label =
     .label = Inoiz ez bidali
@@ -42,10 +42,10 @@ receipt-send-always-label =
 receipt-send-ask-label =
     .label = Galdetu niri
 
-sender-outside-domain =
+sender-outside-domain-label =
     .value = Bidaltzailea nire domeinutik kanpo badago:
-    .acceskey = B
+    .accesskey = k
 
-other-cases-label =
+other-cases-text-label =
     .value = Beste kasu guztietan:
-    .acceskey = B
+    .accesskey = b

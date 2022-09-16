@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Reporte para { $addon-name }
 
 abuse-report-title-extension = Reportar esta extensión a { -vendor-short-name }
+abuse-report-title-sitepermission = Reportar los permisos de sitio de esta extensión a { -vendor-short-name }
 abuse-report-title-theme = Reportar este tema a { -vendor-short-name }
 abuse-report-subtitle = ¿Cuál es el problema?
 
@@ -33,12 +33,6 @@ abuse-report-goback-button = Atrás
 abuse-report-submit-button = Enviar
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -48,6 +42,7 @@ abuse-report-messagebar-submitting = Enviando reporte para <span data-l10n-name=
 abuse-report-messagebar-submitted = Gracias por enviar un reporte. ¿Quieres eliminar <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Gracias por enviar un reporte.
 abuse-report-messagebar-removed-extension = Gracias por enviar un reporte. Has eliminado la extensión <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Gracias por enviar un reporte. Has eliminado los permisos de sitio de la extensión <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Gracias por enviar un reporte. Has eliminado el tema <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Ocurrió un error al enviar el reporte para <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = El reporte para <span data-l10n-name="addon-name">{ $addon-name }</span> no fue enviado por que otro reporte fue enviado recientemente.
@@ -56,6 +51,8 @@ abuse-report-messagebar-error-recent-submit = El reporte para <span data-l10n-na
 
 abuse-report-messagebar-action-remove-extension = Sí, eliminarla
 abuse-report-messagebar-action-keep-extension = No, mantenerla
+abuse-report-messagebar-action-remove-sitepermission = Sí, eliminarlos
+abuse-report-messagebar-action-keep-sitepermission = No, mantenerlos
 abuse-report-messagebar-action-remove-theme = Sí, eliminarlo
 abuse-report-messagebar-action-keep-theme = No, mantenerlo
 abuse-report-messagebar-action-retry = Reintentar
@@ -78,9 +75,11 @@ abuse-report-deceptive-reason-v2 = Dice ser algo que no es
 abuse-report-deceptive-example = Ejemplo: Descripción o imágenes engañosas
 
 abuse-report-broken-reason-extension-v2 = No funciona, provoca errores en sitios o enlentece { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = No funciona, provoca errores en sitios o enlentece { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = No funciona o corrompe la vista del navegador
 abuse-report-broken-example = Ejemplo: Las funciones son lentas, difíciles de usar o no funciona; partes de los sitios web no cargan o tienen un aspecto inusual
 abuse-report-broken-suggestions-extension = Parece que has identificado un bug. Junto con enviar un reporte aquí, la mejor forma de que un problema de funcionalidad sea resuelto es contactar al desarrollador de la extensión. <a data-l10n-name="support-link">Visita el sitio web de la extensión</a> para conseguir la información del desarrollador.
+abuse-report-broken-suggestions-sitepermission = Parece que has identificado un bug. Junto con enviar un reporte aquí, la mejor forma de que un problema de funcionalidad sea resuelto es contactar al desarrollador del sitio web. <a data-l10n-name="support-link">Visita el sitio web</a> para conseguir la información del desarrollador.
 abuse-report-broken-suggestions-theme = Parece que has identificado un bug. Junto con enviar un reporte aquí, la mejor forma de que un problema de funcionalidad sea resuelto es contactar al desarrollador del tema. <a data-l10n-name="support-link">Visita el sitio web del tema</a> para conseguir la información del desarrollador.
 
 abuse-report-policy-reason-v2 = Muestra contenido de odio, violencia o ilegal
@@ -90,4 +89,3 @@ abuse-report-unwanted-reason-v2 = Nunca lo quise y no sé cómo deshacerme de é
 abuse-report-unwanted-example = Ejemplo: Una aplicación instalada sin mi permiso
 
 abuse-report-other-reason = Otra cosa
-

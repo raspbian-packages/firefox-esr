@@ -47,6 +47,9 @@ perftools-thread-render-backend =
 ## preferences are true.
 
 
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
+
 ## Profiler presets
 
 
@@ -54,8 +57,10 @@ perftools-thread-render-backend =
 # devtools/client/performance-new/popup/background.jsm.js
 # The same labels and descriptions are also defined in appmenu.ftl.
 
-perftools-presets-firefox-platform-label = Firefox प्लैटफ़ॉर्म
 perftools-presets-firefox-label = { -brand-shorter-name }
+
+perftools-presets-graphics-label = ग्राफिक्स
+
 perftools-presets-media-label = मीडिया
 
 ##

@@ -19,6 +19,9 @@ auth-waiting = Caka se, daniž kontakt pśeglědanje njedokóńcyjo …
 finger-verify = Pśespytowaś
 finger-verify-access-key = l
 
+finger-ignore = Ignorěrowaś
+finger-ignore-access-key = I
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Palcowy wótśišć OTR pśidaś
 
@@ -43,7 +46,6 @@ finger-unseen = Identita kontakta { $name } hyšći njejo se pśeglědała. Pśi
 finger-seen = { $name } was wót njespóznatego licadła kontaktěrujo. Pśipadne wótsłuchanje njejo móžne, ale z tšochu procu mógał něchten sobu słuchaś. Pśeglědajśo identitu kontakta, aby doglědowanjeju zajźował.
 
 state-not-private = Aktualna konwersacija njejo priwatna.
-
 state-generic-not-private = Aktualna konwersacija njejo priwatna.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Sćo pśespytał identitu { $name }.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = Identita { $name } njejo se wobkšuśiła.
-
-verify-title = Identitu wašogo kontakta pśespytowaś
-error-title = Zmólka
-success-title = Koděrowanje wót kóńca do kóńca
-success-them-title = Identitu wašogo kontakta pśeglědowaś
-fail-title = Pśespytanje njejo móžne
-waiting-title = Wokšuśeńske napšašowanje jo se pósłało
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

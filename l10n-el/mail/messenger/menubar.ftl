@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Γραμμή μενού
+    .accesskey = μ
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Προτιμήσεις
-    .accesskey = Π
 menu-tools-settings =
     .label = Ρυθμίσεις
     .accesskey = θ
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Μέγεθος γραμματοσειράς
+    .accesskey = θ
+menuitem-font-size-enlarge =
+    .label = Αύξηση μεγέθους γραμματοσειράς
+    .accesskey = ξ
+menuitem-font-size-reduce =
+    .label = Μείωση μεγέθους γραμματοσειράς
+    .accesskey = ω
+menuitem-font-size-reset =
+    .label = Επαναφορά μεγέθους γραμματοσειράς
+    .accesskey = π
 mail-uidensity-label =
     .label = Πυκνότητα
     .accesskey = Π
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Αφή
     .accesskey = Α
+menu-spaces-toolbar-button =
+    .label = Γραμμή χώρων
+    .accesskey = χ
 
 ## File
 

@@ -8,6 +8,9 @@ certmgr-title =
 certmgr-tab-mine =
     .label = Sinu sertifikaadid
 
+certmgr-tab-remembered =
+    .label = Autentimisotsused
+
 certmgr-tab-people =
     .label = Inimesed
 
@@ -18,7 +21,9 @@ certmgr-tab-ca =
     .label = Keskused
 
 certmgr-mine = Sul on sind tuvastavaid sertifikaate järgnevatelt asutustelt
+certmgr-remembered = Neid serte kasutatakse sinu tuvastamiseks saitidel
 certmgr-people = Sul on järgnevaid inimesi tuvastavaid sertifikaate
+certmgr-server = Need kirjed tuvastavad serverite sertide vigade erandeid
 certmgr-ca = Sul on järgnevaid sertifitseerimiskeskusi tuvastavaid sertifikaate
 
 certmgr-edit-ca-cert =
@@ -36,6 +41,9 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Sertifikaadi kustutamine
     .style = width: 48em; height: 24em;
+
+certmgr-cert-host =
+    .label = Host
 
 certmgr-cert-name =
     .label = Sertifikaadi nimi
@@ -155,6 +163,11 @@ delete-user-cert-confirm = Kas oled kindel, et soovid neid sertifikaate kustutad
 delete-user-cert-impact = Kui kustutad mõne enda sertifikaadi, ei ole sul võimalik end sellega enam tuvastada.
 
 
+delete-ssl-override-title =
+    .title = Kustuta serveri serdi erand
+delete-ssl-override-confirm = Kas oled kindel, et soovid kustutada selle serveri erandi?
+delete-ssl-override-impact = Serveri erandi kustutamisega taastad selle serveri jaoks tavalised turvakontrollid ning serverilt nõutakse taas valideeruvat sertifikaati.
+
 delete-ca-cert-title =
     .title = SK sertifikaadi kustutamine või usaldusväärsuse eemaldamine
 delete-ca-cert-confirm = Oled avaldanud soovi kustutada need SK sertifikaadid. Sisseehitatud sertifikaatidelt eemaldatakse kogu nende usaldusväärsus, mis annab sama efekti. Kas oled kindel, et soovid kustutamise või usaldusväärsuse eemaldamisega jätkata?
@@ -173,9 +186,19 @@ delete-email-cert-impact = Kui kustutad isiku e-posti sertifikaadi, pole sul võ
 cert-with-serial =
     .value = Järgneva seerianumbriga sertifikaat: { $serialNumber }
 
-## Cert Viewer
+# Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
+send-no-client-certificate = Ära saada kliendiserti
+
+# Used when no cert is stored for an override
+no-cert-stored-for-override = (pole salvestatud)
+
+# When a certificate is unavailable (for example, it has been deleted or the token it exists on has been removed).
+certificate-not-available = (pole saadaval)
 
 ## Used to show whether an override is temporary or permanent
+
+permanent-override = Jäädav
+temporary-override = Ajutine
 
 ## Add Security Exception dialog
 

@@ -10,6 +10,7 @@
 abuse-report-dialog-title = Повідомити про порушення для { $addon-name }
 
 abuse-report-title-extension = Поскаржитись на це розширення до { -vendor-short-name }
+abuse-report-title-sitepermission = Повідомити { -vendor-short-name } про ці дозволи для сайтів додатка
 abuse-report-title-theme = Поскаржитись на цю тему до { -vendor-short-name }
 abuse-report-subtitle = У чому проблема?
 
@@ -36,12 +37,6 @@ abuse-report-goback-button = Назад
 abuse-report-submit-button = Відправити
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -51,6 +46,7 @@ abuse-report-messagebar-submitting = Надсилання скарги на <spa
 abuse-report-messagebar-submitted = Дякуємо за надсилання скарги. Хочете вилучити <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Дякуємо за надсилання скарги.
 abuse-report-messagebar-removed-extension = Дякуємо за надсилання скарги. Ви вилучили розширення <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Дякуємо за надсилання звіту. Ви вилучили дозволи сайтів для додатка <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Дякуємо за надсилання скарги. Ви вилучили тему <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Сталася помилка під час надсилання скарги на <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Скаргу на <span data-l10n-name="addon-name">{ $addon-name }</span> не було надіслано, тому що недавно було відправлено іншу скаргу.
@@ -59,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Скаргу на <span data-l10n-
 
 abuse-report-messagebar-action-remove-extension = Так, вилучити
 abuse-report-messagebar-action-keep-extension = Ні, залишити
+abuse-report-messagebar-action-remove-sitepermission = Так, вилучити
+abuse-report-messagebar-action-keep-sitepermission = Ні, залишити
 abuse-report-messagebar-action-remove-theme = Так, вилучити
 abuse-report-messagebar-action-keep-theme = Ні, залишити
 abuse-report-messagebar-action-retry = Повторити спробу
@@ -81,12 +79,17 @@ abuse-report-deceptive-reason-v2 = Видавання себе за щось і�
 abuse-report-deceptive-example = Наприклад: Опис чи зображення, що вводять в оману
 
 abuse-report-broken-reason-extension-v2 = Не працює, пошкоджує вебсайти, або сповільнює роботу { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Не працює, пошкоджує вебсайти, або сповільнює роботу { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Не працює чи пошкоджує вигляд браузера
 abuse-report-broken-example = Наприклад: Повільна робота, труднощі з використанням, або не працює; частини вебсайтів не завантажуються, або виглядають незвично
 abuse-report-broken-suggestions-extension =
     Схоже, ви виявили помилку. Окрім надсилання скарги, найкращим способом
     розв'язання проблеми буде зв'язок із розробником розширення.
     <a data-l10n-name="support-link">Відвідайте вебсайт розширення</a> для отримання інформації про розробника.
+abuse-report-broken-suggestions-sitepermission =
+    Схоже, ви виявили помилку. Крім надсилання звіту, найкращим способом
+    виправити проблему є звернення до розробника вебсайту.
+    <a data-l10n-name="support-link">Відвідайте вебсайт</a> для отримання інформації про розробника.
 abuse-report-broken-suggestions-theme =
     Схоже, ви виявили помилку. Окрім надсилання скарги, найкращим способом
     розв'язання проблеми буде зв'язок із розробником теми.
@@ -102,4 +105,3 @@ abuse-report-unwanted-reason-v2 = Мені це було непотрібно і
 abuse-report-unwanted-example = Наприклад: Встановлення без дозволу
 
 abuse-report-other-reason = Щось інше
-

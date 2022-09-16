@@ -17,6 +17,9 @@ menu-select-all =
     .label = Velja allt
     .accesskey = j
 
+close-dialog =
+    .key = w
+
 general-tab =
     .label = Almennt
     .accesskey = A
@@ -31,7 +34,7 @@ general-mode =
 general-size =
     .value = Stærð:
 general-referrer =
-    .value = URL bakvísun:
+    .value = URL-slóð tilvísunar:
 general-modified =
     .value = Breytt:
 general-encoding =
@@ -88,7 +91,7 @@ security-view-identity =
 security-view-identity-owner =
     .value = Eigandi:
 security-view-identity-domain =
-    .value = Vefsetur:
+    .value = Vefsvæði:
 security-view-identity-verifier =
     .value = Staðfest af:
 security-view-identity-validity =
@@ -97,11 +100,11 @@ security-view-privacy =
     .value = Friðhelgi og ferill
 
 security-view-privacy-history-value = Hef ég skoðað þetta vefsvæði áður?
-security-view-privacy-sitedata-value = Er þessi vefsíða að geyma upplýsingar á tölvunni minni?
+security-view-privacy-sitedata-value = Er þetta vefsvæði að geyma upplýsingar á tölvunni minni?
 
 security-view-privacy-clearsitedata =
-    .label = Hreinsa smákökur og gögn vefsvæðis
-    .accesskey = ö
+    .label = Hreinsa vefkökur og gögn vefsvæðis
+    .accesskey = H
 
 security-view-privacy-passwords-value = Hef ég vistað eitthvað lykilorð fyrir þetta vefsvæði?
 
@@ -120,10 +123,10 @@ help-button =
 ##   $value (number) - Amount of data being stored
 ##   $unit (string) - The unit of data being stored (Usually KB)
 
-security-site-data-cookies = Já, smákökur og { $value } { $unit } af gögnum vefsvæðis
+security-site-data-cookies = Já, vefkökur og { $value } { $unit } af gögnum vefsvæðis
 security-site-data-only = Já, { $value } { $unit } af gögnum vefsvæðis
 
-security-site-data-cookies-only = Já, smákökur
+security-site-data-cookies-only = Já, vefkökur
 security-site-data-no = Nei
 
 ##
@@ -169,8 +172,8 @@ security-no-visits = Nei
 general-meta-tags =
     .value =
         { $tags ->
-            [one] Meta (1 tag)
-           *[other] Meta ({ $tags } tags)
+            [one] Meta (1 merki)
+           *[other] Meta ({ $tags } merki)
         }
 
 # This string is used to display the number of times
@@ -222,7 +225,7 @@ media-image-type =
 #   $scaledx (number) - The scaled horizontal size of an image
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
-    .value = { $dimx }px × { $dimy }px (skalað í { $scaledx }px × { $scaledy }px)
+    .value = { $dimx }px × { $dimy }px (kvarðað í { $scaledx }px × { $scaledy }px)
 
 # This string is used to display the size of an image in pixels
 # Variables:
@@ -248,7 +251,7 @@ media-block-image =
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:
-#   $website (string) - The url of the website pageInfo is getting info for
+#   $website (string) — The url of the website pageInfo is getting info for
 page-info-page =
     .title = Upplýsingar síðu - { $website }
 page-info-frame =

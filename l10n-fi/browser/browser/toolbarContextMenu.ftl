@@ -39,15 +39,18 @@ toolbar-context-menu-remove-extension =
 toolbar-context-menu-report-extension =
     .label = Raportoi laajennus
     .accesskey = R
-# Can appear on the same context menu as menubarCmd ("Menu Bar") and
-# personalbarCmd ("Bookmarks Toolbar"), so they should have different
-# access keys.
+# Can appear on the same context menu as toolbar-context-menu-menu-bar-cmd
+# ("Menu Bar") and personalbarCmd ("Bookmarks Toolbar"), so they should
+# have different access keys.
 toolbar-context-menu-pin-to-overflow-menu =
     .label = Kiinnitä ylivuotovalikkoon
     .accesskey = y
 toolbar-context-menu-auto-hide-downloads-button-2 =
     .label = Piilota painike, kun latauslista on tyhjä
     .accesskey = i
+toolbar-context-menu-always-open-downloads-panel =
+    .label = Näytä paneeli, kun lataus alkaa
+    .accesskey = ä
 toolbar-context-menu-remove-from-toolbar =
     .label = Poista työkalupalkista
     .accesskey = P

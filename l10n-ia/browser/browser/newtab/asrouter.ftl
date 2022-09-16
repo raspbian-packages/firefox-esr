@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Function recommendate
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Proque vide io isto?
+
 cfr-doorhanger-extension-cancel-button = Non ora
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Adder ora
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = Gerer le configurationes de recommendation
     .accesskey = G
+
 cfr-doorhanger-extension-never-show-recommendation = Non monstrar me iste recommendation
     .accesskey = N
+
 cfr-doorhanger-extension-learn-more-link = Saper plus
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = per { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recommendation
 cfr-doorhanger-extension-notification2 = Recommendation
     .tooltiptext = Extension recommendate
     .a11y-announcement = Un recommendation pro un extension es disponibile
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Recommendation
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = Saper plus
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nove function:
+
 cfr-whatsnew-button =
     .label = Novas
     .tooltiptext = Novas
+
 cfr-whatsnew-release-notes-link-text = Leger le notas de version
 
 ## Enhanced Tracking Protection Milestones
@@ -156,3 +166,16 @@ spotlight-total-cookie-protection-body = Le protection total del cookies bloca l
 spotlight-total-cookie-protection-expanded = { -brand-short-name } crea un barriera circa le cookies, limitante los al sito que tu visita de maniera que le traciatores non pote usar los pro sequer te. Como usator del prime hora, tu nos adjuta a optimisar iste function de sorta que nos pote continuar a construer un web melior pro totes.
 spotlight-total-cookie-protection-primary-button = Activar Protection total del cookies
 spotlight-total-cookie-protection-secondary-button = Non ora
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Un internet melior comencia con te
+spotlight-better-internet-body = Quando tu usa { -brand-short-name }, tu vota pro un internet aperte e accessibile que es melior pro totes.
+spotlight-peace-mind-header = Nos te mantene secur
+spotlight-peace-mind-body = Cata mense, { -brand-short-name } bloca un media de ultra 3000 traciatores per usator. Perque nihil deberea poner se inter te e le bon internet, specialmente enoios pro tu confidentialitate como le traciatores.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Mantener in le Bassino
+       *[other] Appunctar al barra del activitates
+    }
+spotlight-pin-secondary-button = Non ora

@@ -35,6 +35,8 @@ detail-version =
     .label = ਵਰਜ਼ਨ
 detail-last-updated =
     .label = ਆਖਰੀ ਅੱਪਡੇਟ
+addon-detail-description-expand = ਹੋਰ ਵੇਖਾਓ
+addon-detail-description-collapse = ਘੱਟ ਵੇਖਾਓ
 detail-contributions-description = ਇਹ ਐਡ-ਆਨ ਦੇ ਡਿਵੈਲਪਰ ਨੇ ਤੁਹਾਨੂੰ ਪੁੱਛਿਆ ਹੈ ਕਿ ਤੁਸੀਂ ਛੋਟਾ ਜਿਹਾ ਯੋਗਦਾਨ ਦੇ ਕੇ ਇਸ ਦੀ ਡਿਵੈਲਪਮੈਂਟ ਨੂੰ ਜਾਰੀ ਰੱਖਣ 'ਚ ਮੱਦਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ।
 detail-contributions-button = ਯੋਗਦਾਨ ਪਾਓ
     .title = ਇਸ ਐਡ-ਆਨ ਦੇ ਵਿਕਾਸ ਵਿੱਚ ਯੋਗਦਾਨ ਪਾਓadd-on
@@ -134,6 +136,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = ਤਾਜ਼ਾ ਅੱਪਡੇਟ
 addon-category-recent-updates-title =
     .title = ਤਾਜ਼ਾ ਅੱਪਡੇਟ
+addon-category-sitepermission = ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ
+addon-category-sitepermission-title =
+    .title = ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ
 
 ## These are global warnings
 
@@ -280,14 +285,18 @@ extension-enabled-heading = ਸਮਰੱਥ ਹੈ
 extension-disabled-heading = ਅਸਮਰੱਥ ਹੈ
 theme-enabled-heading = ਸਮਰੱਥ ਹੈ
 theme-disabled-heading = ਅਸਮਰੱਥ ਹੈ
+theme-disabled-heading2 = ਸੰਭਾਲੇ ਥੀਮ
 theme-monochromatic-heading = ਰੰਗਢੰਗ
 theme-monochromatic-subheading = { -brand-product-name } ਤੋਂ ਨਵੇਂ ਵੱਖ-ਵੱਖ ਰੰਗਢੰਗਸ ਸੀਮਿਤ ਸਮੇਂ ਲਈ ਹੀ ਉਪਲੱਬਧ ਹਨ।
+theme-colorways-button = ਰੰਗ-ਢੰਗ ਵਰਤ ਕੇ ਵੇਖੋ
 plugin-enabled-heading = ਸਮਰੱਥ ਹੈ
 plugin-disabled-heading = ਅਸਮਰੱਥ ਹੈ
 dictionary-enabled-heading = ਸਮਰੱਥ ਹੈ
 dictionary-disabled-heading = ਅਸਮਰੱਥ ਹੈ
 locale-enabled-heading = ਸਮਰੱਥ ਹੈ
 locale-disabled-heading = ਅਸਮਰੱਥ ਹੈ
+sitepermission-enabled-heading = ਸਮਰੱਥ ਹੈ
+sitepermission-disabled-heading = ਅਸਮਰੱਥ ਹੈ
 always-activate-button = ਹਮੇਸ਼ਾ ਸਰਗਰਮ ਕਰੋ
 never-activate-button = ਕਦੇ ਸਰਗਰਮ ਨਾ ਕਰੋ
 addon-detail-author-label = ਲੇਖਕ
@@ -364,6 +373,7 @@ addon-permissions-optional = ਵਾਧੂ ਕੰਮਾਂ ਲਈ ਚੋਣਵੀ
 addon-permissions-learnmore = ਇਜਾਜ਼ਤਾਂ ਬਾਰੇ ਹੋਰ ਸਿੱਖੋ
 recommended-extensions-heading = ਸਿਫਾਰਸ਼ੀ ਇਕਟੈਨਸ਼ਨਾਂ
 recommended-themes-heading = ਸਿਫਾਰਸ਼ੀ ਥੀਮ
+addon-sitepermissions-required = <span data-l10n-name="hostname">{ $hostname }</span> ਨੂੰ ਅੱਗੇ ਦਿੱਤੀਆਂ ਸਮਰੱਥਾਵਾਂ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਹੈ
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = ਕਲਾ ਜਾਗਦੀ ਹੈ?<a data-l10n-name="link">ਫਾਇਰਫਾਕਸ ਰੰਗ ਨਾਲ ਆਪਣਾ ਖੁਦ ਦਾ ਥੀਮ ਬਣਾਓ।</a>
@@ -376,6 +386,7 @@ plugin-heading = ਆਪਣੀਆਂ ਪਲੱਗਇਨ ਦਾ ਇੰਤਜ਼ਾ
 dictionary-heading = ਆਪਣੀਆਂ ਡਿਕਸ਼ਨਰੀਆਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
 locale-heading = ਆਪਣੀਆਂ ਭਾਸ਼ਾਵਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
 updates-heading = ਆਪਣੇ ਅੱਪਡੇਟਾਂ ਦਾ ਬੰਦੋਬਸਤ ਕਰੋ
+sitepermission-heading = ਆਪਣੀਆਂ ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
 discover-heading = ਆਪਣੇ { -brand-short-name } ਨੂੰ ਆਪਣਾ ਬਣਾਓ
 shortcuts-heading = ਇਕਸਟੈਨਸ਼ਨ ਸ਼ਾਰਟਕੱਟਾਂ ਦਾ ਬੰਦੋਬਸਤ ਕਰੋ
 default-heading-search-label = ਹੋਰ ਐਡ-ਆਨ ਲੱਭੋ
@@ -383,3 +394,20 @@ addons-heading-search-input =
     .placeholder = addons.mozilla.org ਨੂੰ ਖੋਜੋ
 addon-page-options-button =
     .title = ਸਭ ਐਡ-ਆਨ ਲਈ ਟੂਲ
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } { -brand-short-name } { $version } ਦੇ ਲਈ ਢੁੱਕਵੀਂ ਨਹੀਂ ਹੈ।
+details-notification-unsigned-and-disabled = { $name } ਨੂੰ { -brand-short-name } ਵਿੱਚ ਵਰਤਣ ਲਈ ਤਸਦੀਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਅਤੇ ਅਸਮਰੱਥ ਕੀਤਾ ਹੈ।
+details-notification-unsigned-and-disabled-link = ਹੋਰ ਜਾਣਕਾਰੀ
+details-notification-unsigned = { $name } ਨੂੰ { -brand-short-name } ਵਿੱਚ ਵਰਤਣ ਲਈ ਤਸਦੀਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਧਿਆਨ ਨਾਲ ਵਰਤੋਂ।
+details-notification-unsigned-link = ਹੋਰ ਜਾਣਕਾਰੀ
+details-notification-blocked = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆਵਾਂ ਕਰਕੇ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ।
+details-notification-blocked-link = ਹੋਰ ਜਾਣਕਾਰੀ
+details-notification-softblocked = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆ ਦਾ ਕਾਰਨ ਮੰਨਿਆ ਗਿਆ ਹੈ।
+details-notification-softblocked-link = ਹੋਰ ਜਾਣਕਾਰੀ
+details-notification-gmp-pending = { $name } ਨੂੰ ਛੇਤੀ ਹੀ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।

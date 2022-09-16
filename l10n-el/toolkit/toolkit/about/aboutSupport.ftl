@@ -76,6 +76,14 @@ app-basics-location-service-key-google = Κλειδί υπηρεσίας τοπ�
 app-basics-safebrowsing-key-google = Κλειδί ασφαλούς περιήγησης Google
 app-basics-key-mozilla = Κλειδί υπηρεσίας τοποθεσίας Mozilla
 app-basics-safe-mode = Ασφαλής λειτουργία
+app-basics-memory-size = Μέγεθος μνήμης (RAM)
+app-basics-disk-available = Διαθέσιμος χώρος δίσκου
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Προβολή στο Finder
@@ -326,9 +334,9 @@ startup-cache-ignore-disk-cache = Παράβλεψη κρυφής μνήμης �
 startup-cache-found-disk-cache-on-init = Βρέθηκε κρυφή μνήμη δίσκου στο Init
 startup-cache-wrote-to-disk-cache = Εγγράφηκε στην κρυφή μνήμη δίσκου
 
-launcher-process-status-0 = Ενεργό
-launcher-process-status-1 = Ανενεργό λόγω αποτυχίας
-launcher-process-status-2 = Ανενεργό εξαναγκαστικά
+launcher-process-status-0 = Ενεργή
+launcher-process-status-1 = Ανενεργή λόγω αποτυχίας
+launcher-process-status-2 = Ανενεργή εξαναγκαστικά
 launcher-process-status-unknown = Άγνωστη κατάσταση
 
 # Variables
@@ -343,6 +351,7 @@ fission-status-experiment-control = Απενεργοποιήθηκε από πε
 fission-status-experiment-treatment = Ενεργοποιήθηκε από πείραμα
 fission-status-disabled-by-e10s-env = Απενεργοποιήθηκε από το περιβάλλον
 fission-status-enabled-by-env = Ενεργοποιήθηκε από το περιβάλλον
+fission-status-disabled-by-env = Ανενεργό λόγω περιβάλλοντος
 fission-status-disabled-by-safe-mode = Απενεργοποιήθηκε από την ασφαλή λειτουργία
 fission-status-enabled-by-default = Ενεργό από προεπιλογή
 fission-status-disabled-by-default = Απενεργοποιήθηκε από προεπιλογή

@@ -73,9 +73,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } مستخدم
     }
 
-## These messages are steps on how to use the feature and are shown together.
-
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = زامِن علاماتك في كل مكان.
@@ -103,26 +100,6 @@ cfr-whatsnew-button =
 
 cfr-whatsnew-release-notes-link-text = اقرأ ملاحظات الإصدار
 
-## Search Bar
-
-## Search bar
-
-## Picture-in-Picture
-
-## Permission Prompt
-
-## Fingerprinter Counter
-
-## Bookmark Sync
-
-## Login Sync
-
-## Send Tab
-
-## Firefox Send
-
-## Social Tracking Protection
-
 ## Enhanced Tracking Protection Milestones
 
 # Variables:
@@ -139,25 +116,8 @@ cfr-doorhanger-milestone-heading2 =
     }
 cfr-doorhanger-milestone-ok-button = اعرض الكل
     .accesskey = ع
-
-## What’s New Panel Content for Firefox 76
-
-
-## Lockwise message
-
-## Vulnerable Passwords message
-
-## Picture-in-Picture fullscreen message
-
-## Protections Dashboard message
-
-## Better PDF message
-
 cfr-doorhanger-milestone-close-button = أغلِق
     .accesskey = غ
-
-## What’s New Panel Content for Firefox 76
-## Protections Dashboard message
 
 ## DOH Message
 
@@ -177,23 +137,37 @@ cfr-doorhanger-fission-primary-button = حسنًا، فهمت
 cfr-doorhanger-fission-secondary-button = اطّلع على المزيد
     .accesskey = ط
 
-## What's new: Cookies message
-
-## What's new: Media controls message
-
-## What's new: Search shortcuts
-
-## What's new: Cookies protection
-
-## What's new: Better bookmarking
-
-## What's new: Cross-site cookie tracking
-
 ## Full Video Support CFR message
+
+cfr-doorhanger-video-support-body = قد لا تعمل الڤِديوهات في هذا الموقع كما ينبغي في إصدارة { -brand-short-name } هذه. من فضلك حدّث { -brand-short-name } الآن لتحصل على الدعم الكامل للڤِديوهات.
+cfr-doorhanger-video-support-header = حدّث { -brand-short-name } لتشغيل الڤِديو
+cfr-doorhanger-video-support-primary-button = حدّث الآن
+    .accesskey = ح
+
+## Spotlight modal shared strings
+
+spotlight-learn-more-collapsed = اطّلع على المزيد
+    .title = وسّع القسم للاطّلاع على المزيد بخصوص الميزة
+spotlight-learn-more-expanded = اطّلع على المزيد
+    .title = أغلِق
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
 ## If a user is detected to be on a public Wi-Fi network, they are given a
 ## bit of info about how to improve their privacy and then offered a button
 ## to the Mozilla VPN page and a link to dismiss the dialog.
+
+# This header text can be explicitly wrapped.
+spotlight-public-wifi-vpn-header = يبدو أنك تستخدم شبكة Wi-Fi عامة
+spotlight-public-wifi-vpn-body = ننصحك باستعمال شبكة افتراضية خاصة VPN لإخفاء مكانك وتأريخ التصفح. سيساعد هذا في إبقاء تصفّحك في الأماكن العامة كالمطارات والمقاهي محميًا.
+spotlight-public-wifi-vpn-primary-button = احفظ خصوصيتك دومًا عبر { -mozilla-vpn-brand-name }
+    .accesskey = ح
+spotlight-public-wifi-vpn-link = ليس الآن
+    .accesskey = ل
+
+## Total Cookie Protection Rollout
+
+spotlight-total-cookie-protection-secondary-button = ليس الآن
+
+## Emotive Continuous Onboarding
 

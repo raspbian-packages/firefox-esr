@@ -76,6 +76,14 @@ app-basics-location-service-key-google = Ключ Службы вызначэн�
 app-basics-safebrowsing-key-google = Ключ бяспечнага аглядання ад Google
 app-basics-key-mozilla = Ключ Службы вызначэння месцазнаходжання ад Mozilla
 app-basics-safe-mode = Абаронены рэжым
+app-basics-memory-size = Памер памяці (RAM)
+app-basics-disk-available = Даступнае месца на дыску
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Паказаць у шукальніку
@@ -348,6 +356,7 @@ fission-status-experiment-control = Адключана эксперымента�
 fission-status-experiment-treatment = Уключана эксперыментам
 fission-status-disabled-by-e10s-env = Адключана асяроддзем
 fission-status-enabled-by-env = Уключана асяроддзем
+fission-status-disabled-by-env = Адключаны асяроддзем
 fission-status-disabled-by-safe-mode = Адключана ў бяспечным рэжыме
 fission-status-enabled-by-default = Тыпова уключана
 fission-status-disabled-by-default = Тыпова адключана

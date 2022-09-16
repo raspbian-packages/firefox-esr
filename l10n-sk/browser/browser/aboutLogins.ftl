@@ -5,8 +5,6 @@
 
 about-logins-page-title = Prihlasovacie údaje
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Hľadať
 
@@ -15,7 +13,7 @@ create-login-button = Nové prihlasovacie údaje
 fxaccounts-sign-in-text = Synchronizujte svoje heslá aj do ostatných zariadení
 fxaccounts-sign-in-sync-button = Prihlásiť sa a synchronizovať
 fxaccounts-avatar-button =
-    .title = Správa účtu
+    .title = Spravovať účet
 
 ## The ⋯ menu that is in the top corner of the page
 
@@ -62,7 +60,6 @@ about-logins-list-item-breach-icon =
     .title = Únik dát
 about-logins-list-item-vulnerable-password-icon =
     .title = Zraniteľné heslo
-
 about-logins-list-section-breach = Stránky, na ktorých došlo k úniku dát
 about-logins-list-section-vulnerable = Zraniteľné heslá
 about-logins-list-section-nothing = Žiadne upozornenie
@@ -77,8 +74,8 @@ about-logins-login-intro-heading-logged-in = Neboli nájdené žiadne synchroniz
 login-intro-description = Ak ste si uložili prihlasovacie údaje do aplikácie { -brand-product-name } na inom zariadení, môžete ich získať takto:
 login-intro-instructions-fxa = Vytvorte si { -fxaccount-brand-name(capitalization: "sentence") } alebo sa doň prihláste na zariadení, kde máte prihlasovacie údaje uložené.
 login-intro-instructions-fxa-settings = Prejdite do okna Nastavenia > Synchronizácia > Zapnúť synchronizáciu... Začiarknite pole Prihlasovacie údaje.
-login-intro-instructions-fxa-help = Ďalšiu pomoc nájdete na stránke <a data-l10n-name="help-link"> Podpora pre { -lockwise-brand-short-name } </a>.
-about-logins-intro-import = Ak máte prihlasovacie údaje uložené v inom prehliadači, môžete ich <a data-l10n-name="import-link">do { -lockwise-brand-short-name } importovať</a>
+login-intro-instructions-fxa-passwords-help = Ak potrebujete ďalšiu pomoc, navštívte <a data-l10n-name="passwords-help-link">stránky podpory pre heslá</a>.
+about-logins-intro-browser-only-import = Ak máte prihlasovacie údaje uložené v inom prehliadači, môžete ich <a data-l10n-name="import-link">do { -brand-product-name(case: "gen") } importovať</a>
 about-logins-intro-import2 = Ak máte prihlasovacie údaje uložené mimo aplikácie { -brand-product-name }, môžete ich <a data-l10n-name="import-browser-link">importovať z iného prehliadača</a> alebo <a data-l10n-name="import-file-link">zo súboru</a>
 
 ## Login
@@ -133,8 +130,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Ak chcete skopírovať s
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = skopírovať uložené heslo
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Ak chcete exportovať svoje prihlasovacie údaje, zadajte svoje prihlasovacie údaje k systému Windows. Toto opatrenie nám pomáha v zabezpečení vášho účtu.
 # This message can be seen when attempting to export a password in about:logins
@@ -147,8 +142,6 @@ about-logins-primary-password-notification-message = Ak chcete zobraziť uložen
 master-password-reload-button =
     .label = Prihlásiť sa
     .accesskey = P
-
-## Password Sync notification
 
 ## Dialogs
 

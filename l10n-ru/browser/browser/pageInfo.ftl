@@ -97,16 +97,16 @@ security-view-identity-verifier =
 security-view-identity-validity =
     .value = Действителен по:
 security-view-privacy =
-    .value = Приватность и История
+    .value = Приватность и история
 
 security-view-privacy-history-value = Посещал ли я этот сайт до сегодняшнего дня?
-security-view-privacy-sitedata-value = Хранит ли этот веб-сайт информацию на моём компьютере?
+security-view-privacy-sitedata-value = Хранит ли этот сайт информацию на моём компьютере?
 
 security-view-privacy-clearsitedata =
     .label = Удалить куки и данные сайта
     .accesskey = а
 
-security-view-privacy-passwords-value = Сохранял ли я для этого веб-сайта какие-либо пароли?
+security-view-privacy-passwords-value = Сохранял ли я пароли для этого сайта?
 
 security-view-privacy-viewpasswords =
     .label = Просмотреть сохранённые пароли

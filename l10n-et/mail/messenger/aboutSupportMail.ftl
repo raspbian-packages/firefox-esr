@@ -17,3 +17,4 @@ identity-name = Identiteet
 
 send-via-email = Saada e-postiga
 
+app-basics-telemetry = Telemeetriaandmed

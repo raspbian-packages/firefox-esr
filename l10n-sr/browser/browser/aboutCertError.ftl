@@ -76,6 +76,8 @@ cert-error-symantec-distrust-description = Веб-сајтови доказуј�
 
 cert-error-symantec-distrust-admin = О овом проблему можете да обавестите администратора веб-сајта.
 
+cert-error-old-tls-version = Ова страница не подржава TLS 1.2 протокол а то је најмање издање које подржава { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -121,7 +123,6 @@ unknownSocketType-title = Неочекивани одговор сервера
 nssFailure2-title = Безбедна веза није успостављена
 csp-xfo-error-title = { -brand-short-name } не може да отвори ову страницу
 corruptedContentError-title = Грешка оштећеног садржаја
-remoteXUL-title = Удаљени XUL
 sslv3Used-title = Безбедна веза није успостављена
 inadequateSecurityError-title = Веза није безбедна
 blockedByPolicy-title = Блокирана страница

@@ -24,8 +24,6 @@
 <!ENTITY moveToNewWindow.accesskey "F">
 <!ENTITY newVirtualFolderCmd.label "Recerca salvate…">
 <!ENTITY newVirtualFolderCmd.accesskey "S">
-<!ENTITY newOtherAccountsCmd.label "Altere contos…">
-<!ENTITY newOtherAccountsCmd.accesskey "A">
 <!ENTITY newCreateEmailAccountCmd.label "Crear un nove conto email…">
 <!ENTITY newCreateEmailAccountCmd.accesskey "C">
 <!ENTITY newExistingEmailAccountCmd.label "Conto email existente…">
@@ -48,8 +46,6 @@
 <!ENTITY openMessageFileCmd.accesskey "A">
 <!ENTITY saveAsMenu.label "Salvar como">
 <!ENTITY saveAsMenu.accesskey "S">
-<!ENTITY saveAsFileCmd.label "File">
-<!ENTITY saveAsFileCmd.accesskey "F">
 <!ENTITY saveAsFileCmd.key "s">
 <!ENTITY saveAsTemplateCmd.label "Modello">
 <!ENTITY saveAsTemplateCmd.accesskey "M">
@@ -274,7 +270,7 @@
 <!ENTITY findCmd.label "Cercar in iste message…">
 <!ENTITY findCmd.accesskey "C">
 <!ENTITY findCmd.key "c">
-<!ENTITY findAgainCmd.label "Cercar ancora">
+<!ENTITY findAgainCmd.label "Cercar le sequente">
 <!ENTITY findAgainCmd.accesskey "c">
 <!ENTITY findAgainCmd.key "c">
 <!ENTITY findAgainCmd.key2 "VK_F3">
@@ -602,7 +598,7 @@
 <!ENTITY appmenuNewMsgCmd.label "Nove message">
 <!ENTITY appmenuNewContactCmd.label "Contacto del libro de adresses…">
 <!ENTITY appmenuEditMenu.label "Rediger">
-<!ENTITY appmenuToolbarLayout.label "Barra del instrumentos mappa…">
+<!ENTITY appmenuToolbarLayout.label "Arrangiar le barras de instrumentos…">
 <!ENTITY appmenuSelectThread.label "Discussion eligite">
 <!ENTITY appmenuSelectFlagged.label "Eliger messages stellate">
 

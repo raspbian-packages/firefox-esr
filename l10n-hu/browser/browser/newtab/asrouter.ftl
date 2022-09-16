@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Ajánlott szolgáltatás
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Miért látom ezt
+
 cfr-doorhanger-extension-cancel-button = Most nem
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Hozzáadás most
     .accesskey = a
+
 cfr-doorhanger-extension-manage-settings-button = Ajánlási beállítások kezelése
     .accesskey = A
+
 cfr-doorhanger-extension-never-show-recommendation = Ne mutassa ezt az ajánlást
     .accesskey = N
+
 cfr-doorhanger-extension-learn-more-link = További tudnivalók
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = szerző: { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Javaslat
 cfr-doorhanger-extension-notification2 = Javaslat
     .tooltiptext = Kiegészítőjavaslat
     .a11y-announcement = Kiegészítőjavaslat érhető el
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Javaslat
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = További tudnivalók
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Új funkciók:
+
 cfr-whatsnew-button =
     .label = Újdonságok
     .tooltiptext = Újdonságok
+
 cfr-whatsnew-release-notes-link-text = Olvassa el a kiadási megjegyzéseket
 
 ## Enhanced Tracking Protection Milestones
@@ -156,3 +166,16 @@ spotlight-total-cookie-protection-body = A Teljes sütivédelem megakadályozza,
 spotlight-total-cookie-protection-expanded = A { -brand-short-name } kerítést épít a sütik köré, oly módon korlátozva őket, hogy a nyomkövetők ne használhassák az Ön követésére. A korai hozzáféréssel segít nekünk optimalizálni a funkciót, így egy mindenki számára jobb webet építhetünk.
 spotlight-total-cookie-protection-primary-button = A Teljes sütivédelem bekapcsolása
 spotlight-total-cookie-protection-secondary-button = Most nem
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = A jobb internet Önnel kezdődik
+spotlight-better-internet-body = Amikor a { -brand-short-name }ot használja, akkor egy nyílt és hozzáférhető internetre szavaz, amely jobb mindenki számára.
+spotlight-peace-mind-header = Fedezzük Önt
+spotlight-peace-mind-body = Minden hónapban, a { -brand-short-name } átlagosan 3.000 nyomkövetőt blokkol felhasználónként. Mert semmi nem állhat Ön és a jó internet közé, az adatvédelmi szempontból aggályos követők különösen nem.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] A Dockban tartás
+       *[other] Rögzítés a tálcára
+    }
+spotlight-pin-secondary-button = Most nem

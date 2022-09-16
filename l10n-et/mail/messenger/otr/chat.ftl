@@ -6,6 +6,12 @@ state-label = Krüpteeringu olek:
 
 start-text = Alusta krüpteeritud vestlusega
 
+start-label =
+    .label = { start-text }
+
+start-tooltip =
+    .tooltiptext = { start-text }
+
 end-label =
     .label = Lõpeta krüpteeritud vestlus
 

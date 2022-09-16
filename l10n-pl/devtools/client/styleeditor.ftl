@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Importuj istniejący arkusz stylów i dołącz go do dokumentu
     .accesskey = I
+styleeditor-filter-input =
+    .placeholder = Filtruj arkusze stylów
 styleeditor-visibility-toggle =
     .tooltiptext = Przełącz widoczność arkusza stylów
     .accesskey = Z
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Otwórz odnośnik w nowej karcie
 styleeditor-copy-url =
     .label = Kopiuj adres URL
+styleeditor-go-to-line =
+    .label = Przejdź do wiersza…
+    .accesskey = P
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Nie odnaleziono pasującego arkusza stylów.

@@ -5,6 +5,7 @@
 
 e2e-intro-description = Per trametter messadis criptads u signads a moda digitala, stos ti configurar ina tecnologia da criptadi, u OpenPGP u S/MIME.
 e2e-intro-description-more = Tscherna tia clav persunala per pudair utilisar OpenPGP u tes certificat persunal per utilisar S/MIME. Ti stos avair la clav secreta associada cun la clav persunala u il certificat persunal.
+
 e2e-advanced-section = Parameters avanzads
 e2e-attach-key =
     .label = Agiuntar mia clav publica sche ina signatura digitala OpenPGP vegn agiuntada
@@ -240,6 +241,7 @@ openpgp-key-man-key-details-key =
 
 openpgp-key-details-title =
     .title = Caracteristicas da la clav
+
 openpgp-key-details-signatures-tab =
     .label = Certificaziuns
 openpgp-key-details-structure-tab =
@@ -252,6 +254,7 @@ openpgp-key-details-id-label =
 openpgp-key-details-key-type-label = Tip
 openpgp-key-details-key-part-label =
     .label = Part da la clav
+
 openpgp-key-details-algorithm-label =
     .label = Algoritmus
 openpgp-key-details-size-label =
@@ -265,10 +268,10 @@ openpgp-key-details-expiry-header = Data da scadenza
 openpgp-key-details-usage-label =
     .label = Utilisaziun
 openpgp-key-details-fingerprint-label = Impronta
+openpgp-key-details-legend-secret-missing = Per las clavs marcadas cun (!) n'è la clav secreta betg disponibla.
 openpgp-key-details-sel-action =
     .label = Tscherner ina acziun…
     .accesskey = s
-openpgp-key-details-also-known-label = Identitads alternativas presumtivas dal proprietari principal da la clav:
 openpgp-card-details-close-window-label =
     .buttonlabelaccept = Serrar
 openpgp-acceptance-label =
@@ -284,7 +287,6 @@ openpgp-acceptance-verified-label =
 key-accept-personal =
     Per questa clav has ti tant la part publica sco la part secreta. Ti la pos utilisar sco clav persunala.
     Sche ti has survegnì questa clav dad insatgi auter, na l'utilisescha betg sco clav persunala.
-key-personal-warning = Has ti tez creà questa clav e sco proprietari da la clav es ti inditgà?
 openpgp-personal-no-label =
     .label = Na, betg l'utilisar sco mia clav persunala.
 openpgp-personal-yes-label =
@@ -294,15 +296,6 @@ openpgp-copy-cmd-label =
     .label = Copiar
 
 ## e2e encryption settings
-
-#   $count (Number) - the number of configured keys associated with the current identity
-#   $identity (String) - the email address of the currently selected identity
-openpgp-description =
-    { $count ->
-        [0] Thunderbird n'ha naginas clavs persunalas OpenPGP per <b>{ $identity }</b>
-        [one] Thunderbird ha chattà { $count } clav persunala OpenPGP associada cun <b>{ $identity }</b>
-       *[other] Thunderbird ha chattà { $count } clavs persunalas OpenPGP associadas cun <b>{ $identity }</b>
-    }
 
 #   $key (String) - the currently selected OpenPGP key
 openpgp-selection-status-have-key = Tia configuraziun actuala utilisescha la clav cun l'ID <b>{ $key }</b>
@@ -381,7 +374,6 @@ key-expired-date = La clav è scadida ils { $keyExpiry }
 key-expired-simple = La clav è scadida
 key-revoked-simple = La clav è vegnida revocada
 key-do-you-accept = Acceptas ti questa clav per verifitgar signaturas digitalas e per criptar messadis?
-key-accept-warning = Fa la segira che ti acceptas mo clavs autenticas. Utilisescha in auter chanal da communicaziun che e-mail per verifitgar l'impronta da la clav da tes partenari da correspundenza.
 
 # Strings enigmailMsgComposeOverlay.js
 cannot-use-own-key-because = Impussibel da trametter il messadi. I dat in problem cun tia clav persunala. { $problem }
@@ -389,7 +381,6 @@ cannot-encrypt-because-missing = Impussibel da trametter quest messadi cun cript
 window-locked = La fanestra da rediger è bloccada; spediziun annullada
 
 # Strings in mimeDecrypt.jsm
-mime-decrypt-encrypted-part-attachment-label = Part criptada dal messadi
 mime-decrypt-encrypted-part-concealed-data = Quai è ina part criptada dal messadi. Ti stos l'avrir en ina fanestra separada cun cliccar sin l'agiunta.
 
 # Strings in keyserver.jsm
@@ -415,27 +406,6 @@ converter-decrypt-body-failed =
     Impussibel da decriptar il messadi cun l'object
     { $subject }.
     Vuls ti empruvar anc ina giada cun in'autra frasa-clav u sursiglir il messadi?
-
-# Strings in gpg.jsm
-unknown-signing-alg = Algoritmus da signatura nunenconuschent (ID: { $id })
-unknown-hash-alg = Hash criptografic nunenconuschent (ID: { $id })
-
-# Strings in keyUsability.jsm
-expiry-key-expires-soon =
-    Tia clav { $desc } scada en damain che { $days } dis.
-    Nus ta recumandain da crear in nov pèr da clavs e configurar ils contos correspundents per l'utilisaziun.
-expiry-keys-expire-soon =
-    Tia clavs suandantas scadan en damain che { $days } dis:{ $desc }.
-    Nus ta recumandain da crear novas clavs e configurar ils contos correspundents per las utilisar.
-expiry-key-missing-owner-trust =
-    La fidaivladad n'è betg specifitgada per tia clav secreta { $desc }.
-    Nus ta recumandain da drizzar la «Fidaivladad dals certificats» sin «absoluta» en las caracteristicas da questa clav.
-expiry-keys-missing-owner-trust =
-    La fidaivladad n'è betg specifitgada per tias clavs secretas suandantas:
-    { $desc }.
-    Nus ta recumandain da drizzar la «Fidaivladad dals certificats» sin «absoluta» en las caracteristicas da questas clavs.
-expiry-open-key-manager = Avrir l'administraziun da clavs OpenPGP
-expiry-open-key-properties = Avrir las caracteristicas da la clav
 
 # Strings filters.jsm
 filter-folder-required = Ti stos tscherner in ordinatur da destinaziun.
@@ -669,19 +639,9 @@ send-to-news-warning =
     Quai n'è betg recumandabel, perquai ch'i ha mo senn sche tut ils commembers da la gruppa pon decriptar il messadi. Damai sto il messadi esser criptà cun las clavs da tut ils commembers da la gruppa. Trametta per plaschair mo quest messadi sche ti sas exact tge che ti fas.
     Cuntinuar?
 save-attachment-header = Memorisar l'agiunta decriptada
-no-temp-dir =
-    Impussibel da chattar in ordinatur temporar per scriver
-    Definescha per plaschair la variabla d'ambient TEMP
 possibly-pgp-mime = Il messadi è probablamain criptà u signà cun PGP/MIME: utilisar la funcziun «Decriptar/verifitgar»
 cannot-send-sig-because-no-own-key = Impussibel da signar digitalmain quest messadi perquai che ti n'has anc betg configurà il criptadi da fin a fin per <{ $key }>
 cannot-send-enc-because-no-own-key = Impussibel da trametter quest messadi sco messadi criptà perquai che ti n'has anc betg configurà il criptadi da fin a fin per <{ $key }>
-
-compose-menu-attach-key =
-    .label = Agiuntar mia clav publica
-    .accesskey = A
-compose-menu-encrypt-subject =
-    .label = Criptar l'object
-    .accesskey = b
 
 # Strings used in decryption.jsm
 do-import-multiple =

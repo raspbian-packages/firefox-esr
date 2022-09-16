@@ -5,8 +5,6 @@
 
 about-logins-page-title = لاگ ان اور پاس ورڈ
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = لاگ ان تلاش کریں
 
@@ -60,7 +58,6 @@ about-logins-list-item-breach-icon =
     .title = بریچڈ ویب سائٹیں
 about-logins-list-item-vulnerable-password-icon =
     .title = کمزور پاسورڈ
-
 about-logins-list-section-breach = خلاف ورزی کرنے والی ویب سائٹیں
 about-logins-list-section-vulnerable = کمزور پاسورڈ
 about-logins-list-section-nothing = کوئی انتباہ نہیں۔
@@ -72,7 +69,6 @@ about-logins-list-section-week = پچھلے 7 دن
 
 about-logins-login-intro-heading-logged-in = کوئی سینکڈ لاگ ان نہیں ملا۔
 login-intro-description = اگر آپ نے اپنے لاگ انز { -brand-product-name } کو کسی دوسرے آلے پر محفوظ کیاہوا ہے تو، انہیں یہاں حاصل کرنے کا طریقہ یوں ہے:
-about-logins-intro-import = اگر آپ کے لاگ انز کسی دوسرے براؤزر میں محفوظ ہیں تو ، آپ <a data-l10n-name="import-link"> ان کو { -lockwise-brand-short-name }</a> میں درآمد کرسکتے ہیں
 
 ## Login
 
@@ -119,8 +115,6 @@ about-logins-reveal-password-os-auth-dialog-message-macosx = محفوظ شدہ �
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = محفوظ شدہ پاس ورڈ کو نقل کریں
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-export-password-os-auth-dialog-message-macosx = محفوظ شدہ لاگ ان اور پاس ورڈ برآمد کریں
@@ -130,8 +124,6 @@ about-logins-export-password-os-auth-dialog-message-macosx = محفوظ شدہ �
 master-password-reload-button =
     .label = لاگ ان
     .accesskey = L
-
-## Password Sync notification
 
 ## Dialogs
 
@@ -155,6 +147,12 @@ about-logins-confirm-remove-all-dialog-checkbox-label =
         [1] ہاں ، یہ لاگ ان ہٹائیں
         [one] ہاں ، یہ لاگ ان ہٹائیں
        *[other] ہاں ، ان لاگ ان کو ہٹائیں
+    }
+
+about-logins-confirm-remove-all-dialog-title =
+    { $count ->
+        [one] { $count } لاگ ان ہٹائیں؟
+       *[other] تمام { $count } لاگ ان ہٹائیں؟
     }
 
 about-logins-confirm-export-dialog-title = لاگ ان اور پاس ورڈ برآمد کریں

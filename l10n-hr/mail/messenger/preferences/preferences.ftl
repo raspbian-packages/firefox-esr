@@ -5,7 +5,7 @@
 close-button =
     .aria-label = Zatvori
 
-preferences-doc-title = Postavke
+preferences-doc-title2 = Postavke
 
 category-list =
     .aria-label = Kategorije
@@ -165,12 +165,18 @@ restore-default-label =
     .accesskey = r
 
 default-search-engine = Zadani pretraživač
-add-search-engine =
-    .label = Dodaj iz datoteke
+add-web-search-engine =
+    .label = Dodaj…
     .accesskey = a
 remove-search-engine =
     .label = Ukloni
     .accesskey = U
+
+add-opensearch-provider-title = Dodaj OpenSearch pružatelja usluge
+add-opensearch-provider-text = Unesite URL OpenSearch pružatelja usluge kako biste dodali. Koristite direktni URL OpenSearch datoteke opisa ili URL gdje se može automatski otkriti.
+
+adding-opensearch-provider-failed-title = Dodavanje OpenSearch pružatelja usluge nije uspjelo
+adding-opensearch-provider-failed-text = Nije moguće dodati OpenSearch pružatelja usluge za { $url }.
 
 minimize-to-tray-label =
     .label = Kada je { -brand-short-name } smanjen, premjesti ga u sistemsku traku
@@ -197,7 +203,7 @@ app-icon-options =
     .label = Mogućnosti aplikacijske ikone…
     .accesskey = n
 
-notification-settings = Obavijesti i zadani zvukovi se mogu isključiti u okviru obavijesti u postavkama sustava.
+notification-settings2 = Obavijesti i zadani zvukovi se mogu isključiti u okviru obavijesti u postavkama sustava.
 
 animated-alert-label =
     .label = Prikaži obavijest
@@ -411,13 +417,9 @@ quoted-text-color =
 search-handler-table =
     .placeholder = Filtriraj vrste sadržaja i radnje
 
-type-column-label =
-    .label = Vrsta sadržaja
-    .accesskey = t
+type-column-header = Vrsta sadržaja
 
-action-column-label =
-    .label = Radnja
-    .accesskey = a
+action-column-header = Radnja
 
 save-to-label =
     .label = Spremi datoteke u
@@ -572,12 +574,6 @@ default-format-label =
     .label = Koristi kao zadano oblik odlomka umjesto teksta tijela
     .accesskey = o
 
-format-description = Podesite ponašanje prilikom oblikovanja teksta
-
-send-options-label =
-    .label = Mogućnosti slanja…
-    .accesskey = s
-
 autocomplete-description = Kod adresiranja poruka, traži odgovarajuće adrese u:
 
 ab-label =
@@ -674,7 +670,7 @@ keep-label =
     .accesskey = Z
 
 keep-expire =
-    .label = iteka roka
+    .label = isteka roka
 keep-close =
     .label = zatvaranja { -brand-short-name }-a
 keep-ask =
@@ -858,8 +854,6 @@ theme-label =
     .value = Motiv:
     .accesskey = T
 
-style-thunderbird =
-    .label = Thunderbird
 style-bubbles =
     .label = Mjehurići
 style-dark =
@@ -877,6 +871,8 @@ chat-variant-label =
     .value = Varijanta:
     .accesskey = V
 
+## Preferences UI Search Results
+
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -885,19 +881,19 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
+search-preferences-input2 =
     .style = width: 15.4em
     .placeholder = Pronađi u postavkama
 
-## Preferences UI Search Results
+## Settings UI Search Results
 
 search-results-header = Rezultati pretrage
 
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
+search-results-empty-message2 =
     { PLATFORM() ->
-        [windows] Žao nam je! U mogućnostima nema rezultata za „<span data-l10n-name="query"></span>”.
-       *[other] Žao nam je! U postavkama nema rezultata za „<span data-l10n-name="query"></span>”.
+        [windows] Oprosti! Među postavkama nema rezultata za “<span data-l10n-name="query"></span>”.
+       *[other] Oprosti! Među postavkama nema rezultata za “<span data-l10n-name="query"></span>”.
     }
 
 search-results-help-link = Trebaš pomoć? Posjeti <a data-l10n-name="url">{ -brand-short-name } podršku</a>

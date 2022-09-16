@@ -61,8 +61,8 @@ item-history-and-downloads =
     .accesskey = V
 
 item-cookies =
-    .label = Smákökur
-    .accesskey = S
+    .label = Vefkökur
+    .accesskey = V
 
 item-active-logins =
     .label = Virkar innskráningar
@@ -73,12 +73,12 @@ item-cache =
     .accesskey = B
 
 item-form-search-history =
-    .label = Eyðublaða og leitarferill
+    .label = Innfyllingar- og leitarferill
     .accesskey = f
 
 data-section-label = Gögn
 
-item-site-preferences =
+item-site-settings =
     .label = Stillingar vefsvæðis
     .accesskey = S
 

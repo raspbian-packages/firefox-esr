@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Webové stránky preukazujú svoju id
 
 cert-error-symantec-distrust-admin = O tomto probléme môžete informovať správcu webovej stránky.
 
+cert-error-old-tls-version = Zdá sa, že táto webová stránka nepodporuje protokol TLS 1.2, čo je minimálna verzia podporovaná prehliadačom { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -84,7 +86,7 @@ open-in-new-window-for-csp-or-xfo-error = Otvoriť stránku v novom okne
 
 # Variables:
 # $hostname (String) - Hostname of the website blocked by csp or xfo error.
-csp-xfo-blocked-long-desc = Pre vašu bezpečnosť { $hostname } nepovolí { -brand-short-name(case: "acc") } zobraziť stránku, ak je vložená z inej stránky. Ak chcete zobraziť túto stránku, musíte ju otvoriť v novom okne.
+csp-xfo-blocked-long-desc = Kvôli ochrane vašej bezpečnosti nemôže { -brand-short-name } zobraziť stránku zo servera { $hostname }, pretože táto je vložená do inej stránky. Ak ju chcete zobraziť, musíte ju otvoriť v novom okne.
 
 ## Messages used for certificate error titles
 
@@ -115,7 +117,6 @@ unknownSocketType-title = Neočakávaná odpoveď servera
 nssFailure2-title = Zabezpečené pripojenie zlyhalo
 csp-xfo-error-title = { -brand-short-name } nedokáže otvoriť túto stránku
 corruptedContentError-title = Poškodený obsah stránky
-remoteXUL-title = Vzdialené XUL
 sslv3Used-title = Nie je možné sa pripojiť zabezpečene
 inadequateSecurityError-title = Vaše pripojenie nie je zabezpečené
 blockedByPolicy-title = Zablokovaná stránka

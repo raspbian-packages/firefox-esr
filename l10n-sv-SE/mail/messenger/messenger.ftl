@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Minimera
+messenger-window-maximize-button =
+    .tooltiptext = Maximera
+messenger-window-restore-down-button =
+    .tooltiptext = Återställ nedåt
+messenger-window-close-button =
+    .tooltiptext = Stäng
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -76,10 +87,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Inställningar
 appmenu-save-as-file =
     .label = Arkiv…
 appmenu-settings =
@@ -99,15 +106,55 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Omdirigera
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Ta bort meddelande
+           *[other] Ta bort valda meddelanden
+        }
+context-menu-decrypt-to-folder =
+    .label = Kopiera som dekrypterad till
+    .accesskey = y
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Omdirigera
-message-header-msg-is-flagged =
-    .title = Stjärnmärkt meddelande
+message-header-msg-flagged =
+    .title = Stjärnmärkt
+    .aria-label = Stjärnmärkt
 message-header-msg-not-flagged =
     .title = Ej stjärnmärkt meddelande
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Profilbild för { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Inställningar för meddelanderubrik
+message-header-customize-button-style =
+    .value = Knappstil
+    .accesskey = K
+message-header-button-style-default =
+    .label = Ikoner och text
+message-header-button-style-text =
+    .label = Text
+message-header-button-style-icons =
+    .label = Ikoner
+message-header-show-sender-full-address =
+    .label = Visa alltid avsändarens fullständiga adress
+    .accesskey = f
+message-header-show-sender-full-address-description = E-postadressen kommer att visas under visningsnamnet.
+message-header-show-recipient-avatar =
+    .label = Visa avsändarens profilbild
+    .accesskey = p
+message-header-hide-label-column =
+    .label = Dölj kolumnen etiketter
+    .accesskey = e
+message-header-large-subject =
+    .label = Stort ämne
+    .accesskey = n
 
 ## Action Button Context Menu
 
@@ -117,13 +164,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Ta bort tillägg
     .accesskey = T
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Adressen finns i adressboken
-message-header-address-not-in-address-book-icon =
-    .alt = Adressen finns inte i adressboken
 
 ## Add-on removal warning
 
@@ -144,3 +184,91 @@ repair-text-encoding-button =
 no-reply-title = Svar stöds inte
 no-reply-message = Svarsadressen ({ $email }) verkar inte vara en övervakad adress. Meddelanden till den här adressen kommer sannolikt inte att läsas av någon.
 no-reply-reply-anyway-button = Svara ändå
+
+## error messages
+
+decrypt-and-copy-failures = { $failures } av { $total } meddelanden kunde inte dekrypteras och kopierades inte.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Flikmeny
+    .aria-label = Flikmeny
+    .aria-description = Vertikalt verktygsfält för att växla mellan olika flikar. Använd piltangenterna för att navigera mellan tillgängliga knappar.
+spaces-toolbar-button-mail2 =
+    .title = E-post
+spaces-toolbar-button-address-book2 =
+    .title = Adressbok
+spaces-toolbar-button-calendar2 =
+    .title = Kalender
+spaces-toolbar-button-tasks2 =
+    .title = Uppgifter
+spaces-toolbar-button-chat2 =
+    .title = Chatt
+spaces-toolbar-button-overflow =
+    .title = Fler flikar…
+spaces-toolbar-button-settings2 =
+    .title = Inställningar
+spaces-toolbar-button-hide =
+    .title = Dölj verktygsfält för flikmeny
+spaces-toolbar-button-show =
+    .title = Visa verktygsfält för flikmeny
+spaces-context-new-tab-item =
+    .label = Öppna i ny flik
+spaces-context-new-window-item =
+    .label = Öppna i nytt fönster
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Växla till { $tabName }
+settings-context-open-settings-item2 =
+    .label = Inställningar
+settings-context-open-account-settings-item2 =
+    .label = Kontoinställningar
+settings-context-open-addons-item2 =
+    .label = Tillägg och teman
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Öppna flikmenyn
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] Ett oläst meddelande
+           *[other] { $count } olästa meddelanden
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Anpassa…
+spaces-customize-panel-title = Inställningar för flikmeny
+spaces-customize-background-color = Bakgrundsfärg
+spaces-customize-icon-color = Färg för knapp
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Vald bakgrundsfärg för knapp
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Vald knappfärg
+spaces-customize-button-restore = Återställ standard
+    .accesskey = t
+customize-panel-button-save = Klar
+    .accesskey = K

@@ -14,6 +14,8 @@
 
 "use strict";
 
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+
 ChromeUtils.defineModuleGetter(
   this,
   "Downloads",
@@ -270,7 +272,8 @@ DownloadLegacyTransfer.prototype = {
     aTempFile,
     aCancelable,
     aIsPrivate,
-    aDownloadClassification
+    aDownloadClassification,
+    aReferrerInfo
   ) {
     return this._nsITransferInitInternal(
       aSource,
@@ -281,7 +284,8 @@ DownloadLegacyTransfer.prototype = {
       aTempFile,
       aCancelable,
       aIsPrivate,
-      aDownloadClassification
+      aDownloadClassification,
+      aReferrerInfo
     );
   },
 
@@ -296,8 +300,10 @@ DownloadLegacyTransfer.prototype = {
     aCancelable,
     aIsPrivate,
     aDownloadClassification,
+    aReferrerInfo,
     aBrowsingContext,
-    aHandleInternally
+    aHandleInternally,
+    aHttpChannel
   ) {
     let browsingContextId;
     let userContextId;
@@ -317,9 +323,11 @@ DownloadLegacyTransfer.prototype = {
       aCancelable,
       aIsPrivate,
       aDownloadClassification,
+      aReferrerInfo,
       userContextId,
       browsingContextId,
-      aHandleInternally
+      aHandleInternally,
+      aHttpChannel
     );
   },
 
@@ -333,9 +341,11 @@ DownloadLegacyTransfer.prototype = {
     aCancelable,
     isPrivate,
     aDownloadClassification,
+    referrerInfo,
     userContextId = 0,
     browsingContextId = 0,
-    handleInternally = false
+    handleInternally = false,
+    aHttpChannel = null
   ) {
     this._cancelable = aCancelable;
     let launchWhenSucceeded = false,
@@ -358,12 +368,20 @@ DownloadLegacyTransfer.prototype = {
     // Create a new Download object associated to a DownloadLegacySaver, and
     // wait for it to be available.  This operation may cause the entire
     // download system to initialize before the object is created.
+    let authHeader = null;
+    if (aHttpChannel) {
+      try {
+        authHeader = aHttpChannel.getRequestHeader("Authorization");
+      } catch (e) {}
+    }
     let serialisedDownload = {
       source: {
         url: aSource.spec,
         isPrivate,
         userContextId,
         browsingContextId,
+        referrerInfo,
+        authHeader,
       },
       target: {
         path: aTarget.QueryInterface(Ci.nsIFileURL).file.path,
@@ -380,6 +398,10 @@ DownloadLegacyTransfer.prototype = {
     // it is already canceled, so we need to generate and attach the
     // corresponding error to the download.
     if (aDownloadClassification == Ci.nsITransfer.DOWNLOAD_POTENTIALLY_UNSAFE) {
+      Services.telemetry
+        .getKeyedHistogramById("DOWNLOADS_USER_ACTION_ON_BLOCKED_DOWNLOAD")
+        .add(DownloadError.BLOCK_VERDICT_INSECURE, 0);
+
       serialisedDownload.errorObj = {
         becauseBlockedByReputationCheck: true,
         reputationCheckVerdict: DownloadError.BLOCK_VERDICT_INSECURE,

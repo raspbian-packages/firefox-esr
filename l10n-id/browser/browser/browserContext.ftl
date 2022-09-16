@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Simpan Tautan ke { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Salin Alamat Surel
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = Salin Nomor Telepon
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Salin Tautan
@@ -450,3 +449,12 @@ main-context-menu-eme-learn-more =
     .label = Pelajari lebih lanjut tentang DRM…
     .accesskey = D
 
+# Variables
+#   $containerName (String): The name of the current container
+main-context-menu-open-link-in-container-tab =
+    .label = Buka Tautan di Tab { $containerName } Baru
+    .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = Tampilkan Sandi
+    .accesskey = S

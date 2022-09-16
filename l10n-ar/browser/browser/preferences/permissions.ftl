@@ -68,6 +68,11 @@ permissions-capabilities-listitem-block =
 permissions-capabilities-listitem-allow-session =
     .value = اسمح لهذه الجلسة
 
+permissions-capabilities-listitem-off =
+    .value = معطّل
+permissions-capabilities-listitem-off-temporarily =
+    .value = معطّل مؤقتًا
+
 ## Invalid Hostname Dialog
 
 permissions-invalid-uri-title = أُدخل اسم مستضيف غير صالح
@@ -88,6 +93,10 @@ permissions-exceptions-cookie-window =
 permissions-exceptions-cookie-desc = يمكنك تحديد المواقع التي يُسمح لها دائمًا أو لا يُسمح أبدًا باستخدام الكعكات و بيانات الموقع.  اكتب عنوان الموقع الذي تريد إدارته بدقة ثم انقر فوق ”احجب“، أو ”اسمح لهذه لجلسة“، أو ”اسمح“.
 
 ## Exceptions - HTTPS-Only Mode
+
+permissions-exceptions-https-only-window =
+    .title = الاستثناءات - وضع HTTPS فقط
+    .style = { permissions-window.style }
 
 ## Exceptions - Pop-ups
 

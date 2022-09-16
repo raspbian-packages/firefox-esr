@@ -22,3 +22,5 @@ bookmark-overlay-tags-expander =
     .tooltiptextdown = { bookmark-overlay-tags-expander.tooltiptext }
     .tooltiptextup = Folaigh
 
+bookmark-overlay-tags-caption-label = Bain feidhm as clibeanna chun na leabharmharcanna a eagrú agus chun iad a chuardach go díreach ón mbarra seolta
+

@@ -72,6 +72,14 @@ app-basics-location-service-key-google = Google Location Service -avain
 app-basics-safebrowsing-key-google = Google Safebrowsing -avain
 app-basics-key-mozilla = Mozilla Location Service -avain
 app-basics-safe-mode = Vikasietotila
+app-basics-memory-size = Muistin koko (RAM)
+app-basics-disk-available = Levytilaa käytettävissä
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Avaa Finderissa
@@ -339,6 +347,7 @@ fission-status-experiment-control = Kokeilun käytöstä poistama
 fission-status-experiment-treatment = Kokeilun käyttöön ottama
 fission-status-disabled-by-e10s-env = Ympäristön käytöstä poistama
 fission-status-enabled-by-env = Ympäristön käyttöön ottama
+fission-status-disabled-by-env = Ympäristön käytöstä poistama
 fission-status-disabled-by-safe-mode = Vikasietotilan käytöstä poistama
 fission-status-enabled-by-default = Käytössä oletuksena
 fission-status-disabled-by-default = Poistettu käytöstä oletuksena

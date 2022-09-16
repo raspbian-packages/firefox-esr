@@ -41,15 +41,18 @@ toolbar-context-menu-remove-extension =
 toolbar-context-menu-report-extension =
     .label = Nahlásit rozšíření
     .accesskey = N
-# Can appear on the same context menu as menubarCmd ("Menu Bar") and
-# personalbarCmd ("Bookmarks Toolbar"), so they should have different
-# access keys.
+# Can appear on the same context menu as toolbar-context-menu-menu-bar-cmd
+# ("Menu Bar") and personalbarCmd ("Bookmarks Toolbar"), so they should
+# have different access keys.
 toolbar-context-menu-pin-to-overflow-menu =
     .label = Přesunout do rozšiřující nabídky
     .accesskey = P
 toolbar-context-menu-auto-hide-downloads-button-2 =
     .label = Skrýt, pokud je prázdné
     .accesskey = p
+toolbar-context-menu-always-open-downloads-panel =
+    .label = Zobrazit tento panel při zahájení stahování
+    .accesskey = s
 toolbar-context-menu-remove-from-toolbar =
     .label = Odebrat z lišty
     .accesskey = d

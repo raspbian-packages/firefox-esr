@@ -44,4 +44,6 @@ bookmark-overlay-keyword-2 =
     .value = Keyword
     .accesskey = K
 
+bookmark-overlay-tags-caption-label = Gumamit ng mga tag upang ayusin at maghanap ng mga bookmark mula sa address bar
+
 bookmark-overlay-keyword-caption-label-2 = Gumamit ng iisang keyword upang buksan ang mga bookmark nang direkta mula sa address bar

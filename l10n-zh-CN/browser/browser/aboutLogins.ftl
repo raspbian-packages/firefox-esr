@@ -5,8 +5,6 @@
 
 about-logins-page-title = 我的密码
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = 搜索登录信息
 
@@ -60,7 +58,6 @@ about-logins-list-item-breach-icon =
     .title = 发生数据外泄的网站
 about-logins-list-item-vulnerable-password-icon =
     .title = 弱密码
-
 about-logins-list-section-breach = 发生数据外泄的网站
 about-logins-list-section-vulnerable = 弱密码
 about-logins-list-section-nothing = 暂无警报
@@ -75,8 +72,8 @@ about-logins-login-intro-heading-logged-in = 未找到同步的登录信息。
 login-intro-description = 若您曾在其他设备上将登录信息保存到 { -brand-product-name }，请按以下步骤操作：
 login-intro-instructions-fxa = 在您保存登录信息的设备，注册或登录 { -fxaccount-brand-name }
 login-intro-instructions-fxa-settings = 前往“设置”>“同步”>“开启同步…”，勾选“登录名和密码”复选框。
-login-intro-instructions-fxa-help = 若需帮助，请访问 <a data-l10n-name="help-link">{ -lockwise-brand-short-name } 用户支持</a>。
-about-logins-intro-import = 若登录信息保存在其他浏览器，您可以<a data-l10n-name="import-link">导入到 { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = 若需更多帮助，请访问<a data-l10n-name="passwords-help-link">密码支持</a>页面。
+about-logins-intro-browser-only-import = 若登录信息保存在其他浏览器，您可以<a data-l10n-name="import-link">导入到 { -brand-product-name }</a>
 about-logins-intro-import2 = 若您的登录信息并未存储在 { -brand-product-name }，可以<a data-l10n-name="import-browser-link">从另一浏览器</a>或<a data-l10n-name="import-file-link">文件</a>导入
 
 ## Login
@@ -131,8 +128,6 @@ about-logins-copy-password-os-auth-dialog-message-win = 请输入 Windows 登录
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = 复制存放的密码
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = 请输入 Windows 登录凭据，以继续导出登录信息。这有助于保护您的账户安全。
 # This message can be seen when attempting to export a password in about:logins
@@ -145,8 +140,6 @@ about-logins-primary-password-notification-message = 请输入主密码以查看
 master-password-reload-button =
     .label = 登录
     .accesskey = L
-
-## Password Sync notification
 
 ## Dialogs
 

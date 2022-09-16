@@ -48,8 +48,6 @@ inactive-css-not-grid-or-flex-container-fix = Pokušaj dodati <strong>display:gr
 
 inactive-css-not-grid-or-flex-container-or-multicol-container-fix = Pokušaj dodati <strong>display:grid</strong>, <strong>display:flex</strong> ili <strong>columns:2</strong>. { learn-more }
 
-inactive-css-not-grid-or-flex-item-fix-2 = Pokušaj dodati <strong>display:grid</strong>, <strong>display:flex</strong>, <strong>display:inline-grid</strong> ili <strong>display:inline-flex</strong>. { learn-more }
-
 inactive-css-not-grid-item-fix-2 = Pokušaj dodati <strong>display:grid</strong> ili <strong>display:inline-grid</strong> nadređenom elementu stavke. { learn-more }
 
 inactive-css-not-grid-container-fix = Pokušaj dodati <strong>display:grid</strong> ili <strong>display:inline-grid</strong>. { learn-more }
@@ -76,6 +74,16 @@ inactive-text-overflow-when-no-overflow-fix = Pokušaj dodati <strong>overflow:h
 ## Variables:
 ##   $property (string) - A CSS declaration name e.g. "-moz-user-select" that can be a platform specific alias.
 ##   $rootProperty (string) - A raw CSS property name e.g. "user-select" that is not a platform specific alias.
+
+css-compatibility-default-message = Svojstvo <strong>{ $property }</strong> nije podržano u sljedećim preglednicima:
+
+css-compatibility-deprecated-experimental-message = Svojstvo <strong>{ $property }</strong> je bilo eksperimentalno svojstvo koje je sada zastarjelo prema W3C standardima. Nije podržano u sljedećim preglednicima:
+
+css-compatibility-deprecated-experimental-supported-message = Svojstvo <strong>{ $property }</strong> je bilo eksperimentalno svojstvo koje je sada zastarjelo prema W3C standardima.
+
+css-compatibility-deprecated-message = Svojstvo <strong>{ $property }</strong> je sada zastarjelo prema W3C standardima. Nije podržano u sljedećim preglednicima:
+
+css-compatibility-deprecated-supported-message = Svojstvo <strong>{ $property }</strong> je zastarjelo prema W3C standardima.
 
 css-compatibility-experimental-message = <strong>{ $property }</strong> je eksperimentalno svojstvo. Nije podržano u sljedećim preglednicima:
 

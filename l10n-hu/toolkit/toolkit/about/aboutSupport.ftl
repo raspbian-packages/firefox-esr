@@ -73,6 +73,14 @@ app-basics-location-service-key-google = Google helymeghatározási szolgáltat�
 app-basics-safebrowsing-key-google = Google Safebrowsing kulcs
 app-basics-key-mozilla = Mozilla helymeghatározási szolgáltatás kulcs
 app-basics-safe-mode = Csökkentett mód
+app-basics-memory-size = Memória mérete (RAM)
+app-basics-disk-available = Szabad lemezterület
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Megjelenítés a Finderben
@@ -340,6 +348,7 @@ fission-status-experiment-control = Kísérlet által letiltva
 fission-status-experiment-treatment = Kísérlet által engedélyezve
 fission-status-disabled-by-e10s-env = Környezet által letiltva
 fission-status-enabled-by-env = Környezet által engedélyezve
+fission-status-disabled-by-env = Környezet által letiltva
 fission-status-disabled-by-safe-mode = Csökkentett mód miatt letiltva
 fission-status-enabled-by-default = Alapértelmezésben engedélyezve
 fission-status-disabled-by-default = Alapértelmezésben tiltva

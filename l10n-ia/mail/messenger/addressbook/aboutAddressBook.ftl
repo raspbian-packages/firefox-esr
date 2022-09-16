@@ -26,6 +26,8 @@ about-addressbook-books-context-properties =
     .label = Proprietates
 about-addressbook-books-context-synchronize =
     .label = Synchronisar
+about-addressbook-books-context-edit =
+    .label = Rediger
 about-addressbook-books-context-print =
     .label = Imprimer…
 about-addressbook-books-context-export =
@@ -53,8 +55,8 @@ about-addressbook-search =
     .placeholder = Cercar in { $name }
 about-addressbook-search-all =
     .placeholder = Cercar in tote le libros del adresses
-about-addressbook-sort-button =
-    .title = Cambiar le ordine del lista
+about-addressbook-sort-button2 =
+    .title = Optiones de monstra de lista
 about-addressbook-name-format-display =
     .label = Nomine monstrate
 about-addressbook-name-format-firstlast =
@@ -69,6 +71,38 @@ about-addressbook-sort-email-ascending =
     .label = Ordinar per adresse e-mail (A > Z)
 about-addressbook-sort-email-descending =
     .label = Ordinar per adresse e-mail (Z > A)
+about-addressbook-horizontal-layout =
+    .label = Passar al disposition horizontal
+about-addressbook-vertical-layout =
+    .label = Passar al disposition vertical
+
+## Card column headers
+## Each string is listed here twice, and the values should match.
+
+about-addressbook-column-header-generatedname = Nomine
+about-addressbook-column-label-generatedname =
+    .label = { about-addressbook-column-header-generatedname }
+about-addressbook-column-header-emailaddresses = Adresses email
+about-addressbook-column-label-emailaddresses =
+    .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-phonenumbers = Numeros de telephono
+about-addressbook-column-label-phonenumbers =
+    .label = { about-addressbook-column-header-phonenumbers }
+about-addressbook-column-header-addresses = Adresses
+about-addressbook-column-label-addresses =
+    .label = { about-addressbook-column-header-addresses }
+about-addressbook-column-header-title = Titulo
+about-addressbook-column-label-title =
+    .label = { about-addressbook-column-header-title }
+about-addressbook-column-header-department = Departimento
+about-addressbook-column-label-department =
+    .label = { about-addressbook-column-header-department }
+about-addressbook-column-header-organization = Organisation
+about-addressbook-column-label-organization =
+    .label = { about-addressbook-column-header-organization }
+about-addressbook-column-header-addrbook = Libro del adresses
+about-addressbook-column-label-addrbook =
+    .label = { about-addressbook-column-header-addrbook }
 about-addressbook-cards-context-write =
     .label = Scriber
 about-addressbook-confirm-delete-mixed-title = Deler contactos e listas
@@ -122,18 +156,45 @@ about-addressbook-confirm-delete-contacts =
        *[other] Desira tu vermente deler { $count } contactos?
     }
 
+## Card list placeholder
+## Shown when there are no cards in the list
+
+about-addressbook-placeholder-empty-book = Nulle contactos disponibile
+about-addressbook-placeholder-new-contact = Nove contacto
+about-addressbook-placeholder-search-only = Iste libro de adresses monstrara contactos solo post un recerca
+about-addressbook-placeholder-searching = In cerca…
+about-addressbook-placeholder-no-search-results = Nulle contactos trovate
+
 ## Details
 
+about-addressbook-prefer-display-name = Preferer le nomine monstrate al testa del message
+about-addressbook-write-action-button = Scriber
+about-addressbook-event-action-button = Evento
+about-addressbook-search-action-button = Cercar
 about-addressbook-begin-edit-contact-button = Rediger
+about-addressbook-delete-edit-contact-button = Deler
 about-addressbook-cancel-edit-contact-button = Cancellar
 about-addressbook-save-edit-contact-button = Salvar
-about-addressbook-details-email-addresses-header = Adresses e-mail
+about-addressbook-add-contact-to = Adder a:
+about-addressbook-details-email-addresses-header = Adresses email
 about-addressbook-details-phone-numbers-header = Numeros de telephono
-about-addressbook-details-home-address-header = Adresse casa
-about-addressbook-details-work-address-header = Adresse de officio
+about-addressbook-details-addresses-header = Adresses
+about-addressbook-details-notes-header = Notas
 about-addressbook-details-other-info-header = Altere informationes
-about-addressbook-prompt-to-save-title = Salvar le cambiamentos?
-about-addressbook-prompt-to-save = Vole tu salvar tu cambiamentos?
+about-addressbook-entry-type-work = Labor
+about-addressbook-entry-type-home = Initio
+about-addressbook-entry-type-fax = Fax
+about-addressbook-entry-type-cell = Cellula
+about-addressbook-entry-type-pager = Pagina
+about-addressbook-entry-name-birthday = Die natal
+about-addressbook-entry-name-anniversary = Anniversario
+about-addressbook-entry-name-title = Titulo
+about-addressbook-entry-name-role = Rolo
+about-addressbook-entry-name-organization = Organisation
+about-addressbook-entry-name-website = Sito web
+about-addressbook-entry-name-time-zone = Fuso horari
+about-addressbook-unsaved-changes-prompt-title = Modificationes non salveguardate
+about-addressbook-unsaved-changes-prompt = Vole tu salvar tu cambiamentos ante lassar le vista del redaction?
 
 # Photo dialog
 

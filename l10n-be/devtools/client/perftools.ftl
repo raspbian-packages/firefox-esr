@@ -21,6 +21,7 @@ perftools-heading-features-default = Магчымасці (рэкамендав�
 perftools-heading-features-disabled = Адключаныя магчымасці
 perftools-heading-features-experimental = Эксперыментальныя
 perftools-heading-threads = Патокі
+perftools-heading-threads-jvm = Патокі JVM
 perftools-heading-local-build = Лакальная зборка
 
 ##
@@ -49,9 +50,6 @@ perftools-devtools-settings-label = Налады
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Прафайлер адключаны, калі ўключана прыватнае агляданне.
-    Закройце ўсе прыватныя вокны, каб зноў уключыць прафайлер
 perftools-status-recording-stopped-by-another-tool = Запіс быў спынены іншай прыладай.
 perftools-status-restart-required = Каб уключыць гэтую функцыю, трэба перазапусціць браўзeр.
 
@@ -97,6 +95,18 @@ perftools-thread-dns-resolver =
     .title = У гэтым патоку адбываецца вызначэнне DNS
 perftools-thread-task-controller =
     .title = Патокi пула патокаў TaskController
+perftools-thread-jvm-gecko =
+    .title = Асноўны паток Gecko JVM
+perftools-thread-jvm-nimbus =
+    .title = Асноўныя патокі для SDK эксперыментаў Nimbus
+perftools-thread-jvm-default-dispatcher =
+    .title = Прадвызначаны дыспетчар для бібліятэкі сапраграм Kotlin
+perftools-thread-jvm-glean =
+    .title = Асноўныя патокі для SDK тэлеметрыі Glean
+perftools-thread-jvm-arch-disk-io =
+    .title = Дыспетчар IO для бібліятэкі сапраграм Kotlin
+perftools-thread-jvm-pool =
+    .title = Патокі, створаныя ў пуле патокаў без назвы
 
 ##
 
@@ -107,6 +117,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Новае</b>: { -profiler-brand-name } цяпер інтэграваны ў Інструменты распрацоўшчыка. <a>Даведайцеся больш</a> пра гэты новы магутны інструмент.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -123,19 +137,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Вэб-распрацоўка
 perftools-presets-web-developer-description = Рэкамендаваныя папярэднія налады для адладкі большасці вэб-прыкладанняў, з невялікімі выдаткамі.
-perftools-presets-firefox-platform-label = Платформа Firefox
-perftools-presets-firefox-platform-description = Рэкамендаваныя папярэднія налады для ўнутранай адладкі платформы Firefox.
-perftools-presets-firefox-front-end-label = Кліенцкая частка Firefox
-perftools-presets-firefox-front-end-description = Рэкамендаваныя папярэднія налады для ўнутранай адладкі кліенцкай часткі Firefox.
-perftools-presets-firefox-graphics-label = Графіка Firefox
-perftools-presets-firefox-graphics-description = Рэкамендаваныя папярэднія налады для даследавання прадукцыйнасці графікі Firefox.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Рэкамендаваныя налады для прафілявання { -brand-shorter-name }.
 perftools-presets-graphics-label = Графіка
 perftools-presets-graphics-description = Папярэднія налады для даследавання хібаў графікі ў { -brand-shorter-name }.
 perftools-presets-media-label = Медыя
-perftools-presets-media-description = Рэкамендаваныя папярэднія налады для дыягностыкі праблем з гукам і відэа.
 perftools-presets-media-description2 = Папярэднія налады для даследавання хібаў гуку і відэа ў { -brand-shorter-name }.
+perftools-presets-networking-label = Сетка
+perftools-presets-networking-description = Папярэднія налады для даследавання сеткавых хібаў у { -brand-shorter-name }.
 perftools-presets-custom-label = Адмысловыя
 
 ##

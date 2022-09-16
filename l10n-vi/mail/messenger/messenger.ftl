@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Cực tiểu hóa
+messenger-window-maximize-button =
+    .tooltiptext = Cực đại hoá
+messenger-window-restore-down-button =
+    .tooltiptext = Khôi phục kích thước
+messenger-window-close-button =
+    .tooltiptext = Đóng
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -69,13 +80,16 @@ folder-toolbar-toggle-folder-compact-view =
 redirect-msg-menuitem =
     .label = Chuyển hướng
     .accesskey = D
+menu-file-save-as-file =
+    .label = Tập tin…
+    .accesskey = F
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Tùy chỉnh
+appmenu-save-as-file =
+    .label = Tập tin…
+appmenu-settings =
+    .label = Cài đặt
 appmenu-addons-and-themes =
     .label = Tiện ích mở rộng và chủ đề
 appmenu-help-enter-troubleshoot-mode =
@@ -91,11 +105,55 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Chuyển hướng
+mail-context-delete-messages =
+    .label =
+        { $count ->
+           *[other] Xóa các thư đã chọn
+        }
+context-menu-decrypt-to-folder =
+    .label = Sao chép dưới dạng giải mã thành
+    .accesskey = y
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Chuyển hướng
+message-header-msg-flagged =
+    .title = Gắn sao
+    .aria-label = Gắn sao
+message-header-msg-not-flagged =
+    .title = Không gắn sao
+    .aria-label = Không gắn sao
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Ảnh hồ sơ của { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Cài đặt header thư
+message-header-customize-button-style =
+    .value = Kiểu nút
+    .accesskey = B
+message-header-button-style-default =
+    .label = Biểu tượng và văn bản
+message-header-button-style-text =
+    .label = Văn bản
+message-header-button-style-icons =
+    .label = Biểu tượng
+message-header-show-sender-full-address =
+    .label = Luôn hiển thị địa chỉ đầy đủ của người gửi
+    .accesskey = f
+message-header-show-sender-full-address-description = Địa chỉ email sẽ được hiển thị bên dưới tên hiển thị.
+message-header-show-recipient-avatar =
+    .label = Hiển thị ảnh hồ sơ của người gửi
+    .accesskey = P
+message-header-hide-label-column =
+    .label = Ẩn cột nhãn
+    .accesskey = l
+message-header-large-subject =
+    .label = Chủ đề lớn
+    .accesskey = s
 
 ## Action Button Context Menu
 
@@ -105,13 +163,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Xóa tiện ích mở rộng
     .accesskey = v
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Địa chỉ có trong sổ địa chỉ
-message-header-address-not-in-address-book-icon =
-    .alt = Địa chỉ không có trong sổ địa chỉ
 
 ## Add-on removal warning
 
@@ -132,3 +183,90 @@ repair-text-encoding-button =
 no-reply-title = Không hỗ trợ trả lời
 no-reply-message = Địa chỉ trả lời ({ $email }) dường như không phải là địa chỉ được giám sát. Thư đến địa chỉ này có thể sẽ không được đọc bởi bất kỳ ai.
 no-reply-reply-anyway-button = Vẫn trả lời
+
+## error messages
+
+decrypt-and-copy-failures = Không thể giải mã { $failures } trong tổng số { $total } thư.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Thanh công cụ Spaces
+    .aria-label = Thanh công cụ Spaces
+    .aria-description = Thanh công cụ dọc để chuyển đổi giữa các không gian khác nhau. Sử dụng các phím mũi tên để điều hướng các nút có sẵn.
+spaces-toolbar-button-mail2 =
+    .title = Thư
+spaces-toolbar-button-address-book2 =
+    .title = Sổ địa chỉ
+spaces-toolbar-button-calendar2 =
+    .title = Lịch
+spaces-toolbar-button-tasks2 =
+    .title = Nhiệm vụ
+spaces-toolbar-button-chat2 =
+    .title = Trò chuyện
+spaces-toolbar-button-overflow =
+    .title = Thêm không gian…
+spaces-toolbar-button-settings2 =
+    .title = Cài đặt
+spaces-toolbar-button-hide =
+    .title = Ẩn thanh công cụ Spaces
+spaces-toolbar-button-show =
+    .title = Hiển thị thanh công cụ Spaces
+spaces-context-new-tab-item =
+    .label = Mở trong thẻ mới
+spaces-context-new-window-item =
+    .label = Mở trong cửa sổ mới
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Chuyển sang { $tabName }
+settings-context-open-settings-item2 =
+    .label = Cài đặt
+settings-context-open-account-settings-item2 =
+    .label = Cài đặt tài khoản
+settings-context-open-addons-item2 =
+    .label = Tiện ích mở rộng và chủ đề
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Mở menu Spaces
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+           *[other] { $count } thư chưa đọc
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Tùy biến…
+spaces-customize-panel-title = Cài đặt thanh công cụ Spaces
+spaces-customize-background-color = Màu nền:
+spaces-customize-icon-color = Màu nút
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Màu nền của Nút đã chọn
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Màu của Nút đã chọn
+spaces-customize-button-restore = Khôi phục về mặc định
+    .accesskey = R
+customize-panel-button-save = Xong
+    .accesskey = D

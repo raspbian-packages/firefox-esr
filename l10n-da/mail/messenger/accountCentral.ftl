@@ -46,7 +46,7 @@ newsgroups-label = Nyhedsgrupper
 newsgroups-description = { -brand-short-name } giver dig mulighed for at oprette forbindelse til alle de nyhedsgrupper, du ønsker.
 
 import-title = Importer fra et andet program
-import-paragraph = { -brand-short-name } giver dig mulighed for at importere mails, adressebogsindhold, feed-abonnementer, indstillinger og/eller filtre fra andre mailprogrammer og almindelige adressebogsformater.
+import-paragraph2 = { -brand-short-name } giver dig mulighed for at importere mails, adressebogsindhold, feed-abonnementer, indstillinger og/eller filtre fra andre mailprogrammer og almindelige adressebogsformater.
 
 import-label = Importer
     .aria-label = Importer data fra andre programmer

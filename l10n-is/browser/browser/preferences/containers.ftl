@@ -3,7 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 containers-window-new =
-    .title = Bæta við nýjum innihaldsflipa
+    .title = Bæta við nýju sérefni
+    .style = width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings =
+    .title = Stillingar { $name } sérefnis
     .style = width: 45em
 
 containers-window-close =
@@ -25,7 +30,7 @@ containers-name-label = Nafn
     .style = { -containers-labels-style }
 
 containers-name-text =
-    .placeholder = Sláðu inn nafn innihaldsflipa
+    .placeholder = Settu inn heiti sérefnis
 
 containers-icon-label = Táknmynd
     .accesskey = y

@@ -19,3 +19,29 @@ chat-participant-moderator-role-icon2 =
 
 chat-participant-voiced-role-icon2 =
     .alt = Sudionici mogu slati poruke
+
+chat-verify-identity =
+    .label = Provjerite identitet
+    .accesskey = i
+
+chat-identity-verified =
+    .label = Identitet je već provjeren
+
+chat-buddy-identity-status = Povjerenje u šifriranje
+chat-buddy-identity-status-verified = Provjereno
+chat-buddy-identity-status-unverified = Neprovjereno
+
+## Conversation invite notification box
+
+# This string appears in a notification bar at the top of the Contacts window
+# when someone invited the user to a multi user chat conversation, to request
+# the user to confirm they want to join the chat.
+# Variables:
+#   $conversation (String) - Name of the conversation the user is invited to.
+chat-conv-invite-label = Pozvani ste na razgovor u { $conversation }
+chat-conv-invite-accept =
+    .label = Prihvati
+    .accesskey = a
+chat-conv-invite-deny =
+    .label = Odbaci
+    .accesskey = O

@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
-carddav-window =
-    .title = Yeni CardDAV Adres Defteri
+carddav-window-title = Yeni CardDAV Adres Defteri
 
 carddav-dialog =
     .buttonlabelaccept = Devam et
@@ -12,7 +11,6 @@ carddav-dialog =
 carddav-username-label =
     .value = Kullanıcı adı:
     .accesskey = K
-
 carddav-location-label =
     .value = Konum:
     .accesskey = K

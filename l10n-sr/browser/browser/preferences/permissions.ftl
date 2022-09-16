@@ -105,6 +105,7 @@ permissions-exceptions-cookie-desc = Овде можете да наведете
 permissions-exceptions-https-only-window =
     .title = Изузеци – режим „Само HTTPS”
     .style = { permissions-window.style }
+permissions-exceptions-https-only-desc = Можете искључити само HTTPS мод за одређене сајтове. { -brand-short-name } неће покушавати да пребаци на безбедну HTTPS везу за ове сајтове. Ово правило се не примењује на приватне прозоре.
 
 ## Exceptions - Pop-ups
 

@@ -84,6 +84,7 @@ toolbar-button-stop-reload =
 
 ## Firefox Account Button
 
+
 ## Save Page
 
 main-context-menu-page-save =
@@ -93,28 +94,42 @@ main-context-menu-page-save =
 ## Simple menu items
 
 main-context-menu-bookmark-add =
-    .aria-label = यस पृष्ठमा पुस्तकचिनो लगाउनुहोस्
+    .aria-label = यो पृष्ठ बूकमार्क गर्नुहोस्
     .accesskey = m
-    .tooltiptext = यस पृष्ठ मा पुस्तकचिनो लगाउनुहोस्
+    .tooltiptext = यो पृष्ठ बूकमार्क गर्नुहोस्
+
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
+# so should probably have the same access key if possible.
+main-context-menu-bookmark-add-mac =
+    .label = बुकमार्क पृष्ठ
+    .accesskey = m
+
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
+# so should probably have the same access key if possible.
+main-context-menu-bookmark-edit-mac =
+    .label = बुकमार्क सम्पादन गर्नुहोस्
+    .accesskey = m
 
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = यस पृष्ठमा पुस्तकचिनो लगाउनुहोस्
+    .aria-label = यस पृष्ठ बूकमार्क गर्नुहोस्
     .accesskey = m
-    .tooltiptext = यस पृष्ठ ({ $shortcut }) मा पुस्तकचिनो लगाउनुहोस्
+    .tooltiptext = ({ $shortcut }) यस पृष्ठ बूकमार्क गर्नुहोस्
 
 main-context-menu-bookmark-change =
-    .aria-label = यो पुस्तकचिनोलाई सम्पादन गर्नुहोस्
+    .aria-label = यो बुकमार्क सम्पादन गर्नुहोस्
     .accesskey = m
-    .tooltiptext = यस पुस्तकचिनोलाई सम्पादन गर्नुहोस्
+    .tooltiptext = यो बुकमार्क सम्पादन गर्नुहोस्
 
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
 main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = यो पुस्तकचिनोलाई सम्पादन गर्नुहोस्
+    .aria-label = यो बुकमार्क सम्पादन गर्नुहोस्
     .accesskey = m
-    .tooltiptext = यस ({ $shortcut }) पुस्तकचिनोलाई सम्पादन गर्नुहोस्
+    .tooltiptext = यो बुकमार्क सम्पादन गर्नुहोस् ({ $shortcut })
 
 main-context-menu-open-link =
     .label = लिङ्क खोल्नुहोस्
@@ -136,14 +151,13 @@ main-context-menu-open-link-new-private-window =
     .label = लिङ्कलाई नयाँ निजी सञ्झ्यालमा खोल्नुहोस्
     .accesskey = P
 
+main-context-menu-bookmark-link =
+    .label = बुकमार्कको लिङ्क
+    .accesskey = B
+
 main-context-menu-save-link =
     .label = यस रूपमा लिङ्क सङ्ग्रह गर्नुहोस्...
     .accesskey = k
-
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
 
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
@@ -290,7 +304,7 @@ main-context-menu-frame-reload =
     .accesskey = R
 
 main-context-menu-frame-bookmark =
-    .label = यो फ्रेमलाई पुस्तकचिनो हाल्नुहोस्
+    .label = यो फ्रेम बुकमार्क गर्नुहोस्
     .accesskey = m
 
 main-context-menu-frame-save-as =

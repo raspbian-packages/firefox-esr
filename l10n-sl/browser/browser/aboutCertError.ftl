@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Spletne strani svojo istovetnost doka
 
 cert-error-symantec-distrust-admin = O težavi lahko obvestite skrbnika spletne strani.
 
+cert-error-old-tls-version = To spletno mesto ne podpira protokola TLS 1.2, ki je najnižja različica, podprta v { -brand-short-name(sklon: "mestnik") }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Nepričakovan odgovor strežnika
 nssFailure2-title = Varna povezava ni uspela
 csp-xfo-error-title = { -brand-short-name } ne more odpreti te strani
 corruptedContentError-title = Napaka zaradi pokvarjene vsebine
-remoteXUL-title = Oddaljeni XUL
 sslv3Used-title = Varna povezava ni mogoča
 inadequateSecurityError-title = Vaša povezava ni varna
 blockedByPolicy-title = Zavrnjena stran

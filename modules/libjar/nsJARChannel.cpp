@@ -16,6 +16,7 @@
 #include "nsComponentManagerUtils.h"
 
 #include "nsIFileURL.h"
+#include "nsIURIMutator.h"
 
 #include "mozilla/BasePrincipal.h"
 #include "mozilla/ErrorNames.h"
@@ -42,16 +43,19 @@ static NS_DEFINE_CID(kZipReaderCID, NS_ZIPREADER_CID);
 
 //-----------------------------------------------------------------------------
 
+//
+// set MOZ_LOG=nsJarProtocol:5
+//
+static LazyLogModule gJarProtocolLog("nsJarProtocol");
+
 // Ignore any LOG macro that we inherit from arbitrary headers. (We define our
 // own LOG macro below.)
 #ifdef LOG
 #  undef LOG
 #endif
-
-//
-// set NSPR_LOG_MODULES=nsJarProtocol:5
-//
-static LazyLogModule gJarProtocolLog("nsJarProtocol");
+#ifdef LOG_ENABLED
+#  undef LOG_ENABLED
+#endif
 
 #define LOG(args) MOZ_LOG(gJarProtocolLog, mozilla::LogLevel::Debug, args)
 #define LOG_ENABLED() MOZ_LOG_TEST(gJarProtocolLog, mozilla::LogLevel::Debug)
@@ -73,12 +77,18 @@ class nsJARInputThunk : public nsIInputStream {
         mJarReader(zipReader),
         mJarEntry(jarEntry),
         mContentLength(-1) {
-    if (fullJarURI) {
-#ifdef DEBUG
-      nsresult rv =
-#endif
-          fullJarURI->GetAsciiSpec(mJarDirSpec);
-      NS_ASSERTION(NS_SUCCEEDED(rv), "this shouldn't fail");
+    if (ENTRY_IS_DIRECTORY(mJarEntry) && fullJarURI) {
+      nsCOMPtr<nsIURI> urlWithoutQueryRef;
+      nsresult rv = NS_MutateURI(fullJarURI)
+                        .SetQuery(""_ns)
+                        .SetRef(""_ns)
+                        .Finalize(urlWithoutQueryRef);
+      if (NS_SUCCEEDED(rv) && urlWithoutQueryRef) {
+        rv = urlWithoutQueryRef->GetAsciiSpec(mJarDirSpec);
+        MOZ_ASSERT(NS_SUCCEEDED(rv), "Finding a jar dir spec shouldn't fail.");
+      } else {
+        MOZ_CRASH("Shouldn't fail to strip query and ref off jar URI.");
+      }
     }
   }
 
@@ -113,9 +123,6 @@ nsresult nsJARInputThunk::Init() {
     rv = mJarReader->GetInputStream(mJarEntry, getter_AddRefs(mJarStream));
   }
   if (NS_FAILED(rv)) {
-    // convert to the proper result if the entry wasn't found
-    // so that error pages work
-    if (rv == NS_ERROR_FILE_TARGET_DOES_NOT_EXIST) rv = NS_ERROR_FILE_NOT_FOUND;
     return rv;
   }
 
@@ -190,7 +197,6 @@ nsJARChannel::~nsJARChannel() {
   }
 
   // Proxy release the following members to main thread.
-  NS_ReleaseOnMainThread("nsJARChannel::mLoadInfo", mLoadInfo.forget());
   NS_ReleaseOnMainThread("nsJARChannel::mCallbacks", mCallbacks.forget());
   NS_ReleaseOnMainThread("nsJARChannel::mProgressSink", mProgressSink.forget());
   NS_ReleaseOnMainThread("nsJARChannel::mLoadGroup", mLoadGroup.forget());
@@ -278,7 +284,12 @@ nsresult nsJARChannel::CreateJarInput(nsIZipReaderCache* jarCache,
   RefPtr<nsJARInputThunk> input =
       new nsJARInputThunk(reader, mJarURI, mJarEntry, jarCache != nullptr);
   rv = input->Init();
-  if (NS_FAILED(rv)) return rv;
+  if (NS_FAILED(rv)) {
+    if (rv == NS_ERROR_FILE_NOT_FOUND) {
+      CheckForBrokenChromeURL(mLoadInfo, mOriginalURI);
+    }
+    return rv;
+  }
 
   // Make GetContentLength meaningful
   mContentLength = input->GetContentLength();

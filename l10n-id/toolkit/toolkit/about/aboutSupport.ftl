@@ -55,12 +55,14 @@ app-basics-enabled-plugins = Plugin Terpasang
 app-basics-build-config = Konfigurasi Build
 app-basics-user-agent = User Agent
 app-basics-os = OS
+app-basics-os-theme = Tema Sistem Operasi
 # Rosetta is Apple's translation process to run apps containing x86_64
 # instructions on Apple Silicon. This should remain in English.
 app-basics-rosetta = Rosetta Translated
 app-basics-memory-use = Penggunaan Memori
 app-basics-performance = Kinerja
 app-basics-service-workers = Service Worker Terdaftar
+app-basics-third-party = Modul Pihak Ketiga
 app-basics-profiles = Profil
 app-basics-launcher-process-status = Proses Peluncur
 app-basics-multi-process-support = Jendela Multiproses
@@ -71,6 +73,14 @@ app-basics-location-service-key-google = Google Location Service Key
 app-basics-safebrowsing-key-google = Google Safebrowsing Key
 app-basics-key-mozilla = Kunci Layanan Lokasi Mozilla
 app-basics-safe-mode = Mode Aman
+app-basics-memory-size = Ukuran Memori (RAM)
+app-basics-disk-available = Kapasitas Disk Tersedia
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Tampilkan di Finder
@@ -124,7 +134,6 @@ sandbox-sys-call-tid = TID
 sandbox-sys-call-proc-type = Jenis Proses
 sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Argumen
-
 troubleshoot-mode-title = Diagnosis masalah
 restart-in-troubleshoot-mode-label = Mode Pemecahan Masalah…
 clear-startup-cache-title = Coba bersihkan tembolok permulaan
@@ -311,7 +320,6 @@ launcher-process-status-unknown = Status tak diketahui
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
 multi-process-windows = { $remoteWindows }/{ $totalWindows }
-
 # Variables
 # $fissionWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -320,12 +328,14 @@ fission-status-experiment-control = Dinonaktifkan oleh eksperimen
 fission-status-experiment-treatment = Diaktifkan oleh eksperimen
 fission-status-disabled-by-e10s-env = Dinonaktifkan oleh lingkungan
 fission-status-enabled-by-env = Diaktifkan oleh lingkungan
+fission-status-disabled-by-env = Dinonaktifkan oleh lingkungan
 fission-status-disabled-by-safe-mode = Dinonaktifkan oleh mode aman
 fission-status-enabled-by-default = Diaktifkan secara baku
 fission-status-disabled-by-default = Dinonaktifkan secara baku
 fission-status-enabled-by-user-pref = Diaktifkan oleh pengguna
 fission-status-disabled-by-user-pref = Dinonaktifkan oleh pengguna
 fission-status-disabled-by-e10s-other = E10s dinonaktifkan
+fission-status-enabled-by-rollout = Diaktifkan dengan peluncuran bertahap
 
 async-pan-zoom = Geser/Perbesaran Asinkron
 apz-none = tidak ada

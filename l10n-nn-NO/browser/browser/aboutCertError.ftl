@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Nettstadar viser identiteten sin via 
 
 cert-error-symantec-distrust-admin = Du kan varsle nettsideadministratoren om dette problemet.
 
+cert-error-old-tls-version = Denne nettstaden støttar kanskje ikkje versjon 1.2 av TLS-protokollen, som er minimumsversjonen som vert støtta av { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Uventa svar frå tenar
 nssFailure2-title = Trygt samband feila
 csp-xfo-error-title = { -brand-short-name } kan ikkje opne denne sida
 corruptedContentError-title = Øydelagt innhald
-remoteXUL-title = Ekstern-XUL
 sslv3Used-title = Klarte ikkje å kople til trygt
 inadequateSecurityError-title = Tilkoplinga di er ikkje trygg
 blockedByPolicy-title = Blokkert side

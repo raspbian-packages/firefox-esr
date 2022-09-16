@@ -43,15 +43,6 @@ menu-quit =
 menu-quit-mac =
     .label = { -brand-shorter-name } برخاست کریں
 
-# This menu-quit-button string is only used on Linux.
-menu-quit-button =
-    .label = { menu-quit.label }
-
-# This menu-quit-button-win string is only used on Windows.
-menu-quit-button-win =
-    .label = { menu-quit.label }
-    .tooltip = { -brand-shorter-name } سے باہر نکلیں
-
 menu-about =
     .label = { -brand-shorter-name } کے بارے میں
     .accesskey = A
@@ -81,8 +72,15 @@ menu-file-open-location =
 menu-file-open-file =
     .label = فائل کھولیں…
     .accesskey = O
-menu-file-close =
-    .label = بند کریں
+# Variables:
+#  $tabCount (Number): the number of tabs that are affected by the action.
+menu-file-close-tab =
+    .label =
+        { $tabCount ->
+            [1] ٹیبز کو بند کریں۔
+            [one] { $tabCount } ٹیبز کو بند کریں۔
+           *[other] { $tabCount } ٹیبز کو بند کریں۔
+        }
     .accesskey = C
 menu-file-close-window =
     .label = ونڈوں بند کریں
@@ -99,9 +97,6 @@ menu-file-share-url =
 menu-file-print-setup =
     .label = صفحہ سیٹ اپ…
     .accesskey = u
-menu-file-print-preview =
-    .label = چھپائی پیش نظارہ
-    .accesskey = v
 menu-file-print =
     .label = چھاپیں…
     .accesskey = P
@@ -308,9 +303,6 @@ menu-get-help =
     .accesskey = H
 menu-help-report-site-issue =
     .label = سائٹ مسلہ… رپورٹ کریں
-menu-help-feedback-page =
-    .label = اپنی رائے بھیجیں...
-    .accesskey = S
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

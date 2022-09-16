@@ -23,9 +23,6 @@ compatibility-issue-deprecated-experimental-prefixneeded = （不赞成使用、
 compatibility-settings-button-label = 设置
 compatibility-settings-button-title =
     .title = 设置
-compatibility-feedback-button-label = 反馈
-compatibility-feedback-button-title =
-    .title = 反馈
 
 ## Messages used as headers in settings pane
 
@@ -45,3 +42,12 @@ compatibility-issue-occurrences =
 compatibility-no-issues-found = 未发现兼容性问题。
 compatibility-close-settings-button =
     .title = 关闭设置
+
+# Text used in the element containing the browser icons for a given compatibility issue.
+# Line breaks are significant.
+# Variables:
+#   $browsers (String) - A line-separated list of browser information (e.g. Firefox 98\nChrome 99).
+compatibility-issue-browsers-list =
+    .title =
+        存在兼容性问题：
+        { $browsers }

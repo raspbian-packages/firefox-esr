@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Miniměrować
+messenger-window-maximize-button =
+    .tooltiptext = Maksiměrować
+messenger-window-restore-down-button =
+    .tooltiptext = Pomjeńšić
+messenger-window-close-button =
+    .tooltiptext = Začinić
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -31,8 +42,8 @@ quick-filter-toolbarbutton =
     .label = Spěšny filter
     .tooltiptext = Powěsće filtrować
 redirect-msg-button =
-    .label = Dale sposrědkować
-    .tooltiptext = Wubranu powěsć dale sposrědkować
+    .label = Hinak wodźić
+    .tooltiptext = Wubranu powěsć hinak wodźić
 
 ## Folder Pane
 
@@ -70,18 +81,14 @@ folder-toolbar-toggle-folder-compact-view =
 ## Menu
 
 redirect-msg-menuitem =
-    .label = Dale sposrědkować
-    .accesskey = D
+    .label = Hinak wodźić
+    .accesskey = H
 menu-file-save-as-file =
     .label = Dataja…
     .accesskey = D
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Nastajenja
 appmenu-save-as-file =
     .label = Dataja…
 appmenu-settings =
@@ -95,21 +102,63 @@ appmenu-help-exit-troubleshoot-mode =
 appmenu-help-more-troubleshooting-info =
     .label = Dalše informacije za rozrisowanje problemow
 appmenu-redirect-msg =
-    .label = Dale sposrědkować
+    .label = Hinak wodźić
 
 ## Context menu
 
 context-menu-redirect-msg =
-    .label = Dale sposrědkować
+    .label = Hinak wodźić
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Powěsć zhašeć
+            [two] Wubranej powěsći zhašeć
+            [few] Wubrane powěsće zhašeć
+           *[other] Wubrane powěsće zhašeć
+        }
+context-menu-decrypt-to-folder =
+    .label = Jako dešifrowanu kopěrować do
+    .accesskey = d
 
 ## Message header pane
 
 other-action-redirect-msg =
-    .label = Dale sposrědkować
-message-header-msg-is-flagged =
-    .title = Powěsć z hwěžku
+    .label = Hinak wodźić
+message-header-msg-flagged =
+    .title = Z hwěžku
+    .aria-label = Z hwěžku
 message-header-msg-not-flagged =
     .title = Powěsć bjez hwěžki
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Profilowy wobraz { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Nastajenja hłowy powěsće
+message-header-customize-button-style =
+    .value = Tłóčatkowy stil
+    .accesskey = T
+message-header-button-style-default =
+    .label = Symbole a tekst
+message-header-button-style-text =
+    .label = Tekst
+message-header-button-style-icons =
+    .label = Symbole
+message-header-show-sender-full-address =
+    .label = Přeco dospołnu adresu wotpósłarja pokazać
+    .accesskey = d
+message-header-show-sender-full-address-description = E-mejlowa adresa so pod zwobraznjenskim mjenom pokaza.
+message-header-show-recipient-avatar =
+    .label = Profilowy wobraz wotpósłarja pokazać
+    .accesskey = P
+message-header-hide-label-column =
+    .label = Špaltu popisow schować
+    .accesskey = o
+message-header-large-subject =
+    .label = Wulka tema
+    .accesskey = u
 
 ## Action Button Context Menu
 
@@ -119,13 +168,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Rozšěrjenje wotstronić
     .accesskey = s
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Adresa je w adresniku
-message-header-address-not-in-address-book-icon =
-    .alt = Adresa w adresniku njeje
 
 ## Add-on removal warning
 
@@ -146,3 +188,93 @@ repair-text-encoding-button =
 no-reply-title = Wotmołwa so njepodpěruje
 no-reply-message = Zda so, zo wotmołwna adresa ({ $email }) dohladowana adresa njeje. Powěsće na tutu adresu so najskerje wot nikoho nječitaja.
 no-reply-reply-anyway-button = Najebać toho wotmołwić
+
+## error messages
+
+decrypt-and-copy-failures = { $failures } z { $total } powěsćow njejsu so dešifrowali a njejsu so kopěrowali.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Lajsta dźělowych programow
+    .aria-label = Lajsta dźělowych programow
+    .aria-description = Wertikalna symbolowa lajsta, kotraž mjez rozdźělnymi dźělnymi programami přepina. Wužiwajće šipkowe tasty, zo byšće po k dispoziciji stejacych tłóčatkach nawigował.
+spaces-toolbar-button-mail2 =
+    .title = E-mejl
+spaces-toolbar-button-address-book2 =
+    .title = Adresnik
+spaces-toolbar-button-calendar2 =
+    .title = Protyka
+spaces-toolbar-button-tasks2 =
+    .title = Nadawki
+spaces-toolbar-button-chat2 =
+    .title = Chat
+spaces-toolbar-button-overflow =
+    .title = Wjace rumow…
+spaces-toolbar-button-settings2 =
+    .title = Nastajenja
+spaces-toolbar-button-hide =
+    .title = Lajstu dźělowych programow schować
+spaces-toolbar-button-show =
+    .title = Lajstu dźělowych programow pokazać
+spaces-context-new-tab-item =
+    .label = W nowym rajtarku wočinić
+spaces-context-new-window-item =
+    .label = W nowym woknje wočinić
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = K { $tabName } přeńć
+settings-context-open-settings-item2 =
+    .label = Nastajenja
+settings-context-open-account-settings-item2 =
+    .label = Kontowe nastajenja
+settings-context-open-addons-item2 =
+    .label = Přidatki a drasty
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Meni dźělnych programow wočinić
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] { $count } nječitana powěsć
+            [two] { $count } nječitanej powěsći
+            [few] { $count } nječitane powěsće
+           *[other] { $count } nječitanych powěsćow
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Přiměrić…
+spaces-customize-panel-title = Nastajenja lajsty dźělnych programow
+spaces-customize-background-color = Pozadkowa barba
+spaces-customize-icon-color = Tłóčatkowa barba
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Pozadkowa barba wubraneho tłóčatka
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Barba wubraneho tłóčatka
+spaces-customize-button-restore = Standard wobnowić
+    .accesskey = b
+customize-panel-button-save = Dokónčeny
+    .accesskey = D

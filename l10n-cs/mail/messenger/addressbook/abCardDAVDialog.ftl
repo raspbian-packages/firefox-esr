@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
-carddav-window =
-    .title = Nová složka kontaktů CardDAV
+carddav-window-title = Nová složka kontaktů CardDAV
 
 carddav-dialog =
     .buttonlabelaccept = Pokračovat
@@ -12,12 +11,11 @@ carddav-dialog =
 carddav-username-label =
     .value = Uživatelské jméno:
     .accesskey = U
-
 carddav-location-label =
     .value = Adresa:
     .accesskey = A
 carddav-location =
-    .default-placeholder = URL adresa nebo adresa serveru s adresářem
+    .default-placeholder = URL adresa nebo adresa serveru s kontakty
 
 carddav-loading = Vyhledávání nastavení…
 carddav-known-incompatible =

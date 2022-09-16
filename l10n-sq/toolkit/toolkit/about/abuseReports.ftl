@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Raport për { $addon-name }
 
 abuse-report-title-extension = Raportojeni Këtë Zgjerim te { -vendor-short-name }
+abuse-report-title-sitepermission = Raportojeni Këtë shtesë “Leje Sajtesh” te { -vendor-short-name }
 abuse-report-title-theme = Raportojeni Këtë Temë te { -vendor-short-name }
 abuse-report-subtitle = Ç’problem ka?
 
@@ -37,12 +37,6 @@ abuse-report-goback-button = Kthehu mbrapsht
 abuse-report-submit-button = Parashtroje
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Po dërgohet raportim për <span data-l10n-
 abuse-report-messagebar-submitted = Faleminderit për parashtrimin e një raportimi. Doni të hiqet <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Faleminderit për parashtrimin e një raporti.
 abuse-report-messagebar-removed-extension = Faleminderit për parashtrimin e një raporti. E hoqët zgjerimin <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Faleminderit për parashtrimin e një raporti. E hoqët “Leje Sajtesh” <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Faleminderit për parashtrimin e një raporti. E hoqët temën <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Pati një gabim me dërgimin e raportit për <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Raporti për <span data-l10n-name="addon-name">{ $addon-name }</span> s’u dërgua, ngaqë tani afër qe parashtruar një tjetër raport.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Raporti për <span data-l10n-name=
 
 abuse-report-messagebar-action-remove-extension = Po, Hiqe
 abuse-report-messagebar-action-keep-extension = Jo, Do Ta Mbaj
+abuse-report-messagebar-action-remove-sitepermission = Po, Hiqe
+abuse-report-messagebar-action-keep-sitepermission = Jo, Do Ta Mbaj
 abuse-report-messagebar-action-remove-theme = Po, Hiqe
 abuse-report-messagebar-action-keep-theme = Jo, Do Ta Mbaj
 abuse-report-messagebar-action-retry = Riprovo
@@ -82,11 +79,15 @@ abuse-report-deceptive-reason-v2 = Pretendon të jetë diçka që s’është
 abuse-report-deceptive-example = Shembull: Përshkrim ose figurë e gabuar
 
 abuse-report-broken-reason-extension-v2 = S’funksionon, dëmton shfaqjen e sajteve, ose ngadalëson { -brand-product-name }-in
+abuse-report-broken-reason-sitepermission-v2 = S’funksionon, dëmton shfaqjen e sajteve, ose ngadalëson { -brand-product-name }-in
 abuse-report-broken-reason-theme-v2 = S’funksionon ose dëmton shfaqjen e shfletuesit
 abuse-report-broken-example = Shembull: Veçoritë janë të ngadalta, të zorshme për t’u përdorur, ose s’funksionojnë fare; pjesë sajtesh nuk ngarkohen ose duken çuditshëm
 abuse-report-broken-suggestions-extension =
     Duket sikur keni identifikuar një të metë. Veç parashtrimit të një raporti këtu, rruga më e mirë për zgjidhjen e një problemi funksionimi është të lidheni me zhvilluesin e zgjerimit.
     Që të merrni të dhëna rreth tij, <a data-l10n-name="support-link">vizitoni sajtin e zgjerimit</a>.
+abuse-report-broken-suggestions-sitepermission =
+    Duket sikur keni identifikuar një të metë. Veç parashtrimit të një raporti këtu, rruga më e mirë për zgjidhjen e një problemi funksionimi është të lidheni me zhvilluesin e sajtit.
+    Që të merrni hollësi nga zhvilluesi, <a data-l10n-name="support-link">vizitoni sajtin</a>.
 abuse-report-broken-suggestions-theme =
     Duket sikur keni identifikuar një të metë. Veç parashtrimit të një raporti këtu, rruga më e mirë për zgjidhjen e një problemi funksionimi është të lidheni me zhvilluesin e temës.
     Që të merrni të dhëna rreth tij, <a data-l10n-name="support-link">vizitoni sajtin e temës</a>.
@@ -100,4 +101,3 @@ abuse-report-unwanted-reason-v2 = S’e kam dashur ndonjëherë dhe nuk di si ta
 abuse-report-unwanted-example = Shembull: E instaloi një aplikacion, pa lejen time
 
 abuse-report-other-reason = Diçka tjetër
-

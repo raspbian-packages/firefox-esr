@@ -65,22 +65,20 @@ cryptominer-tab-content = Os criptomineiros usan o poder informático do seu sis
 protections-close-button2 =
     .aria-label = Pechar
     .title = Pechar
-  
+
 mobile-app-title = Bloqueo de rastrexadores de anuncios en máis dispositivos
 mobile-app-card-content = Use o navegador móbil con protección integrada contra o rastrexamento de anuncios.
 mobile-app-links = { -brand-product-name } Navegador para <a data-l10n-name="android-mobile-inline-link">Android</a> e <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 
 lockwise-title = Non esqueza nunca máis un contrasinal
-lockwise-title-logged-in2 = Xestor de contrasinais
-lockwise-header-content = { -lockwise-brand-name } almacena os seus contrasinais de forma segura no seu navegador.
+passwords-title-logged-in = Xestionar os seus contrasinais
+passwords-header-content = { -brand-product-name } almacena os seus contrasinais de forma segura no seu navegador.
 lockwise-header-content-logged-in = Almacene e sincronice os seus contrasinais con seguridade en todos os seus dispositivos.
-protection-report-save-passwords-button = Gardar contrasinais
-    .title = Gardar contrasinais en { -lockwise-brand-short-name }
-protection-report-manage-passwords-button = Xestionar contrasinais
-    .title = Xestionar contrasinais en { -lockwise-brand-short-name }
-lockwise-mobile-app-title = Leve os seus contrasinais a todas partes
-lockwise-no-logins-card-content = Empregue os contrasinais gardados en { -brand-short-name } en calquera dispositivo.
-lockwise-app-links = { -lockwise-brand-name } para <a data-l10n-name="lockwise-android-inline-link">Android</a> e <a data-l10n-name = "lockwise-ios-inline-link" >iOS</a>
+protection-report-passwords-save-passwords-button = Gardar contrasinais
+    .title = Gardar contrasinais
+protection-report-passwords-manage-passwords-button = Xestionar contrasinais
+    .title = Xestionar contrasinais
+
 
 # Variables:
 # $count (Number) - Number of passwords exposed in data breaches.

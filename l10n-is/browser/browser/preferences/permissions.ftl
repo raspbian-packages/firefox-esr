@@ -24,6 +24,14 @@ permissions-allow =
     .label = Leyfa
     .accesskey = f
 
+permissions-button-off =
+    .label = Slökkva á
+    .accesskey = k
+
+permissions-button-off-temporarily =
+    .label = Slökkva tímabundið
+    .accesskey = t
+
 permissions-site-name =
     .label = Vefsvæði
 
@@ -42,10 +50,10 @@ permission-dialog =
     .buttonlabelaccept = Vista breytingar
     .buttonaccesskeyaccept = V
 
-permissions-autoplay-menu = Sjálfgefið fyrir allar vefsíður:
+permissions-autoplay-menu = Sjálfgefið fyrir öll vefsvæði:
 
 permissions-searchbox =
-    .placeholder = Leita í vefsvæði
+    .placeholder = Leita á vefsvæði
 
 permissions-capabilities-autoplay-allow =
     .label = Leyfa hljóð og myndskeið
@@ -68,6 +76,11 @@ permissions-capabilities-listitem-block =
 permissions-capabilities-listitem-allow-session =
     .value = Leyfa í þessari vafralotu
 
+permissions-capabilities-listitem-off =
+    .value = Slökkt
+permissions-capabilities-listitem-off-temporarily =
+    .value = Slökkt tímabundið
+
 ## Invalid Hostname Dialog
 
 permissions-invalid-uri-title = Ólöglegt vistfang slegið inn
@@ -75,36 +88,45 @@ permissions-invalid-uri-label = Sláðu inn löglegt vistfang
 
 ## Exceptions - Tracking Protection
 
+permissions-exceptions-etp-window =
+    .title = Undanþágur fyrir aukna rakningarvernd
+    .style = { permissions-window.style }
+permissions-exceptions-etp-desc = Þú hefur slökkt á vörnum á þessum vefsvæðum.
 
 ## Exceptions - Cookies
 
 permissions-exceptions-cookie-window =
-    .title = Undantekningar - Smákökur og gögn vefsvæðis
+    .title = Undantekningar - Vefkökur og gögn vefsvæðis
     .style = { permissions-window.style }
-permissions-exceptions-cookie-desc = Þú getur skilgreint hvaða vefsvæði hafa leyfi eða ekki til að geyma smákökur og gögn.  Sláðu inn nákvæma slóð fyrir það vefsvæði sem þú sjá um og smelltu svo á Loka, Leyfa fyrir lotu, eða leyfa.
+permissions-exceptions-cookie-desc = Þú getur skilgreint hvaða vefsvæði hafa leyfi eða ekki til að geyma vefkökur og gögn.  Settu inn nákvæma slóð fyrir það vefsvæði sem þú vilt sýsla með og smelltu svo á að loka, leyfa fyrir lotu eða leyfa.
 
 ## Exceptions - HTTPS-Only Mode
+
+permissions-exceptions-https-only-window =
+    .title = Undantekningar - Einungis-HTTPS-hamur
+    .style = { permissions-window.style }
+permissions-exceptions-https-only-desc = Þú getur slökkt á Einungis-HTTPS-ham fyrir tilteknar vefsíður. { -brand-short-name } mun ekki reyna að uppfæra tenginguna til að tryggja HTTPS fyrir þessar síður. Undantekningar eiga ekki við um huliðsglugga.
 
 ## Exceptions - Pop-ups
 
 permissions-exceptions-popup-window =
-    .title = Leyfð vefsvæði - Sprettigluggar
+    .title = Leyfð vefsvæði - Sprettgluggar
     .style = { permissions-window.style }
-permissions-exceptions-popup-desc = Þú getur skilgreint hvaða vefsvæði hefur leyfi til að opna sprettiglugga. Sláðu inn nákvæma vefslóð fyrir vefsvæðið og smelltu svo á Leyfa.
+permissions-exceptions-popup-desc = Þú getur skilgreint hvaða vefsvæði hafa leyfi til að opna sprettglugga. Settu inn nákvæma vefslóð fyrir vefsvæðið og smelltu svo á að leyfa.
 
 ## Exceptions - Saved Logins
 
 permissions-exceptions-saved-logins-window =
     .title = Undantekningar - Vistaðar innskráningar
     .style = { permissions-window.style }
-permissions-exceptions-saved-logins-desc = Innskráningar fyrir eftirfarandi svæði verða ekki vistuð
+permissions-exceptions-saved-logins-desc = Innskráningar fyrir eftirfarandi vefsvæði verða ekki vistuð
 
 ## Exceptions - Add-ons
 
 permissions-exceptions-addons-window =
     .title = Leyfð vefsvæði - Uppsetning á viðbótum
     .style = { permissions-window.style }
-permissions-exceptions-addons-desc = Þú getur skilgreint hvaða vefsvæði hafa leyfi til að setja inn viðbætur. Sláðu inn nákvæma vefslóð fyrir vefsvæðið og smelltu svo á Leyfa.
+permissions-exceptions-addons-desc = Þú getur skilgreint hvaða vefsvæði hafa leyfi til að setja inn viðbætur. Sláðu inn nákvæma vefslóð fyrir vefsvæðið og smelltu svo á að leyfa.
 
 ## Site Permissions - Autoplay
 
@@ -135,6 +157,13 @@ permissions-site-location-disable-desc = Þetta kemur í veg fyrir að vefsvæð
 
 ## Site Permissions - Virtual Reality
 
+permissions-site-xr-window =
+    .title = Stillingar - Heimildir fyrir sýndarveruleika
+    .style = { permissions-window.style }
+permissions-site-xr-desc = Eftirfarandi vefsvæði hafa beðið um að fá að aðgang að sýndarveruleikatækjum. Þú getur skilgreint hvaða vefsvæði hafa aðgang að sýndarveruleikatækjunum þínum. Þú getur einnig lokað á nýjar beiðnir um aðgang að sýndarveruleikatækjum.
+permissions-site-xr-disable-label =
+    .label = Loka á nýjar beiðnir sem spyrja um aðgang að sýndarveruleikatækjum
+permissions-site-xr-disable-desc = Þetta kemur í veg fyrir að vefsvæði sem eru ekki hér fyrir ofan sendi beiðni um aðgang að sýndarveruleikatækjum. Ef lokað er á aðgang að sýndarveruleikatækjum gæti það haft áhrif á suma eiginleika vefsvæðis.
 
 ## Site Permissions - Camera
 

@@ -76,12 +76,20 @@ tab-context-close-multiple-tabs =
 ## Variables:
 ##  $tabCount (Number): the number of tabs that are affected by the action.
 
-tab-context-close-tabs =
+tab-context-reopen-closed-tabs =
+    .label =
+        { $tabCount ->
+            [1] Կրկին բացել ներդիրը
+            [one] Կրկին բացել ներդիրները
+           *[other] Կրկին բացել ներդիրները
+        }
+    .accesskey = o
+tab-context-close-n-tabs =
     .label =
         { $tabCount ->
             [1] Փակել ներդիրը
-            [one] Փակել ներդիրները
-           *[other] Փակել ներդիրները
+            [one] Փակել { $tabCount } ներդիրները
+           *[other] Փակել { $tabCount } ներդիրները
         }
     .accesskey = C
 tab-context-move-tabs =
@@ -92,6 +100,7 @@ tab-context-move-tabs =
            *[other] Տեղափոխել ներդիրները
         }
     .accesskey = v
+
 tab-context-send-tabs-to-device =
     .label =
         { $tabCount ->

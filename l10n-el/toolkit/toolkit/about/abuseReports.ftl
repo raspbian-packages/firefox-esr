@@ -10,6 +10,7 @@
 abuse-report-dialog-title = Αναφορά για { $addon-name }
 
 abuse-report-title-extension = Αναφορά επέκτασης στη { -vendor-short-name }
+abuse-report-title-sitepermission = Αναφορά επέκτασης αδειών ιστοτόπων στη { -vendor-short-name }
 abuse-report-title-theme = Αναφορά θέματος στη { -vendor-short-name }
 abuse-report-subtitle = Ποιο είναι το ζήτημα;
 
@@ -36,13 +37,6 @@ abuse-report-goback-button = Επιστροφή
 abuse-report-submit-button = Υποβολή
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Αποστολή αναφοράς για τ
 abuse-report-messagebar-submitted = Ευχαριστούμε για την αναφορά σας. Θέλετε να αφαιρέσετε το <span data-l10n-name="addon-name">{ $addon-name }</span>;
 abuse-report-messagebar-submitted-noremove = Ευχαριστούμε για την αναφορά σας.
 abuse-report-messagebar-removed-extension = Ευχαριστούμε για την αναφορά σας. Έχετε αφαιρέσει την επέκταση <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Ευχαριστούμε για την αναφορά σας. Έχετε αφαιρέσει το πρόσθετο αδειών ιστοτόπων <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Ευχαριστούμε για την αναφορά σας. Έχετε αφαιρέσει το θέμα <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Προέκυψε σφάλμα κατά την αποστολή της αναφοράς για το <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Η αναφορά για το <span data-l10n-name="addon-name">{ $addon-name }</span> δεν απεστάλη, επειδή μια άλλη αναφορά υπεβλήθη πρόσφατα.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Η αναφορά για το <spa
 
 abuse-report-messagebar-action-remove-extension = Ναι, να αφαιρεθεί
 abuse-report-messagebar-action-keep-extension = Όχι, να παραμείνει
+abuse-report-messagebar-action-remove-sitepermission = Ναι, να αφαιρεθεί
+abuse-report-messagebar-action-keep-sitepermission = Όχι, να παραμείνει
 abuse-report-messagebar-action-remove-theme = Ναι, να αφαιρεθεί
 abuse-report-messagebar-action-keep-theme = Όχι, να παραμείνει
 abuse-report-messagebar-action-retry = Επανάληψη
@@ -82,12 +79,17 @@ abuse-report-deceptive-reason-v2 = Προσποιείται ότι είναι κ
 abuse-report-deceptive-example = Παράδειγμα: Παραπλανητική περιγραφή ή απεικόνιση
 
 abuse-report-broken-reason-extension-v2 = Δεν λειτουργεί, χαλάει ιστοτόπους, ή επιβραδύνει το { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Δεν λειτουργεί, χαλάει ιστοτόπους ή επιβραδύνει το { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Δεν λειτουργεί ή χαλάει την προβολή του προγράμματος περιήγησης
 abuse-report-broken-example = Παράδειγμα: Οι λειτουργίες είναι αργές, δύσκολες στη χρήση ή δεν λειτουργούν· δεν φορτώνονται τμήματα ιστοτόπων ή εμφανίζονται διαφορετικά
 abuse-report-broken-suggestions-extension =
     Φαίνεται ότι έχετε εντοπίσει ένα σφάλμα. Εκτός από την υποβολή της παρούσας αναφοράς, ο καλύτερος τρόπος
     να επιλυθεί ένα ζήτημα λειτουργικότητας είναι να επικοινωνήσετε με τον προγραμματιστή της επέκτασης.
     <a data-l10n-name="support-link">Επισκεφθείτε τον ιστότοπο της επέκτασης</a> για να βρείτε τα στοιχεία του προγραμματιστή.
+abuse-report-broken-suggestions-sitepermission =
+    Φαίνεται ότι έχετε εντοπίσει ένα σφάλμα. Εκτός από την υποβολή της παρούσας αναφοράς, ο καλύτερος τρόπος
+    να επιλυθεί ένα ζήτημα λειτουργικότητας είναι να επικοινωνήσετε με τον προγραμματιστή του ιστοτόπου.
+    <a data-l10n-name="support-link">Επισκεφθείτε τον ιστότοπο</a> για να λάβετε τις πληροφορίες του προγραμματιστή.
 abuse-report-broken-suggestions-theme =
     Φαίνεται ότι έχετε εντοπίσει ένα σφάλμα. Εκτός από την υποβολή της παρούσας αναφοράς, ο καλύτερος τρόπος
     να επιλυθεί ένα ζήτημα λειτουργικότητας είναι να επικοινωνήσετε με τον προγραμματιστή του θέματος.

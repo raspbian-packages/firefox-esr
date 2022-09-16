@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Vrstica z menijem
+    .accesskey = m
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Nastavitve
-    .accesskey = N
 menu-tools-settings =
     .label = Nastavitve
     .accesskey = t
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Velikost pisave
+    .accesskey = o
+menuitem-font-size-enlarge =
+    .label = Povečaj velikost pisave
+    .accesskey = v
+menuitem-font-size-reduce =
+    .label = Zmanjšaj velikost pisave
+    .accesskey = m
+menuitem-font-size-reset =
+    .label = Ponastavi velikost pisave
+    .accesskey = n
 mail-uidensity-label =
     .label = Gostota
     .accesskey = G
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Dotik
     .accesskey = D
+menu-spaces-toolbar-button =
+    .label = Vrstica komponent
+    .accesskey = k
 
 ## File
 

@@ -130,19 +130,15 @@ was trying to connect. -->
 
 <!ENTITY certerror.whatCanYouDoAboutItTitle "Que pote tu facer concernente a isto?">
 
-<!ENTITY certerror.unknownIssuer.whatCanYouDoAboutIt "
-<p>Le problema es probabilemente in le sito web, e il ha nulle cosa que tu pote facer pro resolver lo</p>
-<p>Si tu es in un rete corporative o usa un software anti-virus, tu pote demandar lor assistentia technic. Tu pote tamben notificar le administrator del sito super le problema.</p>
-">
+<!ENTITY certerror.unknownIssuer.whatCanYouDoAboutIt "<p>Le problema es probabilemente in le sito web, e il ha nihil que tu pote facer pro resolver lo.</p>
+<p>Si tu es in un rete de interprisa o usa un programma anti-virus, tu pote contactar le respective equipas de assistentia technic. Tu pote tamben signalar le problema al administrator del sito.</p>">
 
 <!ENTITY certerror.expiredCert.whatCanYouDoAboutIt2 "
 <p>Le horologio de tu computator signa <span id='wrongSystemTime_systemDate2'/>. Verifica que le data, hora e fuso horari es configurate correctemente in tu systema, e alora refresca <span class='hostname'/>.</p>
 <p>Si le hora es jam correcte, le sito web es probabilemente mal configurate, e il ha nihil que tu pote facer pro resolver iste problema. Tu pote solo signalar iste problema al administrator del sito.</p>
 ">
 
-<!ENTITY certerror.badCertDomain.whatCanYouDoAboutIt "
-<p>Le problema es probabilemente in le sito web, e il ha nulle cosa que tu pote facer pro resolver lo. Tu pote notificar le administrator del sito web super le problema.</p>
-">
+<!ENTITY certerror.badCertDomain.whatCanYouDoAboutIt "<p>Le problema es probabilemente in le sito web, e il ha nihil que tu pote facer pro resolver lo. Tu pote signalar le problema al administrator del sito.</p>">
 
 <!ENTITY sharedLongDesc "
 <ul>
@@ -163,8 +159,6 @@ was trying to connect. -->
 
 <!ENTITY errorReporting.automatic2 "Reporta errores como tal pro adjutar Mozilla a identificar e blocar le sitos malitiose">
 <!ENTITY errorReporting.learnMore "Saper plus…">
-
-<!ENTITY remoteXUL.longDesc "<p><ul><li>Per favor contacta le proprietarios del sito web pro informar les de iste problema.</li></ul></p>">
 
 <!-- LOCALIZATION NOTE (sslv3Used.longDesc2) - Do not translate
      "SSL_ERROR_UNSUPPORTED_VERSION". -->
@@ -191,9 +185,5 @@ was trying to connect. -->
 
 <!ENTITY prefReset.longDesc "Pare que le configuration de securitate del rete pote esser le causa de isto. Vole tu restaurar le configuration predefinite?">
 <!ENTITY prefReset.label "Restaurar le parametros predefinite">
-
-<!ENTITY enableTls10.longDesc "Iste sito web pote non supportar le protocollo TLS 1.2, le version minime que &brandShortName; supporta. Activar TLS 1.0 e TLS 1.1 poterea permitter que iste connexion succede.">
-<!ENTITY enableTls10.note "TLS 1.0 e TLS 1.1 essera permanentemente disactivate in un version futur.">
-<!ENTITY enableTls10.label "Activar TLS 1.0 e 1.1">
 
 <!ENTITY networkProtocolError.longDesc "<p>Le pagina que tu tenta vider non pote esser monstrate perque un error ha essite detegite in le protocollo de rete.</p><ul><li>Per favor contacta le proprietarios del sito web pro informar les de iste problema.</li></ul>">

@@ -5,7 +5,7 @@
 protections-panel-sendreportview-error = Er is een fout opgetreden bij het verzenden van het rapport. Probeer het later nog eens.
 
 # A link shown when ETP is disabled for a site. Opens the breakage report subview when clicked.
-protections-panel-sitefixedsendreport-label = Website gerepareerd? Verzend rapport
+protections-panel-sitefixedsendreport-label = Website gerepareerd? Rapport verzenden
 
 ## These strings are used to define the different levels of
 ## Enhanced Tracking Protection.
@@ -63,7 +63,6 @@ protections-panel-not-found-label = Geen gedetecteerd
 ##
 
 protections-panel-settings-label = Beschermingsinstellingen
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Beveiligingsdashboard
 
 ## In the Site Not Working? view, we suggest turning off protections if

@@ -33,7 +33,9 @@
 
 <!ENTITY siteIcons.label                "Verkkosivujen kuvakkeet">
 <!ENTITY useSiteIcons.label             "Näytä verkkosivujen kuvakkeet">
+<!ENTITY useSiteIcons.accesskey         "v">
 <!ENTITY useFavIcons.label              "Yritä käyttää palvelimen kuvaketta, kun sivu ei määritä omaa">
+<!ENTITY useFavIcons.accesskey          "Y">
 
 <!ENTITY homePageIntro.label            "Aloitussivu-painikkeen painaminen avaa nämä sivut:">
 <!ENTITY useCurrent.label               "Käytä avointa sivua">
@@ -45,10 +47,3 @@
 <!ENTITY useDefault.label               "Palauta oletus">
 <!ENTITY useDefault.accesskey           "P">
 
-<!ENTITY defaultBrowserGroup.label      "Oletusselain">
-<!ENTITY defaultBrowserButton.label     "Aseta oletusselaimeksi">
-<!ENTITY defaultBrowserButton.accesskey "o">
-<!ENTITY alreadyDefaultText             "&brandShortName; on jo järjestelmän oletusselain.">
-<!ENTITY defaultPendingText             "&brandShortName; asetetaan järjestelmän oletusselaimeksi, kun painat OK.">
-<!ENTITY wasMadeDefaultText             "&brandShortName; on asetettu järjestelmän oletusselaimeksi.">
-<!ENTITY makeDefaultText                "Aseta &brandShortName; järjestelmän oletusselaimeksi.">

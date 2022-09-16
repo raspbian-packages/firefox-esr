@@ -16,6 +16,13 @@ abuse-report-title-extension =
         [neuter] { -vendor-short-name(case: "dat") }
        *[other] organizaci { -vendor-short-name }
     }
+abuse-report-title-sitepermission =
+    { -vendor-short-name.gender ->
+        [masculine] Nahlásit tento doplněk oprávnění { -vendor-short-name(case: "dat") }
+        [feminine] Nahlásit tento doplněk oprávnění { -vendor-short-name(case: "dat") }
+        [neuter] Nahlásit tento doplněk oprávnění { -vendor-short-name(case: "dat") }
+       *[other] Nahlásit tento doplněk oprávnění organizaci { -vendor-short-name }
+    }
 abuse-report-title-theme =
     Nahlásit tento vzhled { -vendor-short-name.gender ->
         [masculine] { -vendor-short-name(case: "dat") }
@@ -46,13 +53,6 @@ abuse-report-goback-button = Zpět
 abuse-report-submit-button = Odeslat
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -62,6 +62,7 @@ abuse-report-messagebar-submitting = Odesílání hlášení doplňku <span data
 abuse-report-messagebar-submitted = Děkujeme za nahlášení. Chcete doplněk <span data-l10n-name="addon-name">{ $addon-name }</span> odebrat?
 abuse-report-messagebar-submitted-noremove = Děkujeme vám za hlášení.
 abuse-report-messagebar-removed-extension = Děkujeme za nahlášení. Rozšíření <span data-l10n-name="addon-name">{ $addon-name }</span> bylo odebráno.
+abuse-report-messagebar-removed-sitepermission = Děkujeme za nahlášení. Doplněk oprávnění serveru <span data-l10n-name="addon-name">{ $addon-name }</span> byl odebrán.
 abuse-report-messagebar-removed-theme = Děkujeme za nahlášení. Vzhled <span data-l10n-name="addon-name">{ $addon-name }</span> byl odebrán.
 abuse-report-messagebar-error = Při odesílání hlášení pro <span data-l10n-name="addon-name">{ $addon-name }</span> došlo k chybě.
 abuse-report-messagebar-error-recent-submit = Doplněk <span data-l10n-name="addon-name">{ $addon-name }</span> nebyl nahlášen, protože jste ho už nedávno nahlásili.
@@ -70,6 +71,8 @@ abuse-report-messagebar-error-recent-submit = Doplněk <span data-l10n-name="add
 
 abuse-report-messagebar-action-remove-extension = Ano, odebrat
 abuse-report-messagebar-action-keep-extension = Ne, ponechat
+abuse-report-messagebar-action-remove-sitepermission = Ano, odebrat
+abuse-report-messagebar-action-keep-sitepermission = Ne, ponechat
 abuse-report-messagebar-action-remove-theme = Ano, odebrat
 abuse-report-messagebar-action-keep-theme = Ne, ponechat
 abuse-report-messagebar-action-retry = Zkusit znovu
@@ -92,15 +95,23 @@ abuse-report-deceptive-reason-v2 = Vydává se za něco jiného
 abuse-report-deceptive-example = Příklad: zavádějící popis nebo náhledy
 
 abuse-report-broken-reason-extension-v2 =
-    Nefunguje, rozbíjí webové stránky nebo zpomaluje{ -brand-product-name.gender ->
-        [masculine] { -brand-product-name(case: "acc") }
-        [feminine] { -brand-product-name(case: "acc") }
-        [neuter] { -brand-product-name(case: "acc") }
-       *[other] aplikaci { -brand-product-name }
+    { -brand-product-name.gender ->
+        [masculine] Nefunguje, rozbíjí webové stránky nebo zpomaluje { -brand-product-name(case: "acc") }
+        [feminine] Nefunguje, rozbíjí webové stránky nebo zpomaluje  { -brand-product-name(case: "acc") }
+        [neuter] Nefunguje, rozbíjí webové stránky nebo zpomaluje { -brand-product-name(case: "acc") }
+       *[other] Nefunguje, rozbíjí webové stránky nebo zpomaluje aplikaci { -brand-product-name }
+    }
+abuse-report-broken-reason-sitepermission-v2 =
+    { -brand-product-name.gender ->
+        [masculine] Nefunguje, rozbíjí webové stránky nebo zpomaluje { -brand-product-name(case: "acc") }
+        [feminine] Nefunguje, rozbíjí webové stránky nebo zpomaluje  { -brand-product-name(case: "acc") }
+        [neuter] Nefunguje, rozbíjí webové stránky nebo zpomaluje { -brand-product-name(case: "acc") }
+       *[other] Nefunguje, rozbíjí webové stránky nebo zpomaluje aplikaci { -brand-product-name }
     }
 abuse-report-broken-reason-theme-v2 = Nefunguje nebo robíjí rozhraní prohlížeče
 abuse-report-broken-example = Příklad: funkce je pomalá, špatně se používá, vůbec nefunguje, nebo omezuje funkčnost a zobrazení webových stránek
 abuse-report-broken-suggestions-extension = Zdá se, že jste objevili chybu. Kromě odeslání hlášení nám v řešení problému pomůže, pokud kontaktujete i autora rozšíření. <a data-l10n-name="support-link">Navštivte stránky rozšíření</a>, kde na autora najdete kontakt.
+abuse-report-broken-suggestions-sitepermission = Zdá se, že jste objevili chybu. Kromě odeslání hlášení nám v řešení problému pomůže, pokud kontaktujete i správce serveru. <a data-l10n-name="support-link">Navštivte stránku</a>, kde na správce najdete kontakt.
 abuse-report-broken-suggestions-theme = Zdá se, že jste objevili chybu. Kromě odeslání hlášení nám v řešení problému pomůže, pokud kontaktujete i autora vzhledu. <a data-l10n-name="support-link">Navštivte stránky vzhledu</a>, kde na autora najdete kontakt.
 
 abuse-report-policy-reason-v2 = Obsahuje nenávistný, násilný nebo nelegální obsah
@@ -110,4 +121,3 @@ abuse-report-unwanted-reason-v2 = Toto rozšíření jsem nechtěl(a) instalovat
 abuse-report-unwanted-example = Příklad: nainstalováno cizí aplikací bez vašeho svolení
 
 abuse-report-other-reason = Něco jiného
-

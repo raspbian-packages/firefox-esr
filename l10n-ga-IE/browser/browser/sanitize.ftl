@@ -19,6 +19,8 @@ dialog-title-everything =
     .title = Glan an Stair Go Léir
     .style = width: 46em
 
+clear-data-settings-label = Nuair a dhúntar é, ba cheart do { -brand-short-name } na nithe seo a ghlanadh go huathoibríoch
+
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
 ## clear-time-duration-suffix is left empty in English, but can be
@@ -76,8 +78,8 @@ item-form-search-history =
 
 data-section-label = Sonraí
 
-item-site-preferences =
-    .label = Sainroghanna an tSuímh
+item-site-settings =
+    .label = Socruithe an tsuímh
     .accesskey = S
 
 item-offline-apps =

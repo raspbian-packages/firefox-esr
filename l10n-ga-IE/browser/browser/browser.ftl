@@ -19,11 +19,12 @@ browser-main-window =
     .data-title-private = { -brand-full-name } (Brabhsáil Phríobháideach)
     .data-content-title-default = { $content-title } - { -brand-full-name }
     .data-content-title-private = { $content-title } - { -brand-full-name } (Brabhsáil Phríobháideach)
+
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
 # "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox - (Private Browsing)"
+# "private" - "Mozilla Firefox — (Private Browsing)"
 #
 # The last two are for use when there *is* a content title.
 # Do not use the brand name in the last two attributes, as we do on non-macOS.
@@ -38,6 +39,7 @@ browser-main-window-mac =
     .data-title-private = { -brand-full-name } - (Brabhsáil Phríobháideach)
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } - (Brabhsáil Phríobháideach)
+
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
@@ -92,9 +94,18 @@ urlbar-search-tips-confirm = Maith go leor, tuigim
 ## Variables:
 ##  $engineName (String): The name of the user's default search engine. e.g. "Google" or "DuckDuckGo".
 
+urlbar-search-tips-onboard = Déan níos lú clóscríbhneoireacht agus aimsigh níos mó: Cuardaigh { $engineName } go díreach ó do bharra seolta.
+urlbar-search-tips-redirect-2 = Tosaigh do chuardach sa bharra seolta chun moltaí de chuid { $engineName } a fheiceáil agus freisin oireas do chuid chúrsála.
+
+# Prompts users to use the Urlbar when they are typing in the domain of a
+# search engine, e.g. google.com or amazon.com.
+urlbar-tabtosearch-onboard = Roghnaigh an t-aicearra seo chun na rudaí a theastaíonn uait a fháil níos tapa.
 
 ## Local search mode indicator labels in the urlbar
 
+urlbar-search-mode-bookmarks = Leabharmharcanna
+urlbar-search-mode-tabs = Cluaisíní
+urlbar-search-mode-history = Oireas
 
 ##
 
@@ -110,10 +121,12 @@ urlbar-screen-blocked =
     .tooltiptext = Chuir tú cosc ar an suíomh seo do scáileán a chomhroinnt.
 urlbar-persistent-storage-blocked =
     .tooltiptext = Chuir tú cosc ar stóras seasmhach ar an suíomh seo.
+
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
 urlbar-star-edit-bookmark =
     .tooltiptext = Cuir an leabharmharc seo in eagar ({ $shortcut })
+
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 urlbar-star-add-bookmark =
@@ -135,17 +148,38 @@ full-screen-exit =
 
 ## Search Engine selection buttons (one-offs)
 
-# This string prompts the user to use the list of one-click search engines in
+# This string prompts the user to use the list of search shortcuts in
 # the Urlbar and searchbar.
 search-one-offs-with-title = An uair seo, cuardaigh le:
+
 search-one-offs-change-settings-compact-button =
     .tooltiptext = Athraigh na socruithe cuardaigh
+
 search-one-offs-context-open-new-tab =
     .label = Cuardaigh i gCluaisín Nua
     .accesskey = r
 search-one-offs-context-set-as-default =
     .label = Socraigh mar Inneall Cuardaigh Réamhshocraithe
     .accesskey = d
+search-one-offs-context-set-as-default-private =
+    .label = Socraigh mar an tInneall Cuardaigh réamhshocraithe é i gcomhair Fuinneoga Príobháideacha
+    .accesskey = P
+
+# Search engine one-off buttons with an @alias shortcut/keyword.
+# Variables:
+#  $engineName (String): The name of the engine.
+#  $alias (String): The @alias shortcut/keyword.
+search-one-offs-engine-with-alias =
+    .tooltiptext = { $engineName } ({ $alias })
+
+# Shown when adding new engines from the address bar shortcut buttons or context
+# menu, or from the search bar shortcut buttons.
+# Variables:
+#  $engineName (String): The name of the engine.
+search-one-offs-add-engine =
+    .label = Cuir “{ $engineName }” leis
+    .tooltiptext = Cuir an t-inneall cuardaigh “{ $engineName }” leis
+    .aria-label = Cuir an t-inneall cuardaigh “{ $engineName }” leis
 # When more than 5 engines are offered by a web page, they are grouped in a
 # submenu using this as its label.
 search-one-offs-add-engine-menu =
@@ -158,6 +192,12 @@ search-one-offs-add-engine-menu =
 ##    restrict their searches to certain sources (e.g., "*" to search only
 ##    bookmarks).
 
+search-one-offs-bookmarks =
+    .tooltiptext = Leabharmharcanna ({ $restrict })
+search-one-offs-tabs =
+    .tooltiptext = Cluaisíní ({ $restrict })
+search-one-offs-history =
+    .tooltiptext = Oireas ({ $restrict })
 
 ## Bookmark Panel
 
@@ -172,6 +212,7 @@ identity-passive-loaded = Tá codanna den leathanach seo neamhshlán (léithéid
 identity-active-loaded = Tá cosaint díchumasaithe agat ar an leathanach seo.
 identity-weak-encryption = Úsáideann an leathanach seo criptiú lag.
 identity-insecure-login-forms = D'fhéadfadh sonraí logáil isteach bheith i mbaol ar an leathanach seo.
+
 identity-permissions-reload-hint = Ní mór duit an leathanach a athlódáil chun na hathruithe a chur i bhfeidhm.
 identity-clear-site-data =
     .label = Glan na Fianáin agus Sonraí Suímh...
@@ -229,17 +270,56 @@ popup-all-windows-shared = Comhroinnfear gach fuinneog infheicthe ar do scáile�
 
 ## URL Bar
 
+# This placeholder is used when not in search mode and the user's default search
+# engine is unknown.
 urlbar-placeholder =
     .placeholder = Cuardaigh nó cuir seoladh isteach
+
+# This placeholder is used in search mode with search engines that search the
+# entire web.
+# Variables
+#  $name (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-placeholder-search-mode-web-2 =
+    .placeholder = Cuardaigh an Gréasán
+    .aria-label = Cuardaigh le { $name }
+
+# This placeholder is used in search mode with search engines that search a
+# specific site (e.g., Amazon).
+# Variables
+#  $name (String): the name of a search engine that searches a specific site
+#  (e.g. Amazon).
+urlbar-placeholder-search-mode-other-engine =
+    .placeholder = Cuir isteach focail le cuardach
+    .aria-label = Cuardaigh { $name }
+
+# This placeholder is used when searching bookmarks.
+urlbar-placeholder-search-mode-other-bookmarks =
+    .placeholder = Cuir isteach focail le cuardach
+    .aria-label = Cuardaigh na leabharmharcanna
+
+# This placeholder is used when searching history.
+urlbar-placeholder-search-mode-other-history =
+    .placeholder = Cuir isteach focail le cuardach
+    .aria-label = Cuardaigh san oireas
+
+# This placeholder is used when searching open tabs.
+urlbar-placeholder-search-mode-other-tabs =
+    .placeholder = Cuir isteach focail le cuardach
+    .aria-label = Cuardaigh sna cluaisíní
+
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
     .placeholder = Cuardaigh le { $name } nó cuir seoladh isteach
+
 urlbar-switch-to-tab =
     .value = Téigh go cluaisín:
+
 # Used to indicate that a selected autocomplete entry is provided by an extension.
 urlbar-extension =
     .value = Eisínteacht:
+
 urlbar-go-button =
     .tooltiptext = Téigh go dtí an seoladh atá sa Bharra Suímh
 urlbar-page-action-button =
@@ -248,21 +328,66 @@ urlbar-page-action-button =
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
 
+# Used when the private browsing engine differs from the default engine.
+# The "with" format was chosen because the search engine name can end with
+# "Search", and we would like to avoid strings like "Search MSN Search".
+# Variables
+#  $engine (String): the name of a search engine
+urlbar-result-action-search-in-private-w-engine = Cuardaigh le { $engine } i bhFuinneog Phríobháideach
+# Used when the private browsing engine is the same as the default engine.
+urlbar-result-action-search-in-private = Cuardaigh i bhFuinneog Phríobháideach
 # The "with" format was chosen because the search engine name can end with
 # "Search", and we would like to avoid strings like "Search MSN Search".
 # Variables
 #  $engine (String): the name of a search engine
 urlbar-result-action-search-w-engine = Cuardaigh le { $engine }
+urlbar-result-action-sponsored = Urraithe
 urlbar-result-action-switch-tab = Téigh go Cluaisín
 urlbar-result-action-visit = Oscail
+# Directs a user to press the Tab key to perform a search with the specified
+# engine.
+# Variables
+#  $engine (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-result-action-before-tabtosearch-web = Brúigh an cnaipe Tab chun cuardach a dhéanamh le { $engine }
+# Directs a user to press the Tab key to perform a search with the specified
+# engine.
+# Variables
+#  $engine (String): the name of a search engine that searches a specific site
+#  (e.g. Amazon).
+urlbar-result-action-before-tabtosearch-other = Brúigh an cnaipe Tab chun cuardach a dhéanamh le { $engine }
+# Variables
+#  $engine (String): the name of a search engine that searches the entire Web
+#  (e.g. Google).
+urlbar-result-action-tabtosearch-web = Déan cuardach go díreach ón mbarra seolta le { $engine }
+# Variables
+#  $engine (String): the name of a search engine that searches a specific site
+#  (e.g. Amazon).
+urlbar-result-action-tabtosearch-other-engine = Déan cuardach go díreach ón mbarra seolta le { $engine }
+# Action text for copying to clipboard.
+urlbar-result-action-copy-to-clipboard = Cóipeáil
+# Shows the result of a formula expression being calculated, the last = sign will be shown
+# as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result = = { $result }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
 ## In these actions "Search" is a verb, followed by where the search is performed.
 
+urlbar-result-action-search-bookmarks = Cuardaigh sna Leabharmharcanna
+urlbar-result-action-search-history = Oireas an Chuardaigh
+urlbar-result-action-search-tabs = Cuardaigh sna Cluaisíní
 
 ## Labels shown above groups of urlbar results
 
+# A label shown above the search suggestions group in the urlbar results. It
+# should use title case.
+# Variables
+#  $engine (String): the name of the search engine providing the suggestions
+urlbar-group-search-suggestions =
+    .label = Moltaí de chuid { $engine }
 
 ## Full Screen and Pointer Lock UI
 
@@ -271,9 +396,12 @@ urlbar-result-action-visit = Oscail
 #  $domain (String): the domain that is full screen, e.g. "mozilla.org"
 fullscreen-warning-domain = Tá <span data-l10n-name="domain">{ $domain }</span> ar lánscáileán anois
 fullscreen-warning-no-domain = Tá an cháipéis seo ar lánscáileán anois
+
+
 fullscreen-exit-button = Fág Mód Lánscáileáin (Esc)
 # "esc" is lowercase on mac keyboards, but uppercase elsewhere.
 fullscreen-exit-mac-button = Fág Mód Lánscáileáin (esc)
+
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
 # Variables
 #  $domain (String): the domain that is using pointer-lock, e.g. "mozilla.org"
@@ -301,6 +429,7 @@ bookmarks-tools =
     .label = Uirlisí Leabharmharcála
 bookmarks-bookmark-edit-panel =
     .label = Cuir an Leabharmharc Seo in Eagar
+
 # The aria-label is a spoken label that should not include the word "toolbar" or
 # such, because screen readers already know that this container is a toolbar.
 # This avoids double-speaking.
@@ -331,31 +460,42 @@ save-to-pocket-button =
 
 ## Customize Toolbar Buttons
 
+# Variables:
+#  $shortcut (String): keyboard shortcut to open settings (only on macOS)
+toolbar-settings-button =
+    .label = Socruithe
+    .tooltiptext =
+        { PLATFORM() ->
+            [macos] Oscail na socruithe ({ $shortcut })
+           *[other] Oscail na socruithe
+        }
 
 ## More items
 
-more-menu-go-offline =
-    .label = Oibrigh As Líne
-    .accesskey = b
 toolbar-overflow-customize-button =
     .label = Saincheap an Barra Uirlisí…
     .accesskey = c
+
 toolbar-button-email-link =
     .label = Seol an Nasc trí Ríomhphost
     .tooltiptext = Seol nasc leis an leathanach seo trí ríomhphost
+
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
     .label = Sábháil an Leathanach
     .tooltiptext = Sábháil an leathanach seo ({ $shortcut })
+
 # Variables:
 #  $shortcut (String): keyboard shortcut to open a local file
 toolbar-button-open-file =
     .label = Oscail Comhad
     .tooltiptext = Oscail comhad ({ $shortcut })
+
 toolbar-button-synced-tabs =
     .label = Cluaisíní Sioncronaithe
     .tooltiptext = Taispeáin cluaisíní ó ghléasanna eile
+
 # Variables
 # $shortcut (string) - Keyboard shortcut to open a new private browsing window
 toolbar-button-new-private-window =
@@ -365,6 +505,7 @@ toolbar-button-new-private-window =
 ## EME notification panel
 
 eme-notifications-drm-content-playing = Baineann roinnt comhad fuaime nó físe ar an suíomh seo leas as bogearraí DRM, rud a chuireann teorainn leis na rudaí is féidir le { -brand-short-name } a dhéanamh leis.
+eme-notifications-drm-content-playing-manage = Bainistigh na socruithe
 
 ## Password save/update panel
 
@@ -386,6 +527,7 @@ ui-tour-info-panel-close =
 popups-infobar-allow =
     .label = Ceadaigh preabfhuinneoga do { $uriHost }
     .accesskey = p
+
 popups-infobar-block =
     .label = Cuir cosc ar phreabfhuinneoga do { $uriHost }
     .accesskey = p
@@ -395,9 +537,17 @@ popups-infobar-block =
 popups-infobar-dont-show-message =
     .label = Ná taispeáin an teachtaireacht seo nuair a bhíonn cosc ar phreabfhuinneoga
     .accesskey = D
+
 picture-in-picture-hide-toggle =
     .label = Folaigh an Scoránú Pictiúr-i-bPictiúr
     .accesskey = F
+
+## Since the default position for PiP controls does not change for RTL layout,
+## right-to-left languages should use "Left" and "Right" as in the English strings,
+
+
+##
+
 
 # Navigator Toolbox
 
@@ -406,30 +556,45 @@ picture-in-picture-hide-toggle =
 # this container is a toolbar. This avoids double-speaking.
 navbar-accessible =
     .aria-label = Nascleanúint
+
 navbar-downloads =
     .label = Íoslódálacha
+
 navbar-overflow =
     .tooltiptext = Tuilleadh uirlisí…
+
 # Variables:
 #   $shortcut (String): keyboard shortcut to print the page
 navbar-print =
     .label = Priontáil
     .tooltiptext = Priontáil an leathanach seo… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = Priontáil
-    .tooltiptext = Priontáil an leathanach seo
+
 navbar-home =
     .label = Baile
     .tooltiptext = Leathanach Baile { -brand-short-name }
+
 navbar-search =
     .title = Cuardaigh
+
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
 tabs-toolbar =
     .aria-label = Cluaisíní brabhsálaí
+
 tabs-toolbar-new-tab =
     .label = Cluaisín Nua
+
 tabs-toolbar-list-all-tabs =
     .label = Liostaigh gach cluaisín
     .tooltiptext = Liostaigh gach cluaisín
+
+## Infobar shown at startup to suggest session-restore
+
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = Seolann { -brand-short-name } sonraí chuig { -vendor-short-name } go huathoibríoch, chun an táirge a fheabhsú.
+data-reporting-notification-button =
+    .label = Roghnaigh Cad a Roinnfidh Mé
+    .accesskey = C

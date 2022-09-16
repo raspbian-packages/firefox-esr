@@ -11,6 +11,7 @@
 <!ENTITY newMenu.label "Nove">
 <!ENTITY newMenu.accesskey "N">
 <!ENTITY newMessage.label "Message">
+<!ENTITY newMessage.accesskey "m">
 <!ENTITY newMessageCmd2.key "N">
 <!ENTITY newContact.label "Contacto del libro de adresses…">
 <!ENTITY newContact.accesskey "C">
@@ -20,9 +21,6 @@
 <!ENTITY attachCloudCmd.accesskey "i">
 <!ENTITY attachPageCmd.label "Pagina web…">
 <!ENTITY attachPageCmd.accesskey "w">
-<!--LOCALIZATION NOTE attachVCardCmd.label Don't translate the term 'vCard' -->
-<!ENTITY attachVCardCmd.label "Carta de visita (vCard)">
-<!ENTITY attachVCardCmd.accesskey "P">
 <!ENTITY remindLater.label "Rememora me plus tarde">
 <!ENTITY remindLater.accesskey "t">
 <!ENTITY closeCmd.label "Clauder">
@@ -80,7 +78,7 @@
 <!ENTITY findReplaceCmd.label "Trovar e reimplaciar…">
 <!ENTITY findReplaceCmd.accesskey "r">
 <!ENTITY findReplaceCmd.key "H">
-<!ENTITY findAgainCmd.label "Cercar novemente">
+<!ENTITY findAgainCmd.label "Cercar le sequente">
 <!ENTITY findAgainCmd.accesskey "o">
 <!ENTITY findAgainCmd.key "G">
 <!ENTITY findAgainCmd.key2 "VK_F3">
@@ -148,16 +146,6 @@
 <!ENTITY returnReceiptMenu.accesskey "t">
 <!ENTITY dsnMenu.label "Aviso de stato de consignation">
 <!ENTITY dsnMenu.accesskey "c">
-<!ENTITY deliveryFormatMenu.label "Formato de consignation">
-<!ENTITY deliveryFormatMenu.accesskey "F">
-<!ENTITY autoFormatCmd.label "Deteger automaticamente">
-<!ENTITY autoFormatCmd.accesskey "a">
-<!ENTITY plainTextFormatCmd.label "Solo texto">
-<!ENTITY plainTextFormatCmd.accesskey "t">
-<!ENTITY htmlFormatCmd.label "Solo Rich Text (HTML)">
-<!ENTITY htmlFormatCmd.accesskey "s">
-<!ENTITY bothFormatCmd.label "Texto ambe formatos (simple e HTML)">
-<!ENTITY bothFormatCmd.accesskey "a">
 <!ENTITY priorityMenu.label "Prioritate">
 <!ENTITY priorityMenu.accesskey "p">
 <!ENTITY priorityButton.title "Prioritate">
@@ -221,7 +209,6 @@
 <!--LOCALIZATION NOTE headersSpaces.style is for aligning  the From:, To: and
     Subject: rows. It should be larger than the largest Header label  -->
 <!ENTITY headersSpace2.style "width: 8em;">
-<!ENTITY extraRecipients.tooltip "Altere typos de campos de adresse">
 <!ENTITY fromAddr2.label "De">
 <!ENTITY fromAddr.accesskey "e">
 <!ENTITY replyAddr2.label "Responder a">

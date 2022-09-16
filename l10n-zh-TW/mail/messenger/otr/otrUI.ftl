@@ -19,6 +19,9 @@ auth-waiting = 等待聯絡人完成驗證…
 finger-verify = 驗證
 finger-verify-access-key = V
 
+finger-ignore = 忽略
+finger-ignore-access-key = I
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = 新增 OTR 指紋
 
@@ -43,7 +46,6 @@ finger-unseen = { $name } 的身分未經驗證。雖然不可能受到一般的
 finger-seen = { $name } 使用未經識別的電腦聯絡您。雖然不可能受到一般的竊聽，但有心人花點功夫還是可以暗中偷聽。請驗證此聯絡人的身分來防止您受到監控。
 
 state-not-private = 目前的對話不是私人對話。
-
 state-generic-not-private = 目前的對話不是私人對話。
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = 您已驗證 { $name } 的身分。
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = { $name } 的身分未經驗證。
-
-verify-title = 確認聯絡人的身分
-error-title = 錯誤
-success-title = 端到端加密
-success-them-title = 確認聯絡人的身分
-fail-title = 無法驗證
-waiting-title = 已送出驗證請求
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

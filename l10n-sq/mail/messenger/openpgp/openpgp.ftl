@@ -5,6 +5,7 @@
 
 e2e-intro-description = Që të dërgoni mesazhe të fshehtëzuar ose të nënshkruar në mënyrë dixhitale, ju duhet të formësoni një teknologji fshehtëzimi, OpenPGP ose S/MIME.
 e2e-intro-description-more = Që të aktivizohet përdorimi i OpenGPG-së, përzgjidhni kyçin tuaj personal, ose dëshminë tuaj personale që të aktivizohet përdorimi i S/MIME-s. Për një kyç apo dëshmi personale, zotëroni kyçin përkatës të fshehtë.
+
 e2e-advanced-section = Rregullime të mëtejshme
 e2e-attach-key =
     .label = Bashkëngjit kyçin tim publik, kur shtohet një nënshkrim dixhital OpenPGP
@@ -240,6 +241,7 @@ openpgp-key-man-key-details-key =
 
 openpgp-key-details-title =
     .title = Veti Kyçi
+
 openpgp-key-details-signatures-tab =
     .label = Dëshmi
 openpgp-key-details-structure-tab =
@@ -252,6 +254,7 @@ openpgp-key-details-id-label =
 openpgp-key-details-key-type-label = Lloj
 openpgp-key-details-key-part-label =
     .label = Pjesë Kyçi
+
 openpgp-key-details-algorithm-label =
     .label = Algoritëm
 openpgp-key-details-size-label =
@@ -265,10 +268,10 @@ openpgp-key-details-expiry-header = Skadon më
 openpgp-key-details-usage-label =
     .label = Përdorim
 openpgp-key-details-fingerprint-label = Shenja gishtash
+openpgp-key-details-legend-secret-missing = Për kyça të treguar me (!), kyçi i fshehtë s’është i passhëm.
 openpgp-key-details-sel-action =
     .label = Përzgjidhni veprim…
     .accesskey = P
-openpgp-key-details-also-known-label = Identitete Alternative të Hamendshme të të Zotit të Kyçit:
 openpgp-card-details-close-window-label =
     .buttonlabelaccept = Mbylle
 openpgp-acceptance-label =
@@ -284,7 +287,6 @@ openpgp-acceptance-verified-label =
 key-accept-personal =
     Për këtë kyç keni si pjesën publike, ashtu edhe atë të fshehtë. Mund ta përdorni si një kyç personal.
     Nëse ky kyç ju qe dhënë nga dikush tjetër, mos e përdorni si kyç personal.
-key-personal-warning = E krijuat vetë këtë kyç, dhe pronësia e shfaqur për kyçin ju referohet juve?
 openpgp-personal-no-label =
     .label = Jo, mos e përdor si kyçin tim personal.
 openpgp-personal-yes-label =
@@ -294,15 +296,6 @@ openpgp-copy-cmd-label =
     .label = Kopjoje
 
 ## e2e encryption settings
-
-#   $count (Number) - the number of configured keys associated with the current identity
-#   $identity (String) - the email address of the currently selected identity
-openpgp-description =
-    { $count ->
-        [0] Thunderbird-i s’ka kyç personal OpenPGP për <b>{ $identity }</b>
-        [one] Thunderbird-i gjeti { $count } kyç personal OpenPGP përshoqëruar me <b>{ $identity }</b>
-       *[other] Thunderbird-i gjeti { $count } kyçe personalë OpenPGP përshoqëruar me <b>{ $identity }</b>
-    }
 
 #   $key (String) - the currently selected OpenPGP key
 openpgp-selection-status-have-key = Formësimi juaj i tanishëm përdor ID kyçi <b>{ $key }</b>
@@ -381,7 +374,6 @@ key-expired-date = Kyçi skadoi më { $keyExpiry }
 key-expired-simple = Kyçi ka skaduar
 key-revoked-simple = Kyçi u shfuqizua
 key-do-you-accept = E pranoni këtë kyç për verifikim nënshkrimesh dixhitale dhe për fshehtëzim mesazhesh?
-key-accept-warning = Shmangni pranimin e një kyçi që s’duket normal. Përdorni një kanal komunikimi tjetër nga email-i që të verifikoni shenjat e gishtave të kyçit të korrespondentit tuaj.
 
 # Strings enigmailMsgComposeOverlay.js
 cannot-use-own-key-because = S’arrihet të dërgohet mesazhi, ngaqë ka një problem me kyçin tuaj personal. { $problem }
@@ -389,7 +381,6 @@ cannot-encrypt-because-missing = S’arrihet të dërgohet ky mesazh me fshehtë
 window-locked = Dritarja e hartimeve është e kyçur; dërgimi u anulua
 
 # Strings in mimeDecrypt.jsm
-mime-decrypt-encrypted-part-attachment-label = Pjesa e fshehtëzuar e mesazhit
 mime-decrypt-encrypted-part-concealed-data = Kjo është pjesë e fshehtëzuar e një mesazhi. Do t’ju duhet ta hapni në një dritare veçmas, duke klikuar mbi bashkëngjitjen.
 
 # Strings in keyserver.jsm
@@ -415,26 +406,6 @@ converter-decrypt-body-failed =
     S’u shfshehtëzua dot mesazh me subjektin
     { $subject }.
     Doni të riprovohet me një frazëkalim tjetër apo doni të anashkalohet mesazhi?
-
-# Strings in gpg.jsm
-unknown-signing-alg = Algoritëm i panjohur nënshkrimi (ID: { $id })
-unknown-hash-alg = Hash kriptografik i panjohur (ID: { $id })
-
-# Strings in keyUsability.jsm
-expiry-key-expires-soon =
-    Kyçi juaj { $desc } do të skadojë për më pak se { $days } ditë.
-    Rekomandojmë që të krijoni një çift të ri kyçesh dhe të formësoni llogaritë përgjegjëse për ta përdorur.
-expiry-keys-expire-soon =
-    Kyçet tuaj vijues do të skadojnë për më pak se { $days } ditë: { $desc }.
-    Rekomandojmë që të krijoni kyçe të rinj dhe të formësoni llogaritë përgjegjëse për t’i përdorur ata.
-expiry-key-missing-owner-trust =
-    Kyçit tuaj të fshehtë { $desc } i mungon vlera e besueshmërisë.
-    Këshillojmë që “Bazohuni në dëshmi” t’i jepni vlerën “përgjithnjë” te veti kyçi.
-expiry-keys-missing-owner-trust =
-    Kyçeve tuaj të fshehtë vijues u mungon vlera e besueshmërisë { $desc }.
-    Këshillojmë që “Bazohuni në dëshmi” t’i jepni vlerën “përgjithnjë” te veti kyçi.
-expiry-open-key-manager = Hapni Përgjegjës Kyçesh OpenPGP
-expiry-open-key-properties = Hap Veti Kyçi
 
 # Strings filters.jsm
 filter-folder-required = Duhet të përzgjidhni një dosje objektiv.
@@ -549,8 +520,8 @@ openpgp-key-revoke-success = Kyçi u shfuqizua me sukses.
 after-revoke-info =
     Kyçi është shfuqizuar.
     Ndajeni sërish me të tjerët këtë kyç publik, duke e dërguar me email, ose duke e ngarkuar te një shërbyes kyçesh, për t’u lejuar të tjerëve të dinë se e shfuqizuat kyçin tuaj.
-    As soon as the software used by other people learns about the revocation, it will stop using your old key.
-    If you are using a new key for the same email address, and you attach the new public key to emails you send, then information about your revoked old key will be automatically included.
+    Sapo software-i përdorur nga persona të tjerë mëson rreth shfuqizimit, do të reshtë së përdorur kyçin tuaj të vjetër.
+    Nëse po përdorni një kyç të ri për të njëjtën adresë email dhe bashkëngjitni kyçin e ri publik te email-e që dërgoni, atëherë informacioni rreth kyçit tuaj të dikurshëm të shfuqizuar do të përfshihet automatikisht.
 
 # Strings in keyRing.jsm & decryption.jsm
 key-man-button-import = &Importo
@@ -669,19 +640,9 @@ send-to-news-warning =
     Kjo nuk këshillohet, ngaqë ka kuptim vetëm nëse krejt anëtarët e grupit munden të fshehtëzojnë mesazhin, d.m.th., mesazhi lypset të fshetëzohet me kyçet e krejt pjesëmarrësve në grup. Ju lutemi, dërgojeni këtë mesazh vetëm nëse e dini saktësisht se ç’po bëni.
     Të vazhdohet?
 save-attachment-header = Ruaje bashkëngjitjen e shfshehtëzuar
-no-temp-dir =
-    S’u gjet dot një drejtori e përkohshme ku të shkruhet
-    Ju lutemi, caktoni ndryshoren TEMP të mjedisit
 possibly-pgp-mime = Mesazh mundet i fshehtëzuar ose nënshkruar me PGP/MIME; përdorni funksionin 'Shfshehtëzoje/Verifikoje' për ta verifkuar
 cannot-send-sig-because-no-own-key = S’nënshkruhet dot në mënyrë dixhitale ky mesazh, ngaqë s’keni formësuar ende fshehtëzim skaj-më-skaj për <{ $key }>
 cannot-send-enc-because-no-own-key = S’mund të dërgohet i fshehtëzuar ky mesazh, ngaqë s’keni formësuar ende fshehtëzim skaj-më-skaj për <{ $key }>
-
-compose-menu-attach-key =
-    .label = Bashkëngjit Kyçin Tim Publik
-    .accesskey = B
-compose-menu-encrypt-subject =
-    .label = Fshehtëzim Subjekti
-    .accesskey = F
 
 # Strings used in decryption.jsm
 do-import-multiple =

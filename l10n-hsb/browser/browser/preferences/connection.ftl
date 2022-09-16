@@ -16,7 +16,7 @@ connection-close-key =
 connection-disable-extension =
     .label = Rozšěrjenje znjemóžnić
 
-connection-proxy-configure = Proksy za přistup na internet konfigurować
+connection-proxy-configure = Proksy za přistup k internetej konfigurować
 
 connection-proxy-option-no =
     .label = Žadyn proksy
@@ -35,7 +35,6 @@ connection-proxy-http = HTTP-proksy
     .accesskey = H
 connection-proxy-http-port = Port
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = Tež tutón proksy za HTTPS wužiwać
     .accesskey = T

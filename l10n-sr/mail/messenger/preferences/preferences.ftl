@@ -5,8 +5,6 @@
 close-button =
     .aria-label = Затвори
 
-preferences-doc-title = Поставке
-
 pane-general-title = Опште
 category-general =
     .tooltiptext = { pane-general-title }
@@ -59,12 +57,21 @@ privacy-passwords-header = Лозинке
 
 privacy-junk-header = Смеће
 
+collection-header = { -brand-short-name } прикупљање података о коришћењу
+
+collection-description = Тежимо да вам омогућимо избор о томе како и шта прикупљамо од података који су нам потребни зарад побољшавања програма { -brand-short-name } за све наше кориснике. Увек тражимо дозволу пре слања личних података.
 collection-privacy-notice = Обавештење о приватности
 
 collection-health-report-telemetry-disabled-link = Сазнајте више
 
+collection-health-report =
+    .label = Дозволи програму { -brand-short-name } слање техничких података и података о коришћењу ка организацији { -vendor-short-name }
+    .accesskey = о
 collection-health-report-link = Сазнајте више
 
+collection-backlogged-crash-reports =
+    .label = Дозволи програму { -brand-short-name } самостално слање сачуваних извештаја о падању програма
+    .accesskey = з
 collection-backlogged-crash-reports-link = Сазнајте више
 
 privacy-security-header = Безбедност
@@ -139,9 +146,9 @@ restore-default-label =
     .accesskey = В
 
 default-search-engine = Подразумевани претраживач
-add-search-engine =
-    .label = Додајте из датотеке
-    .accesskey = Д
+add-web-search-engine =
+    .label = Додај…
+    .accesskey = а
 remove-search-engine =
     .label = Уклоните
     .accesskey = У
@@ -167,8 +174,6 @@ app-icon-options =
     .label = Опције иконице програма…
     .accesskey = н
 
-notification-settings = Узбуне и подразумевани звук могу бити онемогућени у површи за обавештења системских поставки.
-
 animated-alert-label =
     .label = Прикажи узбуну
     .accesskey = б
@@ -176,6 +181,12 @@ customize-alert-label =
     .label = Прилагоди…
     .accesskey = д
 
+biff-use-system-alert =
+    .label = Користи системско обавештење
+
+mail-system-sound-label =
+    .label = Подразумевани системски звук за нову поруку
+    .accesskey = д
 mail-custom-sound-label =
     .label = Користи следећу звучну датотеку
     .accesskey = р
@@ -247,7 +258,7 @@ update-app-legend = { -brand-short-name } ажурирања
 #   $version (String): version of Thunderbird, e.g. 68.0.1
 update-app-version = Верзија { $version }
 
-allow-description = Дозволите { -brand-short-name } да
+allow-description = Дозволите програму { -brand-short-name } да
 automatic-updates-label =
     .label = Аутоматски инсталирај ажурирања (препоручено: побољшава безбедност)
     .accesskey = А
@@ -362,13 +373,12 @@ quoted-text-color =
     .label = Боја:
     .accesskey = о
 
-type-column-label =
-    .label = Врста садржаја
-    .accesskey = т
+search-handler-table =
+    .placeholder = Филтрирај врсте садржаја и радње
 
-action-column-label =
-    .label = Радња
-    .accesskey = д
+type-column-header = Врста садржаја
+
+action-column-header = Радња
 
 save-to-label =
     .label = Сачувај датотеке у
@@ -523,12 +533,6 @@ default-format-label =
     .label = Подразумевано користи пасусе уместо текста тела поруке
     .accesskey = П
 
-format-description = Подеси понашање форматирања текста
-
-send-options-label =
-    .label = Опције слања…
-    .accesskey = с
-
 autocomplete-description = Приликом адресирања порука, тражи одговарајуће уносе у:
 
 ab-label =
@@ -583,7 +587,6 @@ find-cloud-providers =
     .value = Пронађите више провајдера…
 
 cloud-account-description = Додај нову Filelink услугу складиштења
-
 
 ## Privacy Tab
 
@@ -797,8 +800,6 @@ theme-label =
     .value = Тема:
     .accesskey = Т
 
-style-thunderbird =
-    .label = Thunderbird
 style-bubbles =
     .label = Балончићи
 style-dark =
@@ -817,6 +818,9 @@ chat-variant-label =
     .accesskey = В
 
 ## Preferences UI Search Results
+
+
+## Settings UI Search Results
 
 search-results-header = Резултати претраге
 

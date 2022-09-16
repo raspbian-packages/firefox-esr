@@ -30,6 +30,9 @@ permissions-site-name =
 permissions-status =
     .label = Stádas
 
+permissions-searchbox =
+    .placeholder = Cuardaigh Suíomh Gréasáin
+
 permissions-capabilities-allow =
     .label = Ceadaigh
 permissions-capabilities-block =
@@ -57,6 +60,7 @@ permissions-invalid-uri-label = Cuir óstainm bailí isteach, le do thoil
 
 ## Exceptions - HTTPS-Only Mode
 
+
 ## Exceptions - Pop-ups
 
 permissions-exceptions-popup-desc = Is féidir na suímh a bhfuil cead acu preabfhuinneoga a oscailt a shonrú. Clóscríobh seoladh cruinn an tsuímh a theastaíonn uait a cheadú agus ansin cliceáil Ceadaigh.
@@ -71,11 +75,11 @@ permissions-exceptions-saved-logins-window =
 
 permissions-exceptions-addons-desc = Is féidir na suímh a bhfuil cead acu breiseáin a shuiteáil a shonrú. Clóscríobh seoladh cruinn an tsuímh a theastaíonn uait a cheadú agus ansin cliceáil Ceadaigh.
 
-## Exceptions - Autoplay Media
-
-
 ## Site Permissions - Autoplay
 
+permissions-site-autoplay-window =
+    .title = Socruithe - Uathsheinm
+    .style = { permissions-window.style }
 
 ## Site Permissions - Notifications
 
@@ -84,6 +88,7 @@ permissions-exceptions-addons-desc = Is féidir na suímh a bhfuil cead acu brei
 
 
 ## Site Permissions - Virtual Reality
+
 
 ## Site Permissions - Camera
 

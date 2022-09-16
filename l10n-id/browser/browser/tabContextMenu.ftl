@@ -75,8 +75,6 @@ tab-context-close-multiple-tabs =
 tab-context-share-url =
     .label = Bagikan
     .accesskey = B
-tab-context-share-more =
-    .label = Lainnya…
 
 ## Variables:
 ##  $tabCount (Number): the number of tabs that are affected by the action.
@@ -88,11 +86,11 @@ tab-context-reopen-closed-tabs =
            *[other] Buka Kembali Tab Tertutup
         }
     .accesskey = u
-tab-context-close-tabs =
+tab-context-close-n-tabs =
     .label =
         { $tabCount ->
             [1] Tutup Tab
-           *[other] Tutup Tab
+           *[other] Tutup { $tabCount } Tab
         }
     .accesskey = T
 tab-context-move-tabs =
@@ -102,6 +100,7 @@ tab-context-move-tabs =
            *[other] Pindahkan Tab
         }
     .accesskey = P
+
 tab-context-send-tabs-to-device =
     .label = Kirim Tab ke { $tabCount } Peranti
     .accesskey = k

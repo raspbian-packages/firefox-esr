@@ -45,8 +45,8 @@ profile-default-name =
 profile-directory-explanation = Tvoje korisničke postavke, osobitosti i ostali korisnički podaci bit će spremljeni u:
 
 create-profile-choose-folder =
-    .label = Odaberi mapu...
-    .accesskey = m
+    .label = Odaberi mapu …
+    .accesskey = O
 
 create-profile-use-default =
     .label = Koristi standardnu mapu

@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Minimisar
+messenger-window-maximize-button =
+    .tooltiptext = Maximisar
+messenger-window-restore-down-button =
+    .tooltiptext = Restaurar
+messenger-window-close-button =
+    .tooltiptext = Clauder
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -76,10 +87,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Preferentias
 appmenu-save-as-file =
     .label = File…
 appmenu-settings =
@@ -99,15 +106,55 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Re-diriger
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Deler message
+           *[other] Deler messages selecte
+        }
+context-menu-decrypt-to-folder =
+    .label = Copiar decryptate a in
+    .accesskey = E
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Re-diriger
-message-header-msg-is-flagged =
-    .title = Message marcate per stellas
+message-header-msg-flagged =
+    .title = Stellate
+    .aria-label = Stellate
 message-header-msg-not-flagged =
     .title = Message non marcate per stellas
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Photo de profilo de { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Configurationes del titulo del message
+message-header-customize-button-style =
+    .value = Stylo de button
+    .accesskey = b
+message-header-button-style-default =
+    .label = Icones e texto
+message-header-button-style-text =
+    .label = Texto
+message-header-button-style-icons =
+    .label = Icones
+message-header-show-sender-full-address =
+    .label = Sempre monstrar plen adresse del expeditor
+    .accesskey = p
+message-header-show-sender-full-address-description = Le adresse email essera monstrate sub le nomine a monstrar.
+message-header-show-recipient-avatar =
+    .label = Monstrar le photo de profilo del expeditor
+    .accesskey = p
+message-header-hide-label-column =
+    .label = Celar columna de etiquettas
+    .accesskey = e
+message-header-large-subject =
+    .label = Subjecto large
+    .accesskey = s
 
 ## Action Button Context Menu
 
@@ -117,13 +164,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Remover le extension
     .accesskey = v
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Le adresse es in le libro del adresses
-message-header-address-not-in-address-book-icon =
-    .alt = Le adresse non  es in le libro del adresses
 
 ## Add-on removal warning
 
@@ -144,3 +184,91 @@ repair-text-encoding-button =
 no-reply-title = Responsa non supportate
 no-reply-message = Le adresse de responsa ({ $email }) non pare ser un adresse monitorate. Le messages a iste adresse probabilemente non sera legite per alcuno.
 no-reply-reply-anyway-button = Responder comocunque
+
+## error messages
+
+decrypt-and-copy-failures = { $failures } de { $total } messages non pote esser decryptate e non era copiate.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Barra de spatios
+    .aria-label = Barra de spatios
+    .aria-description = Barra de instrumentos vertical pro passar inter spatios differente. Usa le claves flecha pro navigar per le buttones disponibile.
+spaces-toolbar-button-mail2 =
+    .title = E-mail
+spaces-toolbar-button-address-book2 =
+    .title = Libro de adresses
+spaces-toolbar-button-calendar2 =
+    .title = Agenda
+spaces-toolbar-button-tasks2 =
+    .title = Activitates
+spaces-toolbar-button-chat2 =
+    .title = Chat
+spaces-toolbar-button-overflow =
+    .title = Plus spatios…
+spaces-toolbar-button-settings2 =
+    .title = Parametros
+spaces-toolbar-button-hide =
+    .title = Celar barra de spatios
+spaces-toolbar-button-show =
+    .title = Monstrar barra de spatios
+spaces-context-new-tab-item =
+    .label = Aperir un nove scheda
+spaces-context-new-window-item =
+    .label = Aperir in un nove fenestra
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Passar a { $tabName }
+settings-context-open-settings-item2 =
+    .label = Parametros
+settings-context-open-account-settings-item2 =
+    .label = Parametros de contos
+settings-context-open-addons-item2 =
+    .label = Additivos e themas
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Aperir le menu del spatios
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] Un message non legite
+           *[other] { $count } messages non legite
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Personalisar…
+spaces-customize-panel-title = Parametros del barra de spatios
+spaces-customize-background-color = Color de fundo
+spaces-customize-icon-color = Color de button
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Color de fundo del button eligite
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Color del button eligite
+spaces-customize-button-restore = Restaurar le predefinitiones
+    .accesskey = R
+customize-panel-button-save = Facite
+    .accesskey = F

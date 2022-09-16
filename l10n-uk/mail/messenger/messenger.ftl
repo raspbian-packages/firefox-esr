@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Згорнути
+messenger-window-maximize-button =
+    .tooltiptext = Розгорнути
+messenger-window-restore-down-button =
+    .tooltiptext = Відновити вниз
+messenger-window-close-button =
+    .tooltiptext = Закрити
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -77,10 +88,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Налаштування
 appmenu-save-as-file =
     .label = Файл…
 appmenu-settings =
@@ -100,15 +107,56 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Переслати
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Видалити повідомлення
+            [few] Видалити вибрані повідомлення
+           *[many] Видалити вибрані повідомлення
+        }
+context-menu-decrypt-to-folder =
+    .label = Копіювати як розшифроване до
+    .accesskey = ш
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Переслати
-message-header-msg-is-flagged =
-    .title = Повідомлення, позначене зірочкою
+message-header-msg-flagged =
+    .title = Із зіркою
+    .aria-label = Із зіркою
 message-header-msg-not-flagged =
     .title = Повідомлення, не позначене зірочкою
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Зображення профілю { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Налаштування заголовка повідомлення
+message-header-customize-button-style =
+    .value = Стиль кнопки
+    .accesskey = к
+message-header-button-style-default =
+    .label = Піктограми й текст
+message-header-button-style-text =
+    .label = Текст
+message-header-button-style-icons =
+    .label = Піктограми
+message-header-show-sender-full-address =
+    .label = Завжди показувати повну адресу відправника
+    .accesskey = п
+message-header-show-sender-full-address-description = Адреса електронної пошти буде показана під іменем.
+message-header-show-recipient-avatar =
+    .label = Показати зображення профілю відправника
+    .accesskey = П
+message-header-hide-label-column =
+    .label = Сховати стовпець міток
+    .accesskey = х
+message-header-large-subject =
+    .label = Велика тема
+    .accesskey = В
 
 ## Action Button Context Menu
 
@@ -118,13 +166,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Вилучити розширення
     .accesskey = В
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Адреса є в адресній книзі
-message-header-address-not-in-address-book-icon =
-    .alt = Адреси немає в адресній книзі
 
 ## Add-on removal warning
 
@@ -145,3 +186,92 @@ repair-text-encoding-button =
 no-reply-title = Відповідь не підтримується
 no-reply-message = Схоже що не відбувається спостереження за адресою відповіді ({ $email }). Швидше за все ніхто не прочитає повідомлення за цією адресою.
 no-reply-reply-anyway-button = Все одно відровісти
+
+## error messages
+
+decrypt-and-copy-failures = Не вдалося розшифрувати та скопіювати { $failures } з { $total } повідомлень.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Панель Місць
+    .aria-label = Панель Місць
+    .aria-description = Вертикальна панель інструментів для перемикання між різними місцями. Використовуйте клавіші зі стрілками для навігації доступними кнопками.
+spaces-toolbar-button-mail2 =
+    .title = Пошта
+spaces-toolbar-button-address-book2 =
+    .title = Адресна книга
+spaces-toolbar-button-calendar2 =
+    .title = Календар
+spaces-toolbar-button-tasks2 =
+    .title = Завдання
+spaces-toolbar-button-chat2 =
+    .title = Чат
+spaces-toolbar-button-overflow =
+    .title = Більше місць…
+spaces-toolbar-button-settings2 =
+    .title = Налаштування
+spaces-toolbar-button-hide =
+    .title = Сховати панель місць
+spaces-toolbar-button-show =
+    .title = Показати панель місць
+spaces-context-new-tab-item =
+    .label = Відкрити у новій вкладці
+spaces-context-new-window-item =
+    .label = Відкрити в новому вікні
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Перейти до { $tabName }
+settings-context-open-settings-item2 =
+    .label = Налаштування
+settings-context-open-account-settings-item2 =
+    .label = Налаштування облікового запису
+settings-context-open-addons-item2 =
+    .label = Додатки й теми
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Відкрити меню місць
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] Одне непрочитане повідомлення
+            [few] { $count } непрочитані повідомлення
+           *[many] { $count } непрочитаних повідомлень
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Налаштувати…
+spaces-customize-panel-title = Налаштування панелі місць
+spaces-customize-background-color = Колір тла
+spaces-customize-icon-color = Колір кнопки
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Вибраний колір тла кнопки
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Вибраний колір кнопки
+spaces-customize-button-restore = Відновити типові
+    .accesskey = В
+customize-panel-button-save = Готово
+    .accesskey = Г

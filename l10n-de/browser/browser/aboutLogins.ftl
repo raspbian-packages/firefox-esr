@@ -5,8 +5,6 @@
 
 about-logins-page-title = Zugangsdaten und Passwörter
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Zugangsdaten durchsuchen
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Website mit Datenleck
 about-logins-list-item-vulnerable-password-icon =
     .title = Gefährdetes Passwort
-
 about-logins-list-section-breach = Websites mit Datenlecks
 about-logins-list-section-vulnerable = Gefährdete Passwörter
 about-logins-list-section-nothing = Keine Warnung
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Keine synchronisierten Zugangsdaten
 login-intro-description = Wenn Sie Ihre Zugangsdaten in { -brand-product-name } auf einem anderen Gerät gespeichert haben, können Sie diese hier abrufen:
 login-intro-instructions-fxa = Auf dem Gerät mit Ihren gespeicherten Zugangsdaten: Erstellen Sie ein { -fxaccount-brand-name } oder melden Sie sich damit an.
 login-intro-instructions-fxa-settings = Gehen Sie zu Einstellungen > Synchronisation > Synchronisation aktivieren… Wählen Sie das Kontrollfeld "Zugangsdaten und Passwörter".
-login-intro-instructions-fxa-help = Weitere Hilfe finden Sie auf der <a data-l10n-name="help-link">Hilfeseite für { -lockwise-brand-short-name }</a>.
-about-logins-intro-import = Wenn Ihre Zugangsdaten in einem anderen Browser gespeichert sind, können Sie diese in { -lockwise-brand-short-name } <a data-l10n-name="import-link">importieren</a>.
+login-intro-instructions-fxa-passwords-help = Weitere Hilfe finden Sie auf der <a data-l10n-name="passwords-help-link">Hilfeseite für Passwörter</a>.
+about-logins-intro-browser-only-import = Wenn Ihre Zugangsdaten in einem anderen Browser gespeichert sind, können Sie diese in { -brand-product-name } <a data-l10n-name="import-link">importieren</a>.
 about-logins-intro-import2 = Wenn Ihre Zugangsdaten außerhalb von { -brand-product-name } gespeichert sind, können Sie diese <a data-l10n-name="import-browser-link">aus einem anderen Browser</a> oder <a data-l10n-name="import-file-link">aus einer Datei</a> importieren.
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Um das Passwort zu kopie
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = gespeichertes Passwort kopieren
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Um die Zugangsdaten zu exportieren, müssen die Anmeldedaten des Windows-Benutzerkontos eingegeben werden. Dies dient dem Schutz Ihrer Zugangsdaten.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Bitte geben Sie Ihr Hauptpa
 master-password-reload-button =
     .label = Anmelden
     .accesskey = m
-
-## Password Sync notification
 
 ## Dialogs
 

@@ -6,6 +6,10 @@ dock-options-window-dialog =
     .title = Rakenduse ikooni sätted
     .style = width: 35em;
 
+dock-options-show-badge =
+    .label = Kuvatakse ikooni loendurit
+    .accesskey = v
+
 bounce-system-dock-icon =
     .label = Uue kirja saabumisel animeeritakse ikooni
     .accesskey = i
@@ -23,4 +27,4 @@ count-new-messages-radio =
     .label = uute kirjade arvu
     .accesskey = u
 
-notification-settings-info = Rakenduse ikooni loendur on võimalik keelata süsteemi seadetes, teavituste paneelis.
+notification-settings-info2 = Rakenduse ikooni loendur on võimalik keelata süsteemi sätetes, teavituste paneelis.

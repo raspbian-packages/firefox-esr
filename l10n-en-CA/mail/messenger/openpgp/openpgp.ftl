@@ -5,6 +5,21 @@
 
 e2e-intro-description = To send encrypted or digitally signed messages, you need to configure an encryption technology, either OpenPGP or S/MIME.
 e2e-intro-description-more = Select your personal key to enable the use of OpenPGP, or your personal certificate to enable the use of S/MIME. For a personal key or certificate you own the corresponding secret key.
+
+e2e-signing-description = A digital signature allows recipients to verify that the message was sent by you and its content was not changed. Encrypted messages are always signed by default.
+
+e2e-sign-message =
+    .label = Sign unencrypted messages
+    .accesskey = u
+
+e2e-disable-enc =
+    .label = Disable encryption for new messages
+    .accesskey = D
+e2e-enable-enc =
+    .label = Enable encryption for new messages
+    .accesskey = n
+e2e-enable-description = You will be able to disable encryption for individual messages.
+
 e2e-advanced-section = Advanced settings
 e2e-attach-key =
     .label = Attach my public key when adding an OpenPGP digital signature
@@ -46,6 +61,9 @@ openpgp-generate-key =
 openpgp-advanced-prefs-button-label =
     .label = Advanced…
 openpgp-keygen-desc = <a data-l10n-name="openpgp-keygen-desc-link">NOTE: Key generation may take up to several minutes to complete.</a> Do not exit the application while key generation is in progress. Actively browsing or performing disk-intensive operations during key generation will replenish the “randomness pool” and speed-up the process. You will be alerted when key generation is completed.
+
+openpgp-key-created-label =
+    .label = Created
 
 openpgp-key-expiry-label =
     .label = Expiry
@@ -190,6 +208,8 @@ openpgp-key-man-reload =
 openpgp-key-man-change-expiry =
     .label = Change Expiration Date
     .accesskey = E
+openpgp-key-man-ignored-ids =
+    .label = Email addresses
 openpgp-key-man-del-key =
     .label = Delete Key(s)
     .accesskey = D
@@ -238,20 +258,25 @@ openpgp-key-man-select-all-key =
 openpgp-key-man-key-details-key =
     .key = I
 
+openpgp-ign-addr-intro = You accept using this key for the following selected email addresses:
+
 openpgp-key-details-title =
     .title = Key Properties
+
 openpgp-key-details-signatures-tab =
     .label = Certifications
 openpgp-key-details-structure-tab =
     .label = Structure
 openpgp-key-details-uid-certified-col =
     .label = User ID / Certified by
+openpgp-key-details-key-id-label = Key ID
 openpgp-key-details-user-id2-label = Alleged Key Owner
 openpgp-key-details-id-label =
     .label = ID
 openpgp-key-details-key-type-label = Type
 openpgp-key-details-key-part-label =
     .label = Key Part
+
 openpgp-key-details-algorithm-label =
     .label = Algorithm
 openpgp-key-details-size-label =
@@ -265,10 +290,10 @@ openpgp-key-details-expiry-header = Expiry
 openpgp-key-details-usage-label =
     .label = Usage
 openpgp-key-details-fingerprint-label = Fingerprint
+openpgp-key-details-legend-secret-missing = For keys marked with (!) the secret key is not available.
 openpgp-key-details-sel-action =
     .label = Select action…
     .accesskey = S
-openpgp-key-details-also-known-label = Alleged Alternative Identities of the Key Owner:
 openpgp-card-details-close-window-label =
     .buttonlabelaccept = Close
 openpgp-acceptance-label =
@@ -284,7 +309,6 @@ openpgp-acceptance-verified-label =
 key-accept-personal =
     For this key, you have both the public and the secret part. You may use it as a personal key.
     If this key was given to you by someone else, then don’t use it as a personal key.
-key-personal-warning = Did you create this key yourself, and the displayed key ownership refers to yourself?
 openpgp-personal-no-label =
     .label = No, don’t use it as my personal key.
 openpgp-personal-yes-label =
@@ -294,15 +318,6 @@ openpgp-copy-cmd-label =
     .label = Copy
 
 ## e2e encryption settings
-
-#   $count (Number) - the number of configured keys associated with the current identity
-#   $identity (String) - the email address of the currently selected identity
-openpgp-description =
-    { $count ->
-        [0] Thunderbird doesn’t have a personal OpenPGP key for <b>{ $identity }</b>
-        [one] Thunderbird found { $count } personal OpenPGP key associated with <b>{ $identity }</b>
-       *[other] Thunderbird found { $count } personal OpenPGP keys associated with <b>{ $identity }</b>
-    }
 
 #   $key (String) - the currently selected OpenPGP key
 openpgp-selection-status-have-key = Your current configuration uses key ID <b>{ $key }</b>
@@ -381,7 +396,7 @@ key-expired-date = The key expired on { $keyExpiry }
 key-expired-simple = The key has expired
 key-revoked-simple = The key was revoked
 key-do-you-accept = Do you accept this key for verifying digital signatures and for encrypting messages?
-key-accept-warning = Avoid accepting a rogue key. Use a communication channel other than email to verify the fingerprint of your correspondent’s key.
+key-verification = Verify the fingerprint of the key using a secure communication channel other than email to make sure that it’s really the key of { $addr }.
 
 # Strings enigmailMsgComposeOverlay.js
 cannot-use-own-key-because = Unable to send the message, because there is a problem with your personal key. { $problem }
@@ -389,7 +404,6 @@ cannot-encrypt-because-missing = Unable to send this message with end-to-end enc
 window-locked = Compose window is locked; send cancelled
 
 # Strings in mimeDecrypt.jsm
-mime-decrypt-encrypted-part-attachment-label = Encrypted message part
 mime-decrypt-encrypted-part-concealed-data = This is an encrypted message part. You need to open it in a separate window by clicking on the attachment.
 
 # Strings in keyserver.jsm
@@ -415,27 +429,6 @@ converter-decrypt-body-failed =
     Could not decrypt message with subject
     { $subject }.
     Do you want to retry with a different passphrase or do you want to skip the message?
-
-# Strings in gpg.jsm
-unknown-signing-alg = Unknown signing algorithm (ID: { $id })
-unknown-hash-alg = Unknown cryptographic hash (ID: { $id })
-
-# Strings in keyUsability.jsm
-expiry-key-expires-soon =
-    Your key { $desc } will expire in less than { $days } days.
-    We recommend that you create a new key pair and configure the corresponding accounts to use it.
-expiry-keys-expire-soon =
-    Your following keys will expire in less than { $days } days:{ $desc }.
-    We recommend that you create new keys and configure the corresponding accounts to use them.
-expiry-key-missing-owner-trust =
-    Your secret key { $desc } has missing trust.
-    We recommend that you set “You rely on certifications” to “ultimate” in key properties.
-expiry-keys-missing-owner-trust =
-    The following of your secret keys have missing trust.
-    { $desc }.
-    We recommend that you set “You rely on certifications” to “ultimate” in key properties.
-expiry-open-key-manager = Open OpenPGP Key Manager
-expiry-open-key-properties = Open Key Properties
 
 # Strings filters.jsm
 filter-folder-required = You must select a target folder.
@@ -669,19 +662,9 @@ send-to-news-warning =
     This is discouraged because it only makes sense if all members of the group can decrypt the message, i.e. the message needs to be encrypted with the keys of all group participants. Please send this message only if you know exactly what you are doing.
     Continue?
 save-attachment-header = Save decrypted attachment
-no-temp-dir =
-    Could not find a temporary directory to write to
-    Please set the TEMP environment variable
 possibly-pgp-mime = Possibly PGP/MIME encrypted or signed message; use “Decrypt/Verify” function to verify
 cannot-send-sig-because-no-own-key = Cannot digitally sign this message, because you haven’t yet configured end-to-end encryption for <{ $key }>
 cannot-send-enc-because-no-own-key = Cannot send this message encrypted, because you haven’t yet configured end-to-end encryption for <{ $key }>
-
-compose-menu-attach-key =
-    .label = Attach My Public Key
-    .accesskey = A
-compose-menu-encrypt-subject =
-    .label = Subject Encryption
-    .accesskey = b
 
 # Strings used in decryption.jsm
 do-import-multiple =

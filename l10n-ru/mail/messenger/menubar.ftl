@@ -2,14 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Панель меню
+    .accesskey = м
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
+menu-tools-settings =
     .label = Настройки
     .accesskey = а
+
 menu-addons-and-themes =
     .label = Дополнения и темы
     .accesskey = п
@@ -19,9 +21,11 @@ menu-addons-and-themes =
 menu-help-enter-troubleshoot-mode =
     .label = Безопасный режим…
     .accesskey = п
+
 menu-help-exit-troubleshoot-mode =
     .label = Отключить безопасный режим
     .accesskey = ю
+
 menu-help-more-troubleshooting-info =
     .label = Информация для решения проблем
     .accesskey = ш
@@ -52,12 +56,15 @@ menu-view-repair-text-encoding =
 mail-uidensity-label =
     .label = Значки
     .accesskey = н
+
 mail-uidensity-compact =
     .label = Компактные
     .accesskey = м
+
 mail-uidensity-normal =
     .label = Обычные
     .accesskey = ы
+
 mail-uidensity-touch =
     .label = Сенсорные
     .accesskey = о

@@ -30,6 +30,9 @@ import-from-nothing =
 import-from-safari =
     .label = Safari
     .accesskey = S
+import-from-brave =
+    .label = Brave
+    .accesskey = B
 import-from-canary =
     .label = Chrome Canary
     .accesskey = n
@@ -78,23 +81,9 @@ import-done-description = Objektet vijuese u importuan me sukses:
 
 import-close-source-browser = Ju lutemi, para se të vazhdohet, sigurohuni që shfletuesi i përzgjedhur të jetë i mbyllur.
 
-# Displays which browser the bookmarks are being imported from
-#
-# Variables:
-#   $source (String): The browser the user has chosen to import bookmarks from.
-imported-bookmarks-source = Nga { $source }
-
 source-name-ie = Internet Explorer
 source-name-edge = Microsoft Edge
-source-name-edge-beta = Microsoft Edge Beta
-source-name-safari = Safari
-source-name-canary = Google Chrome Canary
 source-name-chrome = Google Chrome
-source-name-chrome-beta = Google Chrome Beta
-source-name-chrome-dev = Google Chrome Dev
-source-name-chromium = Chromium
-source-name-firefox = Mozilla Firefox
-source-name-360se = 360 Secure Browser
 
 imported-safari-reading-list = Listë Leximesh (Prej Safari-t)
 imported-edge-reading-list = Listë Leximesh (Prej Edge-it)

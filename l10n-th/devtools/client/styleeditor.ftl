@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = นำเข้าและผนวกแผ่นลักษณะที่มีอยู่ไปยังเอกสาร
     .accesskey = น
+styleeditor-filter-input =
+    .placeholder = กรองแผ่นลักษณะ
 styleeditor-visibility-toggle =
     .tooltiptext = เปิด/ปิดการมองเห็นแผ่นลักษณะ
     .accesskey = บ
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = เปิดลิงก์ในแท็บใหม่
 styleeditor-copy-url =
     .label = คัดลอก URL
+styleeditor-go-to-line =
+    .label = กระโดดไปบรรทัดที่…
+    .accesskey = ป
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = ไม่พบแผ่นลักษณะที่ตรงกัน

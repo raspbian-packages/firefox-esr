@@ -4,6 +4,7 @@
 
 accounts-title = Cuentas de correo y noticias
 show-private-data-main-text = Incluye nombres de cuenta
+show-private-data-explanation-text = (posiblemente información de identificación)
 accounts-ID = ID
 accounts-name = Nombre
 accounts-incoming-server = Servidor entrante
@@ -13,5 +14,7 @@ accounts-conn-security = Seguridad de la conexión
 accounts-auth-method = Método de autenticación
 accounts-default = ¿Predeterminado?
 identity-name = Identidad
+
 send-via-email = Enviar por correo electrónico
+
 app-basics-telemetry = Datos de telemetría

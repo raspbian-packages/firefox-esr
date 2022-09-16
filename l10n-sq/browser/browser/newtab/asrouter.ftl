@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Veçori e Këshilluar
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Pse më del kjo?
+
 cfr-doorhanger-extension-cancel-button = Jo Tani
     .accesskey = J
+
 cfr-doorhanger-extension-ok-button = Shtoje Tani
     .accesskey = S
+
 cfr-doorhanger-extension-manage-settings-button = Administroni Rregullimet Mbi Rekomandimet
     .accesskey = A
+
 cfr-doorhanger-extension-never-show-recommendation = Mos Ma Shfaq Këtë Rekomandim
     .accesskey = o
+
 cfr-doorhanger-extension-learn-more-link = Mësoni më tepër
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = nga { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Rekomandim
 cfr-doorhanger-extension-notification2 = Rekomandim
     .tooltiptext = Rekomandim zgjerimi
     .a11y-announcement = Ka gati një rekomandim zgjerimi
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Rekomandim
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = Mësoni më tepër
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Veçori e re:
+
 cfr-whatsnew-button =
     .label = Ç’ka të Re
     .tooltiptext = Ç’ka të Re
+
 cfr-whatsnew-release-notes-link-text = Lexoni shënimet mbi hedhjen në qarkullim
 
 ## Enhanced Tracking Protection Milestones
@@ -155,3 +165,16 @@ spotlight-total-cookie-protection-body = Mbrojtja Tërësore Nga Cookie-t i ndal
 spotlight-total-cookie-protection-expanded = { -brand-short-name }-i thur një gardh përreth cookie-ve, duke i kufizuar te sajti ku gjendeni, që kështu gjurmuesit s’mund t’i përdorin për t’ju ndjekur. Duke e provuar që herët, do të ndihmoni të optimizohet kjo veçori, që kështu të mund të vazhdojmë të ndërtojmë një internet më të mirë për këdo.
 spotlight-total-cookie-protection-primary-button = Aktivizo Mbrojtje Tërësore Nga Cookie-t
 spotlight-total-cookie-protection-secondary-button = Jo tani
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Një internet më i mirë zë fill prej jush
+spotlight-better-internet-body = Kur përdorni { -brand-short-name }, votoni për një internet të hapët dhe të përdorshëm, që është më i mirë për këdo.
+spotlight-peace-mind-header = Mendojmë ne për ju
+spotlight-peace-mind-body = Çdo muaj, { -brand-short-name } bllokon mesatarisht 3 mijë gjurmues për përdorues. Ngaqë mes jush dhe internetit të mbarë s’duhet të ketë asgjë, veçanërisht kokëçarje privatësie, të tilla si gjurmuesit.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Mbaje në Panel
+       *[other] Fiksoje te paneli
+    }
+spotlight-pin-secondary-button = Jo tani

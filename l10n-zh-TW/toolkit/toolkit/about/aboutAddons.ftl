@@ -35,6 +35,8 @@ detail-version =
     .label = 版本
 detail-last-updated =
     .label = 最近更新時間
+addon-detail-description-expand = 顯示更多
+addon-detail-description-collapse = 顯示較少
 detail-contributions-description = 這個元件的開發者希望您透過小小的捐獻協助其後續開發。
 detail-contributions-button = 贊助
     .title = 贊助這個元件的開發
@@ -132,6 +134,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = 最近的更新
 addon-category-recent-updates-title =
     .title = 最近的更新
+addon-category-sitepermission = 網站權限
+addon-category-sitepermission-title =
+    .title = 網站權限
 
 ## These are global warnings
 
@@ -271,14 +276,18 @@ extension-enabled-heading = 啟用
 extension-disabled-heading = 停用
 theme-enabled-heading = 啟用
 theme-disabled-heading = 停用
+theme-disabled-heading2 = 儲存的佈景主題
 theme-monochromatic-heading = 配色
 theme-monochromatic-subheading = 活力滿點的 { -brand-product-name } 新配色，限時提供。
+theme-colorways-button = 嘗試 Colorways
 plugin-enabled-heading = 啟用
 plugin-disabled-heading = 停用
 dictionary-enabled-heading = 啟用
 dictionary-disabled-heading = 停用
 locale-enabled-heading = 啟用
 locale-disabled-heading = 停用
+sitepermission-enabled-heading = 啟用
+sitepermission-disabled-heading = 停用
 always-activate-button = 總是啟用
 never-activate-button = 永不啟用
 addon-detail-author-label = 作者
@@ -354,6 +363,7 @@ addon-permissions-optional = 選用功能需要下列權限:
 addon-permissions-learnmore = 了解權限的更多資訊
 recommended-extensions-heading = 推薦的擴充套件
 recommended-themes-heading = 推薦的佈景主題
+addon-sitepermissions-required = 讓 <span data-l10n-name="hostname">{ $hostname }</span> 有下列權限:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = 突然有個靈感嗎？<a data-l10n-name="link">使用 Firefox Color 來打造自己的佈景主題。</a>
@@ -366,6 +376,7 @@ plugin-heading = 管理您的外掛程式
 dictionary-heading = 管理您的字典
 locale-heading = 管理您的語言套件
 updates-heading = 管理您的更新
+sitepermission-heading = 管理網站權限
 discover-heading = 個人化您的 { -brand-short-name }
 shortcuts-heading = 管理擴充套件快速鍵
 default-heading-search-label = 看更多附加元件！
@@ -373,3 +384,20 @@ addons-heading-search-input =
     .placeholder = 在 addons.mozilla.org 搜尋
 addon-page-options-button =
     .title = 所有附加元件的工具
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } 與 { -brand-short-name } { $version } 不相容。
+details-notification-unsigned-and-disabled = 無法驗證 { $name } 於 { -brand-short-name } 使用，已被停用。
+details-notification-unsigned-and-disabled-link = 更多資訊
+details-notification-unsigned = 無法驗證 { $name } 於 { -brand-short-name } 使用，若要使用請小心。
+details-notification-unsigned-link = 更多資訊
+details-notification-blocked = 因為安全性或穩定性因素，{ $name } 已被停用。
+details-notification-blocked-link = 更多資訊
+details-notification-softblocked = 已知 { $name } 會造成安全性或穩定性問題。
+details-notification-softblocked-link = 更多資訊
+details-notification-gmp-pending = 即將安裝 { $name }。

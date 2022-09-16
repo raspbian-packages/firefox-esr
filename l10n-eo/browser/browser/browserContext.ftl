@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Konservi ligilon en { -pocket-brand-name }
     .accesskey = l
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Kopii retpoŝtan adreson
     .accesskey = a
+
+main-context-menu-copy-phone =
+    .label = Kopii telefonnumeron
+    .accesskey = t
 
 main-context-menu-copy-link-simple =
     .label = Kopii ligilon
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Malfermi ligilon en nova langeto { $containerName }
     .accesskey = M
+
+main-context-menu-reveal-password =
+    .label = Montri pasvorton
+    .accesskey = p

@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -37,12 +36,6 @@ abuse-report-goback-button = Takaisin
 abuse-report-submit-button = Lähetä
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -60,6 +53,8 @@ abuse-report-messagebar-error-recent-submit = Raporttia lisäosasta <span data-l
 
 abuse-report-messagebar-action-remove-extension = Kyllä, poista se
 abuse-report-messagebar-action-keep-extension = Ei, säilytä se
+abuse-report-messagebar-action-remove-sitepermission = Kyllä, poista se
+abuse-report-messagebar-action-keep-sitepermission = Ei, säilytä se
 abuse-report-messagebar-action-remove-theme = Kyllä, poista se
 abuse-report-messagebar-action-keep-theme = Ei, säilytä se
 abuse-report-messagebar-action-retry = Yritä uudelleen
@@ -82,6 +77,7 @@ abuse-report-deceptive-reason-v2 = Se väittää olevansa jotain mitä se ei ole
 abuse-report-deceptive-example = Esimerkki: Harhaanjohtava kuvaus tai kuvitus
 
 abuse-report-broken-reason-extension-v2 = Se ei toimi, se rikkoo verkkosivustojen esitystavan tai se hidastaa { -brand-product-name }ia
+abuse-report-broken-reason-sitepermission-v2 = Se ei toimi, se rikkoo verkkosivustoja tai se hidastaa { -brand-product-name }ia
 abuse-report-broken-reason-theme-v2 = Se ei toimi tai se rikkoo selaimen esitystavan
 abuse-report-broken-example = Esimerkki: ominaisuudet ovat hitaita, vaikeakäyttöisiä tai eivät toimi; osa sivuista ei lataudu tai ne näyttävät kummallisilta
 abuse-report-broken-suggestions-extension =
@@ -102,4 +98,3 @@ abuse-report-unwanted-reason-v2 = En koskaan halunnut sitä, enkä tiedä miten 
 abuse-report-unwanted-example = Esimerkki: sovellus asensi sen ilman lupaani
 
 abuse-report-other-reason = Jotain muuta
-

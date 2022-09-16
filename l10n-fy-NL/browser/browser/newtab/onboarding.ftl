@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,40 +23,7 @@ return-to-amo-subtitle = Geweldich, jo hawwe { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Litte wy no<img data-l10n-name="icon"/><b>{ $addon-name }</b> ophelje.
 return-to-amo-add-extension-label = De útwreiding tafoegje
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Wolkom by <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = De flugge, feilige en priveebrowser dy’t stipe wurdt troch in non-profitorganisaasje.
-onboarding-multistage-welcome-primary-button-label = Ynstellen starte
-onboarding-multistage-welcome-secondary-button-label = Oanmelde
-onboarding-multistage-welcome-secondary-button-text = Hawwe jo in account?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = { -brand-short-name } as jo <span data-l10n-name="zap">standertbrowser</span> ynstelle
-onboarding-multistage-set-default-subtitle = Snelheid, feilichheid en privacy, hieltyd as jo surfe.
-onboarding-multistage-set-default-primary-button-label = Standert meitsje
-onboarding-multistage-set-default-secondary-button-label = No net
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = Begjin troch <span data-l10n-name="zap">{ -brand-short-name }</span> ien klik fuortsmiten te meitsjen
-onboarding-multistage-pin-default-subtitle = Fluch, feilich en privee sneupe, elke kear as jo it web brûke.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Kies { -brand-short-name } ûnder Webbrowser as jo ynstellingen iepene wurde
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = Dit makket { -brand-short-name } fêst oan de taakbalke en iepenet ynstellingen
-onboarding-multistage-pin-default-primary-button-label = { -brand-short-name } myn foarkarsbrowser meitsje
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Ymportearje jo wachtwurden, blêdwizers en <span data-l10n-name = "zap">mear</span>
-onboarding-multistage-import-subtitle = Hawwe jo in oare browser brûkt? It is ienfâldich om alles nei { -brand-short-name } oer te bringen.
-onboarding-multistage-import-primary-button-label = Ymport starte
-onboarding-multistage-import-secondary-button-label = No net
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = Dizze websites binne op dit apparaat fûn. { -brand-short-name } bewarret of syngronisearret gjin gegevens fan in oare browser, útsein jo derfoar kieze se te ymportearjen.
+return-to-amo-add-theme-label = It tema tafoegje
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = Dizze websites binne op dit apparaat fûn. 
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Oan de slach: skerm { $current } fan { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Kies in <span data-l10n-name="zap">uterlik</span>
-onboarding-multistage-theme-subtitle = Personalisearje { -brand-short-name } mei in tema.
-onboarding-multistage-theme-primary-button-label2 = Dien
-onboarding-multistage-theme-secondary-button-label = No net
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Automatysk
-onboarding-multistage-theme-label-light = Ljocht
-onboarding-multistage-theme-label-dark = Tsjuster
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -171,60 +121,12 @@ mr1-onboarding-theme-label-light = Ljocht
 mr1-onboarding-theme-label-dark = Donker
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Dien
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        It uterlik fan jo bestjoeringssysteem
-        oernimme foar knoppen, menu’s en finsters.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        It uterlik fan jo bestjoeringssysteem
-        oernimme foar knoppen, menu’s en finsters.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        In ljocht uterlik brûke foar knoppen,
-        menu‘s en finsters.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        In ljocht uterlik brûke foar knoppen,
-        menu‘s en finsters.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        In donker uterlik brûke foar knoppen,
-        menu‘s en finsters.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        In donker uterlik brûke foar knoppen,
-        menu‘s en finsters.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        In kleurich uterlik brûke foar knoppen,
-        menu‘s en finsters.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        In kleurich uterlik brûke foar knoppen,
-        menu‘s en finsters.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -282,17 +184,55 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = Kleurstellingen { $colorwayName } ûntdekke.
+mr2-onboarding-colorway-label = Kleurstellingen { $colorwayName } ûntdekke.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Standerttema’s ferkenne.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = Standerttema’s ferkenne.
+mr2-onboarding-default-theme-label = Standerttema’s ferkenne.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Tank dat jo keazen hawwe foar ús
 mr2-onboarding-thank-you-text = { -brand-short-name } is in ûnôfhinklike browser dy’t stipe wurdt troch in non-profit. Tegearre meitsje wy it web feiliger, sûner en mear privee.
 mr2-onboarding-start-browsing-button-label = Start mei browsen
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Kies jo taal
+onboarding-live-language-button-label-downloading = It taalpakket downloade foar { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = Beskikbere talen ophelje…
+onboarding-live-language-installing = It taalpakket foar { $negotiatedLanguage } ynstallearje…
+onboarding-live-language-secondary-cancel-download = Annulearje
+onboarding-live-language-skip-button-label = Oerslaan
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    Kear
+    <span data-l10n-name="zap">tank</span>
+fx100-thank-you-subtitle = Dit is ús 100ste ferzje! Tank foar it helpen bouwen oan in better, sûner ynternet.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] { -brand-short-name } oan de Dock fêstmeitsje
+       *[other] { -brand-short-name } oan de taakbalke fêstmeitsje
+    }
+fx100-upgrade-thanks-header = 100 kear tank
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = It is ús 100e ferzje fan { -brand-short-name }. <em>Tank</em> foar jo help by it bouwen fan in better, sûner ynternet.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = It is ús 100ste ferzje! Tank dat jo ûnderdiel binne fan ús mienskip. Hâld { -brand-short-name } ien klik ôf fan de folgjende 100.

@@ -140,7 +140,7 @@ urlbar-screen-blocked =
 urlbar-persistent-storage-blocked =
     .tooltiptext = Avètz empachat aquel site de gardar de biais persistent de donadas.
 urlbar-popup-blocked =
-    .tooltiptext = Avètz blocat la fenèstras surgentas per aqueste site.
+    .tooltiptext = Avètz blocat las fenèstras surgentas per aqueste site.
 urlbar-autoplay-media-blocked =
     .tooltiptext = Avètz blocat la lectura automatica dels mèdias amb son per aqueste site.
 urlbar-canvas-blocked =
@@ -521,7 +521,7 @@ urlbar-result-action-search-tabs = Cercar pels onglets
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
 # A label shown above the search suggestions group in the urlbar results. It
-# should use title case.
+# should use sentence case.
 # Variables
 #  $engine (String): the name of the search engine providing the suggestions
 urlbar-group-search-suggestions =
@@ -653,12 +653,6 @@ toolbar-settings-button =
             [macos] Dobrir los paramètres ({ $shortcut })
            *[other] Dobrir los paramètres
         }
-
-## More items
-
-more-menu-go-offline =
-    .label = Trabalhar fòra connexion
-    .accesskey = T
 toolbar-overflow-customize-button =
     .label = Personalizar la barra d'aisinas…
     .accesskey = P
@@ -704,12 +698,6 @@ panel-save-update-password = Senhal
 addon-removal-title = Suprimir { $name } ?
 addon-removal-abuse-report-checkbox = Senhalar aquesta extension a { -vendor-short-name }
 
-## Remote / Synced tabs
-
-remote-tabs-manage-account =
-    .label = Gestion del compte
-remote-tabs-sync-now = Sincronizar ara
-
 ##
 
 # "More" item in macOS share menu
@@ -723,7 +711,7 @@ ui-tour-info-panel-close =
 
 popups-infobar-allow =
     .label = Autorizar las fenèstras sorgissentas de { $uriHost }
-    .accesskey = p
+    .accesskey = A
 popups-infobar-block =
     .label = Blocar las fenèstras sorgissentas de { $uriHost }
     .accesskey = p
@@ -732,7 +720,7 @@ popups-infobar-block =
 
 popups-infobar-dont-show-message =
     .label = Afichar pas aqueste messatge quand se blòcan de fenèstras sorgissentas
-    .accesskey = u
+    .accesskey = p
 edit-popup-settings =
     .label = Gerir los paramètres de las popups…
     .accesskey = G
@@ -748,7 +736,7 @@ picture-in-picture-move-toggle-right =
     .accesskey = D
 picture-in-picture-move-toggle-left =
     .label = Desplaçar lo boton de la vidèo incrustada a man esquèrra
-    .accesskey = e
+    .accesskey = D
 
 ##
 
@@ -769,9 +757,6 @@ navbar-overflow =
 navbar-print =
     .label = Imprimir
     .tooltiptext = Imprimir aquesta pagina… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = Imprimir
-    .tooltiptext = Imprimir aquesta pagina
 navbar-home =
     .label = Acuèlh
     .tooltiptext = Acuèlh de { -brand-short-name }
@@ -798,3 +783,10 @@ tabs-toolbar-list-all-tabs =
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
 restore-session-startup-suggestion-message = <strong>Tornar dobrir los onglets precedents ?</strong> Podètz restablir vòstra session precedenta del menú d’aplicacion de { -brand-short-name } <img data-l10n-name="icon"/> estant jos Istoric.
 restore-session-startup-suggestion-button = Cossí far
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } manda automaticament d'unas informacions a { -vendor-short-name } per tal que poscam melhorar vòstra experiéncia.
+data-reporting-notification-button =
+    .label = Causir çò que mandi
+    .accesskey = C

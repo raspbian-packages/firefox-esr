@@ -35,7 +35,7 @@ devmgr-button-load =
     .accesskey = S
 
 devmgr-button-unload =
-    .label = Sers
+    .label = Sefsex asali
     .accesskey = S
 
 devmgr-button-enable-fips =

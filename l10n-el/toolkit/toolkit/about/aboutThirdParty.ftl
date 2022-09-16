@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-third-party-page-title = Πληροφορίες μονάδας τρίτων
+third-party-page-title = Πληροφορίες μονάδων τρίτων
 third-party-section-title = Λίστα λειτουργικών μονάδων τρίτων στο { -brand-short-name }
 
 third-party-intro =

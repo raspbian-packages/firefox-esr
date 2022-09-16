@@ -35,6 +35,9 @@ connection-proxy-http = Proxy pang-HTTP
     .accesskey = x
 connection-proxy-http-port = Port
     .accesskey = P
+connection-proxy-https-sharing =
+    .label = Gamitin din ang proxy na ito para sa HTTPS
+    .accesskey = n
 
 connection-proxy-https = HTTPS Proxy
     .accesskey = H

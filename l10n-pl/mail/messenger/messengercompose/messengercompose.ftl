@@ -3,7 +3,25 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+compose-send-format-menu =
+    .label = Format wysyłania
+    .accesskey = F
+compose-send-auto-menu-item =
+    .label = Automatyczny
+    .accesskey = A
+compose-send-both-menu-item =
+    .label = Zarówno HTML, jak i zwykły tekst
+    .accesskey = Z
+compose-send-html-menu-item =
+    .label = Tylko HTML
+    .accesskey = H
+compose-send-plain-menu-item =
+    .label = Tylko zwykły tekst
+    .accesskey = T
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -32,6 +50,13 @@ pill-tooltip-not-in-address-book = { $email } nie jest w książce adresowej
 pill-action-edit =
     .label = Edytuj adres
     .accesskey = E
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = Zaznacz wszystkie adresy w polu „{ $type }”
+    .accesskey = Z
+pill-action-select-all-pills =
+    .label = Zaznacz wszystkie adresy
+    .accesskey = w
 pill-action-move-to =
     .label = Przenieś do pola „Do”
     .accesskey = D
@@ -45,7 +70,7 @@ pill-action-expand-list =
     .label = Rozwiń listę
     .accesskey = R
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -61,9 +86,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Załącz
     .tooltiptext = Dodaj pliki do tej wiadomości ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Dodaj załącznik…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Dodaj załącznik…
     .accesskey = D
@@ -76,20 +98,21 @@ context-menuitem-attach-files =
     .label = Załącz plik…
     .accesskey = Z
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
+# Note: Do not translate the term 'vCard'.
+context-menuitem-attach-vcard =
+    .label = Moja wizytówka vCard
+    .accesskey = v
+context-menuitem-attach-openpgp-key =
+    .label = Mój klucz publiczny OpenPGP
+    .accesskey = k
 #   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
-    .value =
-        { $count ->
-            [1] { $count } załącznik
-            [one] { $count } załącznik
-            [few] { $count } załączniki
-           *[many] { $count } załączników
-        }
-    .accesskey = z
-expand-attachment-pane-tooltip =
-    .tooltiptext = Pokaż listę załączników ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Ukryj listę załączników ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
+attachment-bucket-count-value =
+    { $count ->
+        [1] { $count } załącznik
+        [one] { $count } załącznik
+        [few] { $count } załączniki
+       *[many] { $count } załączników
+    }
 attachment-area-show =
     .title = Pokaż listę załączników ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-hide =
@@ -107,7 +130,7 @@ drop-file-label-inline =
        *[many] Wstaw w treści
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = Przenieś na początek
@@ -121,47 +144,77 @@ button-return-receipt =
     .label = Potwierdzenie
     .tooltiptext = Żądaj potwierdzenia dostarczenia tej wiadomości
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = Podpisz wiadomość
-message-to-be-encrypted-icon =
-    .alt = Zaszyfruj wiadomość
+encryption-menu =
+    .label = Bezpieczeństwo
+    .accesskey = B
+encryption-toggle =
+    .label = Zaszyfruj
+    .tooltiptext = Użyj szyfrowania „end-to-end” dla tej wiadomości
+encryption-options-openpgp =
+    .label = OpenPGP
+    .tooltiptext = Wyświetl lub zmień ustawienia szyfrowania OpenPGP
+encryption-options-smime =
+    .label = S/MIME
+    .tooltiptext = Wyświetl lub zmień ustawienia szyfrowania S/MIME
+signing-toggle =
+    .label = Podpisz
+    .tooltiptext = Użyj podpisu cyfrowego dla tej wiadomości
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
+    .accesskey = E
+menu-encrypt =
+    .label = Zaszyfruj
+    .accesskey = s
+menu-encrypt-subject =
+    .label = Zaszyfruj temat
+    .accesskey = m
+menu-sign =
+    .label = Podpisz cyfrowo
+    .accesskey = P
+menu-manage-keys =
+    .label = Asystent kluczy
+    .accesskey = A
+menu-view-certificates =
+    .label = Wyświetl certyfikaty odbiorców
+    .accesskey = c
+menu-open-key-manager =
+    .label = Menedżer kluczy
+    .accesskey = d
+openpgp-key-issue-notification-one = Szyfrowanie typu „end-to-end” wymaga rozwiązania problemów z kluczami dla { $addr }
+openpgp-key-issue-notification-many =
+    { $count ->
+        [one] Szyfrowanie typu „end-to-end” wymaga rozwiązania problemów z kluczami dla { $count } odbiorcy.
+        [few] Szyfrowanie typu „end-to-end” wymaga rozwiązania problemów z kluczami dla { $count } odbiorców.
+       *[many] Szyfrowanie typu „end-to-end” wymaga rozwiązania problemów z kluczami dla { $count } odbiorców.
+    }
+smime-cert-issue-notification-one = Szyfrowanie typu „end-to-end” wymaga rozwiązania problemów z certyfikatami dla { $addr }.
+smime-cert-issue-notification-many =
+    { $count ->
+        [one] Szyfrowanie typu „end-to-end” wymaga rozwiązania problemów z certyfikatami dla { $count } odbiorcy.
+        [few] Szyfrowanie typu „end-to-end” wymaga rozwiązania problemów z certyfikatami dla { $count } odbiorców.
+       *[many] Szyfrowanie typu „end-to-end” wymaga rozwiązania problemów z certyfikatami dla { $count } odbiorców.
+    }
+key-notification-disable-encryption =
+    .label = Nie szyfruj
+    .accesskey = N
+    .tooltiptext = Wyłącz szyfrowanie „end-to-end”
+key-notification-resolve =
+    .label = Rozwiąż…
+    .accesskey = R
+    .tooltiptext = Otwórz asystenta kluczy OpenPGP
+can-encrypt-smime-notification = Możliwe jest szyfrowanie S/MIME typu „end-to-end”.
+can-encrypt-openpgp-notification = Możliwe jest szyfrowanie OpenPGP typu „end-to-end”.
+can-e2e-encrypt-button =
+    .label = Zaszyfruj
+    .accesskey = s
 
-# Addressing Area
+## Addressing Area
 
-to-compose-address-row-label =
-    .value = Do
-#   $key (String) - the shortcut key for this field
-to-compose-show-address-row-menuitem =
-    .label = Pole „{ to-compose-address-row-label.value }”
-    .accesskey = D
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-to-compose-show-address-row-label =
-    .value = { to-compose-address-row-label.value }
-    .tooltiptext = Pokaż pole „{ to-compose-address-row-label.value }” ({ to-compose-show-address-row-menuitem.acceltext })
-cc-compose-address-row-label =
-    .value = Kopia
-#   $key (String) - the shortcut key for this field
-cc-compose-show-address-row-menuitem =
-    .label = Pole „{ cc-compose-address-row-label.value }”
-    .accesskey = K
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-cc-compose-show-address-row-label =
-    .value = { cc-compose-address-row-label.value }
-    .tooltiptext = Pokaż pole „{ cc-compose-address-row-label.value }” ({ cc-compose-show-address-row-menuitem.acceltext })
-bcc-compose-address-row-label =
-    .value = Ukryta kopia
-#   $key (String) - the shortcut key for this field
-bcc-compose-show-address-row-menuitem =
-    .label = Pole „{ bcc-compose-address-row-label.value }”
-    .accesskey = U
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-bcc-compose-show-address-row-label =
-    .value = { bcc-compose-address-row-label.value }
-    .tooltiptext = Pokaż pole „{ bcc-compose-address-row-label.value }” ({ bcc-compose-show-address-row-menuitem.acceltext })
-#   $count (Number) - the count of addresses in the "To" and "Cc" fields.
-many-public-recipients-info = { $count } odbiorców w polach Do i Kopia będzie widzieć swoje adresy. Można uniknąć ujawniania odbiorców, używając zamiast tego pola Ukryta kopia.
 to-address-row-label =
     .value = Do
 #   $key (String) - the shortcut key for this field
@@ -248,3 +301,96 @@ encrypted-bcc-ignore-button = Rozumiem
 
 compose-tool-button-remove-text-styling =
     .tooltiptext = Usuń styl tekstu
+
+## Filelink
+
+# A text used in a tooltip of Filelink attachments, whose account has been
+# removed or is unknown.
+cloud-file-unknown-account-tooltip = Przesłano do nieznanego konta serwisu przechowywania plików.
+
+# Placeholder file
+
+# Title for the html placeholder file.
+# $filename - name of the file
+cloud-file-placeholder-title = { $filename } – Załącznik w serwisie przechowywania plików
+# A text describing that the file was attached as a Filelink and can be downloaded
+# from the link shown below.
+# $filename - name of the file
+cloud-file-placeholder-intro = Plik { $filename } został załączony jako odnośnik do serwisu przechowywania plików. Można go pobrać za pomocą poniższego odnośnika.
+
+# Template
+
+# A line of text describing how many uploaded files have been appended to this
+# message. Emphasis should be on sharing as opposed to attaching. This item is
+# used as a header to a list, hence the colon.
+cloud-file-count-header =
+    { $count ->
+        [one] Połączono { $count } plik z tą wiadomością:
+        [few] Połączono { $count } pliki z tą wiadomością:
+       *[many] Połączono { $count } plików z tą wiadomością:
+    }
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service provider.
+# $link (string) - html a-tag for a link pointing to the web page of the provider
+cloud-file-service-provider-footer-single = Więcej informacji o serwisie { $lastLink }.
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service providers. Links for the used providers are
+# split into a comma separated list of the first n-1 providers and a single entry
+# at the end.
+# $firstLinks (string) - comma separated list of html a-tags pointing to web pages
+#                        of the first n-1 used providers
+# $lastLink (string) - html a-tag pointing the web page of the n-th used provider
+cloud-file-service-provider-footer-multiple = Więcej informacji o serwisach { $firstLinks } i { $lastLink }.
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Odnośnik zabezpieczony hasłem
+# Used in a list of stats about a specific file
+# Service - the used service provider to host the file (Filelink Service: BOX.com)
+# Size - the size of the file (Size: 4.2 MB)
+# Link - the link to the file (Link: https://some.provider.com)
+# Expiry Date - stating the date the link will expire (Expiry Date: 12.12.2022)
+# Download Limit - stating the maximum allowed downloads, before the link becomes invalid
+#                  (Download Limit: 6)
+cloud-file-template-service-name = Serwis przechowywania plików:
+cloud-file-template-size = Rozmiar:
+cloud-file-template-link = Odnośnik:
+cloud-file-template-password-protected-link = Odnośnik zabezpieczony hasłem:
+cloud-file-template-expiry-date = Data wygaśnięcia:
+cloud-file-template-download-limit = Ograniczenie pobierania:
+
+# Messages
+
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-connection-error-title = Błąd połączenia
+cloud-file-connection-error = { -brand-short-name } jest w trybie offline. Nie można połączyć się z serwisem { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was uploaded and caused the error
+cloud-file-upload-error-with-custom-message-title = Przesłanie pliku { $filename } do serwisu { $provider } się nie powiodło
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-title = Błąd zmiany nazwy
+cloud-file-rename-error = Wystąpił problem ze zmianą nazwy pliku { $filename } w serwisie { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-with-custom-message-title = Zmiana nazwy pliku { $filename } w serwisie { $provider } się nie powiodła
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-rename-not-supported = Serwis { $provider } nie obsługuje zmiany nazw już przesłanych plików.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-attachment-error-title = Błąd załącznika w serwisie przechowywania plików
+cloud-file-attachment-error = Zaktualizowanie załącznika { $filename } w serwisie przechowywania plików się nie powiodło, ponieważ odpowiadający mu lokalny plik został przeniesiony lub usunięty.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-account-error-title = Błąd konta serwisu przechowywania plików
+cloud-file-account-error = Zaktualizowanie załącznika { $filename } w serwisie przechowywania plików się nie powiodło, ponieważ jego konto zostało usunięte.
+
+## Link Preview
+
+link-preview-title = Podgląd odnośników
+link-preview-description = { -brand-short-name } może dodawać osadzony podgląd podczas wklejania odnośników.
+link-preview-autoadd = Automatycznie dodawaj podgląd odnośników, kiedy to możliwe
+link-preview-replace-now = Dodać podgląd do tego odnośnika?
+link-preview-yes-replace = Tak
+
+## Dictionary selection popup
+
+spell-add-dictionaries =
+    .label = Dodaj słowniki…
+    .accesskey = D

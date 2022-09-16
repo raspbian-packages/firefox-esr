@@ -19,6 +19,9 @@ auth-waiting = Várakozás, hogy a partnere befejezze az ellenőrzést…
 finger-verify = Ellenőrzés
 finger-verify-access-key = E
 
+finger-ignore = Figyelmen kívül hagyás
+finger-ignore-access-key = F
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = OTR-ujjlenyomat hozzáadása
 
@@ -43,7 +46,6 @@ finger-unseen = { $name } személyazonossága még nem lett ellenőrizve. Az egy
 finger-seen = { $name } egy nem ismert számítógépről lép kapcsolatba Önnel. Az egyszerű lehallgatás nem lehetséges, de némi erőfeszítéssel valaki más lehallgathatja. A partner személyazonosságánek igazolásával megakadályozhatja a megfigyelést.
 
 state-not-private = A jelenlegi beszélgetés nem privát.
-
 state-generic-not-private = A jelenlegi beszélgetés nem privát.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Ellenőrizte { $name } személyazonosságát.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = { $name } személyazonossága nem lett ellenőrizve.
-
-verify-title = A partnere személyazonosságának ellenőrzése
-error-title = Hiba
-success-title = Végpontok közötti titkosítás
-success-them-title = A partnere személyazonosságának ellenőrzése
-fail-title = Nem lehet ellenőrizni
-waiting-title = Ellenőrzési kérés elküldve
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

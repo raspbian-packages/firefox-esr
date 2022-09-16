@@ -20,6 +20,9 @@ about-webrtc-aec-logging-off-state-label = Bắt đầu ghi nhật ký AEC
 about-webrtc-aec-logging-on-state-label = Dừng ghi nhật ký AEC
 about-webrtc-aec-logging-on-state-msg = Bản ghi AEC đang hoạt động (nói chuyện với người gọi trong vài phút và sau đó dừng chụp)
 
+# The autorefresh checkbox causes the page to autorefresh its content when checked
+about-webrtc-auto-refresh-label = Tự động làm mới
+
 ##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is

@@ -4,8 +4,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 e2e-intro-description = 若要发送经加密或数字签名的消息，需配置 OpenPGP 或 S/MIME 加密技术。
-
 e2e-intro-description-more = 请选择您要用于 OpenPGP 的个人密钥，或用于 S/MIME 的个人证书。无论是个人密钥或是证书，您都会有对应的私钥。
+
+e2e-signing-description = 数字签名可让收件人确认消息是您本人发送的，且内容未经窜改。加密消息默认启用数字签名。
+
+e2e-sign-message =
+    .label = 签名未加密消息
+    .accesskey = u
+
+e2e-disable-enc =
+    .label = 为新消息禁用加密
+    .accesskey = D
+e2e-enable-enc =
+    .label = 为新消息启用加密
+    .accesskey = n
+e2e-enable-description = 您仍可禁用特定消息的加密。
 
 e2e-advanced-section = 高级设置
 e2e-attach-key =
@@ -48,6 +61,9 @@ openpgp-generate-key =
 openpgp-advanced-prefs-button-label =
     .label = 高级…
 openpgp-keygen-desc = <a data-l10n-name="openpgp-keygen-desc-link">注意：密钥生成可能需要几分才能完成。</a></b>密钥生成过程中，请不要关闭应用程序。主动浏览上网，或进行频繁读写磁盘操作，可补充“随机数池”以加速密钥生成。完成后将提示您密钥已生成。
+
+openpgp-key-created-label =
+    .label = 创建于
 
 openpgp-key-expiry-label =
     .label = 到期日
@@ -186,6 +202,8 @@ openpgp-key-man-reload =
 openpgp-key-man-change-expiry =
     .label = 更改到期日
     .accesskey = E
+openpgp-key-man-ignored-ids =
+    .label = 电子邮件地址
 openpgp-key-man-del-key =
     .label = 删除密钥
     .accesskey = D
@@ -234,20 +252,25 @@ openpgp-key-man-select-all-key =
 openpgp-key-man-key-details-key =
     .key = I
 
+openpgp-ign-addr-intro = 您接受将此密钥用于验证下列选择的电子邮件地址：
+
 openpgp-key-details-title =
     .title = 密钥属性
+
 openpgp-key-details-signatures-tab =
     .label = 证书
 openpgp-key-details-structure-tab =
     .label = 结构
 openpgp-key-details-uid-certified-col =
     .label = 用户 ID / 颁发者
+openpgp-key-details-key-id-label = 密钥 ID
 openpgp-key-details-user-id2-label = 密钥声称所有者
 openpgp-key-details-id-label =
     .label = ID
 openpgp-key-details-key-type-label = 类型
 openpgp-key-details-key-part-label =
     .label = 密钥部分
+
 openpgp-key-details-algorithm-label =
     .label = 算法
 openpgp-key-details-size-label =
@@ -261,10 +284,10 @@ openpgp-key-details-expiry-header = 到期日
 openpgp-key-details-usage-label =
     .label = 用途
 openpgp-key-details-fingerprint-label = 指纹
+openpgp-key-details-legend-secret-missing = 标有 (!) 的密钥，其私钥不可用。
 openpgp-key-details-sel-action =
     .label = 选择操作…
     .accesskey = S
-openpgp-key-details-also-known-label = 密钥拥有者声称的其他身份：
 openpgp-card-details-close-window-label =
     .buttonlabelaccept = 关闭
 openpgp-acceptance-label =
@@ -278,7 +301,6 @@ openpgp-acceptance-unverified-label =
 openpgp-acceptance-verified-label =
     .label = 接受，我已验证这的确是正确的指纹。
 key-accept-personal = 您有此密钥的公钥与私钥部分，可以将其用作个人密钥。若此密钥是由别人提供给您的，则请勿将其用作个人密钥。
-key-personal-warning = 您是否自行创建了此密钥，且显示的拥有者信息也是您本人？
 openpgp-personal-no-label =
     .label = 不，请勿将其用作我的个人密钥。
 openpgp-personal-yes-label =
@@ -288,14 +310,6 @@ openpgp-copy-cmd-label =
     .label = 复制
 
 ## e2e encryption settings
-
-#   $count (Number) - the number of configured keys associated with the current identity
-#   $identity (String) - the email address of the currently selected identity
-openpgp-description =
-    { $count ->
-        [0] Thunderbird 没有用于 <b>{ $identity }</b> 的 OpenPGP 个人密钥
-       *[other] Thunderbird 找到 { $count } 个 <b>{ $identity }</b> 的 OpenPGP 个人密钥
-    }
 
 #   $key (String) - the currently selected OpenPGP key
 openpgp-selection-status-have-key = 您当前配置使用 ID 为 <b>{ $key }</b> 的密钥
@@ -374,7 +388,7 @@ key-expired-date = 密钥已于 { $keyExpiry } 过期
 key-expired-simple = 密钥已过期
 key-revoked-simple = 密钥已被吊销
 key-do-you-accept = 您要接受将此密钥用于验证数字签名与加密消息吗？
-key-accept-warning = 请先使用电子邮件之外的通信渠道验证对方的密钥指纹，避免接受恶意密钥。
+key-verification = 请使用电子邮件以外的安全通信方式验证密钥指纹，以保证其确为 { $addr } 的密钥。
 
 # Strings enigmailMsgComposeOverlay.js
 cannot-use-own-key-because = 您的个人密钥有问题，无法发送消息。{ $problem }
@@ -382,7 +396,6 @@ cannot-encrypt-because-missing = 由于下列收件人的密钥有问题，无�
 window-locked = 邮件撰写窗口已锁定；取消发送
 
 # Strings in mimeDecrypt.jsm
-mime-decrypt-encrypted-part-attachment-label = 加密消息部分
 mime-decrypt-encrypted-part-concealed-data = 这是加密过的消息部分。请点击附件用单独视窗打开。
 
 # Strings in keyserver.jsm
@@ -401,18 +414,6 @@ wkd-message-body-process = 这是一封关于自动将公钥上传到网上 Open
 
 # Strings in persistentCrypto.jsm
 converter-decrypt-body-failed = 无法解密主题为 { $subject } 的消息。您想要使用不同密语再试一次，或是跳过此消息？
-
-# Strings in gpg.jsm
-unknown-signing-alg = 未知的签名算法（ID：{ $id }）
-unknown-hash-alg = 未知的加密哈希值（ID：{ $id }）
-
-# Strings in keyUsability.jsm
-expiry-key-expires-soon = 您的密钥 { $desc } 将于 { $days } 天内到期。建议您重新生成密钥，并配置妥当对应账户来使用。
-expiry-keys-expire-soon = 您的下列密钥将于 { $days } 天内到期：{ $desc }。建议您重新生成密钥，并配置妥当对应账户来使用。
-expiry-key-missing-owner-trust = 您对密钥 { $desc } 缺少信任设置。建议您到密钥属性中，将“密钥信任度”设为“完全信任”。
-expiry-keys-missing-owner-trust = 下列密钥少信任设置：{ $desc }。建议您到密钥属性中，将“密钥信任度”设为“完全信任”。
-expiry-open-key-manager = 打开 OpenPGP 密钥管理器
-expiry-open-key-properties = 打开密钥属性
 
 # Strings filters.jsm
 filter-folder-required = 必须选择一个目标文件夹。
@@ -609,17 +610,9 @@ minimal-line-wrapping = 您将换行长度设为 { $width } 个字符。若需�
 sending-news = 加密发送操作中断。因为有新闻组收件人，无法加密此消息。请解除加密再重新发送。
 send-to-news-warning = 警告：您即将发送加密的邮件到新闻组中。不鼓励这样做，因为只有在群组中的所有成员都能够解密消息时才能阅读（也就是说，必须使用群组中的所有成员的密钥加密消息）。请只在您确切知道自己在做什么时才发送。确定要继续吗？
 save-attachment-header = 保存解密附件
-no-temp-dir = 找不到可以写入的临时文件夹，请设置 TEMP 环境变量
 possibly-pgp-mime = 可能是 PGP/MIME 加密或签名过的消息，请使用“解密 / 验证”功能来验证
 cannot-send-sig-because-no-own-key = 由于您还没有配置<{ $key }>的端到端加密，无法数字签名此消息
 cannot-send-enc-because-no-own-key = 由于您还没有配置<{ $key }>的端到端加密，无法发送此消息
-
-compose-menu-attach-key =
-    .label = 附上我的公钥
-    .accesskey = A
-compose-menu-encrypt-subject =
-    .label = 主题加密
-    .accesskey = b
 
 # Strings used in decryption.jsm
 do-import-multiple = 要导入下列密钥吗？{ $key }

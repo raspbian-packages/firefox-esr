@@ -5,13 +5,6 @@
 
 ## App Menu
 
-appmenuitem-update-banner3 =
-    .label-update-downloading = Atsiunčiamas „{ -brand-shorter-name }“ naujinimas
-    .label-update-available = Išleistas naujinimas – atsiųsti dabar
-    .label-update-manual = Išleistas naujinimas – atsiųsti dabar
-    .label-update-unsupported = Nepavyko atnaujinti – sistema nesuderinama
-    .label-update-restart = Išleistas naujinimas – paleisti iš naujo dabar
-appmenuitem-protection-dashboard-title = Apsaugos skydelis
 appmenuitem-banner-update-downloading =
     .label = Atsiunčiamas „{ -brand-shorter-name }“ naujinimas
 appmenuitem-banner-update-available =
@@ -108,7 +101,6 @@ appmenu-fxa-sync-and-save-data2 = Sinchronizuoti ir įrašyti duomenis
 appmenu-fxa-signed-in-label = Prisijungti
 appmenu-fxa-setup-sync =
     .label = Įjungti sinchronizavimą…
-appmenu-fxa-show-more-tabs = Rodyti daugiau kortelių
 appmenuitem-save-page =
     .label = Įrašyti kaip…
 
@@ -141,22 +133,14 @@ profiler-popup-reveal-description-button =
 profiler-popup-description-title =
     .value = Įrašykite, analizuokite, dalinkitės
 profiler-popup-description = Bendraukite spręsdami našumo problemas, paskelbdami profilius pasidalinimui su savo komanda.
-profiler-popup-learn-more = Sužinoti daugiau
 profiler-popup-learn-more-button =
     .label = Sužinoti daugiau
 profiler-popup-settings =
     .value = Nuostatos
 # This link takes the user to about:profiling, and is only visible with the Custom preset.
-profiler-popup-edit-settings = Keisti nuostatas…
-# This link takes the user to about:profiling, and is only visible with the Custom preset.
 profiler-popup-edit-settings-button =
     .label = Keisti nuostatas…
-profiler-popup-disabled = Profiliuoklė šiuo metu išjungta, greičiausiai dėl atverto privačiojo naršymo lango.
 profiler-popup-recording-screen = Įrašinėjama…
-# The profiler presets list is generated elsewhere, but the custom preset is defined
-# here only.
-profiler-popup-presets-custom =
-    .label = Pasirinktinės
 profiler-popup-start-recording-button =
     .label = Pradėti įrašinėjimą
 profiler-popup-discard-button =
@@ -185,18 +169,18 @@ profiler-popup-capture-shortcut =
 profiler-popup-presets-web-developer-description = Rekomenduojamas nustatymas daugelio saityno programų derinimui, su nedidelėmis sąnaudomis.
 profiler-popup-presets-web-developer-label =
     .label = Saityno kūrėjams
-profiler-popup-presets-firefox-platform-description = Rekomenduojamas nustatymas vidinės „Firefox“ platformos derinimui.
-profiler-popup-presets-firefox-platform-label =
-    .label = „Firefox“ platforma
-profiler-popup-presets-firefox-front-end-description = Rekomenduojamas nustatymas vidinio „Firefox“ „front-end“ derinimui.
-profiler-popup-presets-firefox-front-end-label =
-    .label = „Firefox“ front-end
-profiler-popup-presets-firefox-graphics-description = Rekomenduojamas nustatymas „Firefox“ grafinio našumo tyrinėjimui.
-profiler-popup-presets-firefox-graphics-label =
-    .label = „Firefox“ grafika
-profiler-popup-presets-media-description = Rekomenduojamas nustatymas garso ir vaizdo problemų diagnozavimui.
+profiler-popup-presets-firefox-description = Rekomenduojamas nustatymas „{ -brand-shorter-name }“ profiliavimui.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Nustatymas „{ -brand-shorter-name }“ grafikos problemų diagnozavimui.
+profiler-popup-presets-graphics-label =
+    .label = Grafika
+profiler-popup-presets-media-description2 = Nustatymas „{ -brand-shorter-name }“ garso ir vaizdo problemų diagnozavimui.
 profiler-popup-presets-media-label =
     .label = Medija
+profiler-popup-presets-networking-description = Nustatymas „{ -brand-shorter-name }“ tinklo problemų diagnozavimui.
+profiler-popup-presets-networking-label =
+    .label = Tinklas
 profiler-popup-presets-custom-label =
     .label = Kitas
 
@@ -231,9 +215,9 @@ appmenu-help-more-troubleshooting-info =
     .accesskey = p
 appmenu-help-report-site-issue =
     .label = Pranešti apie svetainės problemą…
-appmenu-help-feedback-page =
-    .label = Siųsti atsiliepimą…
-    .accesskey = S
+appmenu-help-share-ideas =
+    .label = Pasidalinti idėjomis ir atsiliepimais…
+    .accesskey = s
 
 ## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
@@ -259,8 +243,6 @@ appmenu-help-not-deceptive =
 
 appmenu-customizetoolbar =
     .label = Tvarkyti priemonių juostą…
-appmenu-taskmanager =
-    .label = Užduočių tvarkytuvė
 appmenu-developer-tools-subheader = Naršyklės įrankiai
 appmenu-developer-tools-extensions =
     .label = Priedai programuotojams

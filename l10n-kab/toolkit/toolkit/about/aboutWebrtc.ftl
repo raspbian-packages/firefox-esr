@@ -20,6 +20,9 @@ about-webrtc-aec-logging-off-state-label = Senker asniɣmes AEC
 about-webrtc-aec-logging-on-state-label = Seḥbes asniɣmes AEC
 about-webrtc-aec-logging-on-state-msg = Asniɣmes AEC irmed (meslay kra n tesdatin d unmeɣṛu-inek sakin rken asekles)
 
+# The autorefresh checkbox causes the page to autorefresh its content when checked
+about-webrtc-auto-refresh-label = Asmiren awurman
+
 ##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
@@ -61,9 +64,6 @@ about-webrtc-ice-component-id = ID n usuddis
 
 ## "Avg." is an abbreviation for Average. These are used as data labels.
 
-about-webrtc-avg-bitrate-label = Aktum imsin alemmas:
-about-webrtc-avg-framerate-label = Afmiḍi alemmas n tugniwin di tasint:
-
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
 ## connection.
@@ -72,7 +72,6 @@ about-webrtc-type-local = Adigan
 about-webrtc-type-remote = Tanmeggagt
 
 ##
-
 
 # This adjective is used to label a table column. Cells in this column contain
 # the localized javascript string representation of "true" or are left blank.
@@ -108,7 +107,6 @@ about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (imdel) 
 
 ##
 
-
 about-webrtc-local-candidate = Amzazwar adigan
 about-webrtc-remote-candidate = Amzazwar anmeggag
 about-webrtc-raw-candidates-heading = Akk izirigen imazwaren
@@ -128,6 +126,7 @@ about-webrtc-discarded-packets-label = Ikemmusen yettwanfen:
 about-webrtc-decoder-label = Akestengal
 about-webrtc-encoder-label = Astengal
 about-webrtc-show-tab-label = Sken iccer
+about-webrtc-current-framerate-label = Asnagar n tugna
 about-webrtc-width-px = Tehri (px)
 about-webrtc-height-px = Tiddi (px)
 about-webrtc-consecutive-frames = Ikataren yemseḍfaren
@@ -197,6 +196,24 @@ about-webrtc-aec-logging-off-state-msg = ifuyla n usniɣmes yettwaṭfen ad ttwa
 
 ##
 
+# This is the total number of frames encoded or decoded over an RTP stream.
+# Variables:
+#  $frames (Number) - The number of frames encoded or decoded.
+about-webrtc-frames =
+    { $frames ->
+        [one] { $frames } n tugna
+       *[other] { $frames } n tugniwin
+    }
+
+# This is the number of audio channels encoded or decoded over an RTP stream.
+# Variables:
+#  $channels (Number) - The number of channels encoded or decoded.
+about-webrtc-channels =
+    { $channels ->
+        [one] { $channels } n ubadu
+       *[other] { $channels } n yibuda
+    }
+
 # This is the total number of packets received on the PeerConnection.
 # Variables:
 #  $packets (Number) - The number of packets received.
@@ -253,10 +270,6 @@ about-webrtc-sdp-set-at-timestamp-remote = Sbadu SDP anmeggag ɣer wazemzakud { 
 #  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
 #  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
 about-webrtc-sdp-set-timestamp = Azemzakud { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } ms)
-
-##
-
-##
 
 ##
 

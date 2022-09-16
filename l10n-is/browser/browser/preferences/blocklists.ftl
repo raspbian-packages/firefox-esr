@@ -6,7 +6,7 @@ blocklist-window =
     .title = Lokunarlistar
     .style = width: 55em
 
-blocklist-description = Veldu listann sem { -brand-short-name } notar til að loka á rekja spor einhvers. Listar í boði <a data-l10n-name="disconnect-link" title="Discoonnect"> Aftengja </a>.
+blocklist-description = Veldu listann sem { -brand-short-name } notar til að loka á rekjara. Listar í boði <a data-l10n-name="disconnect-link" title="Discoonnect"> Aftengja </a>.
 blocklist-close-key =
     .key = w
 
@@ -28,5 +28,6 @@ blocklist-dialog =
 blocklist-item-list-template = { $listName } { $description }
 
 blocklist-item-moz-std-listName = Fyrsta stigs lokun (mælt með).
-blocklist-item-moz-std-description = Leyfir sumum að rekja spor svo fleiri vefsíður virki.
+blocklist-item-moz-std-description = Leyfir suma rekjara svo fleiri vefsíður virki.
 blocklist-item-moz-full-listName = Annars stigs lokun.
+blocklist-item-moz-full-description = Lokar á alla rekjara sem finnast. Sum vefsvæði eða efni gætu hlaðist ekki rétt inn.

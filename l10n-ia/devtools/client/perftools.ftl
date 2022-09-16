@@ -21,6 +21,7 @@ perftools-heading-features-default = Functiones (es recommendate mantener los ac
 perftools-heading-features-disabled = Functiones disactivate
 perftools-heading-features-experimental = Experimental
 perftools-heading-threads = Filos
+perftools-heading-threads-jvm = Argumentos JVM
 perftools-heading-local-build = Compilation local
 
 ##
@@ -49,9 +50,6 @@ perftools-devtools-settings-label = Parametros
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Le profilator es disactivate quando le navigation private es active.
-    Claude tote le fenestras private pro reactivar le profilator.
 perftools-status-recording-stopped-by-another-tool = Le registration ha essite interrumpite per un altere instrumento.
 perftools-status-restart-required = Le navigator debe esser reinitiate pro activar iste function.
 
@@ -97,6 +95,18 @@ perftools-thread-dns-resolver =
     .title = Le resolution de DNS eveni sur iste filo
 perftools-thread-task-controller =
     .title = Filos del fundo commun de TaskController
+perftools-thread-jvm-gecko =
+    .title = Le argumento principal de Gecko JVM argumento
+perftools-thread-jvm-nimbus =
+    .title = Le principal argumentos pro le experimentos SDK de Nimbus
+perftools-thread-jvm-default-dispatcher =
+    .title = Le expeditor predefinite pro le bibliotheca de co-routines Kotlin
+perftools-thread-jvm-glean =
+    .title = Le principal argumentos pro le telemetria SDK de Glean
+perftools-thread-jvm-arch-disk-io =
+    .title = Le expeditor de IO pro le bibliotheca de co-routines Kotlin
+perftools-thread-jvm-pool =
+    .title = Argumentos create in un gruppo de sub-processos sin nomine
 
 ##
 
@@ -107,6 +117,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Nove</b>: { -profiler-brand-name } es ora integrate in Utensiles de disveloppator. <a>Saper plus</a> re iste potente nove instrumento.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -123,19 +137,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Disveloppamento web
 perftools-presets-web-developer-description = Pre-configuration recommendate pro le depuration del major parte de applicationes web, con poc supercarga.
-perftools-presets-firefox-platform-label = Platteforma Firefox
-perftools-presets-firefox-platform-description = Pre-configuration recommendate pro le depuration del platteforma interne Firefox.
-perftools-presets-firefox-front-end-label = Interfacie de Firefox
-perftools-presets-firefox-front-end-description = Pre-configuration recommendate pro le depuration interne del interfacie de Firefox.
-perftools-presets-firefox-graphics-label = Graphica de Firefox
-perftools-presets-firefox-graphics-description = Pre-configuration recommendate pro le investigation del prestation graphic de Firefox.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Pre-configuration recommendate pro profilar { -brand-shorter-name }.
 perftools-presets-graphics-label = Graphica
 perftools-presets-graphics-description = Pre-configuration pro investigar errores de graphica in { -brand-shorter-name }.
 perftools-presets-media-label = Multimedia
-perftools-presets-media-description = Pre-configuration recommendate pro diagnosticar problemas audio e video.
 perftools-presets-media-description2 = Pre-configuration pro investigar errores audio e video in { -brand-shorter-name }.
+perftools-presets-networking-label = Rete
+perftools-presets-networking-description = Pre-configuration pro investigar errores de rete in { -brand-shorter-name }.
 perftools-presets-custom-label = Personalisate
 
 ##

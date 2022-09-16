@@ -15,6 +15,8 @@ policy-AllowedDomainsForApps = Google Workspace へのアクセスを許可す�
 
 policy-AppAutoUpdate = アプリケーションの自動更新を有効または無効にします。
 
+policy-AppUpdatePin = { -brand-short-name } が指定のバージョン以降に更新されるのを抑止します。
+
 policy-AppUpdateURL = アプリケーションのカスタム更新 URL を設定します。
 
 policy-Authentication = ウェブサイトが対応する統合認証の設定を行います。
@@ -102,6 +104,8 @@ policy-EnableTrackingProtection = コンテンツブロッキングを有効ま�
 # “lock” means that the user won’t be able to change this setting
 policy-EncryptedMediaExtensions = Encrypted Media Extensions を有効または無効にし、任意で設定をロックします。
 
+policy-ExemptDomainFileTypePairsFromFileTypeDownloadWarnings = 指定のドメインで指定のファイル形式のダウンロード警告を無効にします。
+
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
@@ -158,6 +162,8 @@ policy-OverridePostUpdatePage = 更新後に表示される更新情報ページ
 
 policy-PasswordManagerEnabled = パスワードのパスワードマネージャーへの保存を有効にします。
 
+policy-PasswordManagerExceptions = 指定のサイトで { -brand-short-name } にパスワードを保存させるのを抑止します。
+
 # PDF.js and PDF should not be translated
 policy-PDFjs = { -brand-short-name } の組み込み PDF ビューアー PDF.js を無効化または設定します。
 
@@ -192,9 +198,13 @@ policy-SSLVersionMax = SSL の最高バージョンを設定します。
 
 policy-SSLVersionMin = SSL の最低バージョンを設定します。
 
+policy-StartDownloadsInTempDirectory = 既定のダウンロードディレクトリーではなく、ローカルの一時的な場所にダウンロードするよう強制します。
+
 policy-SupportMenu = ヘルプメニューにカスタムサポートメニューを追加します。
 
 policy-UserMessaging = 特定のメッセージをユーザーに表示させないようにします。
+
+policy-UseSystemPrintDialog = システムの印刷ダイアログで印刷します。
 
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = ウェブサイトを訪問済みにしません。書式の詳細はドキュメントをご覧ください。

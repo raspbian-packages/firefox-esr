@@ -97,9 +97,9 @@ main-context-menu-page-save =
 ## Simple menu items
 
 main-context-menu-bookmark-add =
-    .aria-label = 为此网页添加书签
+    .aria-label = 将此页面加入书签
     .accesskey = m
-    .tooltiptext = 为此页添加书签
+    .tooltiptext = 将此页面加入书签
 
 # This menuitem is only visible on macOS
 # Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
@@ -118,9 +118,9 @@ main-context-menu-bookmark-edit-mac =
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = 为此网页添加书签
+    .aria-label = 将此页面加入书签
     .accesskey = m
-    .tooltiptext = 为此页添加书签 ({ $shortcut })
+    .tooltiptext = 将此页面加入书签 ({ $shortcut })
 
 main-context-menu-bookmark-change =
     .aria-label = 编辑此书签
@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = 保存链接到 { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = 复制邮件地址
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = 复制电话号码
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = 复制链接
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = 新建 { $containerName } 标签页打开链接
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = 显示密码
+    .accesskey = v

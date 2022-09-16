@@ -75,19 +75,19 @@ restart-later = Перезапустить позже
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
-extension-controlled-password-saving = Расширение <img data-l10n-name="icon"/> { $name } контролирует этот параметр.
+extension-controlling-password-saving = <img data-l10n-name="icon"/> <strong>{ $name }</strong> управляет этой настройкой.
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
-extension-controlled-web-notifications = Расширение <img data-l10n-name="icon"/> { $name } контролирует этот параметр.
+extension-controlling-web-notifications = <img data-l10n-name="icon"/> <strong>{ $name }</strong> управляет этой настройкой.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlled-privacy-containers = Расширение <img data-l10n-name="icon"/> { $name } требует для своей работы «Вкладки в контейнере».
+extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> требует для своей работы «Вкладки в контейнере».
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
-extension-controlled-websites-content-blocking-all-trackers = Расширение <img data-l10n-name="icon"/> { $name } контролирует этот параметр.
+extension-controlling-websites-content-blocking-all-trackers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> управляет этой настройкой.
 # This string is shown to notify the user that their proxy configuration preferences
 # are being controlled by an extension.
-extension-controlled-proxy-config = Расширение <img data-l10n-name="icon"/> { $name } контролирует способ соединения { -brand-short-name } с Интернетом.
+extension-controlling-proxy-config = <img data-l10n-name ="icon"/> <strong>{ $name }</strong> контролирует способ соединения { -brand-short-name } с Интернетом.
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -111,11 +111,8 @@ always-check-default =
 is-default = В настоящий момент { -brand-short-name } является вашим браузером по умолчанию
 is-not-default = { -brand-short-name } не является вашим браузером по умолчанию
 set-as-my-default-browser =
-    .label = Установить по умолчанию…
-    .accesskey = н
-startup-restore-previous-session =
-    .label = Восстанавливать предыдущую сессию
-    .accesskey = о
+    .label = Сделать браузером по умолчанию…
+    .accesskey = у
 startup-restore-windows-and-tabs =
     .label = Открыть предыдущие окна и вкладки
     .accesskey = п
@@ -130,9 +127,6 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Открывать ссылки во вкладках вместо новых окон
     .accesskey = ы
-warn-on-close-multiple-tabs =
-    .label = Предупреждать при закрытии нескольких вкладок
-    .accesskey = д
 confirm-on-close-multiple-tabs =
     .label = Подтвердить перед закрытием нескольких вкладок
     .accesskey = е
@@ -189,7 +183,40 @@ containers-remove-cancel-button = Не удалять этот контейне�
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Язык и внешний вид
-fonts-and-colors-header = Шрифты и цвета
+preferences-web-appearance-header = Внешний вид сайтов
+preferences-web-appearance-description = Некоторые веб-сайты адаптируют свою цветовую схему в зависимости от ваших предпочтений. Выберите цветовую схему, которую вы хотите использовать для этих сайтов.
+preferences-web-appearance-choice-browser = Тема { -brand-short-name }
+preferences-web-appearance-choice-system = Системная тема
+preferences-web-appearance-choice-light = Светлая
+preferences-web-appearance-choice-dark = Тёмная
+preferences-web-appearance-choice-tooltip-browser =
+    .title = Применять настройки темы { -brand-short-name } к фону и содержимому веб-сайтов.
+preferences-web-appearance-choice-tooltip-system =
+    .title = Применять системные настройки к фону и содержимому веб-сайтов.
+preferences-web-appearance-choice-tooltip-light =
+    .title = Использовать светлый вид для фона и содержимого веб-сайтов.
+preferences-web-appearance-choice-tooltip-dark =
+    .title = Использовать тёмный вид для фона и содержимого веб-сайтов.
+preferences-web-appearance-choice-input-browser =
+    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
+preferences-web-appearance-choice-input-system =
+    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-light =
+    .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
+preferences-web-appearance-choice-input-dark =
+    .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning = Выбранные вами цвета изменяют внешний вид веб-сайтов. <a data-l10n-name="colors-link">Управлять цветами</a>
+# This message contains one link. It can be moved within the sentence as needed
+# to adapt to your language, but should not be changed.
+preferences-web-appearance-footer = Управляйте темами { -brand-short-name } в разделе <a data-l10n-name="themes-link">«Расширения и темы»</a>
+preferences-colors-header = Цвета
+preferences-colors-description = Переопределяйте цвета { -brand-short-name } по умолчанию для текста, фона веб-сайтов и ссылок.
+preferences-colors-manage-button =
+    .label = Управление цветами…
+    .accesskey = м
+preferences-fonts-header = Шрифты
 default-font = Шрифт по умолчанию
     .accesskey = ф
 default-font-size = Размер
@@ -197,9 +224,6 @@ default-font-size = Размер
 advanced-fonts =
     .label = Дополнительно…
     .accesskey = н
-colors-settings =
-    .label = Цвета…
-    .accesskey = в
 # Zoom is a noun, and the message is used as header for a group of options
 preferences-zoom-header = Масштаб
 preferences-default-zoom = Масштаб по умолчанию
@@ -240,10 +264,9 @@ check-user-spelling =
 
 ## General Section - Files and Applications
 
-files-and-applications-title = Файлы и Приложения
+files-and-applications-title = Файлы и приложения
 download-header = Загрузки
-download-save-to =
-    .label = Путь для сохранения файлов
+download-save-where = Путь для сохранения файлов
     .accesskey = ь
 download-choose-folder =
     .label =
@@ -285,8 +308,8 @@ applications-use-app-default =
 applications-use-os-default =
     .label =
         { PLATFORM() ->
-            [macos] Использовать приложение по умолчанию в macOS
-            [windows] Использовать приложение по умолчанию в Windows
+            [macos] Использовать приложение macOS по умолчанию
+            [windows] Использовать приложение Windows по умолчанию
            *[other] Использовать системное приложение по умолчанию
         }
 applications-use-other =
@@ -334,6 +357,13 @@ applications-use-os-default-label =
 
 ##
 
+applications-handle-new-file-types-description = Что { -brand-short-name } должен делать с другими файлами?
+applications-save-for-new-types =
+    .label = Сохранять файлы
+    .accesskey = я
+applications-ask-before-handling =
+    .label = Спрашивать, открывать или сохранять файлы
+    .accesskey = ш
 drm-content-header = Содержимое использующее технические средства защиты авторских прав (DRM)
 play-drm-content =
     .label = Воспроизводить защищённое DRM содержимое
@@ -362,6 +392,9 @@ update-application-warning-cross-user-setting = Этот параметр при
 update-application-use-service =
     .label = Использовать фоновую службу для установки обновлений
     .accesskey = ф
+update-application-suppress-prompts =
+    .label = Показывать меньше уведомлений об обновлениях
+    .accesskey = е
 update-setting-write-failure-title2 = Ошибка при сохранении настроек обновления
 # Variables:
 #   $path (String) - Path to the configuration file
@@ -403,30 +436,33 @@ performance-default-content-process-count =
 browsing-title = Просмотр сайтов
 browsing-use-autoscroll =
     .label = Использовать автоматическую прокрутку
-    .accesskey = с
+    .accesskey = а
 browsing-use-smooth-scrolling =
     .label = Использовать плавную прокрутку
+    .accesskey = п
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Всегда показывать полосы прокрутки
     .accesskey = о
 browsing-use-onscreen-keyboard =
-    .label = При необходимости отображать сенсорную клавиатуру
-    .accesskey = н
+    .label = При необходимости показывать сенсорную клавиатуру
+    .accesskey = с
 browsing-use-cursor-navigation =
     .label = Всегда использовать клавиши курсора для навигации по страницам
     .accesskey = к
 browsing-search-on-start-typing =
     .label = Искать текст на странице по мере его набора
-    .accesskey = а
+    .accesskey = И
 browsing-picture-in-picture-toggle-enabled =
-    .label = Включить управление видео «Картинка в картинке»
-    .accesskey = ю
+    .label = Включить элементы управления видео «Картинка в картинке»
+    .accesskey = а
 browsing-picture-in-picture-learn-more = Подробнее
 browsing-media-control =
-    .label = Управлять медиа через клавиатуру, гарнитуру или виртуальный интерфейс
-    .accesskey = п
+    .label = Управлять медиа с помощью клавиатуры, гарнитуры или виртуального интерфейса
+    .accesskey = У
 browsing-media-control-learn-more = Подробнее
 browsing-cfr-recommendations =
     .label = Рекомендовать расширения при просмотре
-    .accesskey = к
+    .accesskey = р
 browsing-cfr-features =
     .label = Рекомендовать функции при просмотре
     .accesskey = ф
@@ -439,7 +475,7 @@ network-proxy-connection-description = Настроить, как { -brand-short
 network-proxy-connection-learn-more = Подробнее
 network-proxy-connection-settings =
     .label = Настроить…
-    .accesskey = с
+    .accesskey = Н
 
 ## Home Section
 
@@ -484,11 +520,6 @@ home-prefs-content-header = Домашняя страница Firefox
 home-prefs-content-description = Выберите, какое содержимое вы хотите видеть на домашней странице Firefox.
 home-prefs-search-header =
     .label = Поиск в Интернете
-home-prefs-topsites-header =
-    .label = Топ сайтов
-home-prefs-topsites-description = Самые посещаемые сайты
-home-prefs-topsites-by-option-sponsored =
-    .label = Топ сайтов спонсоров
 home-prefs-shortcuts-header =
     .label = Ярлыки
 home-prefs-shortcuts-description = Сохранённые или посещаемые сайты
@@ -500,7 +531,6 @@ home-prefs-shortcuts-by-option-sponsored =
 
 home-prefs-recommended-by-header =
     .label = Рекомендовано { $provider }
-home-prefs-recommended-by-description-update = Интересные материалы из Интернета, подобранные { $provider }
 home-prefs-recommended-by-description-new = Особый контент, курируемый { $provider }, частью семейства { -brand-product-name }
 
 ##
@@ -508,9 +538,6 @@ home-prefs-recommended-by-description-new = Особый контент, кур�
 home-prefs-recommended-by-learn-more = Как это работает
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Статьи спонсоров
-home-prefs-highlights-header =
-    .label = Избранное
-home-prefs-highlights-description = Избранные сайты, которые вы сохранили или посещали
 home-prefs-highlights-option-visited-pages =
     .label = Посещённые страницы
 home-prefs-highlights-options-bookmarks =
@@ -528,7 +555,6 @@ home-prefs-recent-activity-description = Подборка недавних са�
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Заметки
-home-prefs-snippets-description = Обновления от { -vendor-short-name } и { -brand-product-name }
 home-prefs-snippets-description-new = Советы и новости от { -vendor-short-name } и { -brand-product-name }
 home-prefs-sections-rows-option =
     .label =
@@ -577,7 +603,7 @@ search-choose-engine-column =
 search-choose-keyword-column =
     .label = Краткое имя
 search-restore-default =
-    .label = Восстановить набор поисковых систем по умолчанию
+    .label = Восстановить поисковые системы по умолчанию
     .accesskey = а
 search-remove-engine =
     .label = Удалить
@@ -862,14 +888,10 @@ sitedata-block-desc = Тип заблокированного
     .accesskey = п
 sitedata-option-block-cross-site-trackers =
     .label = Межсайтовые трекеры
-sitedata-option-block-cross-site-and-social-media-trackers =
-    .label = Межсайтовые и социальные трекеры
-sitedata-option-block-cross-site-tracking-cookies-including-social-media =
-    .label = Межсайтовые отслеживающие куки — включая куки социальных сетей
-sitedata-option-block-cross-site-cookies-including-social-media =
-    .label = Межсайтовые куки — включая куки социальных сетей
-sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
-    .label = Межсайтовые и социальные трекеры, а также изолировать оставшиеся куки
+sitedata-option-block-cross-site-tracking-cookies =
+    .label = Межсайтовые отслеживающие куки
+sitedata-option-block-cross-site-cookies =
+    .label = Межсайтовые отслеживающие куки, а также изолировать другие межсайтовые куки
 sitedata-option-block-unvisited =
     .label = Куки с непосещённых сайтов
 sitedata-option-block-all-third-party =
@@ -888,8 +910,8 @@ sitedata-cookies-exceptions =
 
 ## Privacy Section - Address Bar
 
-addressbar-header = Панель адреса
-addressbar-suggest = При использовании панели адреса предлагать ссылки
+addressbar-header = Адресная строка
+addressbar-suggest = При использовании адресной строки предлагать ссылки
 addressbar-locbar-history-option =
     .label = из журнала посещений
     .accesskey = ж
@@ -959,7 +981,6 @@ content-blocking-etp-standard-tcp-rollout-checkbox =
 content-blocking-etp-standard-tcp-rollout-description = Полная защита от кук ограничивает работу кук сайтом, на котором вы находитесь, чтобы трекеры не могли использовать их для слежки за вами от сайта к сайту.
 content-blocking-etp-standard-tcp-rollout-learn-more = Подробнее
 content-blocking-warning-title = Осторожно!
-content-blocking-and-isolating-etp-warning-description = Блокировка трекеров и изоляция куков может нарушить работу некоторых сайтов. Перезагрузите страницу с трекерами, чтобы загрузить все содержимое.
 content-blocking-and-isolating-etp-warning-description-2 = Эта настройка может вызвать ошибки отображения содержимого или нарушение корректной работы некоторых веб-сайтов. Если кажется, что сайт не работает, вам, возможно, понадобится отключить защиту от отслеживания на этом сайте, чтобы загрузить всё его содержимое.
 content-blocking-warning-learn-how = Подробнее
 content-blocking-reload-description = Вам понадобится обновить свои вкладки, чтобы применить эти изменения.
@@ -1031,9 +1052,6 @@ permissions-autoplay-settings =
 permissions-block-popups =
     .label = Блокировать всплывающие окна
     .accesskey = о
-permissions-block-popups-exceptions =
-    .label = Исключения…
-    .accesskey = ю
 # "popup" is a misspelling that is more popular than the correct spelling of
 # "pop-up" so it's included as a search keyword, not displayed in the UI.
 permissions-block-popups-exceptions-button =
@@ -1123,7 +1141,3 @@ httpsonly-radio-disabled =
 desktop-folder-name = Рабочий стол
 downloads-folder-name = Загрузки
 choose-download-folder-title = Выберите папку для загрузок:
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Сохранять файлы в { $service-name }

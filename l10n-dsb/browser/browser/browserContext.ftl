@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Wótkaz do { -pocket-brand-name } składowaś
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = E-mailowu adresu kopěrowaś
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = Telefonowy numer kopěrowaś
+    .accesskey = T
 
 main-context-menu-copy-link-simple =
     .label = Wótkaz kopěrowaś
@@ -454,4 +453,8 @@ main-context-menu-eme-learn-more =
 #   $containerName (String): The name of the current container
 main-context-menu-open-link-in-container-tab =
     .label = Wótkaz w nowem rejtariku kontejnera { $containerName } wócyniś
+    .accesskey = r
+
+main-context-menu-reveal-password =
+    .label = Gronidło pokazaś
     .accesskey = r

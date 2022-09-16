@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Сілтемені { -pocket-brand-name }-ке сақтау
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Электронды пошта адресін көшіріп алу
     .accesskey = п
+
+main-context-menu-copy-phone =
+    .label = Телефон нөмірін көшіріп алу
+    .accesskey = ш
 
 main-context-menu-copy-link-simple =
     .label = Сілтемені көшіріп алу
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Сілтемені жаңа { $containerName } бетінде ашу
     .accesskey = т
+
+main-context-menu-reveal-password =
+    .label = Парольді көрсету
+    .accesskey = с

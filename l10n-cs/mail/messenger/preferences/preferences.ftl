@@ -4,7 +4,6 @@
 
 close-button =
     .aria-label = Zavřít
-preferences-doc-title = Předvolby
 preferences-doc-title2 = Nastavení
 category-list =
     .aria-label = Kategorie
@@ -163,15 +162,16 @@ restore-default-label =
     .label = Obnovit výchozí
     .accesskey = O
 default-search-engine = Výchozí vyhledávač
-add-search-engine =
-    .label = Přidat ze souboru
-    .accesskey = s
 add-web-search-engine =
     .label = Přidat…
     .accesskey = a
 remove-search-engine =
     .label = Odebrat
     .accesskey = r
+add-opensearch-provider-title = Přidat poskytovatele OpenSearch
+add-opensearch-provider-text = Zadejte URL adresu poskytovatele OpenSearch, kterého chcete přidat. Použijte buď přímou adresu popisného souboru OpenSearch, nebo adresu, kde ho lze automaticky zjistit.
+adding-opensearch-provider-failed-title = Přidání poskytovatele OpenSearch se nezdařilo
+adding-opensearch-provider-failed-text = Poskytovatele OpenSearch pro { $url } nelze přidat.
 minimize-to-tray-label =
     .label =
         Při minimalizaci { -brand-short-name.gender ->
@@ -200,7 +200,6 @@ change-dock-icon = Změna nastavení pro ikonu aplikace
 app-icon-options =
     .label = Nastavení ikony aplikace…
     .accesskey = n
-notification-settings = Upozornění a výchozí zvuk můžete zakázat v systémovém nastavení panelu upozornění.
 notification-settings2 = Upozornění a výchozí zvuk můžete zakázat v systémovém nastavení panelu upozornění.
 animated-alert-label =
     .label = Zobrazit upozornění
@@ -245,6 +244,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Použít plynulé posouvání
     .accesskey = l
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Vždy zobrazovat posuvníky
+    .accesskey = o
 system-integration-legend = Nastavení systému
 always-check-default =
     .label =
@@ -404,12 +406,6 @@ quoted-text-color =
     .accesskey = a
 search-handler-table =
     .placeholder = Filtrovat typy obsahu a akcí
-type-column-label =
-    .label = Typ obsahu
-    .accesskey = T
-action-column-label =
-    .label = Akce
-    .accesskey = A
 type-column-header = Typ obsahu
 action-column-header = Akce
 save-to-label =
@@ -502,6 +498,9 @@ auto-save-end = minut
 warn-on-send-accel-key =
     .label = Při odeslání zprávy pomocí klávesové zkratky požadovat potvrzení
     .accesskey = i
+add-link-previews =
+    .label = Přidávat náhledy vložených odkazů
+    .accesskey = i
 spellcheck-label =
     .label = Před odesláním zprávy zkontrolovat pravopis
     .accesskey = P
@@ -533,17 +532,26 @@ restore-html-label =
 default-format-label =
     .label = Ve výchozím nastavení používat formát odstavce namísto základního textu
     .accesskey = D
-format-description = Nastavení chování textového formátu
-send-options-label =
-    .label = Předvolby odesílání…
-    .accesskey = e
+compose-send-format-title = Formát odesílání
+compose-send-automatic-option =
+    .label = Automaticky
+compose-send-automatic-description = Pokud není text zprávy nijak formátovaný, odešle se jako prostý text. Jinak jako HTML a prostý text.
+compose-send-both-option =
+    .label = HTML a prostý text
+compose-send-both-description = E-mailová aplikace příjemce vybere, který formát zobrazit.
+compose-send-html-option =
+    .label = Pouze HTML
+compose-send-html-description = Někteří příjemci nemusí být schopni zprávu bez formátu prostého textu zobrazit.
+compose-send-plain-option =
+    .label = Pouze prostý text
+compose-send-plain-description = Některé formátování textu bude převedeno do alternativy pro prostý text. Některé funkce pro formátování textu nebudou dostupné.
 autocomplete-description = Při psaní adresy hledat vhodné položky v:
 ab-label =
-    .label = Místní kontakty
+    .label = Místních kontaktech
     .accesskey = M
 directories-label =
-    .label = Adresářový server:
-    .accesskey = s
+    .label = Adresářovém serveru:
+    .accesskey = d
 directories-none-label =
     .none = Žádný
 edit-directories-label =
@@ -762,8 +770,8 @@ chat-browse-sound-button =
 theme-label =
     .value = Motiv vzhledu:
     .accesskey = t
-style-thunderbird =
-    .label = Thunderbird
+style-mail =
+    .label = { -brand-short-name }
 style-bubbles =
     .label = Bubliny
 style-dark =
@@ -786,20 +794,6 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
-    .style = width: 15.4em
-    .placeholder = Najít v předvolbách
-
-## Preferences UI Search Results
-
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Please keep the placeholder string short to avoid truncation.
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
 search-preferences-input2 =
     .style = width: 15.4em
     .placeholder = Najít nastavení
@@ -807,12 +801,6 @@ search-preferences-input2 =
 ## Settings UI Search Results
 
 search-results-header = Výsledky vyhledávání
-# `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
-    { PLATFORM() ->
-        [windows] Je nám líto, pro „<span data-l10n-name="query"></span>“ jsme v možnostech nic nenašli.
-       *[other] Je nám líto, pro „<span data-l10n-name="query"></span>“ jsme v předvolbách nic nenašli.
-    }
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
 search-results-empty-message2 = Je nám líto, pro „<span data-l10n-name="query"></span>“ jsme v nastavení nic nenašli.
 search-results-help-link =

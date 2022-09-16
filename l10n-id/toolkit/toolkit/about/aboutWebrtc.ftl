@@ -20,6 +20,9 @@ about-webrtc-aec-logging-off-state-label = Mulai Pencatatan AEC
 about-webrtc-aec-logging-on-state-label = Hentikan Pencatatan AEC
 about-webrtc-aec-logging-on-state-msg = Pencatatan AEC aktif (bicara dengan pemanggil selama beberapa menit lalu hentikan penangkapan)
 
+# The autorefresh checkbox causes the page to autorefresh its content when checked
+about-webrtc-auto-refresh-label = Segarkan Otomatis
+
 ##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
@@ -61,9 +64,6 @@ about-webrtc-ice-component-id = ID komponen
 
 ## "Avg." is an abbreviation for Average. These are used as data labels.
 
-about-webrtc-avg-bitrate-label = Bitrate rata-rata:
-about-webrtc-avg-framerate-label = Framerate rata-rata:
-
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
 ## connection.
@@ -72,7 +72,6 @@ about-webrtc-type-local = Lokal
 about-webrtc-type-remote = Jarak Jauh
 
 ##
-
 
 # This adjective is used to label a table column. Cells in this column contain
 # the localized javascript string representation of "true" or are left blank.
@@ -108,7 +107,6 @@ about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (ditutup
 
 ##
 
-
 about-webrtc-local-candidate = Kandidat Lokal
 about-webrtc-remote-candidate = Kandidat Jarak Jauh
 about-webrtc-raw-candidates-heading = Semua Kandidat Mentah
@@ -128,6 +126,7 @@ about-webrtc-discarded-packets-label = Paket yang dibuang:
 about-webrtc-decoder-label = Dekoder
 about-webrtc-encoder-label = Enkoder
 about-webrtc-show-tab-label = Tampilkan tab
+about-webrtc-current-framerate-label = Kecepatan bingkai
 about-webrtc-width-px = Lebar (px)
 about-webrtc-height-px = Tinggi (px)
 about-webrtc-consecutive-frames = Bingkai Berturutan
@@ -197,6 +196,22 @@ about-webrtc-aec-logging-off-state-msg = berkas log tangkapan dapat ditemukan di
 
 ##
 
+# This is the total number of frames encoded or decoded over an RTP stream.
+# Variables:
+#  $frames (Number) - The number of frames encoded or decoded.
+about-webrtc-frames =
+    { $frames ->
+       *[other] { $frames } frame
+    }
+
+# This is the number of audio channels encoded or decoded over an RTP stream.
+# Variables:
+#  $channels (Number) - The number of channels encoded or decoded.
+about-webrtc-channels =
+    { $channels ->
+       *[other] { $channels } saluran
+    }
+
 # This is the total number of packets received on the PeerConnection.
 # Variables:
 #  $packets (Number) - The number of packets received.
@@ -250,10 +265,6 @@ about-webrtc-sdp-set-at-timestamp-remote = Setel SDP Jarak Jauh pada stempel wak
 #  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
 #  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
 about-webrtc-sdp-set-timestamp = Stempel waktu { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } md)
-
-##
-
-##
 
 ##
 

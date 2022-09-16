@@ -20,6 +20,9 @@ about-webrtc-aec-logging-off-state-label = התחלת רישום AEC
 about-webrtc-aec-logging-on-state-label = עצירת רישום AEC
 about-webrtc-aec-logging-on-state-msg = AEC logging active (speak with the caller for a few minutes and then stop the capture)
 
+# The autorefresh checkbox causes the page to autorefresh its content when checked
+about-webrtc-auto-refresh-label = רענון אוטומטי
+
 ##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
@@ -71,7 +74,6 @@ about-webrtc-type-remote = מרוחק
 
 ##
 
-
 # This adjective is used to label a table column. Cells in this column contain
 # the localized javascript string representation of "true" or are left blank.
 about-webrtc-nominated = Nominated
@@ -105,7 +107,6 @@ about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (סגור) { $now }
 
 ##
-
 
 about-webrtc-local-candidate = Local Candidate
 about-webrtc-remote-candidate = Remote Candidate
@@ -163,10 +164,6 @@ about-webrtc-trickle-caption-msg = מועמדים שהסתננו (הגיעו ל�
 ## "SDP" is an abbreviation for Session Description Protocol, an IETF standard.
 ## See http://wikipedia.org/wiki/Session_Description_Protocol
 
-
-##
-
-##
 
 ##
 

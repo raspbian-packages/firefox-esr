@@ -69,8 +69,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } użytkowników
     }
 
-## These messages are steps on how to use the feature and are shown together.
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Synchronizuj zakładki na każdym urządzeniu.
@@ -98,24 +96,6 @@ cfr-whatsnew-button =
 
 cfr-whatsnew-release-notes-link-text = Przeczytaj informacje o wydaniu
 
-## Search Bar
-
-## Picture-in-Picture
-
-## Permission Prompt
-
-## Fingerprinter Counter
-
-## Bookmark Sync
-
-## Login Sync
-
-## Send Tab
-
-## Firefox Send
-
-## Social Tracking Protection
-
 ## Enhanced Tracking Protection Milestones
 
 # Variables:
@@ -129,20 +109,6 @@ cfr-doorhanger-milestone-heading2 =
     }
 cfr-doorhanger-milestone-ok-button = Wyświetl wszystkie
     .accesskey = W
-
-## What’s New Panel Content for Firefox 76
-
-
-## Lockwise message
-
-## Vulnerable Passwords message
-
-## Picture-in-Picture fullscreen message
-
-## Protections Dashboard message
-
-## Better PDF message
-
 cfr-doorhanger-milestone-close-button = Zamknij
     .accesskey = Z
 
@@ -171,15 +137,50 @@ cfr-doorhanger-video-support-header = Zaktualizuj przeglądarkę { -brand-short-
 cfr-doorhanger-video-support-primary-button = Aktualizuj teraz
     .accesskey = k
 
+## Spotlight modal shared strings
+
+spotlight-learn-more-collapsed = Więcej informacji
+    .title = Rozwiń, aby dowiedzieć się więcej o tej funkcji
+spotlight-learn-more-expanded = Więcej informacji
+    .title = Zamknij
+
 ## VPN promotion dialog for public Wi-Fi users
 ##
 ## If a user is detected to be on a public Wi-Fi network, they are given a
 ## bit of info about how to improve their privacy and then offered a button
 ## to the Mozilla VPN page and a link to dismiss the dialog.
 
+# This header text can be explicitly wrapped.
 spotlight-public-wifi-vpn-header = Wygląda na to, że korzystasz z publicznej sieci Wi-Fi
 spotlight-public-wifi-vpn-body = Aby ukryć swoje położenie i działania w Internecie, pomyśl o wirtualnej sieci prywatnej. Pomoże Ci zapewnić ochronę podczas przeglądania w miejscach publicznych, takich jak lotniska czy kawiarnie.
 spotlight-public-wifi-vpn-primary-button = Zachowaj prywatność dzięki { -mozilla-vpn-brand-name }
     .accesskey = V
 spotlight-public-wifi-vpn-link = Nie teraz
     .accesskey = N
+
+## Total Cookie Protection Rollout
+
+# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
+# "Join an early experiment". This header text can be explicitly wrapped.
+spotlight-total-cookie-protection-header =
+    Przetestuj naszą najpotężniejszą
+    funkcję ochrony prywatności w historii
+spotlight-total-cookie-protection-body = Całkowita ochrona ciasteczek uniemożliwia elementom śledzącym używanie ciasteczek do śledzenia Cię w Internecie.
+# "Early access" for this feature rollout means it's a "feature preview" or
+# "soft launch" as not everybody will get it yet.
+spotlight-total-cookie-protection-expanded = { -brand-short-name } buduje płot wokół ciasteczek, ograniczając je do odwiedzanej witryny, aby elementy śledzące nie mogły ich używać do śledzenia Cię. Włączając tę funkcję przed innymi pomożesz ją zoptymalizować, abyśmy mogli kontynuować tworzenie lepszego Internetu dla wszystkich.
+spotlight-total-cookie-protection-primary-button = Włącz całkowitą ochronę ciasteczek
+spotlight-total-cookie-protection-secondary-button = Nie teraz
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Lepszy Internet zaczyna się od Ciebie
+spotlight-better-internet-body = Kiedy używasz przeglądarki { -brand-short-name }, głosujesz na otwarty i dostępny Internet, który jest lepszy dla wszystkich.
+spotlight-peace-mind-header = Możesz na nas liczyć
+spotlight-peace-mind-body = Każdego miesiąca { -brand-short-name } blokuje średnio ponad 3000 elementów śledzących na użytkownika. Ponieważ nic, zwłaszcza psujące prywatność elementy śledzące, nie powinno stać między Tobą a dobrym Internetem.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Zatrzymaj w Docku
+       *[other] Przypnij do paska zadań
+    }
+spotlight-pin-secondary-button = Nie teraz

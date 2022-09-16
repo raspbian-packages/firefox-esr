@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Websteder bekræfter deres identitet 
 
 cert-error-symantec-distrust-admin = Du kan prøve at kontakte webstedets administrator for at gøre opmærksom på problemet.
 
+cert-error-old-tls-version = Dette websted understøtter muligvis ikke version 1.2 af TLS-protokollen, der er minimumsversionen, { -brand-short-name } understøtter.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -84,7 +86,7 @@ open-in-new-window-for-csp-or-xfo-error = Åbn websted i et nyt vindue
 
 # Variables:
 # $hostname (String) - Hostname of the website blocked by csp or xfo error.
-csp-xfo-blocked-long-desc = For at beskytte din sikkerhed vil { $hostname } ikke tillade, at { -brand-short-name } viser siden, hvis et andet websted har indlejret den. Du skal åbne siden i et nyt vindue for at se den. 
+csp-xfo-blocked-long-desc = For at beskytte din sikkerhed vil { $hostname } ikke tillade, at { -brand-short-name } viser siden, hvis et andet websted har indlejret den. Du skal åbne siden i et nyt vindue for at se den.
 
 ## Messages used for certificate error titles
 
@@ -115,7 +117,6 @@ unknownSocketType-title = Uventet svar fra server
 nssFailure2-title = Sikker forbindelse mislykkedes
 csp-xfo-error-title = { -brand-short-name } kan ikke åbne denne side
 corruptedContentError-title = Fejlbehæftet indhold
-remoteXUL-title = Remote XUL
 sslv3Used-title = Kan ikke oprette sikker forbindelse
 inadequateSecurityError-title = Din forbindelse er ikke sikker
 blockedByPolicy-title = Blokeret side

@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Excepciones
     .style = width: 52em;
 
+permission-preferences-close-window =
+    .key = w
+
 website-address-label =
     .value = Dirección del sitio web:
     .accesskey = D

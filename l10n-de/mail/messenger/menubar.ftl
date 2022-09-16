@@ -2,13 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-## View Menu
+toolbar-context-menu-menu-bar =
+    .toolbarname = Menüleiste
+    .accesskey = M
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
+menu-tools-settings =
     .label = Einstellungen
     .accesskey = E
 
@@ -53,6 +53,22 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Schriftgröße
+    .accesskey = S
+
+menuitem-font-size-enlarge =
+    .label = Vergrößern
+    .accesskey = g
+
+menuitem-font-size-reduce =
+    .label = Verkleinern
+    .accesskey = k
+
+menuitem-font-size-reset =
+    .label = Zurücksetzen
+    .accesskey = Z
+
 mail-uidensity-label =
     .label = Dichte
     .accesskey = D
@@ -69,5 +85,12 @@ mail-uidensity-touch =
     .label = Touch
     .accesskey = T
 
+menu-spaces-toolbar-button =
+    .label = Bereiche-Symbolleiste
+    .accesskey = B
+
 ## File
 
+file-new-newsgroup-account =
+    .label = Newsgruppen-Konto…
+    .accesskey = g

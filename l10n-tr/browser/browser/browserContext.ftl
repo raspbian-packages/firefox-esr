@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Bağlantıyı { -pocket-brand-name }’a kaydet
     .accesskey = P
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = E-posta adresini kopyala
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = Telefon numarasını kopyala
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Bağlantıyı kopyala
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Bağlantıyı yeni { $containerName } sekmesinde aç
     .accesskey = t
+
+main-context-menu-reveal-password =
+    .label = Parolayı göster
+    .accesskey = o

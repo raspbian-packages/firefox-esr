@@ -87,6 +87,10 @@ urlbar-plugins-notification-anchor =
     .tooltiptext = Управление на използването на приставки
 urlbar-web-rtc-share-devices-notification-anchor =
     .tooltiptext = Управление споделянето на вашата камера и/или микрофон със сайта
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+urlbar-web-rtc-share-speaker-notification-anchor =
+    .tooltiptext = Управлявайте споделянето на други говорители със страницата
 urlbar-autoplay-notification-anchor =
     .tooltiptext = Отваряне на панел за автоматично възпроизвеждане
 urlbar-persistent-storage-notification-anchor =
@@ -509,6 +513,16 @@ urlbar-result-action-search-tabs = Търсене на раздели
 
 ## Labels shown above groups of urlbar results
 
+# A label shown above the "Firefox Suggest" (bookmarks/history) group in the
+# urlbar results.
+urlbar-group-firefox-suggest =
+    .label = { -firefox-suggest-brand-name }
+# A label shown above the search suggestions group in the urlbar results. It
+# should use sentence case.
+# Variables
+#  $engine (String): the name of the search engine providing the suggestions
+urlbar-group-search-suggestions =
+    .label = Предложения от { $engine }
 
 ## Full Screen and Pointer Lock UI
 
@@ -529,6 +543,10 @@ pointerlock-warning-no-domain = Този документ контролира �
 ## Subframe crash notification
 
 crashed-subframe-message = <strong>Част от тази страница се срина.</strong> За да уведомите { -brand-product-name } за този проблем и да го поправим по-бързо, изпратете доклад.
+# The string for crashed-subframe-title.title should match crashed-subframe-message,
+# but without any markup.
+crashed-subframe-title =
+    .title = Част от тази страница се срина. За да уведомите { -brand-product-name } за този проблем и да го поправим по-бързо, изпратете доклад.
 crashed-subframe-learnmore-link =
     .value = Научете повече
 crashed-subframe-submit =
@@ -632,12 +650,6 @@ toolbar-settings-button =
             [macos] Отваряне на настройките ({ $shortcut })
            *[other] Отваряне на настройките
         }
-
-## More items
-
-more-menu-go-offline =
-    .label = Работа извън мрежата
-    .accesskey = Р
 toolbar-overflow-customize-button =
     .label = Приспособяване…
     .accesskey = П
@@ -683,14 +695,11 @@ panel-save-update-password = Парола
 addon-removal-title = Премахване на { $name }?
 addon-removal-abuse-report-checkbox = Докладване разширението на { -vendor-short-name }
 
-## Remote / Synced tabs
-
-remote-tabs-manage-account =
-    .label = Управление на сметка
-remote-tabs-sync-now = Синхронизиране
-
 ##
 
+# "More" item in macOS share menu
+menu-share-more =
+    .label = Още…
 ui-tour-info-panel-close =
     .tooltiptext = Затваряне
 
@@ -709,9 +718,19 @@ popups-infobar-block =
 popups-infobar-dont-show-message =
     .label = Без съобщение при блокиране на изскачащи прозорци
     .accesskey = Б
+edit-popup-settings =
+    .label = Управление на изскачащи прозорци…
+    .accesskey = и
 picture-in-picture-hide-toggle =
     .label = Скриване на бутона за превключване на картина в картината
     .accesskey = с
+
+## Since the default position for PiP controls does not change for RTL layout,
+## right-to-left languages should use "Left" and "Right" as in the English strings,
+
+
+##
+
 
 # Navigator Toolbox
 
@@ -729,9 +748,6 @@ navbar-overflow =
 navbar-print =
     .label = Отпечатване
     .tooltiptext = Отпечатване на страница… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = Отпечатване
-    .tooltiptext = Отпечатване на страницата
 navbar-home =
     .label = Начало
     .tooltiptext = Начална страница на { -brand-short-name }
@@ -752,3 +768,16 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = Показване на всички раздели
     .tooltiptext = Показване на всички раздели
+
+## Infobar shown at startup to suggest session-restore
+
+# <img data-l10n-name="icon"/> will be replaced by the application menu icon
+restore-session-startup-suggestion-message = <strong>Отваряне на последните раздели?</strong> Можете да възстановите предишната си сесия от менюто на приложението { -brand-short-name } <img data-l10n-name="icon"/>, раздел „История“.
+restore-session-startup-suggestion-button = Покажете ми как
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } автоматично изпраща данни към { -vendor-short-name }, за да може да подобрим вашето преживяване.
+data-reporting-notification-button =
+    .label = Изберете какво споделяте
+    .accesskey = И

@@ -24,7 +24,7 @@ about-telemetry-telemetry-probe-dictionary = <a data-l10n-name="probe-dictionary
 about-telemetry-show-in-Firefox-json-viewer = Відкрити в засобі перегляду JSON
 about-telemetry-home-section = Домівка
 about-telemetry-general-data-section = Загальні дані
-about-telemetry-environment-data-section = Дані оточення
+about-telemetry-environment-data-section = Дані середовища
 about-telemetry-session-info-section = Інформація про сеанс
 about-telemetry-scalar-section = Величини
 about-telemetry-keyed-scalar-section = Ключові величини
@@ -34,7 +34,6 @@ about-telemetry-events-section = Події
 about-telemetry-simple-measurements-section = Прості вимірювання
 about-telemetry-slow-sql-section = Повільні SQL-запити
 about-telemetry-addon-details-section = Подробиці про додатки
-about-telemetry-captured-stacks-section = Захоплені стеки
 about-telemetry-late-writes-section = Пізні записи
 about-telemetry-raw-payload-section = Необроблене навантаження
 about-telemetry-raw = Необроблений JSON
@@ -122,10 +121,6 @@ about-telemetry-addon-provider = Провайдер { $addonProvider }
 about-telemetry-keys-header = Властивість
 about-telemetry-names-header = Назва
 about-telemetry-values-header = Значення
-# Variables:
-#   $stackKey (String): the string key for this stack
-#   $capturedStacksCount (Integer):  the number of times this stack was captured
-about-telemetry-captured-stacks-title = { $stackKey } (кількість захоплених: { $capturedStacksCount })
 # Variables:
 #   $lateWriteCount (Integer): the number of the late writes
 about-telemetry-late-writes-title = Пізній запис #{ $lateWriteCount }

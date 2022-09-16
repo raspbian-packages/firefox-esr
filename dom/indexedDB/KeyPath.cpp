@@ -11,12 +11,15 @@
 #include "Key.h"
 #include "ReportInternalError.h"
 #include "js/Array.h"  // JS::NewArrayObject
+#include "js/PropertyAndElement.h"  // JS_DefineElement, JS_DefineUCProperty, JS_DeleteUCProperty
+#include "js/PropertyDescriptor.h"  // JS::PropertyDescriptor, JS_GetOwnUCPropertyDescriptor
 #include "mozilla/ResultExtensions.h"
 #include "mozilla/dom/BindingDeclarations.h"
 #include "mozilla/dom/Blob.h"
 #include "mozilla/dom/BlobBinding.h"
 #include "mozilla/dom/File.h"
 #include "mozilla/dom/IDBObjectStoreBinding.h"
+#include "mozilla/dom/quota/ResultExtensions.h"
 #include "nsCharSeparatedTokenizer.h"
 #include "nsJSUtils.h"
 #include "nsPrintfCString.h"
@@ -84,7 +87,7 @@ nsresult GetJSValFromKeyPathString(
       // step 4 substep 1: check for .length on a String value.
       if (currentVal.isString() && !tokenizer.hasMoreTokens() &&
           token.EqualsLiteral("length")) {
-        aKeyJSVal->setNumber(double(JS_GetStringLength(currentVal.toString())));
+        aKeyJSVal->setNumber(JS_GetStringLength(currentVal.toString()));
         break;
       }
 
@@ -249,7 +252,7 @@ nsresult GetJSValFromKeyPathString(
 
   // TODO: It would be nicer to do the cleanup using a RAII class or something.
   //       This last QM_TRY could be removed then.
-  QM_TRY(rv);
+  QM_TRY(MOZ_TO_RESULT(rv));
   return NS_OK;
 }
 

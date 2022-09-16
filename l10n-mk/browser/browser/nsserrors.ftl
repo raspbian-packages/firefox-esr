@@ -2,10 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 # DO NOT ADD THINGS OTHER THAN ERROR MESSAGES HERE.
 # This file gets parsed into a JS dictionary of all known error message ids in
 # gen_aboutneterror_codes.py . If we end up needing fluent attributes or
 # refactoring them in some way, the script will need updating.
+
+# Variables:
+# $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
+cert-error-code-prefix = Кодот на грешката: { $error }
 
 psmerr-ssl-disabled = Безбедното поврзување не е можно бидејќи SSL протоколот е оневозможен.
 psmerr-ssl2-disabled = Безбедното поврзување не е можно бидејќи страницата користи стара и небезбедна верзија на SSL протоколот.
@@ -134,6 +139,8 @@ ssl-error-next-protocol-data-invalid = SSL прими неважечки под�
 ssl-error-feature-not-supported-for-ssl2 = SSL особеноста не е поддржана за врски со SSL 2.0.
 ssl-error-feature-not-supported-for-servers = SSL особеноста не е поддржана за врски со сервери.
 ssl-error-feature-not-supported-for-clients = SSL особеноста не е поддржана за врски со клиенти.
+ssl-error-invalid-version-range = Опсегот на верзија SSL не е валидна.
+ssl-error-feature-not-supported-for-version = SSL особеноста не е поддржана за оваа верзија на протоколот.
 sec-error-io = Се случи I/O грешка за време на сигурносната авторизација.
 sec-error-library-failure = security library failure.
 sec-error-bad-data = безбедносна библиотека: добив неиспавни податоци.
@@ -311,3 +318,6 @@ sec-error-locked-password = Лозинката е заклучена.
 sec-error-unknown-pkcs11-error = Непозната PKCS #11 грешка.
 sec-error-bad-crl-dp-url = Неважечко или неподдржано URL во дистрибутивното име на CRL.
 sec-error-cert-signature-algorithm-disabled = Сертификатот е потпишан со потписен алогоритам кој е оневоможен бидејќи не е безбеден.
+mozilla-pkix-error-not-yet-valid-certificate = Серверот претстави сертификат што сè уште не е валиден.
+mozilla-pkix-error-required-tls-feature-missing = Потребна карактеристика на TLS недостасува.
+mozilla-pkix-error-self-signed-cert = На сертификатот не му се верува бидејќи е само-потпишан.

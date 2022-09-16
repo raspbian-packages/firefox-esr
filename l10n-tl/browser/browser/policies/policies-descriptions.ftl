@@ -12,11 +12,17 @@
 
 policy-3rdparty = Mag-set ng mga policy na maaaring ma-access ng WebExtensions sa chrome.storage.managed.
 
+policy-AllowedDomainsForApps = Tukuyin ang mga domain na pinapayagang maka-access sa Google Workspace.
+
 policy-AppAutoUpdate = Mag-enable o mag-disable ng automatic application update.
 
 policy-AppUpdateURL = Set custom app update URL.
 
 policy-Authentication = I-configure ang integrated na pagpapatotoo para sa mga website na sumusuporta dito.I-configure ang integrated na pagpapatotoo para sa mga website na sumusuporta dito.
+
+policy-AutoLaunchProtocolsFromOrigins = Tukuyin ang isang listahan ng mga panlabas na protokol na maaaring magamit mula sa nakalistang mga pinagmulan nang hindi hinihimok ang gumagamit.
+
+policy-BackgroundAppUpdate2 = Buksan o patayin ang background updater.
 
 policy-BlockAboutAddons = Harangin ang access sa Add-ons Manager (about:addons).
 
@@ -132,6 +138,8 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Bumalik sa legacy Same
 policy-LocalFileLinks = Payagan ang ilang mga website na mag-link sa mga local file.
 
 policy-ManagedBookmarks = Nagco-configure ng isang listahan ng mga bookmark na pinamamahalaanan ng isang administrator na hindi maaaring baguhin ng user.
+
+policy-ManualAppUpdateOnly = Payagan lamang ang mga manu-manong pag-update at huwag ipagbigay-alam sa user ang tungkol sa mga update.
 
 policy-PrimaryPassword = Kailanganin o pigilang gumamit ng Primary Password.
 

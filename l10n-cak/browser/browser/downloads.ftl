@@ -16,8 +16,8 @@ downloads-panel =
 # The style attribute has the width of the Downloads Panel expressed using
 # a CSS unit. The longest labels that should fit are usually those of
 # in-progress and blocked downloads.
-downloads-panel-list =
-    .style = width: 70ch
+downloads-panel-items =
+    .style = width: 35em
 
 downloads-cmd-pause =
     .label = Rupab'axik
@@ -30,42 +30,47 @@ downloads-cmd-cancel =
 downloads-cmd-cancel-panel =
     .aria-label = Tiq'at
 
-# This message is only displayed on Windows and Linux devices
-downloads-cmd-show-menuitem =
-    .label = Tijaq K'wayöl Yakwuj
-    .accesskey = Y
-
-# This message is only displayed on macOS devices
-downloads-cmd-show-menuitem-mac =
-    .label = Tik'ut Pa Finder
-    .accesskey = F
+## Displayed in the downloads context menu for files that can be opened.
+## Variables:
+##   $handler (String) - The name of the mime type's default file handler.
+##   Example: "Notepad", "Acrobat Reader DC", "7-Zip File Manager"
 
 downloads-cmd-use-system-default =
     .label = Tijaq pa ri Rutz'etöy Q'inoj
     .accesskey = t
 
+# We can use the same accesskey as downloads-cmd-always-open-similar-files.
+# Both should not be visible in the downloads context menu at the same time.
 downloads-cmd-always-use-system-default =
     .label = Junelïk tijaq pa ri Rutz'etöy Q'inoj
     .accesskey = J
 
-downloads-cmd-show-button =
+##
+
+# We can use the same accesskey as downloads-cmd-always-use-system-default.
+# Both should not be visible in the downloads context menu at the same time.
+downloads-cmd-always-open-similar-files =
+    .label = Juntape' Kejaq Junam Kiwa taq Yakb'äl
+    .accesskey = n
+
+downloads-cmd-show-button-2 =
     .tooltiptext =
         { PLATFORM() ->
-            [macos] Tik'ut pe pan ilonel
-           *[other] Tijaq ri yaksamaj k'o rupam
+            [macos] Tik'ut pan Ilolb'äl
+           *[other] Tik'ut pa Molyakb'äl
         }
 
-downloads-cmd-show-panel =
+downloads-cmd-show-panel-2 =
     .aria-label =
         { PLATFORM() ->
-            [macos] Tik'ut pe pan ilonel
-           *[other] Tijaq ri yaksamaj k'o rupam
+            [macos] Tik'ut pan Ilob'äl
+           *[other] Tik'ut pan Molyakb'äl
         }
-downloads-cmd-show-description =
+downloads-cmd-show-description-2 =
     .value =
         { PLATFORM() ->
-            [macos] Tik'ut pe pan ilonel
-           *[other] Tijaq ri yaksamaj k'o rupam
+            [macos] Tik'ut pan Ilob'äl
+           *[other] Tik'ut pa Molyab'äl
         }
 
 downloads-cmd-show-downloads =
@@ -89,6 +94,9 @@ downloads-cmd-clear-list =
 downloads-cmd-clear-downloads =
     .label = Kejosq'ïx taq Qasanïk
     .accesskey = Q
+downloads-cmd-delete-file =
+    .label = Tiyuj
+    .accesskey = y
 
 # This command is shown in the context menu when downloads are blocked.
 downloads-cmd-unblock =
@@ -138,6 +146,7 @@ downloads-open-file =
 ##   $seconds (number) - Amount of seconds left till the file opens.
 ##   $minutes (number) - Amount of minutes till the file opens.
 
+
 ##
 
 # Displayed when hovering a download which is able to be retried by users,
@@ -162,6 +171,14 @@ downloads-history =
 downloads-details =
     .title = Rub'anikil Qasanïk
 
+## Displayed when a site attempts to automatically download many files.
+## Variables:
+##   $num (number) - Number of blocked downloads.
+##   $url (string) - The url of the suspicious site, stripped of http, https and www prefix.
+
+
+##
+
 downloads-clear-downloads-button =
     .label = Kejosq'ïx taq Qasanïk
     .tooltiptext = Tijosq'ïx ronojel, q'aton chuqa' man ütz ta taq qasanïk
@@ -174,3 +191,4 @@ downloads-list-empty =
 # This string is shown when there are no items in the Downloads Panel.
 downloads-panel-empty =
     .value = Majun ruqasanik re molojri'ïl re'.
+

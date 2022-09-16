@@ -35,7 +35,7 @@ pocket-panel-signup-learn-more = اطّلع على المزيد
 pocket-panel-signup-login = لِج
 pocket-panel-signup-signup-email = سجّل بالبريد الإلكتروني
 pocket-panel-signup-signup-cta = سجل في { -pocket-brand-name }. مجانًا.
-pocket-panel-signup-signup-firefox = سجّل بفَيَرفُكس
+pocket-panel-signup-signup-firefox = سجّل بِ‍ { -brand-product-name }
 pocket-panel-signup-tagline = احفظ المقالات و الڤديوهات من { -brand-product-name } لعرضها في { -pocket-brand-name } على أي جهاز و في أي وقت.
 pocket-panel-signup-tagline-story-one = انقر على زر { -pocket-brand-name } لحفظ أي مقالة أو ڤديو أو صفحة من { -brand-product-name }.
 pocket-panel-signup-tagline-story-two = اعرض في { -pocket-brand-name } على أي جهاز في أي وقت.
@@ -44,6 +44,12 @@ pocket-panel-signup-tagline-story-two = اعرض في { -pocket-brand-name } ع�
 
 pocket-panel-home-my-list = قائمتي
 pocket-panel-home-welcome-back = مرحبا بعودتك
+pocket-panel-home-paragraph = يمكنك عبر { -pocket-brand-name } استكشاف صفحات الوِب والمقالات ومقاطع الڤِديو والبودكاست وحفظها، أو الرجوع إلى ما كنت تقرأه.
 pocket-panel-home-explore-popular-topics = استكشف المواضيع الشائعة
 pocket-panel-home-discover-more = اكتشف المزيد
 pocket-panel-home-explore-more = استكشف
+
+## Pocket panel header component
+
+## Pocket panel buttons
+

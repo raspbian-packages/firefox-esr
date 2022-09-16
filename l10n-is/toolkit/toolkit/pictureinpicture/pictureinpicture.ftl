@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+pictureinpicture-player-title = Mynd-í-mynd
+
 pictureinpicture-pause =
     .aria-label = Í bið
 pictureinpicture-play =
@@ -12,3 +14,8 @@ pictureinpicture-mute =
 pictureinpicture-unmute =
     .aria-label = Kveikja á hljóði
 
+pictureinpicture-unpip =
+    .aria-label = Senda aftur á flipa
+
+pictureinpicture-close =
+    .aria-label = Loka

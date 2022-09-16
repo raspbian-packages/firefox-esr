@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,40 +23,7 @@ return-to-amo-subtitle = 恭喜，您已经安装好 { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = 现在来安装 <img data-l10n-name="icon"/><b>{ $addon-name }</b> 吧。
 return-to-amo-add-extension-label = 添加扩展
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = 欢迎使用 <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = 快速、安全、私密的浏览器，由非营利组织全力支持。
-onboarding-multistage-welcome-primary-button-label = 开始设置
-onboarding-multistage-welcome-secondary-button-label = 登录
-onboarding-multistage-welcome-secondary-button-text = 已有账户？
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = 将 { -brand-short-name } 设为<span data-l10n-name="zap">默认浏览器</span>
-onboarding-multistage-set-default-subtitle = 每一次浏览，都有最快速度、安全与隐私保护。
-onboarding-multistage-set-default-primary-button-label = 设为默认
-onboarding-multistage-set-default-secondary-button-label = 暂时不要
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = 只需点击几下，即可开始使用 <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-pin-default-subtitle = 时刻拥有快速、安全又私密的上网体验。
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = 设置打开后，在“Web 浏览器”一栏中选择 { -brand-short-name }
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = 这会将 { -brand-short-name } 固定到任务栏并打开设置
-onboarding-multistage-pin-default-primary-button-label = 将 { -brand-short-name } 设为我的主浏览器
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = 导入您的密码、书签和<span data-l10n-name="zap">更多数据</span>
-onboarding-multistage-import-subtitle = 从其他浏览器来？很简单就能把所有东西带来 { -brand-short-name }。
-onboarding-multistage-import-primary-button-label = 开始导入
-onboarding-multistage-import-secondary-button-label = 暂时不要
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = 在此设备找到上面列出的网站。除非您选择导入，否则 { -brand-short-name } 不会保存或同步另一浏览器的数据。
+return-to-amo-add-theme-label = 安装主题
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = 在此设备找到上面列出的网站。�
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = 开始使用：第 { $current }屏，共 { $total } 屏
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = 选择<span data-l10n-name="zap">外观</span>
-onboarding-multistage-theme-subtitle = 换上主题，让 { -brand-short-name } 有您的个性。
-onboarding-multistage-theme-primary-button-label2 = 完成
-onboarding-multistage-theme-secondary-button-label = 暂时不要
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = 自动
-onboarding-multistage-theme-label-light = 明亮
-onboarding-multistage-theme-label-dark = 深邃
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox 染山霞
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -171,44 +121,12 @@ mr1-onboarding-theme-label-light = 明亮
 mr1-onboarding-theme-label-dark = 深邃
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = 染山霞
+onboarding-theme-primary-button-label = 完成
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title = 遵循操作系统的按钮、菜单、窗口外观。
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description = 遵循操作系统的按钮、菜单、窗口外观。
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title = 使用浅色按钮、菜单、窗口外观。
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description = 使用浅色按钮、菜单、窗口外观。
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title = 使用深色按钮、菜单、窗口外观。
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description = 使用深色按钮、菜单、窗口外观。
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title = 使用多彩按钮、菜单、窗口外观。
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description = 使用多彩按钮、菜单、窗口外观。
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -250,17 +168,54 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = 探索 { $colorwayName } 配色。
+mr2-onboarding-colorway-label = 探索 { $colorwayName } 配色。
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = 探索默认主题。
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = 探索默认主题。
+mr2-onboarding-default-theme-label = 探索默认主题。
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = 感谢您选用
 mr2-onboarding-thank-you-text = { -brand-short-name } 是一款由非营利组织支持的独立浏览器。我们共同努力，让网络环境更安全、更健康、也更有隐私。
 mr2-onboarding-start-browsing-button-label = 开始上网冲浪
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = 选择您的语言
+onboarding-live-language-button-label-downloading = 正在下载“{ $negotiatedLanguage }”语言包…
+onboarding-live-language-waiting-button = 正在获取可用的语言列表…
+onboarding-live-language-installing = 正在安装“{ $negotiatedLanguage }”语言包…
+onboarding-live-language-secondary-cancel-download = 取消
+onboarding-live-language-skip-button-label = 跳过
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    百版之约
+    万分<span data-l10n-name="zap">感谢</span>
+fx100-thank-you-subtitle = 第 100 个版本如约而至。感谢您支持我们建设更好、更健康的互联网。
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] 在程序坞中保留 { -brand-short-name }
+       *[other] 将 { -brand-short-name } 固定到任务栏
+    }
+fx100-upgrade-thanks-header = 百版之约，万分感谢
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = { -brand-short-name } 的第 100 个版本如约而至。感谢<em>您</em> 支持我们建设更好、更健康的互联网。
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = 这是我们的第 100 个版本！一路相伴，感谢有您。{ -brand-short-name } 诚挚邀您共赴下个百版之约。

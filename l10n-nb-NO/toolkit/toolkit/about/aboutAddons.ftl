@@ -35,6 +35,8 @@ detail-version =
     .label = Versjon
 detail-last-updated =
     .label = Sist oppdatert
+addon-detail-description-expand = Vis mer
+addon-detail-description-collapse = Vis mindre
 detail-contributions-description = Utvikleren av denne utvidelsen ber om at du hjelper å støtte videre utvikling ved å gjøre en liten donasjon.
 detail-contributions-button = Bidra
     .title = Bidra til utviklingen av denne utvidelsen
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Nylig oppdatert
 addon-category-recent-updates-title =
     .title = Nylig oppdatert
+addon-category-sitepermission = Nettstedstillatelser
+addon-category-sitepermission-title =
+    .title = Nettstedstillatelser
 
 ## These are global warnings
 
@@ -284,14 +289,18 @@ extension-enabled-heading = Påslått
 extension-disabled-heading = Avslått
 theme-enabled-heading = Påslått
 theme-disabled-heading = Avslått
+theme-disabled-heading2 = Lagrede tema
 theme-monochromatic-heading = Fargesammensettinger
 theme-monochromatic-subheading = Levende nye fargesammensettinger fra { -brand-product-name }. Tilgjengelig for en begrenset periode.
+theme-colorways-button = Prøv Colorways
 plugin-enabled-heading = Påslått
 plugin-disabled-heading = Avslått
 dictionary-enabled-heading = Påslått
 dictionary-disabled-heading = Avslått
 locale-enabled-heading = Påslått
 locale-disabled-heading = Avslått
+sitepermission-enabled-heading = Påslått
+sitepermission-disabled-heading = Avslått
 always-activate-button = Aktiver alltid
 never-activate-button = Aktiver aldri
 addon-detail-author-label = Utvikler
@@ -368,6 +377,7 @@ addon-permissions-optional = Valgfrie tillatelser for ekstra funksjonalitet:
 addon-permissions-learnmore = Les mer om tillatelser
 recommended-extensions-heading = Anbefalte utvidelser
 recommended-themes-heading = Anbefalte temaer
+addon-sitepermissions-required = Gir følgende funksjoner til <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Er du i det kreative hjørnet? <a data-l10n-name="link">Bygg ditt eget tema med Firefox Color.</a>
@@ -380,6 +390,7 @@ plugin-heading = Behandle programtilleggene dine
 dictionary-heading = Behandle ordbøkene dine
 locale-heading = Behandle språkene dine
 updates-heading = Behandle oppdateringene
+sitepermission-heading = Behandle nettstedstillatelsene dine
 discover-heading = Tilpass din { -brand-short-name }
 shortcuts-heading = Håndter snarveier for utvidelser
 default-heading-search-label = Finn flere utvidelser
@@ -387,3 +398,20 @@ addons-heading-search-input =
     .placeholder = Søk på addons.mozilla.org
 addon-page-options-button =
     .title = Verktøy for alle utvidelser
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } er inkompatibel med { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = { $name } har ikke blitt bekreftet for bruk i { -brand-short-name } og har blitt slått av.
+details-notification-unsigned-and-disabled-link = Mer informasjon
+details-notification-unsigned = { $name } har ikke blitt bekreftet for bruk i { -brand-short-name }. Fortsett med varsomhet.
+details-notification-unsigned-link = Mer informasjon
+details-notification-blocked = { $name } er avslått av sikkerhets- eller stabilitetshensyn .
+details-notification-blocked-link = Mer informasjon
+details-notification-softblocked = { $name } er kjent for å skape sikkerhets- eller stabilitetsproblemer.
+details-notification-softblocked-link = Mer informasjon
+details-notification-gmp-pending = { $name } vil installeres snart.

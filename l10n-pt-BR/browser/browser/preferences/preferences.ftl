@@ -75,19 +75,19 @@ restart-later = Reiniciar depois
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
-extension-controlled-password-saving = Uma extensão, <img data-l10n-name="icon"/> { $name }, está controlando esta configuração.
+extension-controlling-password-saving = <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla esta configuração.
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
-extension-controlled-web-notifications = Uma extensão, <img data-l10n-name="icon"/> { $name }, está controlando esta configuração.
+extension-controlling-web-notifications = <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla esta configuração.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlled-privacy-containers = Uma extensão requer abas contêiner: <img data-l10n-name="icon"/> { $name }.
+extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> requer abas contêiner.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
-extension-controlled-websites-content-blocking-all-trackers = Uma extensão, <img data-l10n-name="icon"/> { $name }, está controlando esta configuração.
+extension-controlling-websites-content-blocking-all-trackers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla esta configuração.
 # This string is shown to notify the user that their proxy configuration preferences
 # are being controlled by an extension.
-extension-controlled-proxy-config = Uma extensão, <img data-l10n-name="icon"/> { $name }, está controlando como o { -brand-short-name } se conecta à Internet.
+extension-controlling-proxy-config = <img data-l10n-name ="icon"/> <strong>{ $name }</strong> controla como o { -brand-short-name } se conecta à internet.
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -113,9 +113,6 @@ is-not-default = { -brand-short-name } não é o seu navegador padrão
 set-as-my-default-browser =
     .label = Tornar padrão…
     .accesskey = D
-startup-restore-previous-session =
-    .label = Restaurar a sessão anterior
-    .accesskey = R
 startup-restore-windows-and-tabs =
     .label = Abrir janelas e abas anteriores
     .accesskey = s
@@ -130,9 +127,6 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Abrir links em abas em vez de novas janelas
     .accesskey = j
-warn-on-close-multiple-tabs =
-    .label = Avisar quando fechar múltiplas abas
-    .accesskey = m
 confirm-on-close-multiple-tabs =
     .label = Confirmar antes de fechar várias abas
     .accesskey = m
@@ -148,11 +142,11 @@ warn-on-open-many-tabs =
     .label = Ao abrir muitas abas, avisar que o { -brand-short-name } pode ficar lento
     .accesskey = m
 switch-to-new-tabs =
-    .label = Ao abrir um link, imagem ou mídia em uma nova aba, alternar para ela imediatamente
+    .label = Ao abrir um link, imagem ou mídia em uma nova aba, mudar para ela imediatamente
     .accesskey = b
 show-tabs-in-taskbar =
-    .label = Mostrar a visualização das abas na barra de tarefas do Windows
-    .accesskey = v
+    .label = Mostrar conteúdo de abas na barra de tarefas do Windows
+    .accesskey = f
 browser-containers-enabled =
     .label = Ativar abas contêiner
     .accesskey = n
@@ -185,8 +179,41 @@ containers-remove-cancel-button = Não remover este contêiner
 
 ## General Section - Language & Appearance
 
-language-and-appearance-header = Idioma e Aparência
-fonts-and-colors-header = Fontes e cores
+language-and-appearance-header = Idioma e aparência
+preferences-web-appearance-header = Aparência de sites
+preferences-web-appearance-description = Alguns sites adaptam seu esquema de cores com base em suas preferências. Escolha qual esquema de cores você quer usar nesses sites.
+preferences-web-appearance-choice-browser = Tema do { -brand-short-name }
+preferences-web-appearance-choice-system = Tema do sistema
+preferences-web-appearance-choice-light = Claro
+preferences-web-appearance-choice-dark = Escuro
+preferences-web-appearance-choice-tooltip-browser =
+    .title = Seguir sua configuração de tema do { -brand-short-name } no fundo e conteúdo de sites.
+preferences-web-appearance-choice-tooltip-system =
+    .title = Seguir sua configuração do sistema no fundo e conteúdo de sites.
+preferences-web-appearance-choice-tooltip-light =
+    .title = Usar uma aparência clara no fundo e conteúdo de sites.
+preferences-web-appearance-choice-tooltip-dark =
+    .title = Usar uma aparência escura no fundo e conteúdo de sites.
+preferences-web-appearance-choice-input-browser =
+    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
+preferences-web-appearance-choice-input-system =
+    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-light =
+    .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
+preferences-web-appearance-choice-input-dark =
+    .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning = Sua seleção de cores está sobrepondo a aparência de sites. <a data-l10n-name="colors-link">Gerenciar cores</a>
+# This message contains one link. It can be moved within the sentence as needed
+# to adapt to your language, but should not be changed.
+preferences-web-appearance-footer = Gerencie temas do { -brand-short-name } em <a data-l10n-name="themes-link">Extensões e temas</a>
+preferences-colors-header = Cores
+preferences-colors-description = Substituir as cores padrão do { -brand-short-name } de texto, fundo e links de sites.
+preferences-colors-manage-button =
+    .label = Gerenciar cores…
+    .accesskey = c
+preferences-fonts-header = Fontes
 default-font = Fonte padrão
     .accesskey = d
 default-font-size = Tamanho
@@ -194,9 +221,6 @@ default-font-size = Tamanho
 advanced-fonts =
     .label = Avançado…
     .accesskey = v
-colors-settings =
-    .label = Cores…
-    .accesskey = o
 # Zoom is a noun, and the message is used as header for a group of options
 preferences-zoom-header = Zoom
 preferences-default-zoom = Zoom padrão
@@ -237,10 +261,9 @@ check-user-spelling =
 
 ## General Section - Files and Applications
 
-files-and-applications-title = Arquivos e Aplicativos
+files-and-applications-title = Arquivos e aplicativos
 download-header = Downloads
-download-save-to =
-    .label = Salvar arquivos em
+download-save-where = Salvar arquivos em
     .accesskey = S
 download-choose-folder =
     .label =
@@ -331,6 +354,13 @@ applications-use-os-default-label =
 
 ##
 
+applications-handle-new-file-types-description = O que o { -brand-short-name } deve fazer com outros arquivos?
+applications-save-for-new-types =
+    .label = Salvar arquivos
+    .accesskey = S
+applications-ask-before-handling =
+    .label = Perguntar se deve abrir ou salvar arquivos
+    .accesskey = P
 drm-content-header = Conteúdo DRM (gerenciamento de direitos digitais)
 play-drm-content =
     .label = Reproduzir conteúdo controlado por DRM
@@ -359,6 +389,9 @@ update-application-warning-cross-user-setting = Esta configuração se aplica a 
 update-application-use-service =
     .label = Usar um serviço em segundo plano para instalar atualizações
     .accesskey = s
+update-application-suppress-prompts =
+    .label = Mostrar menos avisos com notificação de atualização
+    .accesskey = n
 update-setting-write-failure-title2 = Erro ao salvar configurações de atualização
 # Variables:
 #   $path (String) - Path to the configuration file
@@ -381,7 +414,7 @@ performance-title = Desempenho
 performance-use-recommended-settings-checkbox =
     .label = Usar as configurações de desempenho recomendadas
     .accesskey = U
-performance-use-recommended-settings-desc = Essas configurações são adaptadas automaticamente ao hardware e sistema operacional do computador. Desmarque se quiser modificar aceleração de hardware ou número de processos.
+performance-use-recommended-settings-desc = Essas configurações são adaptadas automaticamente ao hardware e sistema operacional do computador. Desmarque se quiser alterar o uso de aceleração de hardware.
 performance-settings-learn-more = Saiba mais
 performance-allow-hw-accel =
     .label = Usar aceleração de hardware quando disponível
@@ -404,6 +437,9 @@ browsing-use-autoscroll =
 browsing-use-smooth-scrolling =
     .label = Usar rolagem suave
     .accesskey = m
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Sempre mostrar barras de rolagem
+    .accesskey = o
 browsing-use-onscreen-keyboard =
     .label = Mostrar um teclado sensível ao toque quando necessário
     .accesskey = t
@@ -481,11 +517,6 @@ home-prefs-content-header = Conteúdo da página inicial do Firefox
 home-prefs-content-description = Escolha que conteúdo você quer na página inicial do Firefox.
 home-prefs-search-header =
     .label = Campo de pesquisa na web
-home-prefs-topsites-header =
-    .label = Sites preferidos
-home-prefs-topsites-description = Os sites que você mais visita
-home-prefs-topsites-by-option-sponsored =
-    .label = Sites preferidos patrocinados
 home-prefs-shortcuts-header =
     .label = Atalhos
 home-prefs-shortcuts-description = Sites que você salva ou visita
@@ -497,7 +528,6 @@ home-prefs-shortcuts-by-option-sponsored =
 
 home-prefs-recommended-by-header =
     .label = Recomendado pelo { $provider }
-home-prefs-recommended-by-description-update = Conteúdo excepcional da web afora, curadoria de { $provider }
 home-prefs-recommended-by-description-new = Conteúdo excepcional selecionado pelo { $provider }, parte da família { -brand-product-name }
 
 ##
@@ -505,9 +535,6 @@ home-prefs-recommended-by-description-new = Conteúdo excepcional selecionado pe
 home-prefs-recommended-by-learn-more = Como funciona
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Histórias patrocinadas
-home-prefs-highlights-header =
-    .label = Destaques
-home-prefs-highlights-description = Uma seleção de sites que você salvou ou visitou
 home-prefs-highlights-option-visited-pages =
     .label = Páginas visitadas
 home-prefs-highlights-options-bookmarks =
@@ -525,7 +552,6 @@ home-prefs-recent-activity-description = Uma seleção de sites e conteúdos rec
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Snippets
-home-prefs-snippets-description = Novidades da { -vendor-short-name } e do { -brand-product-name }
 home-prefs-snippets-description-new = Dicas e novidades da { -vendor-short-name } e do { -brand-product-name }
 home-prefs-sections-rows-option =
     .label =
@@ -542,7 +568,7 @@ search-bar-hidden =
 search-bar-shown =
     .label = Adicionar a barra de pesquisa na barra de ferramentas
 search-engine-default-header = Mecanismo de pesquisa padrão
-search-engine-default-desc-2 = Este é seu mecanismo de pesquisa padrão na barra de endereços e na barra de pesquisa. Você pode trocar quando quiser.
+search-engine-default-desc-2 = Este é seu mecanismo de pesquisa padrão na barra de endereços e na barra de pesquisa. Você pode mudar quando quiser.
 search-engine-default-private-desc-2 = Escolha outro mecanismo de pesquisa padrão a ser usado em janelas privativas.
 search-separate-default-engine =
     .label = Usar este mecanismo de pesquisa em janelas privativas
@@ -599,7 +625,7 @@ containers-add-button =
     .label = Adicionar novo contêiner
     .accesskey = A
 containers-new-tab-check =
-    .label = Selecione um contêiner para cada nova aba
+    .label = Selecionar um contêiner para cada nova aba
     .accesskey = S
 containers-settings-button =
     .label = Configurações
@@ -858,14 +884,10 @@ sitedata-block-desc = Tipo bloqueado
     .accesskey = T
 sitedata-option-block-cross-site-trackers =
     .label = Rastreadores entre sites
-sitedata-option-block-cross-site-and-social-media-trackers =
-    .label = Rastreadores entre sites e de mídias sociais
-sitedata-option-block-cross-site-tracking-cookies-including-social-media =
-    .label = Cookies de rastreamento entre sites — inclui cookies de mídias sociais
-sitedata-option-block-cross-site-cookies-including-social-media =
-    .label = Cookies entre sites — inclui cookies de mídias sociais
-sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
-    .label = Rastreadores entre sites e de mídias sociais, isolar os cookies restantes
+sitedata-option-block-cross-site-tracking-cookies =
+    .label = Cookies de rastreamento entre sites
+sitedata-option-block-cross-site-cookies =
+    .label = Cookies de rastreamento entre sites e isolar outros cookies entre sites
 sitedata-option-block-unvisited =
     .label = Cookies de sites não visitados
 sitedata-option-block-all-third-party =
@@ -949,14 +971,13 @@ content-blocking-fingerprinters = Fingerprinters (rastreadores de identidade dig
 # "Test pilot" is used as a verb. Possible alternatives:
 # "Be the first to try", "Join an early experiment".
 content-blocking-etp-standard-tcp-rollout-checkbox =
-    .label = Seja piloto de teste do mais poderoso recurso de privacidade que já fizemos
-    .accesskey = t
+    .label = Ser piloto de teste do mais poderoso recurso de privacidade que já fizemos
+    .accesskey = S
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = A proteção total contra cookies isola os cookies do site em que você está, assim os rastreadores não conseguem usá-los para te seguir de um site para outro.
 content-blocking-etp-standard-tcp-rollout-learn-more = Saiba mais
 content-blocking-warning-title = Atenção!
-content-blocking-and-isolating-etp-warning-description = Bloquear rastreadores e isolar cookies pode afetar a funcionalidade de alguns sites. Desative a proteção contra rastreamento em um site para carregar todo o conteúdo.
-content-blocking-and-isolating-etp-warning-description-2 = Esta configuração pode fazer com que alguns sites não exibam conteúdo ou não funcionem corretamente. Se um site parecer ter sido afetado, você pode desativar a proteção contra rastreamento nesse site para carregar todo o conteúdo.
+content-blocking-and-isolating-etp-warning-description-2 = Esta configuração pode fazer com que alguns sites não exibam conteúdo ou não funcionem corretamente. Se um site parece ter sido afetado, você pode desativar a proteção contra rastreamento nesse site para carregar todo o conteúdo.
 content-blocking-warning-learn-how = Saiba como
 content-blocking-reload-description = É preciso recarregar as abas para aplicar essas mudanças.
 content-blocking-reload-tabs-button =
@@ -1027,9 +1048,6 @@ permissions-autoplay-settings =
 permissions-block-popups =
     .label = Bloquear abertura de janelas
     .accesskey = B
-permissions-block-popups-exceptions =
-    .label = Exceções…
-    .accesskey = E
 # "popup" is a misspelling that is more popular than the correct spelling of
 # "pop-up" so it's included as a search keyword, not displayed in the UI.
 permissions-block-popups-exceptions-button =
@@ -1119,7 +1137,3 @@ httpsonly-radio-disabled =
 desktop-folder-name = Área de trabalho
 downloads-folder-name = Downloads
 choose-download-folder-title = Selecione a pasta dos downloads:
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Salvar arquivos no { $service-name }

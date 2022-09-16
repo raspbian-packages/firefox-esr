@@ -16,13 +16,13 @@ connection-close-key =
 connection-disable-extension =
     .label = Onemogući dodatak
 
-connection-proxy-configure = Podesi proxy za pristup Internetu
+connection-proxy-configure = Podesi proxy za pristup internetu
 
 connection-proxy-option-no =
     .label = Bez proxyja
     .accesskey = y
 connection-proxy-option-system =
-    .label = Koristi sistemske postavke za proxy
+    .label = Koristi sustavske postavke za proxy
     .accesskey = s
 connection-proxy-option-auto =
     .label = Automatski pronađi postavke za ovu mrežu
@@ -33,18 +33,18 @@ connection-proxy-option-manual =
 
 connection-proxy-http = HTTP Proxy
     .accesskey = H
-connection-proxy-http-port = Port
-    .accesskey = U
+connection-proxy-http-port = Priključak
+    .accesskey = P
 
 connection-proxy-https = HTTPS proxy
     .accesskey = H
-connection-proxy-ssl-port = Port
-    .accesskey = l
+connection-proxy-ssl-port = Priključak
+    .accesskey = i
 
 connection-proxy-socks = SOCKS domaćin
     .accesskey = C
-connection-proxy-socks-port = Port
-    .accesskey = z
+connection-proxy-socks-port = Priključak
+    .accesskey = k
 
 connection-proxy-socks4 =
     .label = SOCKS v4
@@ -78,7 +78,7 @@ connection-proxy-socks-remote-dns =
     .accesskey = d
 
 connection-dns-over-https =
-    .label = Aktiviraj DNS preko HTTPS
+    .label = Aktiviraj DNS preko HTTPS-a
     .accesskey = O
 
 connection-dns-over-https-url-resolver = Koristi pružatelja usluge

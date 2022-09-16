@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Een bestaand stijlblad importeren en aan het document toevoegen
     .accesskey = m
+styleeditor-filter-input =
+    .placeholder = Stijlbladen filteren
 styleeditor-visibility-toggle =
     .tooltiptext = Zichtbaarheid van stijlblad in-/uitschakelen
     .accesskey = s
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Koppeling openen in nieuw tabblad
 styleeditor-copy-url =
     .label = URL kopiëren
+styleeditor-go-to-line =
+    .label = Spring naar regel…
+    .accesskey = S
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Er is geen overeenkomend stijlblad gevonden.

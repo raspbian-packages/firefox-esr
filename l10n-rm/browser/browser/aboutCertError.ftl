@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Websites cumprovan lur identitad cun 
 
 cert-error-symantec-distrust-admin = Ti pos infurmar l'administratur da la website davart quest problem.
 
+cert-error-old-tls-version = Questa website na sustegna eventualmain betg il protocol TLS 1.2. Quai è dentant la versiun minimala sustegnida da { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Resposta nuncorrecta
 nssFailure2-title = La connexiun segira n'è betg reussida
 csp-xfo-error-title = { -brand-short-name } na po betg avrir questa pagina
 corruptedContentError-title = Errur da cuntegn donnegià
-remoteXUL-title = Remote-XUL
 sslv3Used-title = Impussibel da connectar a moda segira
 inadequateSecurityError-title = Tia connexiun n'è betg segirada
 blockedByPolicy-title = Pagina bloccada

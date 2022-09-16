@@ -4,7 +4,6 @@
 
 close-button =
     .aria-label = Sulje
-preferences-doc-title = Asetukset
 preferences-doc-title2 = Asetukset
 category-list =
     .aria-label = Luokat
@@ -116,9 +115,6 @@ restore-default-label =
     .label = Palauta oletusasetus
     .accesskey = P
 default-search-engine = Oletushakukone
-add-search-engine =
-    .label = Lisää tiedostosta
-    .accesskey = L
 add-web-search-engine =
     .label = Lisää…
     .accesskey = L
@@ -147,7 +143,6 @@ change-dock-icon = Muokkaa sovelluskuvakkeen asetuksia
 app-icon-options =
     .label = Sovelluskuvakkeen asetukset…
     .accesskey = v
-notification-settings = Ilmoitukset ja oletusääni voidaan poistaa käytöstä Asetukset-ikkunan Ilmoitukset-paneelissa.
 animated-alert-label =
     .label = Näytä hälytys
     .accesskey = ä
@@ -191,6 +186,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Vieritä sivua tasaisesti
     .accesskey = e
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Näytä aina vierityspalkit
+    .accesskey = v
 system-integration-legend = Järjestelmään liittäminen
 always-check-default =
     .label = Tarkista aina onko { -brand-short-name } järjestelmän oletussähköpostiohjelma
@@ -315,12 +313,6 @@ quoted-text-color =
     .accesskey = V
 search-handler-table =
     .placeholder = Suodata sisältötyypit ja toiminnot
-type-column-label =
-    .label = Sisältötyyppi
-    .accesskey = S
-action-column-label =
-    .label = Toiminto
-    .accesskey = o
 type-column-header = Sisältötyyppi
 save-to-label =
     .label = Tallenna kansioon
@@ -443,10 +435,16 @@ restore-html-label =
 default-format-label =
     .label = Käytä oletuksena kappalemuotoilua leipätekstin sijaan
     .accesskey = p
-format-description = Muokkaa viestimuodon lähetysasetuksia:
-send-options-label =
-    .label = Lähetysasetukset…
-    .accesskey = L
+compose-send-format-title = Lähetysmuoto
+compose-send-automatic-option =
+    .label = Automaattinen
+compose-send-both-option =
+    .label = Sekä HTML että pelkkä teksti
+compose-send-both-description = Vastaanottajan sähköpostisovellus määrittää näytettävän version.
+compose-send-html-option =
+    .label = Vain HTML
+compose-send-plain-option =
+    .label = Vain pelkkä teksti
 autocomplete-description = Kirjoitettaessa vastaanottajia, etsi vastineita kohteesta:
 ab-label =
     .label = Paikalliset osoitekirjat
@@ -660,8 +658,8 @@ chat-browse-sound-button =
 theme-label =
     .value = Teema:
     .accesskey = T
-style-thunderbird =
-    .label = Thunderbird
+style-mail =
+    .label = { -brand-short-name }
 style-bubbles =
     .label = Kuplat
 style-dark =
@@ -676,28 +674,14 @@ no-preview-description = Tämä teema ei ole kelvollinen tai sitä ei tilapäise
 chat-variant-label =
     .value = Muunnelma:
     .accesskey = M
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Please keep the placeholder string short to avoid truncation.
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-preferences-input =
-    .style = width: 15.4em
-    .placeholder = Etsi asetuksista
-
-## Preferences UI Search Results
-
 
 ## Settings UI Search Results
 
 search-results-header = Hakutulokset
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
+search-results-empty-message2 =
     { PLATFORM() ->
-        [windows] Pahoittelut! Ei hakutuloksia asetuksista haulle ”<span data-l10n-name="query"></span>”.
-       *[other] Pahoittelut! Ei hakutuloksia asetuksista haulle ”<span data-l10n-name="query"></span>”.
+        [windows] Valitettavasti asetuksista ei löytynyt tuloksia haulla “<span data-l10n-name="query"></span>”.
+       *[other] Valitettavasti asetuksista ei löytynyt tuloksia haulla “<span data-l10n-name="query"></span>”.
     }
 search-results-help-link = Tarvitsetko apua? Vieraile <a data-l10n-name="url">{ -brand-short-name }-tuessa</a>

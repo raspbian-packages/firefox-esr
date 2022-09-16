@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 webpage-languages-window =
-    .title = ਵੈੱਬਪੇਜ ਭਾਸ਼ਾ ਸੈਟਿੰਗਜ਼
+    .title = ਵੈੱਬਪੇਜ ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ
     .style = width: 40em
 
 languages-close-key =
@@ -50,7 +50,7 @@ languages-active-code-format =
     .value = { languages-code-format.label }
 
 browser-languages-window =
-    .title = { -brand-short-name } ਭਾਸ਼ਾ ਸੈਟਿੰਗਜ਼
+    .title = { -brand-short-name } ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ
     .style = width: 40em
 
 browser-languages-description = { -brand-short-name } ਤੁਹਾਡੀ ਡਿਫਾਲਟ ਵਾਂਗ ਪਹਿਲੀ ਭਾਸ਼ਾ ਨੂੰ ਪ੍ਰਦਰਸ਼ਿਤ ਕਰੇਗਾ ਅਤੇ ਜੇਕਰ ਲੋੜ ਹੋਈ ਤਾਂ ਕ੍ਰਮ ਵਿੱਚ ਬਦਲਵੀਂਆਂ ਭਾਸ਼ਾਵਾਂ ਪ੍ਰਦਰਸ਼ਿਤ ਕਰਨਗੇ।

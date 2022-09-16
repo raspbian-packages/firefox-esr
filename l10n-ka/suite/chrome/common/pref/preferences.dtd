@@ -38,23 +38,21 @@
 <!ENTITY images.label "გამოსახულებები">
 <!ENTITY popups.label "ამომხტომი ფანჯრები">
 <!ENTITY passwords.label "პაროლები">
-<!ENTITY masterpass.label "მთავარი პაროლები">
 <!ENTITY ssltls.label "SSL/TLS">
 <!ENTITY certs.label "სერტიფიკატები">
 
 <!ENTITY sync.label "სინქრონიზაცია">
 
 <!ENTITY advance.label "დამატებით">
-<!ENTITY scriptsAndWindows.label "სცენარები და მოდულები">
+<!ENTITY scriptsAndWindows2.label "სკრიპტები">
 <!ENTITY keynav.label "კლავიატურა">
 <!ENTITY findAsYouType.label "ძიება ტექსტის შეტანისას">
-<!ENTITY cache.label "ბუფერი">
+<!ENTITY cache.label "მარაგი">
 <!ENTITY offlineApps.label "ლოკალური პროგრამა">
 <!ENTITY proxies.label "პროქსი სერვერები">
 <!ENTITY httpnetworking.label "HTTP პარამეტრები">
 <!ENTITY smart.label "პროგრამების ჩადგმა">
 <!ENTITY mousewheel.label "თაგუნას ბორბალი">
-
 <!ENTITY debugging.label "გამმართველი">
 
 <!ENTITY focusSearch.key "f">

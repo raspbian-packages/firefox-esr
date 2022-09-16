@@ -2,9 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-otr-finger =
-    .buttonlabelaccept = Zacyniś
-    .title = Do togo wiźone palcowe wótśišće OTR
+otr-finger-title = Do togo wiźone palcowe wótśišće OTR
 
 finger-intro = Palcowe wóotśišće OTR-kluca z pjerwjejšnych rozgronow wót kóńca do kóńca.
 

@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
-carddav-window =
-    .title = ახალი CardDAV წიგნაკი
+carddav-window-title = ახალი CardDAV წიგნაკი
 
 carddav-dialog =
     .buttonlabelaccept = განაგრძეთ
@@ -12,7 +11,6 @@ carddav-dialog =
 carddav-username-label =
     .value = მომხმარებელი:
     .accesskey = ხ
-
 carddav-location-label =
     .value = მდებარეობა:
     .accesskey = დ

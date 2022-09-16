@@ -4,8 +4,7 @@
 
 export-dialog-brand-name = { -brand-product-name }
 
-export-dialog-window =
-    .title = Eksporter
+export-dialog-title = Eksporter
 
 export-dialog =
     .buttonlabelaccept = Næste
@@ -14,7 +13,7 @@ export-dialog-button-finish = Afslut
 
 export-dialog-file-picker = Eksporter til en ZIP-komprimeret fil
 
-export-dialog-desc1 = Eksporter mailkonti, beskeder, adressebøger og indstillinger til en ZIP-komprimeret fil.
+export-dialog-description1 = Eksporter mailkonti, mailbeskeder, adressebøger og indstillinger til en ZIP-komprimeret fil.
 
 export-dialog-desc2 = Hvis du får brug for det, kan du importere den ZIP-komprimerede fil for at gendanne din profil.
 

@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Recommended Feature
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Why am I seeing this
+
 cfr-doorhanger-extension-cancel-button = Not Now
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Add Now
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = Manage Recommendation Settings
     .accesskey = M
+
 cfr-doorhanger-extension-never-show-recommendation = Don’t Show Me This Recommendation
     .accesskey = S
+
 cfr-doorhanger-extension-learn-more-link = Learn more
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = by { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recommendation
 cfr-doorhanger-extension-notification2 = Recommendation
     .tooltiptext = Extension recommendation
     .a11y-announcement = Extension recommendation available
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Recommendation
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = Learn more
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = New feature:
+
 cfr-whatsnew-button =
     .label = What’s New
     .tooltiptext = What’s New
+
 cfr-whatsnew-release-notes-link-text = Read the release notes
 
 ## Enhanced Tracking Protection Milestones
@@ -155,3 +165,16 @@ spotlight-total-cookie-protection-body = Total Cookie Protection stops trackers 
 spotlight-total-cookie-protection-expanded = { -brand-short-name } builds a fence around cookies, limiting them to the site you’re on so trackers can’t use them to follow you. With early access, you’ll help optimise this feature so we can keep building a better web for everyone.
 spotlight-total-cookie-protection-primary-button = Turn on Total Cookie Protection
 spotlight-total-cookie-protection-secondary-button = Not now
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = A better internet starts with you
+spotlight-better-internet-body = When you use { -brand-short-name }, you’re voting for an open and accessible internet that’s better for everyone.
+spotlight-peace-mind-header = We’ve got you covered
+spotlight-peace-mind-body = Every month, { -brand-short-name } blocks an average of over 3,000 trackers per user. Because nothing, especially privacy nuisances like trackers, should stand between you and the good internet.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Keep in Dock
+       *[other] Pin to taskbar
+    }
+spotlight-pin-secondary-button = Not now

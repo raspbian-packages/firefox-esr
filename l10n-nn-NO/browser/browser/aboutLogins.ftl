@@ -5,8 +5,6 @@
 
 about-logins-page-title = Innloggingar og passord
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Søk innloggingar
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Nettstad med datalekkasje
 about-logins-list-item-vulnerable-password-icon =
     .title = Sårbart passord
-
 about-logins-list-section-breach = Nettstadar med datalekkasjar
 about-logins-list-section-vulnerable = Sårbare passord
 about-logins-list-section-nothing = Ingen varsel
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Fann ingen synkroniserte innlogging
 login-intro-description = Slik kan du få { -brand-product-name }-innloggingane dine hit, om du har lagra dei på ei anna eining:
 login-intro-instructions-fxa = Lag eller logg inn på { -fxaccount-brand-name }en din på eininga der innloggingane dine er lagra.
 login-intro-instructions-fxa-settings = Gå til Innstillingar > Synkronisering > Slå på synkronisering… Merk av for innloggingar og passord.
-login-intro-instructions-fxa-help = Gå til <a data-l10n-name="help-link">{ -lockwise-brand-short-name }-brukarstøtte</a> for meir hjelp.
-about-logins-intro-import = Dersom innloggingane dine er lagra i ein annen nettlesar, kan du <a data-l10n-name="import-link">importere dei til { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Besøk <a data-l10n-name="passwords-help-link">passordstøtte</a> for meir hjelp.
+about-logins-intro-browser-only-import = Dersom innloggingane dine er lagra i ein annan nettlesar, kan du <a data-l10n-name="import-link">importere dei til { -brand-product-name }</a>
 about-logins-intro-import2 = Dersom innloggingane dine er lagra utanfor { -brand-product-name }, kan du <a data-l10n-name="import-browser-link">importere dei frå ein annan nettlesar</a> eller <a data-l10n-name="import-file-link">frå ei fil</a>
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Skriv inn innloggingsinf
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = kopier det lagra passordet
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = For å eksportere innloggingane dine, skriv inn innloggingsinformasjonen din for Windows. Dette hjelper til med å ta vare på sikkereheita til kontoen din.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Skriv inn hovudpassordet di
 master-password-reload-button =
     .label = Logg inn
     .accesskey = L
-
-## Password Sync notification
 
 ## Dialogs
 

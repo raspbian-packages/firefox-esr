@@ -35,6 +35,9 @@ connection-proxy-http = وسيط HTTP
     .accesskey = س
 connection-proxy-http-port = المنفذ
     .accesskey = م
+connection-proxy-https-sharing =
+    .label = استعمل هذا الوسيط لبروتوكولات HTTPS أيضًا
+    .accesskey = س
 
 connection-proxy-https = وسيط HTTPS
     .accesskey = ط

@@ -14,3 +14,8 @@ pictureinpicture-mute =
 pictureinpicture-unmute =
     .aria-label = Summutus maha
 
+pictureinpicture-unpip =
+    .aria-label = Saada tagasi kaardile
+
+pictureinpicture-close =
+    .aria-label = Sulge

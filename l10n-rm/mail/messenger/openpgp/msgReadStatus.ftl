@@ -22,6 +22,7 @@ openpgp-view-your-encryption-key =
 openpgp-openpgp = OpenPGP
 
 openpgp-no-sig = Nagina signatura digitala
+openpgp-no-sig-info = Quest messadi n'includa nagina suttascripziun digitala dal speditur. L'absenza dad ina suttascripziun digitala munta ch'il messadi pudess esser vegnì tramess dad insatgi che vul dar da crair dad avair questa adressa dad e-mail. Igl è imaginabel ch'il messadi è vegnì modifitgà durant la transmissiun en la rait.
 openpgp-uncertain-sig = Signatura digitala intscherta
 openpgp-invalid-sig = Signatura digitala nunvalida
 openpgp-good-sig = Signatura digitala valida
@@ -40,6 +41,17 @@ openpgp-sig-key-id-with-subkey-id = ID da la clav dal signatari: { $key } (ID su
 
 openpgp-enc-key-id = ID da tia clav da decriptadi: { $key }
 openpgp-enc-key-with-subkey-id = ID da tia clav da decriptadi: { $key } (ID subclav: { $subkey })
+
+openpgp-enc-none = Il messadi n'è betg criptà
+openpgp-enc-none-label = Quest messadi n'è betg vegnì criptà avant la transmissiun. Dad infurmaziuns tramessas senza criptadi via internet pon autras persunas prender invista durant ch'ellas vegnan transmessas.
+
+openpgp-enc-invalid-label = Impussibel da decriptar quest messadi
+openpgp-enc-invalid = Quest messadi è vegnì criptà avant ch'el è vegnì tramess a tai, ma el na po betg vegnir decriptà.
+
+openpgp-enc-clueless = I dat problems nunenconuschents cun quest messadi criptà.
+
+openpgp-enc-valid-label = Il messadi è criptà
+openpgp-enc-valid = Quest messadi è vegnì criptà avant ch'el è vegnì tramess a tai. Il criptadi garantescha che mo ils destinaturs als quals il messadi sa drizza pon leger il messadi.
 
 openpgp-unknown-key-id = Clav nunenconuschenta
 

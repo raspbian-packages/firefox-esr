@@ -5,7 +5,7 @@
 close-button =
     .aria-label = Luk
 
-preferences-doc-title = Indstillinger
+preferences-doc-title2 = Indstillinger
 
 category-list =
     .aria-label = Kategorier
@@ -162,12 +162,18 @@ restore-default-label =
     .accesskey = G
 
 default-search-engine = Standardsøgetjeneste
-add-search-engine =
-    .label = Tilføj fra fil
-    .accesskey = F
+add-web-search-engine =
+    .label = Tilføj…
+    .accesskey = T
 remove-search-engine =
     .label = Fjern
     .accesskey = r
+
+add-opensearch-provider-title = Tilføj OpenSearch-udbyder
+add-opensearch-provider-text = Indtast URL'en på den OpenSearch-udbyder, der skal tilføjes. Brug enten den direkte URL til OpenSearch-beskrivelsesfilen eller en URL, hvor den automatisk kan hentes.
+
+adding-opensearch-provider-failed-title = Tilføjelse af OpenSearch-udbyder mislykkedes
+adding-opensearch-provider-failed-text = Kunne ikke tilføje OpenSearch-udbyder for { $url }.
 
 minimize-to-tray-label =
     .label = Flyt { -brand-short-name } til systembakken, når programmet minimeres
@@ -194,7 +200,7 @@ app-icon-options =
     .label = Indstillinger for app-ikon…
     .accesskey = I
 
-notification-settings = Meddelelser og standardlyden kan deaktiveres på meddelelsessiden i systemindstillingerne.
+notification-settings2 = Meddelelser og standardlyden kan deaktiveres på meddelelsessiden i systemindstillingerne.
 
 animated-alert-label =
     .label = Vis en pop op-meddelelse
@@ -249,6 +255,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Brug blød scrolling
     .accesskey = r
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Vis altid rullebjælker
+    .accesskey = u
 
 system-integration-legend = Systemintegration
 always-check-default =
@@ -408,13 +417,9 @@ quoted-text-color =
 search-handler-table =
     .placeholder = Filtrer indholdstyper og handlinger
 
-type-column-label =
-    .label = Indholdstype
-    .accesskey = I
+type-column-header = Indholdstype
 
-action-column-label =
-    .label = Handling
-    .accesskey = H
+action-column-header = Handling
 
 save-to-label =
     .label = Gem filer i
@@ -568,12 +573,6 @@ restore-html-label =
 default-format-label =
     .label = Benyt afsnitsformat som standard i stedet for formatet for almindelig tekst
     .accesskey = e
-
-format-description = Konfigurering af meddelelsesindholdet:
-
-send-options-label =
-    .label = Afsendelsesindstillinger…
-    .accesskey = A
 
 autocomplete-description = Søg efter adresser i:
 
@@ -855,8 +854,6 @@ theme-label =
     .value = Tema:
     .accesskey = T
 
-style-thunderbird =
-    .label = Thunderbird
 style-bubbles =
     .label = Bobler
 style-dark =
@@ -874,6 +871,8 @@ chat-variant-label =
     .value = Variant:
     .accesskey = V
 
+## Preferences UI Search Results
+
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -882,19 +881,19 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
+search-preferences-input2 =
     .style = width: 15.4em
     .placeholder = Søg i indstillinger
 
-## Preferences UI Search Results
+## Settings UI Search Results
 
 search-results-header = Søgeresultater
 
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
+search-results-empty-message2 =
     { PLATFORM() ->
-        [windows] Beklager! Der er ingen resultater for "<span data-l10n-name="query"></span>" i Indstillingerne.
-       *[other] Beklager! Der er ingen resultater for "<span data-l10n-name="query"></span>" i Indstillingerne.
+        [windows] Beklager, der er ingen resultater for "<span data-l10n-name="query"></span>" i indstillingerne.
+       *[other] Beklager, der er ingen resultater for "<span data-l10n-name="query"></span>" i indstillingerne.
     }
 
 search-results-help-link = Har du brug for hjælp? Besøg <a data-l10n-name="url">Hjælp til { -brand-short-name }</a>

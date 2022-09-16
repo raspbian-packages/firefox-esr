@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Minimalizovat
+messenger-window-maximize-button =
+    .tooltiptext = Maximalizovat
+messenger-window-restore-down-button =
+    .tooltiptext = Obnovit z maximalizace
+messenger-window-close-button =
+    .tooltiptext = Zavřít
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -77,10 +88,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Předvolby
 appmenu-save-as-file =
     .label = Soubor…
 appmenu-settings =
@@ -100,11 +107,57 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Přesměrovat
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Smazat zprávu
+            [few] Smazat vybrané zprávy
+           *[other] Smazat vybrané zprávy
+        }
+context-menu-decrypt-to-folder =
+    .label = Zkopírovat jako dešifrované do
+    .accesskey = f
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Přesměrovat
+message-header-msg-flagged =
+    .title = S hvězdičkou
+    .aria-label = Označeno hvězdičkou
+message-header-msg-not-flagged =
+    .title = Bez hvězdičky
+    .aria-label = Neoznačeno hvězdičkou
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Profilový obrázek pro { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Nastavení záhlaví zpráv
+message-header-customize-button-style =
+    .value = Styl tlačítka
+    .accesskey = t
+message-header-button-style-default =
+    .label = Ikony a text
+message-header-button-style-text =
+    .label = Text
+message-header-button-style-icons =
+    .label = Ikony
+message-header-show-sender-full-address =
+    .label = Vždy zobrazovat celou adresu odesílatele
+    .accesskey = c
+message-header-show-sender-full-address-description = E-mailová adresa se zobrazí pod zobrazovaným jménem.
+message-header-show-recipient-avatar =
+    .label = Zobrazovat profilový obrázek odesílatele
+    .accesskey = p
+message-header-hide-label-column =
+    .label = Skrýt sloupec s popisky
+    .accesskey = l
+message-header-large-subject =
+    .label = Velký předmět
+    .accesskey = p
 
 ## Action Button Context Menu
 
@@ -114,13 +167,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Odebrat rozšíření
     .accesskey = d
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Adresa je v kontaktech
-message-header-address-not-in-address-book-icon =
-    .alt = Adresa není v kontaktech
 
 ## Add-on removal warning
 
@@ -147,3 +193,97 @@ repair-text-encoding-button =
 no-reply-title = Adrese pro odpověď není podporovaná
 no-reply-message = Adresa pro odpověď ({ $email }) není sledovanou adresou. Zprávy odeslané na tuto adresu si nejspíše nikdo nepřečte.
 no-reply-reply-anyway-button = Přesto odpověď odeslat
+
+## error messages
+
+decrypt-and-copy-failures =
+    { $failures ->
+        [one] { $failures } z { $total } zpráv se nepodařilo dešifrovat a nemohla být zkopírována.
+        [few] { $failures } z { $total } zpráv se nepodařilo dešifrovat a nemohly být zkopírovány.
+       *[other] { $failures } z { $total } zpráv se nepodařilo dešifrovat a nemohlo být zkopírováno.
+    }
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Navigační lišta
+    .aria-label = Navigační lišta
+    .aria-description = Vertikální postranní lišta pro přepínání mezi jednotlivými funkcemi. Pro výběr tlačítek na liště použijte kurzorové šipky.
+spaces-toolbar-button-mail2 =
+    .title = Pošta
+spaces-toolbar-button-address-book2 =
+    .title = Kontakty
+spaces-toolbar-button-calendar2 =
+    .title = Kalendář
+spaces-toolbar-button-tasks2 =
+    .title = Úkoly
+spaces-toolbar-button-chat2 =
+    .title = Chat
+spaces-toolbar-button-overflow =
+    .title = Další…
+spaces-toolbar-button-settings2 =
+    .title = Nastavení
+spaces-toolbar-button-hide =
+    .title = Skrýt navigační lištu
+spaces-toolbar-button-show =
+    .title = Zobrazit navigační lištu
+spaces-context-new-tab-item =
+    .label = Otevřít v novém panelu
+spaces-context-new-window-item =
+    .label = Otevřít v novém okně
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Přepnout na panel { $tabName }
+settings-context-open-settings-item2 =
+    .label = Nastavení
+settings-context-open-account-settings-item2 =
+    .label = Nastavení účtu
+settings-context-open-addons-item2 =
+    .label = Doplňky a vzhledy
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Navigační menu
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] Jedna nepřečtená zpráva
+            [few] { $count } nepřečtené zprávy
+           *[other] { $count } nepřečtených zpráv
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Přizpůsobit…
+spaces-customize-panel-title = Nastavení navigační lišty
+spaces-customize-background-color = Barva pozadí
+spaces-customize-icon-color = Barva tlačítek
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Vybraná barva pozadí tlačítek
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Vybraná barva tlačítek
+spaces-customize-button-restore = Obnovit výchozí
+    .accesskey = O
+customize-panel-button-save = Hotovo
+    .accesskey = H

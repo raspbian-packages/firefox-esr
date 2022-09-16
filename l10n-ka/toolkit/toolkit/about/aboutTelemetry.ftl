@@ -24,7 +24,7 @@ about-telemetry-telemetry-probe-dictionary = <a data-l10n-name="probe-dictionary
 about-telemetry-show-in-Firefox-json-viewer = JSON მნახველში გახსნა
 about-telemetry-home-section = მთავარი
 about-telemetry-general-data-section = ზოგადი მონაცემები
-about-telemetry-environment-data-section = გარემოს მონაცემები
+about-telemetry-environment-data-section = გარსის მონაცემები
 about-telemetry-session-info-section = სეანსის მონაცემები
 about-telemetry-scalar-section = სიდიდეები
 about-telemetry-keyed-scalar-section = შიფრიანი სიდიდეები
@@ -34,7 +34,6 @@ about-telemetry-events-section = მოვლენები
 about-telemetry-simple-measurements-section = მარტივი განსაზღვრებები
 about-telemetry-slow-sql-section = ნელი SQL-ბრძანებები
 about-telemetry-addon-details-section = დამატების მონაცემები
-about-telemetry-captured-stacks-section = დაფიქსირებული სტეკები
 about-telemetry-late-writes-section = გვიანი ჩაწერები
 about-telemetry-raw-payload-section = ნედლი დატვირთვა
 about-telemetry-raw = ნედლი JSON
@@ -121,10 +120,6 @@ about-telemetry-addon-provider = { $addonProvider } მომწოდებე�
 about-telemetry-keys-header = მახასიათებელი
 about-telemetry-names-header = სახელი
 about-telemetry-values-header = მნიშვნელობა
-# Variables:
-#   $stackKey (String): the string key for this stack
-#   $capturedStacksCount (Integer):  the number of times this stack was captured
-about-telemetry-captured-stacks-title = { $stackKey } (დაფიქსირების რაოდენობა: { $capturedStacksCount })
 # Variables:
 #   $lateWriteCount (Integer): the number of the late writes
 about-telemetry-late-writes-title = ბოლო ჩანაწერი #{ $lateWriteCount }

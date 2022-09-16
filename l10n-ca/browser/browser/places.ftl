@@ -69,16 +69,6 @@ places-edit-bookmark =
 places-edit-generic =
     .label = Edita…
     .accesskey = E
-places-edit-folder =
-    .label = Reanomena la carpeta…
-    .accesskey = e
-places-remove-folder =
-    .label =
-        { $count ->
-            [1] Elimina la carpeta
-           *[other] Elimina les carpetes
-        }
-    .accesskey = m
 places-edit-folder2 =
     .label = Edita la carpeta…
     .accesskey = i
@@ -98,15 +88,6 @@ managed-bookmarks-subfolder =
 # This label is used for the "Other Bookmarks" folder that appears in the bookmarks toolbar.
 other-bookmarks-folder =
     .label = Altres adreces d'interès
-# Variables:
-# $count (number) - The number of elements being selected for removal.
-places-remove-bookmark =
-    .label =
-        { $count ->
-            [1] Elimina l'adreça d'interès
-           *[other] Elimina les adreces d'interès
-        }
-    .accesskey = m
 places-show-in-folder =
     .label = Mostra en la carpeta
     .accesskey = M
@@ -184,7 +165,7 @@ places-import-bookmarks-from-html =
     .label = Importa en HTML les adreces d'interès…
     .accesskey = I
 places-export-bookmarks-to-html =
-    .label = Export en HTML les adreces d'interès…
+    .label = Exporta en HTML les adreces d'interès…
     .accesskey = E
 places-import-other-browser =
     .label = Importa les dades d'un altre navegador…

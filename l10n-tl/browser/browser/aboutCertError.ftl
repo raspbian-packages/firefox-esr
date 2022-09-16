@@ -24,13 +24,13 @@ cert-error-trust-untrusted-issuer = Hindi pinagkakatiwalaan ang certificate dahi
 
 cert-error-trust-signature-algorithm-disabled = Hindi pinagkakatiwalaan ang certificate dahil ito ay na-sign gamit ang isang signature algorithm na na-disable dahil hindi secure ang algorithm.
 
-cert-error-trust-expired-issuer = Ang sertipiko ay hindi pinagkakatiwalaan dahil ang issuer ng sertipiko ay expired na.
+cert-error-trust-expired-issuer = Hindi pinagkakatiwalaan ang certificate dahil paso na ang certificate ng nag-isyu.
 
-cert-error-trust-self-signed = Ang certificate ay hindi pinagkakatiwalaan dahil ito ay sariling-pirma lamang.
+cert-error-trust-self-signed = Hindi pinagkakatiwalaan ang certificate dahil self-signed ito.
 
 cert-error-trust-symantec = Hindi na ligtas ang mga certificate na na-issue ng GeoTrust, RapidSSL, Symantec, Thawte, at VeriSign dahil ang mga certificate authority na ito ay hindi sumunod sa mga security practice dati.
 
-cert-error-untrusted-default = Ang certificate ay hindi galing sa pinagkakatiwalaang pinangalingan.
+cert-error-untrusted-default = Di galing mula sa isang mapagkakatiwalaang source ang certificate.
 
 # Variables:
 # $hostname (String) - Hostname of the website with cert error.
@@ -110,12 +110,11 @@ netTimeout-title = Ang koneksyon ay nag-time out
 unknownProtocolFound-title = Ang address ay hindi naintindihan
 proxyConnectFailure-title = Ang proxy server ay tinatanggihan ang koneksyon
 proxyResolveFailure-title = Hindi mahanap ang proxy server
-redirectLoop-title = Ang pahina ay hindi nag didirekta ng maayos
+redirectLoop-title = Ang pahina ay hindi nag didirekta nang maayos
 unknownSocketType-title = Hindi inaasahang tugon mula sa server
 nssFailure2-title = Nabigo ang Ligtas na Koneksyon
 csp-xfo-error-title = Hindi Kayang Buksan ng { -brand-short-name } ang Pahinang Ito
 corruptedContentError-title = Corrupted Content Error
-remoteXUL-title = Remote XUL
 sslv3Used-title = Hindi Makakonekta nang Ligtas
 inadequateSecurityError-title = Ang iyong koneksyon ay hindi ligtas
 blockedByPolicy-title = Naka-block na Pahina

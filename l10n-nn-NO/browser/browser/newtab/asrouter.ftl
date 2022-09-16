@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Tilrådd funksjon
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Kvifor ser eg dette
+
 cfr-doorhanger-extension-cancel-button = Ikkje no
     .accesskey = n
+
 cfr-doorhanger-extension-ok-button = Legg til no
     .accesskey = e
+
 cfr-doorhanger-extension-manage-settings-button = Handter tilrådingsinnstillingar
     .accesskey = H
+
 cfr-doorhanger-extension-never-show-recommendation = Ikkje vis meg denne tilrådinga
     .accesskey = s
+
 cfr-doorhanger-extension-learn-more-link = Les meir
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = av { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Tilråding
 cfr-doorhanger-extension-notification2 = Tilråding
     .tooltiptext = Utvidingstilråding
     .a11y-announcement = Utvidingstilråding tilgjengeleg
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Tilråding
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = Les meir
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Ny funksjon:
+
 cfr-whatsnew-button =
     .label = Kva er nytt
     .tooltiptext = Kva er nytt
+
 cfr-whatsnew-release-notes-link-text = Les versjonsnotatet
 
 ## Enhanced Tracking Protection Milestones
@@ -155,3 +165,16 @@ spotlight-total-cookie-protection-body = Totalt vern mot infokapslar stoppar spo
 spotlight-total-cookie-protection-expanded = { -brand-short-name }byggjer eit gjerde rundt infokapslar, og avgrensar dei til nettstaden du er på, slik at sporarar ikkje kan bruke dei til å følgje deg. Med tidleg tilgang hjelper du til med å optimalisere denne funksjonen slik at vi kan fortsetje å byggje eit betre nett for alle.
 spotlight-total-cookie-protection-primary-button = Slå på total vern mot infokapslar
 spotlight-total-cookie-protection-secondary-button = Ikkje no
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Eit betre internett byrjar med deg
+spotlight-better-internet-body = Når du brukar { -brand-short-name }, stemmer du for eit ope og tilgjengeleg internett som er betre for alle.
+spotlight-peace-mind-header = Vi beskyttar deg
+spotlight-peace-mind-body = Kvar månad blokkerer { -brand-short-name } i gjennomsnitt over 3000 sporarar per brukar. Fordi ingenting, spesielt personvernplager som sporarar, skal stå mellom deg og eit godt internett.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Behald i dokk
+       *[other] Fest til oppgåvelinja
+    }
+spotlight-pin-secondary-button = Ikkje no

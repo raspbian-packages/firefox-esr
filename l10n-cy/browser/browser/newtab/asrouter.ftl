@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Nodwedd Cymeradwy
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Pam ydw i'n gweld hyn
+
 cfr-doorhanger-extension-cancel-button = Nid Nawr
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Ychwanegu Nawr
     .accesskey = Y
+
 cfr-doorhanger-extension-manage-settings-button = Gosodiadau Argymell Rheoli
     .accesskey = R
+
 cfr-doorhanger-extension-never-show-recommendation = Peidio Dangos yr Argymhelliad i Mi
     .accesskey = P
+
 cfr-doorhanger-extension-learn-more-link = Dysgu rhagor
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = gan { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Argymhelliad
 cfr-doorhanger-extension-notification2 = Argymhelliad
     .tooltiptext = Argymhelliad Estyniad
     .a11y-announcement = Mae argymhelliad estyniad ar gael
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Argymhelliad
@@ -85,9 +93,11 @@ cfr-protections-panel-link-text = Dysgu rhagor
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nodwedd newydd:
+
 cfr-whatsnew-button =
     .label = Beth sy'n Newydd
     .tooltiptext = Beth sy'n Newydd
+
 cfr-whatsnew-release-notes-link-text = Darllenwch y nodiadau rhyddhau
 
 ## Enhanced Tracking Protection Milestones
@@ -168,3 +178,16 @@ spotlight-total-cookie-protection-body = Mae Total Cookie Protection yn atal tra
 spotlight-total-cookie-protection-expanded = Mae { -brand-short-name } yn adeiladu ffens o amgylch cwcis, gan eu cyfyngu i'r wefan rydych chi arni fel na all tracwyr eu defnyddio i'ch dilyn chi. Gyda mynediad cynnar, byddwch yn helpu i wella'r nodwedd hon fel y gallwn barhau i adeiladu gwe well i bawb.
 spotlight-total-cookie-protection-primary-button = Cychwyn Total Cookie Protection
 spotlight-total-cookie-protection-secondary-button = Nid nawr
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Mae rhyngrwyd gwell yn dechrau gyda chi
+spotlight-better-internet-body = Pan fyddwch yn defnyddio { -brand-short-name }, rydych yn cefnogi rhyngrwyd agored a hygyrch sy'n well i bawb.
+spotlight-peace-mind-header = Rydyn ni yn eich cefnogi chi
+spotlight-peace-mind-body = Bob mis, ar gyfartaledd, mae { -brand-short-name } yn rhwystro dros 3,000 o dracwyr fesul defnyddiwr . Oherwydd dylai dim byd, yn enwedig niwsans preifatrwydd fel tracwyr, sefyll rhyngoch chi a'r rhyngrwyd da.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Cadw yn y Doc
+       *[other] Pinio i'r bar tasgau
+    }
+spotlight-pin-secondary-button = Nid nawr

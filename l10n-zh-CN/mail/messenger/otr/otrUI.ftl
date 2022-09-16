@@ -10,7 +10,7 @@ reauth-label = 重新验证联系人的身份
 auth-cancel = 取消
 auth-cancel-access-key = C
 
-auth-error = 验证联系人身份时发生错误。
+auth-error = 验证联系人身份时出错。
 auth-success = 已成功验证联系人的身份。
 auth-success-them = 您的联系人已成功验证您的身份。您可能也想问他们问题，来验证其身份。
 auth-fail = 无法验证联系人的身份。
@@ -18,6 +18,9 @@ auth-waiting = 等待联系人完成验证…
 
 finger-verify = 验证
 finger-verify-access-key = V
+
+finger-ignore = 忽略
+finger-ignore-access-key = I
 
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = 添加 OTR 指纹
@@ -43,7 +46,6 @@ finger-unseen = 保{ $name } 的身份尚未验证。尽管偶然的窃听不太
 finger-seen = { $name } 使用未识别的计算机与您联系。尽管偶然的窃听不太可能，但为保万无一失。请验证此联系人的身份来避免受到监控。
 
 state-not-private = 当前的对话不是私人对话。
-
 state-generic-not-private = 当前的对话不是私人对话。
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = 您已验证 { $name } 的身份。
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = { $name } 的身份尚未验证。
-
-verify-title = 验证联系人的身份
-error-title = 错误
-success-title = 端到端加密
-success-them-title = 验证联系人的身份
-fail-title = 无法验证
-waiting-title = 验证请求已发送
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

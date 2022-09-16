@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Aneqqis i { $addon-name }
 
 abuse-report-title-extension = Mmel asiɣzef-a i { -vendor-short-name }
+abuse-report-title-sitepermission = Mmel azegrir-a n usireg n usmel i { -vendor-short-name }
 abuse-report-title-theme = Mmel asentel-a i { -vendor-short-name }
 abuse-report-subtitle = D acu i d ugur?
 
@@ -37,12 +37,6 @@ abuse-report-goback-button = Uɣal
 abuse-report-submit-button = Azen
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Tuzna n uneqqis ɣef <span data-l10n-name="
 abuse-report-messagebar-submitted = Tanmirt ɣef uneqqis id-tuzneḍ. Tebɣiḑ ad tekkseḍ <span data-l10n-name="addon-name">{ $addon-name }</span> ?
 abuse-report-messagebar-submitted-noremove = Tanmirt ɣef uneqqis id-tuzneḍ.
 abuse-report-messagebar-removed-extension = Tanmirt ɣef uneqqis id-tuzneḍ. Tekkseḍ asiɣzef <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Tanemmirt ɣef uneqqis i d-tuzneḍ. Tekkseḍ azegrir n usireg n usmel <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Tanmirt ɣef uneqqis id-tuzneḍ. Tekkseḍ asentel <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Tella tucḍa deg uzzna n uneqqis i <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Aneqqis n <span data-l10n-name="addon-name">{ $addon-name }</span> ur yettwazen ara acku aneqqis nniḍen yettwazen melmi kan.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Aneqqis n <span data-l10n-name="ad
 
 abuse-report-messagebar-action-remove-extension = Ih, kkes-it
 abuse-report-messagebar-action-keep-extension = Uhu, eǧǧ-it
+abuse-report-messagebar-action-remove-sitepermission = Ih, kkes-it
+abuse-report-messagebar-action-keep-sitepermission = Uhu, eǧǧ-it
 abuse-report-messagebar-action-remove-theme = Ih, kkes-it
 abuse-report-messagebar-action-keep-theme = Uhu eǧǧ-it
 abuse-report-messagebar-action-retry = Ɛreḍ i tikelt-nniḍen
@@ -82,12 +79,17 @@ abuse-report-deceptive-reason-v2 = Ad d-yeqqar ayen ur yelli
 abuse-report-deceptive-example = Amedya: aglam neɣ tugniwin n ukellex
 
 abuse-report-broken-reason-extension-v2 = Ur iteddu ara, ittruzu ismal web, neɣ isaẓẓay { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Ur iteddu ara, ittruzu ismal web, neɣ isaẓẓay { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Ur iteddu ara neɣ iseḥbes askan n yiminig
 abuse-report-broken-example = Amedya: Timahilin ẓẓayit, yewɛer i useqdec, neɣ ur uleḥḥu ara; iḥricen n usmel web ur d-ttalin ara neɣ ur d-tt-banen ara am zik
 abuse-report-broken-suggestions-extension =
     Ittban d akken yufiḍ-d abug. Ɣer tama n tuzna n uneqqis dagi, abrid ufrin
     akken ad tefruḍ ugur n tmahilt, d anermes n uneflay n usiɣzef.
     <a data-l10n-name="support-link">Rzu ɣer usmel n usiɣzef</a> akken ad tawiḍ talɣut ɣef uneflay.
+abuse-report-broken-suggestions-sitepermission =
+    Ittban belli tufiḍ-d abug. Ɣer tama n tuzna n uneqqis dagi, abrid ufrin
+    akken ad tefruḍ ugur n tmahilt, d anermes n uneflay n usmel web.
+    <a data-l10n-name="support-link">Rzu ɣer usmel web</a> i wakken ad tawiḍ talɣut ɣef uneflay.
 abuse-report-broken-suggestions-theme =
     Ittban d akken yufiḍ-d abug. Ɣer tama n tuzna n uneqqis dagi, abrid ufrin
     akken ad tefruḍ ugur n tmahilt, d anermes n uneflay n usentel.
@@ -103,4 +105,3 @@ abuse-report-unwanted-reason-v2 = Ur ǧǧin bɣiɣ daɣen ur ẓriɣ ara amek ar
 abuse-report-unwanted-example = Amedya: asnas isbedd-it mebla tasiregt
 
 abuse-report-other-reason = Ayen nniḍen
-

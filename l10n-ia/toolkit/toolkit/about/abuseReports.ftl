@@ -10,6 +10,7 @@
 abuse-report-dialog-title = Signalation pro { $addon-name }
 
 abuse-report-title-extension = Signalar iste extension a { -vendor-short-name }
+abuse-report-title-sitepermission = Reportar iste additivo de permissiones de sito a { -vendor-short-name }
 abuse-report-title-theme = Signalar iste thema a { -vendor-short-name }
 abuse-report-subtitle = Qual es le problema?
 
@@ -34,12 +35,6 @@ abuse-report-goback-button = Retornar
 abuse-report-submit-button = Inviar
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -49,6 +44,7 @@ abuse-report-messagebar-submitting = Invio de signalation pro <span data-l10n-na
 abuse-report-messagebar-submitted = Gratias pro haber inviate un signalation. Vole tu remover <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Gratias pro haber inviate un signalation.
 abuse-report-messagebar-removed-extension = Gratias pro haber inviate un signalation. Tu ha removite le extension <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Gratias pro le invio de reporto. Tu ha removite le additivo de permissiones de sito <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Gratias pro haber inviate un signalation. Tu ha removite le thema <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Un error occurreva durante le invio del signalation pro <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Le reporto pro <span data-l10n-name="addon-name">{ $addon-name }</span> non esseva inviate perque un altere reporto ha essite inviate recentemente.
@@ -57,6 +53,8 @@ abuse-report-messagebar-error-recent-submit = Le reporto pro <span data-l10n-nam
 
 abuse-report-messagebar-action-remove-extension = Si, remove lo
 abuse-report-messagebar-action-keep-extension = No, io vole mantener lo
+abuse-report-messagebar-action-remove-sitepermission = Si, remove lo
+abuse-report-messagebar-action-keep-sitepermission = No, io vole mantener lo
 abuse-report-messagebar-action-remove-theme = Si, remove lo
 abuse-report-messagebar-action-keep-theme = No, io vole mantener lo
 abuse-report-messagebar-action-retry = Retentar
@@ -79,9 +77,13 @@ abuse-report-deceptive-reason-v2 = Illo pretende esser qualcosa que non es
 abuse-report-deceptive-example = Exemplo: description o graphica fraudulente
 
 abuse-report-broken-reason-extension-v2 = Illo non functiona, rumpe sitos web o relenta { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Illo non functiona, rumpe sitos web o relenta { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Non functiona o rumpe le disposition visual del navigator
 abuse-report-broken-example = Exemplo: le functionalitate es lente, difficile a usar, o non functiona; partes de sitos web non se carga o pare estranie
 abuse-report-broken-suggestions-extension = Il pare que tu ha identificate un defecto. In addition a inviar un signalation ci, le melior maniera de resolver un problema de functionalitate es de contactar le programmator del extension. <a data-l10n-name="support-link">Visita le sito web del extension</a> pro obtener le informationes del disveloppator.
+abuse-report-broken-suggestions-sitepermission =
+    Il pare que tu ha identificate un defecto. In addition a inviar un reporto ci, le melior maniera de facer resolver un problema de functionalitate es contactar le disveloppator del sito web.
+    <a data-l10n-name="support-link">Visita le sito web</a> pro obtener su informationes.
 abuse-report-broken-suggestions-theme = Il pare que tu ha identificate un defecto. In addition a inviar un signalation ci, le melior maniera de resolver un problema de functionalitate es de contactar le disveloppator del thema. <a data-l10n-name="support-link">Visita le sito web del thema</a> pro obtener le informationes del disveloppator.
 
 abuse-report-policy-reason-v2 = Contento odiose, violente o illegal
@@ -91,4 +93,3 @@ abuse-report-unwanted-reason-v2 = Io non lo ha jammais volite e non sape como li
 abuse-report-unwanted-example = Exemplo: un application lo ha installate sin mi permission
 
 abuse-report-other-reason = Altere cosa
-

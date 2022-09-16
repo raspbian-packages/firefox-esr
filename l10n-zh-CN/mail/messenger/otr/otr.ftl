@@ -75,7 +75,7 @@ context-gone-secure-unverified = 已开始与 { $name } 有加密，但未经验
 #   $name (String) - the screen name of a chat contact person
 context-still-secure = 成功刷新与 { $name } 的加密对话。
 
-error-enc = 加密消息时发生错误。
+error-enc = 加密消息时出错。
 
 # Variables:
 #   $name (String) - the screen name of a chat contact person

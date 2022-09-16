@@ -47,7 +47,7 @@ newsgroups-label = Gruppas da discussiun
 newsgroups-description = Cun { -brand-short-name } pos ti ta connectar cun tut las gruppas da discussiun giavischadas.
 
 import-title = Importar dad in auter program
-import-paragraph = { -brand-short-name } ta permetta dad importar messadis, endataziuns da cudeschets d'adressas, abunaments da feeds, parameters e/u filters dad auters programs dad e-mail e formats frequents da cudeschets d'adressas.
+import-paragraph2 = { -brand-short-name } ta permetta dad importar messadis dad e-mail, endataziuns da cudeschets d'adressas, abunaments da feeds, parameters e/u filters dad auters programs dad e-mail e formats frequents da cudeschets d'adressas.
 
 import-label = Importar
     .aria-label = Importar datas dad auters programs

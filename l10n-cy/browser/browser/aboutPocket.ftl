@@ -17,9 +17,12 @@ pocket-panel-saved-error-tag-length = Mae tagiau wedi eu cyfyngu i 25 nod
 pocket-panel-saved-error-only-links = Dim ond dolenni y mae modd eu cadw
 pocket-panel-saved-error-not-saved = Heb Gadw'r Dudalen
 pocket-panel-saved-error-no-internet = Rhaid eich bod wedi cysylltu i'r rhyngrwyd i gadw i { -pocket-brand-name }. Cysylltwch â'r Rhyngrwyd a cheisiwch eto.
+pocket-panel-saved-error-remove = Bu gwall wrth geisio tynnu'r dudalen.
 pocket-panel-saved-page-removed = Tudalen wedi ei Thynnu
 pocket-panel-saved-page-saved = Cadwyd i { -pocket-brand-name }
+pocket-panel-saved-page-saved-b = Cadwyd i { -pocket-brand-name }
 pocket-panel-saved-processing-remove = Tynnu Tudalen…
+pocket-panel-saved-removed = Tudalen Wedi'i Thynnu o Fy Rhestr
 pocket-panel-saved-processing-tags = Ychwanegu tagiau…
 pocket-panel-saved-remove-page = Tynnu Tudalen
 pocket-panel-saved-save-tags = Cadw
@@ -27,6 +30,9 @@ pocket-panel-saved-saving-tags = Cadw…
 pocket-panel-saved-suggested-tags = Awgrymiadau o Dagiau
 pocket-panel-saved-tags-saved = Ychwanegwyd Tagiau
 pocket-panel-signup-view-list = Gweld Rhestr
+
+# This is displayed above a field where the user can add tags
+pocket-panel-signup-add-tags = Ychwanegu Tagiau:
 
 ## about:pocket-signup panel
 
@@ -40,6 +46,11 @@ pocket-panel-signup-tagline = Cadw erthyglau a fideos o { -brand-product-name } 
 pocket-panel-signup-tagline-story-one = Cliciwch Fotwm { -pocket-brand-name } i gadw unrhyw erthygl, fideo neu dudalen o { -brand-product-name }.
 pocket-panel-signup-tagline-story-two = Gweld yn { -pocket-brand-name } ar unrhyw ddyfais, ar unrhyw adeg.
 
+pocket-panel-signup-cta-a-fix = Eich botwm cadw ar gyfer y rhyngrwyd.
+pocket-panel-signup-cta-b = Cliciwch y botwm { -pocket-brand-name } i gadw erthyglau, fideos a dolenni. Edrychwch ar eich rhestr ar unrhyw ddyfais, unrhyw bryd.
+pocket-panel-signup-cta-b-short = Cliciwch y botwm { -pocket-brand-name } i gadw erthyglau, fideos a dolenni.
+pocket-panel-signup-cta-c = Edrychwch ar eich rhestr ar unrhyw ddyfais, ar unrhyw bryd.
+
 ## about:pocket-home panel
 
 pocket-panel-home-my-list = Fy Rhestr
@@ -48,3 +59,19 @@ pocket-panel-home-paragraph = Gallwch ddefnyddio { -pocket-brand-name } i archwi
 pocket-panel-home-explore-popular-topics = Archwilio Pynciau Poblogaidd
 pocket-panel-home-discover-more = Darganfod Rhagor
 pocket-panel-home-explore-more = Archwilio
+
+pocket-panel-home-most-recent-saves = Dyma beth rydych wedi eu cadw'n ddiweddar:
+pocket-panel-home-most-recent-saves-loading = Yn llwytho erthyglau diweddar wedi'u cadw …
+pocket-panel-home-new-user-cta = Cliciwch y botwm { -pocket-brand-name } i gadw erthyglau, fideos a dolenni.
+pocket-panel-home-new-user-message = Gweld beth rydych wedi eu cadw'n ddiweddar:
+
+## Pocket panel header component
+
+pocket-panel-header-my-list = Gweld Fy Rhestr
+pocket-panel-header-sign-in = Mewngofnodi
+
+## Pocket panel buttons
+
+pocket-panel-button-show-all = Dangos y Cyfan
+pocket-panel-button-activate = Agor { -pocket-brand-name } yn { -brand-product-name }
+pocket-panel-button-remove = Tynnu

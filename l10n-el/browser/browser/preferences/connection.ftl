@@ -35,7 +35,6 @@ connection-proxy-http = Διακομιστής μεσολάβησης HTTP
     .accesskey = λ
 connection-proxy-http-port = Θύρα
     .accesskey = Θ
-
 connection-proxy-https-sharing =
     .label = Να χρησιμοποιείται ο διακομιστής μεσολάβησης και για HTTPS
     .accesskey = χ
@@ -92,7 +91,7 @@ connection-dns-over-https-url-resolver = Χρήση παρόχου
 #   $name (String) - Display name or URL for the DNS over HTTPS provider
 connection-dns-over-https-url-item-default =
     .label = { $name } (Προεπιλογή)
-    .tooltiptext = Χρήση του προεπιλεγμένου URL για επίλυση DNS αντί HTTPS
+    .tooltiptext = Χρήση του προεπιλεγμένου URL για ανάλυση DNS over HTTPS
 
 connection-dns-over-https-url-custom =
     .label = Προσαρμοσμένο

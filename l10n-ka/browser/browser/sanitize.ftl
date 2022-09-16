@@ -69,7 +69,7 @@ item-active-logins =
     .accesskey = შ
 
 item-cache =
-    .label = დროებითი ფაილები
+    .label = მომარაგებული
     .accesskey = ო
 
 item-form-search-history =
@@ -77,10 +77,6 @@ item-form-search-history =
     .accesskey = შ
 
 data-section-label = მონაცემები
-
-item-site-preferences =
-    .label = საიტის პარამეტრები
-    .accesskey = პ
 
 item-site-settings =
     .label = საიტის პარამეტრები

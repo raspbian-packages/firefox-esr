@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Retejoj legitimas sin per sekurecaj a
 
 cert-error-symantec-distrust-admin = Vi povas sciigi la administraton de la retejo pri tiu ĉi problemo.
 
+cert-error-old-tls-version = Tiu ĉi retejo povus ne subteni la protokolon TLS 1.2, kiu estas la minimuma versio subtenata de { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Neatendita respondo el servilo
 nssFailure2-title = Malsukcesa sekura konekto
 csp-xfo-error-title = { -brand-short-name } ne povas malfermi tiun ĉi paĝon
 corruptedContentError-title = Eraro pro difektita enhavo
-remoteXUL-title = Fora XUL
 sslv3Used-title = Ne eblas sekure konektiĝi
 inadequateSecurityError-title = Via konekto ne estas sekura
 blockedByPolicy-title = Blokita paĝo

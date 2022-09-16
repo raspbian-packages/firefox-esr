@@ -7,6 +7,8 @@
 
 <!ENTITY restoreButton.label "Restaurar valores predeterminados">
 <!ENTITY restoreButton.accesskey "R">
+<!ENTITY connectNetwork.label "Conectar a la red">
+<!ENTITY connectNetwork.accesskey "n">
 
 <!ENTITY networkListAdd.label "Añadir red…">
 <!ENTITY networkListAdd.accesskey "A">

@@ -19,6 +19,7 @@ perftools-heading-features-default = 機能 (既定で推奨)
 perftools-heading-features-disabled = 無効な機能
 perftools-heading-features-experimental = 実験的な機能
 perftools-heading-threads = スレッド
+perftools-heading-threads-jvm = JVM スレッド
 perftools-heading-local-build = ローカルビルド
 
 ##
@@ -46,8 +47,6 @@ perftools-devtools-settings-label = 設定
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-  プライベートブラウジングが有効なときは、プロファイラーは無効になります。プライベートウィンドウをすべて閉じてから、再度プロファイラーを有効にしてください。
 perftools-status-recording-stopped-by-another-tool = 他のツールによって記録が停止されました。
 perftools-status-restart-required = この機能を有効にするには、ブラウザーを再起動する必要があります。
 
@@ -94,6 +93,19 @@ perftools-thread-dns-resolver =
 perftools-thread-task-controller =
   .title = タスクコントローラのスレッドプールにあるスレッドです
 
+perftools-thread-jvm-gecko =
+  .title = メイン Gecko JVM スレッドです
+perftools-thread-jvm-nimbus =
+  .title = Nimbus experiments SDK のメインスレッドです
+perftools-thread-jvm-default-dispatcher =
+  .title = Kotlin コルーチンライブラリーの既定のディスパッチャーです
+perftools-thread-jvm-glean =
+  .title = Glean telemetry SDK のメインスレッドです
+perftools-thread-jvm-arch-disk-io =
+  .title = Kotlin コルーチンライブラリーの IO ディスパッチャーです
+perftools-thread-jvm-pool =
+  .title = 無名スレッドプールで生成されたスレッドです
+
 ##
 
 perftools-record-all-registered-threads =
@@ -105,6 +117,9 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>新機能</b>: { -profiler-brand-name } が開発ツールに統合されました。この強力な新しいツールについては <a>こちら</a> をご覧ください。
 
@@ -123,15 +138,6 @@ perftools-onboarding-close-button =
 perftools-presets-web-developer-label = ウェブ開発
 perftools-presets-web-developer-description = 一般的なウェブアプリをデバッグするための低負荷な推奨プリセットです。
 
-perftools-presets-firefox-platform-label = Firefox プラットフォーム
-perftools-presets-firefox-platform-description = Firefox のプラットフォーム内部をデバッグするための推奨プリセットです。
-
-perftools-presets-firefox-front-end-label = Firefox フロントエンド
-perftools-presets-firefox-front-end-description = Firefox のフロントエンド内部をデバッグするための推奨プリセットです。
-
-perftools-presets-firefox-graphics-label = Firefox グラフィック
-perftools-presets-firefox-graphics-description = Firefox のグラフィック性能を調査するための推奨プリセットです。
-
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = { -brand-shorter-name } のプロファイリングのための推奨プリセットです。
 
@@ -139,9 +145,10 @@ perftools-presets-graphics-label = グラフィック
 perftools-presets-graphics-description = { -brand-shorter-name } のグラフィックバグを調査するための推奨プリセットです。
 
 perftools-presets-media-label = メディア
-perftools-presets-media-description = 音声と動画の問題を診断するための推奨プリセットです。
-
 perftools-presets-media-description2 = { -brand-shorter-name } の音声と動画のバグを調査するための推奨プリセットです。
+
+perftools-presets-networking-label = ネットワーク
+perftools-presets-networking-description = { -brand-shorter-name } のネットワークバグを調査するための推奨プリセットです。
 
 perftools-presets-custom-label = カスタム
 

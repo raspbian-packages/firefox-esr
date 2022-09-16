@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Importar e apondre un fuèlh d'estils existent al document
     .accesskey = I
+styleeditor-filter-input =
+    .placeholder = Filtrar los fuèlhs d'estils
 styleeditor-visibility-toggle =
     .tooltiptext = Afichar/amagar lo fuèlh d'estils
     .accesskey = s
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Dobrir lo ligam dins un onglet novèl
 styleeditor-copy-url =
     .label = Copiar l’URL
+styleeditor-go-to-line =
+    .label = Anar a la linha…
+    .accesskey = r
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Cap de fuèlh d’estils correspondent pas trobat.

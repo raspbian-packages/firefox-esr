@@ -123,6 +123,8 @@ cfr-doorhanger-video-support-primary-button = Päivitä nyt
 
 ## Spotlight modal shared strings
 
+spotlight-learn-more-collapsed = Lue lisää
+    .title = Laajenna lukeaksesi ominaisuudesta lisää
 spotlight-learn-more-expanded = Lue lisää
     .title = Sulje
 
@@ -142,4 +144,27 @@ spotlight-public-wifi-vpn-link = Ei nyt
 
 ## Total Cookie Protection Rollout
 
+# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
+# "Join an early experiment". This header text can be explicitly wrapped.
+spotlight-total-cookie-protection-header =
+    Testaa kaikkien aikojen tehokkainta
+    yksityisyyttä varjelevaa ominaisuuttamme
+spotlight-total-cookie-protection-body = Totaalinen evästesuoja estää seuraimia käyttämästä evästeitä sinun seuraamiseen verkossa.
+# "Early access" for this feature rollout means it's a "feature preview" or
+# "soft launch" as not everybody will get it yet.
+spotlight-total-cookie-protection-expanded = { -brand-short-name } rakentaa aidan evästeiden ympärille ja rajoittaa ne sivustoon, jolla olet, jotta seuraimet eivät voi käyttää evästeitä seuratakseen sinua. Varhaisen käytön avulla autat optimoimaan tämän ominaisuuden, jotta voimme jatkaa paremman verkon rakentamista kaikille.
+spotlight-total-cookie-protection-primary-button = Ota totaalinen evästesuoja käyttöön
 spotlight-total-cookie-protection-secondary-button = Ei nyt
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Parempi internet alkaa sinusta
+spotlight-better-internet-body = Kun käytät { -brand-short-name }ia, äänestät avoimen ja saavutettavan internetin puolesta, joka on parempi kaikille.
+spotlight-peace-mind-header = Pidämme huolen sinusta
+spotlight-peace-mind-body = Joka kuukausi { -brand-short-name } estää keskimäärin yli 3 000 seurainta käyttäjää kohden. Koska minkään, etenkään yksityisyyteen liittyvien haittojen, kuten seurainten, ei pitäisi olla sinun ja hyvän internetin välissä.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Pidä Dockissa
+       *[other] Kiinnitä tehtäväpalkkiin
+    }
+spotlight-pin-secondary-button = Ei nyt

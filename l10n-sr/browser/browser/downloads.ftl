@@ -13,12 +13,6 @@ downloads-panel =
 
 ##
 
-# The style attribute has the width of the Downloads Panel expressed using
-# a CSS unit. The longest labels that should fit are usually those of
-# in-progress and blocked downloads.
-downloads-panel-list =
-    .style = width: 74ch
-
 downloads-cmd-pause =
     .label = Паузирај
     .accesskey = П
@@ -30,31 +24,22 @@ downloads-cmd-cancel =
 downloads-cmd-cancel-panel =
     .aria-label = Откажи
 
-# This message is only displayed on Windows and Linux devices
-downloads-cmd-show-menuitem =
-    .label = Прикажи у фасцикли
-    .accesskey = П
-
-# This message is only displayed on macOS devices
-downloads-cmd-show-menuitem-mac =
-    .label = Прикажи у Finder-у
-    .accesskey = F
+## Displayed in the downloads context menu for files that can be opened.
+## Variables:
+##   $handler (String) - The name of the mime type's default file handler.
+##   Example: "Notepad", "Acrobat Reader DC", "7-Zip File Manager"
 
 downloads-cmd-use-system-default =
     .label = Отвори у системском прегледачу
     .accesskey = О
 
+# We can use the same accesskey as downloads-cmd-always-open-similar-files.
+# Both should not be visible in the downloads context menu at the same time.
 downloads-cmd-always-use-system-default =
     .label = Увек отварај у системском прегледачу
     .accesskey = У
 
-downloads-cmd-show-button =
-    .tooltiptext = Прикажи у фасцикли
-
-downloads-cmd-show-panel =
-    .aria-label = Прикажи у фасцикли
-downloads-cmd-show-description =
-    .value = Прикажи у фасцикли
+##
 
 downloads-cmd-show-downloads =
     .label = Отвори фасциклу са преузимањима
@@ -131,6 +116,8 @@ downloading-file-opens-in-minutes = Отварање за { $minutes } мин…
 downloading-file-opens-in-minutes-and-seconds = Отварање за { $minutes } мин. и { $seconds } сек…
 downloading-file-opens-in-seconds = Отварање за { $seconds } сек…
 downloading-file-opens-in-some-time = Отварање по завршетку…
+downloading-file-click-to-open =
+    .value = Отвори када се заврши
 
 ##
 
@@ -156,6 +143,14 @@ downloads-history =
 downloads-details =
     .title = Детаљи о преузимању
 
+## Displayed when a site attempts to automatically download many files.
+## Variables:
+##   $num (number) - Number of blocked downloads.
+##   $url (string) - The url of the suspicious site, stripped of http, https and www prefix.
+
+
+##
+
 downloads-clear-downloads-button =
     .label = Обриши листу
     .tooltiptext = Брише завршена, отказана и неуспешна преузимања
@@ -168,3 +163,4 @@ downloads-list-empty =
 # This string is shown when there are no items in the Downloads Panel.
 downloads-panel-empty =
     .value = Нема преузимања у овој сесији.
+

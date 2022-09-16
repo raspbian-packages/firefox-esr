@@ -183,7 +183,6 @@ extensions-warning-update-security = Հավելումների թարմացման
 extensions-warning-update-security-button = Միացնել
     .title = Միացնել հավելման թարմացման անվտանգության ստուգումը
 
-
 ## Strings connected to add-on updates
 
 addon-updates-check-for-updates = Ստուգել թարմացումները
@@ -278,7 +277,7 @@ discopane-intro =
     պաշտպանել գաղտնաբառերը, ներբեռնել տեսանյութեր, գտնել գործարքներ, արգելափակել նյարդայնացնող գովազդները, փոխել
     ձեր զննարկչի տեսքը և ավելին։ Այս փոքր ծրագրային ծրագրերը 
     հաճախ զարգացվել են երրորդ կողմի կողմից։ Ահա ընտրանք { -brand-product-name }
-    <a data-l10n-name="learn-more-trigger">խորհուր է տրվում</a> բացառիկ
+    <a data-l10n-name="learn-more-trigger">խորհուրդ է տրվում</a> բացառիկ
     անվտանգության, արդյունավետության և գործառություն համար։
 
 # Notice to make user aware that the recommendations are personalized.
@@ -436,3 +435,25 @@ addons-heading-search-input =
 
 addon-page-options-button =
     .title = Գործիքներ բոլոր հավելումների համար
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name }-ը և { -brand-short-name } { $version }-ը անհամատեղելի են:
+
+details-notification-unsigned-and-disabled = { $name }-ը չէր կարող հաստատվել { -brand-short-name }-ում օգտագործման համար և անջատվել է։
+details-notification-unsigned-and-disabled-link = Ավելի շատ տեղեկություն
+
+details-notification-unsigned = { $name }-ը չէր կարող վավերացվել { -brand-short-name }-ում օգտագործման համար։ Կատարվել է նախազգուշացմամբ։
+details-notification-unsigned-link = Ավելի շատ տեղեկություն
+
+details-notification-blocked = { $name }-ը անջատվել է` անվտանգություն կամ կայունություն ապահովելու նպատակով:
+details-notification-blocked-link = Ավելի շատ տեղեկություն
+
+details-notification-softblocked = Հայտնի է, որ { $name }-ը պատճառում է ապահովության կամ կայունության խնդիրներ:
+details-notification-softblocked-link = Ավելի շատ տեղեկություն
+
+details-notification-gmp-pending = { $name }-ը շուտով կտեղադրվի:

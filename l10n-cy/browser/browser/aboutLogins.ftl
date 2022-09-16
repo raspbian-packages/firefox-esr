@@ -5,8 +5,6 @@
 
 about-logins-page-title = Mewngofnodion a Chyfrineiriau
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Chwilio Mewngofnodion
 
@@ -65,7 +63,6 @@ about-logins-list-item-breach-icon =
     .title = Gwefan wedi dioddef tor-data
 about-logins-list-item-vulnerable-password-icon =
     .title = Cyfrinair bregus
-
 about-logins-list-section-breach = Gwefannau wedi dioddef tor-data
 about-logins-list-section-vulnerable = Cyfrinair bregus
 about-logins-list-section-nothing = Dim rhybudd
@@ -80,8 +77,8 @@ about-logins-login-intro-heading-logged-in = Heb ganfod mewngofnodion wedi'u cyd
 login-intro-description = Os gwnaethoch gadw eich mewngofnodion i { -brand-product-name } ar ddyfais wahanol, dyma sut i'w cael yma:
 login-intro-instructions-fxa = Crëwch neu fewngofnodwch i'ch cyfrif { -fxaccount-brand-name } ar y ddyfais lle mae'ch mewngofnodion yn cael eu cadw
 login-intro-instructions-fxa-settings = Ewch i Gosodiadau > Sync > Cychwyn cydweddu... Dewiswch y blwch ticio Mewngofnodi a chyfrineiriau.
-login-intro-instructions-fxa-help = Ewch i <a data-l10n-name="help-link">Gefnogaeth { -lockwise-brand-short-name }</a> i gael rhagor o gymorth
-about-logins-intro-import = Os yw eich mewngofnodion yn cael eu cadw mewn porwr arall, gallwch <a data-l10n-name="import-link">eu mewnforio i { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Ewch i <a data-l10n-name="passwords-help-link">cefnogaeth cyfrineiriau</a> i gael rhagor o gymorth.
+about-logins-intro-browser-only-import = Os yw eich mewngofnodion yn cael eu cadw mewn porwr arall, gallwch <a data-l10n-name="import-link">eu mewnforio i { -brand-product-name }</a>
 about-logins-intro-import2 = Os yw eich mewngofnodion wedi'u cadw y tu allan i { -brand-product-name }, gallwch <a data-l10n-name="import-browser-link">eu mewnforio o borwr arall</a> neu <a data-l10n-name="import-file-link">o ffeil</a>
 
 ## Login
@@ -136,8 +133,6 @@ about-logins-copy-password-os-auth-dialog-message-win = I gopïo'ch cyfrinair, r
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = copïo'r cyfrinair sydd wedi'i gadw
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = I allforio'ch mewngofnodion, nodwch eich manylion mewngofnodi Windows. Mae hyn yn helpu i amddiffyn diogelwch eich cyfrifon.
 # This message can be seen when attempting to export a password in about:logins
@@ -150,8 +145,6 @@ about-logins-primary-password-notification-message = Rhowch eich Prif Gyfrinair 
 master-password-reload-button =
     .label = Mewngofnodi
     .accesskey = M
-
-## Password Sync notification
 
 ## Dialogs
 

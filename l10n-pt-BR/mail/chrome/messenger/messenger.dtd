@@ -24,16 +24,14 @@
 <!ENTITY moveToNewWindow.accesskey "j">
 <!ENTITY newVirtualFolderCmd.label "Pesquisa salva…">
 <!ENTITY newVirtualFolderCmd.accesskey "a">
-<!ENTITY newOtherAccountsCmd.label "Outras contas…">
-<!ENTITY newOtherAccountsCmd.accesskey "O">
 <!ENTITY newCreateEmailAccountCmd.label "Obter uma nova conta de email…">
 <!ENTITY newCreateEmailAccountCmd.accesskey "O">
 <!ENTITY newExistingEmailAccountCmd.label "Conta de email existente…">
 <!ENTITY newExistingEmailAccountCmd.accesskey "o">
 <!ENTITY newIMAccountCmd.label "Conta de conversa…">
 <!ENTITY newIMAccountCmd.accesskey "b">
-<!ENTITY newFeedAccountCmd.label "Conta RSS">
-<!ENTITY newFeedAccountCmd.accesskey "R">
+<!ENTITY newFeedAccountCmd.label "Conta de canal de informações…">
+<!ENTITY newFeedAccountCmd.accesskey "C">
 <!ENTITY newIMContactCmd.label "Contato de conversa…">
 <!ENTITY newIMContactCmd.accesskey "c">
 <!ENTITY  newMessageCmd2.key "N">
@@ -48,12 +46,10 @@
 <!ENTITY openMessageFileCmd.accesskey "b">
 <!ENTITY saveAsMenu.label "Salvar como">
 <!ENTITY saveAsMenu.accesskey "a">
-<!ENTITY saveAsFileCmd.label "Arquivo">
-<!ENTITY saveAsFileCmd.accesskey "A">
 <!ENTITY saveAsFileCmd.key "S">
 <!ENTITY saveAsTemplateCmd.label "Modelo">
 <!ENTITY saveAsTemplateCmd.accesskey "M">
-<!ENTITY getNewMsgForCmd.label "Receber da conta">
+<!ENTITY getNewMsgForCmd.label "Receber novas mensagens de">
 <!ENTITY getNewMsgForCmd.accesskey "R">
 <!ENTITY getAllNewMsgCmdPopupMenu.label "Todas as contas">
 <!ENTITY getAllNewMsgCmdPopupMenu.accesskey "T">
@@ -61,7 +57,7 @@
 <!ENTITY getNewMsgCurrentAccountCmdPopupMenu.accesskey "C">
 <!ENTITY getNextNMsgCmd2.label "Receber as próximas mensagens novas">
 <!ENTITY getNextNMsgCmd2.accesskey "t">
-<!ENTITY sendUnsentCmd.label "Enviar mensagens da pasta “Saída”">
+<!ENTITY sendUnsentCmd.label "Enviar mensagens não enviadas">
 <!ENTITY sendUnsentCmd.accesskey "d">
 <!ENTITY subscribeCmd.label "Inscrever…">
 <!ENTITY subscribeCmd.accesskey "v">
@@ -118,8 +114,8 @@
 <!ENTITY folderPropsFolderCmd2.label "Propriedades da pasta">
 <!ENTITY folderPropsNewsgroupCmd2.label "Propriedades do grupo de notícias">
 <!ENTITY folderPropsCmd.accesskey "o">
-<!ENTITY undoDeleteMsgCmd.label "Desfazer (Excluir mensagem)">
-<!ENTITY redoDeleteMsgCmd.label "Refazer (Excluir mensagem)">
+<!ENTITY undoDeleteMsgCmd.label "Desfazer exclusão de mensagem">
+<!ENTITY redoDeleteMsgCmd.label "Refazer exclusão de mensagem">
 <!ENTITY undoMoveMsgCmd.label "Desfazer (Mover mensagem)">
 <!ENTITY redoMoveMsgCmd.label "Refazer (Mover mensagem)">
 <!ENTITY undoCopyMsgCmd.label "Desfazer (Copiar mensagem)">
@@ -188,7 +184,7 @@
 <!ENTITY sortByStatusCmd.accesskey "t">
 <!ENTITY sortByTagsCmd.label "Etiquetas">
 <!ENTITY sortByTagsCmd.accesskey "q">
-<!ENTITY sortByJunkStatusCmd.label "Spam">
+<!ENTITY sortByJunkStatusCmd.label "Status de spam">
 <!ENTITY sortByJunkStatusCmd.accesskey "m">
 <!ENTITY sortBySubjectCmd.label "Assunto">
 <!ENTITY sortBySubjectCmd.accesskey "s">
@@ -250,7 +246,7 @@
 <!ENTITY bodyAllParts.label "Todas as seções da mensagem">
 <!ENTITY bodyAllParts.accesskey "T">
 
-<!ENTITY bodyMenuFeed.label "Formatação do RSS como">
+<!ENTITY bodyMenuFeed.label "Formatar mensagens de canais de informações como">
 <!ENTITY bodyMenuFeed.accesskey "o">
 <!ENTITY viewFeedWebPage.label "Página web">
 <!ENTITY viewFeedWebPage.accesskey "P">
@@ -320,7 +316,6 @@
 <!ENTITY goBackCmd.commandKey "[">
 <!ENTITY goChatCmd.label "Conversa">
 <!ENTITY goChatCmd.accesskey "B">
-<!ENTITY goChatCmd2.key "H">
 <!ENTITY prevStarredMsgCmd.label "Mensagem com estrela">
 <!ENTITY prevStarredMsgCmd.accesskey "M">
 <!ENTITY folderMenu.label "Pasta">
@@ -339,7 +334,7 @@
 <!ENTITY newNewMsgCmd.accesskey "M">
 <!ENTITY archiveMsgCmd.label "Arquivar">
 <!ENTITY archiveMsgCmd.accesskey "A">
-<!ENTITY archiveMsgCmd.key "A">
+<!ENTITY archiveMsgCmd.key "a">
 <!ENTITY cancelNewsMsgCmd.label "Cancelar mensagem">
 <!ENTITY cancelNewsMsgCmd.accesskey "m">
 <!ENTITY replyMsgCmd.label "Responder">
@@ -442,7 +437,7 @@
 <!ENTITY openInConversationCmd.key "o">
 <!ENTITY openAttachmentListCmd.label "Anexos">
 <!ENTITY openAttachmentListCmd.accesskey "x">
-<!ENTITY openFeedMessage1.label "Ao abrir mensagens RSS">
+<!ENTITY openFeedMessage1.label "Ao abrir mensagens de canais de informações ">
 <!ENTITY openFeedMessage1.accesskey "b">
 <!ENTITY openFeedWebPage.label "Abrir como página web">
 <!ENTITY openFeedWebPage.accesskey "p">
@@ -494,7 +489,7 @@
 <!ENTITY exportCmd.accesskey "x">
 <!ENTITY clearRecentHistory.label "Limpar histórico recente…">
 <!ENTITY clearRecentHistory.accesskey "L">
-<!ENTITY accountManagerCmd2.label "Configurações da conta">
+<!ENTITY accountManagerCmd2.label "Configurações de contas">
 <!ENTITY accountManagerCmd2.accesskey "s">
 <!-- LOCALIZATION NOTE (accountManagerCmdUnix.accesskey):
      Belongs to accountManagerCmd.label, which is placed under the Edit menu
@@ -543,7 +538,7 @@
 <!ENTITY glodaSearch.title "Pesquisa global">
 <!ENTITY searchItem.title "Campo de pesquisa">
 <!ENTITY mailViewsToolbarItem.title "Modos de visualização">
-<!ENTITY folderLocationToolbarItem.title "Endereço da pasta">
+<!ENTITY folderLocationToolbarItem.title "Local da pasta">
 <!ENTITY tagButton.label "Etiquetas">
 <!ENTITY compactButton.label "Compactar">
 <!ENTITY appmenuButton.label "AppMenu">
@@ -629,7 +624,7 @@
 <!ENTITY folderContextOpenInNewWindow.accesskey "o">
 <!ENTITY folderContextOpenNewTab.label "Abrir em nova aba">
 <!ENTITY folderContextOpenNewTab.accesskey "b">
-<!ENTITY folderContextNew.label "Nova pasta…">
+<!ENTITY folderContextNew.label "Nova subpasta…">
 <!ENTITY folderContextNew.accesskey "N">
 <!ENTITY folderContextRename.label "Renomear">
 <!ENTITY folderContextRename.accesskey "m">
@@ -639,8 +634,8 @@
 <!ENTITY folderContextCompact.accesskey "C">
 <!ENTITY folderContextEmptyTrash.label "Esvaziar lixeira">
 <!ENTITY folderContextEmptyTrash.accesskey "x">
-<!ENTITY folderContextEmptyJunk.label "Excluir spans">
-<!ENTITY folderContextEmptyJunk.accesskey "x">
+<!ENTITY folderContextEmptyJunk.label "Esvaziar pasta de spam">
+<!ENTITY folderContextEmptyJunk.accesskey "v">
 <!ENTITY folderContextSendUnsentMessages.label "Enviar mensagens">
 <!ENTITY folderContextSendUnsentMessages.accesskey "E">
 <!ENTITY folderContextUnsubscribe.label "Cancelar inscrição">
@@ -674,7 +669,7 @@
 <!ENTITY searchRecipient.label "Para ou Cc">
 <!ENTITY searchSubjectOrRecipientMenu.label "Assunto, Para ou Cc">
 <!ENTITY searchMessageBody.label "Texto da mensagem">
-<!ENTITY saveAsVirtualFolderMenu.label "Salvar como pasta…">
+<!ENTITY saveAsVirtualFolderMenu.label "Salvar pesquisa como pasta…">
 
 <!-- Thread Pane -->
 <!ENTITY selectColumn.label "Selecionar mensagens">
@@ -689,13 +684,13 @@
 <!ENTITY accountColumn.label "Conta">
 <!ENTITY statusColumn.label "Status">
 <!ENTITY sizeColumn.label "Tamanho">
-<!ENTITY junkStatusColumn.label "Spam">
+<!ENTITY junkStatusColumn.label "Status de spam">
 <!ENTITY unreadColumn.label "Não lida">
 <!ENTITY totalColumn.label "Total">
 <!ENTITY readColumn.label "Lida">
 <!ENTITY receivedColumn.label "Recebimento">
 <!ENTITY starredColumn.label "Com estrela">
-<!ENTITY locationColumn.label "Pasta">
+<!ENTITY locationColumn.label "Local">
 <!ENTITY idColumn.label "Ordem de chegada">
 <!ENTITY attachmentColumn.label "Anexos">
 <!ENTITY deleteColumn.label "Excluir">
@@ -806,7 +801,7 @@
      that the user selects using the same widget as the move to/copy to
      mechanism (via a series of popups).
   -->
-<!ENTITY columnPicker.applyToFolder.label "Pasta">
+<!ENTITY columnPicker.applyToFolder.label "Pasta…">
 <!-- LOCALIZATION NOTE (columnPicker.applyToFolderAndChildren.label):
      This option in the thread pane column picker is found on a sub-menu beneath
      the "columnPicker.applyTo.label" alongside
@@ -941,7 +936,7 @@
 <!ENTITY showAllAppsCmdMac.label        "Mostrar Tudo">
 
 <!-- Mac OS X Dock Icon pop-up menu -->
-<!ENTITY dockOptions.label              "Opções do ícone…">
+<!ENTITY dockOptions.label              "Opções de ícone do aplicativo…">
 <!ENTITY writeNewMessageDock.label      "Escrever nova mensagem">
 <!ENTITY openAddressBookDock.label      "Abrir catálogo de endereços">
 

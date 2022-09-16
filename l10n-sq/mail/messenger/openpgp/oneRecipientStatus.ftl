@@ -26,5 +26,7 @@ openpgp-key-verified = I pranuar (i verifikuar)
 openpgp-key-unverified = I pranuar (i paverifikuar)
 openpgp-key-undecided = I papranuar (i lëkundur)
 openpgp-key-rejected = I papranuar (i hedhur poshtë)
+openpgp-key-expired = I skaduar
 
 openpgp-intro = Kyçe publikë të passhëm për { $key }
+

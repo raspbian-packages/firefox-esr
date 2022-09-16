@@ -23,7 +23,7 @@ update-applying = განახლების ამოქმედება�
 update-failed = განახლება ვერ მოხერხდა. <label data-l10n-name="failed-link">უახლესი ვერსიის ჩამოტვირთვა</label>
 update-failed-main = განახლება ვერ მოხერხდა. <a data-l10n-name="failed-link-main">უახლესი ვერსიის ჩამოტვირთვა</a>
 
-update-adminDisabled = განახლებები აკრძალულია თქვენი სისტემის მმართველის მიერ
+update-adminDisabled = განახლებები აკრძალულია თქვენი სისტემის ზედამხედველის მიერ
 update-noUpdatesFound = { -brand-short-name } განახლებულია
 update-otherInstanceHandlingUpdates = { -brand-short-name } უკვე ახლდება
 

@@ -186,13 +186,14 @@ delete-email-cert-impact = ਜੇ ਤੁਸੀਂ ਇੱਕ ਵਿਅਕਤੀ �
 cert-with-serial =
     .value = ਲੜੀ ਨੰਬਰ ਨਾਲ ਸਰਟੀਫਿਕੇਟ: { $serialNumber }
 
-## Cert Viewer
-
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = ਕੋਈ ਕਲਾਈਂਟ ਸਰਟੀਫਿਕੇਟ ਨਾ ਭੇਜੋ
 
 # Used when no cert is stored for an override
 no-cert-stored-for-override = (ਸੰਭਾਲਿਆ ਨਹੀਂ ਹੈ)
+
+# When a certificate is unavailable (for example, it has been deleted or the token it exists on has been removed).
+certificate-not-available = (ਨਾ-ਉਪਲੱਬਧ)
 
 ## Used to show whether an override is temporary or permanent
 

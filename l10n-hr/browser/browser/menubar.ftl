@@ -43,15 +43,6 @@ menu-quit =
 menu-quit-mac =
     .label = Zatvori { -brand-shorter-name }
 
-# This menu-quit-button string is only used on Linux.
-menu-quit-button =
-    .label = { menu-quit.label }
-
-# This menu-quit-button-win string is only used on Windows.
-menu-quit-button-win =
-    .label = { menu-quit.label }
-    .tooltip = Zatvori { -brand-shorter-name }
-
 menu-about =
     .label = O { -brand-shorter-name }u
     .accesskey = O
@@ -81,9 +72,6 @@ menu-file-open-location =
 menu-file-open-file =
     .label = Otvori datoteku …
     .accesskey = O
-menu-file-close =
-    .label = Zatvori
-    .accesskey = Z
 menu-file-close-window =
     .label = Zatvori prozor
     .accesskey = o
@@ -96,14 +84,11 @@ menu-file-email-link =
 menu-file-print-setup =
     .label = Postavke stranice …
     .accesskey = s
-menu-file-print-preview =
-    .label = Pregled ispisa
-    .accesskey = s
 menu-file-print =
     .label = Ispiši …
     .accesskey = p
 menu-file-import-from-another-browser =
-    .label = Uvoz iz drugog preglednika…
+    .label = Uvezi iz drugog preglednika …
     .accesskey = U
 menu-file-go-offline =
     .label = Izvanmrežni rad
@@ -210,7 +195,6 @@ menu-history-undo-menu =
     .label = Nedavno zatvorene kartice
 menu-history-undo-window-menu =
     .label = Nedavno zatvoreni prozori
-
 menu-history-reopen-all-tabs = Ponovno otvori sve kartice
 menu-history-reopen-all-windows = Ponovno otvori sve prozore
 
@@ -309,9 +293,6 @@ menu-help-more-troubleshooting-info =
     .accesskey = v
 menu-help-report-site-issue =
     .label = Prijavi problem sa stranicom …
-menu-help-feedback-page =
-    .label = Pošalji povratne informacije …
-    .accesskey = e
 menu-help-enter-troubleshoot-mode2 =
     .label = Način rada za rješavanje problema
     .accesskey = m

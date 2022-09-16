@@ -26,5 +26,7 @@ openpgp-key-verified = Godkjent (bekreftet)
 openpgp-key-unverified = Godkjent (ubekreftet)
 openpgp-key-undecided = Ikke godkjent (ikke bestemt)
 openpgp-key-rejected = Ikke akseptert (avvist)
+openpgp-key-expired = Utløpt
 
 openpgp-intro = Tilgjengelige offentlige nøkler for { $key }
+

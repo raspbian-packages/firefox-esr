@@ -16,6 +16,8 @@ about-addressbook-toolbar-new-contact =
     .label = Ny kontakt
 about-addressbook-toolbar-new-list =
     .label = Ny mailingliste
+about-addressbook-toolbar-import =
+    .label = Importer
 
 ## Books
 
@@ -27,10 +29,14 @@ about-addressbook-books-context-synchronize =
     .label = Synkroniser
 about-addressbook-books-context-print =
     .label = Udskriv…
+about-addressbook-books-context-export =
+    .label = Eksporter…
 about-addressbook-books-context-delete =
     .label = Slet
 about-addressbook-books-context-remove =
     .label = Fjern
+about-addressbook-books-context-startup-default =
+    .label = Standardmappe ved start
 
 about-addressbook-confirm-delete-book-title = Slet adressebog
 # Variables:
@@ -68,6 +74,9 @@ about-addressbook-sort-email-ascending =
     .label = Sorter efter mailadresse (A > Å)
 about-addressbook-sort-email-descending =
     .label = Sorter efter mailadresse (Å > A)
+
+about-addressbook-cards-context-write =
+    .label = Skriv
 
 about-addressbook-confirm-delete-mixed-title = Slet kontakter og lister
 # Variables:
@@ -131,3 +140,17 @@ about-addressbook-details-phone-numbers-header = Telefonnumre
 about-addressbook-details-home-address-header = Hjemmeadresse
 about-addressbook-details-work-address-header = Arbejdsadresse
 about-addressbook-details-other-info-header = Anden information
+
+about-addressbook-unsaved-changes-prompt-title = Ugemte ændringer
+about-addressbook-unsaved-changes-prompt = Vil du gemme dine ændringer, inden du forlader redigeringsvisningen?
+
+# Photo dialog
+
+about-addressbook-photo-drop-target = Slip eller indsæt et billede her, eller klik for at vælge en fil.
+about-addressbook-photo-drop-loading = Indlæser billede...
+about-addressbook-photo-drop-error = Billedet kunne ikke indlæses.
+about-addressbook-photo-filepicker-title = Vælg en billedfil
+
+about-addressbook-photo-discard = Kassér eksisterende billede
+about-addressbook-photo-cancel = Fortryd
+about-addressbook-photo-save = Gem

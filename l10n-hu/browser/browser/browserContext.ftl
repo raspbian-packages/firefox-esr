@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Hivatkozás mentése a { -pocket-brand-name }be
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = E-mail cím másolása
     .accesskey = m
+
+main-context-menu-copy-phone =
+    .label = Telefonszám másolása
+    .accesskey = T
 
 main-context-menu-copy-link-simple =
     .label = Hivatkozás másolása
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Hivatkozás megnyitása új { $containerName }-lapon
     .accesskey = l
+
+main-context-menu-reveal-password =
+    .label = Jelszó felfedése
+    .accesskey = f

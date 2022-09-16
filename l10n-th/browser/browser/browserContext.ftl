@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = บันทึกลิงก์ไปยัง { -pocket-brand-name }
     .accesskey = น
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = คัดลอกที่อยู่อีเมล
     .accesskey = ท
+
+main-context-menu-copy-phone =
+    .label = คัดลอกหมายเลขโทรศัพท์
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = คัดลอกลิงก์
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = เปิดลิงก์ในแท็บ { $containerName } ใหม่
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = เผยรหัสผ่าน
+    .accesskey = v

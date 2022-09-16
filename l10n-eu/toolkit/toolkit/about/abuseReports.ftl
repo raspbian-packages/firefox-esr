@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = { $addon-name } gehigarrirako txostena
 
 abuse-report-title-extension = Salatu hedapen hau { -vendor-short-name }(r)i
+abuse-report-title-sitepermission = Salatu guneei baimenak ematen dizkion hedapen hau { -vendor-short-name }(r)i
 abuse-report-title-theme = Salatu itxura hau { -vendor-short-name }(r)i
 abuse-report-subtitle = Zein da arazoa?
 
@@ -35,12 +35,6 @@ abuse-report-goback-button = Joan atzera
 abuse-report-submit-button = Bidali
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -50,6 +44,7 @@ abuse-report-messagebar-submitting = Salaketa bidaltzen <span data-l10n-name="ad
 abuse-report-messagebar-submitted = Eskerrik asko salaketa bidaltzeagatik. <span data-l10n-name="addon-name">{ $addon-name }</span> gehigarria kendu egin nahi duzu?
 abuse-report-messagebar-submitted-noremove = Eskerrik asko salaketa bidaltzeagatik.
 abuse-report-messagebar-removed-extension = Eskerrik asko salaketa bidaltzeagatik. <span data-l10n-name="addon-name">{ $addon-name }</span> hedapena kendu egin duzu.
+abuse-report-messagebar-removed-sitepermission = Eskerrik asko salaketa bidaltzeagatik. Guneei baimenak ematen dizkion <span data-l10n-name="addon-name">{ $addon-name }</span> hedapena kendu egin duzu.
 abuse-report-messagebar-removed-theme = Eskerrik asko salaketa bidaltzeagatik. <span data-l10n-name="addon-name">{ $addon-name }</span> itxura kendu egin duzu.
 abuse-report-messagebar-error = Errorea gertatu da <span data-l10n-name="addon-name">{ $addon-name }</span> gehigarrirako salaketa bidaltzerakoan.
 abuse-report-messagebar-error-recent-submit = <span data-l10n-name="addon-name">{ $addon-name }</span> gehigarrirako salaketa ez da bidali orain dela gutxi beste salaketa bat bidali delako.
@@ -58,6 +53,8 @@ abuse-report-messagebar-error-recent-submit = <span data-l10n-name="addon-name">
 
 abuse-report-messagebar-action-remove-extension = Bai, kendu
 abuse-report-messagebar-action-keep-extension = Ez, mantendu
+abuse-report-messagebar-action-remove-sitepermission = Bai, kendu
+abuse-report-messagebar-action-keep-sitepermission = Ez, mantendu
 abuse-report-messagebar-action-remove-theme = Bai, kendu
 abuse-report-messagebar-action-keep-theme = Ez, mantendu
 abuse-report-messagebar-action-retry = Saiatu berriro
@@ -80,9 +77,11 @@ abuse-report-deceptive-reason-v2 = Benetan ez den zerbait izaten saiatu da
 abuse-report-deceptive-example = Adibidea: gezurretako azalpen edo iruditeria
 
 abuse-report-broken-reason-extension-v2 = Ez dabil, webguneak apurtzen ditu edo { -brand-product-name } moteltzen du
+abuse-report-broken-reason-sitepermission-v2 = Ez dabil, webguneak apurtzen ditu edo { -brand-product-name } moteltzen du
 abuse-report-broken-reason-theme-v2 = Ez dabil edo nabigatzailearen bistaratzea apurtzen du
 abuse-report-broken-example = Adibidea: eginbideak makalak edo erabiltzeko zailak dira, edo ez dabil; webguneetako zatiak ez dabiltza edo ezohikoak dirudite
 abuse-report-broken-suggestions-extension = Badirudi programa-errore bat aurkitu duzula. Hemen bertan horren berri emateaz gain, arazoa konpontzeko biderik onena zuzenean hedapenaren garatzailearekin harremanetan jartzea da. Garatzaileari buruzko informazioa eskuratzeko, <a data-l10n-name="support-link">bisitatu hedapenaren webgunea</a>.
+abuse-report-broken-suggestions-sitepermission = Badirudi programa-errore bat aurkitu duzula. Hemen bertan horren berri emateaz gain, arazoa konpontzeko biderik onena zuzenean webgunearen garatzailearekin harremanetan jartzea da. Garatzaileari buruzko informazioa eskuratzeko, <a data-l10n-name="support-link">bisitatu webgunea</a>.
 abuse-report-broken-suggestions-theme = Badirudi programa-errore bat aurkitu duzula. Hemen bertan horren berri emateaz gain, arazoa konpontzeko biderik onena zuzenean itxuraren garatzailearekin harremanetan jartzea da. Garatzaileari buruzko informazioa eskuratzeko, <a data-l10n-name="support-link">bisitatu itxuraren webgunea</a>.
 
 abuse-report-policy-reason-v2 = Eduki gaitzesgarria, indarkeriazkoa edo ilegala du
@@ -92,4 +91,3 @@ abuse-report-unwanted-reason-v2 = Inoiz ez dut nahi izan eta ez dakit nola gaine
 abuse-report-unwanted-example = Adibidea: aplikazio batek nire baimenik gabe instalatu du
 
 abuse-report-other-reason = Beste zerbait
-

@@ -35,6 +35,8 @@ detail-version =
     .label = גרסה
 detail-last-updated =
     .label = עודכן לאחרונה
+addon-detail-description-expand = להציג יותר
+addon-detail-description-collapse = להציג פחות
 detail-contributions-description = המפתחים של תוספת זו מבקשים את עזרתך בהמשך הפיתוח שלה על־ידי מתן תרומה צנועה.
 detail-contributions-button = תרומה
     .title = מתן תרומה לפיתוח תוספת זו
@@ -134,6 +136,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = עדכונים אחרונים
 addon-category-recent-updates-title =
     .title = עדכונים אחרונים
+addon-category-sitepermission = הרשאות אתר
+addon-category-sitepermission-title =
+    .title = הרשאות אתר
 
 ## These are global warnings
 
@@ -270,8 +275,12 @@ preferences-addon-button =
 details-addon-button = פרטים
 release-notes-addon-button = הערות שחרור
 permissions-addon-button = הרשאות
+theme-disabled-heading2 = ערכות נושא שמורות
 theme-monochromatic-heading = ערכות צבעים
 theme-monochromatic-subheading = ערכות צבעים חדשים ותוססים מ־{ -brand-product-name }. זמינים לזמן מוגבל.
+theme-colorways-button = לנסות ערכות צבעים
+sitepermission-enabled-heading = מופעל
+sitepermission-disabled-heading = מושבת
 always-activate-button = הפעלה תמיד
 never-activate-button = לא להפעיל לעולם
 addon-detail-author-label = מפתח
@@ -348,6 +357,7 @@ addon-permissions-optional = הרשאות רשות לתכונות נוספות:
 addon-permissions-learnmore = מידע נוסף על הרשאות
 recommended-extensions-heading = הרחבות מומלצות
 recommended-themes-heading = ערכות נושא מומלצות
+addon-sitepermissions-required = מעניק ל־<span data-l10n-name="hostname">{ $hostname }</span> את היכולות הבאות:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = גל של יצירתיות שוטף אותך? <a data-l10n-name="link">ניתן ליצור ערכת נושא משלך בעזרת Firefox Color.</a>
@@ -360,6 +370,7 @@ plugin-heading = ניהול התוספים החיצוניים שלך
 dictionary-heading = ניהול המילונים שלך
 locale-heading = ניהול השפות שלך
 updates-heading = ניהול העדכונים שלך
+sitepermission-heading = ניהול ההרשאות שלך לאתרים
 discover-heading = התאמה אישית של ה־{ -brand-short-name } שלך
 shortcuts-heading = ניהול קיצורי דרך להרחבות
 default-heading-search-label = חיפוש תוספות נוספות
@@ -367,3 +378,20 @@ addons-heading-search-input =
     .placeholder = חיפוש ב־addons.mozilla.org
 addon-page-options-button =
     .title = כלים עבור כל התוספות
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } אינו תואם ל־{ -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = לא ניתן לאמת את { $name } לשימוש ב־{ -brand-short-name } ולכן תוספת זו נוטרלה.
+details-notification-unsigned-and-disabled-link = מידע נוסף
+details-notification-unsigned = לא ניתן לאמת את { $name } לשימוש ב־{ -brand-short-name }. נא להיזהר.
+details-notification-unsigned-link = מידע נוסף
+details-notification-blocked = התוספת { $name } נחסמה עקב בעיות אבטחה או יציבות.
+details-notification-blocked-link = מידע נוסף
+details-notification-softblocked = התוספת { $name } נודעת בגרימת בעיות אבטחה או יציבות.
+details-notification-softblocked-link = מידע נוסף
+details-notification-gmp-pending = התוספת { $name } תותקן בהקדם.

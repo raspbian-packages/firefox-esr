@@ -19,6 +19,9 @@ auth-waiting = Väntar på att kontakten ska slutföra verifieringen…
 finger-verify = Verifiera
 finger-verify-access-key = V
 
+finger-ignore = Ignorera
+finger-ignore-access-key = g
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Lägg till OTR-fingeravtryck
 
@@ -43,7 +46,6 @@ finger-unseen = Identiteten för { $name } har inte verifierats än. Tillfällig
 finger-seen = { $name } kontaktar dig från en okänd dator. Tillfällig avlyssning är inte möjlig, men med viss ansträngning kan någon avlyssna. Förhindra övervakning genom att verifiera kontaktens identitet.
 
 state-not-private = Den aktuella konversationen är inte privat.
-
 state-generic-not-private = Den aktuella konversationen är inte privat.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Du har verifierat identiteten på { $name }.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = Identiteten för { $name } har inte verifierats.
-
-verify-title = Verifiera din kontakts identitet
-error-title = Fel
-success-title = End-to-end kryptering
-success-them-title = Verifiera din kontakts identitet
-fail-title = Det går inte att verifiera
-waiting-title = Verifieringsbegäran har skickats
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

@@ -24,8 +24,6 @@
 <!ENTITY moveToNewWindow.accesskey "w">
 <!ENTITY newVirtualFolderCmd.label "Skłaźone pytanje…">
 <!ENTITY newVirtualFolderCmd.accesskey "S">
-<!ENTITY newOtherAccountsCmd.label "Druge konta…">
-<!ENTITY newOtherAccountsCmd.accesskey "u">
 <!ENTITY newCreateEmailAccountCmd.label "Nowe e-mailowe konto wobstaraś…">
 <!ENTITY newCreateEmailAccountCmd.accesskey "N">
 <!ENTITY newExistingEmailAccountCmd.label "Eksistěrujuce e-mailowe konto…">
@@ -48,8 +46,6 @@
 <!ENTITY openMessageFileCmd.accesskey "k">
 <!ENTITY saveAsMenu.label "Składowaś ako">
 <!ENTITY saveAsMenu.accesskey "S">
-<!ENTITY saveAsFileCmd.label "Dataja">
-<!ENTITY saveAsFileCmd.accesskey "D">
 <!ENTITY saveAsFileCmd.key "s">
 <!ENTITY saveAsTemplateCmd.label "Pśedłoga">
 <!ENTITY saveAsTemplateCmd.accesskey "P">
@@ -487,11 +483,11 @@
 <!ENTITY runJunkControls.label "Kontrolu cajkoweje e-maile na zarědnik nałožyś">
 <!ENTITY runJunkControls.accesskey "c">
 <!ENTITY deleteJunk.label "E-mail markěrowanu ako cajk w zarědniku lašowaś">
-<!ENTITY deleteJunk.accesskey "E">
+<!ENTITY deleteJunk.accesskey "m">
 <!ENTITY importCmd.label "Importěrowaś…">
-<!ENTITY importCmd.accesskey "m">
-<!ENTITY exportCmd.label "">
-<!ENTITY exportCmd.accesskey "k">
+<!ENTITY importCmd.accesskey "I">
+<!ENTITY exportCmd.label "Eksportěrowaś…">
+<!ENTITY exportCmd.accesskey "E">
 <!ENTITY clearRecentHistory.label "Aktualnu historiju lašowaś…">
 <!ENTITY clearRecentHistory.accesskey "h">
 <!ENTITY accountManagerCmd2.label "Kontowe nastajenja">

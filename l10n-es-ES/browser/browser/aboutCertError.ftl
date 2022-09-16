@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Los sitios web demuestran su identida
 
 cert-error-symantec-distrust-admin = Puede avisar al administrador del sitio web acerca de este problema.
 
+cert-error-old-tls-version = Es posible que este sitio web no sea compatible con el protocolo TLS 1.2, que es la versión mínima compatible con { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = Seguridad estricta de transporte HTTP: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Respuesta inesperada del servidor
 nssFailure2-title = Conexión segura fallida
 csp-xfo-error-title = { -brand-short-name } no puede abrir esta página
 corruptedContentError-title = Error de contenido dañado
-remoteXUL-title = XUL remoto
 sslv3Used-title = No es posible conectar de manera segura
 inadequateSecurityError-title = Su conexión no es segura
 blockedByPolicy-title = Página bloqueada

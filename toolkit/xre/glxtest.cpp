@@ -36,6 +36,7 @@
 #ifdef MOZ_X11
 #  include "X11/Xlib.h"
 #  include "X11/Xutil.h"
+#  include <X11/extensions/Xrandr.h>
 #endif
 
 #ifdef MOZ_WAYLAND
@@ -59,71 +60,6 @@ typedef XID GLXPbuffer;
 #  define GLX_GREEN_SIZE 9
 #  define GLX_BLUE_SIZE 10
 #  define GLX_DOUBLEBUFFER 5
-
-// xrandr.h
-typedef XID RRMode;
-typedef XID RRProvider;
-typedef unsigned long XRRModeFlags;
-typedef struct _provider provider_t;
-
-typedef struct _XRRModeInfo {
-  RRMode id;
-  unsigned int width;
-  unsigned int height;
-  unsigned long dotClock;
-  unsigned int hSyncStart;
-  unsigned int hSyncEnd;
-  unsigned int hTotal;
-  unsigned int hSkew;
-  unsigned int vSyncStart;
-  unsigned int vSyncEnd;
-  unsigned int vTotal;
-  char* name;
-  unsigned int nameLength;
-  XRRModeFlags modeFlags;
-} XRRModeInfo;
-
-typedef struct _XRRScreenResources {
-  Time timestamp;
-  Time configTimestamp;
-  int ncrtc;
-  void* crtcs;
-  int noutput;
-  void* outputs;
-  int nmode;
-  XRRModeInfo* modes;
-} XRRScreenResources;
-
-typedef struct _XRRProviderInfo {
-  unsigned int capabilities;
-  int ncrtcs;
-  void* crtcs;
-  int noutputs;
-  void* outputs;
-  char* name;
-  int nassociatedproviders;
-  RRProvider* associated_providers;
-  unsigned int* associated_capability;
-  int nameLen;
-} XRRProviderInfo;
-
-typedef struct {
-  unsigned int kind;
-  char* string;
-  XID xid;
-  int index;
-} name_t;
-
-struct _provider {
-  name_t provider;
-  XRRProviderInfo* info;
-};
-
-typedef struct _XRRProviderResources {
-  Time timestamp;
-  int nproviders;
-  RRProvider* providers;
-} XRRProviderResources;
 #endif
 
 // stuff from gl.h
@@ -170,10 +106,12 @@ typedef void* (*PFNEGLGETPROCADDRESS)(const char*);
 #define EGL_RED_SIZE 0x3024
 #define EGL_NONE 0x3038
 #define EGL_VENDOR 0x3053
+#define EGL_EXTENSIONS 0x3055
 #define EGL_CONTEXT_CLIENT_VERSION 0x3098
 #define EGL_OPENGL_API 0x30A2
 #define EGL_DEVICE_EXT 0x322C
 #define EGL_DRM_DEVICE_FILE_EXT 0x3233
+#define EGL_DRM_RENDER_NODE_FILE_EXT 0x3377
 
 // stuff from xf86drm.h
 #define DRM_NODE_RENDER 2
@@ -211,13 +149,11 @@ typedef struct _drmDevice {
 #  define LIBGLES_FILENAME "libGLESv2.so"
 #  define LIBEGL_FILENAME "libEGL.so"
 #  define LIBDRM_FILENAME "libdrm.so"
-#  define LIBXRANDR_FILENAME "libXrandr.so"
 #else
 #  define LIBGL_FILENAME "libGL.so.1"
 #  define LIBGLES_FILENAME "libGLESv2.so.2"
 #  define LIBEGL_FILENAME "libEGL.so.1"
 #  define LIBDRM_FILENAME "libdrm.so.2"
-#  define LIBXRANDR_FILENAME "libXrandr.so.2"
 #endif
 
 #define EXIT_FAILURE_BUFFER_TOO_SMALL 2
@@ -415,11 +351,11 @@ static bool device_has_name(const drmDevice* device, const char* name) {
   return false;
 }
 
-static void get_render_name(const char* name) {
+static bool get_render_name(const char* name) {
   void* libdrm = dlopen(LIBDRM_FILENAME, RTLD_LAZY);
   if (!libdrm) {
     record_warning("Failed to open libdrm");
-    return;
+    return false;
   }
 
   typedef int (*DRMGETDEVICES2)(uint32_t, drmDevicePtr*, int);
@@ -434,7 +370,7 @@ static void get_render_name(const char* name) {
     record_warning(
         "libdrm missing methods for drmGetDevices2 or drmFreeDevice");
     dlclose(libdrm);
-    return;
+    return false;
   }
 
   uint32_t flags = 0;
@@ -442,20 +378,20 @@ static void get_render_name(const char* name) {
   if (devices_len < 0) {
     record_warning("drmGetDevices2 failed");
     dlclose(libdrm);
-    return;
+    return false;
   }
   drmDevice** devices = (drmDevice**)calloc(devices_len, sizeof(drmDevice*));
   if (!devices) {
     record_warning("Allocation error");
     dlclose(libdrm);
-    return;
+    return false;
   }
   devices_len = drmGetDevices2(flags, devices, devices_len);
   if (devices_len < 0) {
     free(devices);
     record_warning("drmGetDevices2 failed");
     dlclose(libdrm);
-    return;
+    return false;
   }
 
   const drmDevice* match = nullptr;
@@ -466,6 +402,7 @@ static void get_render_name(const char* name) {
     }
   }
 
+  bool result = false;
   if (!match) {
     record_warning("Cannot find DRM device");
   } else if (!(match->available_nodes & (1 << DRM_NODE_RENDER))) {
@@ -476,6 +413,7 @@ static void get_render_name(const char* name) {
         "MESA_VENDOR_ID\n0x%04x\n"
         "MESA_DEVICE_ID\n0x%04x\n",
         match->deviceinfo.pci->vendor_id, match->deviceinfo.pci->device_id);
+    result = true;
   }
 
   for (int i = 0; i < devices_len; i++) {
@@ -484,6 +422,7 @@ static void get_render_name(const char* name) {
   free(devices);
 
   dlclose(libdrm);
+  return result;
 }
 #endif
 
@@ -522,7 +461,8 @@ static bool get_gles_status(EGLDisplay dpy,
       cast<PFNEGLQUERYDISPLAYATTRIBEXTPROC>(
           eglGetProcAddress("eglQueryDisplayAttribEXT"));
 
-  if (!eglChooseConfig || !eglCreateContext || !eglMakeCurrent) {
+  if (!eglChooseConfig || !eglCreateContext || !eglMakeCurrent ||
+      !eglQueryDeviceStringEXT) {
     record_warning("libEGL missing methods for GL test");
     return false;
   }
@@ -596,22 +536,26 @@ static bool get_gles_status(EGLDisplay dpy,
     return false;
   }
 
-  if (eglQueryDeviceStringEXT) {
-    EGLDeviceEXT device = nullptr;
-
-    if (eglQueryDisplayAttribEXT(dpy, EGL_DEVICE_EXT, (EGLAttrib*)&device) ==
-        EGL_TRUE) {
+  EGLDeviceEXT device;
+  if (eglQueryDisplayAttribEXT(dpy, EGL_DEVICE_EXT, (EGLAttrib*)&device) ==
+      EGL_TRUE) {
+    const char* deviceExtensions =
+        eglQueryDeviceStringEXT(device, EGL_EXTENSIONS);
+    if (deviceExtensions &&
+        strstr(deviceExtensions, "EGL_MESA_device_software")) {
+      record_value("MESA_ACCELERATED\nFALSE\n");
+    } else {
+#ifdef MOZ_WAYLAND
       const char* deviceString =
           eglQueryDeviceStringEXT(device, EGL_DRM_DEVICE_FILE_EXT);
-      if (deviceString) {
-        record_value("MESA_ACCELERATED\nTRUE\n");
-
-#ifdef MOZ_WAYLAND
-        get_render_name(deviceString);
-#endif
-      } else {
-        record_value("MESA_ACCELERATED\nFALSE\n");
+      if (!deviceString || !get_render_name(deviceString)) {
+        const char* renderNodeString =
+            eglQueryDeviceStringEXT(device, EGL_DRM_RENDER_NODE_FILE_EXT);
+        if (renderNodeString) {
+          record_value("DRM_RENDERDEVICE\n%s\n", renderNodeString);
+        }
       }
+#endif
     }
   }
 
@@ -703,58 +647,7 @@ static bool get_egl_status(EGLNativeDisplayType native_dpy, bool gles_test,
 }
 
 #ifdef MOZ_X11
-static void get_x11_screen_info(Display* dpy) {
-  int screenCount = ScreenCount(dpy);
-  int defaultScreen = DefaultScreen(dpy);
-  if (screenCount != 0) {
-    record_value("SCREEN_INFO\n");
-    for (int idx = 0; idx < screenCount; idx++) {
-      Screen* scrn = ScreenOfDisplay(dpy, idx);
-      int current_height = scrn->height;
-      int current_width = scrn->width;
-
-      record_value("%dx%d:%d%s", current_width, current_height,
-                   idx == defaultScreen ? 1 : 0,
-                   idx == screenCount - 1 ? ";\n" : ";");
-    }
-  }
-}
-
-static void get_x11_ddx_info(Display* dpy) {
-  void* libXrandr = dlopen(LIBXRANDR_FILENAME, RTLD_LAZY);
-  if (!libXrandr) {
-    return;
-  }
-
-  typedef XRRProviderResources* (*XRRGETPROVIDERRESOURCES)(Display*, Window);
-  XRRGETPROVIDERRESOURCES XRRGetProviderResources =
-      cast<XRRGETPROVIDERRESOURCES>(
-          dlsym(libXrandr, "XRRGetProviderResources"));
-
-  typedef XRRScreenResources* (*XRRGETSCREENRESOURCESCURRENT)(Display*, Window);
-  XRRGETSCREENRESOURCESCURRENT XRRGetScreenResourcesCurrent =
-      cast<XRRGETSCREENRESOURCESCURRENT>(
-          dlsym(libXrandr, "XRRGetScreenResourcesCurrent"));
-
-  typedef XRRProviderInfo* (*XRRGETPROVIDERINFO)(Display*, XRRScreenResources*,
-                                                 RRProvider);
-  XRRGETPROVIDERINFO XRRGetProviderInfo =
-      cast<XRRGETPROVIDERINFO>(dlsym(libXrandr, "XRRGetProviderInfo"));
-
-  typedef Bool (*XRRQUERYEXTENSION)(Display*, int*, int*);
-  XRRQUERYEXTENSION XRRQueryExtension =
-      cast<XRRQUERYEXTENSION>(dlsym(libXrandr, "XRRQueryExtension"));
-
-  typedef int (*XRRQUERYVERSION)(Display*, int*, int*);
-  XRRQUERYVERSION XRRQueryVersion =
-      cast<XRRQUERYVERSION>(dlsym(libXrandr, "XRRQueryVersion"));
-
-  if (!XRRGetProviderResources || !XRRGetScreenResourcesCurrent ||
-      !XRRGetProviderInfo || !XRRQueryExtension || !XRRQueryVersion) {
-    dlclose(libXrandr);
-    return;
-  }
-
+static void get_xrandr_info(Display* dpy) {
   // When running on remote X11 the xrandr version may be stuck on an ancient
   // version. There are still setups using remote X11 out there, so make sure we
   // don't crash.
@@ -768,17 +661,13 @@ static void get_x11_ddx_info(Display* dpy) {
   Window root = RootWindow(dpy, DefaultScreen(dpy));
   XRRProviderResources* pr = XRRGetProviderResources(dpy, root);
   XRRScreenResources* res = XRRGetScreenResourcesCurrent(dpy, root);
-  int nProviders = pr->nproviders;
-
-  if (nProviders != 0) {
+  if (pr->nproviders != 0) {
     record_value("DDX_DRIVER\n");
-    for (int i = 0; i < nProviders; i++) {
+    for (int i = 0; i < pr->nproviders; i++) {
       XRRProviderInfo* info = XRRGetProviderInfo(dpy, res, pr->providers[i]);
-      record_value("%s%s", info->name, i == nProviders - 1 ? ";\n" : ";");
+      record_value("%s%s", info->name, i == pr->nproviders - 1 ? ";\n" : ";");
     }
   }
-
-  dlclose(libXrandr);
 }
 
 static void get_glx_status(int* gotGlxInfo, int* gotDriDriver) {
@@ -938,11 +827,8 @@ static void get_glx_status(int* gotGlxInfo, int* gotDriDriver) {
     }
   }
 
-  // Get monitor information
-  get_x11_screen_info(dpy);
-
-  // Get DDX driver information
-  get_x11_ddx_info(dpy);
+  // Get monitor and DDX driver information
+  get_xrandr_info(dpy);
 
   ///// Clean up. Indeed, the parent process might fail to kill us (e.g. if it
   ///// doesn't need to check GL info) so we might be staying alive for longer
@@ -976,17 +862,23 @@ static bool x11_egltest(int pci_count) {
   }
   XSetErrorHandler(x_error_handler);
 
+  // Bug 1667621: 30bit "Deep Color" is broken on EGL on Mesa (as of 2021/10).
+  // Disable all non-standard depths for the initial EGL roleout.
+  int screenCount = ScreenCount(dpy);
+  for (int idx = 0; idx < screenCount; idx++) {
+    if (DefaultDepth(dpy, idx) != 24) {
+      return false;
+    }
+  }
+
   // On at least amdgpu open source driver, eglInitialize fails unless
   // a valid XDisplay pointer is passed as the native display.
   if (!get_egl_status(dpy, true, pci_count != 1)) {
     return false;
   }
 
-  // Get monitor information
-  get_x11_screen_info(dpy);
-
-  // Get DDX driver information
-  get_x11_ddx_info(dpy);
+  // Get monitor and DDX driver information
+  get_xrandr_info(dpy);
 
   // Bug 1715245: Closing the display connection here crashes on NV prop.
   // drivers. Just leave it open, the process will exit shortly after anyway.
@@ -1014,314 +906,6 @@ static void glxtest() {
 #endif
 
 #ifdef MOZ_WAYLAND
-typedef void (*print_info_t)(void* info);
-typedef void (*destroy_info_t)(void* info);
-
-struct global_info {
-  struct wl_list link;
-
-  uint32_t id;
-  uint32_t version;
-  char* interface;
-
-  print_info_t print;
-  destroy_info_t destroy;
-};
-
-struct output_info {
-  struct global_info global;
-  struct wl_list global_link;
-
-  struct wl_output* output;
-
-  int32_t version;
-
-  int32_t scale;
-};
-
-struct xdg_output_v1_info {
-  struct wl_list link;
-
-  struct zxdg_output_v1* xdg_output;
-  struct output_info* output;
-
-  struct {
-    int32_t width, height;
-  } logical;
-};
-
-struct xdg_output_manager_v1_info {
-  struct global_info global;
-  struct zxdg_output_manager_v1* manager;
-  struct weston_info* info;
-
-  struct wl_list outputs;
-};
-
-struct weston_info {
-  struct wl_display* display;
-  struct wl_registry* registry;
-
-  struct wl_list infos;
-  bool roundtrip_needed;
-
-  struct wl_list outputs;
-  struct xdg_output_manager_v1_info* xdg_output_manager_v1_info;
-};
-
-static void init_global_info(struct weston_info* info,
-                             struct global_info* global, uint32_t id,
-                             const char* interface, uint32_t version) {
-  global->id = id;
-  global->version = version;
-  global->interface = strdup(interface);
-
-  wl_list_insert(info->infos.prev, &global->link);
-}
-
-static void print_output_info(void* data) {}
-
-static void destroy_xdg_output_v1_info(struct xdg_output_v1_info* info) {
-  wl_list_remove(&info->link);
-  zxdg_output_v1_destroy(info->xdg_output);
-  free(info);
-}
-
-static int cmpOutputIds(const void* a, const void* b) {
-  return (((struct xdg_output_v1_info*)a)->output->global.id -
-          ((struct xdg_output_v1_info*)b)->output->global.id);
-}
-
-static void print_xdg_output_manager_v1_info(void* data) {
-  struct xdg_output_manager_v1_info* info =
-      (struct xdg_output_manager_v1_info*)data;
-  struct xdg_output_v1_info* output;
-
-  int screen_count = wl_list_length(&info->outputs);
-  if (screen_count > 0) {
-    struct xdg_output_v1_info* infos = (struct xdg_output_v1_info*)calloc(
-        1, screen_count * sizeof(xdg_output_v1_info));
-
-    int pos = 0;
-    wl_list_for_each(output, &info->outputs, link) {
-      infos[pos] = *output;
-      pos++;
-    }
-
-    if (screen_count > 1) {
-      qsort(infos, screen_count, sizeof(struct xdg_output_v1_info),
-            cmpOutputIds);
-    }
-
-    record_value("SCREEN_INFO\n");
-    for (int i = 0; i < screen_count; i++) {
-      record_value("%dx%d:0;", infos[i].logical.width, infos[i].logical.height);
-    }
-    record_value("\n");
-
-    free(infos);
-  }
-}
-
-static void destroy_xdg_output_manager_v1_info(void* data) {
-  struct xdg_output_manager_v1_info* info =
-      (struct xdg_output_manager_v1_info*)data;
-  struct xdg_output_v1_info *output, *tmp;
-
-  zxdg_output_manager_v1_destroy(info->manager);
-
-  wl_list_for_each_safe(output, tmp, &info->outputs, link) {
-    destroy_xdg_output_v1_info(output);
-  }
-}
-
-static void handle_xdg_output_v1_logical_position(void* data,
-                                                  struct zxdg_output_v1* output,
-                                                  int32_t x, int32_t y) {}
-
-static void handle_xdg_output_v1_logical_size(void* data,
-                                              struct zxdg_output_v1* output,
-                                              int32_t width, int32_t height) {
-  struct xdg_output_v1_info* xdg_output = (struct xdg_output_v1_info*)data;
-  xdg_output->logical.width = width;
-  xdg_output->logical.height = height;
-}
-
-static void handle_xdg_output_v1_done(void* data,
-                                      struct zxdg_output_v1* output) {}
-
-static void handle_xdg_output_v1_name(void* data, struct zxdg_output_v1* output,
-                                      const char* name) {}
-
-static void handle_xdg_output_v1_description(void* data,
-                                             struct zxdg_output_v1* output,
-                                             const char* description) {}
-
-static const struct zxdg_output_v1_listener xdg_output_v1_listener = {
-    .logical_position = handle_xdg_output_v1_logical_position,
-    .logical_size = handle_xdg_output_v1_logical_size,
-    .done = handle_xdg_output_v1_done,
-    .name = handle_xdg_output_v1_name,
-    .description = handle_xdg_output_v1_description,
-};
-
-static void add_xdg_output_v1_info(
-    struct xdg_output_manager_v1_info* manager_info,
-    struct output_info* output) {
-  struct xdg_output_v1_info* xdg_output =
-      (struct xdg_output_v1_info*)calloc(1, sizeof *xdg_output);
-
-  wl_list_insert(&manager_info->outputs, &xdg_output->link);
-  xdg_output->xdg_output = zxdg_output_manager_v1_get_xdg_output(
-      manager_info->manager, output->output);
-  zxdg_output_v1_add_listener(xdg_output->xdg_output, &xdg_output_v1_listener,
-                              xdg_output);
-
-  xdg_output->output = output;
-
-  manager_info->info->roundtrip_needed = true;
-}
-
-static void add_xdg_output_manager_v1_info(struct weston_info* info,
-                                           uint32_t id, uint32_t version) {
-  struct output_info* output;
-  struct xdg_output_manager_v1_info* manager =
-      (struct xdg_output_manager_v1_info*)calloc(1, sizeof *manager);
-
-  wl_list_init(&manager->outputs);
-  manager->info = info;
-
-  init_global_info(info, &manager->global, id,
-                   zxdg_output_manager_v1_interface.name, version);
-  manager->global.print = print_xdg_output_manager_v1_info;
-  manager->global.destroy = destroy_xdg_output_manager_v1_info;
-
-  manager->manager = (struct zxdg_output_manager_v1*)wl_registry_bind(
-      info->registry, id, &zxdg_output_manager_v1_interface,
-      version > 2 ? 2 : version);
-
-  wl_list_for_each(output, &info->outputs, global_link) {
-    add_xdg_output_v1_info(manager, output);
-  }
-
-  info->xdg_output_manager_v1_info = manager;
-}
-
-static void output_handle_geometry(void* data, struct wl_output* wl_output,
-                                   int32_t x, int32_t y, int32_t physical_width,
-                                   int32_t physical_height, int32_t subpixel,
-                                   const char* make, const char* model,
-                                   int32_t output_transform) {}
-
-static void output_handle_mode(void* data, struct wl_output* wl_output,
-                               uint32_t flags, int32_t width, int32_t height,
-                               int32_t refresh) {}
-
-static void output_handle_done(void* data, struct wl_output* wl_output) {}
-
-static void output_handle_scale(void* data, struct wl_output* wl_output,
-                                int32_t scale) {
-  struct output_info* output = (struct output_info*)data;
-
-  output->scale = scale;
-}
-
-static const struct wl_output_listener output_listener = {
-    output_handle_geometry,
-    output_handle_mode,
-    output_handle_done,
-    output_handle_scale,
-};
-
-static void destroy_output_info(void* data) {
-  struct output_info* output = (struct output_info*)data;
-
-  wl_output_destroy(output->output);
-}
-
-static void add_output_info(struct weston_info* info, uint32_t id,
-                            uint32_t version) {
-  struct output_info* output = (struct output_info*)calloc(1, sizeof *output);
-
-  init_global_info(info, &output->global, id, "wl_output", version);
-  output->global.print = print_output_info;
-  output->global.destroy = destroy_output_info;
-
-  output->version = MIN(version, 2);
-  output->scale = 1;
-
-  output->output = (struct wl_output*)wl_registry_bind(
-      info->registry, id, &wl_output_interface, output->version);
-  wl_output_add_listener(output->output, &output_listener, output);
-
-  info->roundtrip_needed = true;
-  wl_list_insert(&info->outputs, &output->global_link);
-
-  if (info->xdg_output_manager_v1_info) {
-    add_xdg_output_v1_info(info->xdg_output_manager_v1_info, output);
-  }
-}
-
-static void global_handler(void* data, struct wl_registry* registry,
-                           uint32_t id, const char* interface,
-                           uint32_t version) {
-  struct weston_info* info = (struct weston_info*)data;
-
-  if (!strcmp(interface, "wl_output")) {
-    add_output_info(info, id, version);
-  } else if (!strcmp(interface, zxdg_output_manager_v1_interface.name)) {
-    add_xdg_output_manager_v1_info(info, id, version);
-  }
-}
-
-static void global_remove_handler(void* data, struct wl_registry* registry,
-                                  uint32_t name) {}
-
-static const struct wl_registry_listener registry_listener = {
-    global_handler, global_remove_handler};
-
-static void print_infos(struct wl_list* infos) {
-  struct global_info* info;
-
-  wl_list_for_each(info, infos, link) { info->print(info); }
-}
-
-static void destroy_info(void* data) {
-  struct global_info* global = (struct global_info*)data;
-
-  global->destroy(data);
-  wl_list_remove(&global->link);
-  free(global->interface);
-  free(data);
-}
-
-static void destroy_infos(struct wl_list* infos) {
-  struct global_info *info, *tmp;
-  wl_list_for_each_safe(info, tmp, infos, link) { destroy_info(info); }
-}
-
-static void get_wayland_screen_info(struct wl_display* dpy) {
-  struct weston_info info = {0};
-  info.display = dpy;
-
-  info.xdg_output_manager_v1_info = NULL;
-  wl_list_init(&info.infos);
-  wl_list_init(&info.outputs);
-
-  info.registry = wl_display_get_registry(info.display);
-  wl_registry_add_listener(info.registry, &registry_listener, &info);
-
-  do {
-    info.roundtrip_needed = false;
-    wl_display_roundtrip(info.display);
-  } while (info.roundtrip_needed);
-
-  print_infos(&info.infos);
-  destroy_infos(&info.infos);
-
-  wl_registry_destroy(info.registry);
-}
-
 static void wayland_egltest() {
   // NOTE: returns false to fall back to X11 when the Wayland socket doesn't
   // exist but fails with record_error if something actually went wrong
@@ -1334,7 +918,10 @@ static void wayland_egltest() {
   if (!get_egl_status((EGLNativeDisplayType)dpy, true, false)) {
     record_error("EGL test failed");
   }
-  get_wayland_screen_info(dpy);
+
+  // This is enough to crash some broken NVIDIA prime + Wayland setups, see
+  // https://github.com/NVIDIA/egl-wayland/issues/41 and bug 1768260.
+  wl_display_roundtrip(dpy);
 
   wl_display_disconnect(dpy);
   record_value("TEST_TYPE\nEGL\n");

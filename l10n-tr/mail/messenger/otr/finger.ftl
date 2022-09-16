@@ -2,9 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-otr-finger =
-    .buttonlabelaccept = Kapat
-    .title = Daha önce görülen OTR parmak izleri
+otr-finger-title = Daha Önce Görülen OTR Anahtar Parmak İzleri
 
 finger-intro = Önceki uçtan uca şifrelenmiş görüşmelerin OTR anahtar parmak izleri.
 

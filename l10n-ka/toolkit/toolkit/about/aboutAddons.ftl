@@ -35,7 +35,9 @@ detail-version =
     .label = ვერსია
 detail-last-updated =
     .label = ბოლო განახლება
-detail-contributions-description = ამ დამატების შემქმნელი, პროგრამის მომავალი განვითარებისთვის, გთხოვთ მხარდაჭერას, მცირეოდენი შემოწირულობის სახით.
+addon-detail-description-expand = ვრცლად
+addon-detail-description-collapse = შემოკლებულად
+detail-contributions-description = ამ დამატების შემქმნელი, პროგრამის მომავალი განვითარებისთვის, გთხოვთ მხარდაჭერას მცირეოდენი შემოწირულობის სახით.
 detail-contributions-button = შემოწირულობა
     .title = დამატების შემუშავებისთვის შემოწირულობის გაღება
     .accesskey = წ
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = ბოლო განახლებები
 addon-category-recent-updates-title =
     .title = ბოლო განახლებები
+addon-category-sitepermission = საიტის ნებართვები
+addon-category-sitepermission-title =
+    .title = საიტის ნებართვები
 
 ## These are global warnings
 
@@ -265,7 +270,7 @@ addon-options-button =
 report-addon-button = საჩივარი
 remove-addon-button = მოცილება
 # The link will always be shown after the other text.
-remove-addon-disabled-button = ვერ მოსცილდება <a data-l10n-name="link">რატომ?</a>
+remove-addon-disabled-button = ვერ მოცილდება <a data-l10n-name="link">რატომ?</a>
 disable-addon-button = ამორთვა
 enable-addon-button = ჩართვა
 # This is used for the toggle on the extension card, it's a checkbox and this
@@ -284,14 +289,18 @@ extension-enabled-heading = ჩართულია
 extension-disabled-heading = ამორთულია
 theme-enabled-heading = ჩართულია
 theme-disabled-heading = ამორთულია
+theme-disabled-heading2 = შენახული თემები
 theme-monochromatic-heading = შეფერილობები
 theme-monochromatic-subheading = ახალი ხასხასა შეფერილობები, რომელთაც { -brand-product-name } გთავაზობთ. ხელმისაწვდომია მცირე დროით.
+theme-colorways-button = მოსინჯეთ ახალი შეფერილობა
 plugin-enabled-heading = ჩართულია
 plugin-disabled-heading = ამორთულია
 dictionary-enabled-heading = ჩართულია
 dictionary-disabled-heading = ამორთულია
 locale-enabled-heading = ჩართულია
 locale-disabled-heading = ამორთულია
+sitepermission-enabled-heading = ჩართულია
+sitepermission-disabled-heading = ამორთულია
 always-activate-button = ყოველთვის გაეშვას
 never-activate-button = არასდროს გაეშვას
 addon-detail-author-label = შემქმნელი
@@ -326,7 +335,7 @@ addon-detail-reviews-link =
 #   $addon (string) - Name of the add-on
 pending-uninstall-description = <span data-l10n-name="addon-name">{ $addon }</span> მოცილებულია.
 pending-uninstall-undo-button = დაბრუნება
-addon-detail-updates-label = თვითგანახლებების დაშვება
+addon-detail-updates-label = თვითგანახლების ნებართვა
 addon-detail-updates-radio-default = ნაგულისხმევი
 addon-detail-updates-radio-on = ჩართ.
 addon-detail-updates-radio-off = გამორთ.
@@ -368,6 +377,7 @@ addon-permissions-optional = მოთხოვნილი ნებართ�
 addon-permissions-learnmore = ვრცლად, ნებართვების შესახებ
 recommended-extensions-heading = შემოთავაზებული გაფართოებები
 recommended-themes-heading = შემოთავაზებული თემები
+addon-sitepermissions-required = მოცემული შესაძლებლობებით აღიჭურვება <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = შემოქმედებით უნარებს ფლობთ? <a data-l10n-name="link">ააწყვეთ საკუთარი გაფორმება Firefox Color-ით.</a>
@@ -380,6 +390,7 @@ plugin-heading = მოდულების მართვა
 dictionary-heading = ლექსიკონების მართვა
 locale-heading = ენების მართვა
 updates-heading = განახლებების მართვა
+sitepermission-heading = საიტის ნებართვების მართვა
 discover-heading = მოირგეთ თქვენი { -brand-short-name }
 shortcuts-heading = გაფართოებების ღილაკების მართვა
 default-heading-search-label = სხვა დამატებების მოძიება
@@ -387,3 +398,20 @@ addons-heading-search-input =
     .placeholder = addons.mozilla.org საიტზე მოძიება
 addon-page-options-button =
     .title = ხელსაწყოები ყველა დამატებისთვის
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } არათავსებადია { -brand-short-name } { $version } ვერსიასთან.
+details-notification-unsigned-and-disabled = ვერ დასტურდება, რომ { -brand-short-name } შეძლებს გამოიყენოს { $name }, ამიტომ გამორთულია.
+details-notification-unsigned-and-disabled-link = ვრცლად
+details-notification-unsigned = ვერ დასტურდება, რომ { -brand-short-name } შეძლებს აამუშაოს { $name }. სიფრთხილით გამოიყენეთ.
+details-notification-unsigned-link = ვრცლად
+details-notification-blocked = { $name } გამორთულია უსაფრთხოების მიზნით ან არამდგრადობის გამო.
+details-notification-blocked-link = ვრცლად
+details-notification-softblocked = { $name } მიჩნეულია არამდგრადად და საფრთხის შემცველად.
+details-notification-softblocked-link = ვრცლად
+details-notification-gmp-pending = { $name } მალე ჩაიდგმება.

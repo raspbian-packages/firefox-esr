@@ -73,16 +73,14 @@ mobile-app-card-content = Используйте мобильный браузе
 mobile-app-links = Браузер { -brand-product-name } для <a data-l10n-name="android-mobile-inline-link">Android</a> и <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 
 lockwise-title = Никогда больше не забывайте свои пароли
-lockwise-title-logged-in2 = Управление паролями
-lockwise-header-content = { -lockwise-brand-name } надёжно хранит пароли в вашем браузере.
+passwords-title-logged-in = Управление вашими паролями
+passwords-header-content = { -brand-product-name } надёжно хранит пароли в вашем браузере.
 lockwise-header-content-logged-in = Надёжно храните и синхронизируйте свои пароли со всеми вашими устройствами.
-protection-report-save-passwords-button = Сохранить пароли
-    .title = Сохранить пароли в { -lockwise-brand-short-name }
-protection-report-manage-passwords-button = Управление паролями
-    .title = Управление паролями в { -lockwise-brand-short-name }
-lockwise-mobile-app-title = Возьмите свои пароли с собой
-lockwise-no-logins-card-content = Используйте пароли, сохранённые в { -brand-short-name }, на любом устройстве.
-lockwise-app-links = { -lockwise-brand-name } для <a data-l10n-name="lockwise-android-inline-link">Android</a> и <a data-l10n-name="lockwise-ios-inline-link">iOS</a>
+protection-report-passwords-save-passwords-button = Сохранить пароли
+    .title = Сохранить пароли
+protection-report-passwords-manage-passwords-button = Управление паролями
+    .title = Управление паролями
+
 
 # Variables:
 # $count (Number) - Number of passwords exposed in data breaches.

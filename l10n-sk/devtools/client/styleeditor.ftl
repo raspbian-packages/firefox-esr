@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Importovať a pripojiť existujúci štýl k dokumentu
     .accesskey = I
+styleeditor-filter-input =
+    .placeholder = Filtrovať súbory štýlov
 styleeditor-visibility-toggle =
     .tooltiptext = Prepnúť zobrazenie štýlov
     .accesskey = U
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Otvoriť odkaz na novej karte
 styleeditor-copy-url =
     .label = Kopírovať adresu URL
+styleeditor-go-to-line =
+    .label = Prejsť na riadok…
+    .accesskey = r
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Nenašla sa žiadna zodpovedajúca šablóna štýlov.

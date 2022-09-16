@@ -116,6 +116,7 @@ devinfo-label =
 devinfo-serialnum =
     .label = Seerianumber
 
+fips-nonempty-primary-password-required = FIPS-režiim nõuab igale turvaseadmele ülemparooli määramist. Enne FIPS-režiimi lubamist määra palun parool.
 unable-to-toggle-fips = Turvaseadme FIPS-režiimi muutmine pole võimalik. Soovituslik on rakendusest väljuda ja see taaskäivitada.
 load-pk11-module-file-picker-title = Laaditava PKCS#11 seadme draiveri valimine
 

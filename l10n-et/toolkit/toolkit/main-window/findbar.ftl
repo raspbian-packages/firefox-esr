@@ -27,6 +27,11 @@ findbar-case-sensitive =
     .accesskey = t
     .tooltiptext = Otsi tõstutundlikult
 
+findbar-match-diacritics =
+    .label = Otsitakse diakriitiliselt
+    .accesskey = O
+    .tooltiptext = Eristatakse rõhulisi tähemärke baastähemärkidest (näiteks otsides "Rene", ei leita "René")
+
 findbar-entire-word =
     .label = Täissõnad
     .accesskey = s

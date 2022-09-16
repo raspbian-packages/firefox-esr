@@ -4,8 +4,7 @@
 
 export-dialog-brand-name = { -brand-product-name }
 
-export-dialog-window =
-  .title = Export
+export-dialog-title = Exportieren
 
 export-dialog =
   .buttonlabelaccept = Weiter
@@ -14,9 +13,9 @@ export-dialog-button-finish = Beenden
 
 export-dialog-file-picker = Als ZIP-Datei exportieren
 
-export-dialog-desc1 = Export von E-Mail-Konten und deren Nachrichten sowie Adressbüchern und Einstellungen in eine ZIP-Datei.
+export-dialog-description1 = E-Mail-Konten und -Nachrichten, Adressbücher und Einstellungen in eine .zip-Datei exportieren.
 
-export-dialog-desc2 = Falls benötigt, kann die ZIP-Datei importiert werden, um das Profil wiederherzustellen.
+export-dialog-desc2 = Falls benötigt, kann die .zip-Datei importiert werden, um das Profil wiederherzustellen.
 
 export-dialog-exporting = Export wird durchgeführt…
 

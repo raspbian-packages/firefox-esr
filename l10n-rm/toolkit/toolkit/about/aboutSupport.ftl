@@ -76,6 +76,14 @@ app-basics-location-service-key-google = Clav dal servetsch da localisaziun da G
 app-basics-safebrowsing-key-google = Clav dal servetsch Google Safebrowsing
 app-basics-key-mozilla = Clav dal servetsch da posiziun da Mozilla
 app-basics-safe-mode = Modus privat
+app-basics-memory-size = Grondezza da la memoria (RAM)
+app-basics-disk-available = Memoria disponibla sin il disc
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Mussar en il finder
@@ -343,6 +351,7 @@ fission-status-experiment-control = Deactivà dad experiment
 fission-status-experiment-treatment = Activà dad experiment
 fission-status-disabled-by-e10s-env = Deactivà da l'ambient
 fission-status-enabled-by-env = Activà da l'ambient
+fission-status-disabled-by-env = Deactivà da l'ambient
 fission-status-disabled-by-safe-mode = Deactivà dal modus segirà
 fission-status-enabled-by-default = Activà tenor standard
 fission-status-disabled-by-default = Deactivà tenor standard

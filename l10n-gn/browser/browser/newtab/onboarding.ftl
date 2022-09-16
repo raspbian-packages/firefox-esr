@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,40 +23,7 @@ return-to-amo-subtitle = Iporãite, emohendáma { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Ko’ág̃a roguerekóta <img data-l10n-name="icon"/> <b>{ $addon-name }</b> ndéve g̃uarã.
 return-to-amo-add-extension-label = Embojuaju jepysokue
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Eg̃uahẽporã <span data-l10n-name="zap">{ -brand-short-name }</span>-pe
-onboarding-multistage-welcome-subtitle = Kundahára ipya’e, hekorosã ha hekoñemi oykekóva chupe atyguasu viru’ỹguáva.
-onboarding-multistage-welcome-primary-button-label = Eñepyrũ Ñemboheko
-onboarding-multistage-welcome-secondary-button-label = Mboheraguapy
-onboarding-multistage-welcome-secondary-button-text = ¿Erekópa mba’ete?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = Ejapo { -brand-short-name }-gui <span data-l10n-name="zap">ijypykuéva</span>
-onboarding-multistage-set-default-subtitle = Ipya’e, hekorosã ha hekoñemi eikundaha vove.
-onboarding-multistage-set-default-primary-button-label = Ejapo ijypykuéramo
-onboarding-multistage-set-default-secondary-button-label = Ani ko’ág̃a
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = Eñepyrũ ejapo <span data-l10n-name="zap">{ -brand-short-name }</span> peteĩ jekutúpe
-onboarding-multistage-pin-default-subtitle = Ñeikundaha ipya’e, hekorosã ha iñemíva eipurúvo ñanduti.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Eiporavo { -brand-short-name } ñanduti kundahárape ijurujávo ñemboheko
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = Kóva ombojáta { -brand-short-name } tembiapo rendápe ha ombojurujáta ñemboheko
-onboarding-multistage-pin-default-primary-button-label = Ajapo { -brand-short-name }-gui che kundahára aipuruvéva
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Emba’egueru ñe’ẽñemi, techaukaha ha <span data-l10n-name="zap">hetave</span>
-onboarding-multistage-import-subtitle = ¿Oúpa ambue kundaháragui? Ndahasyiete eguerahapávo { -brand-short-name } ndive.
-onboarding-multistage-import-primary-button-label = Eñepyrũ ñemba’egueru
-onboarding-multistage-import-secondary-button-label = Ani ko’ág̃a
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = Ko’ã tenda ipapapýva ápe ejuhúta ko mba’e’okápe. { -brand-short-name } noñongatúi ha nombojuehéi mba’ekuaarã ambue kundahára pegua nderegueruséirõ.
+return-to-amo-add-theme-label = Embojuaju Téma
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = Ko’ã tenda ipapapýva ápe ejuhúta ko m
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Ku’e ñepyrũgua: mba’erechaha { $current } { $total } pegua
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Eiporavo peteĩva <span data-l10n-name="zap">ma’ẽ</span>
-onboarding-multistage-theme-subtitle = Eñemomba’e { -brand-short-name } peteĩ téma ndive
-onboarding-multistage-theme-primary-button-label2 = Apopyre
-onboarding-multistage-theme-secondary-button-label = Ani ko’ág̃a
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = ijeheguietéva
-onboarding-multistage-theme-label-light = Vevúi
-onboarding-multistage-theme-label-dark = Ypytũ
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -171,60 +121,12 @@ mr1-onboarding-theme-label-light = Tesakã
 mr1-onboarding-theme-label-dark = Ypytũ
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Apopyréma
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        Emog̃uahẽ tembiapoite ohehechaháicha
-        apopyvusu votõ, poravorã ha ovetãme g̃uarã.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        Emog̃uahẽ tembiapoite ohehechaháicha
-        apopyvusu votõ, poravorã ha ovetãme g̃uarã.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        Eipuru ojehechaporãva votõ,
-        poravorã ha ovetã.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        Eipuru ojehechaporãva votõ,
-        poravorã ha ovetã.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        Eipuru iñypytũva votõ,
-        poravorã ha ovetã.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        Eipuru iñypytũva votõ,
-        poravorã ha ovetã.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        Eipuru isa’yetáva votõ,
-        poravorã ha ovetã.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        Eipuru isa’yetáva votõ,
-        poravorã ha ovetã.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -282,17 +184,55 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = Ehapereka sa’y ojueheguáva { $colorwayName }.
+mr2-onboarding-colorway-label = Ehapereka sa’y ojueheguáva { $colorwayName }.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Ehapereka téma ypyguáva.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = Ehapereka téma ypyguáva.
+mr2-onboarding-default-theme-label = Ehapereka téma ypyguáva.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Aguyje reimére orendive
 mr2-onboarding-thank-you-text = { -brand-short-name } ha’e kundahára hekosãsóva oykekóva chupe atyguasu viru’ỹgua. Oñondivepa jajapo ñanduti hekorosã, hesãi ha hekoñemíva.
 mr2-onboarding-start-browsing-button-label = Eñepyrũ eikundaha
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Eiporavo ne ñe’ẽte
+onboarding-live-language-button-label-downloading = Amohendahína ñe’ẽ rysýi { $negotiatedLanguage } peg̃uarã…
+onboarding-live-language-waiting-button = Egueru ñe’ẽ eipurukuaáva…
+onboarding-live-language-installing = Amohendahína ñe’ẽ rysýi { $negotiatedLanguage } peg̃uarã…
+onboarding-live-language-secondary-cancel-download = Heja
+onboarding-live-language-skip-button-label = Jepo
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    Aguyje
+    <span data-l10n-name="zap">Ndéve</span>
+fx100-thank-you-subtitle = ¡Ore ñemyasãi 100! Aguyje orepytyvõ haguére rojapóvo Ñanduti iporã ha hesãivéva.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] Ereko { -brand-short-name } Dock ndive
+       *[other] Emboja { -brand-short-name } tembiapo rendáre
+    }
+fx100-upgrade-thanks-header = 100 Aguyje
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = Ore ñemyasãi 100 { -brand-short-name } rehegua. Aguyje <em>ndéve</em> orepytyvõ haguére rojapóvo Ñanduti iporã ha hesãivéva.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = ¡Ore ñemyasãi 100! Aguyje reime haguére ore rekohápe. Eguereko { -brand-short-name } nde ykére ouvétava 100 ndiveguápe.

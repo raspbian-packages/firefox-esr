@@ -313,9 +313,17 @@
 <!ENTITY forwardAsInline.accesskey "Ч">
 <!ENTITY forwardAsAttachmentCmd.label "Вложение">
 <!ENTITY forwardAsAttachmentCmd.accesskey "В">
-<!ENTITY editMsgAsNewCmd.label "Редактировать как новое">
-<!ENTITY editMsgAsNewCmd.accesskey "Р">
-<!ENTITY editMsgAsNewCmd.key "e">
+<!ENTITY editAsNewMsgCmd.label "Редактировать как новое сообщение">
+<!ENTITY editAsNewMsgCmd.accesskey "н">
+<!ENTITY editAsNewMsgCmd.key "e">
+<!ENTITY editDraftMsgCmd.label "Редактировать черновик сообщения">
+<!ENTITY editDraftMsgCmd.accesskey "ч">
+<!ENTITY editTemplateMsgCmd.label "Редактировать шаблон">
+<!ENTITY editTemplateMsgCmd.accesskey "ш">
+<!ENTITY newMsgFromTemplateCmd.label "Создать сообщение по шаблону">
+<!-- LOCALIZATION NOTE (newMsgFromTemplateCmd.keycode):
+     Do not localize VK_RETURN. -->
+<!ENTITY newMsgFromTemplateCmd.keycode "VK_RETURN">
 <!ENTITY createFilter.label "Создать фильтр…">
 <!ENTITY createFilter.accesskey "ф">
 <!ENTITY archiveMsgCmd.label "Архивировать">
@@ -468,8 +476,12 @@
 <!ENTITY contextOpenNewWindow.accesskey "н">
 <!ENTITY contextOpenNewTab.label "Открыть в новой вкладке">
 <!ENTITY contextOpenNewTab.accesskey "н">
-<!ENTITY contextEditAsNew.label "Редактировать как новое…">
-<!ENTITY contextEditAsNew.accesskey "Р">
+<!ENTITY contextEditMsgAsNew.label "Редактировать как новое сообщение">
+<!ENTITY contextEditMsgAsNew.accesskey "н">
+<!ENTITY contextEditDraftMsg.label "Редактировать черновик сообщения">
+<!ENTITY contextEditTemplate.label "Редактировать шаблон">
+<!ENTITY contextEditTemplate.accesskey "ш">
+<!ENTITY contextNewMsgFromTemplate.label "Создать сообщение по шаблону">
 <!ENTITY contextReplySender.label "Ответить отправителю">
 <!ENTITY contextReplySender.accesskey "О">
 <!ENTITY contextReplyList.label "Ответить в рассылку">

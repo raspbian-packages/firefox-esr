@@ -62,6 +62,14 @@ app-basics-location-service-key-google = Chiave servizio Google Location
 app-basics-safebrowsing-key-google = Chiave servizio Google Safebrowsing
 app-basics-key-mozilla = Chiave per georilevazione di Mozilla
 app-basics-safe-mode = Modalità provvisoria
+app-basics-memory-size = Dimensione memoria (RAM)
+app-basics-disk-available = Spazio su disco disponibile
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Mostra nel Finder
@@ -276,7 +284,7 @@ glcontext-crash-guard = OpenGL
 wmfvpxvideo-crash-guard = WMF VPX - Decoder video
 
 reset-on-next-restart = Reimposta al prossimo avvio
-gpu-process-kill-button = Termina processo GPU
+gpu-process-kill-button = Interrompi processo GPU
 gpu-device-reset = Ripristino dispositivo
 gpu-device-reset-button = Avvia ripristino dispositivo
 uses-tiling = Usa Tiling
@@ -326,7 +334,7 @@ fission-status-experiment-control = Disattivato da esperimento
 fission-status-experiment-treatment = Attivato da esperimento
 fission-status-disabled-by-e10s-env = Disattivato da ambiente
 fission-status-enabled-by-env = Attivato da ambiente
-fission-status-disabled-by-safe-mode = Disattivato da modalità provvisoria
+fission-status-disabled-by-env = Disattivato da ambiente
 fission-status-enabled-by-default = Attivato per impostaz. predefinita
 fission-status-disabled-by-default = Disattivato per impostaz. predefinita
 fission-status-enabled-by-user-pref = Attivato da utente

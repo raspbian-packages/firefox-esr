@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Undanþágur
     .style = width: 45em;
 
+permission-preferences-close-window =
+    .key = w
+
 website-address-label =
     .value = Vistfang vefsvæðis:
     .accesskey = V
@@ -45,9 +48,9 @@ save-button =
     .accesskey = s
 
 permission-can-label = Leyfa
-permission-can-access-first-party-label = Leyfa aðeins fyrsta aðila
+permission-can-access-first-party-label = Leyfa aðeins viðkomandi aðila
 permission-can-session-label = Leyfa í þessari vafralotu
 permission-cannot-label = Loka á
 
-invalid-uri-message = Sláðu inn löglegt vistfang
+invalid-uri-message = Settu inn löglegt vélarheiti.
 invalid-uri-title = Ólöglegt vistfang slegið inn

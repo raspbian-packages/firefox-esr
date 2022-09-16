@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,33 +23,7 @@ return-to-amo-subtitle = Тамаша, сіз { -brand-short-name } орнатт
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Енді сізге <img data-l10n-name="icon"/> <b>{ $addon-name }</b> орнатайық.
 return-to-amo-add-extension-label = Кеңейтуді қосу
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = <span data-l10n-name="zap">{ -brand-short-name }</span> ішіне қош келдіңіз
-onboarding-multistage-welcome-subtitle = Коммерциялық емес ұйымы қолдайтын жылдам, қауіпсіз және жеке браузер.
-onboarding-multistage-welcome-primary-button-label = Баптауды бастау
-onboarding-multistage-welcome-secondary-button-label = Кіру
-onboarding-multistage-welcome-secondary-button-text = Тіркелгіңіз бар ма?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = { -brand-short-name } өнімін өзіңіздің <span data-l10n-name="zap">үнсіз келісім браузері</span> қылыңыз.
-onboarding-multistage-set-default-subtitle = Әр шолудағы жылдамдық, қауіпсіздік және жекелік.
-onboarding-multistage-set-default-primary-button-label = Негізгі етіп қылу
-onboarding-multistage-set-default-secondary-button-label = Қазір емес
-onboarding-multistage-pin-default-subtitle = Сіз интернетті пайдаланатын әр кездегі жылдам, қауіпсіз және жекелік шолу.
-onboarding-multistage-pin-default-primary-button-label = { -brand-short-name } өнімін менің негізгі браузерім қылу
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Парольдер, бетбелгілер және <br/><span data-l10n-name="zap">көптеген басқаны</span> импорттаңыз
-onboarding-multistage-import-subtitle = Басқа браузерден келдіңіз бе? { -brand-short-name } ішіне барлығын әкелу оп-оңай.
-onboarding-multistage-import-primary-button-label = Импорттауды бастау
-onboarding-multistage-import-secondary-button-label = Қазір емес
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = Бұл сайттар осы құрылғыдан табылды. { -brand-short-name } деректерді басқа браузерден деректерді сіз оларды импорттағанша дейін синхрондамайды.
+return-to-amo-add-theme-label = Теманы қосу
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -64,18 +33,6 @@ onboarding-import-sites-disclaimer = Бұл сайттар осы құрылғы
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Жұмысты бастау: экран { $current }, барлығы { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = <span data-l10n-name="zap">Сыртқы түрін</span> таңдаңыз
-onboarding-multistage-theme-subtitle = { -brand-short-name } өнімін тема көмегімен жеке қылыңыз.
-onboarding-multistage-theme-primary-button-label2 = Дайын
-onboarding-multistage-theme-secondary-button-label = Қазір емес
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Автоматты түрде
-onboarding-multistage-theme-label-light = Ашық түсті
-onboarding-multistage-theme-label-dark = Күңгірт түсті
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -98,6 +55,12 @@ mr1-onboarding-reduce-motion-button-label = Анимацияларды сөнд�
 ## match the OS' application context menu item action where Windows uses "pin"
 ## and "taskbar" while macOS "keep" and "Dock" (proper noun).
 
+# Title used on welcome page when Firefox is not pinned
+mr1-onboarding-pin-header =
+    { PLATFORM() ->
+        [macos] Жылдам қол жеткізу үшін { -brand-short-name } өнімін Dock ішінде қалдырыңыз
+       *[other] Жылдам қол жеткізу үшін { -brand-short-name } өнімін тапсырмалар панеліне бекітіңіз
+    }
 # Primary button string used on welcome page when Firefox is not pinned.
 mr1-onboarding-pin-primary-button-label =
     { PLATFORM() ->
@@ -111,17 +74,25 @@ mr1-onboarding-pin-primary-button-label =
 # when Firefox is both pinned and default
 mr1-onboarding-get-started-primary-button-label = Бастау
 mr1-onboarding-welcome-header = { -brand-short-name } өніміне қош келдіңіз
+mr1-onboarding-set-default-pin-primary-button-label = { -brand-short-name } өнімін менің негізгі браузерім қылу
+    .title = { -brand-short-name } негізгі браузер етіп, тапсырмалар панеліне бекітеді
+# This string will be used on welcome page primary button label
+# when Firefox is not default but already pinned
+mr1-onboarding-set-default-only-primary-button-label = { -brand-short-name } өнімін менің негізгі браузерім қылу
 mr1-onboarding-set-default-secondary-button-label = Қазір емес
 mr1-onboarding-sign-in-button-label = Кіру
 
 ## Title, subtitle and primary button string used on set default onboarding screen
 ## when Firefox is not default browser
 
+mr1-onboarding-default-header = { -brand-short-name } өнімін негізгі браузер қылу
+mr1-onboarding-default-subtitle = Жылдамдық, қауіпсіздік және жекелікті автопилотқа орнатыңыз.
 mr1-onboarding-default-primary-button-label = Негізгі браузер қылу
 
 ## Multistage MR1 onboarding strings (about:welcome pages)
 
 mr1-onboarding-import-header = Барлығын өзіңізбен бірге алыңыз
+mr1-onboarding-import-subtitle = Парольдер, <br/>бетбелгілер және т.б. импорттаңыз.
 # The primary import button label will depend on whether we can detect which browser was used to download Firefox.
 # Variables:
 #   $previous (Str) - Previous browser name, such as Edge, Chrome
@@ -130,6 +101,8 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous } ішін�
 mr1-onboarding-import-primary-button-label-no-attribution = Бұрынғы браузерден импорттау
 mr1-onboarding-import-secondary-button-label = Қазір емес
 mr2-onboarding-colorway-header = Түрлі-түсті өмір
+mr2-onboarding-colorway-subtitle = Жаңа, жарық түстер схемалары. Шектеулі уақыт ішінде ғана қолжетімді.
+mr2-onboarding-colorway-primary-button-label = Түстер схемасын сақтау
 mr2-onboarding-colorway-secondary-button-label = Қазір емес
 mr2-onboarding-colorway-label-soft = Жұмсақ
 mr2-onboarding-colorway-label-balanced = Теңгерілген
@@ -150,60 +123,12 @@ mr1-onboarding-theme-label-light = Ашық түсті
 mr1-onboarding-theme-label-dark = Күңгірт
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Дайын
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        Батырмалар, мәзірлер және терезелер үшін
-        операциялық жүйенің сыртқы түрін мұралау.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        Батырмалар, мәзірлер және терезелер үшін
-        операциялық жүйенің сыртқы түрін мұралау.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        Батырмалар, мәзірлер және терезелер үшін
-        ашық түсті сыртқы түрін қолдану.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        Батырмалар, мәзірлер және терезелер үшін
-        ашық түсті сыртқы түрін қолдану.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        Батырмалар, мәзірлер және терезелер үшін
-        күңгірт түсті сыртқы түрін қолдану.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        Батырмалар, мәзірлер және терезелер үшін
-        күңгірт түсті сыртқы түрін қолдану.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        Батырмалар, мәзірлер және терезелер үшін
-        түрлі түсті сыртқы түрін қолдану.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        Батырмалар, мәзірлер және терезелер үшін
-        түрлі түсті сыртқы түрін қолдану.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -245,7 +170,70 @@ mr1-onboarding-theme-description-alpenglow =
     .aria-description =
         Батырмалар, мәзірлер және терезелер үшін
         динамикалық, түрлі-түсті теманы қолдану.
+# Tooltip displayed on hover of non-default colorway theme
+# variations e.g. soft, balanced, bold
+mr2-onboarding-theme-tooltip =
+    .title = Бұл түстер схемасын қолдану.
+# Selector description for non-default colorway theme
+# variations e.g. soft, balanced, bold
+mr2-onboarding-theme-description =
+    .aria-description = Бұл түстер схемасын қолдану.
+# Tooltip displayed on hover of colorway
+# Variables:
+#   $colorwayName (String) - Name of colorway
+mr2-onboarding-colorway-tooltip =
+    .title = { $colorwayName } түстер схемаларын шолу.
+# Selector description for colorway
+# Variables:
+#   $colorwayName (String) - Name of colorway
+mr2-onboarding-colorway-label = { $colorwayName } түстер схемаларын шолу.
+# Tooltip displayed on hover of default themes
+mr2-onboarding-default-theme-tooltip =
+    .title = Бастапқы темаларды шолу.
+# Selector description for default themes
+mr2-onboarding-default-theme-label = Бастапқы темаларды шолу.
 
 ## Strings for Thank You page
 
+mr2-onboarding-thank-you-header = Бізді таңдағаныңызға рахмет
+mr2-onboarding-thank-you-text = { -brand-short-name } — коммерциялық емес ұйым қолдайтын тәуелсіз браузер. Біз интернетті бірге қауіпсіз, сау және жеке етіп жасаймыз.
 mr2-onboarding-start-browsing-button-label = Шолуды бастау
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Өз тіліңізді таңдаңыз
+onboarding-live-language-button-label-downloading = { $negotiatedLanguage } тілдік дестесі жүктеліп алынуда…
+onboarding-live-language-waiting-button = Қолжетімді тілдер алынуда…
+onboarding-live-language-installing = { $negotiatedLanguage } тілдік дестесі орнатылуда…
+onboarding-live-language-secondary-cancel-download = Бас тарту
+onboarding-live-language-skip-button-label = Аттап кету
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    <span data-l10n-name="zap">рахмет</span>
+fx100-thank-you-subtitle = Бұл біздің 100-ші шығарылымымыз! Жақсырақ, сау интернет құруға көмектескеніңіз үшін рақмет.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] { -brand-short-name } өнімін Dock ішіне бекіту
+       *[other] { -brand-short-name } өнімін тапсырмалар панеліне бекіту
+    }
+fx100-upgrade-thanks-header = 100 рахмет
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = Бұл - біздің 100-ші { -brand-short-name } шығарылымымыз. Жақсырақ, сау интернет құруға көмектескеніңіз үшін <em>сізге</em> рахмет.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = Бұл біздің 100-ші шығарылымымыз! Біздің қауымдастықтың бір бөлігі болғаныңыз үшін рахмет. Келесі 100 шығарылым үшін { -brand-short-name } жақын ұстаңыз.

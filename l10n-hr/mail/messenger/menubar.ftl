@@ -2,14 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Traka izbornika
+    .accesskey = T
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
+menu-tools-settings =
     .label = Postavke
-    .accesskey = P
+    .accesskey = e
+
 menu-addons-and-themes =
     .label = Dodaci i teme
     .accesskey = a
@@ -19,9 +21,11 @@ menu-addons-and-themes =
 menu-help-enter-troubleshoot-mode =
     .label = Način rada za rješavanje problema…
     .accesskey = T
+
 menu-help-exit-troubleshoot-mode =
     .label = Isključi način rada za rješavanje problema
     .accesskey = o
+
 menu-help-more-troubleshooting-info =
     .label = Više informacija za rješavanje problema
     .accesskey = m
@@ -52,15 +56,22 @@ menu-view-repair-text-encoding =
 mail-uidensity-label =
     .label = Zbijenost
     .accesskey = Z
+
 mail-uidensity-compact =
     .label = Kompaktno
     .accesskey = K
+
 mail-uidensity-normal =
     .label = Normalno
     .accesskey = N
+
 mail-uidensity-touch =
     .label = Za dodir
     .accesskey = Z
+
+menu-spaces-toolbar-button =
+    .label = Alatna traka zbijenosti
+    .accesskey = s
 
 ## File
 

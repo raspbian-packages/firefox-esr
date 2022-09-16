@@ -35,6 +35,8 @@ detail-version =
     .label = Phiên bản
 detail-last-updated =
     .label = Cập nhật lần cuối
+addon-detail-description-expand = Hiện nhiều hơn
+addon-detail-description-collapse = Hiện ít hơn
 detail-contributions-description = Nhà phát triển tiện ích này đề nghị bạn hỗ trợ một khoản tài chính nhỏ cho việc phát triển.
 detail-contributions-button = Đóng góp
     .title = Đóng góp cho sự phát triển của tiện ích mở rộng này
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Cập nhật gần đây
 addon-category-recent-updates-title =
     .title = Cập nhật gần đây
+addon-category-sitepermission = Quyền hạn trang web
+addon-category-sitepermission-title =
+    .title = Quyền hạn trang web
 
 ## These are global warnings
 
@@ -284,14 +289,18 @@ extension-enabled-heading = Đã bật
 extension-disabled-heading = Đã vô hiệu hóa
 theme-enabled-heading = Đã bật
 theme-disabled-heading = Đã tắt
+theme-disabled-heading2 = Chủ đề đã lưu
 theme-monochromatic-heading = Màu
-theme-monochromatic-subheading = Các màu mới sống động từ { -brand-product-name }. Có sẵn trong một thời gian giới hạn.
+theme-monochromatic-subheading = Các phối màu mới sống động từ { -brand-product-name }. Có sẵn trong một thời gian giới hạn.
+theme-colorways-button = Thử Colorways
 plugin-enabled-heading = Đã bật
 plugin-disabled-heading = Đã tắt
 dictionary-enabled-heading = Đã bật
 dictionary-disabled-heading = Đã tắt
 locale-enabled-heading = Đã bật
 locale-disabled-heading = Đã tắt
+sitepermission-enabled-heading = Đã bật
+sitepermission-disabled-heading = Đã tắt
 always-activate-button = Luôn kích hoạt
 never-activate-button = Không bao giờ kích hoạt
 addon-detail-author-label = Tác giả
@@ -367,6 +376,7 @@ addon-permissions-optional = Các quyền tùy chọn cho chức năng được 
 addon-permissions-learnmore = Tìm hiểu thêm về quyền hạn
 recommended-extensions-heading = Tiện ích mở rộng được đề xuất
 recommended-themes-heading = Chủ đề được đề xuất
+addon-sitepermissions-required = Cấp các khả năng sau cho <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Cảm thấy muốn sáng tạo? <a data-l10n-name="link">Xây dựng chủ đề của riêng bạn với Firefox Color.</a>
@@ -379,6 +389,7 @@ plugin-heading = Quản lí phần bổ trợ của bạn
 dictionary-heading = Quản lí từ điển của bạn
 locale-heading = Quản lí ngôn ngữ của bạn
 updates-heading = Quản lý cập nhật của bạn
+sitepermission-heading = Quản lý quyền hạn trang web của bạn
 discover-heading = Cá nhân hóa { -brand-short-name } của bạn
 shortcuts-heading = Quản lý phím tắt tiện ích mở rộng
 default-heading-search-label = Tìm thêm tiện ích
@@ -386,3 +397,20 @@ addons-heading-search-input =
     .placeholder = Tìm kiếm addons.mozilla.org
 addon-page-options-button =
     .title = Công cụ cho tất cả tiện ích
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } không tương thích với { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = Không thể kiểm tra tính tương thích của { $name } với { -brand-short-name } nên nó đã bị vô hiệu hóa.
+details-notification-unsigned-and-disabled-link = Thông tin chi tiết
+details-notification-unsigned = Không thể kiểm tra tính tương thích của { $name } với { -brand-short-name }. Bạn nên cẩn thận.
+details-notification-unsigned-link = Thông tin chi tiết
+details-notification-blocked = { $name } đã bị vô hiệu hóa vì vấn đề bảo mật hoặc tính ổn định.
+details-notification-blocked-link = Thông tin Chi tiết
+details-notification-softblocked = { $name } được cho là gây ra các vấn đề về bảo mật hoặc tính ổn định.
+details-notification-softblocked-link = Thông tin Chi tiết
+details-notification-gmp-pending = { $name } sắp được cài.

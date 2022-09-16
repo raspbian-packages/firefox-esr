@@ -38,7 +38,7 @@ channel-description = Моментално сте на каналот за на�
 warningDesc-version = { -brand-short-name } е експериментален и може да е нестабилен.
 
 aboutdialog-help-user = Помош за { -brand-product-name }
-aboutdialog-submit-feedback = Поднесете повратна информација
+aboutdialog-submit-feedback = Испратете повратни информации
 
 community-exp = <label data-l10n-name="community-exp-mozillaLink">{ -vendor-short-name }</label> е <label data-l10n-name="community-exp-creditsLink">глобална заедница</label> која работи заедно за да ја зачува мрежата отворена, јавна и достапна за сите.
 

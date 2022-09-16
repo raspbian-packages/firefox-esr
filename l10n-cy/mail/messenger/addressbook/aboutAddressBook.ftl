@@ -26,6 +26,8 @@ about-addressbook-books-context-properties =
     .label = Priodweddau
 about-addressbook-books-context-synchronize =
     .label = Cydweddu
+about-addressbook-books-context-edit =
+    .label = Golygu
 about-addressbook-books-context-print =
     .label = Argraffu…
 about-addressbook-books-context-export =
@@ -53,8 +55,8 @@ about-addressbook-search =
     .placeholder = Chwilio { $name }
 about-addressbook-search-all =
     .placeholder = Chwilio'r holl lyfrau cyfeiriadau
-about-addressbook-sort-button =
-    .title = Newid trefn y rhestr
+about-addressbook-sort-button2 =
+    .title = Rhestru dewisiadau dangos
 about-addressbook-name-format-display =
     .label = Dangos Enw
 about-addressbook-name-format-firstlast =
@@ -69,6 +71,38 @@ about-addressbook-sort-email-ascending =
     .label = Trefnu yn ôl cyfeiriad e-bost (A > Z)
 about-addressbook-sort-email-descending =
     .label = Trefnu yn ôl cyfeiriad e-bost (Z > A)
+about-addressbook-horizontal-layout =
+    .label = Newid i gynllun llorweddol
+about-addressbook-vertical-layout =
+    .label = Newid i gynllun llorweddol
+
+## Card column headers
+## Each string is listed here twice, and the values should match.
+
+about-addressbook-column-header-generatedname = Enw
+about-addressbook-column-label-generatedname =
+    .label = { about-addressbook-column-header-generatedname }
+about-addressbook-column-header-emailaddresses = Cyfeiriadau E-bost
+about-addressbook-column-label-emailaddresses =
+    .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-phonenumbers = Rhifau Ffôn
+about-addressbook-column-label-phonenumbers =
+    .label = { about-addressbook-column-header-phonenumbers }
+about-addressbook-column-header-addresses = Cyfeiriadau
+about-addressbook-column-label-addresses =
+    .label = { about-addressbook-column-header-addresses }
+about-addressbook-column-header-title = Teitl
+about-addressbook-column-label-title =
+    .label = { about-addressbook-column-header-title }
+about-addressbook-column-header-department = Adran
+about-addressbook-column-label-department =
+    .label = { about-addressbook-column-header-department }
+about-addressbook-column-header-organization = Corff
+about-addressbook-column-label-organization =
+    .label = { about-addressbook-column-header-organization }
+about-addressbook-column-header-addrbook = Llyfr Cyfeiriadau
+about-addressbook-column-label-addrbook =
+    .label = { about-addressbook-column-header-addrbook }
 about-addressbook-cards-context-write =
     .label = Ysgrifennu
 about-addressbook-confirm-delete-mixed-title = Dileu Cysylltiadau a Rhestrau
@@ -146,18 +180,45 @@ about-addressbook-confirm-delete-contacts =
        *[other] Ydych chi'n siŵr eich bod chi am ddileu'r { $count } cysylltiad yma?
     }
 
+## Card list placeholder
+## Shown when there are no cards in the list
+
+about-addressbook-placeholder-empty-book = Dim cysylltiadau ar gael
+about-addressbook-placeholder-new-contact = Cysylltiad Newydd
+about-addressbook-placeholder-search-only = Dim ond ar ôl chwilio mae'r llyfr cyfeiriadau hwn yn dangos cysylltiadau
+about-addressbook-placeholder-searching = Yn chwilio…
+about-addressbook-placeholder-no-search-results = Heb ganfod cysylltiadau
+
 ## Details
 
+about-addressbook-prefer-display-name = Dewis enw dangos o flaen pennyn neges
+about-addressbook-write-action-button = Ysgrifennu
+about-addressbook-event-action-button = Digwyddiad
+about-addressbook-search-action-button = Chwilio
 about-addressbook-begin-edit-contact-button = Golygu
+about-addressbook-delete-edit-contact-button = Dileu
 about-addressbook-cancel-edit-contact-button = Diddymu
 about-addressbook-save-edit-contact-button = Cadw
+about-addressbook-add-contact-to = Ychwanegu at:
 about-addressbook-details-email-addresses-header = Cyfeiriadau E-bost
 about-addressbook-details-phone-numbers-header = Rhifau Ffôn
-about-addressbook-details-home-address-header = Cyfeiriad Cartref
-about-addressbook-details-work-address-header = Cyfeiriad Gwaith
+about-addressbook-details-addresses-header = Cyfeiriadau
+about-addressbook-details-notes-header = Nodiadau
 about-addressbook-details-other-info-header = Manylion Eraill
-about-addressbook-prompt-to-save-title = Cadw'r Newidiadau?
-about-addressbook-prompt-to-save = Ydych chi eisiau cadw eich newidiadau?
+about-addressbook-entry-type-work = Gwaith
+about-addressbook-entry-type-home = Cartref
+about-addressbook-entry-type-fax = Ffacs
+about-addressbook-entry-type-cell = Symudol
+about-addressbook-entry-type-pager = Swnyn
+about-addressbook-entry-name-birthday = Pen-blwydd
+about-addressbook-entry-name-anniversary = Dathliad
+about-addressbook-entry-name-title = Teitl
+about-addressbook-entry-name-role = Rôl
+about-addressbook-entry-name-organization = Corff
+about-addressbook-entry-name-website = Gwefan
+about-addressbook-entry-name-time-zone = Cylch Amser
+about-addressbook-unsaved-changes-prompt-title = Newidiadau heb eu Cadw
+about-addressbook-unsaved-changes-prompt = Ydych chi am gadw'ch newidiadau cyn gadael y wedd golygu?
 
 # Photo dialog
 

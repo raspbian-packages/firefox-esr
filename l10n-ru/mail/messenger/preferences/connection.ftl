@@ -26,8 +26,14 @@ connection-dialog-window =
            *[other] width: 49em !important
         }
 
-connection-disable-extension =
-    .label = Отключить расширение
+disable-extension-button = Отключить расширение
+
+# Variables:
+#   $name (String) - The extension that is controlling the proxy settings.
+#
+# The extension-icon is the extension's icon, or a fallback image. It should be
+# purely decoration for the actual extension name, with alt="".
+proxy-settings-controlled-by-extension = Расширение <img data-l10n-name="extension-icon" alt="" /> { $name } контролирует способ соединения { -brand-short-name } с Интернетом.
 
 connection-proxy-legend = Настройка прокси для доступа в Интернет
 

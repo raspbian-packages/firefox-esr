@@ -3,51 +3,20 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding modal / about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
-## These button action text can be split onto multiple lines, so use explicit
-## newlines in translations to control where the line break appears (e.g., to
-## avoid breaking quoted text).
-
-## Welcome modal dialog strings
-
 ### UI strings for the simplified onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
+
 
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
 
+
 ## Welcome page strings
 
 onboarding-welcome-header = Benvenuto in { -brand-short-name }
-
 onboarding-start-browsing-button-label = Inizia a navigare
-
-## Welcome full page string
-
-## Firefox Sync modal dialog strings.
-
-## This is part of the line "Enter your email to continue to Firefox Sync"
-
-
-## These are individual benefit messages shown with an image, title and
-## description.
-
-
-## These strings belong to the individual onboarding messages.
-
-
-## Each message has a title and a description of what the browser feature is.
-## Each message also has an associated button for the user to try the feature.
-## The string for the button is found above, in the UI strings section
-
-## Message strings belonging to the Return to AMO flow
-
 onboarding-not-now-button-label = Non adesso
 
 ## Custom Return To AMO onboarding strings
@@ -59,45 +28,9 @@ return-to-amo-subtitle = Ottimo, ora hai installato { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Perché adesso non provi <img data-l10n-name="icon"/> <b>{ $addon-name }</b>?
 return-to-amo-add-extension-label = Aggiungi l’estensione
+return-to-amo-add-theme-label = Aggiungi il tema
 
 ## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Benvenuto in <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = Il browser veloce, sicuro e rispettoso della privacy, sostenuto da un’organizzazione senza fini di lucro.
-onboarding-multistage-welcome-primary-button-label = Avvia la configurazione
-onboarding-multistage-welcome-secondary-button-label = Accedi
-onboarding-multistage-welcome-secondary-button-text = Hai già un account?
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-set-default-header = Imposta { -brand-short-name } come <span data-l10n-name="zap">predefinito</span>
-onboarding-multistage-set-default-subtitle = Velocità, sicurezza e privacy sempre garantiti quando navighi online.
-onboarding-multistage-set-default-primary-button-label = Imposta come predefinito
-onboarding-multistage-set-default-secondary-button-label = Non adesso
-
-onboarding-multistage-pin-default-header = Inizia mettendo <span data-l10n-name="zap">{ -brand-short-name }</span> a portata di mouse
-onboarding-multistage-pin-default-subtitle = Navigazione veloce, sicura e riservata ogni volta che vuoi esplorare il Web.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Scegli { -brand-short-name } in Browser Web quando si aprono le impostazioni
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = Questo aggiungerà { -brand-short-name } alla barra delle applicazioni e aprirà le impostazioni
-onboarding-multistage-pin-default-primary-button-label = Imposta { -brand-short-name } come browser principale
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Importa password, segnalibri <br/>e <span data-l10n-name="zap">altro ancora</span>
-onboarding-multistage-import-subtitle = Arrivi da un altro browser? È semplice ritrovare tutti i tuoi dati in { -brand-short-name }.
-onboarding-multistage-import-primary-button-label = Avvia importazione
-onboarding-multistage-import-secondary-button-label = Non adesso
-
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer =
-    I siti visualizzati sono stati trovati su questo dispositivo.
-    { -brand-short-name } non salva né sincronizza dati da un altro browser, a
-    meno che non si decida di importarli.
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -107,21 +40,6 @@ onboarding-import-sites-disclaimer =
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Come iniziare: schermata { $current } di { $total }
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Scegli un nuovo <span data-l10n-name="zap">look</span>
-onboarding-multistage-theme-subtitle = Personalizza { -brand-short-name } con un tema.
-onboarding-multistage-theme-primary-button-label2 = Fatto
-onboarding-multistage-theme-secondary-button-label = Non adesso
-
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Automatico
-
-# System refers to the operating system
-onboarding-multistage-theme-label-light = Chiaro
-onboarding-multistage-theme-label-dark = Scuro
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
@@ -143,15 +61,17 @@ mr1-onboarding-reduce-motion-button-label = Disattiva animazioni
 ## and "taskbar" while macOS "keep" and "Dock" (proper noun).
 
 # Title used on welcome page when Firefox is not pinned
-mr1-onboarding-pin-header = { PLATFORM() ->
-    [macos] Mantieni { -brand-short-name } nel Dock per un accesso più rapido
-   *[other] Aggiungi { -brand-short-name } alla barra delle applicazioni per un accesso più rapido
-}
+mr1-onboarding-pin-header =
+    { PLATFORM() ->
+        [macos] Mantieni { -brand-short-name } nel Dock per un accesso più rapido
+       *[other] Aggiungi { -brand-short-name } alla barra delle applicazioni per un accesso più rapido
+    }
 # Primary button string used on welcome page when Firefox is not pinned.
-mr1-onboarding-pin-primary-button-label = { PLATFORM() ->
-    [macos] Mantieni nel Dock
-   *[other] Aggiungi alla barra delle applicazioni
-}
+mr1-onboarding-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] Mantieni nel Dock
+       *[other] Aggiungi alla barra delle applicazioni
+    }
 
 ## Multistage MR1 onboarding strings (about:welcome pages)
 
@@ -161,7 +81,7 @@ mr1-onboarding-get-started-primary-button-label = Inizia
 
 mr1-onboarding-welcome-header = Benvenuto in { -brand-short-name }
 mr1-onboarding-set-default-pin-primary-button-label = Imposta { -brand-short-name } come browser principale
-  .title = Imposta { -brand-short-name } come browser predefinito e lo aggiunge alla barra delle applicazioni
+    .title = Imposta { -brand-short-name } come browser predefinito e lo aggiunge alla barra delle applicazioni
 
 mr1-onboarding-set-default-only-primary-button-label = Imposta { -brand-short-name } come browser predefinito
 mr1-onboarding-set-default-secondary-button-label = Non adesso
@@ -194,7 +114,6 @@ mr2-onboarding-colorway-primary-button-label = Salva tonalità
 mr2-onboarding-colorway-secondary-button-label = Non adesso
 mr2-onboarding-colorway-label-soft = Delicata
 mr2-onboarding-colorway-label-balanced = Bilanciata
-
 # "Bold" is used in the sense of bravery or courage, not in the sense of
 # emphasized text.
 mr2-onboarding-colorway-label-bold = Forte
@@ -204,7 +123,6 @@ mr2-onboarding-theme-label-auto = Automatico
 
 # This string will be used for Default theme
 mr2-onboarding-theme-label-default = Tema predefinito
-
 
 mr1-onboarding-theme-header = Uno stile unico
 mr1-onboarding-theme-subtitle = Personalizza { -brand-short-name } con un tema.
@@ -219,148 +137,151 @@ mr1-onboarding-theme-label-dark = Scuro
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
 
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
+onboarding-theme-primary-button-label = Fatto
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
 
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        Utilizza la stessa combinazione di colori
-        del sistema operativo per pulsanti, menu
-        e finestre.
 
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        Utilizza la stessa combinazione di colori
-        del sistema operativo per pulsanti, menu
-        e finestre.
-
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        Utilizza una combinazione di colori
-        chiara per pulsanti, menu e finestre.
-
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        Utilizza una combinazione di colori
-        chiara per pulsanti, menu e finestre.
-
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        Utilizza una combinazione di colori
-        scura per pulsanti, menu e finestre.
-
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        Utilizza una combinazione di colori
-        scura per pulsanti, menu e finestre.
-
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        Utilizza una combinazione di colori
-        variegata per pulsanti, menu e finestre.
-
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        Utilizza una combinazione di colori
-        variegata per pulsanti, menu e finestre.
+## Please make sure to split the content of the title attribute into lines whose
+## width corresponds to about 40 Latin characters, to ensure that the tooltip
+## doesn't become too long. Line breaks will be preserved when displaying the
+## tooltip.
 
 ## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
-  .title =
-    Utilizza la stessa combinazione di colori
-    del sistema operativo per pulsanti, menu
-    e finestre.
+    .title =
+        Utilizza la stessa combinazione di colori
+        del sistema operativo per pulsanti, menu
+        e finestre.
 
 # Input description for system theme
 mr1-onboarding-theme-description-system =
-  .aria-description =
-    Utilizza la stessa combinazione di colori
-    del sistema operativo per pulsanti, menu
-    e finestre.
+    .aria-description =
+        Utilizza la stessa combinazione di colori
+        del sistema operativo per pulsanti, menu
+        e finestre.
 
 # Tooltip displayed on hover of light theme
 mr1-onboarding-theme-tooltip-light =
-  .title =
-    Utilizza una combinazione di colori chiara
-    per pulsanti, menu e finestre.
+    .title =
+        Utilizza una combinazione di colori chiara
+        per pulsanti, menu e finestre.
 
 # Input description for light theme
 mr1-onboarding-theme-description-light =
-  .aria-description =
-    Utilizza una combinazione di colori chiara
-    per pulsanti, menu e finestre.
+    .aria-description =
+        Utilizza una combinazione di colori chiara
+        per pulsanti, menu e finestre.
 
 # Tooltip displayed on hover of dark theme
 mr1-onboarding-theme-tooltip-dark =
-  .title =
-    Utilizza una combinazione di colori scura
-    per pulsanti, menu e finestre.
+    .title =
+        Utilizza una combinazione di colori scura
+        per pulsanti, menu e finestre.
 
 # Input description for dark theme
 mr1-onboarding-theme-description-dark =
-  .aria-description =
-    Utilizza una combinazione di colori scura
-    per pulsanti, menu e finestre.
+    .aria-description =
+        Utilizza una combinazione di colori scura
+        per pulsanti, menu e finestre.
 
 # Tooltip displayed on hover of Alpenglow theme
 mr1-onboarding-theme-tooltip-alpenglow =
-  .title =
-    Utilizza una combinazione di colori dinamica
-    e variegata per pulsanti, menu e finestre.
+    .title =
+        Utilizza una combinazione di colori dinamica
+        e variegata per pulsanti, menu e finestre.
 
 # Input description for Alpenglow theme
 mr1-onboarding-theme-description-alpenglow =
-  .aria-description =
-    Utilizza una combinazione di colori dinamica
-    e variegata per pulsanti, menu e finestre.
+    .aria-description =
+        Utilizza una combinazione di colori dinamica
+        e variegata per pulsanti, menu e finestre.
 
 # Tooltip displayed on hover of non-default colorway theme
 # variations e.g. soft, balanced, bold
 mr2-onboarding-theme-tooltip =
-  .title = Utilizza questa tonalità.
+    .title = Utilizza questa tonalità.
 
 # Selector description for non-default colorway theme
 # variations e.g. soft, balanced, bold
 mr2-onboarding-theme-description =
-  .aria-description = Utilizza questa tonalità.
+    .aria-description = Utilizza questa tonalità.
 
 # Tooltip displayed on hover of colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
 mr2-onboarding-colorway-tooltip =
-  .title = Scopri le tonalità { $colorwayName }.
+    .title = Scopri le tonalità { $colorwayName }.
 
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-  .aria-description = Scopri le tonalità { $colorwayName }.
+mr2-onboarding-colorway-label = Scopri le tonalità { $colorwayName }.
 
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
-  .title = Scopri i temi predefiniti.
+    .title = Scopri i temi predefiniti.
 
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-  .aria-description = Scopri i temi predefiniti.
+mr2-onboarding-default-theme-label = Scopri i temi predefiniti.
+
+## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Grazie per averci scelto
 mr2-onboarding-thank-you-text = { -brand-short-name } è un browser indipendente sostenuto da un’organizzazione senza fini di lucro. Insieme possiamo rendere il Web più sicuro, più sano e più rispettoso della privacy.
 mr2-onboarding-start-browsing-button-label = Inizia a navigare
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $appLanguage (String) - The name of Firefox's language, e.g. "American English"
+##   $systemLanguage (String) - The name of the OS's language, e.g. "European Spanish"
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "European Spanish"
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Scegli la tua lingua
+
+onboarding-live-language-button-label-downloading = Download del pacchetto lingua per { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = Recupero elenco delle lingue disponibili…
+onboarding-live-language-installing = Installazione del pacchetto lingua per { $negotiatedLanguage }…
+onboarding-live-language-secondary-cancel-download = Annulla
+onboarding-live-language-skip-button-label = Salta
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+  100
+  volte
+  <span data-l10n-name="zap">grazie</span>
+fx100-thank-you-subtitle = Questa è la nostra centesima versione! Grazie al tuo supporto possiamo rendere Internet un luogo migliore e più sano.
+fx100-thank-you-pin-primary-button-label = { PLATFORM() ->
+    [macos] Mantieni { -brand-short-name } nel Dock
+   *[other] Aggiungi { -brand-short-name } alla barra delle applicazioni
+}
+
+fx100-upgrade-thanks-header = 100 volte grazie
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = Questa è la nostra centesima versione di { -brand-short-name }. Grazie al <em>tuo</em> supporto possiamo rendere Internet un luogo migliore e più sano.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = Questa è la nostra centesima versione! Grazie per essere parte della nostra comunità. Tieni { -brand-short-name } a portata di clic per le prossime 100.

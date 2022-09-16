@@ -41,6 +41,11 @@ options-collapse-attrs-label = Tocio priodoleddau DOM
 options-collapse-attrs-tooltip =
     .title = Tocio'r priodoleddau hir yn yr arolygydd
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Cliciwch a llusgwch i olygu gwerthoedd maint
+options-inspector-draggable-properties-tooltip =
+    .title = Cliciwch a llusgwch i olygu gwerthoedd maint yng ngolwg rheolau'r arolygydd.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Uned lliw rhagnodedig
@@ -48,6 +53,7 @@ options-default-color-unit-authored = Fel ei Awduro
 options-default-color-unit-hex = Hecs
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Enw Lliwiau
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Galluogi dadfygio pell
 options-enable-remote-tooltip2 =
     .title = Bydd troi'r dewis hwn ymlaen yn caniatáu dadfygio enghraifft y porwr hwn o bell
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Galluogi fformatwyr cyfaddas
+options-enable-custom-formatters-tooltip =
+    .title = Bydd troi'r dewis hwn ymlaen yn caniatáu i wefannau ddiffinio fformatwyr personol ar gyfer gwrthrychau DOM
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Galluogi Service Workers dros HTTP (pan fydd y blwch offer ar agor)

@@ -73,6 +73,7 @@ app-basics-location-service-key-google = „Google“ buvimo vietos nustatymo pa
 app-basics-safebrowsing-key-google = „Google“ saugaus naršymo paslaugos raktas
 app-basics-key-mozilla = „Mozillos“ buvimo vietos nustatymo paslaugos raktas
 app-basics-safe-mode = Ribotoji veiksena
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Rodyti per „Finder“
@@ -345,6 +346,7 @@ fission-status-experiment-control = Išjungta dėl tyrimo
 fission-status-experiment-treatment = Įjungta dėl tyrimo
 fission-status-disabled-by-e10s-env = Išjungta dėl aplinkos
 fission-status-enabled-by-env = Įjungta dėl aplinkos
+fission-status-disabled-by-env = Išjungta dėl aplinkos
 fission-status-disabled-by-safe-mode = Išjungta dėl ribotosios veiksenos
 fission-status-enabled-by-default = Įjungta pagal numatymą
 fission-status-disabled-by-default = išjungta pagal numatymą

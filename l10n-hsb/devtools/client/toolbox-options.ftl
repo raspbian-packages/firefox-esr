@@ -41,6 +41,11 @@ options-collapse-attrs-label = DOM-atributy wottřihać
 options-collapse-attrs-tooltip =
     .title = Dołhe atributy w Inspektorje wottřihać
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Klikńće a ćehńće, zo byšće hódnoty wulkosćow wobdźěłował
+options-inspector-draggable-properties-tooltip =
+    .title = Klikńće a ćehńće, zo byšće hódnoty wulkosćow w napohledźe inspektorowych prawidłow wobdźěłował.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Standardna barbowa jednotka
@@ -48,6 +53,7 @@ options-default-color-unit-authored = Kaž spisany
 options-default-color-unit-hex = Heksadecimalny
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Barbowe mjena
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Zdalene pytanje za zmylkami
 options-enable-remote-tooltip2 =
     .title = Hdyž tute nastajenje zmóžnjeće, so instanca wobhladowaka znazdala za zmylkami přepytuje
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Swójske formatowaki zmóžnić
+options-enable-custom-formatters-tooltip =
+    .title = Hdyž tute nastajenje zmóžnjeće, smědźa sydła swójske formatowaki za DOM-objekty definować
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Service worker přez HTTP zmóžnić (hdyž graty su wočinjene)

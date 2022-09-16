@@ -34,6 +34,9 @@ cert-error-details-cert-chain-label = Slabhra teastais:
 
 connectionFailure-title = Ní féidir ceangal
 deniedPortAccess-title = Tá an seoladh seo srianta
+# "Hmm" is a sound made when considering or puzzling over something.
+# You don't have to include it in your translation if your language does not have a written word like this.
+dnsNotFound-title = Hmm. Tá deacracht againn an suíomh sin a aimsiú.
 fileNotFound-title = Comhad gan aimsiú
 fileAccessDenied-title = Diúltaíodh rochtain ar an gcomhad
 generic-title = Úps.
@@ -52,6 +55,5 @@ redirectLoop-title = Níl an leathanach ag atreorú i gceart
 unknownSocketType-title = Freagra nach rabhthas ag súil leis ón bhfreastalaí
 nssFailure2-title = Níorbh Fhéidir Ceangal Slán a Bhunú
 corruptedContentError-title = Earráid: Ábhar Truaillithe
-remoteXUL-title = XUL Cianda
 sslv3Used-title = Ní féidir ceangal slán a bhunú
 inadequateSecurityError-title = Níl do cheangal slán

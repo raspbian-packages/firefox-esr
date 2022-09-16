@@ -70,8 +70,8 @@ about-logins-login-intro-heading-logged-in = დასინქრონებ�
 login-intro-description = თუ თქვენს მონაცემებს { -brand-product-name } სხვა მოწყობილობაზე ინახავს, ნახეთ როგორ უნდა გადმოიტანოთ აქ:
 login-intro-instructions-fxa = შედით ან შექმენით { -fxaccount-brand-name } იმ მოწყობილობიდან, რომელზეც თქვენი ანგარიშები ინახება.
 login-intro-instructions-fxa-settings = გადადით პარამეტრებში > სინქრონიზაცია > სინქრონიზაციის ჩართვა… აირჩიეთ ანგარიშები და პაროლები.
-login-intro-instructions-fxa-help = იხილეთ <a data-l10n-name="help-link">{ -lockwise-brand-short-name }-მხარდაჭერის</a> გვერდი, დახმარების მისაღებად.
-about-logins-intro-import = თუ თქვენი ანგარიშების მონაცემებ, სხვა ბრაუზერში ინახება, შეგიძლიათ <a data-l10n-name="import-link">გადმოიტანოთ { -lockwise-brand-short-name }-ში</a>
+login-intro-instructions-fxa-passwords-help = იხილეთ <a data-l10n-name="passwords-help-link">პაროლების მხარდაჭერის გვერდი</a> დახმარების მისაღებად.
+about-logins-intro-browser-only-import = თუ თქვენი ანგარიშების მონაცემები, სხვა ბრაუზერშია, შეგიძლიათ <a data-l10n-name="import-link">გადმოიტანოთ და შეინახავს { -brand-product-name }</a>
 about-logins-intro-import2 = თუ თქვენი ანგარიში მონაცემებს { -brand-product-name } არ ინახავდა, შეგიძლიათ <a data-l10n-name="import-browser-link">გადმოიტანოთ სხვა ბრაუზერიდან</a> ან <a data-l10n-name="import-file-link">პირდაპირ ფაილიდან</a>
 
 ## Login
@@ -141,7 +141,7 @@ master-password-reload-button =
 confirmation-dialog-cancel-button = გაუქმება
 confirmation-dialog-dismiss-button =
     .title = გაუქმება
-about-logins-confirm-remove-dialog-title = მოცილდეს ეს მონაცემები?
+about-logins-confirm-remove-dialog-title = გსურთ ამ მონაცემების მოცილება?
 confirm-delete-dialog-message = ეს ქმედება შეუქცევადია.
 about-logins-confirm-remove-dialog-confirm-button = მოცილება
 about-logins-confirm-remove-all-dialog-confirm-button-label =
@@ -162,20 +162,20 @@ about-logins-confirm-remove-all-dialog-title =
     }
 about-logins-confirm-remove-all-dialog-message =
     { $count ->
-        [1] შედეგად წაიშლება ანგარიშის მონაცემები, რომელსაც ინახავს { -brand-short-name } და მოსცილდება მიტაცებებზე შეტყობინებები. ეს ქმედება შეუქცევადია.
-        [one] შედეგად წაიშლება ანგარიშის მონაცემები, რომელსაც ინახავს { -brand-short-name } და მოსცილდება მიტაცებებზე შეტყობინებები. ეს ქმედება შეუქცევადია.
-       *[other] შედეგად წაიშლება ანგარიშების მონაცემები, რომელთაც ინახავს { -brand-short-name } და მოსცილდება მიტაცებებზე შეტყობინებები. ეს ქმედება შეუქცევადია.
+        [1] შედეგად წაიშლება ანგარიშის მონაცემები, რომელსაც ინახავს { -brand-short-name } და მოცილდება მიტაცებებზე შეტყობინებები. ეს ქმედება შეუქცევადია.
+        [one] შედეგად წაიშლება ანგარიშის მონაცემები, რომელსაც ინახავს { -brand-short-name } და მოცილდება მიტაცებებზე შეტყობინებები. ეს ქმედება შეუქცევადია.
+       *[other] შედეგად წაიშლება ანგარიშების მონაცემები, რომელთაც ინახავს { -brand-short-name } და მოცილდება მიტაცებებზე შეტყობინებები. ეს ქმედება შეუქცევადია.
     }
 about-logins-confirm-remove-all-sync-dialog-title =
     { $count ->
         [one] მოცილდეს { $count } ანგარიში ყველა მოწყობილობიდან?
-       *[other] მოცილდეს { $count } ანგარიში ყველა მოწყობილობიდან
+       *[other] მოცილდეს { $count } ანგარიში ყველა მოწყობილობიდან?
     }
 about-logins-confirm-remove-all-sync-dialog-message =
     { $count ->
-        [1] შედეგად წაიშლება ანგარიშის მონაცემები, რომელსაც ინახავს { -brand-short-name } და ასინქრონებს ყველა მოწყობილობაზე { -fxaccount-brand-name(case: "ins") }. აგრეთვე მოსცილდება მიტაცებებზე შეტყობინებებიც. ეს ქმედება შეუქცევადია.
-        [one] შედეგად წაიშლება ანგარიშის მონაცემები, რომელსაც ინახავს { -brand-short-name } და ასინქრონებს ყველა მოწყობილობაზე { -fxaccount-brand-name(case: "ins") }. აგრეთვე მოსცილდება მიტაცებებზე შეტყობინებებიც. ეს ქმედება შეუქცევადია.
-       *[other] შედეგად წაიშლება ანგარიშების მონაცემები, რომელთაც ინახავს { -brand-short-name } და ასინქრონებს ყველა მოწყობილობაზე { -fxaccount-brand-name(case: "ins") }. აგრეთვე მოსცილდება მიტაცებებზე შეტყობინებებიც. ეს ქმედება შეუქცევადია.
+        [1] შედეგად წაიშლება ანგარიშის მონაცემები, რომელსაც ინახავს { -brand-short-name } და ასინქრონებს ყველა მოწყობილობაზე { -fxaccount-brand-name(case: "ins") }. აგრეთვე მოცილდება მიტაცებებზე შეტყობინებებიც. ეს ქმედება შეუქცევადია.
+        [one] შედეგად წაიშლება ანგარიშის მონაცემები, რომელსაც ინახავს { -brand-short-name } და ასინქრონებს ყველა მოწყობილობაზე { -fxaccount-brand-name(case: "ins") }. აგრეთვე მოცილდება მიტაცებებზე შეტყობინებებიც. ეს ქმედება შეუქცევადია.
+       *[other] შედეგად წაიშლება ანგარიშების მონაცემები, რომელთაც ინახავს { -brand-short-name } და ასინქრონებს ყველა მოწყობილობაზე { -fxaccount-brand-name(case: "ins") }. აგრეთვე მოცილდება მიტაცებებზე შეტყობინებებიც. ეს ქმედება შეუქცევადია.
     }
 about-logins-confirm-export-dialog-title = მონაცემებისა და პაროლების გატანა
 about-logins-confirm-export-dialog-message = თქვენი პაროლები შეინახება წასაკითხ ტექსტად (მაგ. BadP@ssw0rd) ასე რომ, ნებისმიერს შეეძლება მათი ნახვა, თუ გატანილ ფაილს გახსნის.

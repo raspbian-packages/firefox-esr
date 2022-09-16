@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Mewnforio ac atodi dalen arddull cyfredol i'r ddogfen
     .accesskey = M
+styleeditor-filter-input =
+    .placeholder = Hidlo dalennau arddull
 styleeditor-visibility-toggle =
     .tooltiptext = Toglo gwelwdedd tudalen arddull
     .accesskey = C
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Agor Dolen mewn Tab Newydd
 styleeditor-copy-url =
     .label = Copïo'r URL
+styleeditor-go-to-line =
+    .label = Neidio i linell…
+    .accesskey = N
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Dim dalennau arddull cyfatebol.

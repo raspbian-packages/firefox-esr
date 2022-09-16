@@ -205,10 +205,12 @@ PurgeTrackerService.prototype = {
         Ci.nsIClearDataService.CLEAR_ALL_CACHES |
           Ci.nsIClearDataService.CLEAR_COOKIES |
           Ci.nsIClearDataService.CLEAR_DOM_STORAGES |
-          Ci.nsIClearDataService.CLEAR_SECURITY_SETTINGS |
+          Ci.nsIClearDataService.CLEAR_CLIENT_AUTH_REMEMBER_SERVICE |
           Ci.nsIClearDataService.CLEAR_EME |
           Ci.nsIClearDataService.CLEAR_MEDIA_DEVICES |
-          Ci.nsIClearDataService.CLEAR_STORAGE_ACCESS,
+          Ci.nsIClearDataService.CLEAR_STORAGE_ACCESS |
+          Ci.nsIClearDataService.CLEAR_AUTH_TOKENS |
+          Ci.nsIClearDataService.CLEAR_AUTH_CACHE,
         resolve
       );
     });

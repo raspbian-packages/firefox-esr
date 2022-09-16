@@ -73,7 +73,7 @@ certmgr-edit =
     .accesskey = U
 
 certmgr-export =
-    .label = Izvoz…
+    .label = Izvezi …
     .accesskey = z
 
 certmgr-delete =
@@ -93,7 +93,7 @@ certmgr-backup-all =
     .accesskey = k
 
 certmgr-restore =
-    .label = Uvezi…
+    .label = Uvezi …
     .accesskey = v
 
 certmgr-add-exception =
@@ -177,8 +177,6 @@ delete-email-cert-impact = Ako izbrišete certifikat e-pošte određene osobe, v
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Certifikat sa serijskim brojem: { $serialNumber }
-
-## Cert Viewer
 
 # Used when no cert is stored for an override
 no-cert-stored-for-override = (nije pohranjeno)

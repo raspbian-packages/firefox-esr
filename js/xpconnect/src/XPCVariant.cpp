@@ -14,6 +14,7 @@
 #include "js/Array.h"  // JS::GetArrayLength, JS::IsArrayObject, JS::NewArrayObject
 #include "js/friend/StackLimits.h"  // js::AutoCheckRecursionLimit
 #include "js/friend/WindowProxy.h"  // js::ToWindowIfWindowProxy
+#include "js/PropertyAndElement.h"  // JS_GetElement
 #include "js/Wrapper.h"
 
 using namespace JS;
@@ -438,7 +439,7 @@ bool XPCVariant::VariantDataToJS(JSContext* cx, nsIVariant* variant,
       if (NS_FAILED(variant->GetAsDouble(&d))) {
         return false;
       }
-      pJSVal.setNumber(d);
+      pJSVal.set(JS_NumberValue(d));
       return true;
     }
     case nsIDataType::VTYPE_BOOL: {

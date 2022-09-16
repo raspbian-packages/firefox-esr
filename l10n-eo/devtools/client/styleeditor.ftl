@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = Importi kaj aldoni ekzistantan stilfolion al la dokumento
     .accesskey = I
+styleeditor-filter-input =
+    .placeholder = Filtri stilfoliojn
 styleeditor-visibility-toggle =
     .tooltiptext = Ŝalti/malŝalti la videblon de stilfolio
     .accesskey = K
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = Malfermi ligilon en nova langeto
 styleeditor-copy-url =
     .label = Kopii retadreson
+styleeditor-go-to-line =
+    .label = Iri al la linio …
+    .accesskey = I
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = Neniu kongrua stilfolio trovita.

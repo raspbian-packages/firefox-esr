@@ -23,7 +23,7 @@ colors-page-override-option-auto =
 colors-page-override-option-never =
     .label = 总不
 
-colors-text-and-background = 文字和背景
+colors-text-and-background = 文本和背景
 
 colors-text-header = 文本
     .accesskey = T

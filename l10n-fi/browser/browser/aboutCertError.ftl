@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Sivustot todistavat identiteettinsä 
 
 cert-error-symantec-distrust-admin = Voit ilmoittaa tästä ongelmasta sivuston ylläpitäjälle.
 
+cert-error-old-tls-version = Tämä sivusto ei välttämättä tue TLS 1.2 -protokollaa, joka on pienin { -brand-short-name }in tukema versio protokollasta.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Odottamaton vastaus palvelimelta
 nssFailure2-title = Suojatun yhteyden muodostaminen epäonnistui
 csp-xfo-error-title = { -brand-short-name } ei voi avata tätä sivua
 corruptedContentError-title = Sisältö vioittunut -virhe
-remoteXUL-title = XUL-koodia etänä
 sslv3Used-title = Ei voitu muodostaa suojattua yhteyttä
 inadequateSecurityError-title = Yhteys ei ole suojattu
 blockedByPolicy-title = Estetty sivu

@@ -58,8 +58,8 @@ bookmark-tab =
     .label = Bókamerkja flipa
     .accesskey = B
 tab-context-open-in-new-container-tab =
-    .label = Opna í nýjum innihaldsflipa
-    .accesskey = i
+    .label = Opna í nýjum sérefnisflipa
+    .accesskey = e
 move-to-start =
     .label = Færa á byrjun
     .accesskey = S
@@ -75,8 +75,6 @@ tab-context-close-multiple-tabs =
 tab-context-share-url =
     .label = Deila
     .accesskey = D
-tab-context-share-more =
-    .label = Meira…
 
 ## Variables:
 ##  $tabCount (Number): the number of tabs that are affected by the action.
@@ -89,14 +87,6 @@ tab-context-reopen-closed-tabs =
            *[other] Afturkalla að loka flipum
         }
     .accesskey = o
-tab-context-close-tabs =
-    .label =
-        { $tabCount ->
-            [1] Loka flipa
-            [one] Loka flipa
-           *[other] Loka flipum
-        }
-    .accesskey = L
 tab-context-close-n-tabs =
     .label =
         { $tabCount ->
@@ -113,6 +103,7 @@ tab-context-move-tabs =
            *[other] Færa flipa
         }
     .accesskey = F
+
 tab-context-send-tabs-to-device =
     .label =
         { $tabCount ->

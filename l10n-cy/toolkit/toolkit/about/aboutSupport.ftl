@@ -29,7 +29,7 @@ features-id = ID
 processes-title = Prosesau Pell
 processes-type = Math
 processes-count = Cyfrif
-app-basics-title = Sylfaeni Rhaglen
+app-basics-title = Sylfaeni'r Rhaglen
 app-basics-name = Enw
 app-basics-version = Fersiwn
 app-basics-build-id = Cyfeirnod Adeiladu
@@ -73,6 +73,14 @@ app-basics-location-service-key-google = Allwedd Google Location Service
 app-basics-safebrowsing-key-google = Allwedd Google Safebrowsing
 app-basics-key-mozilla = Mozilla Location Service Key
 app-basics-safe-mode = Modd Diogel
+app-basics-memory-size = Maint Cof (RAM)
+app-basics-disk-available = Lle ar Ddisg ar Gael
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Dangos yn Finder
@@ -360,6 +368,7 @@ fission-status-experiment-control = Analluogwyd trwy arbrawf
 fission-status-experiment-treatment = Galluogwyd trwy arbrawf
 fission-status-disabled-by-e10s-env = Analluogwyd gan yr amgylchedd
 fission-status-enabled-by-env = Galluogwyd gan yr amgylchedd
+fission-status-disabled-by-env = Analluogwyd gan yr amgylchedd
 fission-status-disabled-by-safe-mode = Analluogwyd gan y modd diogel
 fission-status-enabled-by-default = Galluogwyd drwy ragosodiad
 fission-status-disabled-by-default = Analluogwyd drwy ragosodiad

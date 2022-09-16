@@ -4,7 +4,6 @@
 
 close-button =
     .aria-label = Kapat
-preferences-doc-title = Tercihler
 preferences-doc-title2 = Ayarlar
 category-list =
     .aria-label = Kategoriler
@@ -116,9 +115,6 @@ restore-default-label =
     .label = Varsayılanı geri yükle
     .accesskey = V
 default-search-engine = Varsayılan Arama Motoru
-add-search-engine =
-    .label = Dosyadan ekle
-    .accesskey = D
 add-web-search-engine =
     .label = Ekle…
     .accesskey = E
@@ -150,7 +146,7 @@ change-dock-icon = Uygulama simgesi tercihlerini değiştir
 app-icon-options =
     .label = Uygulama Simgesi Seçenekleri…
     .accesskey = m
-notification-settings = Uyarılar ve varsayılan ses Sistem Tercihleri'ndeki Bildirim bölümünden kapatılabilir.
+notification-settings2 = Uyarıları ve varsayılan sesi Sistem Ayarları'ndaki Bildirim bölümünden kapatabilirsiniz.
 animated-alert-label =
     .label = Uyarı göster
     .accesskey = U
@@ -194,6 +190,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Yumuşak kaydırmayı kullan
     .accesskey = Y
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Kaydırma çubuklarını her zaman göster
+    .accesskey = u
 system-integration-legend = Sistem Bütünleşmesi
 always-check-default =
     .label = Varsayılan e-posta istemcimin { -brand-short-name } olup olmadığını açılışta denetle
@@ -318,12 +317,6 @@ quoted-text-color =
     .accesskey = n
 search-handler-table =
     .placeholder = İçerik türlerini ve eylemleri filtrele
-type-column-label =
-    .label = İçerik Türü
-    .accesskey = T
-action-column-label =
-    .label = Eylem
-    .accesskey = E
 type-column-header = İçerik türü
 action-column-header = Eylem
 save-to-label =
@@ -447,10 +440,14 @@ restore-html-label =
 default-format-label =
     .label = Varsayılan olarak gövde metni yerine paragraf biçimini kullan
     .accesskey = V
-format-description = Metin biçimi davranışını yapılandır
-send-options-label =
-    .label = Gönderim seçenekleri…
-    .accesskey = m
+compose-send-automatic-option =
+    .label = Otomatik
+compose-send-both-option =
+    .label = Hem HTML hem de düz metin
+compose-send-html-option =
+    .label = Yalnızca HTML
+compose-send-plain-option =
+    .label = Yalnızca düz metin
 autocomplete-description = Adres girerken eşleşen kayıtları bulmak için buraya bak:
 ab-label =
     .label = Yerel adres defterleri
@@ -664,8 +661,8 @@ chat-browse-sound-button =
 theme-label =
     .value = Tema:
     .accesskey = T
-style-thunderbird =
-    .label = Thunderbird
+style-mail =
+    .label = { -brand-short-name }
 style-bubbles =
     .label = Balonlar
 style-dark =
@@ -688,20 +685,6 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
-    .style = width: 15.4em
-    .placeholder = Tercihlerde ara
-
-## Preferences UI Search Results
-
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Please keep the placeholder string short to avoid truncation.
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
 search-preferences-input2 =
     .style = width: 15.4em
     .placeholder = Ayarlarda ara
@@ -709,12 +692,6 @@ search-preferences-input2 =
 ## Settings UI Search Results
 
 search-results-header = Arama Sonuçları
-# `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
-    { PLATFORM() ->
-        [windows] Kusura bakmayın, seçeneklerde “<span data-l10n-name="query"></span>” ile ilgili bir sonuç bulamadık.
-       *[other] Kusura bakmayın, tercihlerde “<span data-l10n-name="query"></span>” ile ilgili bir sonuç bulamadık.
-    }
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
 search-results-empty-message2 =
     { PLATFORM() ->

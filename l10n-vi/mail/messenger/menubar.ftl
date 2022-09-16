@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Thanh menu
+    .accesskey = M
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Tùy chỉnh
-    .accesskey = P
 menu-tools-settings =
     .label = Cài đặt
     .accesskey = e
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Cỡ chữ
+    .accesskey = o
+menuitem-font-size-enlarge =
+    .label = Tăng cỡ chữ
+    .accesskey = I
+menuitem-font-size-reduce =
+    .label = Giảm cỡ chữ
+    .accesskey = D
+menuitem-font-size-reset =
+    .label = Đặt lại cỡ chữ
+    .accesskey = R
 mail-uidensity-label =
     .label = Mật độ
     .accesskey = D
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Chạm
     .accesskey = T
+menu-spaces-toolbar-button =
+    .label = Thanh công cụ Spaces
+    .accesskey = S
 
 ## File
 

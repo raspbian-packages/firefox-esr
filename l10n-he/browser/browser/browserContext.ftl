@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = שמירת קישור אל { -pocket-brand-name }
     .accesskey = מ
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = העתקת כתובת דוא״ל
     .accesskey = כ
+
+main-context-menu-copy-phone =
+    .label = העתקת מספר טלפון
+    .accesskey = ה
 
 main-context-menu-copy-link-simple =
     .label = העתקת קישור
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = פתיחת קישור בלשונית { $containerName } חדשה
     .accesskey = פ
+
+main-context-menu-reveal-password =
+    .label = הצגת ססמה
+    .accesskey = ה

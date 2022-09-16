@@ -35,6 +35,8 @@ detail-version =
     .label = Sürüm
 detail-last-updated =
     .label = Son güncelleme
+addon-detail-description-expand = Daha fazla göster
+addon-detail-description-collapse = Daha az göster
 detail-contributions-description = Bu eklentinin geliştiricisi, sizden ufak bir katkıda bulunarak süregelen geliştirme faaliyetlerini desteklemenizi istiyor.
 detail-contributions-button = Katkıda bulunun
     .title = Bu eklentinin geliştirilmesine katkıda bulunun
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Yakın zamandaki güncellemeler
 addon-category-recent-updates-title =
     .title = Yakın zamandaki güncellemeler
+addon-category-sitepermission = Site İzinleri
+addon-category-sitepermission-title =
+    .title = Site İzinleri
 
 ## These are global warnings
 
@@ -279,14 +284,18 @@ extension-enabled-heading = Etkin
 extension-disabled-heading = Devre dışı
 theme-enabled-heading = Etkin
 theme-disabled-heading = Devre dışı
+theme-disabled-heading2 = Kayıtlı temalar
 theme-monochromatic-heading = Renk kuşakları
 theme-monochromatic-subheading = { -brand-product-name } tarayıcınızdan yepyeni renk kuşakları. Sadece kısıtlı bir süre için.
+theme-colorways-button = Renk kuşaklarını deneyin
 plugin-enabled-heading = Etkin
 plugin-disabled-heading = Devre dışı
 dictionary-enabled-heading = Etkin
 dictionary-disabled-heading = Devre dışı
 locale-enabled-heading = Etkin
 locale-disabled-heading = Devre dışı
+sitepermission-enabled-heading = Etkin
+sitepermission-disabled-heading = Devre dışı
 always-activate-button = Her zaman etkinleştir
 never-activate-button = Asla etkinleştirme
 addon-detail-author-label = Geliştiren
@@ -363,6 +372,7 @@ addon-permissions-optional = Ek işlevler için isteğe bağlı izinler:
 addon-permissions-learnmore = İzinler hakkında daha fazla bilgi alın
 recommended-extensions-heading = Önerilen uzantılar
 recommended-themes-heading = Önerilen temalar
+addon-sitepermissions-required = <span data-l10n-name="hostname">{ $hostname }</span> sitesine aşağıdaki izinleri verir:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Yaratıcı gününüzde misiniz? <a data-l10n-name="link">Firefox Color ile kendi temanızı oluşturun.</a>
@@ -375,6 +385,7 @@ plugin-heading = Yan uygulamalarınızı yönetin
 dictionary-heading = Sözlüklerinizi yönetin
 locale-heading = Dillerinizi yönetin
 updates-heading = Güncellemelerinizi yönetin
+sitepermission-heading = Site izinlerinizi yönetin
 discover-heading = { -brand-short-name } tarayıcınızı kişiselleştirin
 shortcuts-heading = Uzantı kısayollarını yönet
 default-heading-search-label = Daha fazla eklenti bul
@@ -382,3 +393,20 @@ addons-heading-search-input =
     .placeholder = addons.mozilla.org’da ara
 addon-page-options-button =
     .title = Tüm eklentiler için araçlar
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } eklentisi { -brand-short-name } { $version } ile uyumsuz.
+details-notification-unsigned-and-disabled = { $name } { -brand-short-name } üzerinde kullanım için doğrulanamadı ve etkisizleştirildi.
+details-notification-unsigned-and-disabled-link = Daha fazla bilgi
+details-notification-unsigned = { $name } { -brand-short-name } üzerinde kullanım için doğrulanamadı. Lütfen dikkatli olun.
+details-notification-unsigned-link = Daha fazla bilgi
+details-notification-blocked = { $name } güvenlik veya kararlılık gerekçesiyle devre dışı bırakıldı.
+details-notification-blocked-link = Daha fazla bilgi
+details-notification-softblocked = { $name } eklentisinin güvenlik veya kararlılık sorunlarına yol açtığı biliniyor.
+details-notification-softblocked-link = Daha fazla bilgi
+details-notification-gmp-pending = { $name } az sonra yüklenecektir.

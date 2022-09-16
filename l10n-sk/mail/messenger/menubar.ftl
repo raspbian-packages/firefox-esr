@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Panel Ponuka
+    .accesskey = P
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Nastavenia
-    .accesskey = t
 menu-tools-settings =
     .label = Nastavenia
     .accesskey = t
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Veľkosť písma
+    .accesskey = m
+menuitem-font-size-enlarge =
+    .label = Zväčšiť veľkosť písma
+    .accesskey = Z
+menuitem-font-size-reduce =
+    .label = Zmenšiť veľkosť písma
+    .accesskey = m
+menuitem-font-size-reset =
+    .label = Obnoviť veľkosť písma
+    .accesskey = O
 mail-uidensity-label =
     .label = Hustota
     .accesskey = H
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Pre dotykové zariadenia
     .accesskey = P
+menu-spaces-toolbar-button =
+    .label = Panel Miesta
+    .accesskey = M
 
 ## File
 

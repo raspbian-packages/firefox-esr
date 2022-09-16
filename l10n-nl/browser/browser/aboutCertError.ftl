@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Websites tonen hun identiteit aan via
 
 cert-error-symantec-distrust-admin = U kunt de beheerder van de website over dit probleem informeren.
 
+cert-error-old-tls-version = Deze website ondersteunt mogelijk niet het TLS 1.2-protocol, de minimale versie die wordt ondersteund door { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Onverwacht antwoord van server
 nssFailure2-title = Beveiligde verbinding mislukt
 csp-xfo-error-title = { -brand-short-name } kan deze pagina niet openen
 corruptedContentError-title = Beschadigde-inhoudsfout
-remoteXUL-title = Remote XUL
 sslv3Used-title = Kan geen beveiligde verbinding maken
 inadequateSecurityError-title = Uw verbinding is niet beveiligd
 blockedByPolicy-title = Geblokkeerde pagina

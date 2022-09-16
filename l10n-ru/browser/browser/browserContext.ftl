@@ -166,22 +166,21 @@ main-context-menu-save-link-to-pocket =
     .label = Сохранить ссылку в { -pocket-brand-name }
     .accesskey = н
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
 
 main-context-menu-copy-email =
     .label = Копировать адрес электронной почты
-    .accesskey = э
+    .accesskey = К
+
+main-context-menu-copy-phone =
+    .label = Копировать номер телефона
+    .accesskey = н
 
 main-context-menu-copy-link-simple =
     .label = Копировать ссылку
-    .accesskey = л
+    .accesskey = К
 
 ## Media (video/audio) controls
 ##
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Открыть ссылку в новой вкладке в контейнере { $containerName }
     .accesskey = н
+
+main-context-menu-reveal-password =
+    .label = Показать пароль
+    .accesskey = з

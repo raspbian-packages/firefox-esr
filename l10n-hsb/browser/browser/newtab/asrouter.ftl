@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Doporučena funkcija
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Čehodla so to pokazuje
+
 cfr-doorhanger-extension-cancel-button = Nic nětko
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Nětko přidać
     .accesskey = d
+
 cfr-doorhanger-extension-manage-settings-button = Doporučenske nastajenja rjadować
     .accesskey = D
+
 cfr-doorhanger-extension-never-show-recommendation = Tute doporučenje njepokazać
     .accesskey = T
+
 cfr-doorhanger-extension-learn-more-link = Dalše informacije
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = wot { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Doporučenje
 cfr-doorhanger-extension-notification2 = Doporučenje
     .tooltiptext = Doporučenje rozšěrjenja
     .a11y-announcement = Doporučenje rozšěrjenja k dispoziciji
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Doporučenje
@@ -81,9 +89,11 @@ cfr-protections-panel-link-text = Dalše informacije
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nowa funkcija:
+
 cfr-whatsnew-button =
     .label = Nowe funkcije a změny
     .tooltiptext = Nowe funkcije a změny
+
 cfr-whatsnew-release-notes-link-text = Wersijowe informacije čitać
 
 ## Enhanced Tracking Protection Milestones
@@ -162,3 +172,16 @@ spotlight-total-cookie-protection-body = Dospołny plackowy škit přesćěhowak
 spotlight-total-cookie-protection-expanded = { -brand-short-name } płót wokoło plackow twari, kotryž je na sydło wobmjezuje, na kotrymž sće, zo njebychu je přesćěhowaki móhli wužiwać, zo bychu was přesćěhowali. Z lochkim přistupom pomhaće tutu funkciju optimować, zo bychmy móhli dale lěpši web za kóždeho natwarili.
 spotlight-total-cookie-protection-primary-button = Dospołny škit před plackami zmóžnić
 spotlight-total-cookie-protection-secondary-button = Nic nětko
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Lěpši internet z wami startuje
+spotlight-better-internet-body = Hdyž { -brand-short-name } wužiwaće, hłosujeće za wotewrjeny a přistupny internet, kotryž je lěpši za wšěch.
+spotlight-peace-mind-header = Smy was zapřijeli
+spotlight-peace-mind-body = Kóždy měsać { -brand-short-name } w přerězku přez 3.000 přesćěhowakow na wužiwarja blokuje. Dokelž ničo, předewšěm hněwanja priwatnosće kaž přesćěhowaki, njeměło mjez wami a dobrym internetom być.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Na doku wobchować
+       *[other] K nadawkowej lajsće připjeć
+    }
+spotlight-pin-secondary-button = Nic nětko

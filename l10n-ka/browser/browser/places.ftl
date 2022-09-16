@@ -8,6 +8,9 @@ places-open =
 places-open-in-tab =
     .label = გახსნა ახალ ჩანართში
     .accesskey = ლ
+places-open-in-container-tab =
+    .label = გახსნა ახალ სათავს ჩანართში
+    .accesskey = ვ
 places-open-all-bookmarks =
     .label = ყველა სანიშნის გახსნა
     .accesskey = ხ
@@ -69,16 +72,6 @@ places-edit-bookmark =
 places-edit-generic =
     .label = ჩასწორება…
     .accesskey = წ
-places-edit-folder =
-    .label = საქაღალდის გადარქმევა…
-    .accesskey = რ
-places-remove-folder =
-    .label =
-        { $count ->
-            [1] საქაღალდის მოცილება
-           *[other] საქაღალდეების მოცილება
-        }
-    .accesskey = მ
 places-edit-folder2 =
     .label = საქაღალდის ჩასწორება…
     .accesskey = ო
@@ -98,15 +91,6 @@ managed-bookmarks-subfolder =
 # This label is used for the "Other Bookmarks" folder that appears in the bookmarks toolbar.
 other-bookmarks-folder =
     .label = სხვა სანიშნები
-# Variables:
-# $count (number) - The number of elements being selected for removal.
-places-remove-bookmark =
-    .label =
-        { $count ->
-            [1] სანიშნის მოცილება
-           *[other] სანიშნების მოცილება
-        }
-    .accesskey = ც
 places-show-in-folder =
     .label = ჩვენება საქაღალდეში
     .accesskey = ქ
@@ -125,7 +109,7 @@ places-manage-bookmarks =
 places-forget-about-this-site-confirmation-title = ამ საიტის დავიწყება
 # Variables:
 # $hostOrBaseDomain (string) - The base domain (or host in case there is no base domain) for which data is being removed
-places-forget-about-this-site-confirmation-message = ამ ქმედებით მოსცილდება ყველა მონაცემი, რომლებიც უკავშირდება { $hostOrBaseDomain }-ს, მათ შორის ისტორია, პაროლები, ფუნთუშები, დროებითი ფაილები და შიგთავსის პარამეტრები. ნამდვილად გსურთ, განაგრძოთ?
+places-forget-about-this-site-confirmation-message = შედეგად ამოიშლება ყველა მონაცემი, რომელთაც იყენებდა { $hostOrBaseDomain }, მათ შორის ისტორია, პაროლები, ფუნთუშები, მომარაგებული ფაილები და შიგთავსის პარამეტრები. ნამდვილად გსურთ, განაგრძოთ?
 places-forget-about-this-site-forget = დავიწყება
 places-library =
     .title = ბიბლიოთეკა

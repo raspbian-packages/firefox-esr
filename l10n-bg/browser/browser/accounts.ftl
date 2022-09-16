@@ -8,7 +8,7 @@ account-finish-account-setup = Завършете настройката
 
 # Used as the FxA toolbar menu item title when the user
 # needs to reconnect their account.
-account-disconnected2 = Сметката е изключена
+account-disconnected2 = Профилът е изключен
 
 # Menu item that sends a tab to all synced devices.
 account-send-to-all-devices = Изпращане до всички

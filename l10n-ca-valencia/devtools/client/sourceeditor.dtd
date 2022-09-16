@@ -24,5 +24,4 @@
 
 
 <!ENTITY gotoLineCmd.label         "Salta a la línia…">
-<!ENTITY gotoLineCmd.key           "J">
 <!ENTITY gotoLineCmd.accesskey     "S">

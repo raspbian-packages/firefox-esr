@@ -170,7 +170,11 @@ class Task {
   virtual PerformanceCounter* GetPerformanceCounter() const { return nullptr; }
 
   // Get a name for this task. This returns false if the task has no name.
+#ifdef MOZ_COLLECTING_RUNNABLE_TELEMETRY
+  virtual bool GetName(nsACString& aName) = 0;
+#else
   virtual bool GetName(nsACString& aName) { return false; }
+#endif
 
  protected:
   Task(bool aMainThreadOnly,
@@ -245,7 +249,7 @@ struct PoolThread {
 class IdleTaskManager : public TaskManager {
  public:
   explicit IdleTaskManager(already_AddRefed<nsIIdlePeriod>&& aIdlePeriod)
-      : mIdlePeriodState(std::move(aIdlePeriod)) {}
+      : mIdlePeriodState(std::move(aIdlePeriod)), mProcessedTaskCount(0) {}
 
   IdlePeriodState& State() { return mIdlePeriodState; }
 
@@ -254,9 +258,18 @@ class IdleTaskManager : public TaskManager {
     return !idleDeadline;
   }
 
+  void DidRunTask() override {
+    TaskManager::DidRunTask();
+    ++mProcessedTaskCount;
+  }
+
+  uint64_t ProcessedTaskCount() { return mProcessedTaskCount; }
+
  private:
   // Tracking of our idle state of various sorts.
   IdlePeriodState mIdlePeriodState;
+
+  std::atomic<uint64_t> mProcessedTaskCount;
 };
 
 // The TaskController is the core class of the scheduler. It is used to
@@ -268,7 +281,8 @@ class TaskController {
   TaskController()
       : mGraphMutex("TaskController::mGraphMutex"),
         mThreadPoolCV(mGraphMutex, "TaskController::mThreadPoolCV"),
-        mMainThreadCV(mGraphMutex, "TaskController::mMainThreadCV") {}
+        mMainThreadCV(mGraphMutex, "TaskController::mMainThreadCV"),
+        mRunOutOfMTTasksCounter(0) {}
 
   static TaskController* Get();
 
@@ -286,6 +300,8 @@ class TaskController {
     mIdleTaskManager = aIdleTaskManager;
   }
   IdleTaskManager* GetIdleTaskManager() { return mIdleTaskManager.get(); }
+
+  uint64_t RunOutOfMTTasksCount() { return mRunOutOfMTTasksCounter; }
 
   // Initialization and shutdown code.
   void SetPerformanceCounterState(
@@ -318,6 +334,8 @@ class TaskController {
   nsIRunnable* GetRunnableForMTTask(bool aReallyWait);
 
   bool HasMainThreadPendingTasks();
+
+  uint64_t PendingMainthreadTaskCountIncludingSuspended();
 
   // Let users know whether the last main thread task runnable did work.
   bool MTTaskRunnableProcessedTask() { return mMTTaskRunnableProcessedTask; }
@@ -356,10 +374,10 @@ class TaskController {
   void RunPoolThread();
 
   static std::unique_ptr<TaskController> sSingleton;
-  static StaticMutex sSingletonMutex;
+  static StaticMutex sSingletonMutex MOZ_UNANNOTATED;
 
   // This protects access to the task graph.
-  Mutex mGraphMutex;
+  Mutex mGraphMutex MOZ_UNANNOTATED;
 
   // This protects thread pool initialization. We cannot do this from within
   // the GraphMutex, since thread creation on Windows can generate events on
@@ -406,6 +424,9 @@ class TaskController {
   CondVar* mExternalCondVar = nullptr;
   // Idle task manager so we can properly do idle state stuff.
   RefPtr<IdleTaskManager> mIdleTaskManager;
+
+  // How many times the main thread was empty.
+  std::atomic<uint64_t> mRunOutOfMTTasksCounter;
 
   // Our tracking of our performance counter and long task state,
   // shared with nsThread.

@@ -5,8 +5,6 @@
 
 about-logins-page-title = Logins & Passwords
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Search Logins
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Breached web site
 about-logins-list-item-vulnerable-password-icon =
     .title = Vulnerable password
-
 about-logins-list-section-breach = Breached web sites
 about-logins-list-section-vulnerable = Vulnerable passwords
 about-logins-list-section-nothing = No alert
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = No synchronised logins found.
 login-intro-description = If you saved your logins to { -brand-product-name } on a different device, here’s how to get them here:
 login-intro-instructions-fxa = Create or sign in to your { -fxaccount-brand-name(capitalization: "sentence") } on the device where your logins are saved.
 login-intro-instructions-fxa-settings = Go to Settings > Sync > Turn on synchronisation… Select the Logins and passwords checkbox.
-login-intro-instructions-fxa-help = Visit <a data-l10n-name="help-link">{ -lockwise-brand-short-name } Support</a> for more help.
-about-logins-intro-import = If your logins are saved in another browser, you can <a data-l10n-name="import-link">import them into { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Visit <a data-l10n-name="passwords-help-link">passwords support</a> for more help.
+about-logins-intro-browser-only-import = If your logins are saved in another browser, you can <a data-l10n-name="import-link">import them into { -brand-product-name }</a>
 about-logins-intro-import2 = If your logins are saved outside of { -brand-product-name }, you can <a data-l10n-name="import-browser-link">import them from another browser</a> or <a data-l10n-name="import-file-link">from a file</a>
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = To copy your password, e
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = copy the saved password
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = To export your logins, enter your Windows login credentials. This helps protect the security of your accounts.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Please enter your Primary P
 master-password-reload-button =
     .label = Log in
     .accesskey = L
-
-## Password Sync notification
 
 ## Dialogs
 

@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Aanbevolen functie
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Waarom zie ik dit?
+
 cfr-doorhanger-extension-cancel-button = Niet nu
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Nu toevoegen
     .accesskey = t
+
 cfr-doorhanger-extension-manage-settings-button = Instellingen voor aanbevelingen beheren
     .accesskey = I
+
 cfr-doorhanger-extension-never-show-recommendation = Deze aanbeveling niet tonen
     .accesskey = D
+
 cfr-doorhanger-extension-learn-more-link = Meer info
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = door { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Aanbeveling
 cfr-doorhanger-extension-notification2 = Aanbeveling
     .tooltiptext = Aanbeveling voor extensie
     .a11y-announcement = Aanbeveling voor extensie beschikbaar
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Aanbeveling
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = Meer info
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nieuwe functie:
+
 cfr-whatsnew-button =
     .label = Wat is er nieuw
     .tooltiptext = Wat is er nieuw
+
 cfr-whatsnew-release-notes-link-text = Uitgaveopmerkingen lezen
 
 ## Enhanced Tracking Protection Milestones
@@ -156,3 +166,16 @@ spotlight-total-cookie-protection-body = Totale cookiebescherming voorkomt dat t
 spotlight-total-cookie-protection-expanded = { -brand-short-name } bouwt een hek rond cookies, waardoor ze worden beperkt tot de website waarop u zich bevindt, zodat trackers ze niet kunnen gebruiken om u te volgen. Als vroege gebruiker helpt u deze functie te optimaliseren, zodat we een beter internet voor iedereen kunnen blijven bouwen.
 spotlight-total-cookie-protection-primary-button = Totale cookiebescherming inschakelen
 spotlight-total-cookie-protection-secondary-button = Niet nu
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Een beter internet begint bij uzelf
+spotlight-better-internet-body = Als u { -brand-short-name } gebruikt, stemt u voor een open en toegankelijk internet dat beter is voor iedereen.
+spotlight-peace-mind-header = Bij ons bent u veilig
+spotlight-peace-mind-body = Elke maand blokkeert { -brand-short-name } gemiddeld meer dan 3000 trackers per gebruiker. Want niets mag tussen u en het goede internet staan, vooral geen privacy-overlast zoals trackers.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] In de Dock houden
+       *[other] Aan taakbalk vastzetten
+    }
+spotlight-pin-secondary-button = Niet nu

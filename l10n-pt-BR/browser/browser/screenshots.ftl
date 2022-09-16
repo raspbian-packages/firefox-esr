@@ -21,6 +21,8 @@ screenshots-copy-button-title =
     .title = Copiar captura para área de transferência
 screenshots-cancel-button-title =
     .title = Cancelar
+screenshots-retry-button-title =
+    .title = Tentar capturar tela novamente
 screenshots-meta-key =
     { PLATFORM() ->
         [macos] ⌘
@@ -31,7 +33,7 @@ screenshots-notification-link-copied-details = O link da sua captura foi copiado
 screenshots-notification-image-copied-title = Tela capturada
 screenshots-notification-image-copied-details = A captura de tela foi copiada para área de transferência. Tecle { screenshots-meta-key }-V para colar.
 screenshots-request-error-title = Ops! Fora do ar.
-screenshots-request-error-details = Desculpe, não conseguimos salvar sua captura de tela. Tente novamente mais tarde.
+screenshots-request-error-details = Desculpe, não foi possível salvar a captura de tela. Tente novamente mais tarde.
 screenshots-connection-error-title = Não conseguimos nos conectar às suas capturas de tela.
 screenshots-connection-error-details = Verifique sua conexão com a internet. Se conseguir se conectar à internet, pode haver um problema temporário no serviço { -screenshots-brand-name }.
 screenshots-login-error-details = Não conseguimos salvar sua captura porque há um problema no serviço { -screenshots-brand-name }. Tente novamente mais tarde.

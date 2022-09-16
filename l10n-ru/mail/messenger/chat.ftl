@@ -19,3 +19,12 @@ chat-participant-moderator-role-icon2 =
 
 chat-participant-voiced-role-icon2 =
     .alt = Участник может публиковать сообщения
+
+## Conversation invite notification box
+
+chat-conv-invite-accept =
+    .label = Принять
+    .accesskey = и
+chat-conv-invite-deny =
+    .label = Отклонить
+    .accesskey = л

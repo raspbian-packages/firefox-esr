@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,37 +23,7 @@ return-to-amo-subtitle = מצוין, השגת לך את { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = כעת הבה נשיג לך את <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = הוספת ההרחבה
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = ברוכים הבאים אל <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = הדפדפן המהיר, הבטוח והפרטי שמגובה על־ידי עמותה ללא מטרות רווח.
-onboarding-multistage-welcome-primary-button-label = תחילת עבודה
-onboarding-multistage-welcome-secondary-button-label = כניסה
-onboarding-multistage-welcome-secondary-button-text = כבר יש לך חשבון?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = להפוך את { -brand-short-name } <span data-l10n-name="zap">לברירת המחדל</span> שלך
-onboarding-multistage-set-default-subtitle = מהירות, בטיחות ופרטיות בכל פעם שגולשים ברשת.
-onboarding-multistage-set-default-primary-button-label = הגדרה כדפדפן ברירת מחדל
-onboarding-multistage-set-default-secondary-button-label = לא כעת
-onboarding-multistage-pin-default-subtitle = גלישה מהירה, בטוחה ופרטית בכל פעם שגולשים ברשת.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = פעולה זו תצמיד את { -brand-short-name } לשורת המשימות ותפתח את ההגדרות
-onboarding-multistage-pin-default-primary-button-label = להפוך את { -brand-short-name } לדפדפן הראשי שלי
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = ייבוא הססמאות והסימניות שלך, <span data-l10n-name="zap">ועוד</span>
-onboarding-multistage-import-subtitle = הגעת מדפדפן אחר? קל להעביר הכל ל־{ -brand-short-name }.
-onboarding-multistage-import-primary-button-label = התחלה בייבוא
-onboarding-multistage-import-secondary-button-label = לא כעת
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer =
-    האתרים המוצגים כאן נמצאו במכשיר זה. { -brand-short-name } לא שומר או מסנכרן נתונים
-    מדפדפן אחר אלא אם בחרת לייבא אותם.
+return-to-amo-add-theme-label = הוספת ערכת הנושא
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -68,18 +33,6 @@ onboarding-import-sites-disclaimer =
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = תחילת עבודה: מסך { $current } מתוך { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = בחירת <span data-l10n-name="zap">מראה</span>
-onboarding-multistage-theme-subtitle = התאמה אישית של { -brand-short-name } עם ערכת נושא.
-onboarding-multistage-theme-primary-button-label2 = סיום
-onboarding-multistage-theme-secondary-button-label = לא כעת
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = אוטומטי
-onboarding-multistage-theme-label-light = בהיר
-onboarding-multistage-theme-label-dark = כהה
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -100,6 +53,18 @@ mr1-onboarding-reduce-motion-button-label = כיבוי הנפשות
 ## match the OS' application context menu item action where Windows uses "pin"
 ## and "taskbar" while macOS "keep" and "Dock" (proper noun).
 
+# Title used on welcome page when Firefox is not pinned
+mr1-onboarding-pin-header =
+    { PLATFORM() ->
+        [macos] שמירת { -brand-short-name } ב־Dock לגישה מהירה
+       *[other] הצמדת { -brand-short-name } לשורת המשימות לגישה מהירה
+    }
+# Primary button string used on welcome page when Firefox is not pinned.
+mr1-onboarding-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] שמירה ב־Dock
+       *[other] הצמדה לשורת המשימות
+    }
 
 ## Multistage MR1 onboarding strings (about:welcome pages)
 
@@ -155,60 +120,12 @@ mr1-onboarding-theme-label-light = בהירה
 mr1-onboarding-theme-label-dark = כהה
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = סיום
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        שימוש במראה של מערכת ההפעלה שלך
-        עבור כפתורים, תפריטים וחלונות.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        שימוש במראה של מערכת ההפעלה שלך
-        עבור כפתורים, תפריטים וחלונות.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        שימוש בתצוגה בהירה עבור כפתורים,
-        תפריטים וחלונות.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        שימוש בתצוגה בהירה עבור כפתורים,
-        תפריטים וחלונות.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        שימוש בתצוגה כהה עבור כפתורים,
-        תפריטים וחלונות.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        שימוש בתצוגה כהה עבור כפתורים,
-        תפריטים וחלונות.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        שימוש בתצוגה צבעונית עבור כפתורים,
-        תפריטים וחלונות.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        שימוש בתצוגה צבעונית עבור כפתורים,
-        תפריטים וחלונות.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -266,17 +183,55 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = עיון בערכות צבעים מסוג { $colorwayName }.
+mr2-onboarding-colorway-label = עיון בערכות צבעים מסוג { $colorwayName }.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = עיון בערכות נושא ברירת מחדל.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = עיון בערכות נושא ברירת מחדל.
+mr2-onboarding-default-theme-label = עיון בערכות נושא ברירת מחדל.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = תודה רבה שבחרת בנו
 mr2-onboarding-thank-you-text = ‏{ -brand-short-name } הוא דפדפן עצמאי המגובה על־ידי עמותה שאינה למטרות רווח. יחד, אנו הופכים את האינטרנט לבטוח, בריא ופרטי יותר.
 mr2-onboarding-start-browsing-button-label = התחלת גלישה
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = בחירת השפה שלך
+onboarding-live-language-button-label-downloading = ערכת השפה עבור { $negotiatedLanguage } בהורדה…
+onboarding-live-language-waiting-button = מתקבלות שפות זמינות…
+onboarding-live-language-installing = ערכת השפה עבור { $negotiatedLanguage } בהתקנה…
+onboarding-live-language-secondary-cancel-download = ביטול
+onboarding-live-language-skip-button-label = דילוג
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    פעמים
+    <span data-l10n-name="zap">תודה</span>
+fx100-thank-you-subtitle = זוהי המהדורה ה־100 שלנו! תודה שעזרת לנו לבנות אינטרנט בריא וטוב יותר.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] שמירת { -brand-short-name } ב־Dock
+       *[other] הצמדת { -brand-short-name } לשורת המשימות
+    }
+fx100-upgrade-thanks-header = 100 פעמים תודה
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = זוהי המהדורה ה־100 שלנו של { -brand-short-name }. תודה <em>לך</em> שעזרת לנו לבנות אינטרנט בריא וטוב יותר.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = זוהי המהדורה ה־100 שלנו! תודה שהינך חלק מהקהילה שלנו. ניתן להשאיר את { -brand-short-name } במרחק קליק אחד עבור 100 המהדורות הבאות.

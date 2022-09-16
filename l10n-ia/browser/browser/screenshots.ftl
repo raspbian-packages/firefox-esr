@@ -4,7 +4,7 @@
 
 screenshot-toolbarbutton =
     .label = Instantaneo de schermo
-    .tooltiptext = Prende un instantaneo
+    .tooltiptext = Prender un instantaneo
 screenshot-shortcut =
     .key = S
 screenshots-instructions = Trahe o clicca sur le pagina pro seliger un parte. Pulsa ESC pro cancellar.
@@ -21,6 +21,8 @@ screenshots-copy-button-title =
     .title = Copiar instantaneo del schermo al area de transferentia
 screenshots-cancel-button-title =
     .title = Cancellar
+screenshots-retry-button-title =
+    .title = Retentar instantaneo de schermo
 screenshots-meta-key =
     { PLATFORM() ->
         [macos] ⌘

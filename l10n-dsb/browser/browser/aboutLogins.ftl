@@ -5,8 +5,6 @@
 
 about-logins-page-title = Pśizjawjenja a gronidła
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Pśizjawjenja pytaś
 
@@ -63,7 +61,6 @@ about-logins-list-item-breach-icon =
     .title = Zranjone websedło
 about-logins-list-item-vulnerable-password-icon =
     .title = Napadojte gronidło
-
 about-logins-list-section-breach = Websedła z datowymi źěrami
 about-logins-list-section-vulnerable = Napadojte gronidła
 about-logins-list-section-nothing = Žedno warnowanje
@@ -78,8 +75,8 @@ about-logins-login-intro-heading-logged-in = Žedne synchronizěrowane pśizjawj
 login-intro-description = Jolic sćo składł swóje pśizjawjenja { -brand-product-name } na drugem rěźe, tak móžośo je sem pśinjasć:
 login-intro-instructions-fxa = Załožćo abo pśizjawśo se pla swójogo { -fxaccount-brand-name } na rěźe, źož waše pśizjawjenja su skłaźone
 login-intro-instructions-fxa-settings = Źiśo k Nastajenja > Sync > Synchronizaciju zmóžniś… Wubjeŕśo kontrolny kašćik „Pśizjawjenja a gronidła“.
-login-intro-instructions-fxa-help = Woglědajśo se k <a data-l10n-name="help-link">pomocy { -lockwise-brand-short-name }</a> za wěcej pomocy.
-about-logins-intro-import = Jolic waše pśizjawjenja su skłaźone w drugem wobglědowaku, móžośo <a data-l10n-name="import-link">je do { -lockwise-brand-short-name } importěrowaś</a>
+login-intro-instructions-fxa-passwords-help = Woglědajśo se k <a data-l10n-name="passwords-help-link">pomocy gronidłow</a> za wěcej pomocy.
+about-logins-intro-browser-only-import = Jolic waše pśizjawjenja su skłaźone w drugem wobglědowaku, móžośo <a data-l10n-name="import-link">je do { -brand-product-name } importěrowaś</a>
 about-logins-intro-import2 = Jolic waše pśizjawjenja se zwenka { -brand-product-name } składuju, móžośo <a data-l10n-name="import-browser-link">je z drugego wobglědowaka importěrowaś</a>, abo <a data-l10n-name="import-file-link">z dataje</a>
 
 ## Login
@@ -134,8 +131,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Zapódajśo swóje pśiz
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = skłaźone gronidło kopěrowaś
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Zapódajśo swóje pśizjawjeńske daty Windows, aby swóje pśizjawjenja eksportěrował. To wěstotu wašych kontow šćita.
 # This message can be seen when attempting to export a password in about:logins
@@ -148,8 +143,6 @@ about-logins-primary-password-notification-message = Pšosym zapódajśo swójo 
 master-password-reload-button =
     .label = Pśizjawiś
     .accesskey = P
-
-## Password Sync notification
 
 ## Dialogs
 

@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,40 +23,7 @@ return-to-amo-subtitle = მშვენიერია, თქვენ უკ�
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = ახლა, მოდით დავამატოთ <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = გაფართოების დამატება
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = მოგესალმებათ <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = სწრაფი, უსაფრთხო და პირადი ბრაუზერი, არამომგებიანი დაწესებულებისგან.
-onboarding-multistage-welcome-primary-button-label = დაიწყეთ გამართვა
-onboarding-multistage-welcome-secondary-button-label = შესვლა
-onboarding-multistage-welcome-secondary-button-text = გაქვთ ანგარიში?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = აქციეთ { -brand-short-name } <span data-l10n-name="zap">ნაგულისხმევად</span>
-onboarding-multistage-set-default-subtitle = სიჩქარე, უსაფრთხოება და პირადულობა, ინტერნეტის ყოველი გამოყენებისას.
-onboarding-multistage-set-default-primary-button-label = ნაგულისხმევად დაყენება
-onboarding-multistage-set-default-secondary-button-label = ახლა არა
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = გამოიყენეთ ხოლმე <span data-l10n-name="zap">{ -brand-short-name }</span> ერთი დაწკაპებით
-onboarding-multistage-pin-default-subtitle = სწრაფი, უსაფრთხო და პირადული მოგზაურობა ვებსივრცეში.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = ბრაუზერებში აირჩიეთ { -brand-short-name }, პარამეტრების გახსნისას
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = შედეგად, { -brand-short-name } მიმაგრდება ამოცანათა ზოლზე და გაიხსნება პარამეტრები
-onboarding-multistage-pin-default-primary-button-label = გახდეს { -brand-short-name } ჩემი ძირითადი ბრაუზერი
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = გადმოწერეთ თქვენი პაროლები, სანიშნები და <span data-l10n-name="zap">სხვა</span>
-onboarding-multistage-import-subtitle = სხვა ბრაუზერიდან მოდიხართ? მარტივად გადმოიტანს ყველაფერს { -brand-short-name }.
-onboarding-multistage-import-primary-button-label = გადმოტანის დაწყება
-onboarding-multistage-import-secondary-button-label = ახლა არა
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = აქ აღნუსხული საიტები ნაპოვნია ამ მოწყობილობაზე. { -brand-short-name } არ შეინახავს ან დაასინქრონებს მონაცემებს სხვა ბრაუზერიდან, სანამ თავად არ მიუთითებთ, გადმოტანას.
+return-to-amo-add-theme-label = დაამატეთ გაფორმება
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = აქ აღნუსხული სა�
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = დაწყება: ეკრანი { $current }, სულ { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = აირჩიეთ <span data-l10n-name="zap">იერსახე</span>
-onboarding-multistage-theme-subtitle = მოირგეთ { -brand-short-name } თემებით.
-onboarding-multistage-theme-primary-button-label2 = მზადაა
-onboarding-multistage-theme-secondary-button-label = ახლა არა
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = ავტომატური
-onboarding-multistage-theme-label-light = ნათელი
-onboarding-multistage-theme-label-dark = მუქი
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -173,60 +123,12 @@ mr1-onboarding-theme-label-light = ნათელი
 mr1-onboarding-theme-label-dark = მუქი
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = მზადაა
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        საოპერაციო სისტემის გაფორმების გადმოტანა
-        ღილაკებზე, მენიუებსა და ფანჯრებზე.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        საოპერაციო სისტემის გაფორმების გადმოტანა
-        ღილაკებზე, მენიუებსა და ფანჯრებზე.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        ნათელი გაფორმების გამოყენება ღილაკებზე,
-        მენიუებსა და ფანჯრებზე.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        ნათელი გაფორმების გამოყენება ღილაკებზე,
-        მენიუებსა და ფანჯრებზე.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        მუქი გაფორმების გამოყენება ღილაკებზე,
-        მენიუებსა და ფანჯრებზე.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        მუქი გაფორმების გამოყენება ღილაკებზე,
-        მენიუებსა და ფანჯრებზე.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        ფერადი გაფორმების გამოყენება ღილაკებზე,
-        მენიუებსა და ფანჯრებზე.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        ფერადი გაფორმების გამოყენება ღილაკებზე,
-        მენიუებსა და ფანჯრებზე.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -284,17 +186,55 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = მოსინჯეთ { $colorwayName } შეფერილობა.
+mr2-onboarding-colorway-label = მოსინჯეთ { $colorwayName } შეფერილობა.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = მოსინჯეთ ნაგულისხმევი შეფერილობა.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = მოსინჯეთ ნაგულისხმევი შეფერილობა.
+mr2-onboarding-default-theme-label = მოსინჯეთ ნაგულისხმევი შეფერილობა.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = გმადლობთ, რომ ჩვენ აგვირჩიეთ
 mr2-onboarding-thank-you-text = { -brand-short-name } დამოუკიდებელი ბრაუზერია, არამომგებიანი დაწესებულებისგან. ერთად, ჩვენ ვქმნით მეტად უსაფრთხო, ჯანსაღ და პირადულ ვებსამყაროს.
 mr2-onboarding-start-browsing-button-label = გვერდების მონახულება
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = აირჩიეთ თქვენი ენა
+onboarding-live-language-button-label-downloading = ჩამოიტვირთება ენის კრებულად { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = ხელმისაწვდომი ენების მოძიება…
+onboarding-live-language-installing = ჩაიდგმება ენის კრებულად { $negotiatedLanguage }…
+onboarding-live-language-secondary-cancel-download = გაუქმება
+onboarding-live-language-skip-button-label = გამოტოვება
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    მადლობა
+    <span data-l10n-name="zap">თქვენ</span>
+fx100-thank-you-subtitle = ეს ჩვენი მე-100 გამოშვებაა! გმადლობთ, რომ გვეხმარებით უკეთესი, ჯანსაღი ინტერნეტის შექმნაში.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] დარჩეს { -brand-short-name } Dock-ზე
+       *[other] განთავსდეს { -brand-short-name } ამოცანათა ზოლზე
+    }
+fx100-upgrade-thanks-header = 100 მადლობა თქვენ
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = ეს არის ჩვენი მე-100 გამოშვების { -brand-short-name }. გმადლობთ <em>თქვენ</em>, რომ გვეხმარებით უკეთესი, ჯანსაღი ინტერნეტის შექმნაში.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = ეს ჩვენი მე-100 გამოშვებაა! გმადლობთ, რომ ჩვენი ერთობის მონაწილე ხართ. დატოვეთ { -brand-short-name } თითის ერთ გაწვდენაზე, მომდევნო 100 ვერსიაც.

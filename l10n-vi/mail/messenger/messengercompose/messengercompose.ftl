@@ -3,7 +3,25 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+compose-send-format-menu =
+    .label = Định dạng gửi
+    .accesskey = F
+compose-send-auto-menu-item =
+    .label = Tự động
+    .accesskey = A
+compose-send-both-menu-item =
+    .label = Cả HTML và văn bản thuần túy
+    .accesskey = B
+compose-send-html-menu-item =
+    .label = Chỉ HTML
+    .accesskey = H
+compose-send-plain-menu-item =
+    .label = Chỉ văn bản thuần túy
+    .accesskey = P
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -28,6 +46,13 @@ pill-tooltip-not-in-address-book = { $email } không có trong sổ địa chỉ
 pill-action-edit =
     .label = Chỉnh sửa địa chỉ
     .accesskey = e
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = Chọn tất cả địa chỉ trong { $type }
+    .accesskey = A
+pill-action-select-all-pills =
+    .label = Chọn tất cả địa chỉ
+    .accesskey = S
 pill-action-move-to =
     .label = Chuyển sang Đến
     .accesskey = t
@@ -41,7 +66,7 @@ pill-action-expand-list =
     .label = Mở rộng danh sách
     .accesskey = x
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -57,9 +82,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Đính kèm
     .tooltiptext = Thêm một đính kèm ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Thêm đính kèm…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Thêm đính kèm…
     .accesskey = A
@@ -72,18 +94,19 @@ context-menuitem-attach-files =
     .label = Đính kèm tập tin…
     .accesskey = F
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
+# Note: Do not translate the term 'vCard'.
+context-menuitem-attach-vcard =
+    .label = vCard của tôi
+    .accesskey = C
+context-menuitem-attach-openpgp-key =
+    .label = Khóa công khai OpenPGP của tôi
+    .accesskey = K
 #   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
-    .value =
-        { $count ->
-            [1] { $count } đính kèm
-           *[other] { $count } đính kèm
-        }
-    .accesskey = m
-expand-attachment-pane-tooltip =
-    .tooltiptext = Hiển thị ngăn đính kèm ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Ẩn ngăn đính kèm ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
+attachment-bucket-count-value =
+    { $count ->
+        [1] { $count } đính kèm
+       *[other] { $count } đính kèm
+    }
 attachment-area-show =
     .title = Hiển thị ngăn đính kèm ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-hide =
@@ -93,7 +116,7 @@ drop-file-label-attachment =
        *[other] Thêm dưới dạng đính kèm
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = Di chuyển lên đầu
@@ -107,47 +130,64 @@ button-return-receipt =
     .label = Xác nhận
     .tooltiptext = Yêu cầu xác nhận đã nhận thư cho thư này
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = Ký thư
-message-to-be-encrypted-icon =
-    .alt = Mã hóa thư
-
-# Addressing Area
-
-to-compose-address-row-label =
-    .value = Đến
-#   $key (String) - the shortcut key for this field
-to-compose-show-address-row-menuitem =
-    .label = Trường { to-compose-address-row-label.value }
-    .accesskey = T
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-to-compose-show-address-row-label =
-    .value = { to-compose-address-row-label.value }
-    .tooltiptext = Hiện trường { to-compose-address-row-label.value } ({ to-compose-show-address-row-menuitem.acceltext })
-cc-compose-address-row-label =
-    .value = Cc
-#   $key (String) - the shortcut key for this field
-cc-compose-show-address-row-menuitem =
-    .label = Trường { cc-compose-address-row-label.value }
-    .accesskey = C
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-cc-compose-show-address-row-label =
-    .value = { cc-compose-address-row-label.value }
-    .tooltiptext = Hiện trường { cc-compose-address-row-label.value } ({ cc-compose-show-address-row-menuitem.acceltext })
-bcc-compose-address-row-label =
-    .value = Bcc
-#   $key (String) - the shortcut key for this field
-bcc-compose-show-address-row-menuitem =
-    .label = Trường { bcc-compose-address-row-label.value }
+encryption-menu =
+    .label = Bảo mật
+    .accesskey = c
+encryption-toggle =
+    .label = Mã hóa
+    .tooltiptext = Sử dụng mã hóa đầu cuối cho tin nhắn này
+encryption-options-openpgp =
+    .label = OpenPGP
+    .tooltiptext = Xem hoặc thay đổi cài đặt mã hóa OpenPGP
+encryption-options-smime =
+    .label = S/MIME
+    .tooltiptext = Xem hoặc thay đổi cài đặt mã hóa S/MIME
+signing-toggle =
+    .label = Ký
+    .tooltiptext = Sử dụng chữ ký điện tử cho thư này
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
+    .accesskey = S
+menu-encrypt =
+    .label = Mã hóa
+    .accesskey = E
+menu-encrypt-subject =
+    .label = Mã hóa chủ đề
     .accesskey = B
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-bcc-compose-show-address-row-label =
-    .value = { bcc-compose-address-row-label.value }
-    .tooltiptext = Hiện trường { bcc-compose-address-row-label.value } ({ bcc-compose-show-address-row-menuitem.acceltext })
-#   $count (Number) - the count of addresses in the "To" and "Cc" fields.
-many-public-recipients-info = { $count } người nhận trong Đến và Cc sẽ thấy địa chỉ của nhau. Thay vào đó, bạn có thể tránh tiết lộ người nhận bằng cách sử dụng Bcc.
+menu-sign =
+    .label = Chữ ký số
+    .accesskey = i
+menu-view-certificates =
+    .label = Xem chứng nhận của người nhận
+    .accesskey = V
+menu-open-key-manager =
+    .label = Quản lý khóa
+    .accesskey = M
+openpgp-key-issue-notification-one = Mã hóa đầu cuối yêu cầu giải quyết các vấn đề của khóa đối với { $addr }
+openpgp-key-issue-notification-many = Mã hóa đầu cuối yêu cầu giải quyết các vấn đề của khóa đối với { $count } người nhận.
+smime-cert-issue-notification-one = Mã hóa đầu cuối yêu cầu giải quyết các vấn đề về chứng chỉ đối với { $addr }.
+smime-cert-issue-notification-many = Mã hóa end-to-end yêu cầu giải quyết các vấn đề về chứng chỉ đối với { $count } người nhận.
+key-notification-disable-encryption =
+    .label = Không mã hóa
+    .accesskey = D
+    .tooltiptext = Tắt mã hóa đầu cuối
+key-notification-resolve =
+    .label = Giải quyết…
+    .accesskey = R
+    .tooltiptext = Mở trợ lý khóa OpenPGP
+can-encrypt-smime-notification = Có thể mã hóa đầu cuối S/MIME.
+can-encrypt-openpgp-notification = Có thể mã hóa đầu cuối OpenPGP.
+can-e2e-encrypt-button =
+    .label = Mã hóa
+    .accesskey = E
+
+## Addressing Area
+
 to-address-row-label =
     .value = Đến
 #   $key (String) - the shortcut key for this field
@@ -230,3 +270,94 @@ encrypted-bcc-ignore-button = Đã hiểu
 
 compose-tool-button-remove-text-styling =
     .tooltiptext = Xóa kiểu định dạng văn bản
+
+## Filelink
+
+# A text used in a tooltip of Filelink attachments, whose account has been
+# removed or is unknown.
+cloud-file-unknown-account-tooltip = Đã tải lên tài khoản Filelink không xác định.
+
+# Placeholder file
+
+# Title for the html placeholder file.
+# $filename - name of the file
+cloud-file-placeholder-title = { $filename } - Đính kèm Filelink
+# A text describing that the file was attached as a Filelink and can be downloaded
+# from the link shown below.
+# $filename - name of the file
+cloud-file-placeholder-intro = Tập tin { $filename } đã được đính kèm dưới dạng Filelink. Nó có thể được tải xuống từ liên kết bên dưới.
+
+# Template
+
+# A line of text describing how many uploaded files have been appended to this
+# message. Emphasis should be on sharing as opposed to attaching. This item is
+# used as a header to a list, hence the colon.
+cloud-file-count-header =
+    { $count ->
+       *[other] Tôi đã liên kết { $count } tập tin với email này:
+    }
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service provider.
+# $link (string) - html a-tag for a link pointing to the web page of the provider
+cloud-file-service-provider-footer-single = Tìm hiểu thêm về { $link }.
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service providers. Links for the used providers are
+# split into a comma separated list of the first n-1 providers and a single entry
+# at the end.
+# $firstLinks (string) - comma separated list of html a-tags pointing to web pages
+#                        of the first n-1 used providers
+# $lastLink (string) - html a-tag pointing the web page of the n-th used provider
+cloud-file-service-provider-footer-multiple = Tìm hiểu thêm về { $firstLinks } và { $lastLink }.
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Liên kết được bảo vệ bằng mật khẩu
+# Used in a list of stats about a specific file
+# Service - the used service provider to host the file (Filelink Service: BOX.com)
+# Size - the size of the file (Size: 4.2 MB)
+# Link - the link to the file (Link: https://some.provider.com)
+# Expiry Date - stating the date the link will expire (Expiry Date: 12.12.2022)
+# Download Limit - stating the maximum allowed downloads, before the link becomes invalid
+#                  (Download Limit: 6)
+cloud-file-template-service-name = Dịch vụ Filelink:
+cloud-file-template-size = Kích cỡ:
+cloud-file-template-link = Liên kết:
+cloud-file-template-password-protected-link = Liên kết được bảo vệ bằng mật khẩu:
+cloud-file-template-expiry-date = Ngày hết hạn:
+cloud-file-template-download-limit = Giới hạn tải xuống:
+
+# Messages
+
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-connection-error-title = Lỗi kết nối
+cloud-file-connection-error = { -brand-short-name } đang ngoại tuyến. Không thể kết nối với { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was uploaded and caused the error
+cloud-file-upload-error-with-custom-message-title = Không thể tải { $filename } lên { $provider }
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-title = Lỗi đổi tên
+cloud-file-rename-error = Đã xảy ra sự cố khi đổi tên { $filename } trên { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-with-custom-message-title = Không thể đổi tên { $filename } trên { $provider }
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-rename-not-supported = { $provider } không hỗ trợ đổi tên các tập tin đã tải lên.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-attachment-error-title = Lỗi đính kèm Filelink
+cloud-file-attachment-error = Không cập nhật được đính kèm Filelink { $filename } vì tập tin cục bộ của nó đã bị di chuyển hoặc bị xóa.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-account-error-title = Lỗi tài khoản Filelink
+cloud-file-account-error = Không cập nhật được đính kèm Filelink { $filename } vì tài khoản Filelink của nó đã bị xóa.
+
+## Link Preview
+
+link-preview-title = Xem trước liên kết
+link-preview-description = { -brand-short-name } có thể thêm bản xem trước được nhúng khi dán các liên kết.
+link-preview-autoadd = Tự động thêm bản xem trước liên kết khi có thể
+link-preview-replace-now = Thêm bản xem trước cho liên kết này?
+link-preview-yes-replace = Đồng ý
+
+## Dictionary selection popup
+
+spell-add-dictionaries =
+    .label = Thêm từ điển…
+    .accesskey = A

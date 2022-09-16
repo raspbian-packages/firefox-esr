@@ -35,6 +35,8 @@ detail-version =
     .label = Wersja
 detail-last-updated =
     .label = Ostatnia aktualizacja
+addon-detail-description-expand = Więcej
+addon-detail-description-collapse = Mniej
 detail-contributions-description = Autor tego dodatku prosi o wsparcie niewielką kwotą jego dalszego rozwoju.
 detail-contributions-button = Wspomóż
     .title = Wspomóż rozwój tego dodatku
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Ostatnie aktualizacje
 addon-category-recent-updates-title =
     .title = Ostatnie aktualizacje
+addon-category-sitepermission = Uprawnienia witryn
+addon-category-sitepermission-title =
+    .title = Uprawnienia witryn
 
 ## These are global warnings
 
@@ -284,14 +289,18 @@ extension-enabled-heading = Włączone
 extension-disabled-heading = Wyłączone
 theme-enabled-heading = Włączone
 theme-disabled-heading = Wyłączone
+theme-disabled-heading2 = Zachowane motywy
 theme-monochromatic-heading = Kolorystyka
 theme-monochromatic-subheading = Energiczne nowe kolorystyki od przeglądarki { -brand-product-name }. Dostępne przez ograniczony czas.
+theme-colorways-button = Wypróbuj kolorystykę
 plugin-enabled-heading = Włączone
 plugin-disabled-heading = Wyłączone
 dictionary-enabled-heading = Włączone
 dictionary-disabled-heading = Wyłączone
 locale-enabled-heading = Włączone
 locale-disabled-heading = Wyłączone
+sitepermission-enabled-heading = Włączone
+sitepermission-disabled-heading = Wyłączone
 always-activate-button = Zawsze aktywuj
 never-activate-button = Nigdy nie aktywuj
 addon-detail-author-label = Autor
@@ -369,6 +378,7 @@ addon-permissions-optional = Opcjonalne uprawnienia do działania dodatkowych fu
 addon-permissions-learnmore = Więcej informacji o uprawnieniach
 recommended-extensions-heading = Polecane rozszerzenia
 recommended-themes-heading = Polecane motywy
+addon-sitepermissions-required = Daje witrynie <span data-l10n-name="hostname">{ $hostname }</span> te możliwości:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Masz ochotę coś stworzyć? <a data-l10n-name="link">Utwórz własny motyw za pomocą Firefox Color.</a>
@@ -381,6 +391,7 @@ plugin-heading = Zarządzanie wtyczkami
 dictionary-heading = Zarządzanie słownikami
 locale-heading = Zarządzanie pakietami językowymi
 updates-heading = Zarządzanie aktualizacjami
+sitepermission-heading = Zarządzanie uprawnieniami witryn
 discover-heading = Dostosuj przeglądarkę { -brand-short-name }
 shortcuts-heading = Zarządzanie skrótami rozszerzeń
 default-heading-search-label = Znajdź więcej dodatków
@@ -388,3 +399,20 @@ addons-heading-search-input =
     .placeholder = Szukaj na stronie addons.mozilla.org
 addon-page-options-button =
     .title = Narzędzia dla wszystkich dodatków
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = Dodatek „{ $name }” jest niezgodny z programem { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = Dodatek „{ $name }” nie mógł zostać zweryfikowany do użytku w programie { -brand-short-name } i został wyłączony.
+details-notification-unsigned-and-disabled-link = Więcej informacji
+details-notification-unsigned = Dodatek „{ $name }” nie mógł zostać zweryfikowany do użytku w programie { -brand-short-name }. Ostrożnie.
+details-notification-unsigned-link = Więcej informacji
+details-notification-blocked = Dodatek { $name } został wyłączony z powodu problemów z bezpieczeństwem lub stabilnością.
+details-notification-blocked-link = Więcej informacji
+details-notification-softblocked = Dodatek „{ $name }” został zgłoszony jako powodujący problemy z bezpieczeństwem lub stabilnością.
+details-notification-softblocked-link = Więcej informacji
+details-notification-gmp-pending = Dodatek „{ $name }” zostanie wkrótce zainstalowany.

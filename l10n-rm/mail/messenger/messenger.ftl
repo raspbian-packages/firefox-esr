@@ -2,6 +2,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Reducir
+messenger-window-maximize-button =
+    .tooltiptext = Maximar
+messenger-window-restore-down-button =
+    .tooltiptext = Restaurar
+messenger-window-close-button =
+    .tooltiptext = Serrar
+
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -82,12 +94,17 @@ redirect-msg-menuitem =
     .label = Renviar
     .accesskey = R
 
+menu-file-save-as-file =
+    .label = Datoteca…
+    .accesskey = D
+
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Preferenzas
+appmenu-save-as-file =
+    .label = Datoteca…
+
+appmenu-settings =
+    .label = Parameters
 
 appmenu-addons-and-themes =
     .label = Supplements e designs
@@ -109,10 +126,31 @@ appmenu-redirect-msg =
 context-menu-redirect-msg =
     .label = Renviar
 
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Stizzar il messadi
+           *[other] Stizzar ils messadis tschernids
+        }
+
+context-menu-decrypt-to-folder =
+    .label = Copiar sco decriptà en
+    .accesskey = i
+
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Renviar
+
+message-header-msg-flagged =
+    .title = Cun staila
+    .aria-label = Cun staila
+
+message-header-msg-not-flagged =
+    .title = Senza staila
+    .aria-label = Senza staila
+
+## Message header cutomize panel
 
 ## Action Button Context Menu
 
@@ -152,3 +190,116 @@ repair-text-encoding-button =
 no-reply-title = Respostas betg sustegnidas
 no-reply-message = L'adressa da resposta ({ $email }) na para betg dad esser ina adressa che vegn observada. Messadis a questa adressa na vegnan probablamain betg legids.
 no-reply-reply-anyway-button = Tuttina respunder
+
+## error messages
+
+decrypt-and-copy-failures = I n'è betg reussì da decriptar { $failures } da { $total } messadis. Quels n'èn betg vegnids copiads.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Trav da simbols da locals
+    .aria-label = Trav da simbols da locals
+    .aria-description = Trav da simbols verticala per midar tranter differents locals. Utilisescha las tastas da direcziun per navigar en ils buttuns disponibels.
+
+spaces-toolbar-button-mail2 =
+    .title = E-mail
+
+spaces-toolbar-button-address-book2 =
+    .title = Cudeschet d'adressas
+
+spaces-toolbar-button-calendar2 =
+    .title = Chalender
+
+spaces-toolbar-button-tasks2 =
+    .title = Incumbensas
+
+spaces-toolbar-button-chat2 =
+    .title = Chat
+
+spaces-toolbar-button-overflow =
+    .title = Ulteriurs locals…
+
+spaces-toolbar-button-settings2 =
+    .title = Parameters
+
+spaces-toolbar-button-hide =
+    .title = Zuppentar la trav d'utensils da locals
+
+spaces-toolbar-button-show =
+    .title = Mussar la trav d'utensils da locals
+
+spaces-context-new-tab-item =
+    .label = Avrir en in nov tab
+
+spaces-context-new-window-item =
+    .label = Avrir en ina nova fanestra
+
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Midar a { $tabName }
+
+settings-context-open-settings-item =
+    .label = Avrir ils parameters
+
+settings-context-open-account-settings-item =
+    .label = Avrir ils parameters dal conto
+
+settings-context-open-addons-item =
+    .label = Avrir ils supplements e designs
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Avrir il menu dals locals
+
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] In messadi nunlegì
+           *[other] { $count } messadis nunlegids
+        }
+
+## Spaces toolbar customize panel
+
+spaces-customize-panel-title = Parameters da la trav d'utensils dals locals
+
+spaces-customize-background-color = Colur dal fund davos
+
+spaces-customize-icon-color = Colur dal buttun
+
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Colur dal fund davos dal buttun tschernì
+
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Colur dal buttun tschernì
+
+spaces-customize-button-restore = Restaurar il standard
+    .accesskey = R
+

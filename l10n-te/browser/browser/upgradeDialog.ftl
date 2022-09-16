@@ -8,7 +8,6 @@
 
 ## New changes screen
 
-
 ## Pin Firefox screen
 ##
 ## These title, subtitle and button strings differ between platforms as they
@@ -17,7 +16,22 @@
 
 ## Default browser screen
 
-upgrade-dialog-default-secondary-button = ఇప్పుడు కాదు
-
 ## Theme selection screen
 
+
+## Start screen
+
+# This title can be explicitly wrapped to control which words are on which line.
+upgrade-dialog-start-title = జీవితం రంగులమయం
+upgrade-dialog-start-secondary-button = ఇప్పుడు కాదు
+
+## Colorway screen
+
+upgrade-dialog-colorway-secondary-button = మునుపటి అలంకారాన్ని ఉండనివ్వు
+upgrade-dialog-colorway-theme-tooltip =
+    .title = అప్రమేయ అలంకారాలను చూడండి
+upgrade-dialog-colorway-default-theme = అప్రమేయం
+
+## Thank you screen
+
+upgrade-dialog-thankyou-primary-button = విహరించడం మొదలుపెట్టండి

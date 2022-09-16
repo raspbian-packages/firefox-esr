@@ -89,7 +89,7 @@ csp-xfo-blocked-long-desc = Per protegir la vostra seguretat, { $hostname } no p
 ## Messages used for certificate error titles
 
 connectionFailure-title = No s'ha pogut connectar
-deniedPortAccess-title = L'adreça està restringida
+deniedPortAccess-title = Esta adreça està restringida
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Tenim problemes per trobar este lloc.
@@ -115,7 +115,6 @@ unknownSocketType-title = Resposta inesperada del servidor
 nssFailure2-title = Ha fallat la connexió segura
 csp-xfo-error-title = El { -brand-short-name } no pot obrir esta pàgina
 corruptedContentError-title = Error de contingut malmés
-remoteXUL-title = XUL remot
 sslv3Used-title = No s'ha pogut connectar de forma segura
 inadequateSecurityError-title = La connexió no és segura
 blockedByPolicy-title = Pàgina blocada

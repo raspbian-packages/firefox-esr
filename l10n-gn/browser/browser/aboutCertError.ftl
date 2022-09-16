@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Umi ñanduti renda ohechauka heratee 
 
 cert-error-symantec-distrust-admin = Ikatu emomarandu ñanduti renda ñangarekohárape ko apañuãi rehegua.
 
+cert-error-old-tls-version = Ikatu ko ñanduti renda nomoneĩri pe taperekoite TLS 1.2, ha’éva tembiapokue michĩve omoneĩva { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Tekorosãite Jegueraha Katu: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Mbohovái eha’ãrõ’ỹva mohendahavusúgui
 nssFailure2-title = Jeikekatu jejavýva
 csp-xfo-error-title = { -brand-short-name } ndoikekuaái ko kuatiaroguépe
 corruptedContentError-title = Tetepy marãva jejavy
-remoteXUL-title = XUL okaygua
 sslv3Used-title = Ndaikatúi eikekatu
 inadequateSecurityError-title = Nde jeike ndahekokatúi
 blockedByPolicy-title = Kuatiarogue jokopyre

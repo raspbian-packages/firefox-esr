@@ -5,8 +5,6 @@
 
 about-logins-page-title = כניסות וססמאות
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = חיפוש כניסות
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = אתר שנפרץ
 about-logins-list-item-vulnerable-password-icon =
     .title = ססמה פגיעה
-
 about-logins-list-section-breach = אתרים שנפרצו
 about-logins-list-section-vulnerable = ססמאות פגיעות
 about-logins-list-section-nothing = אין התראה
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = לא נמצאו כניסות מסו
 login-intro-description = אם שמרת את הכניסות שלך ל־{ -brand-product-name } במכשיר אחר, כך ניתן לקבל אותן כאן:
 login-intro-instructions-fxa = יש ליצור חשבון או להתחבר ל{ -fxaccount-brand-name(case: "the") } שלך במכשיר שבו שמורות הכניסות שלך.
 login-intro-instructions-fxa-settings = יש לעבור להגדרות > סנכרון > הפעלת סנכרון… > יש לבחור בתיבת הסימון של כניסות וססמאות.
-login-intro-instructions-fxa-help = ניתן לבקר <a data-l10n-name="help-link">בתמיכה של { -lockwise-brand-short-name }</a> לעזרה נוספת.
-about-logins-intro-import = אם הכניסות שלך שמורות בדפדפן אחר, באפשרותך <a data-l10n-name="import-link">לייבא אותם אל תוך { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = יש לבקר ב<a data-l10n-name="passwords-help-link">תמיכה עבור ססמאות</a> לקבלת עזרה נוספת.
+about-logins-intro-browser-only-import = אם הכניסות שלך שמורות בדפדפן אחר, באפשרותך <a data-l10n-name="import-link">לייבא אותם אל תוך { -brand-product-name }</a>
 about-logins-intro-import2 = אם הכניסות שלך שמורות מחוץ ל־{ -brand-product-name }, באפשרותך <a data-l10n-name="import-browser-link">לייבא אותם מדפדפן אחר</a> או <a data-l10n-name="import-file-link">מקובץ</a>
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = כדי להעתיק את
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = להעתיק את הססמה השמורה
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = כדי לייצא את הכניסות שלך, יש להזין את פרטי הכניסה שלך ל־Windows. פעולה זאת מסייעת בהגנה על אבטחת החשבונות שלך.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = נא להכניס את הס
 master-password-reload-button =
     .label = כניסה
     .accesskey = כ
-
-## Password Sync notification
 
 ## Dialogs
 

@@ -25,9 +25,9 @@ permission-dialog-description-file-app = 이 파일이 { $appName } 애플리케
 ## `<strong>` HTML tags). Please also keep the hostname as close to the start
 ## of the sentence as your language's grammar allows.
 
-permission-dialog-remember = <strong>{ $host }</strong> 사이트가 <strong>{ $scheme }</strong> 링크를 열도록 항상 허용
+permission-dialog-remember = 항상 <strong>{ $host }</strong> 사이트가 <strong>{ $scheme }</strong> 링크를 열도록 허용
 
-permission-dialog-remember-file = 이 파일이 <strong>{ $scheme }</strong> 링크를 열도록 항상 허용
+permission-dialog-remember-file = 항상 이 파일이 <strong>{ $scheme }</strong> 링크를 열도록 허용
 
 ##
 
@@ -58,7 +58,7 @@ chooser-dialog =
 chooser-dialog-description = { $scheme } 링크를 열 애플리케이션을 선택하세요.
 
 # Please keep the emphasis around the scheme (ie the `<strong>` HTML tags).
-chooser-dialog-remember = <strong>{ $scheme }</strong> 링크를 여는데 항상 이 애플리케이션 사용
+chooser-dialog-remember = 항상 <strong>{ $scheme }</strong> 링크를 여는데 이 애플리케이션 사용
 
 chooser-dialog-remember-extra =
     { PLATFORM() ->

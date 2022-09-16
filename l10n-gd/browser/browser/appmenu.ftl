@@ -5,13 +5,6 @@
 
 ## App Menu
 
-appmenuitem-update-banner3 =
-    .label-update-downloading = A’ luchdadh a-nuas ùrachadh { -brand-shorter-name }
-    .label-update-available = Tha ùrachadh ri fhaighinn – luchdaich a-nuas e an-dràsta
-    .label-update-manual = Tha ùrachadh ri fhaighinn – luchdaich a-nuas e an-dràsta
-    .label-update-unsupported = Chan urrainn dhuinn ùrachadh – chan eil an siostam co-chòrdail
-    .label-update-restart = Tha ùrachadh ri fhaighinn – ath-thòisich an-dràsta
-appmenuitem-protection-dashboard-title = Deas-bhòrd an dìona
 appmenuitem-banner-update-downloading =
     .label = A’ luchdadh a-nuas ùrachadh { -brand-shorter-name }
 appmenuitem-banner-update-available =
@@ -86,6 +79,8 @@ appmenu-remote-tabs-showmore =
 appmenu-remote-tabs-notabs = Chan eil taba fosgailte
 # This is shown when Sync is configured but syncing tabs is disabled.
 appmenu-remote-tabs-tabsnotsyncing = Cuir air sioncronachadh nan tabaichean airson cothrom fhaighinn air na tabaichean agad o uidheaman eile.
+appmenu-remote-tabs-opensettings =
+    .label = Roghainnean
 # This is shown when Sync is configured but this appears to be the only device attached to
 # the account. We also show links to download Firefox for android/ios.
 appmenu-remote-tabs-noclients = A bheil thu airson na tabaichean a tha agad air uidheaman eile fhaicinn an-seo?
@@ -106,7 +101,6 @@ appmenu-fxa-sync-and-save-data2 = Sioncronaich is sàbhail an dàta
 appmenu-fxa-signed-in-label = Clàraich a-steach
 appmenu-fxa-setup-sync =
     .label = Cuir an sioncronachadh air…
-appmenu-fxa-show-more-tabs = Seall barrachd tabaichean
 appmenuitem-save-page =
     .label = Sàbhail an duilleag mar…
 
@@ -126,6 +120,12 @@ whatsnew-panel-footer-checkbox =
 profiler-popup-button-idle =
     .label = Pròifilear
     .tooltiptext = Clàraich pròifil deanadais
+profiler-popup-button-recording =
+    .label = Pròifilear
+    .tooltiptext = Tha am pròifilear a’ clàradh pròifil
+profiler-popup-button-capturing =
+    .label = Pròifilear
+    .tooltiptext = Tha am pròifilear ri glacadh pròifil
 profiler-popup-title =
     .value = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
@@ -133,22 +133,14 @@ profiler-popup-reveal-description-button =
 profiler-popup-description-title =
     .value = Clàraich, sgrùd, co-roinn
 profiler-popup-description = Obraich còmhla air duilgheadasan leis an dèanadas a dh’fhoillseachadh pròifilean a cho-roinneas tu leis an sgioba agad.
-profiler-popup-learn-more = Barrachd fiosrachaidh
 profiler-popup-learn-more-button =
     .label = Barrachd fiosrachaidh
 profiler-popup-settings =
     .value = Roghainnean
 # This link takes the user to about:profiling, and is only visible with the Custom preset.
-profiler-popup-edit-settings = Deasaich na roghainnean…
-# This link takes the user to about:profiling, and is only visible with the Custom preset.
 profiler-popup-edit-settings-button =
     .label = Deasaich na roghainnean…
-profiler-popup-disabled = Tha a pròifilear à comas an-dràsta, dh’fhaoidte gu bheil uinneag a’ bhrabhsaidh phrìobhaidich fosgailte.
 profiler-popup-recording-screen = ’Ga chlàradh…
-# The profiler presets list is generated elsewhere, but the custom preset is defined
-# here only.
-profiler-popup-presets-custom =
-    .label = Gnàthaichte
 profiler-popup-start-recording-button =
     .label = Tòisich air clàradh
 profiler-popup-discard-button =
@@ -174,6 +166,23 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/popup/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
+profiler-popup-presets-web-developer-description = Recommended preset for most web app debugging, with low overhead.
+profiler-popup-presets-web-developer-label =
+    .label = Web Developer
+profiler-popup-presets-firefox-description = An ro-sheata a mholamaid airson pròifileadh { -brand-shorter-name }.
+profiler-popup-presets-firefox-label =
+    .label = { -brand-shorter-name }
+profiler-popup-presets-graphics-description = Preset for investigating graphics bugs in { -brand-shorter-name }.
+profiler-popup-presets-graphics-label =
+    .label = Graphics
+profiler-popup-presets-media-description2 = Preset for investigating audio and video bugs in { -brand-shorter-name }.
+profiler-popup-presets-media-label =
+    .label = Media
+profiler-popup-presets-networking-description = Preset for investigating networking bugs in { -brand-shorter-name }.
+profiler-popup-presets-networking-label =
+    .label = Networking
+profiler-popup-presets-custom-label =
+    .label = Custom
 
 ## History panel
 
@@ -206,9 +215,9 @@ appmenu-help-more-troubleshooting-info =
     .accesskey = f
 appmenu-help-report-site-issue =
     .label = Dèan aithris air duilgheadas leis an làrach...
-appmenu-help-feedback-page =
-    .label = Cuir thugainn do bheachdan…
-    .accesskey = C
+appmenu-help-share-ideas =
+    .label = Co-roinn do bheachdan…
+    .accesskey = b
 
 ## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
@@ -234,8 +243,6 @@ appmenu-help-not-deceptive =
 
 appmenu-customizetoolbar =
     .label = Gnàthaich am bàr-inneal...
-appmenu-taskmanager =
-    .label = Manaidsear nan saothair
 appmenu-developer-tools-subheader = Innealan a’ bhrabhsair
 appmenu-developer-tools-extensions =
     .label = Leudachain do luchd-leasachaidh

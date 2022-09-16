@@ -9,6 +9,8 @@ search-header =
 search-header-shortcut =
     .key = f
 list-empty-get-extensions-message = Hanki laajennukset ja teemat osoitteesta <a data-l10n-name="get-extensions">{ $domain }</a>
+list-empty-get-dictionaries-message = Hanki sanastot osoitteesta <a data-l10n-name="get-extensions">{ $domain }</a>
+list-empty-get-language-packs-message = Hanki kielipaketit osoitteesta <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-installed =
     .value = Tämäntyyppisiä lisäosia ei ole asennettuna
 list-empty-available-updates =
@@ -33,6 +35,8 @@ detail-version =
     .label = Versio
 detail-last-updated =
     .label = Päivitetty viimeksi
+addon-detail-description-expand = Näytä lisää
+addon-detail-description-collapse = Näytä vähemmän
 detail-contributions-description = Tämän lisäosan kehittäjä toivoo, että tukisit lisäosan kehitystyötä pienellä summalla.
 detail-contributions-button = Auta
     .title = Auta lisäosan kehitystyössä
@@ -132,6 +136,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Tuoreet päivitykset
 addon-category-recent-updates-title =
     .title = Tuoreet päivitykset
+addon-category-sitepermission = Sivuston käyttöoikeudet
+addon-category-sitepermission-title =
+    .title = Sivuston käyttöoikeudet
 
 ## These are global warnings
 
@@ -276,6 +283,7 @@ extension-enabled-heading = Käytössä
 extension-disabled-heading = Ei käytössä
 theme-enabled-heading = Käytössä
 theme-disabled-heading = Ei käytössä
+theme-disabled-heading2 = Tallennetut teemat
 theme-monochromatic-heading = Väriteemat
 theme-monochromatic-subheading = Eloisat uudet väriteemat { -brand-product-name }ilta. Saatavilla rajoitetun ajan.
 plugin-enabled-heading = Käytössä
@@ -284,6 +292,8 @@ dictionary-enabled-heading = Käytössä
 dictionary-disabled-heading = Ei käytössä
 locale-enabled-heading = Käytössä
 locale-disabled-heading = Ei käytössä
+sitepermission-enabled-heading = Käytössä
+sitepermission-disabled-heading = Pois käytöstä
 always-activate-button = Aktivoi aina
 never-activate-button = Älä koskaan aktivoi
 addon-detail-author-label = Tekijä
@@ -372,6 +382,7 @@ plugin-heading = Liitännäisten hallinta
 dictionary-heading = Sanastojen hallinta
 locale-heading = Kielten hallinta
 updates-heading = Päivitysten hallinta
+sitepermission-heading = Hallitse sivustojen oikeuksia
 discover-heading = Tee { -brand-short-name }ista mieleisesi
 shortcuts-heading = Laajennusten pikanäppäinten hallinta
 default-heading-search-label = Etsi lisää lisäosia
@@ -379,3 +390,20 @@ addons-heading-search-input =
     .placeholder = Etsi addons.mozilla.orgista
 addon-page-options-button =
     .title = Työkaluja kaikille lisäosille
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = Lisäosa { $name } on epäyhteensopiva { -brand-short-name }in version { $version } kanssa.
+details-notification-unsigned-and-disabled = Lisäosaa { $name } ei ole varmennettu käytettäväksi { -brand-short-name }issa ja on otettu pois päältä.
+details-notification-unsigned-and-disabled-link = Lisätietoja
+details-notification-unsigned = Lisäosaa { $name } ei ole varmennettu käytettäväksi { -brand-short-name }issa. Ole varovainen.
+details-notification-unsigned-link = Lisätietoja
+details-notification-blocked = Lisäosa { $name } poistettiin käytöstä turvallisuus- tai vakausongelmien takia.
+details-notification-blocked-link = Lisätietoja
+details-notification-softblocked = Lisäosa { $name } aiheuttaa tunnetusti turvallisuus- tai vakausongelmia.
+details-notification-softblocked-link = Lisätietoja
+details-notification-gmp-pending = { $name } asennetaan kohta.

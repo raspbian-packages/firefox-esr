@@ -11,6 +11,7 @@
 <!ENTITY newMenu.label "Novo">
 <!ENTITY newMenu.accesskey "N">
 <!ENTITY newMessage.label "Mensagem">
+<!ENTITY newMessage.accesskey "M">
 <!ENTITY newMessageCmd2.key "n">
 <!ENTITY newContact.label "Contato de catálogo de endereços…">
 <!ENTITY newContact.accesskey "C">
@@ -20,9 +21,6 @@
 <!ENTITY attachCloudCmd.accesskey "l">
 <!ENTITY attachPageCmd.label "Página web…">
 <!ENTITY attachPageCmd.accesskey "w">
-<!--LOCALIZATION NOTE attachVCardCmd.label Don't translate the term 'vCard' -->
-<!ENTITY attachVCardCmd.label "vCard">
-<!ENTITY attachVCardCmd.accesskey "v">
 <!ENTITY remindLater.label "Lembrar mais tarde">
 <!ENTITY remindLater.accesskey "L">
 <!ENTITY closeCmd.label "Fechar">
@@ -148,16 +146,6 @@
 <!ENTITY returnReceiptMenu.accesskey "o">
 <!ENTITY dsnMenu.label "Notificação de status da entrega">
 <!ENTITY dsnMenu.accesskey "N">
-<!ENTITY deliveryFormatMenu.label "Formato de entrega">
-<!ENTITY deliveryFormatMenu.accesskey "F">
-<!ENTITY autoFormatCmd.label "Detectar automaticamente">
-<!ENTITY autoFormatCmd.accesskey "a">
-<!ENTITY plainTextFormatCmd.label "Sem formatação">
-<!ENTITY plainTextFormatCmd.accesskey "e">
-<!ENTITY htmlFormatCmd.label "Formatação HTML">
-<!ENTITY htmlFormatCmd.accesskey "F">
-<!ENTITY bothFormatCmd.label "Ambos os formatos">
-<!ENTITY bothFormatCmd.accesskey "A">
 <!ENTITY priorityMenu.label "Prioridade">
 <!ENTITY priorityMenu.accesskey "P">
 <!ENTITY priorityButton.title "Prioridade">
@@ -186,7 +174,7 @@
 <!ENTITY addressBookCmd.label "Catálogo de endereços">
 <!ENTITY addressBookCmd.accesskey "a">
 <!ENTITY addressBookCmd.key "b">
-<!ENTITY accountManagerCmd2.label "Configurações da conta">
+<!ENTITY accountManagerCmd2.label "Configurações de contas">
 <!ENTITY accountManagerCmd2.accesskey "s">
 <!ENTITY accountManagerCmdUnix2.accesskey "S">
 
@@ -211,7 +199,7 @@
 <!ENTITY quoteButton.tooltip "Citar a mensagem anterior">
 <!ENTITY addressButton.tooltip "Selecionar destinatários no catálogo de endereços">
 <!ENTITY spellingButton.tooltip "Verificar ortografia da seleção ou de toda a mensagem">
-<!ENTITY saveButton.tooltip "Salvar a mensagem na pasta “Rascunhos”">
+<!ENTITY saveButton.tooltip "Salvar esta mensagem">
 <!ENTITY cutButton.tooltip              "Recortar">
 <!ENTITY copyButton.tooltip             "Copiar">
 <!ENTITY pasteButton.tooltip            "Colar">
@@ -221,7 +209,6 @@
 <!--LOCALIZATION NOTE headersSpaces.style is for aligning  the From:, To: and
     Subject: rows. It should be larger than the largest Header label  -->
 <!ENTITY headersSpace2.style "width: 8em;">
-<!ENTITY extraRecipients.tooltip "Outros tipos de campos de endereçamento">
 <!ENTITY fromAddr2.label "De">
 <!ENTITY fromAddr.accesskey "D">
 <!ENTITY replyAddr2.label "Responder a">

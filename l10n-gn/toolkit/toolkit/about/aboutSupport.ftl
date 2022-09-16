@@ -73,6 +73,14 @@ app-basics-location-service-key-google = Google ñemoñe’ẽasa ñe’ẽñemi
 app-basics-safebrowsing-key-google = Google Safebrowsing Key
 app-basics-key-mozilla = Mozilla mba’epytyvõrã rendaite rehegua
 app-basics-safe-mode = Teko jerovia
+app-basics-memory-size = Mandu’arenda tuichakue (RAM)
+app-basics-disk-available = Pa’ũ Ñongatuhaguasu pegua
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Finder-pe jehechauka
@@ -340,6 +348,7 @@ fission-status-experiment-control = Ojepe’a apopyha’ã rupi
 fission-status-experiment-treatment = Oñemyandy apopyha’ã rupi
 fission-status-disabled-by-e10s-env = Ojepe’a jeregua rupi
 fission-status-enabled-by-env = Oñemyandy jeregua rupi
+fission-status-disabled-by-env = Jeregua rupi oipe’apyre
 fission-status-disabled-by-safe-mode = Ojepe’a ayvu hekorosãva rupi
 fission-status-enabled-by-default = Oñemyandy ijypykue rupi
 fission-status-disabled-by-default = Ojepe’a ijypykue rupi

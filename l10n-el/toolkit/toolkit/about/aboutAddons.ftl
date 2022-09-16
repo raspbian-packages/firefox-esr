@@ -35,6 +35,8 @@ detail-version =
     .label = Έκδοση
 detail-last-updated =
     .label = Τελευταία ενημέρωση
+addon-detail-description-expand = Εμφάνιση περισσότερων
+addon-detail-description-collapse = Εμφάνιση λιγότερων
 detail-contributions-description = Ο προγραμματιστής αυτού του προσθέτου σάς ζητά να συνεισφέρετε στην ανάπτυξή του με μια μικρή δωρεά.
 detail-contributions-button = Συνεισφορά
     .title = Συνεισφορά στην ανάπτυξη αυτού του προσθέτου
@@ -136,6 +138,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Πρόσφατες ενημερώσεις
 addon-category-recent-updates-title =
     .title = Πρόσφατες ενημερώσεις
+addon-category-sitepermission = Άδειες ιστοτόπων
+addon-category-sitepermission-title =
+    .title = Άδειες ιστοτόπων
 
 ## These are global warnings
 
@@ -282,14 +287,18 @@ extension-enabled-heading = Ενεργές
 extension-disabled-heading = Ανενεργές
 theme-enabled-heading = Ενεργά
 theme-disabled-heading = Ανενεργά
+theme-disabled-heading2 = Αποθηκευμένα θέματα
 theme-monochromatic-heading = Χρωματικοί συνδυασμοί
 theme-monochromatic-subheading = Νέοι, δυναμικοί χρωματικοί συνδυασμοί από το { -brand-product-name }. Διαθέσιμοι για περιορισμένο χρονικό διάστημα.
+theme-colorways-button = Δοκιμή χρωματικών συνδυασμών
 plugin-enabled-heading = Ενεργά
 plugin-disabled-heading = Ανενεργά
 dictionary-enabled-heading = Ενεργά
 dictionary-disabled-heading = Ανενεργά
 locale-enabled-heading = Ενεργές
 locale-disabled-heading = Ανενεργές
+sitepermission-enabled-heading = Ενεργές
+sitepermission-disabled-heading = Ανενεργές
 always-activate-button = Πάντα ενεργοποιημένο
 never-activate-button = Ποτέ ενεργοποιημένο
 addon-detail-author-label = Δημιουργός
@@ -366,6 +375,7 @@ addon-permissions-optional = Προαιρετικά δικαιώματα για 
 addon-permissions-learnmore = Μάθετε περισσότερα σχετικά με τα δικαιώματα
 recommended-extensions-heading = Προτεινόμενες επεκτάσεις
 recommended-themes-heading = Προτεινόμενα θέματα
+addon-sitepermissions-required = Παραχωρεί τις εξής δυνατότητες στο <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Αισθάνεστε δημιουργικοί; <a data-l10n-name="link">Δημιουργήστε το δικό σας θέμα με το Firefox Color.</a>
@@ -378,6 +388,7 @@ plugin-heading = Διαχείριση των αρθρωμάτων σας
 dictionary-heading = Διαχείριση των λεξικών σας
 locale-heading = Διαχείριση των γλωσσών σας
 updates-heading = Διαχείριση των ενημερώσεών σας
+sitepermission-heading = Διαχείριση αδειών ιστοτόπων
 discover-heading = Εξατομίκευση του { -brand-short-name }
 shortcuts-heading = Διαχείριση συντομεύσεων επεκτάσεων
 default-heading-search-label = Εύρεση περισσότερων προσθέτων
@@ -385,3 +396,20 @@ addons-heading-search-input =
     .placeholder = Αναζήτηση στο addons.mozilla.org
 addon-page-options-button =
     .title = Εργαλεία για όλα τα πρόσθετα
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = Το { $name } είναι ασύμβατο με τον { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = Το { $name } δεν ήταν δυνατό να επαληθευτεί για χρήση από το { -brand-short-name } και έχει απενεργοποιηθεί.
+details-notification-unsigned-and-disabled-link = Περισσότερες πληροφορίες
+details-notification-unsigned = Το { $name } δεν ήταν δυνατό να επαληθευτεί για χρήση από το { -brand-short-name }. Συνεχίστε με προσοχή.
+details-notification-unsigned-link = Περισσότερες πληροφορίες
+details-notification-blocked = Το { $name } έχει απενεργοποιηθεί για λόγους ασφαλείας ή σταθερότητας.
+details-notification-blocked-link = Περισσότερες πληροφορίες
+details-notification-softblocked = Το { $name } είναι γνωστό ότι προκαλεί προβλήματα ασφαλείας ή σταθερότητας.
+details-notification-softblocked-link = Περισσότερες πληροφορίες
+details-notification-gmp-pending = Το πρόσθετο { $name } θα εγκατασταθεί σύντομα.

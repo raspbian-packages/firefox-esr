@@ -13,7 +13,7 @@ colors-window =
 colors-close-key =
     .key = w
 
-colors-page-override = 위에서 선택한 색상으로 페이지에서 지정한 색상을 덮어씀
+colors-page-override = 위에서 선택한 색상으로 페이지에서 지정한 색상을 재정의
     .accesskey = O
 
 colors-page-override-option-always =

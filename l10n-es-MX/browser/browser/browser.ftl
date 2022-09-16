@@ -262,7 +262,7 @@ identity-header-security-with-host =
 identity-connection-not-secure = Conexión no segura
 identity-connection-secure = Conexión segura
 identity-connection-failure = Fallo de conexión
-identity-connection-internal = Esta es un página { -brand-short-name } segura.
+identity-connection-internal = Esta es una página de { -brand-short-name } segura.
 identity-connection-file = Esta página está almacenada en tu computadora.
 identity-extension-page = Esta página se carga desde una extensión.
 identity-active-blocked = { -brand-short-name } bloqueó partes de esta página que no eran seguras.
@@ -521,7 +521,7 @@ urlbar-result-action-search-tabs = Buscar pestañas
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
 # A label shown above the search suggestions group in the urlbar results. It
-# should use title case.
+# should use sentence case.
 # Variables
 #  $engine (String): the name of the search engine providing the suggestions
 urlbar-group-search-suggestions =
@@ -653,12 +653,6 @@ toolbar-settings-button =
             [macos] Abrir ajustes ({ $shortcut })
            *[other] Abrir ajustes
         }
-
-## More items
-
-more-menu-go-offline =
-    .label = Trabajar sin conexión
-    .accesskey = x
 toolbar-overflow-customize-button =
     .label = Personalizar barra de herramientas…
     .accesskey = C
@@ -703,12 +697,6 @@ panel-save-update-password = Contraseña
 #  $name (String): The name of the addon that will be removed.
 addon-removal-title = ¿Eliminar { $name }?
 addon-removal-abuse-report-checkbox = Informar de esta extensión a { -vendor-short-name }
-
-## Remote / Synced tabs
-
-remote-tabs-manage-account =
-    .label = Administrar cuenta
-remote-tabs-sync-now = Sincronizar ahora
 
 ##
 
@@ -769,9 +757,6 @@ navbar-overflow =
 navbar-print =
     .label = Imprimir
     .tooltiptext = Imprimir esta página… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = Imprimir
-    .tooltiptext = Imprimir esta página
 navbar-home =
     .label = Inicio
     .tooltiptext = Página de inicio de { -brand-short-name }
@@ -798,3 +783,10 @@ tabs-toolbar-list-all-tabs =
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
 restore-session-startup-suggestion-message = <strong>¿Abrir pestañas anteriores?</strong> Puedes restaurar tu sesión anterior desde el menú de la aplicación { -brand-short-name } <img data-l10n-name = "icon" />, bajo Historial.
 restore-session-startup-suggestion-button = Mostrar cómo
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } envía automáticamente algunos datos a { -vendor-short-name } para poder mejorar tu experiencia.
+data-reporting-notification-button =
+    .label = Elegir qué compartir
+    .accesskey = c

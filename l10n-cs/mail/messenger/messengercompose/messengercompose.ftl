@@ -3,7 +3,25 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+compose-send-format-menu =
+    .label = Formát odesílání
+    .accesskey = F
+compose-send-auto-menu-item =
+    .label = Automaticky
+    .accesskey = A
+compose-send-both-menu-item =
+    .label = HTML a prostý text
+    .accesskey = a
+compose-send-html-menu-item =
+    .label = Pouze HTML
+    .accesskey = H
+compose-send-plain-menu-item =
+    .label = Pouze prostý text
+    .accesskey = p
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -32,6 +50,13 @@ pill-tooltip-not-in-address-book = { $email } není ve vašem seznamu kontaktu
 pill-action-edit =
     .label = Upravit adresu
     .accesskey = U
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = Vybrat všechny adresy v poli { $type }
+    .accesskey = a
+pill-action-select-all-pills =
+    .label = Vybrat všechny adresy
+    .accesskey = v
 pill-action-move-to =
     .label = Přesunout do Komu
     .accesskey = o
@@ -45,7 +70,7 @@ pill-action-expand-list =
     .label = Rozbalit seznam
     .accesskey = R
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -61,9 +86,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Připojit
     .tooltiptext = Přidat přílohu ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Připojit přílohu…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Připojit přílohu…
     .accesskey = a
@@ -76,20 +98,21 @@ context-menuitem-attach-files =
     .label = Připojit soubor…
     .accesskey = s
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
+# Note: Do not translate the term 'vCard'.
+context-menuitem-attach-vcard =
+    .label = Moje vizitka vCard
+    .accesskey = C
+context-menuitem-attach-openpgp-key =
+    .label = Můj veřejný klíč OpenPGP
+    .accesskey = k
 #   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
-    .value =
-        { $count ->
-            [1] Jedna příloha
-            [one] Jedna příloha
-            [few] { $count } přílohy
-           *[other] { $count } příloh
-        }
-    .accesskey = h
-expand-attachment-pane-tooltip =
-    .tooltiptext = Zobrazí lištu příloh ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Skryje lištu příloh ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
+attachment-bucket-count-value =
+    { $count ->
+        [1] { $count } příloha
+        [one] { $count } příloha
+        [few] { $count } přílohy
+       *[other] { $count } příloh
+    }
 attachment-area-show =
     .title = Zobrazí lištu příloh ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-hide =
@@ -102,7 +125,7 @@ drop-file-label-attachment =
     }
 drop-file-label-inline = Vložit do obsahu
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = Přesunout na začátek
@@ -116,52 +139,77 @@ button-return-receipt =
     .label = Potvrzení o přijetí
     .tooltiptext = Zažádá o potvrzení o přijetí této zprávy
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = Podepsat zprávu
-message-to-be-encrypted-icon =
-    .alt = Zašifrovat zprávu
-
-# Addressing Area
-
-to-compose-address-row-label =
-    .value = Komu
-#   $key (String) - the shortcut key for this field
-to-compose-show-address-row-menuitem =
-    .label = Pole { to-compose-address-row-label.value }
-    .accesskey = K
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-to-compose-show-address-row-label =
-    .value = { to-compose-address-row-label.value }
-    .tooltiptext = Zobrazit pole { to-compose-address-row-label.value } ({ to-compose-show-address-row-menuitem.acceltext })
-cc-compose-address-row-label =
-    .value = Kopie
-#   $key (String) - the shortcut key for this field
-cc-compose-show-address-row-menuitem =
-    .label = Pole { cc-compose-address-row-label.value }
-    .accesskey = i
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-cc-compose-show-address-row-label =
-    .value = { cc-compose-address-row-label.value }
-    .tooltiptext = Zobrazit pole { cc-compose-address-row-label.value } ({ cc-compose-show-address-row-menuitem.acceltext })
-bcc-compose-address-row-label =
-    .value = Skrytá kopie
-#   $key (String) - the shortcut key for this field
-bcc-compose-show-address-row-menuitem =
-    .label = Pole { bcc-compose-address-row-label.value }
+encryption-menu =
+    .label = Zabezpečení
+    .accesskey = b
+encryption-toggle =
+    .label = Zašifrovat
+    .tooltiptext = Ochrání zprávu pomocí koncového šifrování
+encryption-options-openpgp =
+    .label = OpenPGP
+    .tooltiptext = Nastavení šifrování OpenPGP
+encryption-options-smime =
+    .label = S/MIME
+    .tooltiptext = Nastavení šifrování S/MIME
+signing-toggle =
+    .label = Podepsat
+    .tooltiptext = Připojit k této zprávě elektronický podpis
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
     .accesskey = S
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-bcc-compose-show-address-row-label =
-    .value = { bcc-compose-address-row-label.value }
-    .tooltiptext = Zobrazit pole { bcc-compose-address-row-label.value } ({ bcc-compose-show-address-row-menuitem.acceltext })
-#   $count (Number) - the count of addresses in the "To" and "Cc" fields.
-many-public-recipients-info =
+menu-encrypt =
+    .label = Zašifrovat
+    .accesskey = Z
+menu-encrypt-subject =
+    .label = Zašifrovat předmět
+    .accesskey = f
+menu-sign =
+    .label = Elektronicky podepsat
+    .accesskey = i
+menu-manage-keys =
+    .label = Asistent pro správu klíčů
+    .accesskey = A
+menu-view-certificates =
+    .label = Zobrazit certifikáty příjemců
+    .accesskey = c
+menu-open-key-manager =
+    .label = Správce klíčů
+    .accesskey = k
+openpgp-key-issue-notification-one = Pro použití koncového šifrování nejprve odstraňte chyby klíče pro { $addr }
+openpgp-key-issue-notification-many =
     { $count ->
-        [one] { "" }
-        [few] Celkem { $count } adresáti v polích Komu a Kopie navzájem uvidí své adresy. Pokud se tomu chcete vyhnout, použijte pole Skrytá kopie.
-       *[other] Celkem { $count } adresátů v polích Komu a Kopie navzájem uvidí své adresy. Pokud se tomu chcete vyhnout, použijte pole Skrytá kopie.
+        [one] Pro použití koncového šifrování nejprve odstraňte chyby klíče pro jednoho příjemce.
+        [few] Pro použití koncového šifrování nejprve odstraňte chyby klíčů pro { $count } příjemce.
+       *[other] Pro použití koncového šifrování nejprve odstraňte chyby klíčů pro { $count } příjemců.
     }
+smime-cert-issue-notification-one = Pro použití koncového šifrování nejprve odstraňte chyby certifikátu pro { $addr }
+smime-cert-issue-notification-many =
+    { $count ->
+        [one] Pro použití koncového šifrování nejprve odstraňte chyby certifikátu pro jednoho příjemce.
+        [few] Pro použití koncového šifrování nejprve odstraňte chyby certifikátů pro { $count } příjemce.
+       *[other] Pro použití koncového šifrování nejprve odstraňte chyby certifikátů pro { $count } příjemců.
+    }
+key-notification-disable-encryption =
+    .label = Nešifrovat
+    .accesskey = N
+    .tooltiptext = Vypne koncové šifrování
+key-notification-resolve =
+    .label = Vyřešit…
+    .accesskey = y
+    .tooltiptext = Otevře asistenta klíčů OpenPGP
+can-encrypt-smime-notification = Koncové šifrování S/MIME je dostupné.
+can-encrypt-openpgp-notification = Koncové šifrování OpenPGP je dostupné.
+can-e2e-encrypt-button =
+    .label = Šifrovat
+    .accesskey = a
+
+## Addressing Area
+
 to-address-row-label =
     .value = Komu
 #   $key (String) - the shortcut key for this field
@@ -248,3 +296,96 @@ encrypted-bcc-ignore-button = Rozumím
 
 compose-tool-button-remove-text-styling =
     .tooltiptext = Odebrat formátování textu
+
+## Filelink
+
+# A text used in a tooltip of Filelink attachments, whose account has been
+# removed or is unknown.
+cloud-file-unknown-account-tooltip = Nahráno do neznámého účtu úložiště.
+
+# Placeholder file
+
+# Title for the html placeholder file.
+# $filename - name of the file
+cloud-file-placeholder-title = { $filename } - soubor poslaný přes úložiště
+# A text describing that the file was attached as a Filelink and can be downloaded
+# from the link shown below.
+# $filename - name of the file
+cloud-file-placeholder-intro = Soubor { $filename } byl poslán přes úložiště. Stáhnout ho můžete z odkazu níže.
+
+# Template
+
+# A line of text describing how many uploaded files have been appended to this
+# message. Emphasis should be on sharing as opposed to attaching. This item is
+# used as a header to a list, hence the colon.
+cloud-file-count-header =
+    { $count ->
+        [one] Připojil jsem k tomuto e-mailu { $count } soubor:
+        [few] Připojil jsem k tomuto e-mailu { $count } soubory:
+       *[other] Připojil jsem k tomuto e-mailu { $count } souborů:
+    }
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service provider.
+# $link (string) - html a-tag for a link pointing to the web page of the provider
+cloud-file-service-provider-footer-single = Zjistit více o službě { $link }.
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service providers. Links for the used providers are
+# split into a comma separated list of the first n-1 providers and a single entry
+# at the end.
+# $firstLinks (string) - comma separated list of html a-tags pointing to web pages
+#                        of the first n-1 used providers
+# $lastLink (string) - html a-tag pointing the web page of the n-th used provider
+cloud-file-service-provider-footer-multiple = Další informace o službách { $firstLinks } a { $lastLink }.
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Odkaz chráněný heslem
+# Used in a list of stats about a specific file
+# Service - the used service provider to host the file (Filelink Service: BOX.com)
+# Size - the size of the file (Size: 4.2 MB)
+# Link - the link to the file (Link: https://some.provider.com)
+# Expiry Date - stating the date the link will expire (Expiry Date: 12.12.2022)
+# Download Limit - stating the maximum allowed downloads, before the link becomes invalid
+#                  (Download Limit: 6)
+cloud-file-template-service-name = Posílání souborů přes úložiště:
+cloud-file-template-size = Velikost:
+cloud-file-template-link = Odkaz:
+cloud-file-template-password-protected-link = Odkaz chráněný heslem:
+cloud-file-template-expiry-date = Datum vypršení platnosti:
+cloud-file-template-download-limit = Omezení počtu stažení:
+
+# Messages
+
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-connection-error-title = Chyba spojení
+cloud-file-connection-error = { -brand-short-name } je offline, ke službě { $provider } se nelze připojit.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was uploaded and caused the error
+cloud-file-upload-error-with-custom-message-title = Nahrávání souboru { $filename } do služby { $provider } se nezdařilo
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-title = Chyba přejmenování
+cloud-file-rename-error = Vyskytl se problém s přejmenováním souboru { $filename } ve službě { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-with-custom-message-title = Přejmenování souboru { $filename } se ve službě { $provider } nezdařilo
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-rename-not-supported = { $provider } nepodporuje přejmenování již nahraných souborů.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-attachment-error-title = Chyba posílání souborů přes úložiště
+cloud-file-attachment-error = Nepodařilo se aktualizovat soubor { $filename } posílaný přes úložiště, protože byla jeho místní kopie přesunuta nebo smazána.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-account-error-title = Chyba účtu úložiště
+cloud-file-account-error = Nepodařilo se aktualizovat soubor { $filename } posílaný přes úložiště, protože byl účet úložiště smazán.
+
+## Link Preview
+
+link-preview-title = Náhled odkazu
+link-preview-description = { -brand-short-name } může k odkazům vkládaným do zprávy přidat náhled.
+link-preview-autoadd = Automaticky přidávat náhledy odkazů, pokud je to možné
+link-preview-replace-now = Chcete přidat náhled tohoto odkazu?
+link-preview-yes-replace = Ano
+
+## Dictionary selection popup
+
+spell-add-dictionaries =
+    .label = Přidat slovník…
+    .accesskey = a

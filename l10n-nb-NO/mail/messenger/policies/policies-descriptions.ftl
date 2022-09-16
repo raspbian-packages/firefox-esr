@@ -18,6 +18,8 @@ policy-AppUpdateURL = Angi egendefinert programoppdateringsadresse.
 
 policy-Authentication = Konfigurer integrert godkjenning for nettsteder som støtter det.
 
+policy-BackgroundAppUpdate2 = Slå på eller av bakgrunnsoppdatereren.
+
 policy-BlockAboutAddons = Blokker tilgang til Utvidelsesbehandleren (about:addons)
 
 policy-BlockAboutConfig = Blokker tilgang til about:config-siden.
@@ -31,6 +33,8 @@ policy-CaptivePortal = Aktiver eller deaktiver støtte for captive portal.
 policy-CertificatesDescription = Legg til sertifikater eller bruk innebygde sertifikater.
 
 policy-Cookies = Tillat eller nekt nettsteder å lagre infokapsler.
+
+policy-DisableBuiltinPDFViewer = Deaktiver PDF.js, det innebygde PDF-visningsprogrammet i { -brand-short-name }
 
 policy-DisabledCiphers = Deaktiver krypteringsmetoder.
 
@@ -85,6 +89,8 @@ policy-ExtensionSettings = Håndter alle aspekter av utvidelsesinstallasjon.
 
 policy-ExtensionUpdate = Slå på eller slå av automatisk utvidelsesoppdateringer.
 
+policy-Handlers = Konfigurer standard applikasjonsbehandlere.
+
 policy-HardwareAcceleration = Hvis deaktivert, slå av maskinvareakselerasjon.
 
 policy-InstallAddonsPermission = Tillat visse nettsteder å installere utvidelser.
@@ -100,6 +106,8 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Gå tilbake til foreld
 ##
 
 policy-LocalFileLinks = Tillat at bestemte nettsteder kobler til lokale filer.
+
+policy-ManualAppUpdateOnly = Tillat kun manuelle oppdateringer og gi ikke brukeren varsel om oppdateringer.
 
 policy-NetworkPrediction = Aktiver eller deaktiver nettverkspredikering (DNS-prefetch).
 
@@ -119,6 +127,8 @@ policy-PDFjs = Deaktiver eller konfigurer PDF.js, det innebygde PDF-visningsprog
 policy-Permissions2 = Konfigurer tillatelser for kamera, mikrofon, plassering og auto-avspilling.
 
 policy-Preferences = Still inn og lås verdien for en undergruppe av innstillingene.
+
+policy-PrimaryPassword = Krev eller forhindre bruk av hovedpassord.
 
 policy-PromptForDownloadLocation = Spør hvor du skal lagre filer når du laster ned.
 

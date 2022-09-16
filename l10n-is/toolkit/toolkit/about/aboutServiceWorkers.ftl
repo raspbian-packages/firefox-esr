@@ -5,7 +5,7 @@
 
 ### The term "Service Workers" and "Workers" should not be translated
 
-about-service-workers-title = Um Service Workers
+about-service-workers-title = Um Service Workers þjónustuferli
 about-service-workers-main-title = Skráðir Service Workers
 about-service-workers-warning-not-enabled = Service Workers ekki virkir.
 about-service-workers-warning-no-service-workers = Engir Service Workers skráðir.

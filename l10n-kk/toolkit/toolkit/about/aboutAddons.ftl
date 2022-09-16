@@ -13,6 +13,10 @@ search-header-shortcut =
 
 list-empty-get-extensions-message = Кеңейтулер және темаларды <a data-l10n-name="get-extensions">{ $domain }</a> жерінен алыңыз
 
+list-empty-get-dictionaries-message = Сөздіктерді <a data-l10n-name="get-extensions">{ $domain }</a> жерінен алыңыз
+
+list-empty-get-language-packs-message = Тілдік дестелерді <a data-l10n-name="get-extensions">{ $domain }</a> жерінен алыңыз
+
 list-empty-installed =
     .value = Сізде осы түрдегі қосымшалар орнатылмаған
 
@@ -173,6 +177,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Соңғы жаңартулар
 addon-category-recent-updates-title =
     .title = Соңғы жаңартулар
+addon-category-sitepermission = Сайт рұқсаттары
+addon-category-sitepermission-title =
+    .title = Сайт рұқсаттары
 
 ## These are global warnings
 
@@ -183,7 +190,6 @@ extensions-warning-check-compatibility-button = Іске қосу
 extensions-warning-update-security = Кеңейтулер жаңартуларын қауісіздікке тексеру сөндірулі. Жаңартулармен қор болуыңыз мүмкін.
 extensions-warning-update-security-button = Іске қосу
     .title = Кеңейтулер жаңартуларын қауісіздікке тексеруді іске қосу
-
 
 ## Strings connected to add-on updates
 
@@ -303,6 +309,7 @@ install-theme-button = Теманы орнату
 # the detailed add-on view is opened, from where the add-on can be managed.
 manage-addon-button = Басқару
 find-more-addons = Көбірек қосымшаларды табу
+find-more-themes = Көбірек темаларды табу
 
 # This is a label for the button to open the "more options" menu, it is only
 # used for screen readers.
@@ -335,6 +342,8 @@ extension-disabled-heading = Сөндірілген
 
 theme-enabled-heading = Іске қосулы
 theme-disabled-heading = Сөндірілген
+theme-monochromatic-heading = Түстер жинақтары
+theme-monochromatic-subheading = { -brand-product-name } ұсынған жаңа, жарқын түстер жинақтары. Шектеулі уақыт бойы қолжетімді.
 
 plugin-enabled-heading = Іске қосулы
 plugin-disabled-heading = Сөндірілген
@@ -344,6 +353,9 @@ dictionary-disabled-heading = Сөндірілген
 
 locale-enabled-heading = Іске қосулы
 locale-disabled-heading = Сөндірілген
+
+sitepermission-enabled-heading = Іске қосылған
+sitepermission-disabled-heading = Сөндірілген
 
 always-activate-button = Әрқашан белсендіру
 never-activate-button = Ешқашан белсендірмеу
@@ -406,7 +418,6 @@ addon-detail-private-browsing-disallow = Рұқсат етпеу
 addon-badge-recommended2 =
     .title = { -brand-product-name } тек біздің қауіпсіздік және өнімділік стандарттарына сай келетін кеңейтулерді ұсынады
     .aria-label = { addon-badge-recommended2.title }
-
 # We hard code "Mozilla" in the string below because the extensions are built
 # by Mozilla and we don't want forks to display "by Fork".
 addon-badge-line3 =
@@ -425,13 +436,14 @@ release-notes-loading = Жүктелуде…
 release-notes-error = Кешіріңіз, шығарылым ескертпесін жүктеп алу кезінде қате кетті.
 
 addon-permissions-empty = Бұл кеңейту ешқандай рұқсаттарды қажет етпейді
-
 addon-permissions-required = Негізгі мүмкіндіктері үшін керек рұқсаттар:
 addon-permissions-optional = Қосымша мүмкіндіктері үшін керек рұқсаттар:
 addon-permissions-learnmore = Рұқсаттар туралы көбірек білу
 
 recommended-extensions-heading = Ұсынылатын кеңейтулер
 recommended-themes-heading = Ұсынылатын темалар
+
+addon-sitepermissions-required = <span data-l10n-name="hostname">{ $hostname }</span> үшін келесі мүмкіндіктерді рұқсат етеді:
 
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
@@ -445,6 +457,7 @@ plugin-heading = Плагиндерді басқару
 dictionary-heading = Сөздіктерді басқару
 locale-heading = Тілдерді басқару
 updates-heading = Жаңартуларды басқару
+sitepermission-heading = Сайт рұқсаттарын басқару
 discover-heading = Өз { -brand-short-name } жеке қылыңыз
 shortcuts-heading = Кеңейтудің пернетақта жарлықтарын басқару
 
@@ -454,3 +467,25 @@ addons-heading-search-input =
 
 addon-page-options-button =
     .title = Барлық қосымшалар үшін құралдар
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } үйлеспейді, осы { -brand-short-name } { $version } нұсқасымен.
+
+details-notification-unsigned-and-disabled = { $name } { -brand-short-name } ішінде қолданылу үшін растау мүмкін емес, сондықтан ол сөндірілді.
+details-notification-unsigned-and-disabled-link = Көбірек ақпарат
+
+details-notification-unsigned = { $name } { -brand-short-name } ішінде қолданылу үшін растау мүмкін емес. Абайлап жалғастырыңыз.
+details-notification-unsigned-link = Көбірек ақпарат
+
+details-notification-blocked = { $name } қауіпсіздік не тұрақтылық мәселелер салдарынан сөндірілген.
+details-notification-blocked-link = Көбірек ақпарат
+
+details-notification-softblocked = { $name } қауіпсіздік не тұрақтылықпен мәселелер туғызатыны белгілі.
+details-notification-softblocked-link = Көбірек ақпарат
+
+details-notification-gmp-pending = { $name } жақында орнатылады.

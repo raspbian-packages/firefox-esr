@@ -35,6 +35,8 @@ detail-version =
     .label = Fersiwn
 detail-last-updated =
     .label = Diweddarwyd Diwethaf
+addon-detail-description-expand = Dangos rhagor
+addon-detail-description-collapse = Dangos llai
 detail-contributions-description = Mae datblygwr yr ychwanegyn yn gofyn eich bod yn cynorthwyo i gefnogi datblygiad drwy wneud cyfraniad bychan.
 detail-contributions-button = Cyfrannu
     .title = Cyfrannwch i ddatblygiad yr ategyn hwn
@@ -134,6 +136,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Diweddariadau Diweddar
 addon-category-recent-updates-title =
     .title = Diweddariadau Diweddar
+addon-category-sitepermission = Caniatâd Gwefan
+addon-category-sitepermission-title =
+    .title = Caniatâd Gwefan
 
 ## These are global warnings
 
@@ -284,14 +289,18 @@ extension-enabled-heading = Galluogwyd
 extension-disabled-heading = Analluogwyd
 theme-enabled-heading = Galluogwyd
 theme-disabled-heading = Analluogwyd
+theme-disabled-heading2 = Themâu wedi'u Cadw
 theme-monochromatic-heading = Llwybrau lliw
 theme-monochromatic-subheading = Llwybrau lliw newydd bywiog gan { -brand-product-name }. Ar gael am gyfnod cyfyngedig.
+theme-colorways-button = Rhowch gynnig ar Colorways
 plugin-enabled-heading = Galluogwyd
 plugin-disabled-heading = Analluogwyd
 dictionary-enabled-heading = Galluogwyd
 dictionary-disabled-heading = Analluogwyd
 locale-enabled-heading = Galluogwyd
 locale-disabled-heading = Analluogwyd
+sitepermission-enabled-heading = Galluogwyd
+sitepermission-disabled-heading = Analluogwyd
 always-activate-button = Gweithredu Bob Tro
 never-activate-button = Byth Gweithredu
 addon-detail-author-label = Awdur
@@ -372,6 +381,7 @@ addon-permissions-optional = Caniatâd dewisol ar gyfer y swyddogaethau ychwaneg
 addon-permissions-learnmore = Dysgu rhagor am ganiatâd
 recommended-extensions-heading = Estyniadau Cymeradwy
 recommended-themes-heading = Themâu Cymeradwy
+addon-sitepermissions-required = Yn caniatáu'r galluoedd canlynol i <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Teimlo'n greadigol? <a data-l10n-name="link">Adeiladwch eich thema eich hun gyda Firefox Color. </a>
@@ -384,6 +394,7 @@ plugin-heading = Rheoli eich ategion
 dictionary-heading = Rheoli eich geiriaduron
 locale-heading = Rheoli eich ieithoedd
 updates-heading = Rheoli Eich Diweddariadau
+sitepermission-heading = Rheoli Eich Caniatâd Gwefan
 discover-heading = Personoli Eich { -brand-short-name }
 shortcuts-heading = Rheoli Estyniad Llwybrau Byr
 default-heading-search-label = Canfod rhagor o ychwanegion
@@ -391,3 +402,20 @@ addons-heading-search-input =
     .placeholder = Search addons.mozilla.org
 addon-page-options-button =
     .title = Offer ar gyfer pob ychwanegyn
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = Mae { $name } yn anghydnaws â { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = Nid oedd modd dilysu { $name } i'w ddefnyddio yn { -brand-short-name } ac mae wedi ei analluogi.
+details-notification-unsigned-and-disabled-link = Rhagor o Wybodaeth
+details-notification-unsigned = Nid oedd modd dilysu { $name } i'w defnyddio yn { -brand-short-name }. Cymerwch ofal.
+details-notification-unsigned-link = Rhagor o Wybodaeth
+details-notification-blocked = Mae { $name } wedi ei analluogi o ganlyniad i faterion diogelwch a sefydlogrwydd.
+details-notification-blocked-link = Rhagor o Wybodaeth
+details-notification-softblocked = Mae'n hysbys fod { $name } yn achosi anawsterau diogelwch a sefydlogrwydd.
+details-notification-softblocked-link = Rhagor o Wybodaeth
+details-notification-gmp-pending = Bydd { $name } yn cael ei osod yn fuan.

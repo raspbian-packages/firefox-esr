@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 ## Permission Dialog
 ## Variables:
 ##  $host - the hostname that is initiating the request
@@ -61,8 +62,8 @@ chooser-dialog-remember = Siempre utilizar esta aplicación para abrir enlaces <
 
 chooser-dialog-remember-extra =
     { PLATFORM() ->
-        [windows] Esto peude ser cambiado en las opciones de { -brand-short-name }.
-       *[other] Esto peude ser cambiado en las preferencias de { -brand-short-name }.
+        [windows] Esto puede ser cambiado en las opciones de { -brand-short-name }.
+       *[other] Esto puede ser cambiado en las preferencias de { -brand-short-name }.
     }
 
 choose-other-app-description = Elegir otra aplicación

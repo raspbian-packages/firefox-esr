@@ -37,6 +37,9 @@ certmgr-delete-cert =
     .title = प्रमाणपत्र मिटायें
     .style = width: 48em; height: 24em;
 
+certmgr-cert-host =
+    .label = होस्ट
+
 certmgr-cert-name =
     .label = प्रमाणपत्र नाम
 
@@ -173,9 +176,8 @@ delete-email-cert-impact = अगर आप किसी व्यक्ति �
 cert-with-serial =
     .value = सीरियल नंबर के साथ प्रमाण पत्र: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

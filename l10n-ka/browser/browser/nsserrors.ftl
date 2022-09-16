@@ -12,16 +12,20 @@
 # $hostname (String) - Hostname of the website with SSL error.
 # $errorMessage (String) - Error message corresponding to the type of error we are experiencing.
 ssl-connection-error = შეცდომა დაკავშირებისას - { $hostname }. { $errorMessage }
+
 # Variables:
 # $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 cert-error-code-prefix = შეცდომის კოდი: { $error }
+
 psmerr-ssl-disabled = უსაფრთხო დაკავშირება ვერ ხერხდება, რადგან SSL ოქმი ამორთულია.
 psmerr-ssl2-disabled = უსაფრთხო დაკავშირება ვერ ხერხდება, რადგან საიტი SSL ოქმის მოძველებულ ვერსიას იყენებს.
+
 # This is a multi-line message.
 psmerr-hostreusedissuerandserial =
     თქვენ უმართებულო სერტიფიკატი მიიღეთ.  გთხოვთ დაუკავშირდეთ სერვერის მმართველს ან ელფოსტის მოპასუხეს და მიაწოდოთ შემდეგი მონაცემები:
     
     თქვენი სერტიფიკატი შეიცავს იმავე სერიულ ნომერს, რაც ამ გამცემის მიერ გამოშვებული სხვა სერტიფიკატი.  გთხოვთ, გამოიყენოთ ახალი სერტიფიკატი, უნიკალური სერიული ნომრით.
+
 ssl-error-export-only-server = უსაფრთხო კავშირი ვერ ხერხდება. კვანძისთვის მაღალი დონის დაშიფვრა მიუღებელია.
 ssl-error-us-only-server = უსაფრთხო კავშირი ვერ ხერხდება. კვანძი ითხოვს მაღალი დონის დაშიფვრას, რაც უზრუნველყოფილი არაა.
 ssl-error-no-cypher-overlap = კვანძთან უსაფრთხო კავშირი ვერ ხერხდება: არ გააჩნია დაშიფვრის ცნობილი ალგორითმ(ებ)ი.
@@ -124,7 +128,7 @@ ssl-error-internal-error-alert = Peer reports it experienced an internal error.
 ssl-error-user-canceled-alert = Peer user canceled handshake.
 ssl-error-no-renegotiation-alert = Peer does not permit renegotiation of SSL security parameters.
 ssl-error-server-cache-not-configured = SSL server cache not configured and not disabled for this socket.
-ssl-error-unsupported-extension-alert = SSL peer does not support requested TLS hello extension.
+ssl-error-unsupported-extension-alert = SSL-კვანძზე არაა მხარდაჭერილი TLS-hello-გაფართოება.
 ssl-error-certificate-unobtainable-alert = SSL peer could not obtain your certificate from the supplied URL.
 ssl-error-unrecognized-name-alert = SSL peer has no certificate for the requested DNS name.
 ssl-error-bad-cert-status-response-alert = SSL peer was unable to get an OCSP response for its certificate.

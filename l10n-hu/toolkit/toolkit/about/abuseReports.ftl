@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = A(z) { $addon-name } jelentése
 
 abuse-report-title-extension = A kiegészítő jelentése a { -vendor-short-name } felé
+abuse-report-title-sitepermission = Az oldalengedély kiegészítő jelentése a { -vendor-short-name } felé
 abuse-report-title-theme = A téma jelentése a { -vendor-short-name } felé
 abuse-report-subtitle = Mi a probléma?
 
@@ -35,12 +35,6 @@ abuse-report-goback-button = Ugrás vissza
 abuse-report-submit-button = Elküldés
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -50,6 +44,7 @@ abuse-report-messagebar-submitting = Jelentés küldésre erről: <span data-l10
 abuse-report-messagebar-submitted = Köszönjük a bejelentést. Eltávolítja a(z) <span data-l10n-name="addon-name">{ $addon-name }</span> kiegészítőt?
 abuse-report-messagebar-submitted-noremove = Köszönjük a bejelentést.
 abuse-report-messagebar-removed-extension = Köszönjük a bejelentést. Eltávolította a(z) <span data-l10n-name="addon-name">{ $addon-name }</span> kiegészítőt.
+abuse-report-messagebar-removed-sitepermission = Köszönjük a bejelentést. Eltávolította a(z) <span data-l10n-name="addon-name">{ $addon-name }</span> oldalengedély kiegészítőt.
 abuse-report-messagebar-removed-theme = Köszönjük a bejelentést. Eltávolította a(z) <span data-l10n-name="addon-name">{ $addon-name }</span> témát.
 abuse-report-messagebar-error = Hiba történt a(z) <span data-l10n-name="addon-name">{ $addon-name }</span> kiegészítő jelentésének beküldésekor.
 abuse-report-messagebar-error-recent-submit = A(z) <span data-l10n-name="addon-name">{ $addon-name }</span> kiegészítő jelentése nem lett elküldve, mert a közelmúltban már benyújtott egy másik jelentést.
@@ -58,6 +53,8 @@ abuse-report-messagebar-error-recent-submit = A(z) <span data-l10n-name="addon-n
 
 abuse-report-messagebar-action-remove-extension = Igen, távolítsa el
 abuse-report-messagebar-action-keep-extension = Nem, megtartom
+abuse-report-messagebar-action-remove-sitepermission = Igen, távolítsa el
+abuse-report-messagebar-action-keep-sitepermission = Nem, megtartom
 abuse-report-messagebar-action-remove-theme = Igen, távolítsa el
 abuse-report-messagebar-action-keep-theme = Nem, megtartom
 abuse-report-messagebar-action-retry = Újra
@@ -80,12 +77,17 @@ abuse-report-deceptive-reason-v2 = Másnak állítja magát, mint ami
 abuse-report-deceptive-example = Példa: Félrevezető leírás vagy képek
 
 abuse-report-broken-reason-extension-v2 = Nem működik, hibákat okoz weblapokon vagy lassítja a { -brand-product-name } működését
+abuse-report-broken-reason-sitepermission-v2 = Nem működik, hibákat okoz weblapokon vagy lassítja a { -brand-product-name } működését
 abuse-report-broken-reason-theme-v2 = Nem működik, vagy hibákat okoz a böngésző megjelenítésében
 abuse-report-broken-example = Példa: A funkciók lassúak, nehezen használhatóak vagy nem működnek; a weboldalak egyes részei nem töltődnek be vagy szokatlanul néznek ki
 abuse-report-broken-suggestions-extension =
     Úgy néz ki, hogy egy hibát azonosított. Az itt beküldött jelentés mellett a legjobb módszer a probléma
     megoldásának az, hogy kapcsolatba lép a kiegészítő fejlesztőjével.
     <a data-l10n-name="support-link">Keresse fel a kiegészítő weboldalát</a> a fejlesztő információinak megtekintéséhez.
+abuse-report-broken-suggestions-sitepermission =
+    Úgy néz ki, hogy egy hibát azonosított. Az itt beküldött jelentés mellett a legjobb módszer a probléma
+    megoldásának az, hogy kapcsolatba lép a weboldal fejlesztőjével.
+    <a data-l10n-name="support-link">Keresse fel a weboldalt</a> a fejlesztő információinak megtekintéséhez.
 abuse-report-broken-suggestions-theme =
     Úgy néz ki, hogy egy hibát azonosított. Az itt beküldött jelentés mellett a legjobb módszer a probléma
     megoldásának az, hogy kapcsolatba lép a téma fejlesztőjével.
@@ -101,4 +103,3 @@ abuse-report-unwanted-reason-v2 = Soha nem akartam, és nem tudom, hogyan lehet 
 abuse-report-unwanted-example = Példa: Egy alkalmazás az engedélyem nélkül települt
 
 abuse-report-other-reason = Valami más
-

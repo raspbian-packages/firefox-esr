@@ -2,11 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
 about-rights-notification-text = { -brand-short-name } er programvare basert på fri og åpen kildekode, utviklet av et fellesskap med tusenvis av medlemmer rundt om i verden.
 
 ## Content tabs
 
+
 ## Toolbar
+
+addons-and-themes-toolbarbutton =
+    .label = Tillegg og temaer
+    .tooltiptext = T
 
 ## Folder Pane
 
@@ -51,17 +59,42 @@ folder-toolbar-toggle-folder-compact-view =
 
 ## Menu
 
+
 ## AppMenu
+
+appmenu-addons-and-themes =
+    .label = Tillegg og temaer
 
 ## Context menu
 
+
 ## Message header pane
+
+
+## Message header cutomize panel
 
 ## Action Button Context Menu
 
+
 ## Message headers
+
 
 ## Add-on removal warning
 
+
 ## no-reply handling
+
+
+## error messages
+
+
+## Spaces toolbar
+
+settings-context-open-addons-item =
+    .label = Åpne tillegg og temaer
+
+## Spaces toolbar pinned tab menupopup
+
+
+## Spaces toolbar customize panel
 

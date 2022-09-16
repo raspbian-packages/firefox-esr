@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Báo cáo về { $addon-name }
 
 abuse-report-title-extension = Báo cáo tiện ích mở rộng này cho { -vendor-short-name }
+abuse-report-title-sitepermission = Báo cáo chủ đề này cho { -vendor-short-name }
 abuse-report-title-theme = Báo cáo chủ đề này cho { -vendor-short-name }
 abuse-report-subtitle = Vấn đề là gì?
 
@@ -37,12 +37,6 @@ abuse-report-goback-button = Quay lại
 abuse-report-submit-button = Gửi
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Đang gửi báo cáo về <span data-l10n-
 abuse-report-messagebar-submitted = Cám ơn bạn đã gửi báo cáo. Bạn có muốn xóa <span data-l10n-name="addon-name">{ $addon-name }</span> không?
 abuse-report-messagebar-submitted-noremove = Cảm ơn bạn đã gửi báo cáo.
 abuse-report-messagebar-removed-extension = Cảm ơn bạn đã gửi báo cáo. Bạn đã xóa tiện ích mở rộng <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Cảm ơn bạn đã gửi báo cáo. Bạn đã xóa tiện ích mở rộng Quyền hạn trang web <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Cảm ơn bạn đã gửi báo cáo. Bạn đã xóa chủ đề <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Đã xảy ra lỗi khi gửi báo cáo về <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Báo cáo về <span data-l10n-name="addon-name">{ $addon-name }</span> không thể gửi do đã có một báo cáo khác đã được gửi gần đây.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Báo cáo về <span data-l10n-nam
 
 abuse-report-messagebar-action-remove-extension = Vâng, loại bỏ nó
 abuse-report-messagebar-action-keep-extension = Không, tôi sẽ giữ nó
+abuse-report-messagebar-action-remove-sitepermission = Có, loại bỏ nó
+abuse-report-messagebar-action-keep-sitepermission = Không, tôi sẽ giữ nó
 abuse-report-messagebar-action-remove-theme = Vâng, loại bỏ nó
 abuse-report-messagebar-action-keep-theme = Không, tôi sẽ giữ nó
 abuse-report-messagebar-action-retry = Thử lại
@@ -82,12 +79,17 @@ abuse-report-deceptive-reason-v2 = Nó tuyên bố là một cái gì đó mà n
 abuse-report-deceptive-example = Ví dụ: phần mô tả hoặc hình ảnh gây hiểu lầm
 
 abuse-report-broken-reason-extension-v2 = Nó không hoạt động, phá vỡ các trang web hoặc làm chậm { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Nó không hoạt động, phá vỡ các trang web hoặc làm chậm { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Nó không hoạt động hoặc phá vỡ cách trình duyệt hiển thị
 abuse-report-broken-example = Ví dụ: tính năng chậm, khó sử dụng hoặc không hoạt động; các phần của trang web không tải được hoặc trông khác thường
 abuse-report-broken-suggestions-extension =
     Có vẻ như bạn đã xác định được một lỗi. Ngoài việc gửi báo cáo ở đây, cách tốt nhất
     để giải quyết vấn đề là liên hệ với nhà phát triển tiện ích mở rộng.
     <a data-l10n-name="support-link">Truy cập trang web tiện ích mở rộng</a> để nhận thông tin về nhà phát triển.
+abuse-report-broken-suggestions-sitepermission =
+    Có vẻ như bạn đã xác định được một lỗi. Ngoài việc gửi báo cáo ở đây, cách tốt nhất
+    để giải quyết vấn đề là liên hệ với nhà phát triển trang web.
+    <a data-l10n-name="support-link">Truy cập trang web</a> để lấy thông tin nhà phát triển.
 abuse-report-broken-suggestions-theme =
     Có vẻ như bạn đã xác định được một lỗi. Ngoài việc gửi báo cáo ở đây, cách tốt nhất
     để giải quyết vấn đề là liên hệ với nhà phát triển chủ đề.
@@ -103,4 +105,3 @@ abuse-report-unwanted-reason-v2 = Tôi không bao giờ muốn nó và không bi
 abuse-report-unwanted-example = Ví dụ: Một ứng dụng đã cài đặt nó mà không có sự cho phép của tôi
 
 abuse-report-other-reason = Điều gì đó khác
-

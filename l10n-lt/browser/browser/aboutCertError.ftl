@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Svetainės įrodo savo tapatumą pate
 
 cert-error-symantec-distrust-admin = Galite apie problemą pranešti svetainės prižiūrėtojui.
 
+cert-error-old-tls-version = Ši svetainė gali nepalaikyti TLS 1.2 protokolo, kuris yra mažiausia „{ -brand-short-name }“ palaikoma versija.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = „HTTP Strict Transport Security“: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Netikėtas serverio atsakas
 nssFailure2-title = Saugaus ryšio užmegzti nepavyko
 csp-xfo-error-title = „{ -brand-short-name }“ negali atverti šio tinklalapio
 corruptedContentError-title = Klaida: duomenys pažeisti
-remoteXUL-title = XUL iš tinklo
 sslv3Used-title = Nepavyko prisijungti saugiai
 inadequateSecurityError-title = Jūsų ryšys nėra saugus
 blockedByPolicy-title = Uždraustas puslapis

@@ -3,7 +3,25 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+compose-send-format-menu =
+    .label = Format d’expédition
+    .accesskey = F
+compose-send-auto-menu-item =
+    .label = Automatique
+    .accesskey = A
+compose-send-both-menu-item =
+    .label = HTML et texte brut
+    .accesskey = H
+compose-send-html-menu-item =
+    .label = Uniquement en HTML
+    .accesskey = U
+compose-send-plain-menu-item =
+    .label = Uniquement en texte brut
+    .accesskey = b
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -30,6 +48,13 @@ pill-tooltip-not-in-address-book = { $email } ne figure pas dans votre carnet d�
 pill-action-edit =
     .label = Modifier l’adresse
     .accesskey = M
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = Sélectionner toutes les adresses dans { $type }
+    .accesskey = a
+pill-action-select-all-pills =
+    .label = Sélectionner toutes les adresses
+    .accesskey = S
 pill-action-move-to =
     .label = Déplacer vers Pour
     .accesskey = p
@@ -43,7 +68,7 @@ pill-action-expand-list =
     .label = Développer la liste
     .accesskey = D
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -59,9 +84,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Joindre
     .tooltiptext = Ajouter une pièce jointe ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Ajouter une pièce jointe…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Ajouter une pièce jointe…
     .accesskey = j
@@ -74,18 +96,19 @@ context-menuitem-attach-files =
     .label = Joindre fichier(s)…
     .accesskey = f
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
+# Note: Do not translate the term 'vCard'.
+context-menuitem-attach-vcard =
+    .label = Ma vCard
+    .accesskey = C
+context-menuitem-attach-openpgp-key =
+    .label = Ma clé publique OpenPGP
+    .accesskey = O
 #   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
-    .value =
-        { $count ->
-            [1] { $count } pièce jointe
-           *[other] { $count } pièces jointes
-        }
-    .accesskey = o
-expand-attachment-pane-tooltip =
-    .tooltiptext = Afficher le volet des pièces jointes ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Masquer le volet des pièces jointes ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
+attachment-bucket-count-value =
+    { $count ->
+        [1] { $count } pièce jointe
+       *[other] { $count } pièces jointes
+    }
 attachment-area-show =
     .title = Afficher le volet des pièces jointes ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-hide =
@@ -101,7 +124,7 @@ drop-file-label-inline =
        *[other] Ajouter au corps du message
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = En premier
@@ -115,47 +138,67 @@ button-return-receipt =
     .label = Accusé de réception
     .tooltiptext = Demander un accusé de réception pour ce message
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = Signer le message
-message-to-be-encrypted-icon =
-    .alt = Chiffrer le message
-
-# Addressing Area
-
-to-compose-address-row-label =
-    .value = Pour
-#   $key (String) - the shortcut key for this field
-to-compose-show-address-row-menuitem =
-    .label = Champ { to-compose-address-row-label.value }
-    .accesskey = p
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-to-compose-show-address-row-label =
-    .value = { to-compose-address-row-label.value }
-    .tooltiptext = Afficher le champ { to-compose-address-row-label.value } ({ to-compose-show-address-row-menuitem.acceltext })
-cc-compose-address-row-label =
-    .value = Copie à
-#   $key (String) - the shortcut key for this field
-cc-compose-show-address-row-menuitem =
-    .label = Champ { cc-compose-address-row-label.value }
+encryption-menu =
+    .label = Sécurité
+    .accesskey = c
+encryption-toggle =
+    .label = Chiffrer
+    .tooltiptext = Utiliser le chiffrement de bout en bout pour ce message
+encryption-options-openpgp =
+    .label = OpenPGP
+    .tooltiptext = Voir ou modifier les paramètres de chiffrement OpenPGP
+encryption-options-smime =
+    .label = S/MIME
+    .tooltiptext = Voir ou modifier les paramètres de chiffrement S/MIME
+signing-toggle =
+    .label = Signer
+    .tooltiptext = Signer numériquement ce message
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
+    .accesskey = S
+menu-encrypt =
+    .label = Chiffrer
     .accesskey = C
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-cc-compose-show-address-row-label =
-    .value = { cc-compose-address-row-label.value }
-    .tooltiptext = Afficher le champ { cc-compose-address-row-label.value } ({ cc-compose-show-address-row-menuitem.acceltext })
-bcc-compose-address-row-label =
-    .value = Copie cachée à
-#   $key (String) - the shortcut key for this field
-bcc-compose-show-address-row-menuitem =
-    .label = Champ { bcc-compose-address-row-label.value }
-    .accesskey = h
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-bcc-compose-show-address-row-label =
-    .value = { bcc-compose-address-row-label.value }
-    .tooltiptext = Afficher le champ { bcc-compose-address-row-label.value } ({ bcc-compose-show-address-row-menuitem.acceltext })
-#   $count (Number) - the count of addresses in the "To" and "Cc" fields.
-many-public-recipients-info = Les { $count } destinataires en « Pour » et « Copie à » verront les adresses des autres. Vous pouvez éviter de révéler les destinataires en utilisant plutôt « Copie cachée à ».
+menu-encrypt-subject =
+    .label = Chiffrer le sujet
+    .accesskey = u
+menu-sign =
+    .label = Signer numériquement
+    .accesskey = n
+menu-manage-keys =
+    .label = Assistant de clés
+    .accesskey = A
+menu-view-certificates =
+    .label = Voir les certificats des destinataires
+    .accesskey = V
+menu-open-key-manager =
+    .label = Gestionnaire de clés
+    .accesskey = G
+openpgp-key-issue-notification-one = Pour utiliser le chiffrement de bout en bout vous devez résoudre les problèmes de clé pour { $addr }
+openpgp-key-issue-notification-many = Pour utiliser le chiffrement de bout en bout vous devez résoudre les problèmes de clés pour { $count } destinataires.
+smime-cert-issue-notification-one = Pour utiliser le chiffrement de bout en bout vous devez résoudre les problèmes de certificat pour { $addr }
+smime-cert-issue-notification-many = Pour utiliser le chiffrement de bout en bout vous devez résoudre les problèmes de certificat pour { $count } destinataires.
+key-notification-disable-encryption =
+    .label = Ne pas chiffrer
+    .accesskey = N
+    .tooltiptext = Désactiver le chiffrement de bout en bout
+key-notification-resolve =
+    .label = Résoudre…
+    .accesskey = R
+    .tooltiptext = Ouvrir l’assistant de clés OpenPGP
+can-encrypt-smime-notification = Chiffrement S/MIME de bout en bout disponible.
+can-encrypt-openpgp-notification = Chiffrement OpenPGP de bout en bout disponible.
+can-e2e-encrypt-button =
+    .label = Chiffrer
+    .accesskey = C
+
+## Addressing Area
+
 to-address-row-label =
     .value = Pour
 #   $key (String) - the shortcut key for this field
@@ -240,3 +283,95 @@ encrypted-bcc-ignore-button = C’est compris
 
 compose-tool-button-remove-text-styling =
     .tooltiptext = Supprimer le style du texte
+
+## Filelink
+
+# A text used in a tooltip of Filelink attachments, whose account has been
+# removed or is unknown.
+cloud-file-unknown-account-tooltip = Envoyé sur un compte Filelink inconnu.
+
+# Placeholder file
+
+# Title for the html placeholder file.
+# $filename - name of the file
+cloud-file-placeholder-title = { $filename } - Pièce jointe Filelink
+# A text describing that the file was attached as a Filelink and can be downloaded
+# from the link shown below.
+# $filename - name of the file
+cloud-file-placeholder-intro = Le fichier { $filename } a été joint en tant que Filelink. Il peut être téléchargé à partir du lien ci-dessous.
+
+# Template
+
+# A line of text describing how many uploaded files have been appended to this
+# message. Emphasis should be on sharing as opposed to attaching. This item is
+# used as a header to a list, hence the colon.
+cloud-file-count-header =
+    { $count ->
+        [one] J’ai lié un fichier à ce message :
+       *[other] J’ai lié { $count } fichiers à ce message :
+    }
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service provider.
+# $link (string) - html a-tag for a link pointing to the web page of the provider
+cloud-file-service-provider-footer-single = En savoir plus sur { $link }.
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service providers. Links for the used providers are
+# split into a comma separated list of the first n-1 providers and a single entry
+# at the end.
+# $firstLinks (string) - comma separated list of html a-tags pointing to web pages
+#                        of the first n-1 used providers
+# $lastLink (string) - html a-tag pointing the web page of the n-th used provider
+cloud-file-service-provider-footer-multiple = En savoir plus sur { $firstLinks } et { $lastLink }.
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Lien protégé par mot de passe
+# Used in a list of stats about a specific file
+# Service - the used service provider to host the file (Filelink Service: BOX.com)
+# Size - the size of the file (Size: 4.2 MB)
+# Link - the link to the file (Link: https://some.provider.com)
+# Expiry Date - stating the date the link will expire (Expiry Date: 12.12.2022)
+# Download Limit - stating the maximum allowed downloads, before the link becomes invalid
+#                  (Download Limit: 6)
+cloud-file-template-service-name = Service Filelink :
+cloud-file-template-size = Taille :
+cloud-file-template-link = Lien :
+cloud-file-template-password-protected-link = Lien protégé par mot de passe :
+cloud-file-template-expiry-date = Date d’expiration :
+cloud-file-template-download-limit = Limite de téléchargement :
+
+# Messages
+
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-connection-error-title = Erreur de connexion
+cloud-file-connection-error = { -brand-short-name } est hors ligne. Impossible de se connecter à { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was uploaded and caused the error
+cloud-file-upload-error-with-custom-message-title = Échec de l’envoi de { $filename } à { $provider }
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-title = Erreur de renommage
+cloud-file-rename-error = Un problème est survenu lors du changement de nom de { $filename } sur { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-with-custom-message-title = Échec du changement de nom de { $filename } sur { $provider }
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-rename-not-supported = { $provider } ne prend pas en charge le changement de nom des fichiers déjà téléchargés.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-attachment-error-title = Erreur de pièce jointe Filelink
+cloud-file-attachment-error = Échec de la mise à jour de la pièce jointe Filelink { $filename }, car son fichier local a été déplacé ou supprimé.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-account-error-title = Erreur de compte Filelink
+cloud-file-account-error = Échec de la mise à jour de la pièce jointe Filelink { $filename }, car son compte Filelink a été supprimé.
+
+## Link Preview
+
+link-preview-title = Aperçu du lien
+link-preview-description = { -brand-short-name } peut ajouter un aperçu intégré lors du collage des liens.
+link-preview-autoadd = Ajouter automatiquement un aperçu des liens lorsque cela est possible
+link-preview-replace-now = Ajouter un aperçu pour ce lien ?
+link-preview-yes-replace = Oui
+
+## Dictionary selection popup
+
+spell-add-dictionaries =
+    .label = Ajouter des dictionnaires…
+    .accesskey = A

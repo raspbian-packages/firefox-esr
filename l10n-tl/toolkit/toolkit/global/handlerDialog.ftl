@@ -9,6 +9,7 @@
 ##  $scheme - the type of link that's being opened.
 ##  $appName - Name of the application that will be opened.
 
+permission-dialog-description = Payagan ang site na ito na buksan ang { $scheme } link?
 
 ## Please keep the emphasis around the hostname and scheme (ie the
 ## `<strong>` HTML tags). Please also keep the hostname as close to the start
@@ -17,18 +18,31 @@
 
 ##
 
+permission-dialog-btn-open-link =
+    .label = Buksan ang Link
+    .accessKey = B
+
+permission-dialog-btn-choose-app =
+    .label = Pumili ng Application
+    .accessKey = A
 
 ## Chooser dialog
 ## Variables:
 ##  $scheme - the type of link that's being opened.
 
+chooser-window =
+    .title = Pumili ng Application
+    .style = min-width: 26em; min-height: 26em;
+
 chooser-dialog =
     .buttonlabelaccept = Buksan ang Link
     .buttonaccesskeyaccept = B
+
 choose-other-app-description = Mamili ng ibang Application
 choose-app-btn =
     .label = Mamili...
     .accessKey = M
 choose-other-app-window-title = Ibang Application…
+
 # Displayed under the name of a protocol handler in the Launch Application dialog.
 choose-dialog-privatebrowsing-disabled = Naka-disable sa mga Private Window

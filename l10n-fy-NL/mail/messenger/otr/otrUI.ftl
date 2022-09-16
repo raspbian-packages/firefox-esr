@@ -19,6 +19,9 @@ auth-waiting = Wachtsje oant it kontakt de ferifikaasje foltôge hat…
 finger-verify = Ferifiearje
 finger-verify-access-key = V
 
+finger-ignore = Negearje
+finger-ignore-access-key = g
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = OTR-fingerôfdruk tafoegje
 
@@ -43,7 +46,6 @@ finger-unseen = De identiteit fan { $name } is noch net ferifiearre. Ienfâldich
 finger-seen = { $name } nimt kontakt mei jo op fan in ûnbekende kompjûter ôf. Ienfâldich ôflústerjen is net mooglik, mar mei wat muoite kin ien meilústerje. Foarkom ôflústerjen troch de identiteit fan it kontakt te ferifiearjen.
 
 state-not-private = It aktuele petear is net privee.
-
 state-generic-not-private = It aktuele petear is net privee.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Jo hawwe de identiteit fan { $name } ferifiearre.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = De identiteit fan { $name } is net ferifiearre.
-
-verify-title = De identiteit fan jo kontakt ferifiearje
-error-title = Flater
-success-title = End-to-end-fersifering
-success-them-title = Ferifiearje de identiteit fan jo kontakt
-fail-title = Kin net ferifiearje
-waiting-title = Ferifikaasjefersyk ferstjoerd
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

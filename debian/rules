@@ -14,6 +14,7 @@ $(call lazy,LDFLAGS,$$(call dpkg_buildflags,LDFLAGS))
 $(call lazy,DEB_HOST_GNU_TYPE,$$(shell dpkg-architecture -qDEB_HOST_GNU_TYPE))
 $(call lazy,DEB_BUILD_GNU_TYPE,$$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE))
 $(call lazy,DEB_BUILD_ARCH_BITS,$$(shell dpkg-architecture -qDEB_BUILD_ARCH_BITS))
+$(call lazy,DEB_BUILD_ARCH,$$(shell dpkg-architecture -qDEB_BUILD_ARCH))
 $(call lazy,DEB_HOST_ARCH,$$(shell dpkg-architecture -qDEB_HOST_ARCH))
 
 PYTHON := python3 -B
@@ -85,6 +86,8 @@ SHARE_DIR := /usr/share/$($(PRODUCT))
 # Work around https://github.com/rust-lang/cargo/issues/7147
 export CARGO_HOME=$(CURDIR)/debian/.cargo
 
+export MOZBUILD_STATE_PATH = $(CURDIR)/debian/.mozbuild
+
 ifneq (,$(filter stretch,$(DIST)))
 ifneq (,$(filter amd64 i386,$(DEB_HOST_ARCH)))
 export NASM=/usr/lib/nasm-mozilla/bin/nasm
@@ -131,7 +134,7 @@ endif
 ifneq (,$(filter %i386 %amd64 armel armhf arm64,$(DEB_HOST_ARCH)))
 	MOZ_FFVPX = 1
 endif
-ifneq (,$(filter i386 amd64 armel armhf,$(DEB_HOST_ARCH)))
+ifneq (,$(filter i386 amd64 armel armhf arm64,$(DEB_HOST_ARCH)))
 	CRASH_REPORTER = 1
 endif
 ifneq (,$(filter armhf mips%,$(DEB_HOST_ARCH)))
@@ -151,9 +154,6 @@ endif
 
 CXXFLAGS = $(CFLAGS)
 RUSTFLAGS = --remap-path-prefix=$(CURDIR)=.
-ifeq (,$(filter 1.43.% 1.44.%,$(shell rustc --version | awk '{print $$2}')))
-RUSTFLAGS += -Cembed-bitcode=yes
-endif
 
 EXPORTS := CC CXX CFLAGS CXXFLAGS CPPFLAGS LDFLAGS MOZILLA_OFFICIAL RUSTFLAGS
 $(call lazy,CONFIGURE_ENV,$$(foreach export,$(EXPORTS),$$(export)="$$($$(export))"))
@@ -178,12 +178,12 @@ $(call lazy,L10N_PACKAGES_DEPS,$$(shell echo $$(L10N_PACKAGES) | sed 's/ /, /g')
 debian/l10n/$(PRODUCT)-l10n.control: %: %.in
 	PYTHONIOENCODING=utf-8 LC_ALL=C.UTF-8 $(PYTHON) debian/l10n/gen $(L10N_LANGS) > $@
 
-$(call lazy,LIBAVCODEC,$$(shell awk -F\" '/libavcodec\.so/ { sub(/libavcodec\.so\./,"", $$$$2); p = "libavcodec" $$$$2 " | libavcodec-extra" $$$$2; if (d) { d = d " | " p } else { d = p } } END { print d }' dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp))
+$(call lazy,LIBAVCODEC,$$(shell awk -F\" '/libavcodec\.so\./ { sub(/libavcodec\.so\./,"", $$$$2); p = "libavcodec" $$$$2 " | libavcodec-extra" $$$$2; if (d) { d = d " | " p } else { d = p } } END { print d }' dom/media/platforms/ffmpeg/FFmpegRuntimeLinker.cpp))
 
-$(PREPROCESSED_FILES): VARS = GRE_VERSION $(PRODUCT) $(call uc,$(PRODUCT)) $(Product) MOZ_APP_REMOTINGNAME $(SYSTEM_LIBS_VARS) SHORT_SOURCE_CHANNEL DIST TRANSITION MOZ_FFVPX CRASH_REPORTER DEB_HOST_ARCH
+$(PREPROCESSED_FILES): VARS = GRE_VERSION PRODUCT_DOWNLOAD_NAME $(PRODUCT) $(call uc,$(PRODUCT)) $(Product) MOZ_APP_REMOTINGNAME $(SYSTEM_LIBS_VARS) SHORT_SOURCE_CHANNEL DIST TRANSITION MOZ_FFVPX CRASH_REPORTER DEB_HOST_ARCH
 debian/control: VARS += L10N_PACKAGES_DEPS PRODUCT LIBAVCODEC
 $(PREPROCESSED_FILES):
-	$(PYTHON) ./mach python --no-virtualenv python/mozbuild/mozbuild/preprocessor.py --marker % -Fsubstitution $(foreach var,$(VARS),-D$(var)="$($(var))" )$< -o $@
+	MOZ_OBJDIR=debian/objdir MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE=none $(PYTHON) ./mach python python/mozbuild/mozbuild/preprocessor.py --marker % -Fsubstitution $(foreach var,$(VARS),-D$(var)="$($(var))" )$< -o $@
 
 ifdef TRANSITION
 MAINTSCRIPTS := $(addprefix debian/,$(addsuffix .maintscript,$(shell awk -F/ '$$1 != "searchplugins" { next } $$2 == "locale" && $$3 != "en-US" { p="iceweasel-l10n-" $$3 } $$2 == "common" || ($$2 "/" $$3 == "locale/en-US") { p="iceweasel" } !done[p] { print p; done[p] = 1 }' debian/removed_conffiles)))
@@ -233,6 +233,16 @@ stamps/configure-check-$(PRODUCT):: stamps/configure-$(PRODUCT)
 	END { if (error) { exit 1 }}' debian/$($(PRODUCT)).mozconfig
 
 stamps/configure-$(PRODUCT):: stamps/prepare-configure debian/$($(PRODUCT)).mozconfig
+ifeq (armhf,$(DEB_BUILD_ARCH))
+ifeq (,$(shell grep -l cpu:type:aarch64 /sys/devices/system/cpu/modalias))
+	# There is not enough memory in armhf userspace with a 32-bits kernel.
+	$(error Unfortunately cannot build on armhf. Try a 64-bits kernel)
+endif
+endif
+ifeq (mipsel,$(DEB_BUILD_ARCH))
+	# There is not enough memory in mipsel userspace with neither a 32-bits nor 64-bits kernel.
+	$(error Unfortunately cannot build on mipsel. Try cross-compilation)
+endif
 	$(if $(wildcard build-$(PRODUCT)),,mkdir build-$(PRODUCT))
 	cd build-$(PRODUCT) && \
 	MOZCONFIG=$(CURDIR)/debian/$($(PRODUCT)).mozconfig \
@@ -242,9 +252,13 @@ stamps/configure-$(PRODUCT):: stamps/prepare-configure debian/$($(PRODUCT)).mozc
 		$(COMMON_CONFIGURE_FLAGS) \
 		$(CONFIGURE_FLAGS)
 
+# Use thinLTO on armhf, to stay in the memory budget with an armhf toolchain.
+ifeq (armhf,$(DEB_BUILD_ARCH))
+export DEBIAN_RUST_LTO=-Clto=thin
+endif
+
 stamps/build-$(PRODUCT):: stamps/configure-check-$(PRODUCT)
 	+dh_auto_build --parallel --builddirectory=build-$(PRODUCT) -- \
-		LD_LIBS=-Wl,--no-gc-sections \
 		_LEAKTEST_FILES=leaktest.py
 
 L10N_BUILD_STAMPS = $(foreach lang,$(L10N_LANGS),stamps/build-l10n-$(lang))
@@ -261,7 +275,7 @@ $(L10N_BUILD_STAMPS):: stamps/build-l10n-%: stamps/prepare-configure
 		--with-l10n-base=$(CURDIR)/l10n
 
 	$(if $(wildcard l10n/$*),,ln -sf ../l10n-$* l10n/$*)
-	MACH_USE_SYSTEM_PYTHON=1 $(MAKE) -C build-l10n/$*/$(PRODUCT)/locales langpack-$* MOZ_CHROME_FILE_FORMAT=flat MOZ_LANGPACK_EID=langpack-$*@$($(PRODUCT)).mozilla.org PKG_LANGPACK_BASENAME='$$(MOZ_LANGPACK_EID)' PKG_LANGPACK_PATH=xpi/
+	MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE=none $(MAKE) -C build-l10n/$*/$(PRODUCT)/locales langpack-$* MOZ_CHROME_FILE_FORMAT=flat MOZ_LANGPACK_EID=langpack-$*@$($(PRODUCT)).mozilla.org PKG_LANGPACK_BASENAME='$$(MOZ_LANGPACK_EID)' PKG_LANGPACK_PATH=xpi/
 
 override_dh_auto_build-arch: stamps/build-$(PRODUCT)
 
@@ -276,7 +290,7 @@ endif
 endif
 
 override_dh_auto_clean::
-	rm -f $(filter-out debian/control,$(GENERATED_FILES))
+	rm -f $(filter-out debian/control debian/watch,$(GENERATED_FILES))
 	rm -f $$(cat debian/extra-clean 2>/dev/null) debian/extra-clean old-configure js/src/old-configure
 	rm -rf stamps l10n $(CARGO_HOME)
 	rm -f third_party/python/psutil/psutil/*.so
@@ -287,7 +301,7 @@ override_dh_auto_clean::
 	dh_auto_clean --builddirectory=build-$(PRODUCT)
 	dh_auto_clean --builddirectory=build-l10n
 	find . -name "*.pyc" -o -name "*.pyo" | xargs --no-run-if-empty rm -f
-	rm -rf obj-*/.mozbuild
+	rm -rf debian/objdir $(MOZBUILD_STATE_PATH)
 	find . -name __pycache__ -delete
 
 override_dh_clean:

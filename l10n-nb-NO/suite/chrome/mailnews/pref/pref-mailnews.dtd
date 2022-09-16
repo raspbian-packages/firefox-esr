@@ -8,24 +8,19 @@
 <!ENTITY confirmMove.accesskey            "B">
 <!ENTITY preserveThreading.label          "Behold trådstruktur ved sortering av meldinger">
 <!ENTITY preserveThreading.accesskey      "B">
+<!ENTITY mailAutoHide.label               "Skjul e-postfanelinjen når bare én fane er åpen">
+<!ENTITY mailAutoHide.accesskey           "b">
 <!ENTITY loadInBackground.label           "Bytt til nye faner når du åpner den">
 <!ENTITY loadInBackground.accesskey       "t">
+<!ENTITY mailOpenTabsFor.label            "Åpne faner i stedet for vinduer for">
+<!ENTITY mailMiddleClick.label            "Midtklikk eller Ctrl+Enter på en melding eller mappe">
+<!ENTITY mailMiddleClick.accesskey        "M">
+<!ENTITY mailMiddleClickMac.label         "Midtklikk eller &#8984;+Enter på en melding eller mappe">
+<!ENTITY mailMiddleClickMac.accesskey     "M">
+<!ENTITY mailDoubleClick.label            "Dobbeltklikk på en melding">
+<!ENTITY mailDoubleClick.accesskey        "k">
 <!ENTITY mailBiffOnNewWindow.label        "Bare se etter nye meldinger etter åpning av e-post og nyhetsgrupper">
 <!ENTITY mailBiffOnNewWindow.accesskey    "B">
-
-<!ENTITY defaultMailSettings.description  "Gjør &brandShortName; til standardprogram for:">
-<!ENTITY setDefaultMail.label             "E-post">
-<!ENTITY setDefaultMail.accesskey         "E">
-<!ENTITY setDefaultNews.label             "Nyhetsgrupper">
-<!ENTITY setDefaultNews.accesskey         "N">
-<!ENTITY setDefaultFeed.label             "Nyhetskilder">
-<!ENTITY setDefaultFeed.accesskey         "h">
-
-<!ENTITY useInternalSettings.description  "Bruk &brandShortName; E-post og nyhetsgrupper når nettleseren åpner lenker for:">
-<!ENTITY useInternalMail.label            "E-post (mailto:)">
-<!ENTITY useInternalMail.accesskey        "E">
-<!ENTITY useInternalNews.label            "Nyhetsgrupper (news:, snews:, nntp:)">
-<!ENTITY useInternalNews.accesskey        "N">
 
 <!ENTITY messengerStartPage.caption       "Startside for e-post">
 <!ENTITY enableStartPage.label            "Vis denne startsiden i meldingsområdet ved oppstart">

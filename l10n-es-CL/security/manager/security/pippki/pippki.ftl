@@ -16,8 +16,6 @@ change-password-old = Contraseña actual:
 change-password-new = Nueva contraseña:
 change-password-reenter = Nueva contraseña (otra vez):
 
-## Reset Password dialog
-
 pippki-failed-pw-change = No se pudo cambiar la contraseña primaria.
 pippki-incorrect-pw = No ingresaste correctamente la contraseña primaria. Por favor, vuelve a intentarlo.
 pippki-pw-change-ok = La contraseña ha sido cambiada exitosamente.
@@ -35,8 +33,7 @@ reset-primary-password-window =
     .style = width: 40em
 reset-password-button-label =
     .label = Restablecer
-
-reset-primary-password-text = Si restableces tu contraseña primaria, todas las contraseñas de webs y de correo electrónico, certificados personales y llaves privadas almacenados serán olvidados. ¿Estás seguro de que quieres restablecer tu contraseña primaria?
+reset-primary-password-text = Si restableces tu contraseña primaria, todas las contraseñas de webs y de correo electrónico, certificados personales y llaves privadas almacenados serán olvidados. ¿De verdad quieres restablecer tu contraseña primaria?
 
 pippki-reset-password-confirmation-title = Restablecer la contraseña primaria
 pippki-reset-password-confirmation-message = Tu contraseña primaria ha sido restablecida.

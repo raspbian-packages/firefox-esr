@@ -30,6 +30,9 @@ import-from-nothing =
 import-from-safari =
     .label = Safari
     .accesskey = S
+import-from-brave =
+    .label = Brave
+    .accesskey = r
 import-from-canary =
     .label = „Chrome Canary“
     .accesskey = n
@@ -78,23 +81,9 @@ import-done-description = Sėkmingai importuota:
 
 import-close-source-browser = Prieš tęsdami įsitikinkite, kad pasirinkta naršyklė yra išjungta.
 
-# Displays which browser the bookmarks are being imported from
-#
-# Variables:
-#   $source (String): The browser the user has chosen to import bookmarks from.
-imported-bookmarks-source = Iš „{ $source }“
-
 source-name-ie = Internet Explorer
 source-name-edge = „Microsoft Edge“
-source-name-edge-beta = Microsoft Edge Beta
-source-name-safari = Safari
-source-name-canary = „Google Chrome Canary“
 source-name-chrome = Google Chrome
-source-name-chrome-beta = „Google Chrome Beta“
-source-name-chrome-dev = „Google Chrome Dev“
-source-name-chromium = „Chromium“
-source-name-firefox = Mozilla Firefox
-source-name-360se = „360 Secure Browser“
 
 imported-safari-reading-list = Skaitinių sąrašas (iš „Safari“)
 imported-edge-reading-list = Skaitinių sąrašas (iš „Edge“)

@@ -24,8 +24,6 @@
 <!ENTITY moveToNewWindow.accesskey "θ">
 <!ENTITY newVirtualFolderCmd.label "Αποθηκευμένη αναζήτηση…">
 <!ENTITY newVirtualFolderCmd.accesskey "θ">
-<!ENTITY newOtherAccountsCmd.label "Άλλοι λογαριασμοί…">
-<!ENTITY newOtherAccountsCmd.accesskey "λ">
 <!ENTITY newCreateEmailAccountCmd.label "Απόκτηση νέου λογαριασμού email…">
 <!ENTITY newCreateEmailAccountCmd.accesskey "γ">
 <!ENTITY newExistingEmailAccountCmd.label "Υπάρχων λογαριασμός email…">
@@ -48,8 +46,6 @@
 <!ENTITY openMessageFileCmd.accesskey "ν">
 <!ENTITY saveAsMenu.label "Αποθήκευση ως">
 <!ENTITY saveAsMenu.accesskey "θ">
-<!ENTITY saveAsFileCmd.label "Αρχείο">
-<!ENTITY saveAsFileCmd.accesskey "χ">
 <!ENTITY saveAsFileCmd.key "s">
 <!ENTITY saveAsTemplateCmd.label "Πρότυπο">
 <!ENTITY saveAsTemplateCmd.accesskey "Π">
@@ -147,9 +143,9 @@
 <!ENTITY messagePaneWide.accesskey "Ε">
 <!ENTITY messagePaneVertical.label "Κάθετη προβολή">
 <!ENTITY messagePaneVertical.accesskey "θ">
-<!ENTITY showFolderPaneCmd.label "Προβολή φακέλων">
+<!ENTITY showFolderPaneCmd.label "Περιοχή φακέλων">
 <!ENTITY showFolderPaneCmd.accesskey "φ">
-<!ENTITY showFolderPaneColsCmd.label "Στήλες προβολής φακέλων">
+<!ENTITY showFolderPaneColsCmd.label "Στήλες περιοχής φακέλων">
 <!ENTITY showFolderPaneColsCmd.accesskey "Φ">
 <!ENTITY showMessageCmd.label "Περιοχή μηνύματος">
 <!ENTITY showMessageCmd.accesskey "μ">
@@ -701,7 +697,7 @@
 <!ENTITY deleteColumn.label "Διαγραφή">
 
 <!-- Thread Pane Tooltips -->
-<!ENTITY columnChooser2.tooltip "Επιλογή στηλών για προβολή">
+<!ENTITY columnChooser2.tooltip "Επιλέξτε στήλες προς εμφάνιση">
 <!ENTITY selectColumn.tooltip "Εναλλαγή επιλογής όλων των μηνυμάτων">
 <!ENTITY threadColumn2.tooltip "Προβολή νημάτων μηνυμάτων">
 <!ENTITY fromColumn2.tooltip "Ταξινόμηση κατά αποστολέα">

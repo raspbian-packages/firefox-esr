@@ -35,6 +35,8 @@ detail-version =
     .label = Različica
 detail-last-updated =
     .label = Nazadnje posodobljeno
+addon-detail-description-expand = Prikaži več
+addon-detail-description-collapse = Prikaži manj
 detail-contributions-description = Razvijalec tega dodatka vas vabi, da podprete nadaljnji razvoj s skromnim prispevkom.
 detail-contributions-button = Prispevajte
     .title = Prispevajte k razvoju tega dodatka
@@ -134,6 +136,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Nedavne posodobitve
 addon-category-recent-updates-title =
     .title = Nedavne posodobitve
+addon-category-sitepermission = Dovoljenja strani
+addon-category-sitepermission-title =
+    .title = Dovoljenja strani
 
 ## These are global warnings
 
@@ -284,6 +289,7 @@ extension-enabled-heading = Omogočeno
 extension-disabled-heading = Onemogočeno
 theme-enabled-heading = Omogočeno
 theme-disabled-heading = Onemogočeno
+theme-disabled-heading2 = Shranjene teme
 theme-monochromatic-heading = Barvne kombinacije
 theme-monochromatic-subheading = Živahne nove barvne kombinacije za { -brand-product-name }. Le še kratek čas.
 plugin-enabled-heading = Omogočeno
@@ -292,6 +298,8 @@ dictionary-enabled-heading = Omogočeno
 dictionary-disabled-heading = Onemogočeno
 locale-enabled-heading = Omogočeno
 locale-disabled-heading = Onemogočeno
+sitepermission-enabled-heading = Omogočeno
+sitepermission-disabled-heading = Onemogočeno
 always-activate-button = Vedno omogoči
 never-activate-button = Nikoli ne omogoči
 addon-detail-author-label = Avtor
@@ -370,6 +378,7 @@ addon-permissions-optional = Izbirna dovoljenja za dodatno delovanje:
 addon-permissions-learnmore = Več o dovoljenjih
 recommended-extensions-heading = Priporočene razširitve
 recommended-themes-heading = Priporočene teme
+addon-sitepermissions-required = Spletnemu mestu <span data-l10n-name="hostname">{ $hostname }</span> daje naslednje zmožnosti:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Ste ustvarjalno razpoloženi? <a data-l10n-name="link">Ustvarite lastno temo s Firefox Colorjem.</a>
@@ -382,6 +391,7 @@ plugin-heading = Upravljanje vtičnikov
 dictionary-heading = Upravljanje slovarjev
 locale-heading = Upravljanje jezikov
 updates-heading = Upravljanje posodobitev
+sitepermission-heading = Upravljaj dovoljenja strani
 discover-heading = Prilagodite svoj { -brand-short-name }
 shortcuts-heading = Upravljanje bližnjic razširitev
 default-heading-search-label = Poišči več dodatkov
@@ -389,3 +399,20 @@ addons-heading-search-input =
     .placeholder = Iskanje po addons.mozilla.org
 addon-page-options-button =
     .title = Orodja za vse dodatke
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = Dodatek { $name } ni združljiv z brskalnikom { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = { $name } ni bilo mogoče potrditi za uporabo v { -brand-short-name }u, zato je onemogočen.
+details-notification-unsigned-and-disabled-link = Več informacij
+details-notification-unsigned = { $name } ni bilo mogoče potrditi za uporabo v { -brand-short-name }u. Bodite pazljivi.
+details-notification-unsigned-link = Več informacij
+details-notification-blocked = Dodatek { $name } je onemogočen zaradi večje varnosti in zanesljivosti.
+details-notification-blocked-link = Več informacij
+details-notification-softblocked = Dodatek { $name } lahko ogroža varno in zanesljivo delovanje.
+details-notification-softblocked-link = Več informacij
+details-notification-gmp-pending = { $name } bo kmalu nameščen.

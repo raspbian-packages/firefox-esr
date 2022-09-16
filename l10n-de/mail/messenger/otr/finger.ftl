@@ -2,9 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-otr-finger =
-    .buttonlabelaccept = Schließen
-    .title = Zuletzt gesehene OTR-Fingerabdrücke
+otr-finger-title = Bereits gesehene Fingerabdrücke von OTR-Schlüsseln
 
 finger-intro = Fingerabdrücke von OTR-Schlüsseln, welche für die letzten Ende-zu-Ende-Verschlüsselungen verwendet wurden.
 

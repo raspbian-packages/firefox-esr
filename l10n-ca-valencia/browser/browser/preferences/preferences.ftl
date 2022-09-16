@@ -87,26 +87,6 @@ restart-later = Reinicia més tard
 ## Variables:
 ##   $name (String): name of the extension
 
-# This string is shown to notify the user that the password manager setting
-# is being controlled by an extension
-extension-controlled-password-saving = Una extensió, <img data-l10n-name="icon"/> { $name }, controla este paràmetre.
-
-# This string is shown to notify the user that their notifications permission
-# is being controlled by an extension.
-extension-controlled-web-notifications = Una extensió, <img data-l10n-name="icon"/> { $name }, controla este paràmetre.
-
-# This string is shown to notify the user that Container Tabs
-# are being enabled by an extension.
-extension-controlled-privacy-containers = L'extensió «<img data-l10n-name="icon"/> { $name }» requereix pestanyes de contenidor.
-
-# This string is shown to notify the user that their content blocking "All Detected Trackers"
-# preferences are being controlled by an extension.
-extension-controlled-websites-content-blocking-all-trackers = Una extensió,  <img data-l10n-name="icon"/> { $name }, està controlant este paràmetre.
-
-# This string is shown to notify the user that their proxy configuration preferences
-# are being controlled by an extension.
-extension-controlled-proxy-config = L'extensió «<img data-l10n-name="icon"/> { $name }» controla la forma com el { -brand-short-name } es connecta a Internet.
-
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -138,8 +118,8 @@ set-as-my-default-browser =
     .label = Fes que siga el navegador per defecte…
     .accesskey = d
 
-startup-restore-previous-session =
-    .label = Restaura la sessió anterior
+startup-restore-windows-and-tabs =
+    .label = Obri les finestres i pestanyes anteriors
     .accesskey = s
 
 startup-restore-warn-on-quit =
@@ -158,13 +138,26 @@ open-new-link-as-tabs =
     .label = Obri els enllaços en pestanyes en lloc de finestres noves
     .accesskey = t
 
-warn-on-close-multiple-tabs =
-    .label = Avisa en tancar diverses pestanyes
-    .accesskey = d
+confirm-on-close-multiple-tabs =
+    .label = Confirma abans de tancar diverses pestanyes de colp
+    .accesskey = m
+
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (String) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+confirm-on-quit-with-key =
+    .label = Confirma abans d'eixir amb { $quitKey }
+    .accesskey = b
 
 warn-on-open-many-tabs =
     .label = Avisa quan el fet d'obrir moltes pestanyes puga alentir el { -brand-short-name }
     .accesskey = o
+
+switch-to-new-tabs =
+    .label = En obrir un enllaç, una imatge o un fitxer multimèdia en una pestanya nova, vés-hi immediatament
+    .accesskey = h
 
 show-tabs-in-taskbar =
     .label = Mostra les previsualitzacions de les pestanyes a la barra de tasques del Windows
@@ -207,12 +200,9 @@ containers-remove-alert-msg =
 containers-remove-ok-button = Elimina este contenidor
 containers-remove-cancel-button = No eliminis este contenidor
 
-
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Llengua i aparença
-
-fonts-and-colors-header = Tipus de lletra i colors
 
 default-font = Tipus de lletra per defecte
     .accesskey = d
@@ -222,10 +212,6 @@ default-font-size = Mida:
 advanced-fonts =
     .label = Avançat…
     .accesskey = v
-
-colors-settings =
-    .label = Colors…
-    .accesskey = C
 
 # Zoom is a noun, and the message is used as header for a group of options
 preferences-zoom-header = Zoom
@@ -259,6 +245,8 @@ translate-web-pages =
     .label = Tradueix el contingut web
     .accesskey = T
 
+fx-translate-web-pages = { -translations-brand-name }
+
 # The <img> element is replaced by the logo of the provider
 # used to provide machine translations for web pages.
 translate-attribution = Traducció feta per <img data-l10n-name="logo"/>
@@ -284,6 +272,9 @@ download-header = Baixades
 
 download-save-to =
     .label = Guarda els fitxers a
+    .accesskey = s
+
+download-save-where = Guarda els fitxers a
     .accesskey = s
 
 download-choose-folder =
@@ -596,12 +587,6 @@ home-prefs-content-description = Trieu el contingut que voleu a la pantalla d'in
 
 home-prefs-search-header =
     .label = Cerca web
-home-prefs-topsites-header =
-    .label = Llocs principals
-home-prefs-topsites-description = Els llocs que visiteu més sovint
-
-home-prefs-topsites-by-option-sponsored =
-    .label = Llocs principals patrocinats
 home-prefs-shortcuts-header =
     .label = Dreceres
 home-prefs-shortcuts-description = Llocs que guardeu o visiteu
@@ -613,7 +598,6 @@ home-prefs-shortcuts-by-option-sponsored =
 
 home-prefs-recommended-by-header =
     .label = Recomanat per { $provider }
-home-prefs-recommended-by-description-update = Contingut excepcional d'arreu del web, seleccionat per { $provider }
 home-prefs-recommended-by-description-new = Contingut excepcional seleccionat per { $provider }, part de la família de { -brand-product-name }
 
 ##
@@ -622,9 +606,6 @@ home-prefs-recommended-by-learn-more = Com funciona
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Articles patrocinats
 
-home-prefs-highlights-header =
-    .label = Destacats
-home-prefs-highlights-description = Una selecció dels llocs que heu guardat o visitat
 home-prefs-highlights-option-visited-pages =
     .label = Pàgines visitades
 home-prefs-highlights-options-bookmarks =
@@ -644,7 +625,6 @@ home-prefs-recent-activity-description = Una selecció de continguts i llocs rec
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Retalls
-home-prefs-snippets-description = Actualitzacions de { -vendor-short-name } i del { -brand-product-name }
 
 home-prefs-snippets-description-new = Consells i novetats de { -vendor-short-name } i del { -brand-product-name }
 
@@ -712,7 +692,6 @@ search-restore-default =
 search-remove-engine =
     .label = Elimina
     .accesskey = E
-
 search-add-engine =
     .label = Afig
     .accesskey = A
@@ -749,7 +728,6 @@ containers-remove-button =
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = El vostre web a tot arreu
-
 sync-signedout-description2 = Sincronitzeu les vostres adreces d'interés, historial, pestanyes, contrasenyes, complements i paràmetres en tots els vostres dispositius.
 
 sync-signedout-account-signin3 =
@@ -821,7 +799,6 @@ sync-currently-syncing-logins-passwords = Inicis de sessió i contrasenyes
 sync-currently-syncing-addresses = Adreces
 sync-currently-syncing-creditcards = Targetes de crèdit
 sync-currently-syncing-addons = Complements
-
 sync-currently-syncing-settings = Paràmetres
 
 sync-change-options =
@@ -936,7 +913,6 @@ forms-primary-pw-learn-more-link = Més informació
 forms-master-pw-change =
     .label = Canvia la contrasenya mestra…
     .accesskey = m
-
 forms-primary-pw-change =
     .label = Canvia la contrasenya principal…
     .accesskey = p
@@ -947,6 +923,10 @@ forms-primary-pw-former-name = Anteriorment anomenada «Contrasenya mestra»
 
 forms-primary-pw-fips-title = Vos trobeu en mode FIPS. El FIPS requereix una contrasenya principal que no siga buida.
 forms-master-pw-fips-desc = El canvi de contrasenya ha fallat
+forms-windows-sso =
+    .label = Permet l'inici de sessió únic del Windows per a comptes laborals i acadèmics de Microsoft
+forms-windows-sso-learn-more-link = Més informació
+forms-windows-sso-desc = Gestioneu els comptes en els paràmetres del dispositiu
 
 ## OS Authentication dialog
 
@@ -1044,14 +1024,6 @@ sitedata-block-desc = Tipus de contingut blocat
 
 sitedata-option-block-cross-site-trackers =
     .label = Elements de seguiment entre llocs
-sitedata-option-block-cross-site-and-social-media-trackers =
-    .label = Elements de seguiment de xarxes socials i entre llocs
-sitedata-option-block-cross-site-tracking-cookies-including-social-media =
-    .label = Galetes de seguiment entre llocs (inclou les galetes de xarxes socials)
-sitedata-option-block-cross-site-cookies-including-social-media =
-    .label = Galetes entre llocs (inclou les galetes de xarxes socials)
-sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
-    .label = Elements de seguiment de xarxes socials i entre llocs, i aïlla les galetes restants
 sitedata-option-block-unvisited =
     .label = Galetes de llocs web no visitats
 sitedata-option-block-all-third-party =
@@ -1093,7 +1065,6 @@ addressbar-locbar-shortcuts-option =
 addressbar-locbar-topsites-option =
     .label = Llocs principals
     .accesskey = L
-
 addressbar-locbar-engines-option =
     .label = Motors de cerca
     .accesskey = M
@@ -1129,9 +1100,12 @@ enhanced-tracking-protection-setting-custom =
 content-blocking-etp-standard-desc = Equilibri entre protecció i rendiment. Les pàgines es carregaran amb normalitat.
 content-blocking-etp-strict-desc = Més protecció, però pot fer que alguns llocs o algun contingut no funcionen correctament.
 content-blocking-etp-custom-desc = Trieu quins elements de seguiment i scripts cal blocar.
+content-blocking-etp-blocking-desc = El { -brand-short-name } bloca el següent:
 
 content-blocking-private-windows = Contingut que fa seguiment en finestres privades
+content-blocking-cross-site-cookies-in-all-windows = Galetes entre llocs en totes les finestres (inclou galetes de seguiment)
 content-blocking-cross-site-tracking-cookies = Galetes de seguiment entre llocs
+content-blocking-all-cross-site-cookies-private-windows = Galetes entre llocs en finestres privades
 content-blocking-cross-site-tracking-cookies-plus-isolate = Galetes de seguiment entre llocs, i aïlla les galetes restants
 content-blocking-social-media-trackers = Elements de seguiment de xarxes socials
 content-blocking-all-cookies = Totes les galetes
@@ -1141,8 +1115,17 @@ content-blocking-all-third-party-cookies = Totes les galetes de tercers
 content-blocking-cryptominers = Miners de criptomonedes
 content-blocking-fingerprinters = Generadors d'empremtes digitals
 
+# "Test pilot" is used as a verb. Possible alternatives:
+# "Be the first to try", "Join an early experiment".
+content-blocking-etp-standard-tcp-rollout-checkbox =
+    .label = Sigueu dels primers de provar les funcions de privadesa més potents que existeixen
+    .accesskey = S
+
+# "Contains" here means "isolates", "limits".
+content-blocking-etp-standard-tcp-rollout-description = La protecció total de galetes aïlla les galetes del lloc on vos trobeu, de manera que els elements de seguiment no les poden utilitzar per a seguir-vos d'un lloc a l'altre,
+content-blocking-etp-standard-tcp-rollout-learn-more = Més informació
+
 content-blocking-warning-title = Atenció!
-content-blocking-and-isolating-etp-warning-description = El bloqueig d'elements de seguiment i l'aïllament de galetes pot afectar la funcionalitat d'alguns llocs. Torneu a carregar la pàgina amb els elements de seguiment per carregar-ne tot el contingut.
 content-blocking-and-isolating-etp-warning-description-2 = Este paràmetre pot fer que alguns llocs web no mostren part del contingut o que no funcionen correctament. Si pareix que un lloc no funciona bé, podeu provar de desactivar la protecció contra el seguiment perquè este lloc carregue tot el contingut.
 content-blocking-warning-learn-how = Vegeu com fer-ho
 
@@ -1230,9 +1213,12 @@ permissions-block-popups =
     .label = Bloca les finestres emergents
     .accesskey = B
 
-permissions-block-popups-exceptions =
+# "popup" is a misspelling that is more popular than the correct spelling of
+# "pop-up" so it's included as a search keyword, not displayed in the UI.
+permissions-block-popups-exceptions-button =
     .label = Excepcions…
     .accesskey = E
+    .searchkeywords = finestres emergents
 
 permissions-addon-install-warning =
     .label = Avisa quan els llocs web intenten instal·lar complements
@@ -1268,6 +1254,9 @@ addon-recommendations-link = Més informació
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = L'informe de dades està desactivat en la configuració d'esta versió
+
+collection-backlogged-crash-reports-with-link = Permet que el { -brand-short-name } envie els informes de fallada pendents automàticament <a data-l10n-name="crash-reports-link">Més informació</a>
+    .accesskey = f
 
 ## Privacy Section - Security
 ##

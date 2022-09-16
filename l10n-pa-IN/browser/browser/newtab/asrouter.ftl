@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = ਸਿਫ਼ਾਰਸ਼ੀ ਫੀਚਰ
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = ਮੈਨੂੰ ਇਹ ਕਿਉਂ ਦਿਖਾਈ ਦੇ ਰਿਹਾ ਹੈ
+
 cfr-doorhanger-extension-cancel-button = ਹੁਣ ਨਹੀਂ
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = ਹੁਣੇ ਜੋੜੋ
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = ਸਿਫਾਰਸ਼ੀ ਸੈਟਿੰਗਾਂ ਦਾ ਬੰਦੋਬਸਤ ਕਰੋ
     .accesskey = M
+
 cfr-doorhanger-extension-never-show-recommendation = ਇਹ ਸਿਫਾਰਸ਼ ਮੈਨੂੰ ਨਾ ਦਿਖਾਓ
     .accesskey = S
+
 cfr-doorhanger-extension-learn-more-link = ਹੋਰ ਸਿੱਖੋ
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = { $name } ਰਾਹੀਂ
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = ਸਿਫ਼ਾਰਸ਼ੀ
 cfr-doorhanger-extension-notification2 = ਸਿਫਾਰਸ਼ੀ
     .tooltiptext = ਇਕਸਟੈਨਸ਼ਨ ਸਿਫਾਰਸ਼ਾਂ
     .a11y-announcement = ਇਕਸਟੈਨਸ਼ਨ ਸਿਫਾਰਸ਼ਾਂ ਮੌਜੂਦ ਹਨ
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = ਸਿਫਾਰਸ਼ੀ
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = ਹੋਰ ਜਾਣੋ
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = ਨਵਾਂ ਫੀਚਰ
+
 cfr-whatsnew-button =
     .label = ਨਵਾਂ ਕੀ ਹੈ
     .tooltiptext = ਨਵਾਂ ਕੀ ਹੈ
+
 cfr-whatsnew-release-notes-link-text = ਰੀਲਿਜ਼ ਨੋਟਿਸ ਪੜ੍ਹੋ
 
 ## Enhanced Tracking Protection Milestones
@@ -151,5 +161,21 @@ spotlight-public-wifi-vpn-link = ਹੁਣੇ ਨਹੀਂ
 # "Join an early experiment". This header text can be explicitly wrapped.
 spotlight-total-cookie-protection-header = ਸਾਡੇ ਸਭ ਤੋਂ ਜ਼ਬਰਦਸਤ ਪਰਦੇਦਾਰੀ ਤਜਰਬੇ ਨੂੰ ਵਰਤ ਕੇ ਵੇਖੋ
 spotlight-total-cookie-protection-body = ਪੂਰੀ ਕੂਕੀਜ਼ ਸੁਰੱਖਿਆ ਟਰੈਕਾਂ ਨੂੰ ਕੂਕੀਜ਼ ਵਰਤ ਕੇ ਵੈੱਬ ਨੂੰ ਤੁਹਾਡਾ ਪਿੱਛਾ ਕਰਨ ਤੋਂ ਰੋਕਦੀ ਹੈ।
+# "Early access" for this feature rollout means it's a "feature preview" or
+# "soft launch" as not everybody will get it yet.
+spotlight-total-cookie-protection-expanded = { -brand-short-name } ਕੂਕੀਜ਼ ਦੇ ਦੁਆਲੇ ਵਾੜ ਲਾ ਦਿੰਦਾ ਹੈ, ਜਿਸ ਨਾਲ ਉਹ ਤੁਹਾਡੇ ਵਲੋਂ ਖੋਲ੍ਹੀ ਸਾਈਟ ਤੱਕ ਹੀ ਸੀਮਿਤ ਰਹਿ ਜਾਂਦੇ ਹਨ, ਇਸਕਰਕੇ ਟਰੈਕਰ ਉਹਨਾਂ ਨੂੰ ਤੁਹਾਡਾ ਪਿੱਛਾ ਕਰਨ ਲਈ ਨਹੀਂ ਵਰਤ ਸਕਦੇ ਹਨ। ਇਹ ਪਹਿਲਾਂ ਦੀ ਪਹੁੰਚ ਨਾਲ ਤੁਸੀਂ ਇਹ ਫ਼ੀਚਰ ਨੂੰ ਸੰਵਾਰਨ ਲਈ ਮਦਦ ਸਕਦੇ ਹੋ ਤਾ ਕਿ ਅਸੀਂ ਹਰ ਕਿਸੇ ਲਈ ਵੈੱਬ ਨੂੰ ਹੋਰ ਵੀ ਵਧੀਆ ਬਣਾ ਸਕੀੇਏ।
 spotlight-total-cookie-protection-primary-button = ਪੂਰੀ ਕੂਕੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਕਰੋ
 spotlight-total-cookie-protection-secondary-button = ਹੁਣੇ ਨਹੀਂ
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = ਵਧੀਆ ਇੰਟਰਨੈੱਟ ਤੁਹਾਡੇ ਤੋਂ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ
+spotlight-better-internet-body = ਜਦੋਂ ਤੁਸੀਂ { -brand-short-name } ਵਰਤਦੇ ਹੋ ਤਾਂ ਤੁਸੀਂ ਹਰ ਕਿਸੇ ਲਈ ਆਜ਼ਾਦ ਤੇ ਪਹੁੰਚ ਵਿੱਚ ਇੰਟਰਨੈੱਟ ਦੇ ਹੱਕ 'ਚ ਖੜ੍ਹਦੇ ਹੋ।
+spotlight-peace-mind-header = ਅਸੀਂ ਤੁਹਾਡੇ ਲਈ ਢਾਲ ਬਣ ਕੇ ਖੜ੍ਹੇ ਹਾਂ
+spotlight-peace-mind-body = ਹਰ ਮਹੀਨੇ { -brand-short-name } ਹਰ ਵਰਤੋਂਕਾਰ ਲਈ ਔਸਤਨ 3,000 ਟਰੈਕਰਾਂ ਉੱਤੇ ਰੋਕ ਲਾਉਂਦਾ ਹੈ। ਬਿਨਾਂ ਕਿਸੇ ਕਾਰਨ ਕਰਕੇ ਟਰੈਕਰਾਂ ਵਰਗੀਆਂ ਪਰਦੇਦਾਰੀਆਂ ਲਈ ਰੁਕਾਵਟਾਂ ਤੁਹਾਡੇ ਤੇ ਵਧੀਆ ਇੰਟਰਨੈੱਟ ਦੇ ਰਾਹ 'ਚ ਚੋੜ੍ਹਾ ਬਣਦੀਆਂ ਹਨ।
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] ਡੌਕ ਵਿੱਚ ਰੱਖੋ
+       *[other] ਟਾਸਕ-ਬਾਰ ਵਿੱਚ ਟੰਗੋ
+    }
+spotlight-pin-secondary-button = ਹੁਣੇ ਨਹੀਂ

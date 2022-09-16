@@ -5,8 +5,6 @@
 
 about-logins-page-title = 로그인과 비밀번호
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = 로그인 검색
 
@@ -39,7 +37,7 @@ login-list =
     .aria-label = 검색어와 일치하는 로그인
 login-list-count =
     { $count ->
-       *[other] { $count }회 로그인
+       *[other] 로그인 { $count }개
     }
 login-list-sort-label-text = 정렬 기준:
 login-list-name-option = 이름 (A-Z)
@@ -60,7 +58,6 @@ about-logins-list-item-breach-icon =
     .title = 유출된 웹 사이트
 about-logins-list-item-vulnerable-password-icon =
     .title = 취약한 비밀번호
-
 about-logins-list-section-breach = 유출된 웹 사이트
 about-logins-list-section-vulnerable = 취약한 비밀번호
 about-logins-list-section-nothing = 알림 없음
@@ -75,8 +72,8 @@ about-logins-login-intro-heading-logged-in = 동기화된 로그인을 찾을 �
 login-intro-description = 다른 기기에 { -brand-product-name }의 로그인을 저장한 경우, 다음 방법을 참조하세요:
 login-intro-instructions-fxa = 로그인이 저장된 기기에서 { -fxaccount-brand-name }을 만들거나 로그인하세요.
 login-intro-instructions-fxa-settings = 설정> Sync> 동기화 켜기…로 이동해서, 로그인 및 비밀번호 확인란을 선택하세요.
-login-intro-instructions-fxa-help = 더 많은 도움이 필요하면 <a data-l10n-name="help-link">{ -lockwise-brand-short-name } 지원</a>을 방문하세요.
-about-logins-intro-import = 로그인이 다른 브라우저에 저장된 경우, <a data-l10n-name="import-link">{ -lockwise-brand-short-name }로 가져올 수 있습니다</a>
+login-intro-instructions-fxa-passwords-help = 더 많은 도움이 필요하면 <a data-l10n-name="passwords-help-link">비밀번호 지원</a>을 방문하세요.
+about-logins-intro-browser-only-import = 로그인이 다른 브라우저에 저장된 경우, <a data-l10n-name="import-link">{ -brand-product-name }로 가져올 수 있습니다</a>
 about-logins-intro-import2 = 로그인이 { -brand-product-name }의 외부에 저장된 경우, <a data-l10n-name="import-browser-link">다른 브라우저</a> 또는 <a data-l10n-name="import-file-link">파일</a>에서 가져올 수 있습니다
 
 ## Login
@@ -131,8 +128,6 @@ about-logins-copy-password-os-auth-dialog-message-win = 비밀번호를 복사�
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = 저장된 비밀번호 복사
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = 로그인을 내보내려면, Windows 로그인 자격 증명을 입력하세요. 이는 계정의 보안을 보호하는데 도움이 됩니다.
 # This message can be seen when attempting to export a password in about:logins
@@ -145,8 +140,6 @@ about-logins-primary-password-notification-message = 저장된 로그인과 비�
 master-password-reload-button =
     .label = 로그인
     .accesskey = L
-
-## Password Sync notification
 
 ## Dialogs
 

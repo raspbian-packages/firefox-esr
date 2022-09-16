@@ -53,8 +53,11 @@ account-setup-password-label = Adgangskode
 account-provisioner-button = Få en ny mailadresse
     .accesskey = F
 
-account-setup-password-toggle =
-    .title = Vis/skjul adgangskode
+account-setup-password-toggle-show =
+    .title = Vis adgangskode i klartekst
+
+account-setup-password-toggle-hide =
+    .title = Skjul adgangskode
 
 account-setup-remember-password = Husk adgangskode
     .accesskey = H
@@ -176,18 +179,9 @@ account-setup-results-area-title =
        *[other] Tilgængelige konfigurationer
     }
 
-# Note: IMAP is the name of a protocol.
-account-setup-result-imap = IMAP
-
 account-setup-result-imap-description = Hold dine mapper og meddelelser synkroniseret på din server
 
-# Note: POP3 is the name of a protocol.
-account-setup-result-pop = POP3
-
 account-setup-result-pop-description = Hold dine mapper og meddelelser på din computer
-
-# Note: Exchange is the name of a product.
-account-setup-result-exchange = Exchange
 
 # Note: Exchange, Office365 are the name of products.
 account-setup-result-exchange2-description = Brug Microsoft Exchange-serveren eller Office365-cloudtjenester
@@ -199,8 +193,6 @@ account-setup-outgoing-title = Udgående
 account-setup-username-title = Brugernavn
 
 account-setup-exchange-title = Server
-
-account-setup-result-smtp = SMTP
 
 account-setup-result-no-encryption = Ingen kryptering
 
@@ -226,6 +218,8 @@ account-setup-find-settings-failed = { -brand-short-name } kunne ikke finde inds
 
 account-setup-exchange-config-unverifiable = Konfigurationen kunne ikke bekræftes. Hvis brugernavn og adgangskode er indtastet korrekt, skyldes det sandsynligvis, at serveradministratoren har deaktiveret den valgte indstilling for din konto. Prøv at vælge en anden protokol.
 
+account-setup-provisioner-error = Der opstod en fejl under opsætningen af din nye konto i { -brand-short-name }. Prøv at opsætte din konto manuelt med dine log in-oplysninger.
+
 ## Manual configuration area
 
 account-setup-manual-config-title = Serverindstillinger
@@ -233,12 +227,6 @@ account-setup-manual-config-title = Serverindstillinger
 account-setup-incoming-server-legend = Indgående server
 
 account-setup-protocol-label = Protokol:
-
-protocol-imap-option = { account-setup-result-imap }
-
-protocol-pop-option = { account-setup-result-pop }
-
-protocol-exchange-option = { account-setup-result-exchange }
 
 account-setup-hostname-label = Værtsnavn:
 
@@ -308,6 +296,19 @@ exchange-dialog-confirm-button = Login
 exchange-dialog-cancel-button = Annuller
 
 ## Dismiss account creation dialog
+
+exit-dialog-title = Ingen mailkonto konfigureret
+
+exit-dialog-description = Er du sikker på, at du vil annullere opsætningen? { -brand-short-name } kan stadig bruges uden en mailkonto, men mange funktioner vil ikke være tilgængelige.
+
+account-setup-no-account-checkbox = Brug { -brand-short-name } uden en mailkonto
+    .accesskey = B
+
+exit-dialog-cancel-button = Fortsæt opsætningen
+    .accesskey = F
+
+exit-dialog-confirm-button = Afslut opsætningen
+    .accesskey = A
 
 ## Alert dialogs
 

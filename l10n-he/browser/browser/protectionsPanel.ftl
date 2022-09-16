@@ -37,6 +37,7 @@ protections-panel-site-not-working-view =
 ## a tooltip explaining why these items were not blocked in the page.
 
 protections-panel-not-blocking-why-label = למה?
+protections-panel-not-blocking-why-etp-on-tooltip = חסימת רכיבים אלו עלולה לשבור אלמנטים באתרים מסוימים. ללא רכיבי מעקב, ייתכן שחלק מהכפתורים, הטפסים ושדות ההתחברות לא יפעלו.
 protections-panel-not-blocking-why-etp-off-tooltip = כל רכיבי המעקב באתר זה נטענו מכיוון שההגנות כבויות.
 
 ##
@@ -62,7 +63,6 @@ protections-panel-not-found-label = לא אותרו
 ##
 
 protections-panel-settings-label = הגדרות הגנה
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = לוח הגנות
 
 ## In the Site Not Working? view, we suggest turning off protections if

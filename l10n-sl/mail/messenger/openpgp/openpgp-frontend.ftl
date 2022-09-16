@@ -47,3 +47,4 @@ openpgp-partially-encrypted =
 openpgp-reminder-partial-display = Opomnik: Spodaj prikazano sporočilo je le del izvirnega sporočila.
 openpgp-partial-verify-button = Preveri
 openpgp-partial-decrypt-button = Dešifriraj
+openpgp-unexpected-key-for-you = Opozorilo: To sporočilo vsebuje neznan ključ OpenPGP, ki se nanaša na enega od vaših e-poštnih naslovov. Če to ni eden od vaših lastnih ključev, je lahko poskus prevare drugih dopisnikov.

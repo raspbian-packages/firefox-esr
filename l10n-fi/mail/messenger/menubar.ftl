@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Valikkopalkki
+    .accesskey = V
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Asetukset
-    .accesskey = A
 menu-tools-settings =
     .label = Asetukset
     .accesskey = A
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Fonttikoko
+    .accesskey = o
+menuitem-font-size-enlarge =
+    .label = Suurenna fonttikokoa
+    .accesskey = u
+menuitem-font-size-reduce =
+    .label = Pienennä fonttikokoa
+    .accesskey = i
+menuitem-font-size-reset =
+    .label = Palauta fonttikoko
+    .accesskey = l
 mail-uidensity-label =
     .label = Tiheys
     .accesskey = h

@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
-carddav-window =
-    .title = 新增 CardDAV 通訊錄
+carddav-window-title = 新增 CardDAV 通訊錄
 
 carddav-dialog =
     .buttonlabelaccept = 繼續
@@ -12,7 +11,6 @@ carddav-dialog =
 carddav-username-label =
     .value = 使用者名稱:
     .accesskey = U
-
 carddav-location-label =
     .value = 位置:
     .accesskey = L

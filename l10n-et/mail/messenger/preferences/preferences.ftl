@@ -2,9 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
 close-button =
     .aria-label = Sulge
+
+preferences-doc-title2 = Sätted
+
+category-list =
+    .aria-label = Kategooriad
 
 pane-general-title = Üldine
 category-general =
@@ -58,6 +62,28 @@ privacy-passwords-header = Paroolid
 
 privacy-junk-header = Rämpspost
 
+collection-header = { -brand-short-name }i andmete kogumine ja kasutamine
+
+collection-description = Me pingutame, et pakkuda sulle erinevaid valikuvõimalusi, ja kogume ainult neid andmeid, mis aitavad meil { -brand-short-name }i paremaks muuta kõigi jaoks. Isiklike andmete puhul küsime me alati enne saatmist luba.
+collection-privacy-notice = Privaatsusreeglid
+
+collection-health-report-telemetry-disabled = Sa ei luba enam { -vendor-short-name }il koguda tehnilisi andmeid. Kõik varasemad andmed kustutatakse 30 päeva jooksul.
+collection-health-report-telemetry-disabled-link = Rohkem teavet
+
+collection-health-report =
+    .label = { -brand-short-name }il lubatakse automaatselt saata tehnilisi andmeid { -vendor-short-name }le
+    .accesskey = l
+collection-health-report-link = Rohkem teavet
+
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled = Selle kompileerimise konfiguratsiooniga on andmete raporteerimine keelatud
+
+collection-backlogged-crash-reports =
+    .label = { -brand-short-name }il lubatakse saatmata vearaporteid saata
+    .accesskey = s
+collection-backlogged-crash-reports-link = Rohkem teavet
+
 privacy-security-header = Turvalisus
 
 privacy-scam-detection-title = Kelmuse tuvastamine
@@ -101,8 +127,22 @@ update-in-progress-ok-button = &Loobu
 # method of closing the UI will not discard the update.
 update-in-progress-cancel-button = &Jätka
 
+account-button = Kontode sätted
+open-addons-sidebar-button = Lisad ja teemad
+
 ## OS Authentication dialog
 
+# This message can be seen by trying to add a Primary Password.
+primary-password-os-auth-dialog-message-win = Ülemparooli loomiseks sisesta Windowsi sisselogimisandmed. See aitab kaitsta sinu kontode turvalisust.
+
+# This message can be seen by trying to add a Primary Password.
+# The macOS strings are preceded by the operating system with "Thunderbird is trying to "
+# and includes subtitle of "Enter password for the user "xxx" to allow this." These
+# notes are only valid for English. Please test in your locale.
+primary-password-os-auth-dialog-message-macosx = create a Primary Password
+
+# Don't change this label.
+master-password-os-auth-dialog-caption = { -brand-full-name }
 
 ## General Tab
 
@@ -125,12 +165,22 @@ restore-default-label =
     .accesskey = T
 
 default-search-engine = Vaikeotsingumootor
-add-search-engine =
-    .label = Lisa failist
-    .accesskey = f
+add-web-search-engine =
+    .label = Lisa…
+    .accesskey = L
 remove-search-engine =
     .label = Eemalda
     .accesskey = E
+
+add-opensearch-provider-title = Lisa OpenSearchi teenusepakkuja
+add-opensearch-provider-text = Sisesta lisatava OpenSearchi teenusepakkuja URL. Kasuta kas otsest kirjeldusfaili URLi või automaatselt tuvastamise URLi.
+
+adding-opensearch-provider-failed-title = OpenSearchi teenusepakkuja lisamine ebaõnnestus.
+adding-opensearch-provider-failed-text = OpenSearchi teenusepakkujat URLile { $url } polnud võimalik lisada.
+
+minimize-to-tray-label =
+    .label = { -brand-short-name }i minimeerimisel liigutatakse see salve
+    .accesskey = m
 
 new-message-arrival = Uue kirja saabumisel:
 mail-play-sound-label =
@@ -153,7 +203,7 @@ app-icon-options =
     .label = Rakenduse ikooni sätted…
     .accesskey = n
 
-notification-settings = Teated ja vaikimisi heli saab välja lülitada paneelilt Teavitused süsteemi eelistustes.
+notification-settings2 = Teated ja vaikimisi heli saab välja lülitada paneelilt Teavitused süsteemi sätetest.
 
 animated-alert-label =
     .label = kuvatakse teadet
@@ -162,6 +212,18 @@ customize-alert-label =
     .label = Kohanda...
     .accesskey = K
 
+biff-use-system-alert =
+    .label = Kasutatakse süsteemi teavitust
+
+tray-icon-unread-label =
+    .label = Salves kuvatakse lugemata kirjade ikooni
+    .accesskey = v
+
+tray-icon-unread-description = Soovitatav tegumiriba väikeste nuppude kasutamisel
+
+mail-system-sound-label =
+    .label = süsteemi vaikimisi uue kirja heli
+    .accesskey = t
 mail-custom-sound-label =
     .label = kasutatakse järgnevat helifaili
     .accesskey = e
@@ -196,6 +258,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Kasutatakse sujuvat kerimist
     .accesskey = s
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Kerimisribasid kuvatakse alati
+    .accesskey = K
 
 system-integration-legend = Süsteemi integratsioon
 always-check-default =
@@ -269,6 +334,10 @@ diskspace-legend = Kettaruum
 offline-compact-folder =
     .label = Kõik kaustad surutakse kokku, kui see säästab kokku rohkem kui
     .accesskey = b
+
+offline-compact-folder-automatically =
+    .label = Küsitakse iga kord enne tihendamist
+    .accesskey = g
 
 compact-folder-size =
     .value = MiB
@@ -348,13 +417,12 @@ quoted-text-color =
     .label = Värv:
     .accesskey = V
 
-type-column-label =
-    .label = Sisu tüüp
-    .accesskey = S
+search-handler-table =
+    .placeholder = Filtreeri sisu tüüpe ja tegevusi
 
-action-column-label =
-    .label = Tegevus
-    .accesskey = T
+type-column-header = Sisu tüüp
+
+action-column-header = Tegevus
 
 save-to-label =
     .label = Failid salvestatakse asukohta
@@ -467,6 +535,10 @@ warn-on-send-accel-key =
     .label = Küsitakse kinnitust, kui kiri saadetakse klahvide kiirkombinatsiooni abil
     .accesskey = t
 
+add-link-previews =
+    .label = URLide asetamisel lisatakse linkide eelvaated
+    .accesskey = U
+
 spellcheck-label =
     .label = Enne saatmist kontrollitakse õigekirja
     .accesskey = E
@@ -509,11 +581,27 @@ default-format-label =
     .label = Vaikimisi kasututatakse lõiguvormingut
     .accesskey = e
 
-format-description = Muuda saadetavate kirjade teksti vormingut
+compose-send-format-title = Saatmise formaat
 
-send-options-label =
-    .label = Saatmise valikud...
-    .accesskey = S
+compose-send-automatic-option =
+    .label = Automaatne
+
+compose-send-automatic-description = Kui kirjas pole kasutatud stiile, siis saadetakse lihttekstina. Vastasel juhul saadetakse HTMLina, mille tagavaraks on lihttekst.
+
+compose-send-both-option =
+    .label = Nii HTML kui ka lihttekst
+
+compose-send-both-description = Saaja e-posti rakendus määrab kuvatava versiooni.
+
+compose-send-html-option =
+    .label = Ainult HTML
+
+compose-send-html-description = Mõned adressaadid ei pruugi saada kirja lugeda, kui lihtteksti koopia puudub.
+
+compose-send-plain-option =
+    .label = Ainult lihttekst
+
+compose-send-plain-description = Mõned stiilid asendatakse lihtteksti alternatiividega, samas kui teised koostamise funktsionaalsused keelatakse.
 
 autocomplete-description = Kirjade adresseerimisel otsitakse sobivaid vasteid:
 
@@ -569,7 +657,6 @@ find-cloud-providers =
     .value = Leia veel teenusepakkujaid…
 
 cloud-account-description = Lisa uus pilveteenus
-
 
 ## Privacy Tab
 
@@ -634,6 +721,19 @@ passwords-description = { -brand-short-name } võib paroolide infot meeles pidad
 passwords-button =
     .label = Salvestatud paroolid…
     .accesskey = S
+
+primary-password-description = Kui ülemparool on määratud, kaitseb see sinu paroole, kuid sa pead sisestama selle seansi alguses.
+
+primary-password-label =
+    .label = Kasutatakse ülemparooli
+    .accesskey = s
+
+primary-password-button =
+    .label = Muuda ülemparooli…
+    .accesskey = M
+
+forms-primary-pw-fips-title = Sa oled FIPS-režiimis. See eeldab, et sinu ülemparool ei oleks tühi.
+forms-master-pw-fips-desc = Parooli muutmine ebaõnnestus
 
 
 junk-description = Määra oma vaikimisi rämpsposti sätted. Kontopõhiseid rämpsposti sätteid saab häälestada konto sätetes.
@@ -783,8 +883,8 @@ theme-label =
     .value = Teema:
     .accesskey = T
 
-style-thunderbird =
-    .label = Thunderbird
+style-mail =
+    .label = { -brand-short-name }
 style-bubbles =
     .label = Mullid
 style-dark =
@@ -804,3 +904,27 @@ chat-variant-label =
 
 ## Preferences UI Search Results
 
+# This is used to determine the width of the search field in about:preferences,
+# in order to make the entire placeholder string visible
+#
+# Please keep the placeholder string short to avoid truncation.
+#
+# Notice: The value of the `.style` attribute is a CSS string, and the `width`
+# is the name of the CSS property. It is intended only to adjust the element's width.
+# Do not translate.
+search-preferences-input2 =
+    .style = width: 15.4em
+    .placeholder = Otsi sätetest
+
+## Settings UI Search Results
+
+search-results-header = Otsingutulemused
+
+# `<span data-l10n-name="query"></span>` will be replaced by the search term.
+search-results-empty-message2 =
+    { PLATFORM() ->
+        [windows] Vabandust! Sätete seast ei leitud vastet otsingule “<span data-l10n-name="query"></span>”.
+       *[other] Vabandust! Sätete seast ei leitud vastet otsingule “<span data-l10n-name="query"></span>”.
+    }
+
+search-results-help-link = Vajad abi? Külasta lehte <a data-l10n-name="url">{ -brand-short-name }i abi</a>

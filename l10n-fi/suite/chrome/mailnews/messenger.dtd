@@ -313,9 +313,17 @@
 <!ENTITY forwardAsInline.accesskey "V">
 <!ENTITY forwardAsAttachmentCmd.label "Liitteenä">
 <!ENTITY forwardAsAttachmentCmd.accesskey "L">
-<!ENTITY editMsgAsNewCmd.label "Muokkaa viestiä uutena">
-<!ENTITY editMsgAsNewCmd.accesskey "o">
-<!ENTITY editMsgAsNewCmd.key "e">
+<!ENTITY editAsNewMsgCmd.label "Muokkaa uutena viestinä">
+<!ENTITY editAsNewMsgCmd.accesskey "e">
+<!ENTITY editAsNewMsgCmd.key "e">
+<!ENTITY editDraftMsgCmd.label "Muokkaa viestiluonnosta">
+<!ENTITY editDraftMsgCmd.accesskey "l">
+<!ENTITY editTemplateMsgCmd.label "Muokkaa mallia">
+<!ENTITY editTemplateMsgCmd.accesskey "m">
+<!ENTITY newMsgFromTemplateCmd.label "Uusi viesti mallista">
+<!-- LOCALIZATION NOTE (newMsgFromTemplateCmd.keycode):
+     Do not localize VK_RETURN. -->
+<!ENTITY newMsgFromTemplateCmd.keycode "VK_RETURN">
 <!ENTITY createFilter.label "Luo suodatin viestistä…">
 <!ENTITY createFilter.accesskey "d">
 <!ENTITY archiveMsgCmd.label "Siirrä arkistokansioon">
@@ -344,7 +352,7 @@
 <!ENTITY copyHereMenu.accesskey "K">
 <!ENTITY tagMenu.label "Tunnukset">
 <!ENTITY tagMenu.accesskey "T">
-<!ENTITY tagCustomize.label "Muokkaa…">
+<!ENTITY tagCustomize.label "Mukauta…">
 <!ENTITY tagCustomize.accesskey "M">
 <!ENTITY markMenu.label "Merkitse">
 <!ENTITY markMenu.accesskey "M">
@@ -468,8 +476,12 @@
 <!ENTITY contextOpenNewWindow.accesskey "A">
 <!ENTITY contextOpenNewTab.label "Avaa uuteen välilehteen">
 <!ENTITY contextOpenNewTab.accesskey "v">
-<!ENTITY contextEditAsNew.label "Muokkaa uutena…">
-<!ENTITY contextEditAsNew.accesskey "u">
+<!ENTITY contextEditMsgAsNew.label "Muokkaa uutena viestinä">
+<!ENTITY contextEditMsgAsNew.accesskey "e">
+<!ENTITY contextEditDraftMsg.label "Muokkaa viestiluonnosta">
+<!ENTITY contextEditTemplate.label "Muokkaa mallia">
+<!ENTITY contextEditTemplate.accesskey "m">
+<!ENTITY contextNewMsgFromTemplate.label "Uusi viesti mallista">
 <!ENTITY contextReplySender.label "Vastaa lähettäjälle">
 <!ENTITY contextReplySender.accesskey "l">
 <!ENTITY contextReplyList.label "Vastaa listalle">

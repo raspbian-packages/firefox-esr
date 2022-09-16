@@ -166,18 +166,17 @@ main-context-menu-save-link-to-pocket =
     .label = Αποθήκευση συνδέσμου στο { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
 
 main-context-menu-copy-email =
     .label = Αντιγραφή διεύθυνσης email
-    .accesskey = Ε
+    .accesskey = σ
+
+main-context-menu-copy-phone =
+    .label = Αντιγραφή αριθμού τηλεφώνου
+    .accesskey = τ
 
 main-context-menu-copy-link-simple =
     .label = Αντιγραφή συνδέσμου
@@ -254,7 +253,7 @@ main-context-menu-media-video-leave-fullscreen =
 # This is used when right-clicking on a video in the
 # content area when the Picture-in-Picture feature is enabled.
 main-context-menu-media-watch-pip =
-    .label = Προβολή σε εικόνα εντός εικόνας
+    .label = Προβολή σε «Εικόνα εντός εικόνας»
     .accesskey = ο
 
 main-context-menu-image-reload =
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Άνοιγμα συνδέσμου σε νέα καρτέλα «{ $containerName }»
     .accesskey = κ
+
+main-context-menu-reveal-password =
+    .label = Εμφάνιση κωδικού πρόσβασης
+    .accesskey = φ

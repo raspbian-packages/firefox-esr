@@ -35,6 +35,8 @@ detail-version =
     .label = Verzió
 detail-last-updated =
     .label = Utoljára frissítve
+addon-detail-description-expand = Több megjelenítése
+addon-detail-description-collapse = Kevesebb megjelenítése
 detail-contributions-description = A kiegészítő fejlesztője azt kéri, hogy egy csekély összeggel támogassa a további fejlesztést.
 detail-contributions-button = Közreműködés
     .title = Közreműködés ezen kiegészítő fejlesztésében
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Legutóbbi frissítések
 addon-category-recent-updates-title =
     .title = Legutóbbi frissítések
+addon-category-sitepermission = Oldalengedélyek
+addon-category-sitepermission-title =
+    .title = Oldalengedélyek
 
 ## These are global warnings
 
@@ -286,14 +291,18 @@ extension-enabled-heading = Engedélyezve
 extension-disabled-heading = Tiltva
 theme-enabled-heading = Engedélyezve
 theme-disabled-heading = Tiltva
+theme-disabled-heading2 = Mentett témák
 theme-monochromatic-heading = Színvilágok
 theme-monochromatic-subheading = Élénk új színvilágok a { -brand-product-name }tól. Korlátozott ideig elérhető.
+theme-colorways-button = Próbálja ki a színvilágokat
 plugin-enabled-heading = Engedélyezve
 plugin-disabled-heading = Tiltva
 dictionary-enabled-heading = Engedélyezve
 dictionary-disabled-heading = Tiltva
 locale-enabled-heading = Engedélyezve
 locale-disabled-heading = Tiltva
+sitepermission-enabled-heading = Engedélyezve
+sitepermission-disabled-heading = Tiltva
 always-activate-button = Mindig aktiválja
 never-activate-button = Soha ne aktiválja
 addon-detail-author-label = Szerző
@@ -370,6 +379,7 @@ addon-permissions-optional = A további funkciókhoz szükséges engedélyek:
 addon-permissions-learnmore = További tudnivalók az engedélyekről
 recommended-extensions-heading = Ajánlott kiegészítők
 recommended-themes-heading = Ajánlott témák
+addon-sitepermissions-required = A következő lehetőségeket biztosítja a(z) <span data-l10n-name="hostname">{ $hostname }</span> számára:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Kreatívnak érzi magát? <a data-l10n-name="link">Állítsa össze a saját témáját a Firefox Color használatával.</a>
@@ -382,6 +392,7 @@ plugin-heading = Bővítmények kezelése
 dictionary-heading = Szótárak kezelése
 locale-heading = Nyelvek kezelése
 updates-heading = Frissítések kezelése
+sitepermission-heading = Oldalengedélyek kezelése
 discover-heading = A { -brand-short-name } testreszabása
 shortcuts-heading = Kiegészítő-gyorsbillentyűk kezelése
 default-heading-search-label = Több kiegészítő keresése
@@ -389,3 +400,20 @@ addons-heading-search-input =
     .placeholder = Keresés itt: addons.mozilla.org
 addon-page-options-button =
     .title = Eszközök minden kiegészítőhöz
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = A(z) { $name } nem kompatibilis ezzel: { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = { $name } használhatósága nem ellenőrizhető a { -brand-short-name } programban, és le lett tiltva.
+details-notification-unsigned-and-disabled-link = További információ
+details-notification-unsigned = { $name } használhatósága nem ellenőrizhető a { -brand-short-name } programban. Legyen óvatos.
+details-notification-unsigned-link = További információ
+details-notification-blocked = A(z) { $name } le lett tiltva biztonsági vagy stabilitási problémák miatt.
+details-notification-blocked-link = További információ
+details-notification-softblocked = A(z) { $name } biztonsági vagy stabilitási problémát okoz.
+details-notification-softblocked-link = További információ
+details-notification-gmp-pending = { $name } hamarosan telepítésre kerül.

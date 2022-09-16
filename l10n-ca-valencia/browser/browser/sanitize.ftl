@@ -78,8 +78,8 @@ item-form-search-history =
 
 data-section-label = Dades
 
-item-site-preferences =
-    .label = Preferències dels llocs
+item-site-settings =
+    .label = Paràmetres del lloc
     .accesskey = P
 
 item-offline-apps =

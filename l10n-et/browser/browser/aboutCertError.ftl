@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Saidid tõestavad oma identiteeti tur
 
 cert-error-symantec-distrust-admin = Sa võid teavitada saidi administraatorit sellest probleemist.
 
+cert-error-old-tls-version = See sait ei pruugi toetada protokolli TLS 1.2, mis on { -brand-short-name }i minimaalne toetatud versioon.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security tehnoloogia: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Ootamatu vastus serverilt
 nssFailure2-title = Turvalise ühenduse viga
 csp-xfo-error-title = { -brand-short-name }il pole võimalik seda lehte avada
 corruptedContentError-title = Vigane sisu
-remoteXUL-title = Remote XUL
 sslv3Used-title = Turvaline ühendumine pole võimalik
 inadequateSecurityError-title = Ühendus pole turvaline
 blockedByPolicy-title = Blokitud leht

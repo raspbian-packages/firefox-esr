@@ -46,3 +46,19 @@ openpgp-unknown-key-id = Nežinomas raktas
 openpgp-other-enc-additional-key-ids = Be to, pranešimas buvo užšifruotas šių raktų savininkams:
 openpgp-other-enc-all-key-ids = Pranešimas buvo užšifruotas šių raktų savininkams:
 
+openpgp-message-header-encrypted-ok-icon =
+    .alt = Iššifravimas sėkmingas
+openpgp-message-header-encrypted-notok-icon =
+    .alt = Iššifruoti nepavyko
+
+openpgp-message-header-signed-ok-icon =
+    .alt = Parašas teisingas
+# Mismatch icon is used for notok state as well
+openpgp-message-header-signed-mismatch-icon =
+    .alt = Parašas neteisingas
+openpgp-message-header-signed-unknown-icon =
+    .alt = Parašo būsena nežinoma
+openpgp-message-header-signed-verified-icon =
+    .alt = Parašas patvirtintas
+openpgp-message-header-signed-unverified-icon =
+    .alt = Parašas nepatvirtintas

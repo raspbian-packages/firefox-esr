@@ -21,7 +21,10 @@ checkbox-newsgroups-label =
     .label = Fréttahópa
     .tooltiptext = { unset-default-tooltip }
 checkbox-feeds-label =
-    .label = Strauma
+    .label = Streymi
+    .tooltiptext = { unset-default-tooltip }
+checkbox-calendar-label =
+    .label = Dagatöl
     .tooltiptext = { unset-default-tooltip }
 
 # Note: This is the search engine name for all the different platforms.

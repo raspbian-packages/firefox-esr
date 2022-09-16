@@ -78,9 +78,9 @@ item-form-search-history =
 
 data-section-label = Data
 
-item-site-preferences =
-    .label = Pengaturan Situs Tertentu
-    .accesskey = S
+item-site-settings =
+    .label = Pengaturan situs
+    .accesskey = s
 
 item-offline-apps =
     .label = Data Situs Web Luring

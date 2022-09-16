@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,40 +23,7 @@ return-to-amo-subtitle = Igerrez, tesεiḍ { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Tura ad ak·am-id-nmudd <img data-l10n-name="icon"/> <b>{ $addon-name }.</b>
 return-to-amo-add-extension-label = Rnu asiɣzef
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Ansuf ɣer <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = D iminig arurad, aɣelsan, uslig i teḥrez tkebbanit ur nettnadi ɣef tedrimt.
-onboarding-multistage-welcome-primary-button-label = Bdu asebded
-onboarding-multistage-welcome-secondary-button-label = Kcem
-onboarding-multistage-welcome-secondary-button-text = Ɣur-k·m amiḍan?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = Eg { -brand-short-name }-inek <span data-l10n-name="zap">amezwer</span>
-onboarding-multistage-set-default-subtitle = D arurad, d aɣellsan yerna iḥerrez tabaḍnit yal mi ara tinigeḍ.
-onboarding-multistage-set-default-primary-button-label = Eg amezwer
-onboarding-multistage-set-default-secondary-button-label = Mačči tura
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = Bdu s tririt <span data-l10n-name="zap">{ -brand-short-name }</span> s usiti kan
-onboarding-multistage-pin-default-subtitle = Tunigin taruradt, taɣellsant, tusligt yal mi ara tesqedceḍ web.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Fren { -brand-short-name } deg yiminig web mi ara ldin yiɣewwaren
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = Aya ad isenteḍ { -brand-short-name } ɣer ufaggag n tigawin yerna ad yeldi iɣewwaren
-onboarding-multistage-pin-default-primary-button-label = Err { -brand-short-name } d iminig agejdan
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Kter awalen-ik·im uffiren, <br/>ticraḍ n yisebtar d <span data-l10n-name="zap">wugar</span>
-onboarding-multistage-import-subtitle = Truḥeḍ-d seg yiminig-nniḍen? Yeshel ad d-taweḍ kullec ɣer { -brand-short-name }.
-onboarding-multistage-import-primary-button-label = Bdu aktar
-onboarding-multistage-import-secondary-button-label = Mačči tura
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = Ismal i d-yettwabedren dagi ttwafen deg yibenk-a.{ -brand-short-name } ur isseklas isefka, ur ten-issestab seg yiming-nniḍen ala ma yella tferneḍ kter-it.
+return-to-amo-add-theme-label = Rnu asentel
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = Ismal i d-yettwabedren dagi ttwafen deg yib
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Bdu: agdil { $current } seg { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Fren <span data-l10n-name="zap">udem</span>
-onboarding-multistage-theme-subtitle = Err { -brand-short-name } d udmawan s usentel.
-onboarding-multistage-theme-primary-button-label2 = Immed
-onboarding-multistage-theme-secondary-button-label = Mačči tura
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Awurman
-onboarding-multistage-theme-label-light = Aceɛlal
-onboarding-multistage-theme-label-dark = Aberkan
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -148,8 +98,12 @@ mr1-onboarding-import-primary-button-label-attribution = Kter seg { $previous }
 # This string will be used in cases where we can't detect the previous browser name.
 mr1-onboarding-import-primary-button-label-no-attribution = Kter seg yiminig wayeḍ
 mr1-onboarding-import-secondary-button-label = Mačči tura
+mr2-onboarding-colorway-header = Tudert ifeǧǧeǧen
+mr2-onboarding-colorway-subtitle = Tafrant n yiniten tamaynut i d-yettakken rruḥ. Llan deg yal akud.
+mr2-onboarding-colorway-primary-button-label = Sekles afran n yini
 mr2-onboarding-colorway-secondary-button-label = Mačči tura
 mr2-onboarding-colorway-label-soft = Leqqaq
+mr2-onboarding-colorway-label-balanced = Mnekni
 # "Bold" is used in the sense of bravery or courage, not in the sense of
 # emphasized text.
 mr2-onboarding-colorway-label-bold = Azuran
@@ -167,60 +121,12 @@ mr1-onboarding-theme-label-light = Aceɛlal
 mr1-onboarding-theme-label-dark = Aberkan
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Yemmed
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        Ṭṭef arwes n unagraw-ik·im
-        n wammud i tqeffalin, i wumuɣen d yisfuyla.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        Ṭṭef arwes n unagraw-ik·im
-        n wammud i tqeffalin, i wumuɣen d yisfuyla.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        Seqdec arwes aceεlal i tqeffalin,
-        i wumuɣen d yisfuyla.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        Seqdec arwes aceεlal i tqeffalin,
-        i wumuɣen d yisfuyla.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        Seqdec arwes aberkan i tqeffalin,
-        i wumuɣen d yisfuyla.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        Seqdec arwes aberkan i tqeffalin,
-        i wumuɣen d yisfuyla.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        Seqdec arwes s yiniten i tqeffalin,
-        i wumuɣen d yisfuyla.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        Seqdec arwes s yiniten i tqeffalin,
-        i wumuɣen d yisfuyla.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -262,14 +168,71 @@ mr1-onboarding-theme-description-alpenglow =
     .aria-description =
         Seqdec asentel arurad, s yini aččuran i tqeffalin,
         umuɣen d yiwfuyla.
+# Tooltip displayed on hover of non-default colorway theme
+# variations e.g. soft, balanced, bold
+mr2-onboarding-theme-tooltip =
+    .title = Seqdec afran-a n yini.
+# Selector description for non-default colorway theme
+# variations e.g. soft, balanced, bold
+mr2-onboarding-theme-description =
+    .aria-description = Seqdec afran-a n yini.
+# Tooltip displayed on hover of colorway
+# Variables:
+#   $colorwayName (String) - Name of colorway
+mr2-onboarding-colorway-tooltip =
+    .title = Snirem afran-a n yiniten { $colorwayName }.
+# Selector description for colorway
+# Variables:
+#   $colorwayName (String) - Name of colorway
+mr2-onboarding-colorway-label = Snirem afran-a n yiniten { $colorwayName }.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Snirem isental imezwer.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = Snirem isental imezwer.
+mr2-onboarding-default-theme-label = Snirem isental imezwer.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Tanemmirt imi d nekkni i tferneḍ
+mr2-onboarding-thank-you-text = { -brand-short-name } d iminig ilelli i teḥrez tkebbanit ur nettnadi ɣef tedrimt. Akk akken, ad nerr web d aɣellsan, d azedgan yerna d uslig ugar.
 mr2-onboarding-start-browsing-button-label = Bdu tunigin
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Fren tutlayt-ik·im
+onboarding-live-language-button-label-downloading = Asader n ukemmus n tutlayt i { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = Awway n tutlayin yellan…
+onboarding-live-language-installing = Asebded n ukemmus n tutlayt i { $negotiatedLanguage }…
+onboarding-live-language-secondary-cancel-download = Sefsex
+onboarding-live-language-skip-button-label = Zgel
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    tikkal
+    <span data-l10n-name="zap">tanemmirt</span>
+fx100-thank-you-subtitle = D lqem-nneɣ wis 100! Tanemmirt ɣef tallalt-ik·im i lebni n internet igerrzen, azedgan.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] Eǧǧ { -brand-short-name } deg Dock
+       *[other] Senteḍ { -brand-short-name } deg ufeggag n tiwuriwin
+    }
+fx100-upgrade-thanks-header = 100 tikkal tanemmirt
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = D lqem-nneɣ wis 100 n { -brand-short-name }. <em>Tanemmirt</em> ɣef tallalt-ik·im i lebni n internet igerrzen, azedgan.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = D lqem-nneɣ wis 100! Tanemmirt imi telliḍ d aεeggal deg tɣiwant-nneɣ. Eǧǧ { -brand-short-name } ɣef wafus i 100 i d-iteddun.

@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Uložit odkaz do { -pocket-brand-name(case: "gen") }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Kopírovat e-mailovou adresu
     .accesskey = a
+
+main-context-menu-copy-phone =
+    .label = Kopírovat telefonní číslo
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Zkopírovat odkaz
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Otevřít odkaz v novém panelu kontejneru { $containerName }
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = Zobrazit heslo
+    .accesskey = v

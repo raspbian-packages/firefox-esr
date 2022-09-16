@@ -84,6 +84,7 @@ toolbar-button-stop-reload =
 
 ## Firefox Account Button
 
+
 ## Save Page
 
 main-context-menu-page-save =
@@ -136,6 +137,10 @@ main-context-menu-open-link-new-private-window =
     .label = Havolani yangi maxfiy oynada ochish
     .accesskey = m
 
+main-context-menu-bookmark-link =
+    .label = Havolani xatchoʻplarga qoʻshish
+    .accesskey = H
+
 main-context-menu-save-link =
     .label = Havolani saqlash…
     .accesskey = k
@@ -144,11 +149,6 @@ main-context-menu-save-link-to-pocket =
     .label = Havolani { -pocket-brand-name } xizmatiga saqlash
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -156,6 +156,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Email manzilidan nusxa olish
     .accesskey = E
+
+main-context-menu-copy-link-simple =
+    .label = Havoladan nusxa olish
+    .accesskey = l
 
 ## Media (video/audio) controls
 ##
@@ -210,9 +214,25 @@ main-context-menu-image-reload =
     .label = Rasmni qayta yuklash
     .accesskey = R
 
+main-context-menu-image-view-new-tab =
+    .label = Rasmni yangi varaqda ochish
+    .accesskey = o
+
 main-context-menu-image-copy =
     .label = Rasmdan nusxa olish
     .accesskey = u
+
+main-context-menu-image-copy-link =
+    .label = Havoladan nusxa olish
+    .accesskey = H
+
+main-context-menu-video-copy-link =
+    .label = Video havolasidan nusxa olish
+    .accesskey = o
+
+main-context-menu-audio-copy-link =
+    .label = Audio havolasidan nusxa olish
+    .accesskey = o
 
 main-context-menu-image-save-as =
     .label = Rasmni saqlash…
@@ -221,6 +241,10 @@ main-context-menu-image-save-as =
 main-context-menu-image-email =
     .label = Rasmni emaildan joʻnatish…
     .accesskey = m
+
+main-context-menu-image-set-image-as-background =
+    .label = Ish stoli orqa foni sifatida oʻrnatish
+    .accesskey = s
 
 main-context-menu-image-info =
     .label = Rasm maʼlumotini koʻrish
@@ -317,9 +341,21 @@ main-context-menu-frame-view-info =
     .label = Freym haqida maʼlumot
     .accesskey = s
 
+main-context-menu-print-selection =
+    .label = Tanlanganlarni chop qilish
+    .accesskey = p
+
 main-context-menu-view-selection-source =
     .label = Tanlangan fragment manba kodi
     .accesskey = e
+
+main-context-menu-take-screenshot =
+    .label = Skrinshot olish
+    .accesskey = S
+
+main-context-menu-take-frame-screenshot =
+    .label = Skrinshot olish
+    .accesskey = o
 
 main-context-menu-view-page-source =
     .label = Sahifa manba kodi
@@ -333,10 +369,20 @@ main-context-menu-bidi-switch-page =
     .label = Sahifa yoʻnalishini almashtirish
     .accesskey = y
 
+main-context-menu-inspect =
+    .label = Tekshirish
+    .accesskey = T
+
 main-context-menu-inspect-a11y-properties =
     .label = Qulaylik xossalarini kuzatish
 
 main-context-menu-eme-learn-more =
     .label = DRM haqida batafsil…
     .accesskey = D
+
+# Variables
+#   $containerName (String): The name of the current container
+main-context-menu-open-link-in-container-tab =
+    .label = Havolani yangi { $containerName } varagʻida ochish
+    .accesskey = H
 

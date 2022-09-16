@@ -19,6 +19,9 @@ auth-waiting = Čekání na dokončení ověření kontaktem…
 finger-verify = Ověřit
 finger-verify-access-key = O
 
+finger-ignore = Ignorovat
+finger-ignore-access-key = I
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Přidat otisk klíče OTR
 
@@ -43,7 +46,6 @@ finger-unseen = Identita uživatele { $name } ještě nebyla ověřena. Příle�
 finger-seen = Uživatel { $name } vás kontaktuje z neznámého počítače. Příležitostné odposlouchávání možné není, ale s vynaložením určitého úsilí odposlech možný je. Předejděte tomu ověřením identity tohoto kontaktu.
 
 state-not-private = Aktuální konverzace není soukromá.
-
 state-generic-not-private = Aktuální konverzace není soukromá.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Ověřili jste identitu uživatele { $name }.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = Identita uživatele { $name } nebyla ověřena.
-
-verify-title = Ověřit identitu kontaktu
-error-title = Chyba
-success-title = Koncové šifrování
-success-them-title = Ověřit identitu kontaktu
-fail-title = Nelze ověřit
-waiting-title = Žádost o ověření byla odeslána
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

@@ -41,6 +41,11 @@ options-collapse-attrs-label = Κόψιμο ιδιοτήτων DOM
 options-collapse-attrs-tooltip =
     .title = Κόψιμο μεγάλων ιδιοτήτων στην επιθεώρηση
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Κάντε κλικ και σύρετε για να επεξεργαστείτε τις τιμές μεγέθους
+options-inspector-draggable-properties-tooltip =
+    .title = Κάντε κλικ και σύρετε για να επεξεργαστείτε τις τιμές μεγέθους στην προβολή κανόνων επιθεώρησης.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Προεπιλεγμένη μονάδα χρώματος
@@ -48,6 +53,7 @@ options-default-color-unit-authored = Πρωτότυπη
 options-default-color-unit-hex = Hex
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Ονόματα χρωμάτων
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Ενεργοποίηση απομακρυσμένου ελέγχου σφαλμάτων
 options-enable-remote-tooltip2 =
     .title = Η ενεργοποίηση αυτής της επιλογής θα επιτρέψει τον απομακρυσμένο έλεγχο σφαλμάτων σε αυτό το παράθυρο του προγράμματος περιήγησης
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Ενεργοποίηση προσαρμοσμένων μορφοποιητών
+options-enable-custom-formatters-tooltip =
+    .title = Η ενεργοποίηση αυτής της επιλογής θα επιτρέψει στους ιστοτόπους να ορίζουν προσαρμοσμένους μορφοποιητές για αντικείμενα DOM
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Ενεργοποίηση service worker μέσω HTTP (όταν είναι ανοικτή η εργαλειοθήκη)

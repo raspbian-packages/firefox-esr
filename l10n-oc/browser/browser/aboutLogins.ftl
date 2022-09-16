@@ -5,8 +5,6 @@
 
 about-logins-page-title = Identificants e senhals
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Recercar d’identificants
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Site amb contengut expausat al public
 about-logins-list-item-vulnerable-password-icon =
     .title = Senhal vulnerable
-
 about-logins-list-section-breach = Site amb contengut expausat al public
 about-logins-list-section-vulnerable = Senhals vulnerables
 about-logins-list-section-nothing = Cap d’alèrta
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Cap d’identificant sincronizat pa
 login-intro-description = Se salvatz vòstres identificants dins { -brand-product-name } sus un autre periferics, vaquí cossí i accedir aquí :
 login-intro-instructions-fxa = Connectatz-vos o creatz un { -fxaccount-brand-name } sul periferic ont son salvats los identificants.
 login-intro-instructions-fxa-settings = Anatz als Paramètres > Sincronizacion > Activar la sincronizacion… e marcatz la cassa « Identificants e senhals ».
-login-intro-instructions-fxa-help = Consultatz l’<a data-l10n-name="help-link">assisténcia { -lockwise-brand-short-name }</a> per mai d’ajuda.
-about-logins-intro-import = Se vòstres identificants son salvats dins un autre navegador, podètz <a data-l10n-name="import-link">los importar dins { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Consultatz <a data-l10n-name="passwords-help-link">l’assisténcia dels senhals</a> per mai d’ajuda.
+about-logins-intro-browser-only-import = Se vòstres identificants son salvats dins un autre navegador, podètz <a data-l10n-name="import-link">los importar dins { -brand-product-name }</a>
 about-logins-intro-import2 = Se vòstres identificants de connexion e senhals son salvats al defòra de { -brand-product-name }, podètz <a data-l10n-name="import-browser-link">los importar d‘un autre navegador estant</a> o <a data-l10n-name="import-file-link"> a partir d’un fichièr</a>
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Per copiar vòstre senha
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = copiar lo senhal salvat
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Per exportar vòstres identificants, picatz vòstras informacions de connexion Windows. Aquò permet de servar la seguretat dels comptes.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Picatz vòstre senhal màge
 master-password-reload-button =
     .label = Connexion
     .accesskey = C
-
-## Password Sync notification
 
 ## Dialogs
 

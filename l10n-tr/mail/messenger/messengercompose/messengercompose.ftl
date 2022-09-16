@@ -3,7 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -30,6 +33,13 @@ pill-tooltip-not-in-address-book = { $email } adres defterinizde yok
 pill-action-edit =
     .label = Adresi düzenle
     .accesskey = d
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = { $type } içindeki tüm adresleri seç
+    .accesskey = t
+pill-action-select-all-pills =
+    .label = Tüm adresleri seç
+    .accesskey = m
 pill-action-move-to =
     .label = Kime alanına taşı
     .accesskey = m
@@ -43,7 +53,7 @@ pill-action-expand-list =
     .label = Listeyi genişlet
     .accesskey = n
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -59,9 +69,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Ekle
     .tooltiptext = Dosya ekle ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Dosya ekle…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Dosya ekle…
     .accesskey = D
@@ -74,19 +81,24 @@ context-menuitem-attach-files =
     .label = Dosya ekle…
     .accesskey = D
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
+# Note: Do not translate the term 'vCard'.
+context-menuitem-attach-vcard =
+    .label = vCard'ım
+    .accesskey = C
+context-menuitem-attach-openpgp-key =
+    .label = OpenPGP ortak anahtarım
+    .accesskey = k
 #   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
-    .value =
-        { $count ->
-            [1] { $count } ek
-            [one] { $count } ek
-           *[other] { $count } ek
-        }
-    .accesskey = e
-expand-attachment-pane-tooltip =
-    .tooltiptext = Ek bölmesini göster ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Ek bölmesini gizle ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
+attachment-bucket-count-value =
+    { $count ->
+        [1] { $count } ek
+        [one] { $count } ek
+       *[other] { $count } ek
+    }
+attachment-area-show =
+    .title = Ek bölmesini göster ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
+attachment-area-hide =
+    .title = Ek bölmesini gizle ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 drop-file-label-attachment =
     { $count ->
         [one] Dosya olarak ekle
@@ -98,7 +110,7 @@ drop-file-label-inline =
        *[other] Satır içi ekle
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = Başa taşı
@@ -112,47 +124,26 @@ button-return-receipt =
     .label = Alındı onayı
     .tooltiptext = Bu ileti için alındı onayı iste
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = İletiyi imzala
-message-to-be-encrypted-icon =
-    .alt = İletiyi şifrele
+encryption-menu =
+    .label = Güvenlik
+    .accesskey = G
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
+    .accesskey = S
+menu-encrypt =
+    .label = Şifrele
+    .accesskey = e
+menu-encrypt-subject =
+    .label = Konuyu şifrele
+    .accesskey = o
 
-# Addressing Area
+## Addressing Area
 
-to-compose-address-row-label =
-    .value = Alıcı
-#   $key (String) - the shortcut key for this field
-to-compose-show-address-row-menuitem =
-    .label = { to-compose-address-row-label.value } alanı
-    .accesskey = K
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-to-compose-show-address-row-label =
-    .value = { to-compose-address-row-label.value }
-    .tooltiptext = { to-compose-address-row-label.value } alanını göster ({ to-compose-show-address-row-menuitem.acceltext })
-cc-compose-address-row-label =
-    .value = Cc
-#   $key (String) - the shortcut key for this field
-cc-compose-show-address-row-menuitem =
-    .label = { cc-compose-address-row-label.value } alanı
-    .accesskey = C
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-cc-compose-show-address-row-label =
-    .value = { cc-compose-address-row-label.value }
-    .tooltiptext = { cc-compose-address-row-label.value } alanını göster ({ cc-compose-show-address-row-menuitem.acceltext })
-bcc-compose-address-row-label =
-    .value = Bcc
-#   $key (String) - the shortcut key for this field
-bcc-compose-show-address-row-menuitem =
-    .label = { bcc-compose-address-row-label.value } alanı
-    .accesskey = B
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-bcc-compose-show-address-row-label =
-    .value = { bcc-compose-address-row-label.value }
-    .tooltiptext = { bcc-compose-address-row-label.value } alanını göster ({ bcc-compose-show-address-row-menuitem.acceltext })
-#   $count (Number) - the count of addresses in the "To" and "Cc" fields.
-many-public-recipients-info = Kime ve Cc alanlarındaki { $count } alıcı birbirlerinin adresini görebilecek. Bunun yerine Bcc kullanarak alıcıları göstermekten kaçınabilirsiniz.
 to-address-row-label =
     .value = Kime
 #   $key (String) - the shortcut key for this field
@@ -223,3 +214,58 @@ encrypted-bcc-ignore-button = Anladım
 
 compose-tool-button-remove-text-styling =
     .tooltiptext = Metin stilini kaldır
+
+## Filelink
+
+
+# Placeholder file
+
+
+# Template
+
+# A line of text describing how many uploaded files have been appended to this
+# message. Emphasis should be on sharing as opposed to attaching. This item is
+# used as a header to a list, hence the colon.
+cloud-file-count-header =
+    { $count ->
+        [one] { $count } dosyayı bu e-postaya bağladım:
+       *[other] { $count } dosyayı bu e-postaya bağladım:
+    }
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service provider.
+# $link (string) - html a-tag for a link pointing to the web page of the provider
+cloud-file-service-provider-footer-single = { $link } hakkında daha fazla bilgi alın.
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service providers. Links for the used providers are
+# split into a comma separated list of the first n-1 providers and a single entry
+# at the end.
+# $firstLinks (string) - comma separated list of html a-tags pointing to web pages
+#                        of the first n-1 used providers
+# $lastLink (string) - html a-tag pointing the web page of the n-th used provider
+cloud-file-service-provider-footer-multiple = { $firstLinks } ve { $lastLink } hakkında daha fazla bilgi alın.
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Parola korumalı bağlantı
+cloud-file-template-size = Boyut:
+cloud-file-template-link = Bağlantı:
+cloud-file-template-password-protected-link = Parola korumalı bağlantı:
+cloud-file-template-expiry-date = Bitiş tarihi:
+cloud-file-template-download-limit = İndirme sınırı:
+
+# Messages
+
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-connection-error-title = Bağlantı Hatası
+cloud-file-connection-error = { -brand-short-name } çevrimdışı. { $provider } ile bağlantı kurulamadı.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-title = Yeniden adlandırma hatası
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-rename-not-supported = { $provider } önceden yüklenmiş dosyaların yeniden adlandırılmasını desteklemiyor.
+
+## Link Preview
+
+link-preview-title = Bağlantı ön izleme
+link-preview-yes-replace = Evet
+
+## Dictionary selection popup
+

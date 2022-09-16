@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 # DO NOT ADD THINGS OTHER THAN ERROR MESSAGES HERE.
 # This file gets parsed into a JS dictionary of all known error message ids in
 # gen_aboutneterror_codes.py . If we end up needing fluent attributes or
@@ -161,7 +162,7 @@ ssl-error-no-supported-signature-algorithm = Не наладжаны ні адз
 ssl-error-unsupported-signature-algorithm = Пір выкарыстоўвае непадтрыманае спалучэнне алгарытмаў подпісу і хэшавання.
 ssl-error-missing-extended-master-secret = Пір спрабаваў прадоўжыць без карэктнага пашырэння extended_master_secret.
 ssl-error-unexpected-extended-master-secret = Пір спрабаваў прадоўжыць з нечаканым пашырэннем extended_master_secret.
-sec-error-io = Здарылася памылка ўводу/вываду падчас бяспечнага апазнавання.
+sec-error-io = Здарылася памылка ўводу/вываду ў часе бяспечнай аўтарызацыі.
 sec-error-library-failure = няўдача бібліятэкі бяспекі.
 sec-error-bad-data = бібліятэка бяспекі: атрыманы кепскія дадзеныя.
 sec-error-output-len = бібліятэка бяспекі: памылковая даўжыня вываду.

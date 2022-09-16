@@ -15,6 +15,8 @@ policy-AllowedDomainsForApps = Definisce i domini con cui è consentito accedere
 
 policy-AppAutoUpdate = Attiva o disattiva aggiornamenti automatici dell’applicazione.
 
+policy-AppUpdatePin = Impedisce l’aggiornamento di { -brand-short-name } a una versione superiore a quella indicata.
+
 policy-AppUpdateURL = Imposta URL personalizzato per aggiornamento applicazione.
 
 policy-Authentication = Configura autenticazione integrata per i siti in cui è supportata.
@@ -100,6 +102,8 @@ policy-EnableTrackingProtection = Attiva o disattiva il blocco contenuti ed even
 
 policy-EncryptedMediaExtensions = Attiva o disattiva Encrypted Media Extensions ed eventualmente impedisci modifiche all’opzione.
 
+policy-ExemptDomainFileTypePairsFromFileTypeDownloadWarnings = Disattiva avvisi associati all’estensione dei file per determinati tipi di file e domini.
+
 policy-Extensions = Installa, disinstalla o blocca estensioni. L’opzione per installare richiede URL o percorsi come parametri. L’opzione per disinstallare o bloccare richiede gli ID delle estensioni.
 
 policy-ExtensionSettings = Gestisci tutti gli aspetti connessi all’installazione di estensioni.
@@ -152,6 +156,8 @@ policy-OverridePostUpdatePage = Sostituisci la pagina “Novità” visualizzata
 
 policy-PasswordManagerEnabled = Attiva il salvataggio delle password nel gestore password.
 
+policy-PasswordManagerExceptions = Impedisci a { -brand-short-name } di salvare le password per determinati siti.
+
 policy-PDFjs = Disattiva o configura PDF.js, il lettore integrato di PDF di { -brand-short-name }.
 
 policy-Permissions2 = Configura i permessi per fotocamera, microfono, posizione, notifiche e riproduzione automatica.
@@ -184,9 +190,13 @@ policy-SSLVersionMax = Imposta la versione massima di SSL.
 
 policy-SSLVersionMin = Imposta la versione minima di SSL.
 
+policy-StartDownloadsInTempDirectory = Forza l’avvio dei download in una cartella temporanea locale invece della cartella predefinita per i download.
+
 policy-SupportMenu = Aggiungi una voce di menu personalizzata nel menu Aiuto.
 
 policy-UserMessaging = Non visualizzare determinati messaggi all’utente.
+
+policy-UseSystemPrintDialog = Stampa utilizzando la finestra di dialogo di sistema.
 
 policy-WebsiteFilter = Impedisci l’accesso a determinati siti web. Consulta la documentazione per ulteriori dettagli sul formato da utilizzare.
 

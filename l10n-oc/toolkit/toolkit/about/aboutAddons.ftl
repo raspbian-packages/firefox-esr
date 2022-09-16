@@ -35,6 +35,8 @@ detail-version =
     .label = Version
 detail-last-updated =
     .label = Darrièra mesa a jorn
+addon-detail-description-expand = Ne veire mai
+addon-detail-description-collapse = Ne veire mens
 detail-contributions-description = Lo desvolopaire d'aqueste modul demanda que l'ajudetz a assegurar lo contunhament de son desvolopament en li pagant una pichona contribucion.
 detail-contributions-button = Contribuir
     .title = Contribuir al desvolopament d’aqueste modul
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Mes a jorn
 addon-category-recent-updates-title =
     .title = Mes a jorn
+addon-category-sitepermission = Autorizacions de site
+addon-category-sitepermission-title =
+    .title = Autorizacions de site
 
 ## These are global warnings
 
@@ -286,14 +291,18 @@ extension-enabled-heading = Activadas
 extension-disabled-heading = Desactivadas
 theme-enabled-heading = Activat
 theme-disabled-heading = Desactivats
+theme-disabled-heading2 = Tèmas salvats
 theme-monochromatic-heading = Colorit
 theme-monochromatic-subheading = Combinasons de colors vibrantas de { -brand-product-name }. Disponiblas durant un temps limitat.
+theme-colorways-button = Ensajatz Colorways
 plugin-enabled-heading = Activats
 plugin-disabled-heading = Desactivats
 dictionary-enabled-heading = Activats
 dictionary-disabled-heading = Desactivats
 locale-enabled-heading = Activadas
 locale-disabled-heading = Desactivadas
+sitepermission-enabled-heading = Activat
+sitepermission-disabled-heading = Desactivat
 always-activate-button = Totjorn activar
 never-activate-button = Activar pas jamai
 addon-detail-author-label = Autor
@@ -370,6 +379,7 @@ addon-permissions-optional = Permissions opcionalas per las foncionalitats suple
 addon-permissions-learnmore = Per ne saber mai sus las permissions
 recommended-extensions-heading = Extensions recomandadas
 recommended-themes-heading = Tèmas recomandats
+addon-sitepermissions-required = Donar las capacitats seguentas a <span data-l10n-name="hostname">{ $hostname }</span> :
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Vos sentissètz creatiu ? <a data-l10n-name="link">Creatz vòstre pròpri tèma amb Firefox Color.</a>
@@ -382,6 +392,7 @@ plugin-heading = Gestion dels plugins
 dictionary-heading = Gestion dels diccionaris
 locale-heading = Gestion de las lengas
 updates-heading = Gestion de las mesas a jorn
+sitepermission-heading = Gerir las autorizacions de site
 discover-heading = Personalizatz { -brand-short-name }
 shortcuts-heading = Gestion dels acorchis d’extensions
 default-heading-search-label = Trobar mai de moduls
@@ -389,3 +400,20 @@ addons-heading-search-input =
     .placeholder = Cercar sus addons.mozilla.org
 addon-page-options-button =
     .title = Aisinas per totes los moduls
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } es incompatible amb { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = { $name } a pas poput èsser verificat per son utilizacion dins { -brand-short-name } e foguèt desactivat.
+details-notification-unsigned-and-disabled-link = Mai d'informacions
+details-notification-unsigned = { $name } a pas pogut èsser verificat per son utilizacion dins { -brand-short-name }. Fasètz atencion.
+details-notification-unsigned-link = Mai d'informacions
+details-notification-blocked = { $name } es estat desactivat en seguida de problèmas de seguretat o d'estabilitat.
+details-notification-blocked-link = Mai d'informacions
+details-notification-softblocked = { $name } es conegut per provocar de problèmas de seguretat o d'estabilitat.
+details-notification-softblocked-link = Mai d'informacions
+details-notification-gmp-pending = { $name } serà installat lèu.

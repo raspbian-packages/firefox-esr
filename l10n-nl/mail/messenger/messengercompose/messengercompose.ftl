@@ -3,7 +3,25 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+compose-send-format-menu =
+    .label = Verzendopmaak
+    .accesskey = o
+compose-send-auto-menu-item =
+    .label = Automatisch
+    .accesskey = A
+compose-send-both-menu-item =
+    .label = Zowel HTML als platte tekst
+    .accesskey = Z
+compose-send-html-menu-item =
+    .label = Alleen HTML
+    .accesskey = H
+compose-send-plain-menu-item =
+    .label = Alleen platte tekst
+    .accesskey = p
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -30,6 +48,13 @@ pill-tooltip-not-in-address-book = { $email } staat niet in uw adresboek
 pill-action-edit =
     .label = Adres bewerken
     .accesskey = d
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = Alle adressen in { $type } selecteren
+    .accesskey = A
+pill-action-select-all-pills =
+    .label = Alle adressen selecteren
+    .accesskey = c
 pill-action-move-to =
     .label = Verplaatsen naar Aan
     .accesskey = A
@@ -43,7 +68,7 @@ pill-action-expand-list =
     .label = Lijst uitvouwen
     .accesskey = w
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -59,9 +84,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Koppelen
     .tooltiptext = Een bijlage toevoegen ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Bijlage toevoegen…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Bijlage toevoegen…
     .accesskey = B
@@ -74,18 +96,20 @@ context-menuitem-attach-files =
     .label = Bestand(en) koppelen…
     .accesskey = B
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
+# Note: Do not translate the term 'vCard'.
+context-menuitem-attach-vcard =
+    .label = Mijn vCard
+    .accesskey = C
+context-menuitem-attach-openpgp-key =
+    .label = Mijn openbare OpenPGP-sleutel
+    .accesskey = s
 #   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
-    .value =
-        { $count ->
-            [one] { $count } bijlage
-           *[other] { $count } bijlagen
-        }
-    .accesskey = l
-expand-attachment-pane-tooltip =
-    .tooltiptext = Het bijlagevenster tonen ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Het bijlagevenster verbergen ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
+attachment-bucket-count-value =
+    { $count ->
+        [1] { $count } bijlage
+        [one] { $count } bijlage
+       *[other] { $count } bijlagen
+    }
 attachment-area-show =
     .title = Het bijlagevenster tonen ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-hide =
@@ -101,7 +125,7 @@ drop-file-label-inline =
        *[other] Inline toevoegen
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = Naar de eerste
@@ -115,47 +139,67 @@ button-return-receipt =
     .label = Ontvangstbevestiging
     .tooltiptext = Een ontvangstbevestiging voor dit bericht vragen
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = Bericht ondertekenen
-message-to-be-encrypted-icon =
-    .alt = Bericht versleutelen
+encryption-menu =
+    .label = Beveiliging
+    .accesskey = v
+encryption-toggle =
+    .label = Versleutelen
+    .tooltiptext = End-to-end-versleuteling gebruiken voor dit bericht
+encryption-options-openpgp =
+    .label = OpenPGP
+    .tooltiptext = OpenPGP-versleutelingsinstellingen bekijken of wijzigen
+encryption-options-smime =
+    .label = S/MIME
+    .tooltiptext = S/MIME-versleutelingsinstellingen bekijken of wijzigen
+signing-toggle =
+    .label = Ondertekenen
+    .tooltiptext = Digitale ondertekening gebruiken voor dit bericht
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
+    .accesskey = S
+menu-encrypt =
+    .label = Versleutelen
+    .accesskey = V
+menu-encrypt-subject =
+    .label = Onderwerp versleutelen
+    .accesskey = d
+menu-sign =
+    .label = Digitaal ondertekenen
+    .accesskey = i
+menu-manage-keys =
+    .label = Sleutelassistent
+    .accesskey = a
+menu-view-certificates =
+    .label = Certificaten van ontvangers bekijken
+    .accesskey = b
+menu-open-key-manager =
+    .label = Sleutelbeheerder
+    .accesskey = h
+openpgp-key-issue-notification-one = End-to-end-versleuteling vereist het oplossen van sleutelproblemen voor { $addr }
+openpgp-key-issue-notification-many = End-to-end-versleuteling vereist het oplossen van sleutelproblemen voor { $count } ontvangers.
+smime-cert-issue-notification-one = End-to-end-versleuteling vereist het oplossen van certificaatproblemen voor { $addr }.
+smime-cert-issue-notification-many = End-to-end-versleuteling vereist het oplossen van certificaatproblemen voor { $count } ontvangers.
+key-notification-disable-encryption =
+    .label = Niet versleutelen
+    .accesskey = i
+    .tooltiptext = End-to-end-versleuteling uitschakelen
+key-notification-resolve =
+    .label = Oplossen…
+    .accesskey = l
+    .tooltiptext = De OpenPGP-sleutelassistent openen
+can-encrypt-smime-notification = S/MIME end-to-end-versleuteling is mogelijk.
+can-encrypt-openpgp-notification = OpenPGP end-to-end-versleuteling is mogelijk.
+can-e2e-encrypt-button =
+    .label = Versleutelen
+    .accesskey = V
 
-# Addressing Area
+## Addressing Area
 
-to-compose-address-row-label =
-    .value = Aan
-#   $key (String) - the shortcut key for this field
-to-compose-show-address-row-menuitem =
-    .label = Veld { to-compose-address-row-label.value }
-    .accesskey = A
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-to-compose-show-address-row-label =
-    .value = { to-compose-address-row-label.value }
-    .tooltiptext = Veld { to-compose-address-row-label.value } tonen ({ to-compose-show-address-row-menuitem.acceltext })
-cc-compose-address-row-label =
-    .value = Cc
-#   $key (String) - the shortcut key for this field
-cc-compose-show-address-row-menuitem =
-    .label = Veld { cc-compose-address-row-label.value }
-    .accesskey = C
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-cc-compose-show-address-row-label =
-    .value = { cc-compose-address-row-label.value }
-    .tooltiptext = Veld { cc-compose-address-row-label.value } tonen ({ cc-compose-show-address-row-menuitem.acceltext })
-bcc-compose-address-row-label =
-    .value = Bcc
-#   $key (String) - the shortcut key for this field
-bcc-compose-show-address-row-menuitem =
-    .label = Veld { bcc-compose-address-row-label.value }
-    .accesskey = B
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-bcc-compose-show-address-row-label =
-    .value = { bcc-compose-address-row-label.value }
-    .tooltiptext = Veld { bcc-compose-address-row-label.value } tonen ({ bcc-compose-show-address-row-menuitem.acceltext })
-#   $count (Number) - the count of addresses in the "To" and "Cc" fields.
-many-public-recipients-info = De { $count } ontvangers in Aan en Cc zullen elkaars adres zien. U kunt voorkomen dat ontvangers worden onthuld door in plaats hiervan Bcc te gebruiken.
 to-address-row-label =
     .value = Aan
 #   $key (String) - the shortcut key for this field
@@ -240,3 +284,95 @@ encrypted-bcc-ignore-button = Begrepen
 
 compose-tool-button-remove-text-styling =
     .tooltiptext = Tekstopmaak verwijderen
+
+## Filelink
+
+# A text used in a tooltip of Filelink attachments, whose account has been
+# removed or is unknown.
+cloud-file-unknown-account-tooltip = Geüpload naar een onbekende Filelink-account.
+
+# Placeholder file
+
+# Title for the html placeholder file.
+# $filename - name of the file
+cloud-file-placeholder-title = { $filename } – Filelink-bijlage
+# A text describing that the file was attached as a Filelink and can be downloaded
+# from the link shown below.
+# $filename - name of the file
+cloud-file-placeholder-intro = Het bestand { $filename } is als Filelink bijgevoegd. Het is te downloaden via onderstaande koppeling.
+
+# Template
+
+# A line of text describing how many uploaded files have been appended to this
+# message. Emphasis should be on sharing as opposed to attaching. This item is
+# used as a header to a list, hence the colon.
+cloud-file-count-header =
+    { $count ->
+        [one] Ik heb { $count } bestand aan dit e-mailbericht gekoppeld:
+       *[other] Ik heb { $count } bestanden aan dit e-mailbericht gekoppeld:
+    }
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service provider.
+# $link (string) - html a-tag for a link pointing to the web page of the provider
+cloud-file-service-provider-footer-single = Meer info over { $link }.
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service providers. Links for the used providers are
+# split into a comma separated list of the first n-1 providers and a single entry
+# at the end.
+# $firstLinks (string) - comma separated list of html a-tags pointing to web pages
+#                        of the first n-1 used providers
+# $lastLink (string) - html a-tag pointing the web page of the n-th used provider
+cloud-file-service-provider-footer-multiple = Meer info over { $firstLinks } en { $lastLink }.
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Met wachtwoord beveiligde koppeling
+# Used in a list of stats about a specific file
+# Service - the used service provider to host the file (Filelink Service: BOX.com)
+# Size - the size of the file (Size: 4.2 MB)
+# Link - the link to the file (Link: https://some.provider.com)
+# Expiry Date - stating the date the link will expire (Expiry Date: 12.12.2022)
+# Download Limit - stating the maximum allowed downloads, before the link becomes invalid
+#                  (Download Limit: 6)
+cloud-file-template-service-name = Filelink-service:
+cloud-file-template-size = Grootte:
+cloud-file-template-link = Koppeling:
+cloud-file-template-password-protected-link = Met wachtwoord beveiligde koppeling:
+cloud-file-template-expiry-date = Vervaldatum:
+cloud-file-template-download-limit = Downloadlimiet:
+
+# Messages
+
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-connection-error-title = Verbindingsfout
+cloud-file-connection-error = { -brand-short-name } is offline. Kan geen verbinding maken met { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was uploaded and caused the error
+cloud-file-upload-error-with-custom-message-title = Uploaden van { $filename } naar { $provider } mislukt
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-title = Fout bij hernoemen
+cloud-file-rename-error = Er is een probleem opgetreden bij het hernoemen van { $filename } op { $provider }.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-with-custom-message-title = Hernoemen van { $filename } op { $provider } mislukt
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-rename-not-supported = { $provider } ondersteunt het hernoemen van reeds geüploade bestanden niet.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-attachment-error-title = Filelink-bijlagefout
+cloud-file-attachment-error = Kan de Filelink-bijlage { $filename } niet bijwerken, omdat het lokale bestand is verplaatst of verwijderd.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-account-error-title = Filelink-accountfout
+cloud-file-account-error = Kan de Filelink-bijlage { $filename } niet bijwerken, omdat de Filelink-account is verwijderd.
+
+## Link Preview
+
+link-preview-title = Koppelingsvoorbeeld
+link-preview-description = { -brand-short-name } kan een ingesloten voorbeeld toevoegen bij het plakken van koppelingen.
+link-preview-autoadd = Koppelingsvoorbeelden indien mogelijk automatisch toevoegen
+link-preview-replace-now = Een koppelingsvoorbeeld voor deze koppeling toevoegen?
+link-preview-yes-replace = Ja
+
+## Dictionary selection popup
+
+spell-add-dictionaries =
+    .label = Woordenboeken toevoegen…
+    .accesskey = t

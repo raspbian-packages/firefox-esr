@@ -5,7 +5,7 @@
 close-button =
     .aria-label = Serrar
 
-preferences-doc-title = Preferenzas
+preferences-doc-title2 = Parameters
 
 category-list =
     .aria-label = Categorias
@@ -165,12 +165,18 @@ restore-default-label =
     .accesskey = R
 
 default-search-engine = Maschina da tschertgar da standard
-add-search-engine =
-    .label = Agiuntar cun datoteca
+add-web-search-engine =
+    .label = Agiuntar…
     .accesskey = A
 remove-search-engine =
     .label = Allontanar
     .accesskey = o
+
+add-opensearch-provider-title = Agiuntar in purschider OpenSearch
+add-opensearch-provider-text = Endatescha l'URL dal purschider OpenSearch che duai vegnir agiuntà. Utilisescha l'URL direct da la datoteca da descripziun OpenSearch u in URL per al chattar automaticamain.
+
+adding-opensearch-provider-failed-title = Betg reussì dad agiuntar il purschider OpenSearch
+adding-opensearch-provider-failed-text = Impussibel dad agiuntar il purschider OpenSearch per { $url }.
 
 minimize-to-tray-label =
     .label = Sche { -brand-short-name } è minimà, al spustar en la trav da notificaziuns
@@ -197,7 +203,7 @@ app-icon-options =
     .label = Preferenzas per l'icona da l'applicaziun…
     .accesskey = n
 
-notification-settings = Avertiments ed il tun da standard pon vegnir deactivads sin la panela da communicaziuns en las preferenzas dal sistem.
+notification-settings2 = Avertiments ed il tun da standard pon vegnir deactivads en la panela da notificaziuns en ils parameters dal sistem.
 
 animated-alert-label =
     .label = Mussar in avis
@@ -252,6 +258,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Activar la defilada cuntinuanta
     .accesskey = n
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Adina mussar las travs per defilar
+    .accesskey = d
 
 system-integration-legend = Integraziun en il sistem
 always-check-default =
@@ -411,13 +420,9 @@ quoted-text-color =
 search-handler-table =
     .placeholder = Filtrar tips da cuntegn ed acziuns
 
-type-column-label =
-    .label = Tip da datoteca
-    .accesskey = T
+type-column-header = Tip da cuntegn
 
-action-column-label =
-    .label = Acziun
-    .accesskey = A
+action-column-header = Acziun
 
 save-to-label =
     .label = Memorisar tut las datotecas en il suandant ordinatur:
@@ -571,12 +576,6 @@ restore-html-label =
 default-format-label =
     .label = Utilisar sco standard il format da paragraf empè dal text da corp
     .accesskey = p
-
-format-description = Configurar il cumportament dal format da text
-
-send-options-label =
-    .label = Opziuns da trametter…
-    .accesskey = o
 
 autocomplete-description = Cun adressar messadis, tschertgar endataziuns correspundentas en:
 
@@ -858,8 +857,6 @@ theme-label =
     .value = Design:
     .accesskey = e
 
-style-thunderbird =
-    .label = Thunderbird
 style-bubbles =
     .label = Borlas
 style-dark =
@@ -877,6 +874,8 @@ chat-variant-label =
     .value = Varianta:
     .accesskey = V
 
+## Preferences UI Search Results
+
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -885,19 +884,19 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
+search-preferences-input2 =
     .style = width: 15.4em
-    .placeholder = Tschertgar en las preferenzas
+    .placeholder = Chattar en ils parameters
 
-## Preferences UI Search Results
+## Settings UI Search Results
 
 search-results-header = Resultats da tschertga
 
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
+search-results-empty-message2 =
     { PLATFORM() ->
-        [windows] Perstgisa! Impussibel da chattar «<span data-l10n-name="query"></span>» en las preferenzas.
-       *[other] Perstgisa! Impussibel da chattar «<span data-l10n-name="query"></span>» en las preferenzas.
+        [windows] Perstgisa! Impussibel da chattar «<span data-l10n-name="query"></span>» en ils parameters.
+       *[other] Perstgisa! Impussibel da chattar «<span data-l10n-name="query"></span>» en ils parameters.
     }
 
 search-results-help-link = Dovras sustegn? Consultescha <a data-l10n-name="url">{ -brand-short-name }l'agid</a>

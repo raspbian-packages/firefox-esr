@@ -75,19 +75,19 @@ restart-later = Reinicia més tard
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
-extension-controlled-password-saving = Una extensió, <img data-l10n-name="icon"/> { $name }, controla aquest paràmetre.
+extension-controlling-password-saving = L'extensió <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla aquest paràmetre.
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
-extension-controlled-web-notifications = Una extensió, <img data-l10n-name="icon"/> { $name }, controla aquest paràmetre.
+extension-controlling-web-notifications = L'extensió <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla aquest paràmetre.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlled-privacy-containers = L'extensió «<img data-l10n-name="icon"/> { $name }» requereix pestanyes de contenidor.
+extension-controlling-privacy-containers = L'extensió <img data-l10n-name="icon"/> <strong>{ $name }</strong> requereix pestanyes de contenidor.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
-extension-controlled-websites-content-blocking-all-trackers = Una extensió,  <img data-l10n-name="icon"/> { $name }, està controlant aquest paràmetre.
+extension-controlling-websites-content-blocking-all-trackers = L'extensió <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla aquest paràmetre.
 # This string is shown to notify the user that their proxy configuration preferences
 # are being controlled by an extension.
-extension-controlled-proxy-config = L'extensió «<img data-l10n-name="icon"/> { $name }» controla la forma com el { -brand-short-name } es connecta a Internet.
+extension-controlling-proxy-config = L'extensió <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla com el { -brand-short-name } es connecta a Internet.
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -113,9 +113,6 @@ is-not-default = El { -brand-short-name } no és el navegador per defecte
 set-as-my-default-browser =
     .label = Fes que sigui el navegador per defecte…
     .accesskey = d
-startup-restore-previous-session =
-    .label = Restaura la sessió anterior
-    .accesskey = s
 startup-restore-windows-and-tabs =
     .label = Obre les finestres i pestanyes anteriors
     .accesskey = s
@@ -130,9 +127,6 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Obre els enllaços en pestanyes en lloc de finestres noves
     .accesskey = t
-warn-on-close-multiple-tabs =
-    .label = Avisa en tancar diverses pestanyes
-    .accesskey = d
 confirm-on-close-multiple-tabs =
     .label = Confirma abans de tancar diverses pestanyes de cop
     .accesskey = m
@@ -186,7 +180,40 @@ containers-remove-cancel-button = No eliminis aquest contenidor
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Llengua i aparença
-fonts-and-colors-header = Tipus de lletra i colors
+preferences-web-appearance-header = Aparença dels llocs web
+preferences-web-appearance-description = Alguns llocs web adapten l'esquema de colors d'acord amb les vostres preferències. Trieu quin esquema de colors voleu per aquests llocs.
+preferences-web-appearance-choice-browser = Tema del { -brand-short-name }
+preferences-web-appearance-choice-system = Tema del sistema
+preferences-web-appearance-choice-light = Clar
+preferences-web-appearance-choice-dark = Fosc
+preferences-web-appearance-choice-tooltip-browser =
+    .title = Fa que el fons i el contingut dels llocs web coincideixin amb del tema del { -brand-short-name }.
+preferences-web-appearance-choice-tooltip-system =
+    .title = Fa que el fons i el contingut dels llocs web coincideixin amb del tema del del sistema.
+preferences-web-appearance-choice-tooltip-light =
+    .title = Usa un aspecte clar per al fons i el contingut dels llocs web.
+preferences-web-appearance-choice-tooltip-dark =
+    .title = Usa un aspecte fosc per al fons i el contingut dels llocs web.
+preferences-web-appearance-choice-input-browser =
+    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
+preferences-web-appearance-choice-input-system =
+    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-light =
+    .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
+preferences-web-appearance-choice-input-dark =
+    .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning = La vostra selecció de colors modifica l'aparença dels llocs web. <a data-l10n-name="colors-link">Gestiona els colors</a>
+# This message contains one link. It can be moved within the sentence as needed
+# to adapt to your language, but should not be changed.
+preferences-web-appearance-footer = Gestioneu els temes del { -brand-short-name } a <a data-l10n-name="themes-link">Extensions i temes</a>
+preferences-colors-header = Colors
+preferences-colors-description = Sobreescriu els colors per defecte del { -brand-short-name } per al text, els fons dels llocs web i els enllaços.
+preferences-colors-manage-button =
+    .label = Gestiona els colors…
+    .accesskey = c
+preferences-fonts-header = Tipus de lletra
 default-font = Tipus de lletra per defecte
     .accesskey = d
 default-font-size = Mida:
@@ -194,9 +221,6 @@ default-font-size = Mida:
 advanced-fonts =
     .label = Avançat…
     .accesskey = v
-colors-settings =
-    .label = Colors…
-    .accesskey = C
 # Zoom is a noun, and the message is used as header for a group of options
 preferences-zoom-header = Zoom
 preferences-default-zoom = Zoom per defecte
@@ -241,6 +265,8 @@ files-and-applications-title = Fitxers i aplicacions
 download-header = Baixades
 download-save-to =
     .label = Desa els fitxers a
+    .accesskey = s
+download-save-where = Desa els fitxers a
     .accesskey = s
 download-choose-folder =
     .label =
@@ -331,6 +357,13 @@ applications-use-os-default-label =
 
 ##
 
+applications-handle-new-file-types-description = Què ha de fer el { -brand-short-name } amb els altres fitxers?
+applications-save-for-new-types =
+    .label = Desa el fitxers
+    .accesskey = s
+applications-ask-before-handling =
+    .label = Demana si els fitxers s'han d'obrir o de desar
+    .accesskey = a
 drm-content-header = Contingut DRM (Digital Rights Management, Gestió de drets digitals)
 play-drm-content =
     .label = Reprodueix contingut controlat per DRM
@@ -359,6 +392,9 @@ update-application-warning-cross-user-setting = Aquest paràmetre s'aplicarà a 
 update-application-use-service =
     .label = Instal·la les actualitzacions en segon pla
     .accesskey = s
+update-application-suppress-prompts =
+    .label = Mostra menys notificacions d'actualització
+    .accesskey = n
 update-setting-write-failure-title2 = Error en desar els paràmetres d'actualització
 # Variables:
 #   $path (String) - Path to the configuration file
@@ -404,6 +440,9 @@ browsing-use-autoscroll =
 browsing-use-smooth-scrolling =
     .label = Utilitza el desplaçament suau
     .accesskey = s
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Mostra sempre les barres de desplaçament
+    .accesskey = o
 browsing-use-onscreen-keyboard =
     .label = Mostra un teclat tàctil quan calgui
     .accesskey = M
@@ -481,11 +520,6 @@ home-prefs-content-header = Contingut d'inici del Firefox
 home-prefs-content-description = Trieu el contingut que voleu a la pantalla d'inici del Firefox.
 home-prefs-search-header =
     .label = Cerca web
-home-prefs-topsites-header =
-    .label = Llocs principals
-home-prefs-topsites-description = Els llocs que visiteu més sovint
-home-prefs-topsites-by-option-sponsored =
-    .label = Llocs principals patrocinats
 home-prefs-shortcuts-header =
     .label = Dreceres
 home-prefs-shortcuts-description = Llocs que deseu o visiteu
@@ -497,7 +531,6 @@ home-prefs-shortcuts-by-option-sponsored =
 
 home-prefs-recommended-by-header =
     .label = Recomanat per { $provider }
-home-prefs-recommended-by-description-update = Contingut excepcional d'arreu del web, seleccionat per { $provider }
 home-prefs-recommended-by-description-new = Contingut excepcional seleccionat per { $provider }, part de la família de { -brand-product-name }
 
 ##
@@ -505,9 +538,6 @@ home-prefs-recommended-by-description-new = Contingut excepcional seleccionat pe
 home-prefs-recommended-by-learn-more = Com funciona
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Articles patrocinats
-home-prefs-highlights-header =
-    .label = Destacats
-home-prefs-highlights-description = Una selecció dels llocs que heu desat o visitat
 home-prefs-highlights-option-visited-pages =
     .label = Pàgines visitades
 home-prefs-highlights-options-bookmarks =
@@ -525,7 +555,6 @@ home-prefs-recent-activity-description = Una selecció de continguts i llocs rec
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Retalls
-home-prefs-snippets-description = Actualitzacions de { -vendor-short-name } i del { -brand-product-name }
 home-prefs-snippets-description-new = Consells i novetats de { -vendor-short-name } i del { -brand-product-name }
 home-prefs-sections-rows-option =
     .label =
@@ -858,14 +887,10 @@ sitedata-block-desc = Tipus de contingut blocat
     .accesskey = T
 sitedata-option-block-cross-site-trackers =
     .label = Elements de seguiment entre llocs
-sitedata-option-block-cross-site-and-social-media-trackers =
-    .label = Elements de seguiment de xarxes socials i entre llocs
-sitedata-option-block-cross-site-tracking-cookies-including-social-media =
-    .label = Galetes de seguiment entre llocs (inclou les galetes de xarxes socials)
-sitedata-option-block-cross-site-cookies-including-social-media =
-    .label = Galetes entre llocs (inclou les galetes de xarxes socials)
-sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
-    .label = Elements de seguiment de xarxes socials i entre llocs, i aïlla les galetes restants
+sitedata-option-block-cross-site-tracking-cookies =
+    .label = Galetes de seguiment entre llocs
+sitedata-option-block-cross-site-cookies =
+    .label = Galetes de seguiment entre llocs, i aïlla les altres galetes entre llocs
 sitedata-option-block-unvisited =
     .label = Galetes de llocs web no visitats
 sitedata-option-block-all-third-party =
@@ -955,7 +980,6 @@ content-blocking-etp-standard-tcp-rollout-checkbox =
 content-blocking-etp-standard-tcp-rollout-description = La protecció total de galetes aïlla les galetes del lloc on us trobeu, de manera que els elements de seguiment no les poden utilitzar per a seguir-vos d'un lloc a l'altre,
 content-blocking-etp-standard-tcp-rollout-learn-more = Més informació
 content-blocking-warning-title = Atenció!
-content-blocking-and-isolating-etp-warning-description = El bloqueig d'elements de seguiment i l'aïllament de galetes pot afectar la funcionalitat d'alguns llocs. Torneu a carregar la pàgina amb els elements de seguiment per carregar-ne tot el contingut.
 content-blocking-and-isolating-etp-warning-description-2 = Aquest paràmetre pot fer que alguns llocs web no mostrin part del contingut o que no funcionin correctament. Si sembla que un lloc no funciona bé, podeu provar de desactivar la protecció contra el seguiment perquè aquest lloc carregui tot el contingut.
 content-blocking-warning-learn-how = Vegeu com fer-ho
 content-blocking-reload-description = Cal tornar a carregar les pestanyes per aplicar aquests canvis.
@@ -1027,9 +1051,6 @@ permissions-autoplay-settings =
 permissions-block-popups =
     .label = Bloca les finestres emergents
     .accesskey = B
-permissions-block-popups-exceptions =
-    .label = Excepcions…
-    .accesskey = E
 # "popup" is a misspelling that is more popular than the correct spelling of
 # "pop-up" so it's included as a search keyword, not displayed in the UI.
 permissions-block-popups-exceptions-button =

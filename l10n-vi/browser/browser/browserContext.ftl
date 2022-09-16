@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Lưu liên kết vào { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Sao chép địa chỉ email
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = Sao chép số điện thoại
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Sao chép liên kết
@@ -234,7 +233,7 @@ main-context-menu-media-loop =
 ## because the two context-menu items are mutually exclusive.
 
 main-context-menu-media-show-controls =
-    .label = Hiện các điều khiển
+    .label = Hiển thị điều khiển
     .accesskey = C
 
 main-context-menu-media-hide-controls =
@@ -376,7 +375,7 @@ main-context-menu-frame =
     .accesskey = h
 
 main-context-menu-frame-show-this =
-    .label = Chỉ hiện khung này
+    .label = Chỉ hiển thị khung này
     .accesskey = S
 
 main-context-menu-frame-open-tab =
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Mở liên kết trong thẻ { $containerName } mới
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = Hiển thị mật khẩu
+    .accesskey = v

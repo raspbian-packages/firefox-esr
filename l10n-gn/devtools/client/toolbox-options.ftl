@@ -41,6 +41,11 @@ options-collapse-attrs-label = Tekome’ẽ DOM ñemboyke
 options-collapse-attrs-tooltip =
     .title = Tekome’ẽ ipukúva moambuekuaávape ñemboyke
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Eikutu ha embosyryry rehaijey hag̃ua tuichakue térã michĩngue
+options-inspector-draggable-properties-tooltip =
+    .title = Eikutu ha embosyryry rehaijey hag̃ua tuichakue térã michĩngue moambuekuaáva renondépe
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Sa’y joja imarãva
@@ -48,6 +53,7 @@ options-default-color-unit-authored = Apoháraramo
 options-default-color-unit-hex = Mba’evai
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Sa’ykuéra réra
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Ñemopotĩ okayguáva myandy
 options-enable-remote-tooltip2 =
     .title = Emyandývo ko poravorã omoneĩta ndéve emopotĩvo ko kundahára reko oka guive
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Emyandy mopotĩeteha mba’eteéva
+options-enable-custom-formatters-tooltip =
+    .title = Emyandývo poravorã omoneĩ umi tenda ombohapévo mopotĩeteha mba’eteéva DOM peg̃uarãva
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Mba’epytyvõrã mba’apohára moheñói HTTP rupi (tembipuru ryru ijurujáramo)

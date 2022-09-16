@@ -5,8 +5,6 @@
 
 about-logins-page-title = 登入資訊與密碼
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = 搜尋登入資訊
 
@@ -60,7 +58,6 @@ about-logins-list-item-breach-icon =
     .title = 發生資料外洩事件的網站
 about-logins-list-item-vulnerable-password-icon =
     .title = 脆弱的密碼
-
 about-logins-list-section-breach = 發生資料外洩事件的網站
 about-logins-list-section-vulnerable = 脆弱的密碼
 about-logins-list-section-nothing = 沒有警報
@@ -75,8 +72,8 @@ about-logins-login-intro-heading-logged-in = 找不到同步的登入資訊。
 login-intro-description = 若您在其他裝置上儲存登入資訊到 { -brand-product-name } 過，請參考下列步驟，即可在此裝置使用:
 login-intro-instructions-fxa = 在您儲存登入資訊的裝置註冊或登入 { -fxaccount-brand-name }。
 login-intro-instructions-fxa-settings = 到「設定 > 同步 > 開啟同步…」勾選「登入資訊與密碼」選取框。
-login-intro-instructions-fxa-help = 若需協助，請到 <a data-l10n-name="help-link">{ -lockwise-brand-short-name } 技術支援站</a>。
-about-logins-intro-import = 若登入資訊儲存在其他瀏覽器，您可以<a data-l10n-name="import-link">匯入到 { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = 若需更多說明，請造訪<a data-l10n-name="passwords-help-link">密碼支援</a>說明頁面。
+about-logins-intro-browser-only-import = 若登入資訊儲存在其他瀏覽器，您可以<a data-l10n-name="import-link">匯入到 { -brand-product-name }</a>
 about-logins-intro-import2 = 若您的登入資訊並未儲存於 { -brand-product-name }，可以<a data-l10n-name="import-browser-link">從另一套瀏覽器</a>或<a data-l10n-name="import-file-link">檔案</a>匯入
 
 ## Login
@@ -131,8 +128,6 @@ about-logins-copy-password-os-auth-dialog-message-win = 請在下方輸入您的
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = 複製儲存的網站密碼
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = 請在下方輸入您的 Windows 登入帳號密碼才能匯出登入資訊。這個動作是為了保護您的登入資訊安全。
 # This message can be seen when attempting to export a password in about:logins
@@ -145,8 +140,6 @@ about-logins-primary-password-notification-message = 請輸入您的主控密碼
 master-password-reload-button =
     .label = 登入
     .accesskey = L
-
-## Password Sync notification
 
 ## Dialogs
 

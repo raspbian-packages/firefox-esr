@@ -22,6 +22,7 @@ openpgp-view-your-encryption-key =
 openpgp-openpgp = OpenPGP
 
 openpgp-no-sig = Ingen digital signatur
+openpgp-no-sig-info = Denne meddelelse indeholder ikke afsenderens digitale signatur. Fraværet af en digital signatur betyder, at meddelelsen kan være sendt af en anden, der udgiver sig for at have denne mailadresse. Det er også muligt at meddelelsen er blevet ændret undervejs.
 openpgp-uncertain-sig = Usikker digital signatur
 openpgp-invalid-sig = Ugyldig digital signatur
 openpgp-good-sig = God digital signatur
@@ -40,6 +41,17 @@ openpgp-sig-key-id-with-subkey-id = Underskrivers nøgle-id: { $key } (Undernøg
 
 openpgp-enc-key-id = Dit dekrypteringsnøgle-id: { $key }
 openpgp-enc-key-with-subkey-id = Dit dekrypteringsnøgle-id: { $key } (Undernøgle-id: { $subkey })
+
+openpgp-enc-none = Meddelelsen er ikke krypteret
+openpgp-enc-none-label = Denne meddelelse blev ikke krypteret, inden den blev sendt. Oplysninger, der er sendt over internettet uden kryptering, kan være set af andre personer undervejs.
+
+openpgp-enc-invalid-label = Meddelelsen kan ikke dekrypteres
+openpgp-enc-invalid = Denne meddelelse blev krypteret, inden den blev sendt til dig, men den kan ikke dekrypteres.
+
+openpgp-enc-clueless = Der er ukendte problemer med denne krypterede meddelelse.
+
+openpgp-enc-valid-label = Meddelelsen er krypteret
+openpgp-enc-valid = Denne besked blev krypteret, før den blev sendt til dig. Kryptering sikrer, at beskeden kun kan læses af de modtagere, den var beregnet til.
 
 openpgp-unknown-key-id = Ukendt nøgle
 

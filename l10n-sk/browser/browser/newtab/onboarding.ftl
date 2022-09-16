@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -16,7 +11,7 @@
 ## Welcome page strings
 
 onboarding-welcome-header = Víta vás { -brand-short-name }
-onboarding-start-browsing-button-label = Začať prehliadať
+onboarding-start-browsing-button-label = Poďme prehliadať
 onboarding-not-now-button-label = Teraz nie
 
 ## Custom Return To AMO onboarding strings
@@ -28,40 +23,7 @@ return-to-amo-subtitle = Skvelé, odteraz máte { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Teraz naspäť k doplnku <img data-l10n-name="icon"/> <b>{ $addon-name }.</b>
 return-to-amo-add-extension-label = Pridať rozšírenie
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Víta vás <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = Rýchly a bezpečný prehliadač, ktorý vyvíja nezisková organizácia.
-onboarding-multistage-welcome-primary-button-label = Začať nastavenie
-onboarding-multistage-welcome-secondary-button-label = Prihlásiť sa
-onboarding-multistage-welcome-secondary-button-text = Už máte účet?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = Nastavte si { -brand-short-name } ako <span data-l10n-name="zap">predvolený prehliadač</span>
-onboarding-multistage-set-default-subtitle = Rýchlosť, bezpečnosť a súkromie.
-onboarding-multistage-set-default-primary-button-label = Nastaviť ako predvolený
-onboarding-multistage-set-default-secondary-button-label = Teraz nie
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = Len niekoľko kliknutí a môžete <span data-l10n-name="zap">{ -brand-short-name }</span> používať
-onboarding-multistage-pin-default-subtitle = Rýchle, bezpečné a súkromné prehliadanie pri každom použití webu.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Po otvorení nastavení nájdite sekciu Webový prehliadač a zvoľte { -brand-short-name }
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = Týmto pripnete { -brand-short-name } na paneli úloh a otvoríte nastavenia
-onboarding-multistage-pin-default-primary-button-label = Nastavte si { -brand-short-name } ako predvolený prehliadač
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Importujte svoje heslá, záložky a <span data-l10n-name="zap">ďalšie položky</span>
-onboarding-multistage-import-subtitle = Prechádzate z iného prehliadača? Všetko si môžete do { -brand-short-name(case: "gen") } jednoducho preniesť.
-onboarding-multistage-import-primary-button-label = Importovať
-onboarding-multistage-import-secondary-button-label = Teraz nie
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = Tieto stránky boli nájdené na tomto zariadení. { -brand-short-name } neukladá ani nesynchronizuje údaje z iných prehliadačov ak si ich neimportujete.
+return-to-amo-add-theme-label = Pridať tému vzhľadu
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = Tieto stránky boli nájdené na tomto zari
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Začíname: stránka { $current } z { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Vyberte si <span data-l10n-name="zap">vzhľad</span>
-onboarding-multistage-theme-subtitle = Prispôsobte si { -brand-short-name }.
-onboarding-multistage-theme-primary-button-label2 = Hotovo
-onboarding-multistage-theme-secondary-button-label = Teraz nie
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Automatický
-onboarding-multistage-theme-label-light = Svetlý
-onboarding-multistage-theme-label-dark = Tmavý
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -149,7 +99,7 @@ mr1-onboarding-import-primary-button-label-attribution = Importovať z prehliada
 mr1-onboarding-import-primary-button-label-no-attribution = Importovať z predchádzajúceho prehliadača
 mr1-onboarding-import-secondary-button-label = Teraz nie
 mr2-onboarding-colorway-header = Život vo farbách
-mr2-onboarding-colorway-subtitle = Nové živé farebné prevedenie. K dispozícii na obmedzený čas.
+mr2-onboarding-colorway-subtitle = Nové živé farebné témy. K dispozícii na obmedzený čas.
 mr2-onboarding-colorway-primary-button-label = Uložiť farebnú tému
 mr2-onboarding-colorway-secondary-button-label = Teraz nie
 mr2-onboarding-colorway-label-soft = Jemná
@@ -171,44 +121,12 @@ mr1-onboarding-theme-label-light = Svetlá
 mr1-onboarding-theme-label-dark = Tmavá
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Hotovo
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title = Použije vzhľad tlačidiel, ponúk a okien podľa nastavenia vášho operačného systému.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description = Použije vzhľad tlačidiel, ponúk a okien podľa nastavenia vášho operačného systému.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title = Použije svetlý vzhľad tlačidiel, ponúk a okien.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description = Použije svetlý vzhľad tlačidiel, ponúk a okien.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title = Použije tmavý vzhľad tlačidiel, ponúk a okien.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description = Použije tmavý vzhľad tlačidiel, ponúk a okien.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title = Použije farebný vzhľad tlačidiel, ponúk a okien.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description = Použije farebný vzhľad tlačidiel, ponúk a okien.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -266,17 +184,54 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = Pozrite sa na farebnú tému { $colorwayName }
+mr2-onboarding-colorway-label = Pozrite sa na farebnú tému { $colorwayName }
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Pozrite sa predvolené témy vzhľadu
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = Pozrite sa predvolené témy vzhľadu
+mr2-onboarding-default-theme-label = Pozrite sa predvolené témy vzhľadu
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Ďakujeme, že ste si nás vybrali
 mr2-onboarding-thank-you-text = { -brand-short-name } je nezávislý prehliadač podporovaný neziskovou organizáciou. Spoločne robíme web bezpečnejším, zdravším a s väčším ohľadom na súkromie.
 mr2-onboarding-start-browsing-button-label = Začať prehliadanie
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Vyberte si svoj jazyk
+onboarding-live-language-button-label-downloading = Sťahuje sa jazykový balík { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = Získavajú sa dostupné jazyky…
+onboarding-live-language-installing = Inštaluje sa jazykový balík { $negotiatedLanguage }…
+onboarding-live-language-secondary-cancel-download = Zrušiť
+onboarding-live-language-skip-button-label = Preskočiť
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100x
+    <span data-l10n-name="zap">vďaka</span>
+fx100-thank-you-subtitle = Je to naše 100. vydanie! Ďakujeme, že nám pomáhate budovať lepší a zdravší internet.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] Ponechať { -brand-short-name } v Docku
+       *[other] Pripnúť { -brand-short-name } na hlavný panel úloh
+    }
+fx100-upgrade-thanks-header = 100x vďaka
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = Je to naše 100. vydanie { -brand-short-name(case: "gen") }. Ďakujeme <em>vám</em>, že nám pomáhate budovať lepší a zdravší internet.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = Je to naše 100. vydanie! Ďakujeme, že ste súčasťou našej komunity. Jediným kliknutím si môžete { -brand-short-name } ponechať na ďalších sto.

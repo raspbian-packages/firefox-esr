@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Các trang web chứng minh danh tín
 
 cert-error-symantec-distrust-admin = Bạn có thể thông báo cho quản trị viên trang web về vấn đề này.
 
+cert-error-old-tls-version = Trang web này có thể không hỗ trợ giao thức TLS 1.2, đây là phiên bản tối thiểu được hỗ trợ bởi { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Nhận được phản hồi lạ từ máy chủ
 nssFailure2-title = Không thể kết nối an toàn
 csp-xfo-error-title = { -brand-short-name } không thể mở trang này
 corruptedContentError-title = Lỗi nội dung bị hỏng
-remoteXUL-title = Remote XUL
 sslv3Used-title = Không thể kết nối một cách an toàn
 inadequateSecurityError-title = Kết nối của bạn không an toàn
 blockedByPolicy-title = Trang bị chặn

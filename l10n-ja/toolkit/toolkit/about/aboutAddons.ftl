@@ -35,6 +35,8 @@ detail-version =
     .label = バージョン
 detail-last-updated =
     .label = 更新日
+addon-detail-description-expand = 詳細を表示
+addon-detail-description-collapse = 詳細を隠す
 detail-contributions-description = このアドオンの開発者が開発を継続するための少額の寄付によるサポートを求めています。
 detail-contributions-button = Contribute
     .title = このアドオンの開発に寄付する
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = 最近の更新
 addon-category-recent-updates-title =
     .title = 最近の更新
+addon-category-sitepermission = サイト許可設定
+addon-category-sitepermission-title =
+    .title = サイトの許可設定
 
 ## These are global warnings
 
@@ -166,6 +171,7 @@ addon-updates-update-addons-automatically = アドオンを既定で自動更新
 ## update checking behavior for all add-ons to the default global behavior
 ## (which itself is either "Automatically" or "Manually", controlled by the
 ## extensions-updates-update-addons-automatically.label menu item).
+
 # (^m^) 原文が直感的でないため実際の動作に合わせて、"Automatically / Manually" を使わない表現に変更した。
 # https://github.com/mozilla-japan/gecko-l10n/issues/263
 addon-updates-reset-updates-to-automatic = すべてのアドオンの更新設定を既定にリセット
@@ -196,8 +202,9 @@ addon-manage-extensions-shortcuts = 拡張機能のショートカットキー�
     .accesskey = S
 shortcuts-no-addons = 有効な拡張機能がありません。
 shortcuts-no-commands = 次の拡張機能にはショートカットがありません:
+# (^m^) shortcuts-input.placeholder は 15 文字まで
 shortcuts-input =
-    .placeholder = ショートカットキーを入力してください
+    .placeholder = ショートカットキーを入力
 shortcuts-browserAction2 = ツールバーボタンを有効化
 shortcuts-pageAction = ページ操作を有効化
 shortcuts-sidebarAction = サイドバーの表示を切り替え
@@ -283,14 +290,18 @@ extension-enabled-heading = 有効
 extension-disabled-heading = 無効
 theme-enabled-heading = 有効
 theme-disabled-heading = 無効
+theme-disabled-heading2 = 保存したテーマ
 theme-monochromatic-heading = カラーテーマ
 theme-monochromatic-subheading = { -brand-product-name } の新しいカラーテーマが期間限定で利用できます。
+theme-colorways-button = カラーテーマを試す
 plugin-enabled-heading = 有効
 plugin-disabled-heading = 無効
 dictionary-enabled-heading = 有効
 dictionary-disabled-heading = 無効
 locale-enabled-heading = 有効
 locale-disabled-heading = 無効
+sitepermission-enabled-heading = 有効
+sitepermission-disabled-heading = 無効
 always-activate-button = 常に有効化
 never-activate-button = 無効化
 addon-detail-author-label = 作者
@@ -298,11 +309,9 @@ addon-detail-version-label = バージョン
 addon-detail-last-updated-label = 最終更新日
 addon-detail-homepage-label = ホームページ
 addon-detail-rating-label = 評価
-
 # Message for add-ons with a staged pending update.
 install-postponed-message = この拡張機能は { -brand-short-name } の再起動時に更新されます。
 install-postponed-button = 今すぐ更新
-
 # The average rating that the add-on has received.
 # Variables:
 #   $rating (number) - A number between 0 and 5. The translation should show at most one digit after the comma.
@@ -345,11 +354,11 @@ addon-badge-recommended2 =
 # We hard code "Mozilla" in the string below because the extensions are built
 # by Mozilla and we don't want forks to display "by Fork".
 addon-badge-line3 =
-  .title = Mozilla により作成された公式の拡張機能です。安全性とパフォーマンスの基準に適合します
-  .aria-label = { addon-badge-line3.title }
+    .title = Mozilla により作成された公式の拡張機能です。安全性とパフォーマンスの基準に適合します
+    .aria-label = { addon-badge-line3.title }
 addon-badge-verified2 =
-  .title = この拡張機能はセキュリティとパフォーマンスの基準に適合するようレビューされています。
-  .aria-label = { addon-badge-verified2.title }
+    .title = この拡張機能はセキュリティとパフォーマンスの基準に適合するようレビューされています。
+    .aria-label = { addon-badge-verified2.title }
 
 ##
 
@@ -363,6 +372,7 @@ addon-permissions-optional = 追加機能の任意の許可設定:
 addon-permissions-learnmore = 許可設定についての詳細情報
 recommended-extensions-heading = おすすめの拡張機能
 recommended-themes-heading = おすすめのテーマ
+addon-sitepermissions-required = <span data-l10n-name="hostname">{ $hostname }</span> に以下の機能を許可します:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = ご自分で作ってみませんか？ <a data-l10n-name="link">Firefox Color で独自のテーマを構築できます。</a>
@@ -375,6 +385,7 @@ plugin-heading = プラグインの管理
 dictionary-heading = スペルチェック辞書の管理
 locale-heading = 言語パックの管理
 updates-heading = 更新の管理
+sitepermission-heading = サイト許可設定の管理
 discover-heading = { -brand-short-name } のパーソナライズ
 shortcuts-heading = 拡張機能のショートカットキーの管理
 default-heading-search-label = アドオンを探す
@@ -382,3 +393,20 @@ addons-heading-search-input =
     .placeholder = addons.mozilla.org を検索
 addon-page-options-button =
     .title = アドオンツール
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } は { -brand-short-name } { $version } と互換性がありません。
+details-notification-unsigned-and-disabled = { $name } は { -brand-short-name } での使用が検証できないため無効化されています。
+details-notification-unsigned-and-disabled-link = 詳細情報
+details-notification-unsigned = { $name } は { -brand-short-name } での使用が検証できません。配布元を確認して慎重に使用してください。
+details-notification-unsigned-link = 詳細情報
+details-notification-blocked = { $name } はセキュリティまたは安定性に問題があるため無効化されています。
+details-notification-blocked-link = 詳細情報
+details-notification-softblocked = { $name } はセキュリティまたは安定性の問題を引き起こすことが知られています。
+details-notification-softblocked-link = 詳細情報
+details-notification-gmp-pending = { $name } はすぐにインストールされます。

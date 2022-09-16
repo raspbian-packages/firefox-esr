@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Recommendit Featur
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Whit fur am I seein this
+
 cfr-doorhanger-extension-cancel-button = No Jist Noo
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Eik On Noo
     .accesskey = E
+
 cfr-doorhanger-extension-manage-settings-button = Manage Recommendation Settins
     .accesskey = M
+
 cfr-doorhanger-extension-never-show-recommendation = Dinnae Kythe This Recommendation
     .accesskey = S
+
 cfr-doorhanger-extension-learn-more-link = Lairn mair
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = by { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recommendation
 cfr-doorhanger-extension-notification2 = Recommendation
     .tooltiptext = Extension recommendation
     .a11y-announcement = Extension recommendation redd
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Recommendation
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = Lairn mair
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = New featur:
+
 cfr-whatsnew-button =
     .label = Whit's New
     .tooltiptext = Whit's New
+
 cfr-whatsnew-release-notes-link-text = Read the roll-oot notes
 
 ## Enhanced Tracking Protection Milestones
@@ -121,15 +131,28 @@ cfr-doorhanger-video-support-header = Update { -brand-short-name } fur tae pley 
 cfr-doorhanger-video-support-primary-button = Update Noo
     .accesskey = U
 
+## Spotlight modal shared strings
+
+spotlight-learn-more-expanded = Lairn mair
+    .title = Sneck
+
 ## VPN promotion dialog for public Wi-Fi users
 ##
 ## If a user is detected to be on a public Wi-Fi network, they are given a
 ## bit of info about how to improve their privacy and then offered a button
 ## to the Mozilla VPN page and a link to dismiss the dialog.
 
+# This header text can be explicitly wrapped.
 spotlight-public-wifi-vpn-header = Luiks like ye're yaisin public Wi-Fi
 spotlight-public-wifi-vpn-body = Tae hide yer airtin and yer stravaigin ongauns, think aboot a Virtual Private Netwark. It'll help keep ye bieldit when stravaigin in public places sic as airports and coffee shops.
 spotlight-public-wifi-vpn-primary-button = Stey private wi { -mozilla-vpn-brand-name }
     .accesskey = S
 spotlight-public-wifi-vpn-link = No Jist Noo
     .accesskey = N
+
+## Total Cookie Protection Rollout
+
+spotlight-total-cookie-protection-secondary-button = No jist noo
+
+## Emotive Continuous Onboarding
+

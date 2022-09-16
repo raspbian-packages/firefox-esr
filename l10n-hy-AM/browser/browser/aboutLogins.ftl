@@ -5,14 +5,13 @@
 
 about-logins-page-title = Մուտքագրումներ և գաղտնաբառեր
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Որոնել մուտքագրումներ
 
 create-login-button = Ստեղծել նոր մուտքագրում
 
 fxaccounts-sign-in-text = Ստացեք ձեր գաղտնաբառերը ձեր մյուս սարքերում
+fxaccounts-sign-in-sync-button = Մուտք գործեք՝ համաժամեցնելու համար
 fxaccounts-avatar-button =
     .title = Կառավարել հաշիվը
 
@@ -58,12 +57,15 @@ about-logins-list-item-breach-icon =
     .title = Խախտված կայք
 about-logins-list-item-vulnerable-password-icon =
     .title = Խոցելի գաղտնաբառ
+about-logins-list-section-nothing = Զգուշացում չկա
+about-logins-list-section-today = Այսօր
+about-logins-list-section-yesterday = Երեկ
+about-logins-list-section-week = Վերջին 7 օրում
 
 ## Introduction screen
 
 about-logins-login-intro-heading-logged-in = Համաժամեցված մուտք չի գտնվել:
 login-intro-description = Եթե պահպանել եք ձեր մուտքագրումները { -brand-product-name }-ում այլ սարքում, ահա թե ինչպես կարող եք ստանալ դրանք.
-about-logins-intro-import = Եթե ձեր մուտքանունները այլ զննարկիչում են պահպանված, դուք կարող եք <a data-l10n-name="import-link">դրանք ներածել { -lockwise-brand-short-name }</a>-ում
 
 ## Login
 
@@ -116,8 +118,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Ձեր մուտքագր�
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = պատճենեք պահպանված գաղտնաբառը
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Ձեր մուտքագրումը արտահանելու համար մուտքագրեք ձեր Windows մուտքի հավատարմագրերը: Սա օգնում է պաշտպանել ձեր հաշիվների անվտանգությունը:
 # This message can be seen when attempting to export a password in about:logins
@@ -130,8 +130,6 @@ about-logins-primary-password-notification-message = Մուտքագրեք Հիմ
 master-password-reload-button =
     .label = Մուտք գործել
     .accesskey = L
-
-## Password Sync notification
 
 ## Dialogs
 
@@ -204,7 +202,6 @@ about-logins-error-message-duplicate-login-with-link = { $loginTitle }-ի այդ
 # This is a generic error message.
 about-logins-error-message-default = Գաղտնաբառի պահման ժամանակ հայտնվեց սխալ։
 
-
 ## Login Export Dialog
 
 # Title of the file picker dialog
@@ -264,15 +261,21 @@ about-logins-import-dialog-error-title = Ներմուծման սխալ
 about-logins-import-dialog-error-file-permission-title = Հնարավոր չէ կարդալ ֆայլը
 about-logins-import-dialog-error-no-logins-imported = Ոչ մի մուտքագրում չի ներմուծվել
 about-logins-import-dialog-error-learn-more = Իմանալ ավելին
+about-logins-import-dialog-error-try-import-again = Նորից փորձեք ներմուծել…
 about-logins-import-dialog-error-cancel = Չեղարկել
+
+about-logins-import-report-row-description-error = Սխալ․ դաշտ չկա
 
 ##
 ## Variables:
 ##  $field (String) - The name of the field from the CSV file for example url, username or password
 
+about-logins-import-report-row-description-error-missing-field = Սխալ․ բացակայում է { $field }
+
 ##
 ## Variables:
 ##  $count (number) - The number of affected elements
+
 
 ## Logins import report page
 

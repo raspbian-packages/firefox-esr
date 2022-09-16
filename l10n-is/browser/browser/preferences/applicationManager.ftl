@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 app-manager-window =
-    .title = Forritsupplýsingar
+    .title = Upplýsingar um forrit
     .style = width: 32em; min-height: 20em;
 
 app-manager-remove =

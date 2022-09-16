@@ -33,7 +33,7 @@ bookmark-overlay-tags-2 =
     .accesskey = T
 
 bookmark-overlay-tags-empty-description =
-    .placeholder = Separe las etiquetas con comas
+    .placeholder = Separa las etiquetas con comas
 
 bookmark-overlay-tags-expander =
     .tooltiptext = Mostrar todas las etiquetas

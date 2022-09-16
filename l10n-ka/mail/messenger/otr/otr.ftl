@@ -94,4 +94,4 @@ tlv-disconnected = { $name } პირმა დაასრულა დაშ�
 # Make sure that this string does NOT contain any numbers, e.g. like "3".
 # Variables:
 #   $name (String) - the screen name of a chat contact person
-query-msg = { $name } ითხოვს არასაჯარო, Off-the-Record (OTR) დაშიფრულ საუბარს. თუმცა, თქვენ არ გაქვთ საჭირო მოდული. ვრცლად, იხილეთ https://en.wikipedia.org/wiki/Off-the-Record_Messaging
+query-msg = { $name } ითხოვს არასაჯარო, Off-the-Record (OTR) დაშიფრულ საუბარს. თუმცა თქვენ არ გაქვთ საჭირო მოდული. ვრცლად, იხილეთ https://en.wikipedia.org/wiki/Off-the-Record_Messaging

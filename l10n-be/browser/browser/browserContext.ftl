@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Захаваць спасылку ў { -pocket-brand-name }
     .accesskey = ў
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Капіяваць адрас эл.пошты
     .accesskey = э
+
+main-context-menu-copy-phone =
+    .label = Капіяваць нумар тэлефона
+    .accesskey = о
 
 main-context-menu-copy-link-simple =
     .label = Капіраваць спасылку
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Адкрыць спасылку ў новай картцы { $containerName }
     .accesskey = ы
+
+main-context-menu-reveal-password =
+    .label = Паказаць пароль
+    .accesskey = а

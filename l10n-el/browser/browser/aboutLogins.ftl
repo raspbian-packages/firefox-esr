@@ -5,8 +5,6 @@
 
 about-logins-page-title = Συνδέσεις & κωδικοί πρόσβασης
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Αναζήτηση συνδέσεων
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Παραβιασμένος ιστότοπος
 about-logins-list-item-vulnerable-password-icon =
     .title = Ευάλωτος κωδικός πρόσβασης
-
 about-logins-list-section-breach = Παραβιασμένοι ιστότοποι
 about-logins-list-section-vulnerable = Ευάλωτοι κωδικοί πρόσβασης
 about-logins-list-section-nothing = Καμία ειδοποίηση
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Δεν βρέθηκαν συγχρ�
 login-intro-description = Αν αποθηκεύσατε τις συνδέσεις σας στο { -brand-product-name } άλλης συσκευής, μπορείτε να τις μεταφέρετε εδώ ως εξής:
 login-intro-instructions-fxa = Στη συσκευή όπου έχουν αποθηκευτεί οι συνδέσεις σας, δημιουργήστε ή συνδεθείτε στον { -fxaccount-brand-name(case: "acc", capitalization: "lower") } σας.
 login-intro-instructions-fxa-settings = Μεταβείτε στις Ρυθμίσεις > Συγχρονισμός > Ενεργοποίηση συγχρονισμού… Επιλέξτε «Συνδέσεις και κωδικοί πρόσβασης».
-login-intro-instructions-fxa-help = Επισκεφθείτε την <a data-l10n-name="help-link">Υποστήριξη { -lockwise-brand-short-name }</a> για περισσότερη βοήθεια.
-about-logins-intro-import = Αν οι συνδέσεις σας είναι αποθηκευμένες σε άλλο πρόγραμμα περιήγησης, μπορείτε να <a data-l10n-name="import-link">τις εισαγάγετε στο { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Επισκεφτείτε την <a data-l10n-name="passwords-help-link">υποστήριξη κωδικών πρόσβασης</a> για περαιτέρω βοήθεια.
+about-logins-intro-browser-only-import = Αν οι συνδέσεις σας είναι αποθηκευμένες σε άλλο πρόγραμμα περιήγησης, μπορείτε να <a data-l10n-name="import-link">τις εισαγάγετε στο { -brand-product-name }</a>
 about-logins-intro-import2 = Εάν οι συνδέσεις σας αποθηκεύονται εκτός του { -brand-product-name }, μπορείτε να τις <a data-l10n-name="import-browser-link">εισαγάγετε από άλλο πρόγραμμα περιήγησης</a> ή <a data-l10n-name="import-file-link">από κάποιο αρχείο</a>
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Για να αντιγρ
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = αντιγράψει τον αποθηκευμένο κωδικό πρόσβασης
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Για να εξαγάγετε τις συνδέσεις σας, εισαγάγετε τα διαπιστευτήρια σύνδεσης των Windows. Αυτό συμβάλλει στην προστασία των λογαριασμών σας.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Παρακαλώ εισαγ
 master-password-reload-button =
     .label = Σύνδεση
     .accesskey = Σ
-
-## Password Sync notification
 
 ## Dialogs
 

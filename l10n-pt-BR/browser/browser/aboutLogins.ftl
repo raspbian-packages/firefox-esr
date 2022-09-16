@@ -5,8 +5,6 @@
 
 about-logins-page-title = Contas e senhas
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Pesquisar contas
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Site vazado
 about-logins-list-item-vulnerable-password-icon =
     .title = Senha vulnerável
-
 about-logins-list-section-breach = Sites com vazamento de dados
 about-logins-list-section-vulnerable = Senhas vulneráveis
 about-logins-list-section-nothing = Nenhum alerta
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Nenhuma conta sincronizada foi enco
 login-intro-description = Se você salvou suas contas no { -brand-product-name } em outro dispositivo, veja como tê-las aqui:
 login-intro-instructions-fxa = Crie ou entre na sua { -fxaccount-brand-name } no dispositivo onde suas contas estão salvas.
 login-intro-instructions-fxa-settings = Vá em Configurações > Sync > Ativar sincronização… Selecione a opção de contas e senhas.
-login-intro-instructions-fxa-help = Visite o <a data-l10n-name="help-link">suporte do { -lockwise-brand-short-name }</a> para obter mais ajuda.
-about-logins-intro-import = Se suas contas estão salvas em outro navegador, você pode <a data-l10n-name="import-link">importar para o { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Visite o <a data-l10n-name="passwords-help-link">suporte a senhas</a> para obter mais ajuda.
+about-logins-intro-browser-only-import = Se suas contas estão salvas em outro navegador, você pode <a data-l10n-name="import-link">importar no { -brand-product-name }</a>
 about-logins-intro-import2 = Se suas contas foram salvas fora do { -brand-product-name }, você pode <a data-l10n-name="import-browser-link">importar de outro navegador</a> ou <a data-l10n-name="import-file-link">de um arquivo</a>
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Para copiar a senha, ins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = copiar a senha salva
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Para exportar suas contas, insira suas credenciais de acesso ao Windows. Isso ajuda a proteger a segurança de suas contas.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Digite sua senha principal 
 master-password-reload-button =
     .label = Entrar
     .accesskey = E
-
-## Password Sync notification
 
 ## Dialogs
 

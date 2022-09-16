@@ -24,8 +24,6 @@
 <!ENTITY moveToNewWindow.accesskey "კ">
 <!ENTITY newVirtualFolderCmd.label "შენახული ძიება…">
 <!ENTITY newVirtualFolderCmd.accesskey "ძ">
-<!ENTITY newOtherAccountsCmd.label "სხვა ანგარიშები…">
-<!ENTITY newOtherAccountsCmd.accesskey "ნ">
 <!ENTITY newCreateEmailAccountCmd.label "ახალი საფოსტო ანგარიშის შექმნა…">
 <!ENTITY newCreateEmailAccountCmd.accesskey "ფ">
 <!ENTITY newExistingEmailAccountCmd.label "არსებული საფოსტო ანგარიშები…">
@@ -48,8 +46,6 @@
 <!ENTITY openMessageFileCmd.accesskey "წ">
 <!ENTITY saveAsMenu.label "ჩაწერა როგორც">
 <!ENTITY saveAsMenu.accesskey "ო">
-<!ENTITY saveAsFileCmd.label "ფაილი">
-<!ENTITY saveAsFileCmd.accesskey "ფ">
 <!ENTITY saveAsFileCmd.key "s">
 <!ENTITY saveAsTemplateCmd.label "ნიმუში">
 <!ENTITY saveAsTemplateCmd.accesskey "ნ">
@@ -367,7 +363,7 @@
 <!ENTITY editAsNewMsgCmd.label "ჩასწორება ახალი შეტყობინების სახით">
 <!ENTITY editAsNewMsgCmd.accesskey "ჩ">
 <!ENTITY editAsNewMsgCmd.key "e">
-<!ENTITY editDraftMsgCmd.label "შეტყობინების წინასწარი ვერსიის ჩასწორება">
+<!ENTITY editDraftMsgCmd.label "წინასწარი ნამუშევრის ჩასწორება">
 <!ENTITY editDraftMsgCmd.accesskey "ვ">
 <!ENTITY editTemplateMsgCmd.label "ნიმუშის ჩასწორება">
 <!ENTITY editTemplateMsgCmd.accesskey "ნ">
@@ -741,7 +737,7 @@
 <!ENTITY contextOpenContainingFolder.accesskey "ც">
 <!ENTITY contextEditMsgAsNew.label "ჩასწორება ახალი შეტყობინების სახით">
 <!ENTITY contextEditMsgAsNew.accesskey "ჩ">
-<!ENTITY contextEditDraftMsg.label "შეტყობინების წინასწარი ვერსიის ჩასწორება">
+<!ENTITY contextEditDraftMsg.label "წინასწარი ნამუშევრის ჩასწორება">
 <!ENTITY contextEditTemplate.label "ნიმუშის ჩასწორება">
 <!ENTITY contextEditTemplate.accesskey "ნ">
 <!ENTITY contextArchive.label "არქივი">

@@ -18,6 +18,8 @@ about-webrtc-aec-logging-msg-label = AEC 로깅
 about-webrtc-aec-logging-off-state-label = AEC 로깅 시작
 about-webrtc-aec-logging-on-state-label = AEC 로깅 중지
 about-webrtc-aec-logging-on-state-msg = AEC 로깅 활성화(몇 분 간 대화를 하고 캡처를 중지하세요)
+# The autorefresh checkbox causes the page to autorefresh its content when checked
+about-webrtc-auto-refresh-label = 자동 새로 고침
 
 ##
 
@@ -57,11 +59,6 @@ about-webrtc-ice-rollback-count-label = ICE 롤백:
 about-webrtc-ice-pair-bytes-sent = 보낸 바이트:
 about-webrtc-ice-pair-bytes-received = 받은 바이트:
 about-webrtc-ice-component-id = 컴포넌트 ID
-
-## "Avg." is an abbreviation for Average. These are used as data labels.
-
-about-webrtc-avg-bitrate-label = 평균 비트레이트:
-about-webrtc-avg-framerate-label = 평균 프레임레이트:
 
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
@@ -113,7 +110,7 @@ about-webrtc-raw-cand-show-msg = 원시 후보자 보기
     .title = 섹션 펼치기
 about-webrtc-raw-cand-hide-msg = 원시 후보자 감추기
     .title = 섹션 접기
-about-webrtc-priority = 우선순위
+about-webrtc-priority = 우선 순위
 about-webrtc-fold-show-msg = 상세 보기
     .title = 섹션 펼치기
 about-webrtc-fold-hide-msg = 상세 감추기
@@ -183,6 +180,22 @@ about-webrtc-aec-logging-off-state-msg = 캡처된 로그파일 위치: { $path 
 
 ##
 
+# This is the total number of frames encoded or decoded over an RTP stream.
+# Variables:
+#  $frames (Number) - The number of frames encoded or decoded.
+about-webrtc-frames =
+    { $frames ->
+        [one] { $frames } 프레임
+       *[other] { $frames } 프레임
+    }
+# This is the number of audio channels encoded or decoded over an RTP stream.
+# Variables:
+#  $channels (Number) - The number of channels encoded or decoded.
+about-webrtc-channels =
+    { $channels ->
+        [one] { $channels } 채널
+       *[other] { $channels } 채널
+    }
 # This is the total number of packets received on the PeerConnection.
 # Variables:
 #  $packets (Number) - The number of packets received.

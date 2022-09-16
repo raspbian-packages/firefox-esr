@@ -17,6 +17,7 @@ update-updateButton =
 
 update-checkingForUpdates = Athuga með uppfærslur…
 update-downloading = <img data-l10n-name="icon"/>Niðurhala uppfærslu — <label data-l10n-name="download-status"/>
+update-downloading-message = Sækir uppfærslu — <label data-l10n-name="download-status"/>
 update-applying = Virkja uppfærslu…
 
 update-failed = Uppfærsla mistókst. <label data-l10n-name="failed-link">Niðurhala nýjustu útgáfu</label>
@@ -32,18 +33,21 @@ update-unsupported = Ekki er hægt að setja inn fleiri uppfærslur. <label data
 
 update-restarting = Endurræsir…
 
-channel-description = Þú ert núna á <label data-l10n-name="current-channel"></label> uppfærslu rásinni.{ " " }
+channel-description = Þú ert núna á <label data-l10n-name="current-channel"></label> uppfærslurásinni.
 
 warningDesc-version = { -brand-short-name } er tilraunakenndur og gæti verið óstöðugur.
+
+aboutdialog-help-user = { -brand-product-name } hjálp
+aboutdialog-submit-feedback = Senda álit
 
 community-exp = <label data-l10n-name="community-exp-mozillaLink">{ -vendor-short-name }</label> er <label data-l10n-name="community-exp-creditsLink">samfélag</label> sem vinnur að því að gera vefinn opinn, frjálsan og aðgengilegan öllum.
 
 community-2 = { -brand-short-name } er hannað af <label data-l10n-name="community-mozillaLink">{ -vendor-short-name }</label>, sem er <label data-l10n-name="community-creditsLink">samfélag</label> sem vinnur að því að gera vefinn opinn, frjálsan og aðgengilegan öllum.
 
-helpus = Viltu hjálpa? <label data-l10n-name="helpus-donateLink">Styrkja verkefnið</label> eða <label data-l10n-name="helpus-getInvolvedLink">taktu þátt!</label>
+helpus = Viltu hjálpa? <label data-l10n-name="helpus-donateLink">Styrktu verkefnið</label> eða <label data-l10n-name="helpus-getInvolvedLink">taktu þátt!</label>
 
-bottomLinks-license = Leyfisupplýsingar
-bottomLinks-rights = Notendaréttindi
+bottomLinks-license = Notkunarleyfi
+bottomLinks-rights = Réttindi notenda
 bottomLinks-privacy = Meðferð persónuupplýsinga
 
 # Example of resulting string: 66.0.1 (64-bit)

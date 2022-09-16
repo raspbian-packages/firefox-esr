@@ -5,8 +5,6 @@
 
 about-logins-page-title = Dane logowania i hasła
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Szukaj danych logowania
 
@@ -62,7 +60,6 @@ about-logins-list-item-breach-icon =
     .title = Witryna z wyciekiem haseł
 about-logins-list-item-vulnerable-password-icon =
     .title = Potencjalnie niebezpieczne hasło
-
 about-logins-list-section-breach = Witryny z wyciekami haseł
 about-logins-list-section-vulnerable = Potencjalnie niebezpieczne hasła
 about-logins-list-section-nothing = Brak powiadomienia
@@ -77,8 +74,8 @@ about-logins-login-intro-heading-logged-in = Brak synchronizowanych danych logow
 login-intro-description = Aby przenieść tutaj dane logowania zachowane w przeglądarce { -brand-product-name } na innym urządzeniu:
 login-intro-instructions-fxa = Zarejestruj się lub zaloguj na { -fxaccount-brand-name(case: "loc", capitalization: "lower") } na urządzeniu, w którym zachowano dane logowania.
 login-intro-instructions-fxa-settings = Otwórz Ustawienia → Synchronizacja → Włącz synchronizację… i zaznacz pole „dane logowania i hasła”.
-login-intro-instructions-fxa-help = <a data-l10n-name="help-link">Pomoc usługi { -lockwise-brand-short-name }</a> zawiera więcej informacji.
-about-logins-intro-import = Jeśli dane logowania są zachowane w innej przeglądarce, możesz <a data-l10n-name="import-link">zaimportować je do usługi { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = <a data-l10n-name="passwords-help-link">Pomoc na temat haseł</a> zawiera więcej informacji.
+about-logins-intro-browser-only-import = Jeśli dane logowania są zachowane w innej przeglądarce, możesz <a data-l10n-name="import-link">zaimportować je do przeglądarki { -brand-product-name }</a>
 about-logins-intro-import2 = Jeśli dane logowania są zachowane poza przeglądarką { -brand-product-name }, możesz <a data-l10n-name="import-browser-link">zaimportować je z innej przeglądarki</a> lub <a data-l10n-name="import-file-link">z pliku</a>
 
 ## Login
@@ -133,8 +130,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Aby skopiować hasło, w
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = skopiowanie zachowanego hasła
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Aby wyeksportować dane logowania witryn, wprowadź swoje dane logowania do systemu Windows. Pomaga to chronić bezpieczeństwo Twoich kont.
 # This message can be seen when attempting to export a password in about:logins
@@ -147,8 +142,6 @@ about-logins-primary-password-notification-message = Proszę podać hasło głó
 master-password-reload-button =
     .label = Zaloguj się
     .accesskey = Z
-
-## Password Sync notification
 
 ## Dialogs
 

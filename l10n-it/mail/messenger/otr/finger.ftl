@@ -2,9 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-otr-finger =
-    .buttonlabelaccept = Chiudi
-    .title = Fingerprint OTR visti in precedenza
+otr-finger-title = Fingerprint OTR visti in precedenza
 
 finger-intro = Chiavi fingerprint OTR da precedenti conversazioni con crittografia end-to-end.
 

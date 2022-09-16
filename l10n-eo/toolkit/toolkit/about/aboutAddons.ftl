@@ -9,6 +9,8 @@ search-header =
 search-header-shortcut =
     .key = f
 list-empty-get-extensions-message = Elŝutu etendaĵojn kaj etosojn el <a data-l10n-name="get-extensions">{ $domain }</a>
+list-empty-get-dictionaries-message = Elŝutu vortarojn el <a data-l10n-name="get-extensions">{ $domain }</a>
+list-empty-get-language-packs-message = Elŝutu lingvajn pakojn el <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-installed =
     .value = Vi havas neniun aldonaĵon de tiu tipo instalita
 list-empty-available-updates =
@@ -33,6 +35,8 @@ detail-version =
     .label = Versio
 detail-last-updated =
     .label = Laste modifita
+addon-detail-description-expand = Montri pli
+addon-detail-description-collapse = Montri malpli
 detail-contributions-description = La programisto de tiu ĉi aldonaĵo petas al vi subteni la daŭran disvolvon per eta kontribuo.
 detail-contributions-button = Kontribui
     .title = Kontribui al la evoluigado de tiu ĉi aldonaĵo
@@ -130,6 +134,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Ĵusaj ĝisdatigoj
 addon-category-recent-updates-title =
     .title = Ĵusaj ĝisdatigoj
+addon-category-sitepermission = Permesoj por retejo
+addon-category-sitepermission-title =
+    .title = Permesoj por retejo
 
 ## These are global warnings
 
@@ -270,14 +277,18 @@ extension-enabled-heading = Aktiva
 extension-disabled-heading = Malaktiva
 theme-enabled-heading = Aktiva
 theme-disabled-heading = Malaktiva
+theme-disabled-heading2 = Konservitaj etosoj
 theme-monochromatic-heading = Koloraroj
 theme-monochromatic-subheading = Vibraj, novaj koloraroj de { -brand-product-name }. Disponeblaj dum limigita tempo.
+theme-colorways-button = Provu koloraron
 plugin-enabled-heading = Aktiva
 plugin-disabled-heading = Malaktiva
 dictionary-enabled-heading = Aktiva
 dictionary-disabled-heading = Malaktiva
 locale-enabled-heading = Aktiva
 locale-disabled-heading = Malaktiva
+sitepermission-enabled-heading = Aktiva
+sitepermission-disabled-heading = Malaktiva
 always-activate-button = Ĉiam aktivigi
 never-activate-button = Neniam aktivigi
 addon-detail-author-label = Aŭtoro
@@ -354,6 +365,7 @@ addon-permissions-optional = Elekteblaj permesoj por aldonaj funkcioj:
 addon-permissions-learnmore = Pli da informo pri permesoj
 recommended-extensions-heading = Rekomenditaj etendaĵoj
 recommended-themes-heading = Rekomenditaj etosoj
+addon-sitepermissions-required = Ĝi donas jenajn kapablojn al <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Ĉu vi kreemas? <a data-l10n-name="link">Kreu vian propran etoson per Firefox Color.</a>
@@ -366,6 +378,7 @@ plugin-heading = Administri viajn kromprogramojn
 dictionary-heading = Administri viajn vortarojn
 locale-heading = Administri lingvojn
 updates-heading = Administri viajn ĝisdatigojn
+sitepermission-heading = Administri viajn permesojn por retejoj
 discover-heading = Personecigu vian { -brand-short-name }
 shortcuts-heading = Administri alirklavojn de etendaĵoj
 default-heading-search-label = Serĉi pli da aldonaĵoj
@@ -373,3 +386,20 @@ addons-heading-search-input =
     .placeholder = Serĉi en addons.mozilla.org
 addon-page-options-button =
     .title = Iloj por ĉiuj aldonaĵoj
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } estas nekongrua kun { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = { $name } ne povis esti kontrolita por uzo en { -brand-short-name } kaj estis malaktivigita.
+details-notification-unsigned-and-disabled-link = Pli da informo
+details-notification-unsigned = { $name } ne povis esti kontrolita por uzo en { -brand-short-name }. Daŭrigu singarde.
+details-notification-unsigned-link = Pli da informo
+details-notification-blocked = { $name } esti blokita pro sekurecaj kaj stabilecaj problemoj.
+details-notification-blocked-link = Plia informo
+details-notification-softblocked = Estas konata fakto ke { $name } povas okazigi sekurecajn kaj stabilecajn problemojn.
+details-notification-softblocked-link = Plia informo
+details-notification-gmp-pending = { $name } estos baldaŭ instalita.

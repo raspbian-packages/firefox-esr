@@ -158,7 +158,7 @@ edit-trust-ca = A(z) „{ $certName }” tanúsítvány egy hitelesítésszolgá
 ## For Deleting Certificates
 
 delete-user-cert-title =
-    .title = Tanúsítványok törlése
+    .title = Saját tanúsítványok törlése
 delete-user-cert-confirm = Biztosan törölni akarja ezeket a tanúsítványokat?
 delete-user-cert-impact = Ha valamely saját tanúsítványodat törli, akkor többé nem használhatja saját maga azonosítására.
 
@@ -185,8 +185,6 @@ delete-email-cert-impact = Ha törli valakinek az e-mail tanúsítványát, töb
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Tanúsítvány ezen sorozatszámmal: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Ne küldjön ügyféltanúsítványt

@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Панель меню
+    .accesskey = М
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Налаштування
-    .accesskey = Н
 menu-tools-settings =
     .label = Налаштування
     .accesskey = а
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Розмір шрифту
+    .accesskey = о
+menuitem-font-size-enlarge =
+    .label = Збільшити розмір шрифту
+    .accesskey = З
+menuitem-font-size-reduce =
+    .label = Зменшити розмір шрифту
+    .accesskey = м
+menuitem-font-size-reset =
+    .label = Скинути розмір шрифту
+    .accesskey = С
 mail-uidensity-label =
     .label = Щільність
     .accesskey = і
@@ -63,6 +73,9 @@ mail-uidensity-normal =
     .accesskey = З
 mail-uidensity-touch =
     .label = Дотик
+    .accesskey = о
+menu-spaces-toolbar-button =
+    .label = Панель Місць
     .accesskey = о
 
 ## File

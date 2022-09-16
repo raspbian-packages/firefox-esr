@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,70 +23,7 @@ return-to-amo-subtitle = Skvěle, nyní máte aplikaci { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Teď zpět k doplňku <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Přidat rozšíření
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Vítá vás <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = Rychlý, bezpečný a soukromý prohlížeč od neziskové organizace.
-onboarding-multistage-welcome-primary-button-label = Nastavit
-onboarding-multistage-welcome-secondary-button-label = Přihlášení
-onboarding-multistage-welcome-secondary-button-text = Už máte účet?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = Nastavte si { -brand-short-name(case: "acc") } jako <span data-l10n-name="zap">výchozí</span>
-onboarding-multistage-set-default-subtitle = Rychlost, bezpečnost a soukromí pro vaše prohlížení.
-onboarding-multistage-set-default-primary-button-label = Nastavit jako výchozí
-onboarding-multistage-set-default-secondary-button-label = Teď ne
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header =
-    { -brand-short-name.gender ->
-        [masculine] <span data-l10n-name="zap">{ -brand-short-name(case: "acc") }</span>
-        [feminine] <span data-l10n-name="zap">{ -brand-short-name(case: "acc") }</span>
-        [neuter] <span data-l10n-name="zap">{ -brand-short-name(case: "acc") }</span>
-       *[other] Aplikaci <span data-l10n-name="zap">{ -brand-short-name }</span>
-    } můžete mít na klik myší
-onboarding-multistage-pin-default-subtitle = Rychlé, bezpečné a soukromé prohlížení kdykoliv jste na webu.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle =
-    Po otevření systémového nastavení vyberte jako Webový prohlížeč { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "acc") }
-        [feminine] { -brand-short-name(case: "acc") }
-        [neuter] { -brand-short-name(case: "acc") }
-       *[other] aplikaci { -brand-short-name }
-    }
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text =
-    Tím si { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "acc") }
-        [feminine] { -brand-short-name(case: "acc") }
-        [neuter] { -brand-short-name(case: "acc") }
-       *[other] aplikaci { -brand-short-name }
-    } připnete na lištu a otevřete nastavení
-onboarding-multistage-pin-default-primary-button-label =
-    Nastavit { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "acc") }
-        [feminine] { -brand-short-name(case: "acc") }
-        [neuter] { -brand-short-name(case: "acc") }
-       *[other] aplikaci { -brand-short-name }
-    } jako můj hlavní prohlížeč
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Importujte svá hesla, <br/> záložky a <span data-l10n-name="zap">další data</span>
-onboarding-multistage-import-subtitle =
-    Přecházíte z jiného prohlížeče? Přenést data do { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] aplikace { -brand-short-name }
-    } je velmi snadné.
-onboarding-multistage-import-primary-button-label = Spustit import
-onboarding-multistage-import-secondary-button-label = Teď ne
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = Na tomto zařízení byly nalezeny následující stránky. { -brand-short-name } si neuloží a nebude synchronizovat dat uložená v jiném prohlížeči, dokud mu nepovolíte je importovat.
+return-to-amo-add-theme-label = Přidat motiv vzhledu
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -106,24 +38,6 @@ onboarding-welcome-steps-indicator =
             [few] ze { $total }
            *[other] z { $total }
         }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Vyberte si <span data-l10n-name="zap">vzhled</span>
-onboarding-multistage-theme-subtitle =
-    Přizpůsobte si vzhled { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] aplikace { -brand-short-name }
-    }
-onboarding-multistage-theme-primary-button-label2 = Hotovo
-onboarding-multistage-theme-secondary-button-label = Teď ne
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Automatický
-onboarding-multistage-theme-label-light = Světlý
-onboarding-multistage-theme-label-dark = Tmavý
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -259,44 +173,12 @@ mr1-onboarding-theme-label-light = Světlý
 mr1-onboarding-theme-label-dark = Tmavý
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Hotovo
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title = Použije vzhled tlačítek, nabídek a oken podle nastavení vašeho operačního systému.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description = Použije vzhled tlačítek, nabídek a oken podle nastavení vašeho operačního systému.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title = Použije světlý vzhled tlačítek, nabídek a oken.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description = Použije světlý vzhled tlačítek, nabídek a oken.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title = Použije tmavý vzhled tlačítek, nabídek a oken.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description = Použije tmavý vzhled tlačítek, nabídek a oken.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title = Použije barevný vzhled tlačítek, nabídek a oken.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description = Použije barevný vzhled tlačítek, nabídek a oken.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -354,17 +236,78 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = Vyzkoušet paletu barev { $colorwayName }.
+mr2-onboarding-colorway-label = Vyzkoušet paletu barev { $colorwayName }.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Vyzkoušet výchozí vzhledy.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = Vyzkoušet výchozí vzhledy.
+mr2-onboarding-default-theme-label = Vyzkoušet výchozí vzhledy.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Děkujeme, že jste si vybrali nás
 mr2-onboarding-thank-you-text = { -brand-short-name } je nezávislý prohlížeč od neziskové organizace. Společně se snažíme udělat web bezpečnější, zdravější a s větším ohledem na soukromí.
 mr2-onboarding-start-browsing-button-label = Začít prohlížet
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Výběr jazyka
+onboarding-live-language-button-label-downloading = Stahování jazykového balíčku pro jazyk { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = Získávání dostupných jazyků…
+onboarding-live-language-installing = Instalace jazykového balíčku pro jazyk { $negotiatedLanguage }…
+onboarding-live-language-secondary-cancel-download = Zrušit
+onboarding-live-language-skip-button-label = Přeskočit
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    Děkujeme
+    <span data-l10n-name="zap">100krát</span>
+fx100-thank-you-subtitle = Toto je 100. verze! Děkujeme vám, že pomáháte budovat lepší a zdravější internet.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos]
+            { -brand-short-name.gender ->
+                [masculine] Připnout { -brand-short-name(case: "acc") } do docku
+                [feminine] Připnout { -brand-short-name(case: "acc") } do docku
+                [neuter] Připnout { -brand-short-name(case: "acc") } do docku
+               *[other] Připnout aplikaci { -brand-short-name } do docku
+            }
+       *[other]
+            { -brand-short-name.gender ->
+                [masculine] Připnout { -brand-short-name(case: "acc") } na lištu
+                [feminine] Připnout { -brand-short-name(case: "acc") } na lištu
+                [neuter] Připnout { -brand-short-name(case: "acc") } na lištu
+               *[other] Připnout aplikaci { -brand-short-name } na lištu
+            }
+    }
+fx100-upgrade-thanks-header = Děkujeme 100krát
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body =
+    { -brand-short-name.gender ->
+        [masculine] Toto je 100. vydání { -brand-short-name(case: "gen") }! Děkujeme <em>vám</em>, že pomáháte budovat lepší a zdravější internet.
+        [feminine] Toto je 100. vydání { -brand-short-name(case: "gen") }! Děkujeme <em>vám</em>, že pomáháte budovat lepší a zdravější internet.
+        [neuter] Toto je 100. vydání { -brand-short-name(case: "gen") }! Děkujeme <em>vám</em>, že pomáháte budovat lepší a zdravější internet.
+       *[other] Toto je 100. vydání aplikace { -brand-short-name }! Děkujeme <em>vám</em>, že pomáháte budovat lepší a zdravější internet.
+    }
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body =
+    { -brand-short-name.gender ->
+        [masculine] Toto je 100. vydání! Mějte { -brand-short-name(case: "acc") } na dosah ještě dalších 100 vydání.
+        [feminine] Toto je 100. vydání! Mějte { -brand-short-name(case: "acc") } na dosah ještě dalších 100 vydání.
+        [neuter] Toto je 100. vydání! Mějte { -brand-short-name(case: "acc") } na dosah ještě dalších 100 vydání.
+       *[other] Toto je 100. vydání! Mějte aplikaci { -brand-short-name } na dosah ještě dalších 100 vydání.
+    }

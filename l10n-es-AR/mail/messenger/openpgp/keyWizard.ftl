@@ -79,7 +79,7 @@ openpgp-import-success = ¡Las claves OpenPGP se importaron correctamente!
 
 openpgp-import-success-title = Completar el proceso de importación
 
-openpgp-import-success-description = Para comenzar a usar la clave OpenPGP importada para cifrar correo electrónico, cierre este diálogo y acceda  a la configuración de la cuenta para seleccionarla.
+openpgp-import-success-description = Para comenzar a usar la clave OpenPGP importada para cifrar el correo electrónico, cierre este diálogo y acceda  a la configuración de la cuenta para seleccionarla.
 
 openpgp-keygen-confirm =
     .label = Confirmar
@@ -124,10 +124,10 @@ openpgp-import-key-description = Puede importar claves personales que se crearon
 openpgp-import-key-info = Otro software podría describir una clave personal utilizando términos alternativos como su propia clave, clave secreta, clave privada o par de claves.
 
 #   $count (Number) - the number of keys found in the selected files
-openpgp-import-key-list-amount =
+openpgp-import-key-list-amount-2 =
     { $count ->
-        [one] Thunderbird encontró una clave que puede ser importada.
-       *[other] Thunderbird encontró { $count } claves que pueden ser importadas.
+        [one] { -brand-short-name } encontró una clave que puede ser importada.
+       *[other] { -brand-short-name } encontró { $count } claves que pueden ser importadas.
     }
 
 openpgp-import-key-list-description = Confirme qué claves pueden considerarse como sus claves personales. Solo las claves que creó usted mismo y que muestran su propia identidad deberían usarse como claves personales. Puede cambiar esta opción más adelante en el cuadro de diálogo Propiedades de clave.

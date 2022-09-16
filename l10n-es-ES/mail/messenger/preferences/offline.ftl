@@ -7,7 +7,9 @@ offline-dialog-window =
 
 autodetect-online-label =
     .label = Seguir automáticamente el estado de conexión detectado
-    .accesskey = a
+    .accesskey = d
+
+offline-preference-startup-label = Indicar manualmente el estado al iniciar:
 
 status-radio-remember =
     .label = Recordar el estado de conexión anterior

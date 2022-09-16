@@ -65,22 +65,20 @@ cryptominer-tab-content = Kripto madencileri sayısal para madenciliğinde bulun
 protections-close-button2 =
     .aria-label = Kapat
     .title = Kapat
-  
+
 mobile-app-title = Reklam takipçilerini tüm cihazlarda engelleyin
 mobile-app-card-content = Reklam takipçilerine karşı dahili korumaya sahip mobil tarayıcıyı kullanın.
 mobile-app-links = <a data-l10n-name="android-mobile-inline-link">Android</a> ve <a data-l10n-name="ios-mobile-inline-link">iOS</a> için { -brand-product-name } Browser
 
 lockwise-title = Bir daha hiçbir parolayı unutmayın
-lockwise-title-logged-in2 = Parola yönetimi
-lockwise-header-content = { -lockwise-brand-name } parolalarınızı tarayınızda güvenle saklar.
+passwords-title-logged-in = Parolalarınızı yönetin
+passwords-header-content = { -brand-product-name } parolalarınızı tarayıcınızda güvenle saklar.
 lockwise-header-content-logged-in = Parolalarınızı güvenle saklayıp tüm cihazlarınızla senkronize edebilirsiniz.
-protection-report-save-passwords-button = Parolaları kaydet
-    .title = Parolaları { -lockwise-brand-short-name } ile kaydet
-protection-report-manage-passwords-button = Parolaları yönet
-    .title = Parolaları { -lockwise-brand-short-name } ile yönet
-lockwise-mobile-app-title = Parolalarınızı yanınızda taşıyın
-lockwise-no-logins-card-content = { -brand-short-name } tarayıcınızda kaydettiğiniz parolaları tüm cihazlarınızda kullanın.
-lockwise-app-links = <a data-l10n-name="lockwise-android-inline-link">Android</a> ve <a data-l10n-name="lockwise-ios-inline-link">iOS</a> için { -lockwise-brand-name }
+protection-report-passwords-save-passwords-button = Parolaları kaydet
+    .title = Parolaları kaydet
+protection-report-passwords-manage-passwords-button = Parolaları yönet
+    .title = Parolaları yönet
+
 
 # Variables:
 # $count (Number) - Number of passwords exposed in data breaches.

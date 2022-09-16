@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Timahilin ihulen
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Acuɣer i d-yettban waya
+
 cfr-doorhanger-extension-cancel-button = Mačči tura
     .accesskey = T
+
 cfr-doorhanger-extension-ok-button = Rnu Tura
     .accesskey = N
+
 cfr-doorhanger-extension-manage-settings-button = Sefrek Iɣewwaṛen n wahul
     .accesskey = S
+
 cfr-doorhanger-extension-never-show-recommendation = Ur yid-skan ara Ahul Agi
     .accesskey = U
+
 cfr-doorhanger-extension-learn-more-link = Issin ugar
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = S { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Awelleh
 cfr-doorhanger-extension-notification2 = Iwellihen
     .tooltiptext = Iseɣzaf ihulen
     .a11y-announcement = Iseɣzaf ihulen i yellan
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Iwellihen
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = Issin ugar
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Timahilin timaynutin:
+
 cfr-whatsnew-button =
     .label = Amaynut
     .tooltiptext = Amaynut
+
 cfr-whatsnew-release-notes-link-text = Ɣer tizmilin n lqem.
 
 ## Enhanced Tracking Protection Milestones
@@ -137,6 +147,7 @@ spotlight-learn-more-expanded = Issin ugar
 
 # This header text can be explicitly wrapped.
 spotlight-public-wifi-vpn-header = Akka yettban tseqqdaceḍ Wi-Fi azayaz
+spotlight-public-wifi-vpn-body = I tuffra n wadig-ik•im akked urmud n tunigin, muqel ad tesqedceḍ azeṭṭa uslig uhlis (VPN). Ad ak•akem-yeǧǧ tettummestneḍ mi ara tettinigeḍ deg yimekwan izayazen am deg yinaffagen d tḥuna.
 spotlight-public-wifi-vpn-primary-button = Qqim d uslig s { -mozilla-vpn-brand-name }
     .accesskey = Q
 spotlight-public-wifi-vpn-link = Mačči tura
@@ -144,5 +155,27 @@ spotlight-public-wifi-vpn-link = Mačči tura
 
 ## Total Cookie Protection Rollout
 
+# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
+# "Join an early experiment". This header text can be explicitly wrapped.
+spotlight-total-cookie-protection-header =
+    Sekyed s wudem uzwir tirmit n
+    tbaḍnit iǧehden akk urǧin i nfeṣṣel yakan
+spotlight-total-cookie-protection-body = Ammesten asemday mgal y inagan n tuqqna yessewḥal ineḍfaren ad sqedc inagan n tuqqna i wakken ad ak•akem-ḍefren deg web.
+# "Early access" for this feature rollout means it's a "feature preview" or
+# "soft launch" as not everybody will get it yet.
+spotlight-total-cookie-protection-expanded = { -brand-short-name } itegg zzeṛb i yinagan n tuqqna, it eǧǧ-asen talast deg usmel ideg telliḍ i wakken ur ten-sseqdacen ara ineḍfaren. S unekcum zik, ad ak•akem-iɛawen deg usesfer n tmahilt-a, akka ad nessiweḍ ad nebnu web igerrzen i yal yiwen.
 spotlight-total-cookie-protection-primary-button = Rmed ammesten asemday mgal inagan n tuqqna
 spotlight-total-cookie-protection-secondary-button = Mačči tura
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Internet igerrzen yis-k
+spotlight-better-internet-body = Mi ara tesqedceḍ { -brand-short-name }, ad tferneḍ web yeldin akked internet igerrzen i yal yiwen.
+spotlight-peace-mind-header = Ad neḍmen ammesten-ik
+spotlight-peace-mind-body = Yal ayyur, { -brand-short-name } issewḥal azal n 3,000 n yineḍfaren i useqdac. Acku ulac, aṭas aṭas ayen yettḍurrun tudert tabaḍnit am yineḍfaren, ur ilaq ara ad ilin gar-k•m akked internet igerrzen.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Eǧǧ deg Dock
+       *[other] Senteḍ ɣer ufaggag n twuriwin
+    }
+spotlight-pin-secondary-button = Mačči tura

@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Küçült
+messenger-window-maximize-button =
+    .tooltiptext = Ekranı kapla
+messenger-window-restore-down-button =
+    .tooltiptext = Geri küçült
+messenger-window-close-button =
+    .tooltiptext = Kapat
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -76,10 +87,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Tercihler
 appmenu-save-as-file =
     .label = Dosya…
 appmenu-settings =
@@ -99,11 +106,35 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Yönlendir
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] İletiyi sil
+           *[other] Seçilmiş iletileri sil
+        }
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Yönlendir
+message-header-msg-flagged =
+    .title = Yıldızlı
+    .aria-label = Yıldızlı
+message-header-msg-not-flagged =
+    .title = Yıldızsız
+    .aria-label = Yıldızsız
+
+## Message header cutomize panel
+
+message-header-customize-button-style =
+    .value = Düğme stili
+    .accesskey = D
+message-header-button-style-default =
+    .label = Simgeler ve metin
+message-header-button-style-text =
+    .label = Metin
+message-header-button-style-icons =
+    .label = Simgeler
 
 ## Action Button Context Menu
 
@@ -113,13 +144,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Uzantıyı kaldır
     .accesskey = n
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Bu adres, adres defterinde mevcut
-message-header-address-not-in-address-book-icon =
-    .alt = Bu adres, adres defterinde mevcut değil
 
 ## Add-on removal warning
 
@@ -140,3 +164,72 @@ repair-text-encoding-button =
 no-reply-title = Yanıt desteklenmiyor
 no-reply-message = Yanıt adresi ({ $email }) izlenen bir adrese benzemiyor. Bu adrese gönderilen iletiler muhtemelen okunmayacaktır.
 no-reply-reply-anyway-button = Yine de yanıtla
+
+## error messages
+
+decrypt-and-copy-failures = { $total } iletinin { $failures } tanesinin şifresi çözülemedi ve bu iletiler kopyalanmadı.
+
+## Spaces toolbar
+
+spaces-toolbar-button-mail2 =
+    .title = E-posta
+spaces-toolbar-button-address-book2 =
+    .title = Adres Defteri
+spaces-toolbar-button-calendar2 =
+    .title = Takvim
+spaces-toolbar-button-tasks2 =
+    .title = Görevler
+spaces-toolbar-button-chat2 =
+    .title = Sohbet
+spaces-toolbar-button-settings2 =
+    .title = Ayarlar
+spaces-context-new-tab-item =
+    .label = Yeni sekmede aç
+spaces-context-new-window-item =
+    .label = Yeni pencerede aç
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = { $tabName } sekmesine geç
+settings-context-open-settings-item2 =
+    .label = Ayarlar
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Alanlar menüsünü aç
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] Bir okunmamış ileti
+           *[other] { $count } okunmamış ileti
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Özelleştir…
+spaces-customize-background-color = Arka plan rengi
+spaces-customize-icon-color = Düğme rengi
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Seçilen düğme arka plan rengi
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Seçilen düğme rengi

@@ -10,7 +10,7 @@
 
 <!-- Specific error messages -->
 
-<!ENTITY connectionFailure.title "Viga ühendumisel">
+<!ENTITY connectionFailure.title "Ühendumine pole võimalik">
 <!ENTITY connectionFailure.longDesc "&sharedLongDesc;">
 
 <!ENTITY deniedPortAccess.title "See aadress on keelatud">
@@ -63,7 +63,7 @@
 <!ENTITY netInterrupt.longDesc "&sharedLongDesc;">
 
 <!ENTITY notCached.title "Dokument aegus">
-<!ENTITY notCached.longDesc "<p>Nõutud dokument pole brauseri vahemälus saadaval.</p><ul><li>Turvalisuse ettevaatusabinõuna ei laadi brauser tundliku infoga dokumente automaatselt uuesti.</li><li>Klõpsa Proovi uuesti, et hankida dokumendi sisu veebilehelt uuesti.</li></ul>">
+<!ENTITY notCached.longDesc "<p>Nõutud dokument pole brauseri vahemälus saadaval.</p><ul><li>Turvalisuse ettevaatusabinõuna ei laadi brauser tundliku sisuga dokumente automaatselt uuesti.</li><li>Veebisaidist dokumendi uuestiküsimuseks klõpsa Proovi uuesti.</li></ul>">
 
 <!ENTITY netOffline.title "Võrguta režiim">
 <!ENTITY netOffline.longDesc2 "
@@ -166,6 +166,9 @@ ja sa võid hiljem uuesti proovida.</li>
 
 <!ENTITY cspBlocked.title "Blokitud sisu kaitsva turvareegliga">
 <!ENTITY cspBlocked.longDesc "<p>&brandShortName; keeldus lehe laadimisest sellisel moel, sest lehe sisu kaitsvate turvareeglite kohaselt on see keelatud.</p>">
+
+<!ENTITY xfoBlocked.title "Blokitud X-Frame-Options reeglistikuga">
+<!ENTITY xfoBlocked.longDesc "<p>&brandShortName; keeldus lehe laadimisest selles kontekstis, sest lehel oleva X-Frame-Options reeglistiku kohaselt on see keelatud.</p>">
 
 <!ENTITY corruptedContentErrorv2.title "Vigane sisu">
 <!ENTITY corruptedContentErrorv2.longDesc "<p>Andmete edastamisel esinenud vea tõttu pole soovitud lehte võimalik kuvada.</p><ul><li>Palun võta ühendust veebilehe omanikega, et teavitada neid sellest probleemist.</li></ul>">

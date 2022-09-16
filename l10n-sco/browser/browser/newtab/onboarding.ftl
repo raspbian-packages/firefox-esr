@@ -3,18 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding modal / about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
-## These button action text can be split onto multiple lines, so use explicit
-## newlines in translations to control where the line break appears (e.g., to
-## avoid breaking quoted text).
-
-## Welcome modal dialog strings
-
-
 ### UI strings for the simplified onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -24,32 +12,11 @@
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
 
+
 ## Welcome page strings
 
 onboarding-welcome-header = Walcome tae { -brand-short-name }
-
 onboarding-start-browsing-button-label = Stert Stravaigin
-
-## Welcome full page string
-
-## Firefox Sync modal dialog strings.
-
-## This is part of the line "Enter your email to continue to Firefox Sync"
-
-
-## These are individual benefit messages shown with an image, title and
-## description.
-
-
-## These strings belong to the individual onboarding messages.
-
-
-## Each message has a title and a description of what the browser feature is.
-## Each message also has an associated button for the user to try the feature.
-## The string for the button is found above, in the UI strings section
-
-## Message strings belonging to the Return to AMO flow
-
 onboarding-not-now-button-label = No jist noo
 
 ## Custom Return To AMO onboarding strings
@@ -64,42 +31,6 @@ return-to-amo-add-extension-label = Eik On the Extension
 
 ## Multistage 3-screen onboarding flow strings (about:welcome pages)
 
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Walcome tae <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = The fast, siccar, and private wab-stravaiger that's uphaudit by a non-profit.
-onboarding-multistage-welcome-primary-button-label = Stert Setup
-onboarding-multistage-welcome-secondary-button-label = Sign in
-onboarding-multistage-welcome-secondary-button-text = Got an accoont?
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = Mak { -brand-short-name } yer <span data-l10n-name="zap">staunart</span>
-onboarding-multistage-set-default-subtitle = Speed, siccarness and privacy ilka time ye stravaig.
-onboarding-multistage-set-default-primary-button-label = Mak Staunart
-onboarding-multistage-set-default-secondary-button-label = No jist noo
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = Stert by makkin <span data-l10n-name="zap">{ -brand-short-name }</span> anely a click awa
-onboarding-multistage-pin-default-subtitle = Fast, siccar, and private stravaigin ilka time ye yaise the wab.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Wale { -brand-short-name } unner Wab-stravaiger when yer settins come up
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = This will peen { -brand-short-name } tae taskbaur and open settins
-onboarding-multistage-pin-default-primary-button-label = Mak { -brand-short-name } Ma Staunart Stravaiger
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Inbring yer passwirds, <br/>buikmerks, and <span data-l10n-name="zap">mair</span>
-onboarding-multistage-import-subtitle = Comin fae anither wab-stravaiger? It's easy tae bring awthin tae { -brand-short-name }.
-onboarding-multistage-import-primary-button-label = Stert Inbringin
-onboarding-multistage-import-secondary-button-label = No jist noo
-
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = The sites listit here were fund on this device. { -brand-short-name } disnae save or sync data fae anither wab-stravaiger unless ye decide tae inbring it.
-
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -108,21 +39,6 @@ onboarding-import-sites-disclaimer = The sites listit here were fund on this dev
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Gettin stertit: screen { $current } o { $total }
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Wale a <span data-l10n-name="zap">kythin</span>
-onboarding-multistage-theme-subtitle = Personalise { -brand-short-name } wi a theme.
-onboarding-multistage-theme-primary-button-label2 = Duin
-onboarding-multistage-theme-secondary-button-label = No jist noo
-
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Automatic
-
-onboarding-multistage-theme-label-light = Licht
-onboarding-multistage-theme-label-dark = Daurk
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
@@ -196,6 +112,12 @@ mr1-onboarding-import-primary-button-label-attribution = Inbring fae { $previous
 mr1-onboarding-import-primary-button-label-no-attribution = Inbring fae previous wab-stravaiger
 mr1-onboarding-import-secondary-button-label = No jist noo
 
+mr2-onboarding-colorway-secondary-button-label = No jist noo
+mr2-onboarding-colorway-label-soft = Saft
+
+# This string will be used for Default theme
+mr2-onboarding-theme-label-default = Staunart
+
 mr1-onboarding-theme-header = Mak it yer ain
 mr1-onboarding-theme-subtitle = Personalise { -brand-short-name } wi a theme.
 mr1-onboarding-theme-primary-button-label = Save theme
@@ -214,58 +136,11 @@ mr1-onboarding-theme-label-alpenglow = Alpenglow
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
 
+
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        Cairry ower the kythe o yer operatin
-        system fur buttons, menus and windaes.
-
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        Cairry ower the kythe o yer operatin
-        system fur buttons, menus and windaes.
-
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        Yaise a licht kythe fur buttons,
-        menus, and windaes.
-
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        Yaise a licht kythe fur buttons,
-        menus, and windaes.
-
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        Yaise a daurk kythe fur buttons,
-        menus, and windaes.
-
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        Yaise a daurk kythe fur buttons,
-        menus, and windaes.
-
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        Yaise a vieve kythe fur buttons,
-        menus, and windaes.
-
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        Yaise a vieve kythe fur buttons,
-        menus, and windaes.
 
 ## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
@@ -316,3 +191,17 @@ mr1-onboarding-theme-description-alpenglow =
     .aria-description =
         Yaise a vieve, cantie theme fur buttons,
         menus, and windaes.
+
+## Strings for Thank You page
+
+mr2-onboarding-start-browsing-button-label = Stert stravaigin
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+## Firefox 100 Thank You screens
+

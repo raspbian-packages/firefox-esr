@@ -43,15 +43,6 @@ menu-quit =
 menu-quit-mac =
     .label = Fini { -brand-shorter-name }
 
-# This menu-quit-button string is only used on Linux.
-menu-quit-button =
-    .label = { menu-quit.label }
-
-# This menu-quit-button-win string is only used on Windows.
-menu-quit-button-win =
-    .label = { menu-quit.label }
-    .tooltip = Fini { -brand-shorter-name }
-
 menu-about =
     .label = Pri { -brand-shorter-name }
     .accesskey = P
@@ -81,8 +72,15 @@ menu-file-open-location =
 menu-file-open-file =
     .label = Malfermi dosieron…
     .accesskey = d
-menu-file-close =
-    .label = Fermi
+# Variables:
+#  $tabCount (Number): the number of tabs that are affected by the action.
+menu-file-close-tab =
+    .label =
+        { $tabCount ->
+            [1] Fermi langeton
+            [one] Fermi langeton
+           *[other] Fermi { $tabCount } langetojn
+        }
     .accesskey = F
 menu-file-close-window =
     .label = Fermi fenestron
@@ -99,9 +97,6 @@ menu-file-share-url =
 menu-file-print-setup =
     .label = Agordi paĝon…
     .accesskey = A
-menu-file-print-preview =
-    .label = Antaŭvidi presadon
-    .accesskey = t
 menu-file-print =
     .label = Presi…
     .accesskey = P
@@ -314,9 +309,9 @@ menu-help-more-troubleshooting-info =
     .accesskey = p
 menu-help-report-site-issue =
     .label = Raporti problemon kun retejo…
-menu-help-feedback-page =
-    .label = Sendi opiniojn…
-    .accesskey = S
+menu-help-share-ideas =
+    .label = Dividi ideojn kaj komentojn…
+    .accesskey = D
 menu-help-enter-troubleshoot-mode2 =
     .label = Problemsolva reĝimo…
     .accesskey = r

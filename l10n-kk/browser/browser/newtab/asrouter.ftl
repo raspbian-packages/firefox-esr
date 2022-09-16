@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Ұсынылатын мүмкіндік
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Мен бұны неге көріп отырмын
+
 cfr-doorhanger-extension-cancel-button = Қазір емес
     .accesskey = м
+
 cfr-doorhanger-extension-ok-button = Қазір қосу
     .accesskey = а
+
 cfr-doorhanger-extension-manage-settings-button = Ұсыныстар параметрлерін басқару
     .accesskey = б
+
 cfr-doorhanger-extension-never-show-recommendation = Бұл ұсынысты маған көрсетпеу
     .accesskey = к
+
 cfr-doorhanger-extension-learn-more-link = Көбірек білу
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = { $name } шығарған
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Ұсыныс
 cfr-doorhanger-extension-notification2 = Ұсыныс
     .tooltiptext = Кеңейту ұсынысы
     .a11y-announcement = Кеңейту ұсынысы қолжетімді
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Ұсыныс
@@ -75,9 +83,11 @@ cfr-protections-panel-link-text = Көбірек білу
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Жаңа мүмкіндік:
+
 cfr-whatsnew-button =
     .label = Не жаңалық
     .tooltiptext = Не жаңалық
+
 cfr-whatsnew-release-notes-link-text = Шығарылым ескертпесін оқу
 
 ## Enhanced Tracking Protection Milestones
@@ -142,4 +152,27 @@ spotlight-public-wifi-vpn-link = Қазір емес
 
 ## Total Cookie Protection Rollout
 
+# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
+# "Join an early experiment". This header text can be explicitly wrapped.
+spotlight-total-cookie-protection-header =
+    Біздің барлық уақыттағы ен күшті
+    жекеілкті қорғауды сынап көріңіз
+spotlight-total-cookie-protection-body = Cookie файлдарынан Толық қорғаныс интернетте сізді бақылау үшін трекерлерге cookie файлдарын қолдануға жол бермейді.
+# "Early access" for this feature rollout means it's a "feature preview" or
+# "soft launch" as not everybody will get it yet.
+spotlight-total-cookie-protection-expanded = { -brand-short-name } cookie файлдарының айналасын қоршап, оларды сіз кіретін сайтпен шектейді, сондықтан трекерлер оларды сізді бақылау үшін пайдалана алмайды. Ертерек қолжетімділік арқылы сіз бұл мүмкіндікті оңтайландыруға көмектесесіз, осылайша біз барлығы үшін жақсырақ Интернетті жасауды жалғастыра аламыз.
+spotlight-total-cookie-protection-primary-button = Cookie файлдарынан Толық қорғанысты іске қосу
 spotlight-total-cookie-protection-secondary-button = Қазір емес
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Жақсырақ интернет сізден басталады
+spotlight-better-internet-body = { -brand-short-name } пайдаланған кезде сіз әркім үшін қолайлы, ашық және қолжетімді интернетке дауыс бересіз.
+spotlight-peace-mind-header = Сіз үшін қамқорлықпен
+spotlight-peace-mind-body = Ай сайын { -brand-short-name } бір пайдаланушыға орта есеппен 3000-нан астам трекерді блоктайды. Өйткені сіз бен жақсы интернет арасында ешнәрсе, әсіресе трекерлер сияқты жеке өмірге қатысты кедергілер тұрмауы керек.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Dock ішіне қосу
+       *[other] Тапсырмалар панеліне бекіту
+    }
+spotlight-pin-secondary-button = Қазір емес

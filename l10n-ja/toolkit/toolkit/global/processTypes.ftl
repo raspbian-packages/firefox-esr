@@ -16,9 +16,6 @@ process-type-privilegedmozilla = 特権 Mozilla コンテンツ
 process-type-extension = 拡張機能
 # process used to open file:// URLs
 process-type-file = ローカルファイル
-# process used to isolate webpages that requested special
-# permission to allocate large amounts of memory
-process-type-weblargeallocation = 大きなサイズの割り当て
 # process used to isolate a webpage from other web pages
 # to improve security
 process-type-webisolated = 隔離されたウェブコンテンツ
@@ -41,6 +38,8 @@ process-type-gpu = GPU
 process-type-socket = ソケット
 # process used to decode media
 process-type-rdd = RDD
+# process used to run some IPC actor in their own sandbox
+process-type-utility = サンドボックス化された IPC アクター
 
 ##
 ## Other

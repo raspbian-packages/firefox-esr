@@ -41,6 +41,11 @@ options-collapse-attrs-label = Tronquer les attributs DOM
 options-collapse-attrs-tooltip =
     .title = Tronquer les longs attributs dans l’inspecteur
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Cliquez et faites glisser pour modifier les valeurs de la taille
+options-inspector-draggable-properties-tooltip =
+    .title = Cliquez et faites glisser pour modifier les valeurs de la taille dans la vue de l’inspecteur de règles.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Unité par défaut pour les couleurs
@@ -48,6 +53,7 @@ options-default-color-unit-authored = unité d’origine
 options-default-color-unit-hex = hexadécimal
 options-default-color-unit-hsl = TSL(A)
 options-default-color-unit-rgb = RVB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = noms de couleurs
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Activer le débogage distant
 options-enable-remote-tooltip2 =
     .title = L’activation de cette option permettra de déboguer cette instance de navigateur à distance
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Activer les formateurs personnalisés
+options-enable-custom-formatters-tooltip =
+    .title = Activer cette option autorise les sites à définir des formateurs personnalisés pour les objets DOM
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Activer les Service Workers via HTTP (lorsque la boîte à outils est ouverte)

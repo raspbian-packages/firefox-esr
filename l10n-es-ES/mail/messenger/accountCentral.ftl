@@ -5,6 +5,7 @@
 account-central-title = Bienvenido a { -brand-full-name }
 account-settings = Configuración de la cuenta
 
+#   $accounts (Number) - the number of configured accounts
 setup-title = Elija qué configurar
 about-title = Acerca de { -brand-full-name }
 resources-title = Recursos
@@ -41,7 +42,7 @@ newsgroups-label = Grupos de noticias
 newsgroups-description = { -brand-short-name } le permite conectar con todos los grupos de noticias que quiera.
 
 import-title = Importar de otro programa
-import-paragraph = { -brand-short-name } le permite importar mensajes de correo, entradas de libretas de direcciones, suscripciones a canales, preferencias y filtros de otros programas de correo y formatos comunes de libretas de direcciones.
+import-paragraph2 = { -brand-short-name } le permite importar mensajes de correo, entradas de libretas de direcciones, suscripciones a canales, ajustes y filtros de otros programas de correo y formatos comunes de libretas de direcciones.
 
 import-label = Importar
     .aria-label = Importar datos de otros programas

@@ -163,11 +163,6 @@ main-context-menu-save-link-to-pocket =
     .label = Պահպանել հղումը { -pocket-brand-name }-ում
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -386,6 +381,10 @@ main-context-menu-view-selection-source =
 main-context-menu-take-screenshot =
     .label = Ստանալ էկրանի հանույթը
     .accesskey = T
+
+main-context-menu-take-frame-screenshot =
+    .label = Ստանալ էկրանի հանույթը
+    .accesskey = o
 
 main-context-menu-view-page-source =
     .label = Դիտել Էջի Կոդը

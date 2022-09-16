@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Паведаміць пра { $addon-name }
 
 abuse-report-title-extension = Паведаміць пра гэта пашырэнне ў { -vendor-short-name }
+abuse-report-title-sitepermission = Паведаміць пра гэты дадатак дазволаў для сайта ў { -vendor-short-name }
 abuse-report-title-theme = Паведаміць пра гэту тэму ў { -vendor-short-name }
 abuse-report-subtitle = У чым праблема?
 
@@ -37,12 +37,6 @@ abuse-report-goback-button = Вярнуцца
 abuse-report-submit-button = Даслаць
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Адпраўляецца паведамле
 abuse-report-messagebar-submitted = Дзякуем за прадстаўленую справаздачу. Хочаце выдаліць <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Дзякуем за прадстаўленую справаздачу.
 abuse-report-messagebar-removed-extension = Дзякуй за прадстаўленую справаздачу. Вы выдалілі пашырэнне <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Дзякуй за прадстаўленую справаздачу. Вы выдалілі дадатак дазволаў для сайта <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Дзякуй за прадстаўленую справаздачу. Вы выдалілі <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Памылка пры адпраўцы справаздачы для <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Справаздача пра <span data-l10n-name="addon-name">{ $addon-name }</span> не адпраўлена, бо нядаўна была пададзена яшчэ адна справаздача.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Справаздача пра <spa
 
 abuse-report-messagebar-action-remove-extension = Так, выдаліць
 abuse-report-messagebar-action-keep-extension = Не, пакінуць яго
+abuse-report-messagebar-action-remove-sitepermission = Так, выдаліць
+abuse-report-messagebar-action-keep-sitepermission = Не, пакінуць яго
 abuse-report-messagebar-action-remove-theme = Так, выдаліць
 abuse-report-messagebar-action-keep-theme = Не, пакінуць яе
 abuse-report-messagebar-action-retry = Паўтарыць
@@ -82,12 +79,17 @@ abuse-report-deceptive-reason-v2 = Выдае сябе за тое, чым не 
 abuse-report-deceptive-example = Прыклад: Апісанне або выява ўводзіць у зман
 
 abuse-report-broken-reason-extension-v2 = Не працуе, псуе вэб-сайты або запавольвае { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Не працуе, псуе вэб-сайты або запавольвае { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Не працуе або парушае адлюстраванне браўзера
 abuse-report-broken-example = Прыклад: функцыі марудныя, цяжкія ў выкарыстанні або не працуюць; часткі сайтаў не загружаюцца ці выглядаюць незвычайна
 abuse-report-broken-suggestions-extension =
     Падобна на тое, што вы выявілі памылку. Акрамя прадстаўлення справаздачы тут, лепшы спосаб
     вырашыць праблему з функцыянальнасцю - звярнуцца да распрацоўшчыка пашырэння.
     <a data-l10n-name="support-link">Наведайце вэб-сайт пашырэння</a> для звестак пра распрацоўніка.
+abuse-report-broken-suggestions-sitepermission =
+    Падобна на тое, што вы выявілі памылку. Акрамя прадстаўлення справаздачы тут, лепшы спосаб
+    вырашыць праблему з функцыянальнасцю - звязацца з распрацоўшчыкам вэб-сайта.
+    <a data-l10n-name="support-link">Наведайце вэб-сайт</a> для звестак пра распрацоўніка.
 abuse-report-broken-suggestions-theme =
     Падобна на тое, што вы выявілі памылку. Акрамя прадстаўлення справаздачы тут, лепшы спосаб
     вырашыць праблему з функцыянальнасцю - звязацца з распрацоўшчыкам тэмы.
@@ -103,4 +105,3 @@ abuse-report-unwanted-reason-v2 = Ніколі не хацеў гэтага і �
 abuse-report-unwanted-example = Прыклад: праграма усталявала гэта без майго дазволу
 
 abuse-report-other-reason = Нешта іншае
-

@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Sajtet e dëshmojnë identitetin e ty
 
 cert-error-symantec-distrust-admin = Mundeni të njoftoni përgjegjësin e sajtit mbi këtë problem.
 
+cert-error-old-tls-version = Ky sajt mund të mos mbulojnë protokollin TLS 1.2, i cili është versioni minimum i mbuluar nga { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Përgjigje e papritur prej shërbyesit
 nssFailure2-title = Dështoi Lidhja e Sigurt
 csp-xfo-error-title = { -brand-short-name }-i S’mund Ta Hapë Këtë Faqe
 corruptedContentError-title = Gabim nga Lëndë e Dëmtuar
-remoteXUL-title = XUL i Largët
 sslv3Used-title = S'arrin të Lidhet Në Mënyrë të Sigurt
 inadequateSecurityError-title = Lidhja juaj s'është e sigurt
 blockedByPolicy-title = Faqe e Bllokuar

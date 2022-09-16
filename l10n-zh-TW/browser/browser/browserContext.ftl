@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = 將鏈結儲存至 { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = 複製電子郵件地址
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = 複製電話號碼
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = 複製鏈結
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = 用新 { $containerName } 容器分頁開啟鏈結
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = 顯示密碼
+    .accesskey = v

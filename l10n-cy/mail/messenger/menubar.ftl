@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Bar Dewislen
+    .accesskey = D
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Dewisiadau
-    .accesskey = D
 menu-tools-settings =
     .label = Gosodiadau
     .accesskey = G
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Maint Ffont
+    .accesskey = M
+menuitem-font-size-enlarge =
+    .label = Cynyddu Maint Ffont
+    .accesskey = F
+menuitem-font-size-reduce =
+    .label = Lleihau Maint Ffont
+    .accesskey = L
+menuitem-font-size-reset =
+    .label = Ailosod Maint Ffont
+    .accesskey = A
 mail-uidensity-label =
     .label = Dwysedd
     .accesskey = D
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Cyffwrdd
     .accesskey = y
+menu-spaces-toolbar-button =
+    .label = Bar Offer Mannau
+    .accesskey = B
 
 ## File
 

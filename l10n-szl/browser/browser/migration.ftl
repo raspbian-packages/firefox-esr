@@ -30,6 +30,9 @@ import-from-nothing =
 import-from-safari =
     .label = Safari
     .accesskey = S
+import-from-brave =
+    .label = Brave
+    .accesskey = r
 import-from-canary =
     .label = Chrome Canary
     .accesskey = n
@@ -52,7 +55,7 @@ import-from-360se =
     .label = 360 Secure Browser
     .accesskey = 3
 
-no-migration-sources = Niy ma znodniynto żodno przeglōndarka, co by miała zokłodki, historyjo abo hasła.
+no-migration-sources = Niy szło znojś żodnych programōw ze zokłodkami, historyjōm abo hasłami.
 
 import-source-page-title = Importuj nasztalowania i dane
 import-items-page-title = Elymynta do importowanio
@@ -78,23 +81,9 @@ import-done-description = Import tych elymyntōw sie podarził:
 
 import-close-source-browser = Podwiela pudziesz dalij, dej pozōr, jeźli ôbrano przeglōndarka je zawarto.
 
-# Displays which browser the bookmarks are being imported from
-#
-# Variables:
-#   $source (String): The browser the user has chosen to import bookmarks from.
-imported-bookmarks-source = Z przeglōndarki { $source }
-
 source-name-ie = Internet Explorer
 source-name-edge = Microsoft Edge
-source-name-edge-beta = Microsoft Edge Beta
-source-name-safari = Safari
-source-name-canary = Google Chrome Canary
 source-name-chrome = Google Chrome
-source-name-chrome-beta = Google Chrome Beta
-source-name-chrome-dev = Google Chrome Dev
-source-name-chromium = Chromium
-source-name-firefox = Mozilla Firefox
-source-name-360se = 360 Secure Browser
 
 imported-safari-reading-list = Wykoz do czytanio (ze Safari)
 imported-edge-reading-list = Wykoz do czytanio (z Edge)

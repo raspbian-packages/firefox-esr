@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Rozpšawa za { $addon-name }
 
 abuse-report-title-extension = { -vendor-short-name } toś to rozšyrjenje k wěsći daś
+abuse-report-title-sitepermission = { -vendor-short-name } toś ten dodank sedłowych pšawow k wěsći daś
 abuse-report-title-theme = { -vendor-short-name } toś tu drastwu k wěsći daś
 abuse-report-subtitle = Kótary jo problem?
 
@@ -37,12 +37,6 @@ abuse-report-goback-button = Slědk
 abuse-report-submit-button = Wótpósłaś
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -52,6 +46,7 @@ abuse-report-messagebar-submitting = Rozpšawa za <span data-l10n-name="addon-na
 abuse-report-messagebar-submitted = Źěkujomy se, až sćo pósłał rozpšawu. Cośo <span data-l10n-name="addon-name">{ $addon-name }</span> wótwónoźeś?
 abuse-report-messagebar-submitted-noremove = Źěkujomy se, až sćo pósłał rozpšawu.
 abuse-report-messagebar-removed-extension = Źěkujomy se, až sćo pósłał rozpšawu. Sćo wótwónoźeł rozšyěrjenje <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Źěkujomy se, až sćo pósłał rozpšawu. Sćo wótwónoźeł dodank sedłowych pšawow <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Źěkujomy se, až sćo pósłał rozpšawu. Sćo wótwónoźeł drastwu <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Zmólka pśi słanju rozpšawy za <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = Rozpšawa za <span data-l10n-name="addon-name">{ $addon-name }</span> njejo se pósłała, dokulaž jo se druga rozpšawa njedawno wótpósłała.
@@ -60,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Rozpšawa za <span data-l10n-name=
 
 abuse-report-messagebar-action-remove-extension = Jo, wótwónoźeś
 abuse-report-messagebar-action-keep-extension = Ně, wobchowaś
+abuse-report-messagebar-action-remove-sitepermission = Jo, wótwónoźeś
+abuse-report-messagebar-action-keep-sitepermission = Ně, wobchowaś
 abuse-report-messagebar-action-remove-theme = Jo, wótwónoźeś
 abuse-report-messagebar-action-keep-theme = Ně, wobchowaś
 abuse-report-messagebar-action-retry = Hyšći raz wopytaś
@@ -82,9 +79,11 @@ abuse-report-deceptive-reason-v2 = Twjerźi, až to njejo
 abuse-report-deceptive-example = Pśikład: Torjece wopisanje abo wobraznosć
 
 abuse-report-broken-reason-extension-v2 = Njefunkcioněrujo, wobškóźujo websedła abo spómałšujo { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Njefunkcioněrujo, wobškóźujo websedła abo spómałšujo { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Njefunkcioněrujo abo wobškóźujo zwobraznjenje wobglědowaka
 abuse-report-broken-example = Pśikład: Funkcije su pomałe, śěžko wužywajobne abo njefunkcioněruju; źěle websedła se njezacytaju abo wuglědaju njewšedne
 abuse-report-broken-suggestions-extension = Zda se, zo sćo identificěrował zmólku. Mimo až móžośo rozpšawu wótpósłaś, stajśo se nejlěpjej z wuwijarjom rozšyrjenja do zwiska, aby problem z funkcionalnosću rozwězał. <a data-l10n-name="support-link">Woglědajśo se k websedłoju rozšyrjenja</a>, aby se informacije wó wuwijarju wobstarał.
+abuse-report-broken-suggestions-sitepermission = Zda se, zo sćo identificěrował zmólku. Mimo až móžośo rozpšawu wótpósłaś, stajśo se nejlěpjej z wuwijarjom websedła do zwiska, aby problem z funkcionalnosću rozwězał. <a data-l10n-name="support-link">Woglědajśo se k websedłoju</a>, aby se informacije wó wuwijarju wobstarał.
 abuse-report-broken-suggestions-theme = Zda se, zo sćo identificěrował zmólku. Mimo až móžośo rozpšawu wótpósłaś, stajśo se nejlěpjej z wuwijarjom drastwy do zwiska, aby problem z funkcionalnosću rozwězał. <a data-l10n-name="support-link">Woglědajśo se k websedłoju drastwy</a>, aby se informacije wó wuwijarju wobstarał.
 
 abuse-report-policy-reason-v2 = Wopśimujo gramoty połne, namócne abo ilegalne wopśimjeśe
@@ -94,4 +93,3 @@ abuse-report-unwanted-reason-v2 = Njejsom to nigda kśěł a njewěm, kak mógu 
 abuse-report-unwanted-example = Pśikład: Nałoženje jo jo zainstalěrowało bźez dowólnosći
 
 abuse-report-other-reason = Něco druge
-

@@ -9,28 +9,18 @@
 <!ENTITY preserveThreading.label          "Säilytä viestiketjujen rakenne viestejä lajiteltaessa">
 <!ENTITY preserveThreading.accesskey      "S">
 <!ENTITY mailAutoHide.label               "Piilota sähköpostin välilehtipalkki, kun auki on vain yksi välilehti">
+<!ENTITY mailAutoHide.accesskey           "l">
 <!ENTITY loadInBackground.label           "Siirry uusiin välilehtiin, kun ne avataan">
 <!ENTITY loadInBackground.accesskey       "v">
 <!ENTITY mailOpenTabsFor.label            "Avaa välilehti ikkunan sijaan">
 <!ENTITY mailMiddleClick.label            "Hiiren keskimmäisen painikkeen napsautus tai Ctrl+Enter viestin tai kansion kohdalla">
+<!ENTITY mailMiddleClick.accesskey        "H">
 <!ENTITY mailMiddleClickMac.label         "Hiiren keskimmäisen painikkeen napsautus tai &#8984;+Return viestin tai kansion kohdalla">
+<!ENTITY mailMiddleClickMac.accesskey     "H">
 <!ENTITY mailDoubleClick.label            "Kaksoisnapsauta viestiä">
+<!ENTITY mailDoubleClick.accesskey        "K">
 <!ENTITY mailBiffOnNewWindow.label        "Nouda uudet viestit vasta sähköpostiohjelman avaamisen jälkeen">
 <!ENTITY mailBiffOnNewWindow.accesskey    "N">
-
-<!ENTITY defaultMailSettings.description  "Tee &brandShortName;stä oletusohjelma seuraaville sovelluksille:">
-<!ENTITY setDefaultMail.label             "Sähköposti">
-<!ENTITY setDefaultMail.accesskey         "ä">
-<!ENTITY setDefaultNews.label             "Keskusteluryhmät">
-<!ENTITY setDefaultNews.accesskey         "e">
-<!ENTITY setDefaultFeed.label             "Syötteet">
-<!ENTITY setDefaultFeed.accesskey         "y">
-
-<!ENTITY useInternalSettings.description  "Käytä &brandShortName;n sähköposti- ja keskusteluryhmäohjelmaa, kun selaimessa avataan seuraavia linkkejä:">
-<!ENTITY useInternalMail.label            "Sähköposti (mailto:)">
-<!ENTITY useInternalMail.accesskey        "h">
-<!ENTITY useInternalNews.label            "Keskusteluryhmät (news:, snews:, nntp:)">
-<!ENTITY useInternalNews.accesskey        "u">
 
 <!ENTITY messengerStartPage.caption       "Aloitussivu">
 <!ENTITY enableStartPage.label            "Näytä aloitussivu viestiruudussa, kun sähköpostiohjelma käynnistyy">

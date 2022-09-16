@@ -19,6 +19,7 @@ perftools-heading-features-default = Özellikler (Varsayılan olarak açık kalm
 perftools-heading-features-disabled = Devre dışı özellikler
 perftools-heading-features-experimental = Deneysel
 perftools-heading-threads = İş parçacıkları
+perftools-heading-threads-jvm = JVM iş parçacıkları
 perftools-heading-local-build = Yerel build
 
 ##
@@ -42,9 +43,6 @@ perftools-devtools-settings-label = Ayarlar
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Gizli gezinti etkinleştirildiğinde profilleyici devre dışı bırakılır.
-    Profilleyiciyi yeniden etkinleştirmek için tüm gizli pencereleri kapatın
 perftools-status-recording-stopped-by-another-tool = Kayıt başka bir araç tarafından durduruldu.
 perftools-status-restart-required = Bu özelliği etkinleştirmek için tarayıcı yeniden başlatılmalıdır.
 
@@ -90,6 +88,8 @@ perftools-thread-dns-resolver =
     .title = DNS çözümleme bu iş parçacığında gerçekleşir
 perftools-thread-task-controller =
     .title = TaskController iş parçacığı havuzu iş parçacıkları
+perftools-thread-jvm-gecko =
+    .title = Ana Gecko JVM iş parçacığı
 
 ##
 
@@ -100,6 +100,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Yeni</b>: { -profiler-brand-name } artık geliştirici araçlarına entegre edildi. Bu güçlü yeni araç hakkında <a>daha fazla bilgi edinin</a>.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -116,19 +120,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Web geliştirici
 perftools-presets-web-developer-description = Çoğu web uygulamasında hata ayıklama için önerilen ayarlar, düşük overhead.
-perftools-presets-firefox-platform-label = Firefox platformu
-perftools-presets-firefox-platform-description = Dahili Firefox platformu hata ayıklaması için önerilen ayarlar.
-perftools-presets-firefox-front-end-label = Firefox ön yüzü
-perftools-presets-firefox-front-end-description = Dahili Firefox ön yüz hata ayıklaması için önerilen ayarlar.
-perftools-presets-firefox-graphics-label = Firefox grafikleri
-perftools-presets-firefox-graphics-description = Firefox grafik performans incelemesi için önerilen ayarlar.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = { -brand-shorter-name } tarayıcısını profilleme için önerilen ayar.
 perftools-presets-graphics-label = Grafik
 perftools-presets-graphics-description = { -brand-shorter-name } tarayıcısında grafik hatalarını araştırma ayarı.
 perftools-presets-media-label = Ortam
-perftools-presets-media-description = Ses ve video sorunlarını tanılamak için önerilen ayarlar.
 perftools-presets-media-description2 = { -brand-shorter-name } tarayıcısında ses ve video hatalarını araştırma ayarı.
+perftools-presets-networking-label = Ağ
+perftools-presets-networking-description = { -brand-shorter-name } tarayıcısında ağ hatalarını araştırma ayarı.
 perftools-presets-custom-label = Özel
 
 ##

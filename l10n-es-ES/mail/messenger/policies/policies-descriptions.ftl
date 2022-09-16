@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 ## The Enterprise Policies feature is aimed at system administrators
 ## who want to deploy these settings across several Thunderbird installations
 ## all at once. This is traditionally done through the Windows Group Policy
@@ -17,6 +18,8 @@ policy-AppUpdateURL = Establecer una URL de actualización personalizada.
 
 policy-Authentication = Configurar identificación integrada en los sitios web que la admitan.
 
+policy-BackgroundAppUpdate2 = Activar o desactivar la actualización en segundo plano.
+
 policy-BlockAboutAddons = Bloquear el acceso al administrador de complementos (about:addons).
 
 policy-BlockAboutConfig = Bloquear el acceso a la página about:config.
@@ -30,6 +33,8 @@ policy-CaptivePortal = Activar o desactivar la compatibilidad con un portal caut
 policy-CertificatesDescription = Añadir certificados o usar certificados incluidos de serie.
 
 policy-Cookies = Permitir o denegar a los sitios web enviar cookies.
+
+policy-DisableBuiltinPDFViewer = Desactivar PDF.js, el visor de PDF integrado en { -brand-short-name }.
 
 policy-DisabledCiphers = Desactivar cifrados.
 
@@ -84,6 +89,8 @@ policy-ExtensionSettings = Administrar todos los aspectos de la instalación de 
 
 policy-ExtensionUpdate = Activar o desactivar actualizaciones automáticas de extensiones.
 
+policy-Handlers = Configurar gestores de aplicación predeterminados.
+
 policy-HardwareAcceleration = Si falso, desactivar la aceleración hardware.
 
 policy-InstallAddonsPermission = Permitir a ciertos sitios web instalar complementos.
@@ -99,6 +106,8 @@ policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Revertir al comportami
 ##
 
 policy-LocalFileLinks = Permitir a sitios web específicos enlazar a archivos locales.
+
+policy-ManualAppUpdateOnly = Permitir solo actualizaciones manuales y no notificar al usuario acerca de actualizaciones.
 
 policy-NetworkPrediction = Activar o desactivar la predicción de red (precarga DNS).
 
@@ -118,6 +127,8 @@ policy-PDFjs = Desactivar o configurar PDF.js, el visor PDF incorporado en { -br
 policy-Permissions2 = Configurar permisos de la cámara, micrófono, ubicación, notificaciones y autorreproducción.
 
 policy-Preferences = Establecer y bloquear el valor de un subconjunto de preferencias.
+
+policy-PrimaryPassword = Requerir o evitar el uso de una contraseña maestra.
 
 policy-PromptForDownloadLocation = Preguntar dónde guardar los archivos al guardar.
 

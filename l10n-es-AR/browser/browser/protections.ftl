@@ -71,16 +71,14 @@ mobile-app-card-content = Usar el navegador móvil con protección integrada con
 mobile-app-links = Navegador { -brand-product-name } para <a data-l10n-name="android-mobile-inline-link">Android </a> y <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 
 lockwise-title = Nunca más olvide una contraseña
-lockwise-title-logged-in2 = Gestión de contraseñas
-lockwise-header-content = { -lockwise-brand-name } almacena sus contraseñas en su navegador de manera segura.
+passwords-title-logged-in = Administrar contraseñas
+passwords-header-content = { -brand-product-name } almacena de forma segura sus contraseñas en el navegador.
 lockwise-header-content-logged-in = Almacene y sincronice sus contraseñas en todos sus dispositivos de manera segura.
-protection-report-save-passwords-button = Guardar contraseñas
-    .title = Guardar contraseñas en { -lockwise-brand-short-name }
-protection-report-manage-passwords-button = Administrar contraseñas
-    .title = Administrar contraseñas en { -lockwise-brand-short-name }
-lockwise-mobile-app-title = Lleve sus contraseñas a todas partes
-lockwise-no-logins-card-content = Use contraseñas guardadas en { -brand-short-name } en cualquier dispositivo.
-lockwise-app-links = { -lockwise-brand-name } para <a data-l10n-name="lockwise-android-inline-link">Android</a> y <a data-l10n-name="lockwise-ios-inline-link">iOS</a>
+protection-report-passwords-save-passwords-button = Guardar contraseñas
+    .title = Guardar contraseñas
+protection-report-passwords-manage-passwords-button = Administrar contraseñas
+    .title = Administrar contraseñas
+
 
 # Variables:
 # $count (Number) - Number of passwords exposed in data breaches.

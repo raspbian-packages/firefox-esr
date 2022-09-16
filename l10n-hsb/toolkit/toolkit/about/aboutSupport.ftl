@@ -73,6 +73,14 @@ app-basics-location-service-key-google = Kluč stejnišćoweje słužby Google
 app-basics-safebrowsing-key-google = Kluč Safebrowsing Google
 app-basics-key-mozilla = Kluč stejnišćoweje słužby Mozilla
 app-basics-safe-mode = Wěsty modus
+app-basics-memory-size = Wulkosć składa (RAM)
+app-basics-disk-available = K dispoziciji stejacy tačelowy składowak
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] W Finder pokazać
@@ -350,6 +358,7 @@ fission-status-experiment-control = Přez eksperiment znjemóžnjeny
 fission-status-experiment-treatment = Přez eksperiment zmóžnjeny
 fission-status-disabled-by-e10s-env = Přez wokolinu znjemóžnjeny
 fission-status-enabled-by-env = Přez wokolinu zmóžnjeny
+fission-status-disabled-by-env = Přez wokolinu znjemóžnjeny
 fission-status-disabled-by-safe-mode = Přez wěsty modus znjemóžnjeny
 fission-status-enabled-by-default = Po standardźe zmóžnjeny
 fission-status-disabled-by-default = Po standardźe znjemóžnjeny

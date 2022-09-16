@@ -35,6 +35,8 @@ detail-version =
     .label = Ferzje
 detail-last-updated =
     .label = Lêst bywurke
+addon-detail-description-expand = Mear toane
+addon-detail-description-collapse = Minder toane
 detail-contributions-description = De ûnwikkeler fan dizze add-on freget om stipe foar de trochgeande ûntwikkeling troch it meitsjen fan in lytse bydrage.
 detail-contributions-button = Bydrage
     .title = Bydrage oan de ûntwikkeling fan dizze add-on
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Resinte fernijingen
 addon-category-recent-updates-title =
     .title = Resinte fernijingen
+addon-category-sitepermission = Websitemachtigingen
+addon-category-sitepermission-title =
+    .title = Websitemachtigingen
 
 ## These are global warnings
 
@@ -284,14 +289,18 @@ extension-enabled-heading = Ynskeakele
 extension-disabled-heading = Utskeakele
 theme-enabled-heading = Ynskeakele
 theme-disabled-heading = Utskeakele
+theme-disabled-heading2 = Bewarre tema’s
 theme-monochromatic-heading = Kleurstellingen
 theme-monochromatic-subheading = Libbene nije kleuren fan { -brand-product-name }. Beskikber foar in beheinde tiid.
+theme-colorways-button = Kleurstellingen probearje
 plugin-enabled-heading = Ynskeakele
 plugin-disabled-heading = Utskeakele
 dictionary-enabled-heading = Ynskeakele
 dictionary-disabled-heading = Utskeakele
 locale-enabled-heading = Ynskeakele
 locale-disabled-heading = Utskeakele
+sitepermission-enabled-heading = Ynskeakele
+sitepermission-disabled-heading = Utskeakele
 always-activate-button = Altyd aktivearje
 never-activate-button = Nea aktivearje
 addon-detail-author-label = Skriuwer
@@ -368,6 +377,7 @@ addon-permissions-optional = Opsjonele tastimmingen foar ekstra funksjonaliteit:
 addon-permissions-learnmore = Mear ynfo oer tastimmingen
 recommended-extensions-heading = Oanrekommandearre útwreidingen
 recommended-themes-heading = Oanrekommandearre tema’s
+addon-sitepermissions-required = Jout <span data-l10n-name="hostname">{ $hostname }</span> de folgjende mooglikheden:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Fiele jo jo kreätyf? <a data-l10n-name="link"> Bou jo eigen tema mei Firefox Color.</a>
@@ -380,6 +390,7 @@ plugin-heading = Jo ynstekkers beheare
 dictionary-heading = Jo wurdboeken beheare
 locale-heading = Jo talen beheare
 updates-heading = Jo fernijingen beheare
+sitepermission-heading = Jo websitemachtigingen beheare
 discover-heading = Personalisearje jo { -brand-short-name }
 shortcuts-heading = Utwreidingsfluchtoetsen beheare
 default-heading-search-label = Mear add-ons sykje
@@ -387,3 +398,20 @@ addons-heading-search-input =
     .placeholder = addons.mozilla.org trochsykje
 addon-page-options-button =
     .title = Ark foar alle add-ons
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } is ynkompatibel mei { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = { $name } koe net ferifiearre wurde foar gebrûk yn { -brand-short-name } en is útskeakele.
+details-notification-unsigned-and-disabled-link = Mear ynformaasje
+details-notification-unsigned = { $name } koe net ferifiearre wurde foar gebrûk yn { -brand-short-name }. Wês foarsichtich as jo fierdergean.
+details-notification-unsigned-link = Mear ynformaasje
+details-notification-blocked = { $name } is útskeakele om reden fan feilichheid of stabiliteit.
+details-notification-blocked-link = Mear ynformaasje
+details-notification-softblocked = { $name } kin feilichheids- of stabiliteitsproblemen feroarsaakje.
+details-notification-softblocked-link = Mear ynformaasje
+details-notification-gmp-pending = { $name } sil ynkoarten ynstallearre wurde.

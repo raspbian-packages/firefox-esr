@@ -5,8 +5,6 @@
 
 about-logins-page-title = Inicis de sessió i contrasenyes
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Cerca els inicis de sessió
 
@@ -45,6 +43,8 @@ login-list-count =
 login-list-sort-label-text = Ordena per:
 login-list-name-option = Nom (A-Z)
 login-list-name-reverse-option = Nom (Z-A)
+login-list-username-option = Nom d’usuari (A-Z)
+login-list-username-reverse-option = Nom d’usuari (Z-A)
 about-logins-login-list-alerts-option = Alertes
 login-list-last-changed-option = Darrera modificació
 login-list-last-used-option = Darrer ús
@@ -59,6 +59,12 @@ about-logins-list-item-breach-icon =
     .title = Lloc web amb filtració de dades
 about-logins-list-item-vulnerable-password-icon =
     .title = Contrasenya vulnerable
+about-logins-list-section-breach = Llocs web amb filtracions de dades
+about-logins-list-section-vulnerable = Contrasenyes vulnerables
+about-logins-list-section-nothing = Cap alerta
+about-logins-list-section-today = Hui
+about-logins-list-section-yesterday = Ahir
+about-logins-list-section-week = Darrers 7 dies
 
 ## Introduction screen
 
@@ -67,9 +73,8 @@ about-logins-login-intro-heading-logged-in = No s'ha trobat cap inici de sessió
 login-intro-description = Si heu guardat els vostres inicis de sessió en el { -brand-product-name } des d'un altre dispositiu, esta és la manera de tindre-los també ací:
 login-intro-instructions-fxa = Creeu un { -fxaccount-brand-name } o inicieu-hi la sessió des del dispositiu on teniu guardats els vostres inicis de sessió.
 login-intro-instructions-fxa-settings = Aneu a Paràmetres > Sync > Activa la sincronització... Marqueu la casella de selecció «Inicis de sessió i contrasenyes».
-login-intro-instructions-fxa-help = Visiteu l'<a data-l10n-name="help-link">assistència del { -lockwise-brand-short-name }</a> per obtindre més ajuda.
-about-logins-intro-import = Si els vostres inicis de sessió estan guardats en un altre navegador, podeu <a data-l10n-name="import-link">importar-los al { -lockwise-brand-short-name }</a>
-
+login-intro-instructions-fxa-passwords-help = Visiteu l'<a data-l10n-name="passwords-help-link">assistència de contrasenyes</a> per a obtindre més ajuda.
+about-logins-intro-browser-only-import = Si teniu inicis de sessió guardats en un altre navegador, podeu <a data-l10n-name="import-link">importar-los al { -brand-product-name }</a>.
 about-logins-intro-import2 = Si els vostres inicis de sessió estan guardats fora del { -brand-product-name }, podeu <a data-l10n-name="import-browser-link">importar-los d'un altre navegador</a> o <a data-l10n-name="import-file-link">d'un fitxer</a>
 
 ## Login
@@ -124,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Per copiar la contraseny
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = copiar la contrasenya guardada
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Per exportar els inicis de sessió, introduïu les vostres credencials d'inici de sessió al Windows. Això ajuda a protegir la seguretat dels vostres comptes.
 # This message can be seen when attempting to export a password in about:logins
@@ -138,8 +141,6 @@ about-logins-primary-password-notification-message = Introduïu la contrasenya p
 master-password-reload-button =
     .label = Inicia la sessió
     .accesskey = I
-
-## Password Sync notification
 
 ## Dialogs
 
@@ -229,7 +230,6 @@ about-logins-error-message-duplicate-login-with-link = Ja existeix una entrada p
 
 # This is a generic error message.
 about-logins-error-message-default = S'ha produït un error en intentar guardar esta contrasenya.
-
 
 ## Login Export Dialog
 

@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -26,42 +21,9 @@ return-to-amo-subtitle = Molt bé, teniu el { -brand-short-name }
 #
 # Variables:
 #   $addon-name (String) - Name of the add-on
-return-to-amo-addon-title = Ara, instal·leu l'extensió complement <img data-l10n-name="icon"/><b>{ $addon-name }</b>.
+return-to-amo-addon-title = Ara, instal·leu l'extensió <img data-l10n-name="icon"/><b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Afegeix l'extensió
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Us donem la benvinguda al <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = El navegador ràpid, segur i privat que té el suport d'una organització sense ànim de lucre.
-onboarding-multistage-welcome-primary-button-label = Inicia la configuració
-onboarding-multistage-welcome-secondary-button-label = Inicia la sessió
-onboarding-multistage-welcome-secondary-button-text = Ja teniu un compte?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = Feu que el { -brand-short-name } sigui el vostre navegador <span data-l10n-name="zap">per defecte</span>
-onboarding-multistage-set-default-subtitle = Velocitat, seguretat i privadesa sempre que navegueu.
-onboarding-multistage-set-default-primary-button-label = Fes que sigui el navegador per defecte
-onboarding-multistage-set-default-secondary-button-label = Ara no
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = Per començar, feu que el <span data-l10n-name="zap">{ -brand-short-name }</span> estigui a un sol clic
-onboarding-multistage-pin-default-subtitle = Navegació ràpida, segura i privada cada vegada que utilitzeu el web.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Quan s'obrin els paràmetres, trieu el { -brand-short-name } com a navegador web
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = Això fixarà el { -brand-short-name } a la barra de tasques i obrirà els paràmetres
-onboarding-multistage-pin-default-primary-button-label = Fes que el { -brand-short-name } sigui el meu navegador principal
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Importeu les vostres contrasenyes, <br/>adreces d'interès i <span data-l10n-name = "zap">més</span>
-onboarding-multistage-import-subtitle = Veniu d'un altre navegador? Importar-ho tot al { -brand-short-name } és molt fàcil.
-onboarding-multistage-import-primary-button-label = Inicia la importació
-onboarding-multistage-import-secondary-button-label = Ara no
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = S'han trobat els llocs següents en aquest dispositiu. El { -brand-short-name } no desa ni sincronitza les dades de cap altre navegador tret que les importeu.
+return-to-amo-add-theme-label = Afegeix un tema
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = S'han trobat els llocs següents en aquest 
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Primers passos: pantalla { $current } de { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Trieu una <span data-l10n-name = "zap">aparença</span>
-onboarding-multistage-theme-subtitle = Personalitzeu el { -brand-short-name } amb un tema.
-onboarding-multistage-theme-primary-button-label2 = Fet
-onboarding-multistage-theme-secondary-button-label = Ara no
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Automàtic
-onboarding-multistage-theme-label-light = Clar
-onboarding-multistage-theme-label-dark = Fosc
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -155,7 +105,7 @@ mr2-onboarding-colorway-subtitle = Combinacions de colors vibrants. Disponibles 
 mr2-onboarding-colorway-primary-button-label = Desa la combinació de colors
 mr2-onboarding-colorway-secondary-button-label = Ara no
 mr2-onboarding-colorway-label-soft = Suau
-mr2-onboarding-colorway-label-balanced = Equilibat
+mr2-onboarding-colorway-label-balanced = Equilibrat
 # "Bold" is used in the sense of bravery or courage, not in the sense of
 # emphasized text.
 mr2-onboarding-colorway-label-bold = Atrevit
@@ -178,55 +128,6 @@ mr1-onboarding-theme-label-alpenglow = Alpenglow
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        Hereta l'aparença del sistema operatiu
-        per als botons, menús i finestres.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        Hereta l'aparença del sistema operatiu
-        per als botons, menús i finestres.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        Utilitza una aparença clara per als
-        botons, menús i finestres.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        Utilitza una aparença clara per als
-        botons, menús i finestres.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        Utilitza una aparença fosca per als
-        botons, menús i finestres.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        Utilitza una aparença fosca per als
-        botons, menús i finestres.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        Utilitza una aparença acolorida per als
-        botons, menús i finestres.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        Utilitza una aparença acolorida per als
-        botons, menús i finestres.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -284,17 +185,54 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = Descobriu les combinacions de colors de { $colorwayName }.
+mr2-onboarding-colorway-label = Descobriu les combinacions de colors de { $colorwayName }.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Descobriu els temes per defecte.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = Descobriu els temes per defecte.
+mr2-onboarding-default-theme-label = Descobriu els temes per defecte.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Gràcies per triar-nos
 mr2-onboarding-thank-you-text = El { -brand-short-name } és un navegador independent que té el suport d'una organització sense ànim de lucre. Tots junts, fem que el web sigui més segur, més saludable i més privat.
 mr2-onboarding-start-browsing-button-label = Comença a navegar
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Trieu la llengua
+onboarding-live-language-button-label-downloading = S'està baixant el paquet de llengua per a { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = S'estan obtenint les llengües disponibles…
+onboarding-live-language-installing = S'està instal·lant el paquet de llengua per a { $negotiatedLanguage }…
+onboarding-live-language-secondary-cancel-download = Cancel·la
+onboarding-live-language-skip-button-label = Omet
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    <span data-l10n-name="zap">gràcies</span>
+fx100-thank-you-subtitle = És la versió número 100! Gràcies per ajudar-nos a construir una Internet millor i més saludable.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] Fixa el { -brand-short-name } al Dock
+       *[other] Fixa el { -brand-short-name } a la barra de tasques
+    }
+fx100-upgrade-thanks-header = 100 gràcies
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = És la versió número 100 del { -brand-short-name }. <em>Gràcies</em> per ajudar-nos a construir una Internet millor i més saludable.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = És la versió número 100! Gràcies per formar part de la nostra comunitat. Feu que el { -brand-short-name } estigui a un sol clic de les properes 100.

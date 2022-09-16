@@ -9,3 +9,5 @@ account-finish-account-setup = Завршете го поставувањето 
 # Menu item that sends a tab to all synced devices.
 account-send-to-all-devices = Испрати на сите уреди
 
+# Menu item that links to the Firefox Accounts settings for connected devices.
+account-manage-devices = Менаџирај уреди…

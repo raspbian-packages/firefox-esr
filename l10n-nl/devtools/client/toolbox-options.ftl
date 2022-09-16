@@ -41,6 +41,11 @@ options-collapse-attrs-label = DOM-attributen afkappen
 options-collapse-attrs-tooltip =
     .title = Lange attributen in de inspector afkappen
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Klik en sleep om de afmetingswaarden te bewerken
+options-inspector-draggable-properties-tooltip =
+    .title = Klik en sleep om de afmetingswaarden te bewerken in de inspectorregelweergave.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Standaardkleureenheid
@@ -48,6 +53,7 @@ options-default-color-unit-authored = Zoals opgesteld
 options-default-color-unit-hex = Hex
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Kleurnamen
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Remote debugging inschakelen
 options-enable-remote-tooltip2 =
     .title = Door deze optie in te schakelen kunt u deze browserinstallatie op afstand debuggen
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Aangepaste opmaakelementen inschakelen
+options-enable-custom-formatters-tooltip =
+    .title = Als u deze optie inschakelt, kunnen websites aangepaste opmaakelementen voor DOM-objecten definiëren
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Service Workers over HTTP inschakelen (als werkset is geopend)

@@ -19,6 +19,7 @@ perftools-heading-features-default = Funcionalidades (recomendado ativar por pad
 perftools-heading-features-disabled = Funcionalidades desativadas
 perftools-heading-features-experimental = Experimental
 perftools-heading-threads = Threads
+perftools-heading-threads-jvm = Threads da JVM
 perftools-heading-local-build = Build local
 
 ##
@@ -42,9 +43,6 @@ perftools-devtools-settings-label = Configurações
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    O profiler é desativado quando a navegação privativa está ativada.
-    Feche todas as janelas privativas para reativar o profiler
 perftools-status-recording-stopped-by-another-tool = A gravação foi interrompida por outra ferramenta.
 perftools-status-restart-required = O navegador deve ser reiniciado para ativar esta funcionalidade.
 
@@ -90,6 +88,18 @@ perftools-thread-dns-resolver =
     .title = A resolução de DNS acontece neste thread
 perftools-thread-task-controller =
     .title = Threads do conjunto de threads do TaskController
+perftools-thread-jvm-gecko =
+    .title = O thread principal da JVM do Gecko
+perftools-thread-jvm-nimbus =
+    .title = Os threads principais do SDK de experimentos Nimbus
+perftools-thread-jvm-default-dispatcher =
+    .title = O expedidor padrão da biblioteca de corrotinas Kotlin
+perftools-thread-jvm-glean =
+    .title = Os threads principais do SDK de telemetria Glean
+perftools-thread-jvm-arch-disk-io =
+    .title = O expedidor de IO da biblioteca de corrotinas Kotlin
+perftools-thread-jvm-pool =
+    .title = Threads criados em um pool de threads sem nome
 
 ##
 
@@ -100,6 +110,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Novo</b>: Agora o { -profiler-brand-name } é integrado nas ferramentas de desenvolvimento. <a>Saiba mais</a> sobre esta nova ferramenta poderosa.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -116,19 +130,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Desenvolvimento web
 perftools-presets-web-developer-description = Ajuste prévio recomendado para depuração da maioria dos aplicativos web, com pouca sobrecarga.
-perftools-presets-firefox-platform-label = Plataforma Firefox
-perftools-presets-firefox-platform-description = Ajuste prévio recomendado para depuração de aspectos internos da plataforma Firefox.
-perftools-presets-firefox-front-end-label = Interface do usuário do Firefox
-perftools-presets-firefox-front-end-description = Ajuste prévio recomendado para depuração de aspectos internos da interface do usuário (front-end) do Firefox.
-perftools-presets-firefox-graphics-label = Gráfico do Firefox
-perftools-presets-firefox-graphics-description = Ajuste prévio recomendado para investigação de desempenho gráfico do Firefox.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Predefinição recomendada para gravação de profile no { -brand-shorter-name }.
 perftools-presets-graphics-label = Gráficos
 perftools-presets-graphics-description = Predefinição para investigar bugs gráficos no { -brand-shorter-name }.
 perftools-presets-media-label = Mídia
-perftools-presets-media-description = Ajuste prévio recomendado para diagnosticar problemas de áudio e vídeo.
 perftools-presets-media-description2 = Predefinição para investigar bugs de áudio e vídeo no { -brand-shorter-name }.
+perftools-presets-networking-label = Rede
+perftools-presets-networking-description = Predefinição para investigar bugs de rede no { -brand-shorter-name }.
 perftools-presets-custom-label = Personalizado
 
 ##

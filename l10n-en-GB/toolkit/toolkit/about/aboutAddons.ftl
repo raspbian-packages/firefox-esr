@@ -35,6 +35,8 @@ detail-version =
     .label = Version
 detail-last-updated =
     .label = Last Updated
+addon-detail-description-expand = Show more
+addon-detail-description-collapse = Show less
 detail-contributions-description = The developer of this add-on asks that you help support its continued development by making a small contribution.
 detail-contributions-button = Contribute
     .title = Contribute to the development of this add-on
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Recent Updates
 addon-category-recent-updates-title =
     .title = Recent Updates
+addon-category-sitepermission = Site Permissions
+addon-category-sitepermission-title =
+    .title = Site Permissions
 
 ## These are global warnings
 
@@ -284,14 +289,18 @@ extension-enabled-heading = Enabled
 extension-disabled-heading = Disabled
 theme-enabled-heading = Enabled
 theme-disabled-heading = Disabled
+theme-disabled-heading2 = Saved Themes
 theme-monochromatic-heading = Colourways
 theme-monochromatic-subheading = Vibrant new colourways from { -brand-product-name }. Available for a limited time.
+theme-colorways-button = Try Colourways
 plugin-enabled-heading = Enabled
 plugin-disabled-heading = Disabled
 dictionary-enabled-heading = Enabled
 dictionary-disabled-heading = Disabled
 locale-enabled-heading = Enabled
 locale-disabled-heading = Disabled
+sitepermission-enabled-heading = Enabled
+sitepermission-disabled-heading = Disabled
 always-activate-button = Always Activate
 never-activate-button = Never Activate
 addon-detail-author-label = Author
@@ -368,6 +377,7 @@ addon-permissions-optional = Optional permissions for added functionality:
 addon-permissions-learnmore = Learn more about permissions
 recommended-extensions-heading = Recommended Extensions
 recommended-themes-heading = Recommended Themes
+addon-sitepermissions-required = Grants the following capabilities to <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Feeling creative? <a data-l10n-name="link">Build your own theme with Firefox Colour.</a>
@@ -380,6 +390,7 @@ plugin-heading = Manage Your Plugins
 dictionary-heading = Manage Your Dictionaries
 locale-heading = Manage Your Languages
 updates-heading = Manage Your Updates
+sitepermission-heading = Manage Your Site Permissions
 discover-heading = Personalise Your { -brand-short-name }
 shortcuts-heading = Manage Extension Shortcuts
 default-heading-search-label = Find more add-ons
@@ -387,3 +398,20 @@ addons-heading-search-input =
     .placeholder = Search addons.mozilla.org
 addon-page-options-button =
     .title = Tools for all add-ons
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } is incompatible with { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = { $name } could not be verified for use in { -brand-short-name } and has been disabled.
+details-notification-unsigned-and-disabled-link = More Information
+details-notification-unsigned = { $name } could not be verified for use in { -brand-short-name }. Proceed with caution.
+details-notification-unsigned-link = More Information
+details-notification-blocked = { $name } has been disabled due to security or stability issues.
+details-notification-blocked-link = More Information
+details-notification-softblocked = { $name } is known to cause security or stability issues.
+details-notification-softblocked-link = More Information
+details-notification-gmp-pending = { $name } will be installed shortly.

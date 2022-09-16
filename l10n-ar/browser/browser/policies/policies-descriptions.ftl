@@ -194,3 +194,4 @@ policy-UserMessaging = عدم عرض بعض الرسائل بعينها للمس
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = منع زيارة المواقع. طالع التوثيق لتفاصيل أكثر بخصوص النسق.
 
+policy-Windows10SSO = السماح بالولوج الموحّد من وِندوز إلى حسابات ميكروسوفت وحسابات العمل والحسابات المدرسية.

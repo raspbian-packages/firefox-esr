@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Pienennä
+messenger-window-maximize-button =
+    .tooltiptext = Suurenna
+messenger-window-restore-down-button =
+    .tooltiptext = Palauta pienemmäksi ikkunaksi
+messenger-window-close-button =
+    .tooltiptext = Sulje
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -76,10 +87,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Asetukset
 appmenu-save-as-file =
     .label = Tiedosto…
 appmenu-settings =
@@ -99,11 +106,29 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Uudelleenohjaa
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Poista valittu viesti
+           *[other] Poista valitut viestit
+        }
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Uudelleenohjaa
+
+## Message header cutomize panel
+
+message-header-customize-button-style =
+    .value = Painikkeen tyyli
+    .accesskey = P
+message-header-button-style-default =
+    .label = Kuvakkeet ja teksti
+message-header-button-style-text =
+    .label = Teksti
+message-header-button-style-icons =
+    .label = Kuvakkeet
 
 ## Action Button Context Menu
 
@@ -140,3 +165,80 @@ repair-text-encoding-button =
 no-reply-title = Vastausta ei tueta
 no-reply-message = Vastausosoite ({ $email }) ei vaikuta olevan valvottu osoite. Kukaan ei todennäköisesti lue tähän osoitteeseen tulevia viestejä.
 no-reply-reply-anyway-button = Vastaa silti
+
+## error messages
+
+decrypt-and-copy-failures = { $failures }/{ $total } viestin salausta ei voitu purkaa, joten niitä ei kopioitu.
+
+## Spaces toolbar
+
+spaces-toolbar-button-mail2 =
+    .title = Sähköposti
+spaces-toolbar-button-address-book2 =
+    .title = Osoitekirja
+spaces-toolbar-button-calendar2 =
+    .title = Kalenteri
+spaces-toolbar-button-tasks2 =
+    .title = Tehtävät
+spaces-toolbar-button-chat2 =
+    .title = Keskustelu
+spaces-toolbar-button-settings2 =
+    .title = Asetukset
+spaces-context-new-tab-item =
+    .label = Avaa uudessa välilehdessä
+spaces-context-new-window-item =
+    .label = Avaa uudessa ikkunassa
+settings-context-open-settings-item =
+    .label = Avaa asetukset
+settings-context-open-account-settings-item =
+    .label = Avaa tilin asetukset
+settings-context-open-addons-item =
+    .label = Avaa lisäosien hallinta
+settings-context-open-settings-item2 =
+    .label = Asetukset
+settings-context-open-account-settings-item2 =
+    .label = Tilin asetukset
+settings-context-open-addons-item2 =
+    .label = Lisäosat ja teemat
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail2.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book2.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar2.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks2.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat2.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] Yksi lukematon viesti
+           *[other] { $count } lukematonta viestiä
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Muokkaa…
+spaces-customize-background-color = Taustaväri
+spaces-customize-icon-color = Painikkeen väri
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Valittu painikkeen taustaväri
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Valittu painikkeen väri
+spaces-customize-button-restore = Palauta oletukset
+    .accesskey = o
+customize-panel-button-save = Valmis
+    .accesskey = V

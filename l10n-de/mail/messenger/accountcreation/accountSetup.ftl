@@ -53,8 +53,11 @@ account-setup-password-label = Passwort
 account-provisioner-button = Neue E-Mail-Adresse erhalten
     .accesskey = u
 
-account-setup-password-toggle =
-    .title = Passwortanzeige umschalten
+account-setup-password-toggle-show =
+    .title = Passwort anzeigen
+
+account-setup-password-toggle-hide =
+    .title = Passwort ausblenden
 
 account-setup-remember-password = Passwort speichern
     .accesskey = s
@@ -176,18 +179,9 @@ account-setup-results-area-title =
         *[other] Verfügbare Konfigurationen
     }
 
-# Note: IMAP is the name of a protocol.
-account-setup-result-imap = IMAP
-
 account-setup-result-imap-description = Ordner und E-Mails mit dem Server synchronisieren
 
-# Note: POP3 is the name of a protocol.
-account-setup-result-pop = POP3
-
 account-setup-result-pop-description = Ordner und E-Mails auf dem Computer speichern
-
-# Note: Exchange is the name of a product.
-account-setup-result-exchange = Exchange
 
 # Note: Exchange, Office365 are the name of products.
 account-setup-result-exchange2-description = Microsoft-Exchange-Server oder Office365-Cloud-Dienste verwenden
@@ -199,8 +193,6 @@ account-setup-outgoing-title = Postausgangs-Server
 account-setup-username-title = Benutzername
 
 account-setup-exchange-title = Server
-
-account-setup-result-smtp = SMTP
 
 account-setup-result-no-encryption = Keine Verschlüsselung
 
@@ -226,6 +218,8 @@ account-setup-find-settings-failed = { -brand-short-name } konnte keine Einstell
 
 account-setup-exchange-config-unverifiable = Konfiguration konnte nicht überprüft werden. Falls der Benutzername und das Passwort korrekt sind, hat der Server-Administrator vermutlich die gewählte Konfiguration für Ihr Konto deaktiviert. Versuchen Sie, ein anderes Protokoll zu verwenden.
 
+account-setup-provisioner-error = Während des Einrichten des neuen Kontos in { -brand-short-name } trat ein Fehler auf. Bitte versuchen Sie das Konto manuell mit den Ihnen bekannten Zugangsdaten hinzuzufügen.
+
 ## Manual configuration area
 
 account-setup-manual-config-title = Manuelle Einrichtigung
@@ -233,12 +227,6 @@ account-setup-manual-config-title = Manuelle Einrichtigung
 account-setup-incoming-server-legend = Posteingangs-Server
 
 account-setup-protocol-label = Protokoll:
-
-protocol-imap-option = { account-setup-result-imap }
-
-protocol-pop-option = { account-setup-result-pop }
-
-protocol-exchange-option = { account-setup-result-exchange }
 
 account-setup-hostname-label = Hostname:
 
@@ -308,6 +296,19 @@ exchange-dialog-confirm-button = Senden
 exchange-dialog-cancel-button = Abbrechen
 
 ## Dismiss account creation dialog
+
+exit-dialog-title = Kein E-Mail-Konto eingerichtet
+
+exit-dialog-description = Soll der Einrichtungsprozess wirklich abgebrochen werden? { -brand-short-name } kann ohne ein E-Mail-Konto verwendet werden, aber viele Funktionen werden nicht verfügbar sein.
+
+account-setup-no-account-checkbox = { -brand-short-name } ohne ein E-Mail-Konto verwenden
+    .accesskey = o
+
+exit-dialog-cancel-button = Einrichtung fortsetzen
+    .accesskey = z
+
+exit-dialog-confirm-button = Einrichtung beenden
+    .accesskey = b
 
 ## Alert dialogs
 

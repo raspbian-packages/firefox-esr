@@ -288,7 +288,7 @@ identity-permissions-storage-access-hint = Ці сторони сайти мож
 identity-permissions-storage-access-learn-more = Докладніше
 identity-permissions-reload-hint = Для застосування змін, можливо, доведеться перезавантажити сторінку.
 identity-clear-site-data =
-    .label = Стерти куки і дані сайтів…
+    .label = Стерти куки та дані сайтів…
 identity-connection-not-secure-security-view = Ваше з'єднання з цим сайтом незахищене.
 identity-connection-verified = Ваше з'єднання з цим сайтом захищене.
 identity-ev-owner-label = Сертифікат виданий:
@@ -394,8 +394,8 @@ popup-mute-notifications-checkbox = Вимкнути сповіщення веб
 
 ## WebRTC window or screen share tab switch warning
 
-sharing-warning-window = Ви надаєте спільний доступ до { -brand-short-name }. Інші люди можуть бачити, коли ви перемикаєтесь на нову вкладку.
-sharing-warning-screen = Ви надаєте спільний доступ до цілого екрана. Інші люди можуть бачити, коли ви перемикаєтесь на нову вкладку.
+sharing-warning-window = Ви надаєте спільний доступ до { -brand-short-name }. Інші люди можуть бачити, коли ви переходите на нову вкладку.
+sharing-warning-screen = Ви надаєте спільний доступ до цілого екрана. Інші люди можуть бачити, коли ви переходите на нову вкладку.
 sharing-warning-proceed-to-tab =
     .label = Перемкнути вкладку
 sharing-warning-disable-for-session =
@@ -451,7 +451,7 @@ urlbar-remote-control-notification-anchor2 =
 urlbar-permissions-granted =
     .tooltiptext = Ви надали цьому вебсайту додаткові дозволи.
 urlbar-switch-to-tab =
-    .value = Перемкнутись на вкладку:
+    .value = Перейти на вкладку:
 # Used to indicate that a selected autocomplete entry is provided by an extension.
 urlbar-extension =
     .value = Розширення:
@@ -522,7 +522,7 @@ urlbar-result-action-search-tabs = Шукати у вкладках
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
 # A label shown above the search suggestions group in the urlbar results. It
-# should use title case.
+# should use sentence case.
 # Variables
 #  $engine (String): the name of the search engine providing the suggestions
 urlbar-group-search-suggestions =
@@ -654,12 +654,6 @@ toolbar-settings-button =
             [macos] Відкрити налаштування ({ $shortcut })
            *[other] Відкрити налаштування
         }
-
-## More items
-
-more-menu-go-offline =
-    .label = Працювати автономно
-    .accesskey = ю
 toolbar-overflow-customize-button =
     .label = Налаштувати панель інструментів…
     .accesskey = Н
@@ -704,12 +698,6 @@ panel-save-update-password = Пароль
 #  $name (String): The name of the addon that will be removed.
 addon-removal-title = Вилучити { $name }?
 addon-removal-abuse-report-checkbox = Поскаржитись на це розширення до { -vendor-short-name }
-
-## Remote / Synced tabs
-
-remote-tabs-manage-account =
-    .label = Керувати обліковим записом
-remote-tabs-sync-now = Синхронізувати
 
 ##
 
@@ -770,9 +758,6 @@ navbar-overflow =
 navbar-print =
     .label = Друкувати
     .tooltiptext = Друкувати цю сторінку… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = Друкувати
-    .tooltiptext = Друкувати цю сторінку
 navbar-home =
     .label = Домівка
     .tooltiptext = Домівка { -brand-short-name }
@@ -799,3 +784,10 @@ tabs-toolbar-list-all-tabs =
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
 restore-session-startup-suggestion-message = <strong>Відкрити попередні вкладки?</strong> Ви можете відновити попередній сеанс у меню { -brand-short-name } <img data-l10n-name="icon"/> у розділі Історія.
 restore-session-startup-suggestion-button = Покажіть як
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = { -brand-short-name } автоматично відправляє деякі дані в { -vendor-short-name }, щоб ми могли вдосконалити вашу роботу.
+data-reporting-notification-button =
+    .label = Вибрати чим ділитись
+    .accesskey = В

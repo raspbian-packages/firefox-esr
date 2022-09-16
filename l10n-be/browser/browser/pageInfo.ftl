@@ -97,7 +97,7 @@ security-view-identity-verifier =
 security-view-identity-validity =
     .value = Канчаецца:
 security-view-privacy =
-    .value = Прыватнасць і бяспека
+    .value = Прыватнасць і гісторыя
 
 security-view-privacy-history-value = Ці я наведваў гэты вэб-сайт раней?
 security-view-privacy-sitedata-value = Ці захоўвае гэты вэб-сайт звесткі на маім камп'ютары?

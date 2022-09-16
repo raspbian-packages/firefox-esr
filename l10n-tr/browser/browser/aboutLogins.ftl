@@ -5,8 +5,6 @@
 
 about-logins-page-title = Hesaplar ve Parolalar
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Hesaplarda ara
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Bu site ihlale uğramış
 about-logins-list-item-vulnerable-password-icon =
     .title = Güvensiz parola
-
 about-logins-list-section-breach = Veri ihlaline uğrayan siteler
 about-logins-list-section-vulnerable = Güvensiz parolalar
 about-logins-list-section-nothing = Uyarı yok
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Eşitlenmiş hesap bulunamadı.
 login-intro-description = Hesaplarınızı farklı bir cihazdaki { -brand-product-name } tarayıcınıza kaydettiyseniz onları buraya aktarabilirsiniz:
 login-intro-instructions-fxa = Hesaplarınızın kayıtlı olduğu cihazda { -fxaccount-brand-name } açın veya hesabınıza giriş yapın.
 login-intro-instructions-fxa-settings = Ayarlar > Eşitleme > “Eşitlemeyi başlat…” kısmına gidip “Hesaplar ve parolalar”ı işaretleyin.
-login-intro-instructions-fxa-help = Yardıma ihtiyacınız varsa <a data-l10n-name="help-link">{ -lockwise-brand-short-name } Destek</a>’i ziyaret edebilirsiniz.
-about-logins-intro-import = Hesaplarınız başka bir tarayıcıda kayıtlıysa onları <a data-l10n-name="import-link">{ -lockwise-brand-short-name }’a aktarabilirsiniz</a>
+login-intro-instructions-fxa-passwords-help = Yardıma ihtiyacınız varsa <a data-l10n-name="passwords-help-link">parola desteğini</a> ziyaret edebilirsiniz.
+about-logins-intro-browser-only-import = Hesaplarınız başka bir tarayıcıda kayıtlıysa onları <a data-l10n-name="import-link">{ -brand-product-name }’a aktarabilirsiniz</a>
 about-logins-intro-import2 = Hesaplarınız { -brand-product-name } dışında kayıtlıysa onları <a data-l10n-name="import-browser-link">başka bir tarayıcıdan</a> veya <a data-l10n-name="import-file-link">dosyadan</a> içe aktarabilirsiniz
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Parolanızı kopyalamak 
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = kayıtlı parolayı kopyalama
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Hesaplarınızı dışa aktarmak için Windows hesap bilgilerinizi girin. Bu sayede hesaplarınızı daha güvenli bir şekilde koruyabiliriz.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Kayıtlı parola ve hesapla
 master-password-reload-button =
     .label = Giriş yap
     .accesskey = G
-
-## Password Sync notification
 
 ## Dialogs
 

@@ -24,8 +24,6 @@
 <!ENTITY moveToNewWindow.accesskey "F">
 <!ENTITY newVirtualFolderCmd.label "Lagret søk …">
 <!ENTITY newVirtualFolderCmd.accesskey "L">
-<!ENTITY newOtherAccountsCmd.label "Annen konto …">
-<!ENTITY newOtherAccountsCmd.accesskey "n">
 <!ENTITY newCreateEmailAccountCmd.label "Lag en ny e-postkonto …">
 <!ENTITY newCreateEmailAccountCmd.accesskey "L">
 <!ENTITY newExistingEmailAccountCmd.label "Eksisterende e-postkonto …">
@@ -48,8 +46,6 @@
 <!ENTITY openMessageFileCmd.accesskey "Å">
 <!ENTITY saveAsMenu.label "Lagre som">
 <!ENTITY saveAsMenu.accesskey "s">
-<!ENTITY saveAsFileCmd.label "Fil">
-<!ENTITY saveAsFileCmd.accesskey "F">
 <!ENTITY saveAsFileCmd.key "s">
 <!ENTITY saveAsTemplateCmd.label "Mal">
 <!ENTITY saveAsTemplateCmd.accesskey "M">
@@ -490,6 +486,8 @@
 <!ENTITY deleteJunk.accesskey "S">
 <!ENTITY importCmd.label "Importer …">
 <!ENTITY importCmd.accesskey "m">
+<!ENTITY exportCmd.label "Eksporter …">
+<!ENTITY exportCmd.accesskey "k">
 <!ENTITY clearRecentHistory.label "Slett nylig historikk …">
 <!ENTITY clearRecentHistory.accesskey "n">
 <!ENTITY accountManagerCmd2.label "Kontoinnstillinger">
@@ -696,7 +694,6 @@
 <!ENTITY locationColumn.label "Plassering">
 <!ENTITY idColumn.label "Mottaksrekkefølge">
 <!ENTITY attachmentColumn.label "Vedlegg-status">
-
 <!ENTITY deleteColumn.label "Slett">
 
 <!-- Thread Pane Tooltips -->
@@ -722,7 +719,6 @@
 <!ENTITY locationColumn2.tooltip "Sorter etter plassering">
 <!ENTITY idColumn2.tooltip "Sorter etter mottaksrekkefølge">
 <!ENTITY attachmentColumn2.tooltip "Sorter etter vedlegg">
-
 <!ENTITY deleteColumn.tooltip "Slett en melding">
 
 <!-- Thread Pane Context Menu -->

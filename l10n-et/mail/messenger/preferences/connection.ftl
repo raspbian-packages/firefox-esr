@@ -26,7 +26,16 @@ connection-dialog-window =
            *[other] width: 49em !important
         }
 
-connection-proxy-legend = Puhverserverite häälestamine internetti pääsemiseks
+disable-extension-button = Keela laiendus
+
+# Variables:
+#   $name (String) - The extension that is controlling the proxy settings.
+#
+# The extension-icon is the extension's icon, or a fallback image. It should be
+# purely decoration for the actual extension name, with alt="".
+proxy-settings-controlled-by-extension = Laiendus <img data-l10n-name="extension-icon" alt="" />{ $name } kontrollib seda, kuidas { -brand-short-name } ühendub internetti.
+
+connection-proxy-legend = Interneti puhverserveri häälestamine
 
 proxy-type-no =
     .label = Puhverserver puudub
@@ -51,6 +60,14 @@ proxy-http-label =
 http-port-label =
     .value = Port:
     .accesskey = P
+
+proxy-http-sharing =
+    .label = Seda puhverserverit kasutatakse ka HTTPSi jaoks
+    .accesskey = S
+
+proxy-https-label =
+    .value = HTTPS-puhverserver:
+    .accesskey = h
 
 ssl-port-label =
     .value = Port:
@@ -85,6 +102,9 @@ no-proxy-label =
     .accesskey = d
 
 no-proxy-example = Näide: .mozilla.org, .net.nz, 192.168.1.0/24
+
+# Do not translate "localhost", "127.0.0.1/8" and "::1". (You can translate "and".)
+connection-proxy-noproxy-localhost-desc-2 = Ühendusi järgnevatele aadressidele ei suunata kunagi puhverserverisse: localhost, 127.0.0.1/8 ja ::1.
 
 proxy-password-prompt =
     .label = Salvestatud paroolide korral autentimist ei küsita

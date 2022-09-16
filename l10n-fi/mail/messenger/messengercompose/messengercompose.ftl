@@ -3,7 +3,25 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+compose-send-format-menu =
+    .label = Lähetysmuoto
+    .accesskey = L
+compose-send-auto-menu-item =
+    .label = Automaattinen
+    .accesskey = A
+compose-send-both-menu-item =
+    .label = Sekä HTML että pelkkä teksti
+    .accesskey = S
+compose-send-html-menu-item =
+    .label = Vain HTML
+    .accesskey = H
+compose-send-plain-menu-item =
+    .label = Vain pelkkä teksti
+    .accesskey = t
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 #   $count (Number) - the number of address pills currently present in the addressing row
@@ -27,6 +45,9 @@ pill-tooltip-not-in-address-book = { $email } ei ole osoitekirjassasi
 pill-action-edit =
     .label = Muokkaa osoitetta
     .accesskey = M
+pill-action-select-all-pills =
+    .label = Valitse kaikki osoitteet
+    .accesskey = k
 pill-action-move-to =
     .label = Siirä vastaanottajaksi
     .accesskey = S
@@ -37,7 +58,7 @@ pill-action-move-bcc =
     .label = Siirrä piilokopion vastaanottajaksi
     .accesskey = p
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -53,9 +74,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Liitä
     .tooltiptext = Lisää liite ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Lisää liite…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Lisää liite…
     .accesskey = ä
@@ -68,18 +86,6 @@ context-menuitem-attach-files =
     .label = Liitä tiedosto(t)…
     .accesskey = i
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
-#   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
-    .value =
-        { $count ->
-            [1] { $count } liite
-           *[other] { $count } liitettä
-        }
-    .accesskey = m
-expand-attachment-pane-tooltip =
-    .tooltiptext = Näytä Liite-paneeli ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Piilota Liite-paneeli ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-show =
     .title = Näytä liitepaneeli ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-hide =
@@ -95,7 +101,7 @@ drop-file-label-inline =
        *[other] Liitä sisennettyinä
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = Siirrä ensimmäiseksi
@@ -109,14 +115,16 @@ button-return-receipt =
     .label = Vastaanottokuittaus
     .tooltiptext = Pyydä tämän viestin vastaanottokuittausta
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = Allekirjoita viesti
-message-to-be-encrypted-icon =
-    .alt = Salaa viesti
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
+    .accesskey = S
 
-# Addressing Area
+## Addressing Area
 
 many-public-recipients-bcc =
     .label = Käytä sen sijaan piilokopiota (Bcc)
@@ -136,4 +144,31 @@ encrypted-bcc-ignore-button = Ymmärretty
 
 
 # Tools
+
+compose-tool-button-remove-text-styling =
+    .tooltiptext = Poista tekstin tyyli
+
+## Filelink
+
+
+# Placeholder file
+
+
+# Template
+
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Salasanasuojattu linkki
+cloud-file-template-size = Koko:
+cloud-file-template-link = Linkki:
+cloud-file-template-password-protected-link = Salasanasuojattu linkki:
+cloud-file-template-expiry-date = Vanhenemispäivä:
+cloud-file-template-download-limit = Latausraja:
+
+# Messages
+
+
+## Link Preview
+
+
+## Dictionary selection popup
 

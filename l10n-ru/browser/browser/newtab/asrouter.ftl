@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Рекомендуемая функция
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Почему я это вижу
+
 cfr-doorhanger-extension-cancel-button = Не сейчас
     .accesskey = е
+
 cfr-doorhanger-extension-ok-button = Добавить
     .accesskey = а
+
 cfr-doorhanger-extension-manage-settings-button = Управление настройками рекомендаций
     .accesskey = п
+
 cfr-doorhanger-extension-never-show-recommendation = Не показывать мне эту рекомендацию
     .accesskey = е
+
 cfr-doorhanger-extension-learn-more-link = Подробнее
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = от { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Рекомендация
 cfr-doorhanger-extension-notification2 = Рекомендация
     .tooltiptext = Рекомендация расширения
     .a11y-announcement = Доступна рекомендация расширения
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Рекомендация
@@ -79,9 +87,11 @@ cfr-protections-panel-link-text = Подробнее
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Новая функция:
+
 cfr-whatsnew-button =
     .label = Что нового
     .tooltiptext = Что нового
+
 cfr-whatsnew-release-notes-link-text = Прочитать примечания к выпуску
 
 ## Enhanced Tracking Protection Milestones
@@ -159,3 +169,16 @@ spotlight-total-cookie-protection-body = Полная защита от кук �
 spotlight-total-cookie-protection-expanded = { -brand-short-name } огораживает куки, ограничивая их только сайтом, на котором вы находитесь, чтобы трекеры не могли использовать их для слежки за вами. Благодаря раннему доступу вы помогаете оптимизировать эту функцию, чтобы мы продолжали создавать лучший Интернет для всех и каждого.
 spotlight-total-cookie-protection-primary-button = Включить Полную защиту от кук
 spotlight-total-cookie-protection-secondary-button = Не сейчас
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Лучший Интернет начинается с вас
+spotlight-better-internet-body = Когда вы используете { -brand-short-name }, вы выбираете открытый и доступный Интернет, лучший для каждого.
+spotlight-peace-mind-header = Мы заботимся о вас
+spotlight-peace-mind-body = В среднем каждый месяц { -brand-short-name } блокирует у каждого пользователя более 3000 трекеров. Ничего, а особенно такие проблемы приватности, как трекеры, не должно стоять между вами и хорошим Интернетом.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Добавить в Dock
+       *[other] Закрепить на панели задач
+    }
+spotlight-pin-secondary-button = Не сейчас

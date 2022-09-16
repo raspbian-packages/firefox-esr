@@ -35,6 +35,8 @@ detail-version =
     .label = Версія
 detail-last-updated =
     .label = Апошняе абнаўленне
+addon-detail-description-expand = Паказаць больш
+addon-detail-description-collapse = Паказаць менш
 detail-contributions-description = Распрацоўца гэтага дадатка просіць падтрымаць яго распрацоўку невялікім ахвяраваннем.
 detail-contributions-button = Зрабіць унёсак
     .title = Зрабіць унёсак у распрацоўку гэтага дадатку
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Нядаўнія абнаўленні
 addon-category-recent-updates-title =
     .title = Нядаўнія абнаўленні
+addon-category-sitepermission = Дазволы для сайтаў
+addon-category-sitepermission-title =
+    .title = Дазволы для сайтаў
 
 ## These are global warnings
 
@@ -282,18 +287,22 @@ preferences-addon-button =
 details-addon-button = Падрабязнасці
 release-notes-addon-button = Заўвагі да выпуску
 permissions-addon-button = Правы доступу
-extension-enabled-heading = Уключана
+extension-enabled-heading = Уключаны
 extension-disabled-heading = Адключана
 theme-enabled-heading = Уключана
 theme-disabled-heading = Выключана
+theme-disabled-heading2 = Захаваныя тэмы
 theme-monochromatic-heading = Расфарбоўкі
 theme-monochromatic-subheading = Яркія новыя колеры ад { -brand-product-name }. Даступныя абмежаваны час.
-plugin-enabled-heading = Уключана
+theme-colorways-button = Паспрабаваць расфарбоўкі
+plugin-enabled-heading = Уключаны
 plugin-disabled-heading = Адключана
-dictionary-enabled-heading = Уключана
+dictionary-enabled-heading = Уключаны
 dictionary-disabled-heading = Адключана
 locale-enabled-heading = Уключана
 locale-disabled-heading = Выключана
+sitepermission-enabled-heading = Уключаны
+sitepermission-disabled-heading = Адключаны
 always-activate-button = Заўсёды задейнічаць
 never-activate-button = Ніколі не задзейнічаць
 addon-detail-author-label = Аўтар
@@ -371,6 +380,7 @@ addon-permissions-optional = Неабавязковыя дазволы для д
 addon-permissions-learnmore = Даведацца больш пра дазволы
 recommended-extensions-heading = Рэкамендаваныя пашырэнні
 recommended-themes-heading = Рэкамендаваныя тэмы
+addon-sitepermissions-required = Дае <span data-l10n-name="hostname">{ $hostname }</span> наступныя магчымасці:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Адчуваеце натхненне? <a data-l10n-name="link">Стварыце ўласную тэму з дапамогай Firefox Color.</a>
@@ -383,6 +393,7 @@ plugin-heading = Кіруйце сваімі плагінамі
 dictionary-heading = Кіруйце сваімі слоўнікамі
 locale-heading = Кіруйце сваімі мовамі
 updates-heading = Кіруйце сваімі абнаўленнямі
+sitepermission-heading = Кіраваць дазволамі для сайтаў
 discover-heading = Персаналізуйце свой { -brand-short-name }
 shortcuts-heading = Кіраваць спалучэннямі клавіш пашырэнняў
 default-heading-search-label = Знайсці больш дадаткаў
@@ -390,3 +401,20 @@ addons-heading-search-input =
     .placeholder = Пошук на addons.mozilla.org
 addon-page-options-button =
     .title = Прылады для ўсіх дадаткаў
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } несумяшчальна з { -brand-short-name } { $version }.
+details-notification-unsigned-and-disabled = Праца { $name } у { -brand-short-name } не была праверана, таму яно было адключана.
+details-notification-unsigned-and-disabled-link = Больш звестак
+details-notification-unsigned = Праца { $name } у { -brand-short-name } не была праверана. Працягвайце з асцярогай.
+details-notification-unsigned-link = Больш звестак
+details-notification-blocked = { $name } забаронены, бо маюцца праблемы сумяшчальнасці або ўстойлівасці.
+details-notification-blocked-link = Падрабязней
+details-notification-softblocked = Вядома, што { $name } мае праблемы сумяшчальнасці або ўстойлівасці.
+details-notification-softblocked-link = Падрабязней
+details-notification-gmp-pending = { $name } будзе хутка усталявана.

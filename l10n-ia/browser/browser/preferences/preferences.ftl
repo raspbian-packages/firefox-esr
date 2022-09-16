@@ -75,19 +75,19 @@ restart-later = Reinitiar depois
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
-extension-controlled-password-saving = Le extension <img data-l10n-name="icon"/>{ $name } controla iste configuration.
+extension-controlling-password-saving = Le <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla iste parametros.
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
-extension-controlled-web-notifications = Un extension, <img data-l10n-name="icon"/> { $name }, controla iste configuration.
+extension-controlling-web-notifications = Le <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla iste parametros.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlled-privacy-containers = Un extension, <img data-l10n-name="icon"/> { $name }, require schedas contentor.
+extension-controlling-privacy-containers = Le <img data-l10n-name="icon"/> <strong>{ $name }</strong> require le Schedas recipente.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
-extension-controlled-websites-content-blocking-all-trackers = Le extension <img data-l10n-name="icon"/>{ $name } controla iste configuration.
+extension-controlling-websites-content-blocking-all-trackers = Le <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla iste parametros.
 # This string is shown to notify the user that their proxy configuration preferences
 # are being controlled by an extension.
-extension-controlled-proxy-config = Un extension, <img data-l10n-name="icon"/> { $name }, controla como { -brand-short-name } se connecte a internet.
+extension-controlling-proxy-config = Le <img data-l10n-name ="icon"/> <strong>{ $name }</strong> controla como { -brand-short-name } se connecte a internet.
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -113,9 +113,6 @@ is-not-default = { -brand-short-name } non es tu navigator predefinite
 set-as-my-default-browser =
     .label = Predefinir…
     .accesskey = D
-startup-restore-previous-session =
-    .label = Restaurar le session previe
-    .accesskey = p
 startup-restore-windows-and-tabs =
     .label = Aperir le previe fenestras e schedas
     .accesskey = s
@@ -130,9 +127,6 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Aperir ligamines in schedas in vice de nove fenestras
     .accesskey = s
-warn-on-close-multiple-tabs =
-    .label = Advertir te quando tu claude multiple schedas
-    .accesskey = m
 confirm-on-close-multiple-tabs =
     .label = Confirmar ante clauder plure schedas
     .accesskey = m
@@ -186,7 +180,40 @@ containers-remove-cancel-button = Non remover iste contentor
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Lingua e apparentia
-fonts-and-colors-header = Typos de litteras e colores
+preferences-web-appearance-header = Apparentia del sito web
+preferences-web-appearance-description = Alcun sitos web adapta lor schema de color in base a tu preferentias. Elige que schema de color tu amarea usar pro ille sitos.
+preferences-web-appearance-choice-browser = Thema de { -brand-short-name }
+preferences-web-appearance-choice-system = Thema del systema
+preferences-web-appearance-choice-light = Clar
+preferences-web-appearance-choice-dark = Obscur
+preferences-web-appearance-choice-tooltip-browser =
+    .title = Concorda tu parametros de thema de { -brand-short-name } pro le fundos e contento del sito web.
+preferences-web-appearance-choice-tooltip-system =
+    .title = Concorda tu parametros de systema pro fundos e contento del sito web.
+preferences-web-appearance-choice-tooltip-light =
+    .title = Usa un apparentia clar pro fundos e contento del sito web.
+preferences-web-appearance-choice-tooltip-dark =
+    .title = Usa un apparentia obscur pro fundos e contento del sito web.
+preferences-web-appearance-choice-input-browser =
+    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
+preferences-web-appearance-choice-input-system =
+    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-light =
+    .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
+preferences-web-appearance-choice-input-dark =
+    .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning = Tu selectiones color supplanta le apparentia del sito web.<a data-l10n-name="colors-link">Gere le colores</a>
+# This message contains one link. It can be moved within the sentence as needed
+# to adapt to your language, but should not be changed.
+preferences-web-appearance-footer = Gere le themas de { -brand-short-name } in <a data-l10n-name="themes-link">Extensiones e themas</a>
+preferences-colors-header = Colores
+preferences-colors-description = Supplanta le colores predefinite de { -brand-short-name } pro texto, fundos e ligamines de sito web.
+preferences-colors-manage-button =
+    .label = Gerer colores…
+    .accesskey = c
+preferences-fonts-header = Typos de characteres
 default-font = Typo de litteras predefinite
     .accesskey = D
 default-font-size = Dimension
@@ -194,9 +221,6 @@ default-font-size = Dimension
 advanced-fonts =
     .label = Avantiate…
     .accesskey = A
-colors-settings =
-    .label = Colores…
-    .accesskey = C
 # Zoom is a noun, and the message is used as header for a group of options
 preferences-zoom-header = Zoom
 preferences-default-zoom = Zoom predefinite
@@ -239,8 +263,7 @@ check-user-spelling =
 
 files-and-applications-title = Files e applicationes
 download-header = Discargamentos
-download-save-to =
-    .label = Salvar le files in
+download-save-where = Salvar le files in
     .accesskey = S
 download-choose-folder =
     .label =
@@ -331,6 +354,13 @@ applications-use-os-default-label =
 
 ##
 
+applications-handle-new-file-types-description = Que debe { -brand-short-name } facer con altere files?
+applications-save-for-new-types =
+    .label = Salvar le files
+    .accesskey = S
+applications-ask-before-handling =
+    .label = Demandar si aperir o salvar le files
+    .accesskey = D
 drm-content-header = Contento protegite per DRM (Gestion de Derectos Digital)
 play-drm-content =
     .label = Presentar contento protegite per DRM
@@ -359,6 +389,9 @@ update-application-warning-cross-user-setting = Iste configuration sera applicat
 update-application-use-service =
     .label = Usar un servicio in secunde plano pro installar le actualisationes
     .accesskey = s
+update-application-suppress-prompts =
+    .label = Monstrar minus avisos de  actualisation
+    .accesskey = m
 update-setting-write-failure-title2 = Impossibile registrar parametros de actualisation
 # Variables:
 #   $path (String) - Path to the configuration file
@@ -404,6 +437,9 @@ browsing-use-autoscroll =
 browsing-use-smooth-scrolling =
     .label = Usar le rolamento suave
     .accesskey = s
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Sempre monstrar barras de rolamento
+    .accesskey = o
 browsing-use-onscreen-keyboard =
     .label = Monstrar un claviero tactile quando necessari
     .accesskey = M
@@ -481,11 +517,6 @@ home-prefs-content-header = Pagina initial de Firefox
 home-prefs-content-description = Elige qual contento tu desira pro tu pagina initial de Firefox.
 home-prefs-search-header =
     .label = Recerca del Web
-home-prefs-topsites-header =
-    .label = Sitos preferite
-home-prefs-topsites-description = Le sitos que tu visita le plus
-home-prefs-topsites-by-option-sponsored =
-    .label = Sitos principal sponsorisate
 home-prefs-shortcuts-header =
     .label = Accessos directe
 home-prefs-shortcuts-description = Sitos que tu salva o visita
@@ -497,7 +528,6 @@ home-prefs-shortcuts-by-option-sponsored =
 
 home-prefs-recommended-by-header =
     .label = Recommendate per { $provider }
-home-prefs-recommended-by-description-update = Contentos exceptional de tote le Web, curate per { $provider }
 home-prefs-recommended-by-description-new = Contento exceptional a cura de { $provider }, parte del familia { -brand-product-name }
 
 ##
@@ -505,9 +535,6 @@ home-prefs-recommended-by-description-new = Contento exceptional a cura de { $pr
 home-prefs-recommended-by-learn-more = Como illo labora
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Articulos sponsorisate
-home-prefs-highlights-header =
-    .label = In evidentia
-home-prefs-highlights-description = Un selection de sitos que tu ha salvate o visitate
 home-prefs-highlights-option-visited-pages =
     .label = Paginas visitate
 home-prefs-highlights-options-bookmarks =
@@ -525,7 +552,6 @@ home-prefs-recent-activity-description = Un selection de sitos e contento recent
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Breve novas
-home-prefs-snippets-description = Actualitates de { -vendor-short-name } e { -brand-product-name }
 home-prefs-snippets-description-new = Consilios e notitias de { -vendor-short-name } e { -brand-product-name }
 home-prefs-sections-rows-option =
     .label =
@@ -858,14 +884,10 @@ sitedata-block-desc = Typo de contento blocate
     .accesskey = T
 sitedata-option-block-cross-site-trackers =
     .label = Traciatores inter sitos
-sitedata-option-block-cross-site-and-social-media-trackers =
-    .label = Traciatores inter sitos e de retes social
-sitedata-option-block-cross-site-tracking-cookies-including-social-media =
-    .label = Le cookies de traciamento inter sitos, incluse le cookies de retes social
-sitedata-option-block-cross-site-cookies-including-social-media =
-    .label = Le cookies inter sitos, incluse le cookies de retes social
-sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
-    .label = Traciatores inter sitos e de social media, e isolar le cookies restante
+sitedata-option-block-cross-site-tracking-cookies =
+    .label = Cookies de traciamento inter sitos
+sitedata-option-block-cross-site-cookies =
+    .label = Cookies de traciamento inter sitos, e isolar los altere cookies inter sitos
 sitedata-option-block-unvisited =
     .label = Cookies de sitos web non visitate
 sitedata-option-block-all-third-party =
@@ -955,7 +977,6 @@ content-blocking-etp-standard-tcp-rollout-checkbox =
 content-blocking-etp-standard-tcp-rollout-description = Le protection total contra le cookies contine le cookies del sito ubi tu es, assi le traciatores non pote sequer te inter le sitos.
 content-blocking-etp-standard-tcp-rollout-learn-more = Pro saper plus
 content-blocking-warning-title = Attention!
-content-blocking-and-isolating-etp-warning-description = Blocar traciatores e isolar cookies poterea impedir le functionamento de alcun sitos. Recarga un pagina con traciatores pro cargar tote le contento.
 content-blocking-and-isolating-etp-warning-description-2 = Iste parametro pote causar alcun sitos web a non monstrar contento o non pote functionar correctemente. Si un sito pare corrupte, prova disactivar protection de traciamento pro ille sito pote cargar tote le contento.
 content-blocking-warning-learn-how = Apprende como
 content-blocking-reload-description = Tu debera recargar tu schedas pro applicar iste cambios.
@@ -1027,9 +1048,6 @@ permissions-autoplay-settings =
 permissions-block-popups =
     .label = Blocar le fenestras emergente
     .accesskey = B
-permissions-block-popups-exceptions =
-    .label = Exceptiones…
-    .accesskey = E
 # "popup" is a misspelling that is more popular than the correct spelling of
 # "pop-up" so it's included as a search keyword, not displayed in the UI.
 permissions-block-popups-exceptions-button =
@@ -1119,7 +1137,3 @@ httpsonly-radio-disabled =
 desktop-folder-name = Scriptorio
 downloads-folder-name = Discargamentos
 choose-download-folder-title = Elige le dossier de discargamentos:
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Salvar files in { $service-name }

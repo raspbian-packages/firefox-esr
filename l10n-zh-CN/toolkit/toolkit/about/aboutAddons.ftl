@@ -35,6 +35,8 @@ detail-version =
     .label = 版本
 detail-last-updated =
     .label = 上次更新
+addon-detail-description-expand = 显示更多
+addon-detail-description-collapse = 显示更少
 detail-contributions-description = 此附加组件的开发者希望通过您的小额捐款，帮助支持其持续开发。
 detail-contributions-button = 捐助
     .title = 捐助此附加组件的开发
@@ -134,6 +136,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = 最近更新
 addon-category-recent-updates-title =
     .title = 最近更新
+addon-category-sitepermission = 网站权限
+addon-category-sitepermission-title =
+    .title = 网站权限
 
 ## These are global warnings
 
@@ -273,14 +278,18 @@ extension-enabled-heading = 已启用
 extension-disabled-heading = 已禁用
 theme-enabled-heading = 已启用
 theme-disabled-heading = 已禁用
+theme-disabled-heading2 = 保存的主题
 theme-monochromatic-heading = 配色
 theme-monochromatic-subheading = 元气满满的 { -brand-product-name } 新配色，限时提供。
+theme-colorways-button = 配色随心换
 plugin-enabled-heading = 已启用
 plugin-disabled-heading = 已禁用
 dictionary-enabled-heading = 已启用
 dictionary-disabled-heading = 已禁用
 locale-enabled-heading = 已启用
 locale-disabled-heading = 已禁用
+sitepermission-enabled-heading = 已启用
+sitepermission-disabled-heading = 已禁用
 always-activate-button = 一律激活
 never-activate-button = 永不激活
 addon-detail-author-label = 作者
@@ -356,6 +365,7 @@ addon-permissions-optional = 附加功能的可选权限：
 addon-permissions-learnmore = 详细了解“权限”
 recommended-extensions-heading = 推荐扩展
 recommended-themes-heading = 推荐主题
+addon-sitepermissions-required = 授予 <span data-l10n-name="hostname">{ $hostname }</span> 以下功能：
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = 有好的创意？<a data-l10n-name="link">使用 Firefox Color 打造自己的主题。</a>
@@ -368,6 +378,7 @@ plugin-heading = 管理您的插件
 dictionary-heading = 管理您的字典
 locale-heading = 管理您的语言包
 updates-heading = 管理您的更新
+sitepermission-heading = 管理网站权限
 discover-heading = 让 { -brand-short-name } 有您的个性
 shortcuts-heading = 管理扩展快捷键
 default-heading-search-label = 寻找更多附加组件
@@ -375,3 +386,20 @@ addons-heading-search-input =
     .placeholder = 在 addons.mozilla.org 搜索
 addon-page-options-button =
     .title = 用于所有附加组件的工具
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } 不兼容 { -brand-short-name } { $version }。
+details-notification-unsigned-and-disabled = { $name } 未通过针对是否适用于 { -brand-short-name } 的验证，现已被禁用。
+details-notification-unsigned-and-disabled-link = 了解详情
+details-notification-unsigned = { $name } 未通过针对是否适用于 { -brand-short-name } 的验证。请谨慎。
+details-notification-unsigned-link = 了解详情
+details-notification-blocked = { $name } 由于安全或稳定性问题已被禁用。
+details-notification-blocked-link = 了解详情
+details-notification-softblocked = { $name } 已知会导致安全性或稳定性问题。
+details-notification-softblocked-link = 了解详情
+details-notification-gmp-pending = { $name } 即将安装。

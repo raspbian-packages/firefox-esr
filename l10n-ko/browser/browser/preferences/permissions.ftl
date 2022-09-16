@@ -67,7 +67,7 @@ permissions-capabilities-allow =
 permissions-capabilities-block =
     .label = 차단
 permissions-capabilities-prompt =
-    .label = 항상 물어보기
+    .label = 항상 확인
 
 permissions-capabilities-listitem-allow =
     .value = 허용

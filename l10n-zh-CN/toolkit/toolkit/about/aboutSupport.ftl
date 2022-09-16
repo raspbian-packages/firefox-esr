@@ -76,6 +76,14 @@ app-basics-location-service-key-google = Google 位置服务密钥
 app-basics-safebrowsing-key-google = Google 安全浏览密钥
 app-basics-key-mozilla = Mozilla 位置服务密钥
 app-basics-safe-mode = 安全模式
+app-basics-memory-size = 内存大小（RAM）
+app-basics-disk-available = 磁盘可用空间
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] 在 Finder 中显示
@@ -323,6 +331,7 @@ fission-status-experiment-control = 通过实验禁用
 fission-status-experiment-treatment = 通过实验启用
 fission-status-disabled-by-e10s-env = 被环境禁用
 fission-status-enabled-by-env = 由环境启用
+fission-status-disabled-by-env = 被环境禁用
 fission-status-disabled-by-safe-mode = 被安全模式禁用
 fission-status-enabled-by-default = 默认启用
 fission-status-disabled-by-default = 默认禁用

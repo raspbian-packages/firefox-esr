@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Ziurtagiri-autoritateek jaulkitako zi
 
 cert-error-symantec-distrust-admin = Webgunearen kudeatzaileari arazo honen berri eman nahiko diozu agian.
 
+cert-error-old-tls-version = Baliteke webgune honek TLS 1.2 protokoloa ez onartzea, { -brand-short-name }(e)k onartzen duen bertsio minimoa.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Zerbitzariaren erantzuna ez zen espero
 nssFailure2-title = Konexio seguruak huts egin du
 csp-xfo-error-title = { -brand-short-name }(e)k ezin du orri hau ireki
 corruptedContentError-title = Hondatutako edukien errorea
-remoteXUL-title = Urruneko XUL
 sslv3Used-title = Ezin da modu seguruan konektatu
 inadequateSecurityError-title = Zure konexioa ez da segurua
 blockedByPolicy-title = Blokeatutako orria

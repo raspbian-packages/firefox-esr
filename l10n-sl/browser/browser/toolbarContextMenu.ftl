@@ -41,15 +41,18 @@ toolbar-context-menu-remove-extension =
 toolbar-context-menu-report-extension =
     .label = Prijavi razširitev
     .accesskey = j
-# Can appear on the same context menu as menubarCmd ("Menu Bar") and
-# personalbarCmd ("Bookmarks Toolbar"), so they should have different
-# access keys.
+# Can appear on the same context menu as toolbar-context-menu-menu-bar-cmd
+# ("Menu Bar") and personalbarCmd ("Bookmarks Toolbar"), so they should
+# have different access keys.
 toolbar-context-menu-pin-to-overflow-menu =
     .label = Pripni v meni prekoračitve
     .accesskey = P
 toolbar-context-menu-auto-hide-downloads-button-2 =
     .label = Skrij gumb, ko je seznam prazen
     .accesskey = S
+toolbar-context-menu-always-open-downloads-panel =
+    .label = Ob začetku prenosa prikaži ploščo
+    .accesskey = š
 toolbar-context-menu-remove-from-toolbar =
     .label = Odstrani iz orodne vrstice
     .accesskey = R

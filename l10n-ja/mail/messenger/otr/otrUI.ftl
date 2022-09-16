@@ -15,6 +15,8 @@ auth-fail = 相手の身元確認に失敗しました。
 auth-waiting = 相手が身元確認を完了するまで待機しています...
 finger-verify = 確認
 finger-verify-access-key = V
+finger-ignore = 無視
+finger-ignore-access-key = I
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = OTR フィンガープリントを追加
 # Variables:
@@ -58,12 +60,6 @@ afterauth-private = { $name } さんの身元を確認しました。
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = { $name } さんの身元はまだ確認されていません。
-verify-title = 相手の身元確認
-error-title = エラー
-success-title = エンドツーエンド暗号化
-success-them-title = 相手の身元を確認してください
-fail-title = 確認できません
-waiting-title = 身元確認要求を送信しました
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:
 #   $error (String) - contains an error message that describes the cause of the failure

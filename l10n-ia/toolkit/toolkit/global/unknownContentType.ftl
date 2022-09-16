@@ -5,19 +5,21 @@
 unknowncontenttype-handleinternally =
     .label = Aperir con { -brand-short-name }
     .accesskey = e
+
 unknowncontenttype-settingschange =
     .value =
         { PLATFORM() ->
             [windows] Le parametros pote esser cambiate in le optiones de { -brand-short-name }.
            *[other] Le parametros pote esser cambiate in le preferentias de { -brand-short-name }.
         }
+
 unknowncontenttype-intro = Tu ha eligite de aperir:
 unknowncontenttype-which-is = le qual es:
 unknowncontenttype-from = de:
 unknowncontenttype-prompt = Desira tu salvar iste file?
 unknowncontenttype-action-question = Que debe { -brand-short-name } facer con iste file?
 unknowncontenttype-open-with =
-    .label = Aperir per
+    .label = Aperir con
     .accesskey = o
 unknowncontenttype-other =
     .label = Altere…

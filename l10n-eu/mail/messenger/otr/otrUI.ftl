@@ -19,6 +19,9 @@ auth-waiting = Kontaktuaren zain egiaztapena burutzeko…
 finger-verify = Egiaztatu
 finger-verify-access-key = E
 
+finger-ignore = Ezikusi
+finger-ignore-access-key = E
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Gehitu OTR hatz-marka
 
@@ -43,7 +46,6 @@ finger-unseen = { $name }(e)n identitatea ezin izan da egiaztatu oraindik. Usteg
 finger-seen = { $name } zurekin kontaktatzen ari da ordenagailu ezezagun batetik. Ustegabeko entzuteak ez dira posible, baina ahalegin batekin inor entzuten egon liteke.  Ekidin begiraleak kontaktuen identitatea egiaztatuz.
 
 state-not-private = Uneko elkarrizketa ez da pribatua.
-
 state-generic-not-private = Uneko elkarrizketa ez da pribatua.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = { $name }(e)n identitatea egiaztatu duzu.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = { $name }(e)n identitatea ez da egiaztatu.
-
-verify-title = Egiaztatu zure kontaktuaren identitatea
-error-title = Errorea
-success-title = Muturretik muturrerako enkriptatzea
-success-them-title = Egiaztatu zure kontaktuaren identitatea
-fail-title = Ezin da egiaztatu
-waiting-title = Egiaztapen eskaria bidalita
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

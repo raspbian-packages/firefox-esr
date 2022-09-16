@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
-carddav-window =
-    .title = Νέο ευρετήριο διευθύνσεων CardDAV
+carddav-window-title = Νέο ευρετήριο διευθύνσεων CardDAV
 
 carddav-dialog =
     .buttonlabelaccept = Συνέχεια
@@ -12,7 +11,6 @@ carddav-dialog =
 carddav-username-label =
     .value = Όνομα χρήστη:
     .accesskey = Ό
-
 carddav-location-label =
     .value = Διεύθυνση:
     .accesskey = Δ

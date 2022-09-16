@@ -28,7 +28,6 @@
 #include "nsGkAtoms.h"
 #include "nsCocoaFeatures.h"
 #include "nsCocoaWindow.h"
-#include "nsNativeBasicTheme.h"
 #include "nsNativeThemeColors.h"
 #include "nsIScrollableFrame.h"
 #include "mozilla/ClearOnShutdown.h"
@@ -400,7 +399,7 @@ static bool IsInSourceList(nsIFrame* aFrame) {
 
 NS_IMPL_ISUPPORTS_INHERITED(nsNativeThemeCocoa, nsNativeTheme, nsITheme)
 
-nsNativeThemeCocoa::nsNativeThemeCocoa() {
+nsNativeThemeCocoa::nsNativeThemeCocoa() : ThemeCocoa(ScrollbarStyle()) {
   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
 
   kMaxFocusRingWidth = 7;
@@ -986,18 +985,10 @@ nsNativeThemeCocoa::TextFieldParams nsNativeThemeCocoa::ComputeTextFieldParams(
     nsIFrame* aFrame, EventStates aEventState) {
   TextFieldParams params;
   params.insideToolbar = IsInsideToolbar(aFrame);
-  params.disabled = IsDisabled(aFrame, aEventState);
+  params.disabled = aEventState.HasState(NS_EVENT_STATE_DISABLED);
 
   // See ShouldUnconditionallyDrawFocusRingIfFocused.
   params.focused = aEventState.HasState(NS_EVENT_STATE_FOCUS);
-  // XUL textboxes set the native appearance on the containing box, while
-  // concrete focus is set on the html:input element within it. We can
-  // though, check the focused attribute of xul textboxes in this case.
-  // On Mac, focus rings are always shown for textboxes, so we do not need
-  // to check the window's focus ring state here
-  if (aFrame->GetContent()->IsXULElement() && IsFocused(aFrame)) {
-    params.focused = true;
-  }
 
   params.rtl = IsFrameRTL(aFrame);
   params.verticalAlignFactor = VerticalAlignFactor(aFrame);
@@ -1076,7 +1067,7 @@ NSSize nsNativeThemeCocoa::GetMenuIconSize(MenuIcon aIcon) {
 
 nsNativeThemeCocoa::MenuIconParams nsNativeThemeCocoa::ComputeMenuIconParams(
     nsIFrame* aFrame, EventStates aEventState, MenuIcon aIcon) {
-  bool isDisabled = IsDisabled(aFrame, aEventState);
+  bool isDisabled = aEventState.HasState(NS_EVENT_STATE_DISABLED);
 
   MenuIconParams params;
   params.icon = aIcon;
@@ -1125,7 +1116,7 @@ void nsNativeThemeCocoa::DrawMenuIcon(CGContextRef cgContext, const CGRect& aRec
 
 nsNativeThemeCocoa::MenuItemParams nsNativeThemeCocoa::ComputeMenuItemParams(
     nsIFrame* aFrame, EventStates aEventState, bool aIsChecked) {
-  bool isDisabled = IsDisabled(aFrame, aEventState);
+  bool isDisabled = aEventState.HasState(NS_EVENT_STATE_DISABLED);
 
   MenuItemParams params;
   params.checked = aIsChecked;
@@ -1192,7 +1183,7 @@ static bool ShouldUnconditionallyDrawFocusRingIfFocused(nsIFrame* aFrame) {
 nsNativeThemeCocoa::ControlParams nsNativeThemeCocoa::ComputeControlParams(
     nsIFrame* aFrame, EventStates aEventState) {
   ControlParams params;
-  params.disabled = IsDisabled(aFrame, aEventState);
+  params.disabled = aEventState.HasState(NS_EVENT_STATE_DISABLED);
   params.insideActiveWindow = FrameIsInActiveWindow(aFrame);
   params.pressed = aEventState.HasAllStates(NS_EVENT_STATE_ACTIVE | NS_EVENT_STATE_HOVER);
   params.focused = aEventState.HasState(NS_EVENT_STATE_FOCUS) &&
@@ -1783,7 +1774,7 @@ nsNativeThemeCocoa::ProgressParams nsNativeThemeCocoa::ComputeProgressParams(
   params.max = GetProgressMaxValue(aFrame);
   params.verticalAlignFactor = VerticalAlignFactor(aFrame);
   params.insideActiveWindow = FrameIsInActiveWindow(aFrame);
-  params.indeterminate = IsIndeterminateProgress(aFrame, aEventState);
+  params.indeterminate = aEventState.HasState(NS_EVENT_STATE_INDETERMINATE);
   params.horizontal = aIsHorizontal;
   params.rtl = IsFrameRTL(aFrame);
   return params;
@@ -1960,7 +1951,7 @@ Maybe<nsNativeThemeCocoa::ScaleParams> nsNativeThemeCocoa::ComputeHTMLScaleParam
   params.reverse = !isHorizontal || rangeFrame->IsRightToLeft();
   params.insideActiveWindow = FrameIsInActiveWindow(aFrame);
   params.focused = aEventState.HasState(NS_EVENT_STATE_FOCUSRING);
-  params.disabled = IsDisabled(aFrame, aEventState);
+  params.disabled = aEventState.HasState(NS_EVENT_STATE_DISABLED);
   params.horizontal = isHorizontal;
   return Some(params);
 }
@@ -2282,9 +2273,9 @@ Maybe<nsNativeThemeCocoa::WidgetInfo> nsNativeThemeCocoa::ComputeWidgetInfo(
 
       CheckboxOrRadioParams params;
       params.state = CheckboxOrRadioState::eOff;
-      if (isCheckbox && GetIndeterminate(aFrame)) {
+      if (eventState.HasState(NS_EVENT_STATE_INDETERMINATE)) {
         params.state = CheckboxOrRadioState::eIndeterminate;
-      } else if (GetCheckedOrSelected(aFrame, !isCheckbox)) {
+      } else if (eventState.HasState(NS_EVENT_STATE_CHECKED)) {
         params.state = CheckboxOrRadioState::eOn;
       }
       params.controlParams = ComputeControlParams(aFrame, eventState);
@@ -2307,17 +2298,12 @@ Maybe<nsNativeThemeCocoa::WidgetInfo> nsNativeThemeCocoa::ComputeWidgetInfo(
         // text, and default buttons in inactive windows have white background
         // and black text.)
         EventStates docState = aFrame->GetContent()->OwnerDoc()->GetDocumentState();
-        bool isInActiveWindow = !docState.HasState(NS_DOCUMENT_STATE_WINDOW_INACTIVE);
-        bool hasDefaultButtonLook = isInActiveWindow && !eventState.HasState(NS_EVENT_STATE_ACTIVE);
-        ButtonType buttonType =
-            hasDefaultButtonLook ? ButtonType::eDefaultPushButton : ButtonType::eRegularPushButton;
         ControlParams params = ComputeControlParams(aFrame, eventState);
-        params.insideActiveWindow = isInActiveWindow;
-        return Some(WidgetInfo::Button(ButtonParams{params, buttonType}));
+        params.insideActiveWindow = !docState.HasState(NS_DOCUMENT_STATE_WINDOW_INACTIVE);
+        return Some(WidgetInfo::Button(ButtonParams{params, ButtonType::eDefaultPushButton}));
       }
       if (IsButtonTypeMenu(aFrame)) {
         ControlParams controlParams = ComputeControlParams(aFrame, eventState);
-        controlParams.focused = controlParams.focused || IsFocused(aFrame);
         controlParams.pressed = IsOpenButton(aFrame);
         DropdownParams params;
         params.controlParams = controlParams;
@@ -2373,7 +2359,7 @@ Maybe<nsNativeThemeCocoa::WidgetInfo> nsNativeThemeCocoa::ComputeWidgetInfo(
           params.pressedButton = Some(SpinButton::eDown);
         }
       }
-      params.disabled = IsDisabled(aFrame, eventState);
+      params.disabled = eventState.HasState(NS_EVENT_STATE_DISABLED);
       params.insideActiveWindow = FrameIsInActiveWindow(aFrame);
 
       return Some(WidgetInfo::SpinButtons(params));
@@ -2390,7 +2376,7 @@ Maybe<nsNativeThemeCocoa::WidgetInfo> nsNativeThemeCocoa::ComputeWidgetInfo(
         } else if (numberControlFrame->SpinnerDownButtonIsDepressed()) {
           params.pressedButton = Some(SpinButton::eDown);
         }
-        params.disabled = IsDisabled(aFrame, eventState);
+        params.disabled = eventState.HasState(NS_EVENT_STATE_DISABLED);
         params.insideActiveWindow = FrameIsInActiveWindow(aFrame);
         if (aAppearance == StyleAppearance::SpinnerUpbutton) {
           return Some(WidgetInfo::SpinButtonUp(params));
@@ -2430,7 +2416,6 @@ Maybe<nsNativeThemeCocoa::WidgetInfo> nsNativeThemeCocoa::ComputeWidgetInfo(
     case StyleAppearance::MenulistButton:
     case StyleAppearance::Menulist: {
       ControlParams controlParams = ComputeControlParams(aFrame, eventState);
-      controlParams.focused = controlParams.focused || IsFocused(aFrame);
       controlParams.pressed = IsOpenButton(aFrame);
       DropdownParams params;
       params.controlParams = controlParams;
@@ -2454,7 +2439,7 @@ Maybe<nsNativeThemeCocoa::WidgetInfo> nsNativeThemeCocoa::ComputeWidgetInfo(
       return Some(WidgetInfo::SearchField(ComputeTextFieldParams(aFrame, eventState)));
 
     case StyleAppearance::ProgressBar: {
-      if (IsIndeterminateProgress(aFrame, eventState)) {
+      if (eventState.HasState(NS_EVENT_STATE_INDETERMINATE)) {
         if (!QueueAnimatedContentForRefresh(aFrame->GetContent(), 30)) {
           NS_WARNING("Unable to animate progressbar!");
         }
@@ -2498,38 +2483,6 @@ Maybe<nsNativeThemeCocoa::WidgetInfo> nsNativeThemeCocoa::ComputeWidgetInfo(
       Maybe<ScaleParams> params = ComputeHTMLScaleParams(aFrame, eventState);
       if (params) {
         return Some(WidgetInfo::Scale(*params));
-      }
-      break;
-    }
-
-    case StyleAppearance::ScrollbarHorizontal:
-    case StyleAppearance::ScrollbarVertical:
-    case StyleAppearance::ScrollbarbuttonUp:
-    case StyleAppearance::ScrollbarbuttonLeft:
-    case StyleAppearance::ScrollbarbuttonDown:
-    case StyleAppearance::ScrollbarbuttonRight:
-      break;
-
-    case StyleAppearance::ScrollbarthumbVertical:
-    case StyleAppearance::ScrollbarthumbHorizontal:
-    case StyleAppearance::ScrollbartrackHorizontal:
-    case StyleAppearance::ScrollbartrackVertical:
-    case StyleAppearance::Scrollcorner: {
-      bool isHorizontal = aAppearance == StyleAppearance::ScrollbarthumbHorizontal ||
-                          aAppearance == StyleAppearance::ScrollbartrackHorizontal;
-      ScrollbarParams params = ScrollbarDrawingMac::ComputeScrollbarParams(
-          aFrame, *nsLayoutUtils::StyleForScrollbar(aFrame), isHorizontal);
-      switch (aAppearance) {
-        case StyleAppearance::ScrollbarthumbVertical:
-        case StyleAppearance::ScrollbarthumbHorizontal:
-          return Some(WidgetInfo::ScrollbarThumb(params));
-        case StyleAppearance::ScrollbartrackHorizontal:
-        case StyleAppearance::ScrollbartrackVertical:
-          return Some(WidgetInfo::ScrollbarTrack(params));
-        case StyleAppearance::Scrollcorner:
-          return Some(WidgetInfo::ScrollCorner(params));
-        default:
-          MOZ_CRASH("unexpected aAppearance");
       }
       break;
     }
@@ -2582,8 +2535,13 @@ Maybe<nsNativeThemeCocoa::WidgetInfo> nsNativeThemeCocoa::ComputeWidgetInfo(
 NS_IMETHODIMP
 nsNativeThemeCocoa::DrawWidgetBackground(gfxContext* aContext, nsIFrame* aFrame,
                                          StyleAppearance aAppearance, const nsRect& aRect,
-                                         const nsRect& aDirtyRect, DrawOverflow) {
+                                         const nsRect& aDirtyRect, DrawOverflow aDrawOverflow) {
   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
+
+  if (IsWidgetScrollbarPart(aAppearance)) {
+    return ThemeCocoa::DrawWidgetBackground(aContext, aFrame, aAppearance, aRect, aDirtyRect,
+                                            aDrawOverflow);
+  }
 
   Maybe<WidgetInfo> widgetInfo = ComputeWidgetInfo(aFrame, aAppearance, aRect);
 
@@ -2598,7 +2556,7 @@ nsNativeThemeCocoa::DrawWidgetBackground(gfxContext* aContext, nsIFrame* aFrame,
 
   bool hidpi = IsHiDPIContext(aFrame->PresContext()->DeviceContext());
 
-  auto colorScheme = LookAndFeel::ColorSchemeForDocument(*aFrame->PresContext()->Document());
+  auto colorScheme = LookAndFeel::ColorSchemeForFrame(aFrame);
 
   RenderWidget(*widgetInfo, colorScheme, *aContext->GetDrawTarget(), nativeWidgetRect,
                NSRectToRect(aDirtyRect, p2a), hidpi ? 2.0f : 1.0f);
@@ -2631,43 +2589,6 @@ void nsNativeThemeCocoa::RenderWidget(const WidgetInfo& aWidgetInfo,
       aDrawTarget.FillRect(aWidgetRect, ColorPattern(ToDeviceColor(color)));
       break;
     }
-    case Widget::eScrollbarThumb: {
-      ScrollbarParams params = aWidgetInfo.Params<ScrollbarParams>();
-      auto thumb = ScrollbarDrawingMac::GetThumbRect(aWidgetRect, params, aScale);
-      float cornerRadius = (params.horizontal ? thumb.mRect.Height() : thumb.mRect.Width()) / 2.0f;
-      aDrawTarget.FillRoundedRect(RoundedRect(thumb.mRect, RectCornerRadii(cornerRadius)),
-                                  ColorPattern(ToDeviceColor(thumb.mFillColor)));
-      if (thumb.mStrokeColor) {
-        auto strokeRect = thumb.mRect;
-        strokeRect.Inflate(thumb.mStrokeOutset);
-        float strokeRadius = (params.horizontal ? strokeRect.Height() : strokeRect.Width()) / 2.0f;
-        RefPtr<Path> path =
-            MakePathForRoundedRect(aDrawTarget, strokeRect, RectCornerRadii(strokeRadius));
-        aDrawTarget.Stroke(path, ColorPattern(ToDeviceColor(thumb.mStrokeColor)),
-                           StrokeOptions(thumb.mStrokeWidth));
-      }
-      break;
-    }
-    case Widget::eScrollbarTrack: {
-      ScrollbarParams params = aWidgetInfo.Params<ScrollbarParams>();
-      ScrollbarDrawingMac::ScrollbarTrackRects rects;
-      if (ScrollbarDrawingMac::GetScrollbarTrackRects(aWidgetRect, params, aScale, rects)) {
-        for (const auto& rect : rects) {
-          aDrawTarget.FillRect(rect.mRect, ColorPattern(ToDeviceColor(rect.mColor)));
-        }
-      }
-      break;
-    }
-    case Widget::eScrollCorner: {
-      ScrollbarParams params = aWidgetInfo.Params<ScrollbarParams>();
-      ScrollbarDrawingMac::ScrollCornerRects rects;
-      if (ScrollbarDrawingMac::GetScrollCornerRects(aWidgetRect, params, aScale, rects)) {
-        for (const auto& rect : rects) {
-          aDrawTarget.FillRect(rect.mRect, ColorPattern(ToDeviceColor(rect.mColor)));
-        }
-      }
-      break;
-    }
     default: {
       AutoRestoreTransform autoRestoreTransform(&aDrawTarget);
       gfx::Rect widgetRect = aWidgetRect;
@@ -2697,12 +2618,8 @@ void nsNativeThemeCocoa::RenderWidget(const WidgetInfo& aWidgetInfo,
 
       switch (widget) {
         case Widget::eColorFill:
-        case Widget::eScrollbarThumb:
-        case Widget::eScrollbarTrack:
-        case Widget::eScrollCorner: {
           MOZ_CRASH("already handled in outer switch");
           break;
-        }
         case Widget::eMenuIcon: {
           MenuIconParams params = aWidgetInfo.Params<MenuIconParams>();
           DrawMenuIcon(cgContext, macRect, params);
@@ -2863,6 +2780,11 @@ bool nsNativeThemeCocoa::CreateWebRenderCommandsForWidget(
     const mozilla::layers::StackingContextHelper& aSc,
     mozilla::layers::RenderRootStateManager* aManager, nsIFrame* aFrame,
     StyleAppearance aAppearance, const nsRect& aRect) {
+  if (IsWidgetScrollbarPart(aAppearance)) {
+    return ThemeCocoa::CreateWebRenderCommandsForWidget(aBuilder, aResources, aSc, aManager, aFrame,
+                                                        aAppearance, aRect);
+  }
+
   // This list needs to stay consistent with the list in DrawWidgetBackground.
   // For every switch case in DrawWidgetBackground, there are three choices:
   //  - If the case in DrawWidgetBackground draws nothing for the given widget
@@ -2909,23 +2831,7 @@ bool nsNativeThemeCocoa::CreateWebRenderCommandsForWidget(
     case StyleAppearance::Treeitem:
     case StyleAppearance::Treeview:
     case StyleAppearance::Range:
-    case StyleAppearance::ScrollbarthumbVertical:
-    case StyleAppearance::ScrollbarthumbHorizontal:
       return false;
-
-    case StyleAppearance::Scrollcorner:
-    case StyleAppearance::ScrollbartrackHorizontal:
-    case StyleAppearance::ScrollbartrackVertical: {
-      const ComputedStyle& style = *nsLayoutUtils::StyleForScrollbar(aFrame);
-      ScrollbarParams params = ScrollbarDrawingMac::ComputeScrollbarParams(
-          aFrame, style, aAppearance == StyleAppearance::ScrollbartrackHorizontal);
-      if (params.overlay && !params.rolledOver) {
-        // There is no scrollbar track, draw nothing and return true.
-        return true;
-      }
-      // There is a scrollbar track and it needs to be drawn using fallback.
-      return false;
-    }
 
     case StyleAppearance::Textarea:
     case StyleAppearance::Listbox:
@@ -2961,7 +2867,6 @@ LayoutDeviceIntMargin nsNativeThemeCocoa::GetWidgetBorder(nsDeviceContext* aCont
   LayoutDeviceIntMargin result;
 
   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
-
   switch (aAppearance) {
     case StyleAppearance::Button: {
       if (IsButtonTypeMenu(aFrame)) {
@@ -3026,23 +2931,6 @@ LayoutDeviceIntMargin nsNativeThemeCocoa::GetWidgetBorder(nsDeviceContext* aCont
       SInt32 frameOutset = 0;
       ::GetThemeMetric(kThemeMetricListBoxFrameOutset, &frameOutset);
       result.SizeTo(frameOutset, frameOutset, frameOutset, frameOutset);
-      break;
-    }
-
-    case StyleAppearance::ScrollbartrackHorizontal:
-    case StyleAppearance::ScrollbartrackVertical: {
-      bool isHorizontal = (aAppearance == StyleAppearance::ScrollbartrackHorizontal);
-      if (LookAndFeel::UseOverlayScrollbars()) {
-        // Leave a bit of space at the start and the end on all OS X versions.
-        if (isHorizontal) {
-          result.left = 1;
-          result.right = 1;
-        } else {
-          result.top = 1;
-          result.bottom = 1;
-        }
-      }
-
       break;
     }
 
@@ -3147,15 +3035,6 @@ bool nsNativeThemeCocoa::GetWidgetOverflow(nsDeviceContext* aContext, nsIFrame* 
   return false;
 }
 
-auto nsNativeThemeCocoa::GetScrollbarSizes(nsPresContext* aPresContext, StyleScrollbarWidth aWidth,
-                                           Overlay aOverlay) -> ScrollbarSizes {
-  auto size = ScrollbarDrawingMac::GetScrollbarSize(aWidth, aOverlay == Overlay::Yes);
-  if (IsHiDPIContext(aPresContext->DeviceContext())) {
-    size *= 2;
-  }
-  return {int32_t(size), int32_t(size)};
-}
-
 NS_IMETHODIMP
 nsNativeThemeCocoa::GetMinimumWidgetSize(nsPresContext* aPresContext, nsIFrame* aFrame,
                                          StyleAppearance aAppearance, LayoutDeviceIntSize* aResult,
@@ -3164,6 +3043,11 @@ nsNativeThemeCocoa::GetMinimumWidgetSize(nsPresContext* aPresContext, nsIFrame* 
 
   aResult->SizeTo(0, 0);
   *aIsOverridable = true;
+
+  if (IsWidgetScrollbarPart(aAppearance)) {
+    return ThemeCocoa::GetMinimumWidgetSize(aPresContext, aFrame, aAppearance, aResult,
+                                            aIsOverridable);
+  }
 
   switch (aAppearance) {
     case StyleAppearance::Button: {
@@ -3295,24 +3179,9 @@ nsNativeThemeCocoa::GetMinimumWidgetSize(nsPresContext* aPresContext, nsIFrame* 
       break;
     }
 
-    case StyleAppearance::ScrollbarthumbHorizontal:
-    case StyleAppearance::ScrollbarthumbVertical:
-    case StyleAppearance::ScrollbarHorizontal:
-    case StyleAppearance::ScrollbarVertical:
-    case StyleAppearance::ScrollbartrackVertical:
-    case StyleAppearance::ScrollbartrackHorizontal:
-    case StyleAppearance::ScrollbarbuttonUp:
-    case StyleAppearance::ScrollbarbuttonDown:
-    case StyleAppearance::ScrollbarbuttonLeft:
-    case StyleAppearance::ScrollbarbuttonRight: {
-      *aIsOverridable = false;
-      *aResult = ScrollbarDrawingMac::GetMinimumWidgetSize(aAppearance, aFrame, 1.0f);
-      break;
-    }
-
     case StyleAppearance::MozMenulistArrowButton:
-      *aResult = ScrollbarDrawingMac::GetMinimumWidgetSize(aAppearance, aFrame, 1.0f);
-      break;
+      return ThemeCocoa::GetMinimumWidgetSize(aPresContext, aFrame, aAppearance, aResult,
+                                              aIsOverridable);
 
     case StyleAppearance::Resizer: {
       HIThemeGrowBoxDrawInfo drawInfo;
@@ -3326,6 +3195,7 @@ nsNativeThemeCocoa::GetMinimumWidgetSize(nsPresContext* aPresContext, nsIFrame* 
       HIThemeGetGrowBoxBounds(&pnt, &drawInfo, &bounds);
       aResult->SizeTo(bounds.size.width, bounds.size.height);
       *aIsOverridable = false;
+      break;
     }
     default:
       break;
@@ -3401,6 +3271,9 @@ nsNativeThemeCocoa::ThemeChanged() {
 
 bool nsNativeThemeCocoa::ThemeSupportsWidget(nsPresContext* aPresContext, nsIFrame* aFrame,
                                              StyleAppearance aAppearance) {
+  if (IsWidgetScrollbarPart(aAppearance)) {
+    return ThemeCocoa::ThemeSupportsWidget(aPresContext, aFrame, aAppearance);
+  }
   // if this is a dropdown button in a combobox the answer is always no
   if (aAppearance == StyleAppearance::MozMenulistArrowButton) {
     nsIFrame* parentFrame = aFrame->GetParent();
@@ -3474,21 +3347,7 @@ bool nsNativeThemeCocoa::ThemeSupportsWidget(nsPresContext* aPresContext, nsIFra
     case StyleAppearance::MozMacActiveSourceListSelection:
 
     case StyleAppearance::Range:
-
-    case StyleAppearance::ScrollbarHorizontal:
-    case StyleAppearance::ScrollbarVertical:
-    case StyleAppearance::ScrollbarbuttonUp:
-    case StyleAppearance::ScrollbarbuttonDown:
-    case StyleAppearance::ScrollbarbuttonLeft:
-    case StyleAppearance::ScrollbarbuttonRight:
-    case StyleAppearance::ScrollbarthumbHorizontal:
-    case StyleAppearance::ScrollbarthumbVertical:
-    case StyleAppearance::ScrollbartrackVertical:
-    case StyleAppearance::ScrollbartrackHorizontal:
       return !IsWidgetStyled(aPresContext, aFrame, aAppearance);
-
-    case StyleAppearance::Scrollcorner:
-      return true;
 
     case StyleAppearance::Resizer: {
       nsIFrame* parentFrame = aFrame->GetParent();
@@ -3536,7 +3395,7 @@ bool nsNativeThemeCocoa::WidgetIsContainer(StyleAppearance aAppearance) {
   return true;
 }
 
-bool nsNativeThemeCocoa::ThemeDrawsFocusForWidget(StyleAppearance aAppearance) {
+bool nsNativeThemeCocoa::ThemeDrawsFocusForWidget(nsIFrame*, StyleAppearance aAppearance) {
   switch (aAppearance) {
     case StyleAppearance::Textarea:
     case StyleAppearance::Textfield:
@@ -3612,7 +3471,7 @@ nsITheme::ThemeGeometryType nsNativeThemeCocoa::ThemeGeometryTypeForWidget(
     case StyleAppearance::Menuitem:
     case StyleAppearance::Checkmenuitem: {
       EventStates eventState = GetContentState(aFrame, aAppearance);
-      bool isDisabled = IsDisabled(aFrame, eventState);
+      bool isDisabled = eventState.HasState(NS_EVENT_STATE_DISABLED);
       bool isSelected = !isDisabled && CheckBooleanAttr(aFrame, nsGkAtoms::menuactive);
       return isSelected ? eThemeGeometryTypeHighlightedMenuItem : eThemeGeometryTypeMenu;
     }
@@ -3631,27 +3490,16 @@ nsITheme::ThemeGeometryType nsNativeThemeCocoa::ThemeGeometryTypeForWidget(
 
 nsITheme::Transparency nsNativeThemeCocoa::GetWidgetTransparency(nsIFrame* aFrame,
                                                                  StyleAppearance aAppearance) {
+  if (IsWidgetScrollbarPart(aAppearance)) {
+    return ThemeCocoa::GetWidgetTransparency(aFrame, aAppearance);
+  }
+
   switch (aAppearance) {
     case StyleAppearance::Menupopup:
     case StyleAppearance::Tooltip:
     case StyleAppearance::Dialog:
     case StyleAppearance::Toolbar:
       return eTransparent;
-
-    case StyleAppearance::ScrollbarHorizontal:
-    case StyleAppearance::ScrollbarVertical:
-    case StyleAppearance::Scrollcorner: {
-      // We don't use custom scrollbars when using overlay scrollbars.
-      if (LookAndFeel::UseOverlayScrollbars()) {
-        return eTransparent;
-      }
-      const nsStyleUI* ui = nsLayoutUtils::StyleForScrollbar(aFrame)->StyleUI();
-      if (!ui->mScrollbarColor.IsAuto() &&
-          ui->mScrollbarColor.AsColors().track.MaybeTransparent()) {
-        return eTransparent;
-      }
-      return eOpaque;
-    }
 
     case StyleAppearance::Statusbar:
       // Knowing that scrollbars and statusbars are opaque improves
@@ -3663,13 +3511,6 @@ nsITheme::Transparency nsNativeThemeCocoa::GetWidgetTransparency(nsIFrame* aFram
   }
 }
 
-already_AddRefed<nsITheme> do_GetNativeThemeDoNotUseDirectly() {
-  static nsCOMPtr<nsITheme> inst;
-
-  if (!inst) {
-    inst = new nsNativeThemeCocoa();
-    ClearOnShutdown(&inst);
-  }
-
-  return do_AddRef(inst);
+already_AddRefed<widget::Theme> do_CreateNativeThemeDoNotUseDirectly() {
+  return do_AddRef(new nsNativeThemeCocoa());
 }

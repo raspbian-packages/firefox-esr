@@ -87,6 +87,10 @@ urlbar-plugins-notification-anchor =
     .tooltiptext = Stiùirich cleachdadh a’ phlugain
 urlbar-web-rtc-share-devices-notification-anchor =
     .tooltiptext = Stiùirich co-roinneadh a’ chamara ’s/no a’ mhicreofoin agad leis an làrach
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+urlbar-web-rtc-share-speaker-notification-anchor =
+    .tooltiptext = Stiùirich co-roinneadh nan glaodhairean eile leis an làrach
 urlbar-autoplay-notification-anchor =
     .tooltiptext = Fosgail panail na fèin-chluich
 urlbar-persistent-storage-notification-anchor =
@@ -520,6 +524,16 @@ urlbar-result-action-search-tabs = Lorg sna tabaichean
 
 ## Labels shown above groups of urlbar results
 
+# A label shown above the "Firefox Suggest" (bookmarks/history) group in the
+# urlbar results.
+urlbar-group-firefox-suggest =
+    .label = { -firefox-suggest-brand-name }
+# A label shown above the search suggestions group in the urlbar results. It
+# should use sentence case.
+# Variables
+#  $engine (String): the name of the search engine providing the suggestions
+urlbar-group-search-suggestions =
+    .label = Molaidhean { $engine }
 
 ## Full Screen and Pointer Lock UI
 
@@ -647,12 +661,6 @@ toolbar-settings-button =
             [macos] Fosgail na roghainnean ({ $shortcut })
            *[other] Fosgail na roghainnean
         }
-
-## More items
-
-more-menu-go-offline =
-    .label = Obraich far loidhne
-    .accesskey = O
 toolbar-overflow-customize-button =
     .label = Gnàthaich am bàr-inneal...
     .accesskey = G
@@ -698,14 +706,11 @@ panel-save-update-password = Facal-faire
 addon-removal-title = A bheil thu airson { $name } a thoirt air falbh?
 addon-removal-abuse-report-checkbox = Dèan aithris air an leudachan seo gu { -vendor-short-name }
 
-## Remote / Synced tabs
-
-remote-tabs-manage-account =
-    .label = Stiùirich an cunntas
-remote-tabs-sync-now = Sioncronaich an-dràsta
-
 ##
 
+# "More" item in macOS share menu
+menu-share-more =
+    .label = Barrachd…
 ui-tour-info-panel-close =
     .tooltiptext = Dùin
 
@@ -724,9 +729,25 @@ popups-infobar-block =
 popups-infobar-dont-show-message =
     .label = Na seall an teachdaireachd seo ma tha bacadh air priob-uinneagan
     .accesskey = D
+edit-popup-settings =
+    .label = Stiùirich roghainnean nam priob-uinneagan…
+    .accesskey = m
 picture-in-picture-hide-toggle =
     .label = Falaich toglachadh dealbh am broinn deilbh
     .accesskey = h
+
+## Since the default position for PiP controls does not change for RTL layout,
+## right-to-left languages should use "Left" and "Right" as in the English strings,
+
+picture-in-picture-move-toggle-right =
+    .label = Gluais toglachadh an deilbh am broinn deilbh gun taobh deas
+    .accesskey = r
+picture-in-picture-move-toggle-left =
+    .label = Gluais toglachadh an deilbh am broinn deilbh gun taobh chlì
+    .accesskey = l
+
+##
+
 
 # Navigator Toolbox
 
@@ -744,9 +765,6 @@ navbar-overflow =
 navbar-print =
     .label = Clò-bhuail
     .tooltiptext = Clò-bhuail an duilleag seo… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = Clò-bhuail
-    .tooltiptext = Clò-bhuail an duilleag seo
 navbar-home =
     .label = Dhachaigh
     .tooltiptext = Duilleag-dhachaigh { -brand-short-name }
@@ -767,3 +785,16 @@ tabs-toolbar-new-tab =
 tabs-toolbar-list-all-tabs =
     .label = Liostaich gach taba
     .tooltiptext = Liostaich gach taba
+
+## Infobar shown at startup to suggest session-restore
+
+# <img data-l10n-name="icon"/> will be replaced by the application menu icon
+restore-session-startup-suggestion-message = <strong>A bheil thu airson tabaichean a bh’ agad roimhe ath-fhosgladh?</strong> ’S urrainn dhut tabaichean o sheann seisean aiseag o chlàr-taice aplacaid { -brand-short-name } <img data-l10n-name="icon"/>, fo “Eachdraidh”.
+restore-session-startup-suggestion-button = Seall dhomh mar a nì mi seo
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = Cuiridh { -brand-short-name } beagan dàta dha { -vendor-short-name } ach an urrainn dhuinn piseach a thoirt air.
+data-reporting-notification-button =
+    .label = Co-dhùin na thèid a cho-roinneadh
+    .accesskey = C

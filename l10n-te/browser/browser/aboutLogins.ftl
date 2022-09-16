@@ -5,14 +5,13 @@
 
 about-logins-page-title = ప్రవేశాలు & సంకేతపదాలు
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = ప్రవేశాలను వెతకండి
 
 create-login-button = కొత్త ప్రవేశాన్ని సృష్టించు
 
 fxaccounts-sign-in-text = మీ సంకేతపదాలను ఇతర పరికరాల్లో పొందండి
+fxaccounts-sign-in-sync-button = Sync లోనికి ప్రవేశించండి
 fxaccounts-avatar-button =
     .title = ఖాతా నిర్వహించు
 
@@ -60,7 +59,9 @@ about-logins-list-item-breach-icon =
     .title = ఉల్లంఘిత వెబ్‌సైటు
 about-logins-list-item-vulnerable-password-icon =
     .title = బలహీనమైన సంకేతపదం
-
+about-logins-list-section-breach = ఉల్లంఘిత వెబ్‌సైట్లు
+about-logins-list-section-vulnerable = బలహీనమైన సంకేతపదాలు
+about-logins-list-section-nothing = హెచ్చరిక వద్దు
 about-logins-list-section-today = ఈరోజు
 about-logins-list-section-yesterday = నిన్న
 about-logins-list-section-week = గత 7 రోజులు
@@ -69,7 +70,6 @@ about-logins-list-section-week = గత 7 రోజులు
 
 about-logins-login-intro-heading-logged-in = సింక్రనిత ప్రవేశాలేమీ కనబడలేదు.
 login-intro-description = మరో పరికరంలో మీ ప్రవేశాలను { -brand-product-name }‌లో భద్రపరచుకొని ఉంటే, వాటిని ఇక్కడకు తెచ్చుకోవడం ఇలా:
-about-logins-intro-import = మీ ప్రవేశాలు వేరే విహారిణిలో భద్రమైవుంటే, వాటిని <a data-l10n-name="import-link">{ -lockwise-brand-short-name } లోనికి దిగుమతి చేసుకోండి</a>
 
 ## Login
 
@@ -104,6 +104,10 @@ about-logins-os-auth-dialog-caption = { -brand-full-name }
 ## and includes subtitle of "Enter password for the user "xxx" to allow this." These
 ## notes are only valid for English. Please test in your respected locale.
 
+# This message can be seen when attempting to edit a login in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-edit-login-os-auth-dialog-message-macosx = భద్రపరచిన ప్రవేశాన్ని సవరించు
+
 # This message can be seen when attempting to reveal a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-reveal-password-os-auth-dialog-message-macosx = భద్రపరచిన సంకేతపదాన్ని చూపించడానికి
@@ -114,8 +118,9 @@ about-logins-copy-password-os-auth-dialog-message-win = మీ సంకేత�
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = భద్రపరచిన సంకేతపదాన్ని కాపీచేయడానికి
 
-## Master Password notification
-
+# This message can be seen when attempting to export a password in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-export-password-os-auth-dialog-message-macosx = భద్రపరచిన ప్రవేశాలను, సంకేతపదాలను ఎగుమతిచేయి
 
 ## Primary Password notification
 
@@ -123,8 +128,6 @@ about-logins-primary-password-notification-message = భద్రపరచిన
 master-password-reload-button =
     .label = ప్రవేశించండి
     .accesskey = L
-
-## Password Sync notification
 
 ## Dialogs
 

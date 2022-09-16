@@ -2,13 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = メニューバー
+    .accesskey = M
+
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = 設定
-    .accesskey = P
 menu-tools-settings =
     .label = 設定
     .accesskey = e
@@ -51,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = フォントサイズ
+    .accesskey = o
+menuitem-font-size-enlarge =
+    .label = フォントサイズを大きくする
+    .accesskey = I
+menuitem-font-size-reduce =
+    .label = フォントサイズを小さくする
+    .accesskey = D
+menuitem-font-size-reset =
+    .label = フォントサイズをリセット
+    .accesskey = R
 mail-uidensity-label =
     .label = UI 密度
     .accesskey = D
@@ -63,6 +74,10 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = タッチ
     .accesskey = T
+# (^m^) en-US: "Spaces Toolbar" (Bug 1665511)
+menu-spaces-toolbar-button =
+    .label = スペースツールバー
+    .accesskey = S
 
 ## File
 

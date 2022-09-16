@@ -2,12 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+unknowncontenttype-handleinternally =
+    .label = Opna með { -brand-short-name }
+    .accesskey = e
+
 unknowncontenttype-settingschange =
     .value =
         { PLATFORM() ->
             [windows] Hægt er að breyta stillingum í valkostum { -brand-short-name }.
            *[other] Hægt er að breyta stillingum í valkostum { -brand-short-name }.
         }
+
 unknowncontenttype-intro = Þú hefur valið að opna:
 unknowncontenttype-which-is = sem er:
 unknowncontenttype-from = frá:

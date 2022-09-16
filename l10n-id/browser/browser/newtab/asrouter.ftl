@@ -63,9 +63,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } pengguna
     }
 
-## These messages are steps on how to use the feature and are shown together.
-
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sinkronkan markah Anda di mana saja.
@@ -93,26 +90,6 @@ cfr-whatsnew-button =
 
 cfr-whatsnew-release-notes-link-text = Baca catatan rilis
 
-## Search Bar
-
-## Search bar
-
-## Picture-in-Picture
-
-## Permission Prompt
-
-## Fingerprinter Counter
-
-## Bookmark Sync
-
-## Login Sync
-
-## Send Tab
-
-## Firefox Send
-
-## Social Tracking Protection
-
 ## Enhanced Tracking Protection Milestones
 
 # Variables:
@@ -124,25 +101,8 @@ cfr-doorhanger-milestone-heading2 =
     }
 cfr-doorhanger-milestone-ok-button = Lihat Semua
     .accesskey = L
-
-## What’s New Panel Content for Firefox 76
-
-
-## Lockwise message
-
-## Vulnerable Passwords message
-
-## Picture-in-Picture fullscreen message
-
-## Protections Dashboard message
-
-## Better PDF message
-
 cfr-doorhanger-milestone-close-button = Tutup
     .accesskey = T
-
-## What’s New Panel Content for Firefox 76
-## Protections Dashboard message
 
 ## DOH Message
 
@@ -162,18 +122,6 @@ cfr-doorhanger-fission-primary-button = Oke, paham
 cfr-doorhanger-fission-secondary-button = Pelajari lebih lanjut
     .accesskey = P
 
-## What's new: Cookies message
-
-## What's new: Media controls message
-
-## What's new: Search shortcuts
-
-## What's new: Cookies protection
-
-## What's new: Better bookmarking
-
-## What's new: Cross-site cookie tracking
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Video pada situs ini mungkin tidak dapat diputar dengan benar dalam versi { -brand-short-name } ini. Untuk dukungan video penuh, perbarui { -brand-short-name } sekarang.
@@ -181,9 +129,50 @@ cfr-doorhanger-video-support-header = Perbarui { -brand-short-name } untuk memut
 cfr-doorhanger-video-support-primary-button = Perbarui Sekarang
     .accesskey = u
 
+## Spotlight modal shared strings
+
+spotlight-learn-more-collapsed = Pelajari Lebih Lanjut
+    .title = Buka untuk pempelajari fitur ini lebih lanjut
+spotlight-learn-more-expanded = Pelajari lebih lanjut
+    .title = Tutup
+
 ## VPN promotion dialog for public Wi-Fi users
 ##
 ## If a user is detected to be on a public Wi-Fi network, they are given a
 ## bit of info about how to improve their privacy and then offered a button
 ## to the Mozilla VPN page and a link to dismiss the dialog.
 
+# This header text can be explicitly wrapped.
+spotlight-public-wifi-vpn-header = Sepertinya Anda menggunakan Wi-Fi publik
+spotlight-public-wifi-vpn-body = Untuk menyembunyikan lokasi dan aktivitas penjelajahan Anda, pertimbangkan Jaringan Pribadi Virtual (VPN). Ini akan membantu Anda tetap terlindungi saat menjelajah di tempat umum seperti bandara dan kedai kopi.
+spotlight-public-wifi-vpn-primary-button = Tetap terjaga dengan { -mozilla-vpn-brand-name }
+    .accesskey = T
+spotlight-public-wifi-vpn-link = Jangan Sekarang
+    .accesskey = J
+
+## Total Cookie Protection Rollout
+
+# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
+# "Join an early experiment". This header text can be explicitly wrapped.
+spotlight-total-cookie-protection-header =
+    Uji coba pengalaman privasi terkuat
+    kami yang pernah ada
+spotlight-total-cookie-protection-body = Perlindungan Kuki Total mencegah pelacak menggunakan kuki untuk menguntit Anda di web.
+# "Early access" for this feature rollout means it's a "feature preview" or
+# "soft launch" as not everybody will get it yet.
+spotlight-total-cookie-protection-expanded = { -brand-short-name } membangun pagar di sekitar kuki, dengan membatasi kuki di situs tempat Anda berada, sehingga pelacak tidak dapat menggunakannya untuk mengikuti Anda. Dengan akses awal, Anda akan membantu mengoptimalkan fitur ini agar kami dapat terus membangun web yang lebih baik untuk semua orang.
+spotlight-total-cookie-protection-primary-button = Aktifkan Perlindungan Kuki Total
+spotlight-total-cookie-protection-secondary-button = Jangan sekarang
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Internet yang lebih baik dimulai dari Anda
+spotlight-better-internet-body = Ketika Anda menggunakan { -brand-short-name }, Anda memilih Internet yang terbuka dan dapat diakses secara lebih baik untuk semua orang.
+spotlight-peace-mind-header = Kami membantu Anda
+spotlight-peace-mind-body = Setiap bulan, { -brand-short-name } memblokir rata-rata lebih dari 3000 pelacak per pengguna. Karena tidak ada yang bisa menghalangi antara Anda dengan Internet yang baik, terutama gangguan privasi seperti pelacak.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Sematkan ke Dock
+       *[other] Sematkan ke bilah tugas
+    }
+spotlight-pin-secondary-button = Jangan sekarang

@@ -2,9 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-otr-finger =
-    .buttonlabelaccept = Bezárás
-    .title = Előzőleg látott OTR-ujjlenyomatok
+otr-finger-title = Korábban látott OTR ujjlenyomatok
 
 finger-intro = Az OTR-kulcs ujjlenyomatai a korábbi, végpontok között titkosított beszélgetésekből.
 

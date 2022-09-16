@@ -68,3 +68,10 @@ accessibility-text-label-issue-toolbar = Panely nástrojů musí být označeny,
 
 accessibility-keyboard-issue-semantics = Prvky dosažitelné pomocí klávesnice by měly mít interaktivní sémantiku. <a>Zjistit více</a>
 
+accessibility-keyboard-issue-tabindex = Vyhněte se používaní atributu <code>tabindex</code> s hodnotou větší než nula. <a>Zjistit více</a>
+
+accessibility-keyboard-issue-action = Interaktivní prvky musí být možno aktivovat klávesnicí. <a>Zjistit více</a>
+
+accessibility-keyboard-issue-focusable = Interaktivní prvky musí být přístupné klávesnicí. <a>Zjistit více</a>
+
+accessibility-keyboard-issue-mouse-only = Prvky, na které lze kliknout, musí být dosažitelné pomocí klávesnice, a měly by mít interaktivní sémantiku. <a>Zjistit více</a>

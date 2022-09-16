@@ -5,7 +5,7 @@
 close-button =
     .aria-label = Užverti
 
-preferences-doc-title = Nuostatos
+preferences-doc-title2 = Nuostatos
 
 category-list =
     .aria-label = Kategorijos
@@ -165,12 +165,14 @@ restore-default-label =
     .accesskey = t
 
 default-search-engine = Numatytoji paieškos sistema
-add-search-engine =
-    .label = Pridėti iš failo
-    .accesskey = A
+add-web-search-engine =
+    .label = Pridėti…
+    .accesskey = P
 remove-search-engine =
     .label = Pašalinti
     .accesskey = v
+
+add-opensearch-provider-title = Pridėti OpenSearch iesškyklę
 
 minimize-to-tray-label =
     .label = Kai „{ -brand-short-name }“ sumažinamas iki minimumo, perkelti į dėklą
@@ -196,8 +198,6 @@ change-dock-icon = Keisti pritvirtinamos piktogramos nuostatas
 app-icon-options =
     .label = Piktogramos nuostatos…
     .accesskey = n
-
-notification-settings = Įspėjimus ir numatytuosius garsus galite išjungti Sistemos nuostatų Pranešimų polangyje.
 
 animated-alert-label =
     .label = Parodyti įspėjimą
@@ -407,14 +407,6 @@ quoted-text-color =
 search-handler-table =
     .placeholder = Filtruoti pagal turinio tipus ir veiksmus
 
-type-column-label =
-    .label = Turinio tipas
-    .accesskey = t
-
-action-column-label =
-    .label = Veiksmas
-    .accesskey = V
-
 save-to-label =
     .label = Įrašyti failus į aplanką
     .accesskey = f
@@ -568,12 +560,6 @@ default-format-label =
     .label = Numatytuoju atveju naudoti pastraipos formatą vietoj paprastojo teksto formato
     .accesskey = p
 
-format-description = Parinkite siunčiamų laiškų tekstų tipus:
-
-send-options-label =
-    .label = Siuntimo parinktys…
-    .accesskey = S
-
 autocomplete-description = Adresų, kurių pradžios sutampa su surinktu tekstu, ieškoti:
 
 ab-label =
@@ -628,7 +614,6 @@ find-cloud-providers =
     .value = Rasti daugiau teikėjų…
 
 cloud-account-description = Pridėkite failų talpinimo debesyje tarnybą
-
 
 ## Privacy Tab
 
@@ -693,7 +678,6 @@ passwords-description = Programa „{ -brand-short-name }“ gali įsiminti vis�
 passwords-button =
     .label = Įrašyti slaptažodžiai…
     .accesskey = s
-
 
 primary-password-description = Pagrindinis slaptažodis apsaugo visus slaptažodžius, bet jį turite įvesti kaskart paleidus programą.
 
@@ -856,8 +840,6 @@ theme-label =
     .value = Grafinis apvalkalas:
     .accesskey = T
 
-style-thunderbird =
-    .label = „Thunderbird“
 style-bubbles =
     .label = Burbulai
 style-dark =
@@ -875,27 +857,11 @@ chat-variant-label =
     .value = Variantas:
     .accesskey = V
 
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Please keep the placeholder string short to avoid truncation.
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
-search-preferences-input =
-    .style = width: 15.4em
-    .placeholder = Find in Preferences
-
 ## Preferences UI Search Results
 
-search-results-header = Paieškos rezultatai
 
-# `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
-    { PLATFORM() ->
-        [windows] Deja! Nuostatose nėra rezultatų, atitinkančių „<span data-l10n-name="query"></span>“.
-       *[other] Deja! Nuostatose nėra rezultatų, atitinkančių „<span data-l10n-name="query"></span>“.
-    }
+## Settings UI Search Results
+
+search-results-header = Paieškos rezultatai
 
 search-results-help-link = Reikia pagalbos? Aplankykite <a data-l10n-name="url">„{ -brand-short-name }“</a>

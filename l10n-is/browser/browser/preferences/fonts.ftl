@@ -69,7 +69,7 @@ fonts-langgroup-thai =
 fonts-langgroup-tibetan =
     .label = Tíbetska
 fonts-langgroup-canadian =
-    .label = Unified Canadian Syllabary
+    .label = Samræmd Kanadísk atkvæðatákn
 fonts-langgroup-other =
     .label = Önnur ritunarkerfi
 
@@ -92,7 +92,7 @@ fonts-serif = Serif
 fonts-sans-serif = Sans-serif
     .accesskey = n
 
-fonts-monospace = Jafnstórt
+fonts-monospace = Jafnbreitt
     .accesskey = J
 
 fonts-monospace-size = Stærð
@@ -107,11 +107,6 @@ fonts-minsize-none =
 fonts-allow-own =
     .label = Leyfa vefsíðum að velja sínar eigin leturgerðir, í staðinn fyrir mitt val hér fyrir ofan
     .accesskey = a
-
-## Text Encodings
-##
-## Translate the encoding names as adjectives for an encoding, not as the name
-## of the language.
 
 # Variables:
 #   $name {string, "Arial"} - Name of the default font

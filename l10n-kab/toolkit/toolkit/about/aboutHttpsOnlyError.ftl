@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 about-httpsonly-title-alert = Alɣu n uskar HTTPS-Only
-about-httpsonly-title-connection-not-available = Ulac tuqqna taɣellsant
+about-httpsonly-title-site-not-available = Ulac taɣellist n usmel
 
 # Variables:
 #   $websiteUrl (String) - Url of the website that failed to load. Example: www.example.com

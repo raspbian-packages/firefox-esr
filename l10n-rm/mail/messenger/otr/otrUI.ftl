@@ -19,6 +19,9 @@ auth-waiting = Spetgar ch'il contact cumpletteschia la verificaziun…
 finger-verify = Verifitgar
 finger-verify-access-key = V
 
+finger-ignore = Ignorar
+finger-ignore-access-key = I
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Agiuntar ina impronta OTR
 
@@ -43,7 +46,6 @@ finger-unseen = L'identitad da { $name } n'è anc betg vegnida verifitgada. Che 
 finger-seen = { $name } ta contactescha cun agid dad in computer betg reconuschì. Che la conversaziun vegnia spiunada mo per cas è exclus, ma cun in tschert effort èsi pussaivel. Prevegna a la surveglianza cun verifitgar l'identitad dal contact.
 
 state-not-private = La conversaziun actuala n'è betg privata.
-
 state-generic-not-private = La conversaziun actuala n'è betg privata.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Ti has verifitgà l'identitad da { $name }.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = L'identitad da { $name } n'è betg vegnida verifitgada.
-
-verify-title = Verifitgar l'identitad da tes contact
-error-title = Errur
-success-title = Criptadi fin-a-fin
-success-them-title = Verifitgar l'identitad da tes contact
-fail-title = Impussibel da verifitgar
-waiting-title = Tramess ina dumonda da verificaziun
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

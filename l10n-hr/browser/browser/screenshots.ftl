@@ -6,6 +6,9 @@ screenshot-toolbarbutton =
     .label = Snimka ekrana
     .tooltiptext = Snimi ekran
 
+screenshot-shortcut =
+    .key = S
+
 screenshots-instructions = Povuci ili pritisni na stranicu za odabir područja. Pritisni ESC za prekid.
 screenshots-cancel-button = Odustani
 screenshots-save-visible-button = Spremi vidljivo
@@ -14,6 +17,14 @@ screenshots-download-button = Preuzmi
 screenshots-download-button-tooltip = Preuzmi snimku ekrana
 screenshots-copy-button = Kopiraj
 screenshots-copy-button-tooltip = Kopiraj snimku ekrana u međuspremnik
+screenshots-download-button-title =
+    .title = Preuzmi snimku zaslona
+screenshots-copy-button-title =
+    .title = Kopiraj snimku zaslona u međuspremnik
+screenshots-cancel-button-title =
+    .title = Odustani
+screenshots-retry-button-title =
+    .title = Ponovi snimku zaslona
 
 screenshots-meta-key =
     { PLATFORM() ->

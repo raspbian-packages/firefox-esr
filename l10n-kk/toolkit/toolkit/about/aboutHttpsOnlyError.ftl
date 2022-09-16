@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 about-httpsonly-title-alert = Тек-HTTPS режимінің ескертуі
-about-httpsonly-title-connection-not-available = Қауіпсіз байланыс қолжетімсіз
+about-httpsonly-title-site-not-available = Қауіпсіз сайт қолжетімді емес
 
 # Variables:
 #   $websiteUrl (String) - Url of the website that failed to load. Example: www.example.com
@@ -22,3 +22,5 @@ about-httpsonly-link-learn-more = Көбірек білу…
 ##   $websiteUrl (String) - Url of the website that can be securely loded with these alternatives. Example: example.com
 
 about-httpsonly-suggestion-box-header = Мүмкін болатын балама
+about-httpsonly-suggestion-box-www-text = <em>www.{ $websiteUrl }</em> сайтының қауіпсіз нұсқасы бар. Сіз бұл бетті <em>{ $websiteUrl }</em> орнына қолдана аласыз.
+about-httpsonly-suggestion-box-www-button = www.{ $websiteUrl } сайтына өту

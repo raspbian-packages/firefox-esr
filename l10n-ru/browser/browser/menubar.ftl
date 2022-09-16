@@ -38,16 +38,11 @@ menu-quit =
             [windows] х
            *[other] ы
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Завершить { -brand-shorter-name }
-# This menu-quit-button string is only used on Linux.
-menu-quit-button =
-    .label = { menu-quit.label }
-# This menu-quit-button-win string is only used on Windows.
-menu-quit-button-win =
-    .label = { menu-quit.label }
-    .tooltip = Выход из { -brand-shorter-name }
+
 menu-about =
     .label = О { -brand-shorter-name }
     .accesskey = О
@@ -77,9 +72,6 @@ menu-file-open-location =
 menu-file-open-file =
     .label = Открыть файл…
     .accesskey = к
-menu-file-close =
-    .label = Закрыть
-    .accesskey = З
 # Variables:
 #  $tabCount (Number): the number of tabs that are affected by the action.
 menu-file-close-tab =
@@ -106,9 +98,6 @@ menu-file-share-url =
 menu-file-print-setup =
     .label = Параметры страницы…
     .accesskey = м
-menu-file-print-preview =
-    .label = Предварительный просмотр
-    .accesskey = д
 menu-file-print =
     .label = Печать…
     .accesskey = ч
@@ -318,23 +307,23 @@ menu-get-help =
     .accesskey = ч
 menu-help-more-troubleshooting-info =
     .label = Информация для решения проблем
-    .accesskey = а
+    .accesskey = И
 menu-help-report-site-issue =
     .label = Сообщить о проблеме с сайтом…
-menu-help-feedback-page =
-    .label = Отправить отзыв…
-    .accesskey = т
+menu-help-share-ideas =
+    .label = Поделиться идеями или оставить отзыв
+    .accesskey = д
 menu-help-enter-troubleshoot-mode2 =
     .label = Безопасный режим…
-    .accesskey = й
+    .accesskey = Б
 menu-help-exit-troubleshoot-mode =
     .label = Отключить безопасный режим
-    .accesskey = ю
+    .accesskey = Б
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =
     .label = Сообщить о поддельном сайте…
-    .accesskey = б
+    .accesskey = п
 menu-help-not-deceptive =
     .label = Это не поддельный сайт…
-    .accesskey = е
+    .accesskey = п

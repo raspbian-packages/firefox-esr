@@ -36,20 +36,9 @@ menu-quit =
             [windows] x
            *[other] Q
         }
-
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = { -brand-shorter-name } থেকে প্রস্থান
-
-# This menu-quit-button string is only used on Linux.
-menu-quit-button =
-    .label = { menu-quit.label }
-
-# This menu-quit-button-win string is only used on Windows.
-menu-quit-button-win =
-    .label = { menu-quit.label }
-    .tooltip = { -brand-shorter-name } থেকে প্রস্থান
-
 menu-about =
     .label = About { -brand-shorter-name }
     .accesskey = A
@@ -60,7 +49,7 @@ menu-file =
     .label = ফাইল
     .accesskey = F
 menu-file-new-tab =
-    .label = নতুন ট্যাব T
+    .label = নতুন ট্যাব
     .accesskey = T
 menu-file-new-container-tab =
     .label = নতুন কন্টেইনার ট্যাব
@@ -79,9 +68,6 @@ menu-file-open-location =
 menu-file-open-file =
     .label = ফাইল খুলুন…
     .accesskey = O
-menu-file-close =
-    .label = বন্ধ
-    .accesskey = C
 menu-file-close-window =
     .label = উইন্ডো বন্ধ
     .accesskey = d
@@ -94,9 +80,6 @@ menu-file-email-link =
 menu-file-print-setup =
     .label = পাতার বিন্যাস…
     .accesskey = u
-menu-file-print-preview =
-    .label = মুদ্রণের প্রাকদর্শন v
-    .accesskey = v
 menu-file-print =
     .label = মুদ্রণ…
     .accesskey = P
@@ -227,6 +210,9 @@ menu-tools =
 menu-tools-downloads =
     .label = ডাউনলোড
     .accesskey = D
+menu-tools-addons-and-themes =
+    .label = অ্যাড-অন ও থিম
+    .accesskey = A
 menu-tools-sync-now =
     .label = এখন সিঙ্ক
     .accesskey = S
@@ -234,7 +220,7 @@ menu-tools-fxa-re-auth =
     .label = { -brand-product-name } এ পুনরায় সংযুক্ত করুন...
     .accesskey = R
 menu-tools-page-source =
-    .label = পাতার সোর্স
+    .label = পাতার উৎস
     .accesskey = o
 menu-tools-page-info =
     .label = পাতার সংক্রান্ত তথ্য
@@ -256,15 +242,6 @@ menu-window-bring-all-to-front =
 # NOTE: For Engineers, any additions or changes to Help menu strings should
 # also be reflected in the related strings in appmenu.ftl. Those strings, by
 # convention, will have the same ID as these, but prefixed with "app".
-# Example: appmenu-help-product
-#
-# These strings are duplicated to allow for different casing depending on
-# where the strings appear.
-
-
-# NOTE: For Engineers, any additions or changes to Help menu strings should
-# also be reflected in the related strings in appmenu.ftl. Those strings, by
-# convention, will have the same ID as these, but prefixed with "app".
 # Example: appmenu-get-help
 #
 # These strings are duplicated to allow for different casing depending on
@@ -273,10 +250,13 @@ menu-window-bring-all-to-front =
 menu-help =
     .label = সহায়তা
     .accesskey = H
+menu-help-more-troubleshooting-info =
+    .label = সমস্যা সমাধান সংক্রান্ত আরও তথ্য
+    .accesskey = T
 menu-help-report-site-issue =
     .label = সাইটের সমস্যা রিপোর্ট করুন…
-menu-help-feedback-page =
-    .label = মন্তব্য প্রদান…
+menu-help-share-ideas =
+    .label = ধারনা ও প্রতিক্রিয়া শেয়ার করুন…
     .accesskey = S
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.

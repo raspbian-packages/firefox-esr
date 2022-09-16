@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Priporočena možnost
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Zakaj vidim to
+
 cfr-doorhanger-extension-cancel-button = Ne zdaj
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Dodaj zdaj
     .accesskey = D
+
 cfr-doorhanger-extension-manage-settings-button = Upravljaj nastavitve priporočil
     .accesskey = U
+
 cfr-doorhanger-extension-never-show-recommendation = Ne prikazuj tega priporočila
     .accesskey = N
+
 cfr-doorhanger-extension-learn-more-link = Več o tem
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = — { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Priporočilo
 cfr-doorhanger-extension-notification2 = Priporočilo
     .tooltiptext = Priporočilo razširitve
     .a11y-announcement = Na voljo je priporočilo razširitve
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Priporočilo
@@ -81,9 +89,11 @@ cfr-protections-panel-link-text = Več o tem
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Novost:
+
 cfr-whatsnew-button =
     .label = Novosti
     .tooltiptext = Novosti
+
 cfr-whatsnew-release-notes-link-text = Preberite opombe ob izdaji
 
 ## Enhanced Tracking Protection Milestones
@@ -162,3 +172,16 @@ spotlight-total-cookie-protection-body = Popolna zaščita pred piškotki prepre
 spotlight-total-cookie-protection-expanded = { -brand-short-name } ograjuje piškotke znotraj spletnega mesta, na katerem se nahajate, tako da jih sledilci ne morejo uporabiti, da bi vam sledili. Z zgodnjim dostopom boste pomagali izboljšati to zmogljivost, da bomo lahko še naprej gradili boljši splet za vse.
 spotlight-total-cookie-protection-primary-button = Vključi popolno zaščito pred piškotki
 spotlight-total-cookie-protection-secondary-button = Ne zdaj
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Boljši internet se začenja z vami
+spotlight-better-internet-body = Z uporabo { -brand-short-name(sklon: "rodilnik") } daste svoj glas odprtemu in dostopnemu internetu, ki bo boljši za vsakogar.
+spotlight-peace-mind-header = Stojimo vam ob strani
+spotlight-peace-mind-body = { -brand-short-name } vsak mesec v povprečju zavrne več kot 3000 sledilcev na uporabnika. Ker vam nič, še posebej pa ne sledilci in podobne nadloge, ne sme stati na poti do dobrega interneta.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Obdrži v Docku
+       *[other] Pripni v opravilno vrstico
+    }
+spotlight-pin-secondary-button = Ne zdaj

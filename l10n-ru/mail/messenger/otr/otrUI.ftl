@@ -19,6 +19,9 @@ auth-waiting = Ждём контакт, чтобы завершить прове
 finger-verify = Подтвердить
 finger-verify-access-key = е
 
+finger-ignore = Игнорировать
+finger-ignore-access-key = н
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Добавить отпечаток OTR
 
@@ -43,7 +46,6 @@ finger-unseen = Личность { $name } ещё не была подтверж
 finger-seen = { $name } связывается с вами с неизвестного компьютера. Случайное прослушивание невозможно, но с определенными усилиями кто-то может прослушивать ваш разговор. Предотвратите прослушивание, проверив личность этого контакта.
 
 state-not-private = Текущий разговор не является конфиденциальным.
-
 state-generic-not-private = Текущий разговор не является конфиденциальным.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Вы подтвердили личность { $name }.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = Личность { $name } не была подтверждена.
-
-verify-title = Подтвердить личность вашего контакта
-error-title = Ошибка
-success-title = Сквозное шифрование
-success-them-title = Подтвердите личность вашего контакта
-fail-title = Не удалось подтвердить
-waiting-title = Запрос на подтверждение отправлен
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

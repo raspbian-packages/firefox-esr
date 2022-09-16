@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,40 +23,7 @@ return-to-amo-subtitle = Τέλεια, αποκτήσατε το { -brand-short-
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Τώρα, προτείνουμε το <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
 return-to-amo-add-extension-label = Προσθήκη επέκτασης
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Καλώς ορίσατε στο <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = Το γρήγορο, ασφαλές και ιδιωτικό πρόγραμμα περιήγησης, που υποστηρίζεται από έναν μη κερδοσκοπικό οργανισμό.
-onboarding-multistage-welcome-primary-button-label = Έναρξη ρύθμισης
-onboarding-multistage-welcome-secondary-button-label = Σύνδεση
-onboarding-multistage-welcome-secondary-button-text = Έχετε λογαριασμό;
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = Ορίστε το { -brand-short-name } ως <span data-l10n-name="zap">προεπιλογή</span>
-onboarding-multistage-set-default-subtitle = Ταχύτητα, ασφάλεια και απόρρητο κάθε φορά που περιηγείστε.
-onboarding-multistage-set-default-primary-button-label = Ορισμός ως προεπιλογή
-onboarding-multistage-set-default-secondary-button-label = Όχι τώρα
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = Ξεκινήστε κάνοντας το <span data-l10n-name="zap">{ -brand-short-name }</span> προσβάσιμο με ένα κλικ
-onboarding-multistage-pin-default-subtitle = Γρήγορη, ασφαλής και ιδιωτική περιήγηση κάθε φορά που χρησιμοποιείτε το διαδίκτυο.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Επιλέξτε το { -brand-short-name } για "Πρόγραμμα περιήγησης Web" όταν ανοίξουν οι ρυθμίσεις
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = Το { -brand-short-name } θα καρφιτσωθεί στη γραμμή εργασιών και θα ανοίξουν οι ρυθμίσεις
-onboarding-multistage-pin-default-primary-button-label = Ορισμός { -brand-short-name } ως κύριου προγράμματος περιήγησης
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Εισάγετε κωδικούς πρόσβασης, <br/>σελιδοδείκτες και <span data-l10n-name="zap">πολλά άλλα</span>
-onboarding-multistage-import-subtitle = Έρχεστε από άλλο πρόγραμμα περιήγησης; Είναι εύκολο να μεταφέρετε τα πάντα στο { -brand-short-name }.
-onboarding-multistage-import-primary-button-label = Έναρξη εισαγωγής
-onboarding-multistage-import-secondary-button-label = Όχι τώρα
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = Οι παρακάτω σελίδες βρέθηκαν στη συσκευή. Το { -brand-short-name } δεν αποθηκεύει ούτε συγχρονίζει δεδομένα από άλλο πρόγραμμα περιήγησης, εκτός αν επιλέξετε εσείς να γίνει εισαγωγή.
+return-to-amo-add-theme-label = Προσθήκη θέματος
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = Οι παρακάτω σελίδες βρέ
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Έναρξη: οθόνη { $current } από { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Επιλέξτε <span data-l10n-name="zap">εμφάνιση</span>
-onboarding-multistage-theme-subtitle = Εξατομίκευση του { -brand-short-name } με ένα θέμα.
-onboarding-multistage-theme-primary-button-label2 = Τέλος
-onboarding-multistage-theme-secondary-button-label = Όχι τώρα
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Αυτόματο
-onboarding-multistage-theme-label-light = Ανοιχτόχρωμο
-onboarding-multistage-theme-label-dark = Σκουρόχρωμο
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -173,60 +123,12 @@ mr1-onboarding-theme-label-light = Ανοιχτόχρωμο
 mr1-onboarding-theme-label-dark = Σκοτεινό
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Τέλος
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        Αντιγραφή της εμφάνισης του λειτουργικού σας
-        συστήματος για τα κουμπιά, τα μενού και τα παράθυρα.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        Αντιγραφή της εμφάνισης του λειτουργικού σας
-        συστήματος για τα κουμπιά, τα μενού και τα παράθυρα.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        Χρήση ανοιχτόχρωμης εμφάνισης για τα κουμπιά,
-        τα μενού και τα παράθυρα.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        Χρήση ανοιχτόχρωμης εμφάνισης για τα κουμπιά,
-        τα μενού και τα παράθυρα.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        Χρήση σκουρόχρωμης εμφάνισης για τα κουμπιά,
-        τα μενού και τα παράθυρα.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        Χρήση σκουρόχρωμης εμφάνισης για τα κουμπιά,
-        τα μενού και τα παράθυρα.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        Πολύχρωμη εμφάνιση για τα κουμπιά,
-        τα μενού και τα παράθυρα.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        Πολύχρωμη εμφάνιση για τα κουμπιά,
-        τα μενού και τα παράθυρα.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -284,17 +186,54 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = Εξερευνήστε τους χρωματικούς συνδυασμούς «{ $colorwayName }».
+mr2-onboarding-colorway-label = Εξερευνήστε τους χρωματικούς συνδυασμούς «{ $colorwayName }».
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Εξερευνήστε τα προεπιλεγμένα θέματα.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = Εξερευνήστε τα προεπιλεγμένα θέματα.
+mr2-onboarding-default-theme-label = Εξερευνήστε τα προεπιλεγμένα θέματα.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Ευχαριστούμε που μας επιλέξατε
 mr2-onboarding-thank-you-text = Το { -brand-short-name } είναι ένα ανεξάρτητο πρόγραμμα περιήγησης που υποστηρίζεται από έναν μη κερδοσκοπικό οργανισμό. Μαζί, κάνουμε το διαδίκτυο πιο ασφαλές, υγιές και ιδιωτικό.
 mr2-onboarding-start-browsing-button-label = Έναρξη περιήγησης
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Επιλέξτε τη γλώσσα σας
+onboarding-live-language-button-label-downloading = Λήψη πακέτου γλώσσας για τα { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = Λήψη διαθέσιμων γλωσσών…
+onboarding-live-language-installing = Εγκατάσταση πακέτου γλώσσας για τα { $negotiatedLanguage }…
+onboarding-live-language-secondary-cancel-download = Ακύρωση
+onboarding-live-language-skip-button-label = Παράλειψη
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    <span data-l10n-name="zap">Ευχαριστώ</span>
+fx100-thank-you-subtitle = Είναι η 100η μας έκδοση! Σας ευχαριστούμε για τη βοήθειά σας για ένα καλύτερο, υγιέστερο διαδίκτυο.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] Καρφίτσωμα { -brand-short-name } στο Dock
+       *[other] Καρφίτσωμα { -brand-short-name } στη γραμμή εργασιών
+    }
+fx100-upgrade-thanks-header = 100 Ευχαριστώ
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = Είναι η 100η μας έκδοση του { -brand-short-name }. <em>Σας</em> ευχαριστούμε για τη βοήθειά σας για ένα καλύτερο, υγιέστερο διαδίκτυο.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = Είναι η 100η μας έκδοση! Σας ευχαριστούμε που είστε μέλος της κοινότητάς μας. Κρατήστε το { -brand-short-name } ένα κλικ μακριά για τις επόμενες 100.

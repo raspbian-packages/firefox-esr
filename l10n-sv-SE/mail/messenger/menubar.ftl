@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Menyrad
+    .accesskey = M
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Inställningar
-    .accesskey = n
 menu-tools-settings =
     .label = Inställningar
     .accesskey = n
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Textstorlek
+    .accesskey = e
+menuitem-font-size-enlarge =
+    .label = Öka textstorlek
+    .accesskey = k
+menuitem-font-size-reduce =
+    .label = Minska textstorlek
+    .accesskey = M
+menuitem-font-size-reset =
+    .label = Återställ textstorlek
+    .accesskey = t
 mail-uidensity-label =
     .label = Täthet
     .accesskey = T
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Touch
     .accesskey = T
+menu-spaces-toolbar-button =
+    .label = Flikmeny
+    .accesskey = F
 
 ## File
 

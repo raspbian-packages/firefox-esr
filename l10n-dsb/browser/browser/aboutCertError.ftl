@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Websedła swóju identitu pśez certi
 
 cert-error-symantec-distrust-admin = Snaź cośo administratora websedła wó toś tom problemje informěrowaś.
 
+cert-error-old-tls-version = Toś to websedło snaź protokolTLS 1.2 njepódpěra, kótaryž jo minimalna wersija, kótaruž { -brand-short-name } pódpěra.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Njewótčakane wótegrono ze serwera
 nssFailure2-title = Wěsty zwisk njejo móžny
 csp-xfo-error-title = { -brand-short-name } njamóžo toś ten bok wócyniś
 corruptedContentError-title = Zmólka - wobškóźone wopśimjeśe
-remoteXUL-title = Daloki XUL
 sslv3Used-title = Wěsty zwisk njejo móžny
 inadequateSecurityError-title = Waš zwisk njejo wěsty
 blockedByPolicy-title = Zablokěrowany bok

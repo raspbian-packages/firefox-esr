@@ -15,3 +15,4 @@ third-party-unsigned-icon =
 third-party-status-loaded = لوڈ کر دیا گیا
 third-party-status-blocked = بلاک شدہ
 
+third-party-button-copy-to-clipboard = تختہ تراشہ پر خام کوائف نقل کریں

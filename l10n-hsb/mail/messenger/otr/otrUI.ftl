@@ -19,6 +19,9 @@ auth-waiting = Čaka so, doniž kontakt přepruwowanje njedokónča…
 finger-verify = Přepruwować
 finger-verify-access-key = u
 
+finger-ignore = Ignorować
+finger-ignore-access-key = I
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Porstowy wotćišć OTR přidać
 
@@ -43,7 +46,6 @@ finger-unseen = Identita kontakta { $name } hišće njeje so přepruwowała. Př
 finger-seen = { $name } was wot njespóznateho ličaka kontaktuje. Připadne wotposkowanje móžne njeje, ale z trochu prócu móhł něchtó sobu słuchać. Přeprujće identitu kontakta, zo byšće dohladowanju zadźěwał.
 
 state-not-private = Aktualna konwersacija priwatna njeje.
-
 state-generic-not-private = Aktualna konwersacija priwatna njeje.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Sće identitu { $name } přepruwował.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = Identita { $name } njeje so přepruwowała.
-
-verify-title = Identitu wašeho kontakta přepruwować
-error-title = Zmylk
-success-title = Zaklučowanje wot kónca do kónca
-success-them-title = Identitu wašeho kontakta přepruwować
-fail-title = Přepruwowanje móžne njeje
-waiting-title = Wokrućenske naprašowanje je so pósłało
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

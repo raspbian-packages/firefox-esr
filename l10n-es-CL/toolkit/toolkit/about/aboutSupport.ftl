@@ -76,6 +76,14 @@ app-basics-location-service-key-google = Clave del servicio de localización de 
 app-basics-safebrowsing-key-google = Clave del servicio de navegación segura de Google
 app-basics-key-mozilla = Clave del servicio de localización de Mozilla
 app-basics-safe-mode = Modo seguro
+app-basics-memory-size = Tamaño de memoria (RAM)
+app-basics-disk-available = Espacio disponible en disco
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Mostrar en Finder
@@ -313,7 +321,7 @@ has-privileged-user-namespaces = Espacios de nombre de usuario para procesos pri
 can-sandbox-content = Aislamiento de procesos de contenido
 can-sandbox-media = Aislamiento de complementos de medios
 content-sandbox-level = Nivel de aislamiento de procesos de contenido
-effective-content-sandbox-level = Nivel efectivo del contenedor de proceso de contenido
+effective-content-sandbox-level = Nivel efectivo de aislamiento de procesos de contenidodo
 content-win32k-lockdown-state = Estado de bloqueo de Win32k para el proceso de contenido
 sandbox-proc-type-content = contenido
 sandbox-proc-type-file = contenido del archivo
@@ -343,6 +351,7 @@ fission-status-experiment-control = Desactivado por el experimento
 fission-status-experiment-treatment = Activado por el experimento
 fission-status-disabled-by-e10s-env = Desactivado por el entorno
 fission-status-enabled-by-env = Activado por el entorno
+fission-status-disabled-by-env = Desactivado por el entorno
 fission-status-disabled-by-safe-mode = Desactivado por el modo seguro
 fission-status-enabled-by-default = Activado por defecto
 fission-status-disabled-by-default = Desactivado por defecto

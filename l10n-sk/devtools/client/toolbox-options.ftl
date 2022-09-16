@@ -41,6 +41,11 @@ options-collapse-attrs-label = Skrátené DOM atribúty
 options-collapse-attrs-tooltip =
     .title = Skrátené dlhé atribúty v prieskumníkovi
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Kliknutím a potiahnutím upravíte hodnoty veľkosti
+options-inspector-draggable-properties-tooltip =
+    .title = Kliknutím a potiahnutím upravíte hodnoty veľkosti v zobrazení pravidiel inšpektora.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Predvolená jednotka farieb
@@ -48,6 +53,7 @@ options-default-color-unit-authored = Podľa autora
 options-default-color-unit-hex = Hex
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Názov farby
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Povoliť vzdialené ladenie
 options-enable-remote-tooltip2 =
     .title = Zapnutím tejto možnosti umožníte ladenie tejto inštancie prehliadača na diaľku
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Povoliť vlastné formátovače
+options-enable-custom-formatters-tooltip =
+    .title = Zapnutie tejto možnosti umožní webovým stránkam definovať vlastné formátovače pre objekty DOM
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Povoliť skripty typu worker cez HTTP (ak je súprava nástrojov otvorená)

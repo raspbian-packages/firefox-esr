@@ -9,6 +9,8 @@ autodetect-online-label =
     .label = Fylgja sjálfvirkt eftir netstöðu
     .accesskey = ð
 
+offline-preference-startup-label = Handvirkt ástand við ræsingu:
+
 status-radio-remember =
     .label = Muna síðustu nettengistöðu
     .accesskey = M
@@ -22,8 +24,8 @@ status-radio-always-online =
     .accesskey = N
 
 status-radio-always-offline =
-    .label = Ónettengdur
-    .accesskey = n
+    .label = Ónettengt
+    .accesskey = g
 
 going-online-label = Senda ósendan póst þegar verið er að tengjast?
 

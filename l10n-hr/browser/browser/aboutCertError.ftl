@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Web stranice dokazuju svoj identitet 
 
 cert-error-symantec-distrust-admin = O ovom problemu možeš obavijestiti administratora web stranice.
 
+cert-error-old-tls-version = Ova web stranica možda ne podržava protokol TLS 1.2, što je minimalna verzija koju podržava { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -89,7 +91,7 @@ csp-xfo-blocked-long-desc = Iz sigurnosnih razloga, { $hostname } ne dopušta da
 ## Messages used for certificate error titles
 
 connectionFailure-title = Povezivanje nije moguće
-deniedPortAccess-title = Port je ograničen radi sigurnosnih razloga
+deniedPortAccess-title = Pristup adresi je ograničen
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Ne možemo pronaći tu stranicu.
@@ -115,7 +117,6 @@ unknownSocketType-title = Neočekivani odgovor od poslužitelja
 nssFailure2-title = Sigurna veza nije uspostavljena
 csp-xfo-error-title = { -brand-short-name } ne može otvoriti ovu stranicu
 corruptedContentError-title = Greška oštećenog sadržaja
-remoteXUL-title = Udaljeni XUL
 sslv3Used-title = Uspostava sigurne veze nije uspjela
 inadequateSecurityError-title = Tvoja veza nije sigurna
 blockedByPolicy-title = Blokirana stranica

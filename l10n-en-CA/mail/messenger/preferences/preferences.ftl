@@ -5,7 +5,7 @@
 close-button =
     .aria-label = Close
 
-preferences-doc-title = Preferences
+preferences-doc-title2 = Settings
 
 category-list =
     .aria-label = Categories
@@ -165,12 +165,18 @@ restore-default-label =
     .accesskey = R
 
 default-search-engine = Default Search Engine
-add-search-engine =
-    .label = Add from file
+add-web-search-engine =
+    .label = Add…
     .accesskey = A
 remove-search-engine =
     .label = Remove
     .accesskey = v
+
+add-opensearch-provider-title = Add OpenSearch Provider
+add-opensearch-provider-text = Enter the URL of the OpenSearch provider to add. Either use the direct URL of the OpenSearch Description file, or a URL where it can be auto-discovered.
+
+adding-opensearch-provider-failed-title = Adding OpenSearch Provider Failed
+adding-opensearch-provider-failed-text = Could not add OpenSearch Provider for { $url }.
 
 minimize-to-tray-label =
     .label = When { -brand-short-name } is minimized, move it to the tray
@@ -197,7 +203,7 @@ app-icon-options =
     .label = App Icon Options…
     .accesskey = n
 
-notification-settings = Alerts and the default sound can be disabled on the Notification pane of System Preferences.
+notification-settings2 = Alerts and the default sound can be disabled on the Notification pane of System Settings.
 
 animated-alert-label =
     .label = Show an alert
@@ -252,6 +258,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Use smooth scrolling
     .accesskey = m
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Always show scrollbars
+    .accesskey = c
 
 system-integration-legend = System Integration
 always-check-default =
@@ -411,13 +420,9 @@ quoted-text-color =
 search-handler-table =
     .placeholder = Filter content types and actions
 
-type-column-label =
-    .label = Content Type
-    .accesskey = T
+type-column-header = Content Type
 
-action-column-label =
-    .label = Action
-    .accesskey = A
+action-column-header = Action
 
 save-to-label =
     .label = Save files to
@@ -571,12 +576,6 @@ restore-html-label =
 default-format-label =
     .label = Use Paragraph format instead of Body Text by default
     .accesskey = P
-
-format-description = Configure text format behaviour
-
-send-options-label =
-    .label = Send Options…
-    .accesskey = S
 
 autocomplete-description = When addressing messages, look for matching entries in:
 
@@ -858,8 +857,6 @@ theme-label =
     .value = Theme:
     .accesskey = T
 
-style-thunderbird =
-    .label = Thunderbird
 style-bubbles =
     .label = Bubbles
 style-dark =
@@ -877,6 +874,8 @@ chat-variant-label =
     .value = Variant:
     .accesskey = V
 
+## Preferences UI Search Results
+
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -885,19 +884,19 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
+search-preferences-input2 =
     .style = width: 15.4em
-    .placeholder = Find in Preferences
+    .placeholder = Find in Settings
 
-## Preferences UI Search Results
+## Settings UI Search Results
 
 search-results-header = Search Results
 
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
+search-results-empty-message2 =
     { PLATFORM() ->
         [windows] Sorry! There are no results in Options for “<span data-l10n-name="query"></span>”.
-       *[other] Sorry! There are no results in Preferences for “<span data-l10n-name="query"></span>”.
+       *[other] Sorry! There are no results in Settings for “<span data-l10n-name="query"></span>”.
     }
 
 search-results-help-link = Need help? Visit <a data-l10n-name="url">{ -brand-short-name } Support</a>

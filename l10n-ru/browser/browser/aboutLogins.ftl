@@ -5,8 +5,6 @@
 
 about-logins-page-title = Логины и пароли
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Поиск логинов
 
@@ -62,7 +60,6 @@ about-logins-list-item-breach-icon =
     .title = Атакованный сайт
 about-logins-list-item-vulnerable-password-icon =
     .title = Уязвимый пароль
-
 about-logins-list-section-breach = Атакованные сайты
 about-logins-list-section-vulnerable = Уязвимые пароли
 about-logins-list-section-nothing = Нет предупреждения
@@ -77,8 +74,8 @@ about-logins-login-intro-heading-logged-in = Синхронизированны�
 login-intro-description = Если вы сохранили ваши логины в { -brand-product-name } на другом устройстве, то вот как получить к ним доступ здесь:
 login-intro-instructions-fxa = Создайте или войдите в ваш { -fxaccount-brand-name } на устройстве, где сохранены ваши логины
 login-intro-instructions-fxa-settings = Выберите «Настройки» > «Синхронизация» > «Включить синхронизацию…». Установите флажок «Логины и пароли».
-login-intro-instructions-fxa-help = Посетите <a data-l10n-name="help-link">Поддержку { -lockwise-brand-short-name }</a> для получения помощи.
-about-logins-intro-import = Если ваши логины сохранены в другом браузере, вы можете <a data-l10n-name="import-link">импортировать их в { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Посетите <a data-l10n-name="passwords-help-link">раздел поддержки по паролям</a>, чтобы узнать больше.
+about-logins-intro-browser-only-import = Если ваши логины сохранены в другом браузере, вы можете <a data-l10n-name="import-link">импортировать их в { -brand-product-name }</a>
 about-logins-intro-import2 = Если ваши логины сохранены не в { -brand-product-name }, вы можете <a data-l10n-name="import-browser-link">импортировать их из другого браузера</a> или <a data-l10n-name="import-file-link">из файла</a>
 
 ## Login
@@ -133,8 +130,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Чтобы скопир�
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = скопировать сохранённый пароль
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Чтобы экспортировать свои логины, введите ваши учётные данные для входа в Windows. Это поможет защитить безопасность ваших аккаунтов.
 # This message can be seen when attempting to export a password in about:logins
@@ -147,8 +142,6 @@ about-logins-primary-password-notification-message = Введите ваш ма�
 master-password-reload-button =
     .label = Войти
     .accesskey = В
-
-## Password Sync notification
 
 ## Dialogs
 

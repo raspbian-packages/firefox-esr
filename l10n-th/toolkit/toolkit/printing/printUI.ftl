@@ -14,6 +14,8 @@ printui-sheets-count =
     }
 
 printui-page-range-all = ทั้งหมด
+printui-page-range-odd = คี่
+printui-page-range-even = คู่
 printui-page-range-custom = กำหนดเอง
 printui-page-range-label = หน้า
 printui-page-range-picker =

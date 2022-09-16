@@ -46,7 +46,7 @@ newsgroups-label = Grupy dyskusyjne
 newsgroups-description = { -brand-short-name } umożliwia połączenie się ze wszystkimi grupami dyskusyjnymi.
 
 import-title = Import z innego programu
-import-paragraph = { -brand-short-name } umożliwia zaimportowanie wiadomości, wpisów książki adresowej, subskrypcji aktualności, preferencji i filtrów z innych programów pocztowych i popularnych formatów książek adresowych.
+import-paragraph2 = { -brand-short-name } umożliwia zaimportowanie wiadomości, wpisów książki adresowej, subskrypcji aktualności, ustawień i filtrów z innych programów pocztowych i popularnych formatów książek adresowych.
 
 import-label = Importuj
     .aria-label = Importuj dane z innych programów

@@ -38,14 +38,13 @@
 <!ENTITY images.label "圖片">
 <!ENTITY popups.label "彈出型視窗 (Popup)">
 <!ENTITY passwords.label "密碼">
-<!ENTITY masterpass.label "主控密碼">
 <!ENTITY ssltls.label "SSL/TLS">
 <!ENTITY certs.label "憑證">
 
 <!ENTITY sync.label "同步">
 
 <!ENTITY advance.label "進階">
-<!ENTITY scriptsAndWindows.label "指令碼與外掛程式">
+<!ENTITY scriptsAndWindows2.label "指令碼">
 <!ENTITY keynav.label "鍵盤瀏覽">
 <!ENTITY findAsYouType.label "隨打即找">
 <!ENTITY cache.label "快取">
@@ -54,7 +53,6 @@
 <!ENTITY httpnetworking.label "HTTP 網路">
 <!ENTITY smart.label "軟體安裝">
 <!ENTITY mousewheel.label "滾輪滑鼠">
-
 <!ENTITY debugging.label "除錯">
 
 <!ENTITY focusSearch.key "f">

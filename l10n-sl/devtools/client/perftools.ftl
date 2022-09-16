@@ -30,16 +30,15 @@ perftools-range-interval-milliseconds = { NUMBER($interval, maxFractionalUnits: 
 
 # The size of the memory buffer used to store things in the profiler.
 perftools-range-entries-label = Velikost medpomnilnika:
+
 perftools-custom-threads-label = Dodaj niti po meri po imenu:
+
 perftools-devtools-interval-label = Interval:
 perftools-devtools-threads-label = Niti:
 perftools-devtools-settings-label = Nastavitve
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Profiler je onemogočen, kadar je vključeno zasebno brskanje.
-    Za omogočenje profilerja zaprite vsa zasebna okna
 perftools-status-recording-stopped-by-another-tool = Drugo orodje je ustavilo spremljanje.
 perftools-status-restart-required = Za vključitev te možnosti se mora brskalnik ponovno zagnati.
 
@@ -59,6 +58,8 @@ perftools-button-edit-settings = Uredi nastavitve …
 
 ## These messages are descriptions of the threads that can be enabled for the profiler.
 
+perftools-thread-render-backend =
+    .title = Nit WebRender RenderBackend
 perftools-thread-img-decoder =
     .title = Niti za dekodiranje slik
 perftools-thread-dns-resolver =
@@ -71,7 +72,11 @@ perftools-thread-dns-resolver =
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
 
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
+
 perftools-onboarding-message = <b>Novo</b>: { -profiler-brand-name } je sedaj vključen med razvojna orodja. <a>Preberite več</a> o tem zmogljivem novem orodju.
+
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
 perftools-onboarding-reenable-old-panel = (Za omejen čas je dosedanja plošča Učinkovitost še dostopna v <a>{ options-context-advanced-settings }</a>)
 
@@ -84,18 +89,19 @@ perftools-onboarding-reenable-old-panel = (Za omejen čas je dosedanja plošča 
 
 perftools-presets-web-developer-label = Spletni razvoj
 perftools-presets-web-developer-description = Priporočena prednastavitev za razhroščevanje večine spletnih aplikacij, z nizko porabo sredstev.
-perftools-presets-firefox-platform-label = Firefox: platforma
-perftools-presets-firefox-platform-description = Priporočena prednastavitev za razhroščevanje platforme Firefox.
-perftools-presets-firefox-front-end-label = Firefox: čelni del
-perftools-presets-firefox-front-end-description = Priporočena prednastavitev za razhroščevanje čelnega dela Firefoxa.
-perftools-presets-firefox-graphics-label = Firefox: grafika
-perftools-presets-firefox-graphics-description = Priporočena prednastavitev za raziskovanje učinkovitosti grafike Firefoxa.
+
 perftools-presets-firefox-label = { -brand-shorter-name }
+perftools-presets-firefox-description = Priporočena prednastavitev za spremljanje zmogljivosti { -brand-shorter-name(sklon: "rodilnik") }.
+
 perftools-presets-graphics-label = Grafika
 perftools-presets-graphics-description = Prednastavitev za preiskovanje napak grafike v { -brand-shorter-name(sklon: "mestnik") }
+
 perftools-presets-media-label = Predstavnost
-perftools-presets-media-description = Priporočena prednastavitev za prepoznavanje težav z zvokom in videom.
 perftools-presets-media-description2 = Prednastavitev za preiskovanje napak zvoka in videa v { -brand-shorter-name(sklon: "mestnik") }.
+
+perftools-presets-networking-label = Omrežje
+perftools-presets-networking-description = Prednastavitev za preiskovanje napak v delovanju omrežja v { -brand-shorter-name(sklon: "mestnik") }
+
 perftools-presets-custom-label = Po meri
 
 ##

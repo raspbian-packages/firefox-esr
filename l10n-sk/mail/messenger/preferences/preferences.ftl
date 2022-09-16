@@ -4,7 +4,6 @@
 
 close-button =
     .aria-label = Zavrieť
-preferences-doc-title = Nastavenia
 preferences-doc-title2 = Nastavenia
 category-list =
     .aria-label = Kategórie
@@ -116,9 +115,6 @@ restore-default-label =
     .label = Obnoviť predvolenú
     .accesskey = d
 default-search-engine = Predvolený vyhľadávací modul
-add-search-engine =
-    .label = Pridať zo súboru
-    .accesskey = r
 add-web-search-engine =
     .label = Pridať…
     .accesskey = P
@@ -132,7 +128,7 @@ adding-opensearch-provider-failed-text = Nepodarilo sa pridať poskytovateľa Op
 minimize-to-tray-label =
     .label = Ak je { -brand-short-name } minimalizovaný, presunúť ho oblasti oznámení
     .accesskey = m
-new-message-arrival = Pri prijatí novej správy
+new-message-arrival = Pri prijatí novej správy:
 mail-play-sound-label =
     .label =
         { PLATFORM() ->
@@ -141,7 +137,7 @@ mail-play-sound-label =
         }
     .accesskey =
         { PLATFORM() ->
-            [macos] z
+            [macos] h
            *[other] h
         }
 mail-play-button =
@@ -151,7 +147,6 @@ change-dock-icon = Zmena nastavení ikony aplikácie
 app-icon-options =
     .label = Nastavenia ikony aplikácie…
     .accesskey = e
-notification-settings = Upozornenia a predvolené zvuky môžete zakázať v nastaveniach systému na paneli Notifikácie.
 notification-settings2 = Upozornenia a predvolené zvuky môžete zakázať v nastaveniach systému na paneli Notifikácie.
 animated-alert-label =
     .label = Zobraziť upozornenie
@@ -196,6 +191,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Použiť plynulý posun
     .accesskey = n
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Vždy zobrazovať posuvníky
+    .accesskey = V
 system-integration-legend = Integrácia so systémom
 always-check-default =
     .label = Pri štarte kontrolovať, či je { -brand-short-name } predvoleným poštovým klientom
@@ -236,7 +234,7 @@ update-history-button =
     .label = Zobraziť históriu aktualizácií
     .accesskey = Z
 use-service =
-    .label = Na inštaláciu aktualizácií použiť službu na pozadí
+    .label = Na inštaláciu aktualizácií používať službu na pozadí
     .accesskey = k
 cross-user-udpate-warning = Toto nastavenie sa vzťahuje na všetky účty v systéme Windows a profily aplikácie { -brand-short-name } používajúce túto inštaláciu aplikácie { -brand-short-name }.
 networking-legend = Pripojenie
@@ -320,12 +318,6 @@ quoted-text-color =
     .accesskey = a
 search-handler-table =
     .placeholder = Filtrovať typy obsahu a akcie
-type-column-label =
-    .label = Typ obsahu
-    .accesskey = T
-action-column-label =
-    .label = Akcia
-    .accesskey = A
 type-column-header = Typ obsahu
 action-column-header = Akcia
 save-to-label =
@@ -418,6 +410,9 @@ auto-save-end = minút
 warn-on-send-accel-key =
     .label = Žiadať potvrdenie pri odosielaní správy pomocou klávesovej skratky
     .accesskey = v
+add-link-previews =
+    .label = Pri vkladaní adries URL pridávať ukážky odkazov
+    .accesskey = L
 spellcheck-label =
     .label = Kontrolovať pravopis pred odoslaním
     .accesskey = K
@@ -449,10 +444,19 @@ restore-html-label =
 default-format-label =
     .label = V predvolenom nastavení používať formát odstavca namiesto základného textu
     .accesskey = r
-format-description = Konfigurácia správania formátovania textov
-send-options-label =
-    .label = Nastavenie odosielania…
-    .accesskey = N
+compose-send-format-title = Formát odosielaných správ
+compose-send-automatic-option =
+    .label = Automaticky
+compose-send-automatic-description = Ak v správe nie je použitý žiadny štýl, odošlite ju ako obyčajný text. V opačnom prípade ju odošlite ako HTML a zálohou vo formáte obyčajného textu.
+compose-send-both-option =
+    .label = HTML aj obyčajný text
+compose-send-both-description = E-mailová aplikácia príjemcu určí, ktorá verzia sa má zobraziť.
+compose-send-html-option =
+    .label = Iba HTML
+compose-send-html-description = Niektorí príjemcovia nemusia byť schopní prečítať správu bez zálohy vo formáte obyčajného textu.
+compose-send-plain-option =
+    .label = Iba obyčajný text
+compose-send-plain-description = Niektoré štýly sa skonvertujú na jednoduchú alternatívu, zatiaľ čo ostatné funkcie budú vypnuté.
 autocomplete-description = Pri určovaní adries správ hľadať zodpovedajúce položky v:
 ab-label =
     .label = Lokálne adresáre
@@ -469,7 +473,7 @@ email-picker-label =
     .label = Adresy odosielaných e-mailov automaticky pridať do:
     .accesskey = o
 default-directory-label =
-    .value = Predvolený spúšťací priečinok v okne adresára:
+    .value = Predvolený priečinok pri spustení v okne adresára:
     .accesskey = r
 default-last-label =
     .none = Naposledy použitý priečinok
@@ -592,7 +596,7 @@ ocsp-label =
     .label = Aktuálnu platnosť certifikátov overovať na serveroch OCSP
     .accesskey = A
 certificate-button =
-    .label = Správa certifikátov…
+    .label = Spravovať certifikáty…
     .accesskey = S
 security-devices-button =
     .label = Bezpečnostné zariadenia…
@@ -666,8 +670,8 @@ chat-browse-sound-button =
 theme-label =
     .value = Téma vzhľadu:
     .accesskey = v
-style-thunderbird =
-    .label = Thunderbird
+style-mail =
+    .label = { -brand-short-name }
 style-bubbles =
     .label = Bubliny
 style-dark =
@@ -690,20 +694,6 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
-    .style = width: 15.4em
-    .placeholder = Hľadať v nastaveniach
-
-## Preferences UI Search Results
-
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Please keep the placeholder string short to avoid truncation.
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
 search-preferences-input2 =
     .style = width: 15.4em
     .placeholder = Hľadať v nastaveniach
@@ -711,12 +701,6 @@ search-preferences-input2 =
 ## Settings UI Search Results
 
 search-results-header = Výsledky vyhľadávania
-# `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
-    { PLATFORM() ->
-        [windows] Mrzí nás to, no pre hľadaný výraz “<span data-l10n-name="query"></span>” sme v možnostiach nič nenašli.
-       *[other] Mrzí nás to, no pre hľadaný výraz “<span data-l10n-name="query"></span>” sme v možnostiach nič nenašli.
-    }
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
 search-results-empty-message2 =
     { PLATFORM() ->

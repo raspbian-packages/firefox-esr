@@ -10,6 +10,7 @@
 abuse-report-dialog-title = Meldung über { $addon-name }
 
 abuse-report-title-extension = Erweiterung melden an { -vendor-short-name }
+abuse-report-title-sitepermission = Add-on für Website-Berechtigungen melden an { -vendor-short-name }
 abuse-report-title-theme = Theme melden an { -vendor-short-name }
 abuse-report-subtitle = Was ist das Problem?
 
@@ -36,12 +37,6 @@ abuse-report-goback-button = Zurück
 abuse-report-submit-button = Absenden
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -51,6 +46,7 @@ abuse-report-messagebar-submitting = Meldung für <span data-l10n-name="addon-na
 abuse-report-messagebar-submitted = Vielen Dank für das Senden der Meldung. Soll <span data-l10n-name="addon-name">{ $addon-name }</span> entfernt werden?
 abuse-report-messagebar-submitted-noremove = Vielen Dank für das Senden der Meldung.
 abuse-report-messagebar-removed-extension = Vielen Dank für das Senden der Meldung. Sie haben die Erweiterung <span data-l10n-name="addon-name">{ $addon-name }</span> entfernt.
+abuse-report-messagebar-removed-sitepermission = Vielen Dank für das Senden der Meldung. Sie haben das Add-on für Website-Berechtigungen <span data-l10n-name="addon-name">{ $addon-name }</span> entfernt.
 abuse-report-messagebar-removed-theme = Vielen Dank für das Senden der Meldung. Sie haben das Theme <span data-l10n-name="addon-name">{ $addon-name }</span> entfernt.
 abuse-report-messagebar-error = Beim Senden der Meldung über <span data-l10n-name="addon-name">{ $addon-name }</span> trat ein Fehler auf.
 abuse-report-messagebar-error-recent-submit = Die Meldung für <span data-l10n-name="addon-name">{ $addon-name }</span> wurde nicht gesendet, da kürzlich eine andere Meldung dafür übermittelt wurde.
@@ -59,6 +55,8 @@ abuse-report-messagebar-error-recent-submit = Die Meldung für <span data-l10n-n
 
 abuse-report-messagebar-action-remove-extension = Ja, entfernen
 abuse-report-messagebar-action-keep-extension = Nein, behalten
+abuse-report-messagebar-action-remove-sitepermission = Ja, entfernen
+abuse-report-messagebar-action-keep-sitepermission = Nein, behalten
 abuse-report-messagebar-action-remove-theme = Ja, entfernen
 abuse-report-messagebar-action-keep-theme = Nein, behalten
 abuse-report-messagebar-action-retry = Erneut versuchen
@@ -81,11 +79,15 @@ abuse-report-deceptive-reason-v2 = Es täuscht vor, etwas zu sein, das es nicht 
 abuse-report-deceptive-example = Beispiel: Irreführende Beschreibung oder Bilder
 
 abuse-report-broken-reason-extension-v2 = Es funktioniert nicht, verursacht Probleme mit Websites oder verlangsamt { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Es funktioniert nicht, verursacht Probleme mit Websites oder verlangsamt { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Es funktioniert nicht oder verursacht Probleme mit der Browser-Darstellung
 abuse-report-broken-example = Beispiel: Das Programm reagiert langsam auf Befehle und ist schwierig zu verwenden oder funktioniert nicht; Teile von Webseiten laden nicht oder sehen nicht wie erwartet aus
 abuse-report-broken-suggestions-extension =
     Vermutlich haben Sie ein Problem mit der Erweiterung erkannt. Damit es behoben wird, sollten Sie zusätzlich zum Senden der Meldung hier die Entwickler der Erweiterung kontaktieren.
     Besuchen Sie die <a data-l10n-name="support-link">Homepage der Erweiterung</a>, um Informationen dafür zu erhalten.
+abuse-report-broken-suggestions-sitepermission =
+    Vermutlich haben Sie ein Problem erkannt. Damit es behoben wird, sollten Sie zusätzlich zum Senden der Meldung hier die Entwickler der Website kontaktieren.
+    Besuchen Sie die <a data-l10n-name="support-link">Website</a>, um Informationen dafür zu erhalten.
 abuse-report-broken-suggestions-theme =
     Vermutlich haben Sie ein Problem mit dem Theme erkannt. Damit es behoben wird, sollten Sie zusätzlich zum Senden der Meldung hier die Entwickler des Themes kontaktieren.
     Besuchen Sie die <a data-l10n-name="support-link">Homepage des Themes</a>, um Informationen dafür zu erhalten.
@@ -99,4 +101,3 @@ abuse-report-unwanted-reason-v2 = Ich wollte es nie und weiß nicht, wie ich es 
 abuse-report-unwanted-example = Beispiel: Eine Anwendung hat die Erweiterung ohne meine Erlaubnis installiert.
 
 abuse-report-other-reason = Etwas anderes
-

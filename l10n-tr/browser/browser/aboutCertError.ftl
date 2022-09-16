@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Web siteleri, kimliklerini kanıtlama
 
 cert-error-symantec-distrust-admin = Web sitesinin sahibine bu sorunla ilgili bilgi vermeyi deneyebilirsiniz.
 
+cert-error-old-tls-version = Bu web sitesi TLS 1.2 protokolünü desteklemiyor olabilir. { -brand-short-name } tarafından desteklenen en düşük sürüm TLS 1.2'dir.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Sunucudan beklenmeyen yanıt
 nssFailure2-title = Güvenli bağlantı kurulamadı
 csp-xfo-error-title = { -brand-short-name } bu sayfayı açamıyor
 corruptedContentError-title = Hasarlı içerik hatası
-remoteXUL-title = Uzak XUL
 sslv3Used-title = Güvenli bağlantı kurulamadı
 inadequateSecurityError-title = Bağlantınız güvenli değil
 blockedByPolicy-title = Engellenmiş sayfa

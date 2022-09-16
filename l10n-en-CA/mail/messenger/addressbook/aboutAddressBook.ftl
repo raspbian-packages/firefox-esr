@@ -69,6 +69,10 @@ about-addressbook-sort-email-ascending =
     .label = Sort by e-mail address (A > Z)
 about-addressbook-sort-email-descending =
     .label = Sort by e-mail address (Z > A)
+
+## Card column headers
+## Each string is listed here twice, and the values should match.
+
 about-addressbook-cards-context-write =
     .label = Write
 about-addressbook-confirm-delete-mixed-title = Delete Contacts and Lists
@@ -131,6 +135,29 @@ about-addressbook-details-email-addresses-header = Email Addresses
 about-addressbook-details-phone-numbers-header = Phone Numbers
 about-addressbook-details-home-address-header = Home Address
 about-addressbook-details-work-address-header = Work Address
+about-addressbook-details-notes-header = Notes
 about-addressbook-details-other-info-header = Other Information
-about-addressbook-prompt-to-save-title = Save Changes?
-about-addressbook-prompt-to-save = Do you want to save your changes?
+about-addressbook-entry-type-work = Work
+about-addressbook-entry-type-home = Home
+about-addressbook-entry-type-fax = Fax
+about-addressbook-entry-type-cell = Cell
+about-addressbook-entry-type-pager = Pager
+about-addressbook-entry-name-birthday = Birthday
+about-addressbook-entry-name-anniversary = Anniversary
+about-addressbook-entry-name-title = Title
+about-addressbook-entry-name-department = Department
+about-addressbook-entry-name-organization = Organization
+about-addressbook-entry-name-website = Website
+about-addressbook-entry-name-time-zone = Time Zone
+about-addressbook-unsaved-changes-prompt-title = Unsaved Changes
+about-addressbook-unsaved-changes-prompt = Do you want to save your changes before leaving the edit view?
+
+# Photo dialog
+
+about-addressbook-photo-drop-target = Drop or paste a photo here, or click to select a file.
+about-addressbook-photo-drop-loading = Loading photo…
+about-addressbook-photo-drop-error = Failed to load photo.
+about-addressbook-photo-filepicker-title = Select an image file
+about-addressbook-photo-discard = Discard existing photo
+about-addressbook-photo-cancel = Cancel
+about-addressbook-photo-save = Save

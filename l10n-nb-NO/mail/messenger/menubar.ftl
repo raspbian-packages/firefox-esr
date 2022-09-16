@@ -3,9 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-## View Menu
-
 ## Tools Menu
+
+menu-addons-and-themes =
+    .label = Tillegg og temaer
+    .accesskey = T
 
 ## Help Menu
 
@@ -38,7 +40,9 @@ toolbar-undelete-button =
 
 ## View
 
+
 ## View / Layout
+
 
 ## File
 

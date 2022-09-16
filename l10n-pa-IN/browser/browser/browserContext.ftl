@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = ਲਿੰਕ ਨੂੰ { -pocket-brand-name } ਵਿੱਚ ਸੰਭਾਲੋ
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = ਈਮੇਲ ਐਡਰੈੱਸ ਨੂੰ ਕਾਪੀ ਕਰੋ
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = ਫ਼ੋਨ ਨੰਬਰ ਕਾਪੀ ਕਰੋ
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = ਲਿੰਕ ਕਾਪੀ ਕਰੋ
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = ਲਿੰਕ ਨਵੀੰ { $containerName } ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = ਪਾਸਵਰਡ ਦਿਖਾਓ
+    .accesskey = v

@@ -42,7 +42,7 @@ newsgroups-label = Igrawen n yisallen
 newsgroups-description = { -brand-short-name } ad k-yeǧǧ ad teqqneḍ ɣer yigrawen n yisallen akk i tebɣiḍ.
 
 import-title = Kter seg wahil-nniḍen
-import-paragraph = { -brand-short-name } ad k-yeǧǧ ad tketreḍ iznan n tirawt, inekcam n yimedlis n tensiwin, ajerred n usuddem, ismenyafen, akked/neɣ imsizdigen seg wahilen-nniḍen n tirawt d yimawalen yettwassnen n yimedlis n tensiwin.
+import-paragraph2 = { -brand-short-name } ad k-yeǧǧ ad tketreḍ iznan n tirawt, inekcam n yimedlis n tensiwin, ajerred n usuddem, iɣewwaren, akked/neɣ imsizdigen seg wahilen-nniḍen n tirawt d yimawalen yettwassnen n yimedlis n tensiwin.
 
 import-label = Kter
     .aria-label = Kter isefka seg wahilen-nniḍen

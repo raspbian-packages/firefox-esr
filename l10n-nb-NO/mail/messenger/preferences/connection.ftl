@@ -26,6 +26,15 @@ connection-dialog-window =
            *[other] width: 49em !important
         }
 
+disable-extension-button = Slå av utvidelse
+
+# Variables:
+#   $name (String) - The extension that is controlling the proxy settings.
+#
+# The extension-icon is the extension's icon, or a fallback image. It should be
+# purely decoration for the actual extension name, with alt="".
+proxy-settings-controlled-by-extension = En utvidelse, <img data-l10n-name="extension-icon" alt="" /> { $name }, styrer hvordan { -brand-short-name } kobler seg til internett.
+
 connection-proxy-legend = Konfigurer proxy for tilgang til Internett
 
 proxy-type-no =
@@ -93,6 +102,9 @@ no-proxy-label =
     .accesskey = n
 
 no-proxy-example = Eksempel: .mozilla.org, .net.nz, 192.168.1.0/24
+
+# Do not translate "localhost", "127.0.0.1/8" and "::1". (You can translate "and".)
+connection-proxy-noproxy-localhost-desc-2 = Tilkoblinger til localhost, 127.0.0.1/8, og ::1 er aldri koblet til via proxy.
 
 proxy-password-prompt =
     .label = Ikke be om autentisering hvis passordet er lagret

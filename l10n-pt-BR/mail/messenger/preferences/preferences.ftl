@@ -4,7 +4,6 @@
 
 close-button =
     .aria-label = Fechar
-preferences-doc-title = Preferências
 preferences-doc-title2 = Configurações
 category-list =
     .aria-label = Categorias
@@ -84,7 +83,7 @@ update-in-progress-ok-button = &Descartar
 # Continue is the cancel button so pressing escape or using a platform standard
 # method of closing the UI will not discard the update.
 update-in-progress-cancel-button = &Continuar
-account-button = Configurações da conta
+account-button = Configurações de contas
 open-addons-sidebar-button = Extensões e temas
 
 ## OS Authentication dialog
@@ -116,9 +115,6 @@ restore-default-label =
     .label = Restaurar padrão
     .accesskey = R
 default-search-engine = Mecanismo de pesquisa padrão
-add-search-engine =
-    .label = Adicionar a partir de arquivo
-    .accesskey = A
 add-web-search-engine =
     .label = Adicionar…
     .accesskey = A
@@ -151,7 +147,6 @@ change-dock-icon = Mudar preferências do ícone
 app-icon-options =
     .label = Opções do ícone…
     .accesskey = n
-notification-settings = Alertas e o som padrão podem ser desativados no painel de notificações das preferências do sistema.
 notification-settings2 = Alertas e o som padrão podem ser desativados no painel de notificações das configurações do sistema.
 animated-alert-label =
     .label = Mostrar um alerta
@@ -196,6 +191,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Rolagem suave
     .accesskey = R
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Sempre mostrar barras de rolagem
+    .accesskey = S
 system-integration-legend = Integração com o sistema
 always-check-default =
     .label = Sempre verificar se o { -brand-short-name } é o aplicativo padrão de email ao iniciar
@@ -320,8 +318,6 @@ quoted-text-color =
     .accesskey = o
 search-handler-table =
     .placeholder = Filtrar tipos de conteúdo e ações
-type-column-label = Tipo de conteúdo
-action-column-label = Ação
 type-column-header = Tipo de conteúdo
 action-column-header = Ação
 save-to-label =
@@ -414,6 +410,9 @@ auto-save-end = minutos
 warn-on-send-accel-key =
     .label = Confirmar ao usar um atalho do teclado para enviar mensagens
     .accesskey = o
+add-link-previews =
+    .label = Adicionar visualização de links ao colar URLs
+    .accesskey = i
 spellcheck-label =
     .label = Verificar ortografia antes de enviar
     .accesskey = e
@@ -445,10 +444,19 @@ restore-html-label =
 default-format-label =
     .label = Usar formato de parágrafo em vez do corpo do texto por padrão
     .accesskey = P
-format-description = Configurar comportamento de formatação de texto
-send-options-label =
-    .label = Opções de envio…
-    .accesskey = m
+compose-send-format-title = Formato de envio
+compose-send-automatic-option =
+    .label = Automático
+compose-send-automatic-description = Se nenhuma formatação for usada na mensagem, enviar texto simples. Caso contrário, enviar em duas versões: HTML e texto simples.
+compose-send-both-option =
+    .label = Tanto HTML quanto texto simples
+compose-send-both-description = O aplicativo de email do destinatário determinará qual versão mostrar.
+compose-send-html-option =
+    .label = Apenas HTML
+compose-send-html-description = Alguns destinatários podem não conseguir ler a mensagem sem uma versão em texto simples.
+compose-send-plain-option =
+    .label = Apenas texto simples
+compose-send-plain-description = Alguma formatação é convertida em uma alternativa em texto simples, enquanto outros recursos de redação são desativados.
 autocomplete-description = Ao endereçar mensagens, procurar por contatos em:
 ab-label =
     .label = Catálogos de endereços locais
@@ -492,7 +500,7 @@ cloud-account-description = Adicionar um serviço de armazenamento de anexos onl
 
 ## Privacy Tab
 
-mail-content = Conteúdo do email
+mail-content = Conteúdo de email
 remote-content-label =
     .label = Permitir conteúdo remoto nas mensagens
     .accesskey = m
@@ -538,7 +546,7 @@ passwords-description = O { -brand-short-name } pode memorizar nomes de usuário
 passwords-button =
     .label = Senhas memorizadas…
     .accesskey = S
-primary-password-description = Uma senha principal protege todas as suas senhas, mas você deve digitá-la uma vez por sessão.
+primary-password-description = Uma senha principal protege todas as suas senhas, mas você deve digitar uma vez por sessão.
 primary-password-label =
     .label = Usar uma senha principal
     .accesskey = U
@@ -555,7 +563,7 @@ junk-move-label =
     .label = Movê-las para a pasta “Spam” da conta
     .accesskey = o
 junk-delete-label =
-    .label = Excluí-las
+    .label = Excluir
     .accesskey = x
 junk-read-label =
     .label = Marcar como lidas as mensagens definidas como spam
@@ -582,8 +590,8 @@ certificate-auto =
     .label = Selecionar um automaticamente
     .accesskey = S
 certificate-ask =
-    .label = Perguntar quando necessário
-    .accesskey = A
+    .label = Perguntar todas as vezes
+    .accesskey = P
 ocsp-label =
     .label = Consultar servidores OCSP para confirmar a validade atual dos certificados
     .accesskey = C
@@ -662,8 +670,8 @@ chat-browse-sound-button =
 theme-label =
     .value = Tema:
     .accesskey = T
-style-thunderbird =
-    .label = Thunderbird
+style-mail =
+    .label = { -brand-short-name }
 style-bubbles =
     .label = Bolhas
 style-dark =
@@ -686,20 +694,6 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
-    .style = width: 16.4em
-    .placeholder = Procurar em preferências
-
-## Preferences UI Search Results
-
-# This is used to determine the width of the search field in about:preferences,
-# in order to make the entire placeholder string visible
-#
-# Please keep the placeholder string short to avoid truncation.
-#
-# Notice: The value of the `.style` attribute is a CSS string, and the `width`
-# is the name of the CSS property. It is intended only to adjust the element's width.
-# Do not translate.
 search-preferences-input2 =
     .style = width: 15.4em
     .placeholder = Procurar nas configurações
@@ -707,12 +701,6 @@ search-preferences-input2 =
 ## Settings UI Search Results
 
 search-results-header = Resultados da pesquisa
-# `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
-    { PLATFORM() ->
-        [windows] Desculpe, “<span data-l10n-name="query"></span>” não foi encontrado nas opções.
-       *[other] Desculpe, “<span data-l10n-name="query"></span>” não foi encontrado nas preferências.
-    }
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
 search-results-empty-message2 =
     { PLATFORM() ->

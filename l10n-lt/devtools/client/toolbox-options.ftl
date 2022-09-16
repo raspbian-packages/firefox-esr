@@ -48,6 +48,7 @@ options-default-color-unit-authored = kaip nurodyta
 options-default-color-unit-hex = Šešioliktainiai kodai
 options-default-color-unit-hsl = AGŠ(A) (HSL(A))
 options-default-color-unit-rgb = RŽM(A) (RGB(A))
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Spalvų vardai
 
 ## Style Editor section

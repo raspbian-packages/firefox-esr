@@ -5,8 +5,6 @@
 
 about-logins-page-title = Credenciais e palavras-passe
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Pesquisar credenciais
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = Site invadido
 about-logins-list-item-vulnerable-password-icon =
     .title = Palavra-passe vulnerável
-
 about-logins-list-section-breach = Sites invadidos
 about-logins-list-section-vulnerable = Palavras-passe vulneráveis
 about-logins-list-section-nothing = Sem alertas
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = Não foram encontradas credenciais 
 login-intro-description = Se guardou as suas credenciais para o { -brand-product-name } num dispositivo diferente, eis como as obter aqui:
 login-intro-instructions-fxa = Crie ou inicie a sessão na sua { -fxaccount-brand-name } no dispositivo onde as suas credenciais estão guardadas
 login-intro-instructions-fxa-settings = Aceda a Definições > Sincronizar > Ativar sincronização... Marque a caixa de seleção Credenciais e palavras-passe.
-login-intro-instructions-fxa-help = Visite o <a data-l10n-name="help-link">Apoio do { -lockwise-brand-short-name }</a> para mais ajuda.
-about-logins-intro-import = Se as suas credenciais estão guardadas noutro navegador, pode <a data-l10n-name="import-link">importar as mesmas para o { -lockwise-brand-short-name }</a>
+login-intro-instructions-fxa-passwords-help = Visite <a data-l10n-name="passwords-help-link">apoio para as palavras-passe</a> para mais ajuda.
+about-logins-intro-browser-only-import = Se as suas credenciais estão guardadas noutro navegador, pode <a data-l10n-name="import-link">importar as mesmas para o { -brand-product-name }</a>
 about-logins-intro-import2 = Se as suas credenciais são guardadas fora do { -brand-product-name }, poderá <a data-l10n-name="import-browser-link">importar as mesmas de outro navegador</a> ou <a data-l10n-name="import-file-link">de um ficheiro</a>
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Para copiar a sua palavr
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = copiar a palavra-passe guardada
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Para exportas as suas credenciais, introduza as suas credenciais de autenticação do Windows. Isto ajuda a proteger a segurança das suas contas.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = Por favor introduza a sua p
 master-password-reload-button =
     .label = Iniciar sessão
     .accesskey = I
-
-## Password Sync notification
 
 ## Dialogs
 

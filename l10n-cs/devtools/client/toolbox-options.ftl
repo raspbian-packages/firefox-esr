@@ -48,6 +48,7 @@ options-default-color-unit-authored = Jak je napsáno
 options-default-color-unit-hex = Hex
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Názvy barev
 
 ## Style Editor section
@@ -64,6 +65,11 @@ options-stylesheet-autocompletion-tooltip =
 
 # The heading
 options-screenshot-label = Chování snímku obrazovky
+
+# Label for the checkbox that toggles screenshot to clipboard feature
+options-screenshot-clipboard-only-label = Snímek obrazovky pouze do schránky
+options-screenshot-clipboard-tooltip2 =
+    .title = Uloží snímek obrazovky rovnou do schránky
 
 # Label for the checkbox that toggles the camera shutter audio for screenshot tool
 options-screenshot-audio-label = Přehrát zvuk spouště fotoaparátu

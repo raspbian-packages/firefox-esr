@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -11,6 +10,7 @@
 abuse-report-dialog-title = Raporto por { $addon-name }
 
 abuse-report-title-extension = Denunci tiun ĉi etendaĵon al { -vendor-short-name }
+abuse-report-title-sitepermission = Denunci al { -vendor-short-name }  tiun ĉi aldonaĵon de retejaj permesoj
 abuse-report-title-theme = Denunci tiun ĉi etoson al { -vendor-short-name }
 abuse-report-subtitle = Kiu estas la problemo?
 
@@ -33,12 +33,6 @@ abuse-report-goback-button = Malantaŭen
 abuse-report-submit-button = Sendi
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -48,6 +42,7 @@ abuse-report-messagebar-submitting = Sendo de denunco por <span data-l10n-name="
 abuse-report-messagebar-submitted = Dankon pro via denunco. Ĉu vi volas forigi <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = Dankon pro via denunco.
 abuse-report-messagebar-removed-extension = Dankon pro via denunco. Vi forigis la etendaĵon <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = Dankon pro via denunco. Vi forigis la aldonaĵon de retejaj permesoj <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = Dankon pro via denunco. Vi forigis la etoson <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = Okazis eraro dum la sendo de la denunco por <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = La denunco por <span data-l10n-name="addon-name">{ $addon-name }</span> ne estis sendita ĉar alia denunco estis ĵuse sendita.
@@ -56,6 +51,8 @@ abuse-report-messagebar-error-recent-submit = La denunco por <span data-l10n-nam
 
 abuse-report-messagebar-action-remove-extension = Jes, forigi ĝin
 abuse-report-messagebar-action-keep-extension = Ne, mi ĝin gardos
+abuse-report-messagebar-action-remove-sitepermission = Jes, forigi ĝin
+abuse-report-messagebar-action-keep-sitepermission = Ne, mi ĝin gardos
 abuse-report-messagebar-action-remove-theme = Jes, forigi ĝin
 abuse-report-messagebar-action-keep-theme = Ne, mi ĝin gardos
 abuse-report-messagebar-action-retry = Klopodi denove
@@ -78,9 +75,11 @@ abuse-report-deceptive-reason-v2 = Ĝi pretendas esti io alia
 abuse-report-deceptive-example = Ekzemplo: priskribo aŭ bildoj trompaj
 
 abuse-report-broken-reason-extension-v2 = Ĝi ne funkcias, misfunkciigas retejojn aŭ malrapidigas { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = Ĝi ne funkcias, misfunkciigas retejojn aŭ malrapidigas { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = Ĝi ne funkcias kaj misfunkciigas la montradon de paĝoj
 abuse-report-broken-example = Ekzemplo: trajtoj estas malrapidaj, malfacile uzeblaj aŭ ne funkcias; partoj de la retejoj ne ŝargiĝos aŭ aspektos strange
 abuse-report-broken-suggestions-extension = Ŝajne vi ĵus trovis eraron. Krom tiu ĉi denunco, la plej bona maniero solvi problemon estas kontakti la programiston. <a data-l10n-name="support-link">Vizitu la retejon de la etendaĵo</a> por havi informon pri la programisto.
+abuse-report-broken-suggestions-sitepermission = Ŝajne vi ĵus trovis eraron. Krom tiu ĉi denunco, la plej bona maniero solvi problemon estas kontakti la programiston de la retejo. <a data-l10n-name="support-link">Vizitu la retejon</a> por havi informon pri la programisto.
 abuse-report-broken-suggestions-theme = Ŝajne vi ĵus trovis eraron. Krom tiu ĉi denunco, la plej bona maniero solvi problemon estas kontakti la programiston. <a data-l10n-name="support-link">Vizitu la retejon de la etoso</a> por havi informon pri la programisto.
 
 abuse-report-policy-reason-v2 = Ĝi enhavas abomenan, perfortan aŭ kontraŭleĝan enhavon
@@ -90,4 +89,3 @@ abuse-report-unwanted-reason-v2 = Mi neniam volis ĝin kaj mi ne scias kiel fori
 abuse-report-unwanted-example = Ekzemplo: programo instalis ĝin sen mia permeso
 
 abuse-report-other-reason = Io alia
-

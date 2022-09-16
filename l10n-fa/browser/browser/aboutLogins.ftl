@@ -5,8 +5,6 @@
 
 about-logins-page-title = ورودها و گذرواژه‌ها
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = جست‌وجو در اطلاعات ورودها
 
@@ -61,7 +59,6 @@ about-logins-list-item-breach-icon =
     .title = وب‌سایت هک شده
 about-logins-list-item-vulnerable-password-icon =
     .title = رمز عبور آسیب پذیر
-
 about-logins-list-section-breach = وب‌سایت‌های هک شده
 about-logins-list-section-vulnerable = گذرواژه‌های ناامن
 about-logins-list-section-nothing = هیچ هشداری وجود ندارد
@@ -76,8 +73,8 @@ about-logins-login-intro-heading-logged-in = هیچ ورود همگام شده�
 login-intro-description = اگر شما ورودتون به{ -brand-product-name } را بر روی دستگاه دیگری ذخیره کرده‌اید،‌ به این شکل بدستشون بیارید:
 login-intro-instructions-fxa = { -fxaccount-brand-name } خود را در دستگاهی که ورودهای شما در آن ذخیره شده‌اند ایجاد یا در آن وارد شوید.
 login-intro-instructions-fxa-settings = به تنظیمات> همگام‌سازی> روشن کردن همگام‌سازی… بروید و گزینهٔ ورودها و گذرواژها را انتخاب کنید.
-login-intro-instructions-fxa-help = برای راهنمایی بیشتر به <a data-l10n-name="help-link">{ -lockwise-brand-short-name }پشتیبانی</a> مراجعه کنید.
-about-logins-intro-import = اگر اطلاعات ورود شما، در مرورگر دیگری ثبت شده است، می‌توانید از طریق <a data-l10n-name="import-link"> آن‌ها را به { -lockwise-brand-short-name }</a> منتقل کنید.
+login-intro-instructions-fxa-passwords-help = برای راهنمایی بیشتر به <a data-l10n-name="passwords-help-link">پشتیبانی مربوط به گذرواژه</a> مراجعه کنید.
+about-logins-intro-browser-only-import = اگر اطلاعات ورود شما در یک مرورگر دیگر ذخیره شده است، شما می‌توانید <a data-l10n-name="import-link">آن‌ها را به { -brand-product-name } منتقل کنید</a>
 about-logins-intro-import2 = اگر ورودهای شما خارج از { -brand-product-name } ذخیره شده‌اند، می‌توانید <a data-l10n-name="import-browser-link">آنها را از مرورگری دیگر</a> یا <a data-l10n-name="import-file-link">از طریق یک پرونده</a> وارد کنید
 
 ## Login
@@ -132,8 +129,6 @@ about-logins-copy-password-os-auth-dialog-message-win = برای رونوشت ا
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = کپی رمز عبور ذخیره شده
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = برای برون‌ریزی گذرواژه‌های خود، گذواژهٔ ویندوز خود را وارد کنید. این به امنیت حساب شما کمک می‌کند.
 # This message can be seen when attempting to export a password in about:logins
@@ -146,8 +141,6 @@ about-logins-primary-password-notification-message = برای دیدن ورود�
 master-password-reload-button =
     .label = ورود
     .accesskey = و
-
-## Password Sync notification
 
 ## Dialogs
 

@@ -6,6 +6,9 @@ screenshot-toolbarbutton =
     .label = Tangkapan Layar
     .tooltiptext = Ambil Tangkapan Layar
 
+screenshot-shortcut =
+    .key = S
+
 screenshots-instructions = Seret atau klik pada laman untuk memilih area. Tekan ESC untuk membatalkan.
 screenshots-cancel-button = Batal
 screenshots-save-visible-button = Simpan yang terlihat
@@ -14,6 +17,14 @@ screenshots-download-button = Unduh
 screenshots-download-button-tooltip = Unduh tangkapan layar
 screenshots-copy-button = Salin
 screenshots-copy-button-tooltip = Salin tangkapan layar ke papan klip
+screenshots-download-button-title =
+    .title = Unduh tangkapan layar
+screenshots-copy-button-title =
+    .title = Salin tangkapan layar ke papan klip
+screenshots-cancel-button-title =
+    .title = Batalkan
+screenshots-retry-button-title =
+    .title = Coba tangkap layar lagi
 
 screenshots-meta-key =
     { PLATFORM() ->

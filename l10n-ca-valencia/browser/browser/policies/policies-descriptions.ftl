@@ -12,11 +12,15 @@
 
 policy-3rdparty = Defineix les polítiques a les quals WebExtensions pot accedir mitjançant chrome.storage.managed.
 
+policy-AllowedDomainsForApps = Defineix els dominis autoritzats a accedir a Google Workspace.
+
 policy-AppAutoUpdate = Activa o desactiva les actualitzacions automàtiques de l'aplicació.
 
 policy-AppUpdateURL = Defineix un URL personalitzat d'actualització de l'aplicació.
 
 policy-Authentication = Configura l'autenticació integrada per a les pàgines web que l'admeten.
+
+policy-BackgroundAppUpdate2 = Activa o desactiva l'actualitzador en segon pla.
 
 policy-BlockAboutAddons = Bloca l'accés al gestor de complements (about:addons).
 
@@ -137,6 +141,8 @@ policy-ManualAppUpdateOnly = Permet només les actualitzacions manuals i sense n
 
 policy-PrimaryPassword = Requerir o impedir l'ús d'una contrasenya principal.
 
+policy-NetworkPrediction = Activa o desactiva la predicció de xarxa (obtenció prèvia de DNS).
+
 policy-NewTabPage = Activa o desactiva la pàgina de pestanya nova.
 
 policy-PasswordManagerEnabled = Permet guardar les contrasenyes en el gestor de contrasenyes.
@@ -162,6 +168,8 @@ policy-SearchSuggestEnabled = Activa o desactiva els suggeriments de cerca.
 
 # For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
 policy-SecurityDevices = Instal·la mòduls PKCS #11.
+
+policy-ShowHomeButton = Mostra el botó d'inici a la barra d'eines.
 
 policy-SSLVersionMax = Defineix la versió màxima de SSL.
 

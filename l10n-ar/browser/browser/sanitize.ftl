@@ -78,9 +78,9 @@ item-form-search-history =
 
 data-section-label = البيانات
 
-item-site-preferences =
-    .label = تفضيلات الموقع
-    .accesskey = ض
+item-site-settings =
+    .label = إعدادات الموقع
+    .accesskey = ع
 
 item-offline-apps =
     .label = بيانات المواقع للعمل دون اتصال

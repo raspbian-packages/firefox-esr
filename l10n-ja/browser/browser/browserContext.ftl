@@ -157,6 +157,11 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = メールアドレスをコピー
     .accesskey = l
+
+main-context-menu-copy-phone =
+    .label = 電話番号をコピー
+    .accesskey = o
+
 main-context-menu-copy-link-simple =
     .label = リンクをコピー
     .accesskey = L
@@ -396,3 +401,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = リンクを新しい { $containerName } タブで開く
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = パスワードを開示
+    .accesskey = v

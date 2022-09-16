@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Вэб-сайты пацвярджа�
 
 cert-error-symantec-distrust-admin = Вы можаце паведаміць адміністратару вэб-сайта аб гэтай праблеме.
 
+cert-error-old-tls-version = Гэты вэб-сайт можа не падтрымліваць пратакол TLS 1.2 — мінімальную версію, якую падтрымлівае { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = Фарсіраванае абароненае злучэнне HTTP: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Нечаканы адказ сервера
 nssFailure2-title = Няўдача бяспечнага злучэння
 csp-xfo-error-title = { -brand-short-name } не можа адкрыць гэту старонку
 corruptedContentError-title = Памылка пашкоджанага змесціва
-remoteXUL-title = Аддалены XUL
 sslv3Used-title = Немагчыма злучыцца бяспечна
 inadequateSecurityError-title = Ваша злучэнне не бяспечнае
 blockedByPolicy-title = Заблакаваная старонка

@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
-carddav-window =
-    .title = Нова адресна книга CardDAV
+carddav-window-title = Нова адресна книга CardDAV
 
 carddav-dialog =
     .buttonlabelaccept = Продовжити
@@ -12,7 +11,6 @@ carddav-dialog =
 carddav-username-label =
     .value = Ім’я користувача:
     .accesskey = І
-
 carddav-location-label =
     .value = Розташування:
     .accesskey = Р

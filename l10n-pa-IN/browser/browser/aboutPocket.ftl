@@ -17,9 +17,12 @@ pocket-panel-saved-error-tag-length = ਟੈਗ 25 ਅੱਖਰਾਂ ਤੱਕ 
 pocket-panel-saved-error-only-links = ਕੇਵਲ ਲਿੰਕਾਂ ਨੂੰ ਹੀ ਸੰਭਾਲਿਆ ਜਾ ਸਕਦਾ ਹੈ
 pocket-panel-saved-error-not-saved = ਸਫ਼ੇ ਨੂੰ ਨਹੀਂ ਸੰਭਾਲਿਆ ਗਿਆ
 pocket-panel-saved-error-no-internet = { -pocket-brand-name } ਵਿੱਚ ਸੰਭਾਲਣ ਲਈ ਤੁਹਾਨੂੰ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ। ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋ ਕੇ ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।
+pocket-panel-saved-error-remove = ਇਸ ਸਫ਼ੇ ਨੂੰ ਹਟਾਉਣ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ।
 pocket-panel-saved-page-removed = ਸਫ਼ੇ ਨੂੰ ਹਟਾਇਆ ਗਿਆ
 pocket-panel-saved-page-saved = { -pocket-brand-name } ਵਿੱਚ ਸੰਭਾਲਿਆ
+pocket-panel-saved-page-saved-b = { -pocket-brand-name } ਵਿੱਚ ਸੰਭਾਲਿਆ!
 pocket-panel-saved-processing-remove = …ਸਫ਼ੇ ਨੂੰ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ
+pocket-panel-saved-removed = ਸਫ਼ੇ ਨੂੰ ਮੇਰੀ ਸੂਚੀ ਵਿੱਚੋਂ ਹਟਾਇਆ ਗਿਆ
 pocket-panel-saved-processing-tags = …ਟੈਗ ਨੂੰ ਜੋੜਿਆ ਜਾ ਰਿਹਾ ਹੈ
 pocket-panel-saved-remove-page = ਸਫ਼ੇ ਨੂੰ ਹਟਾਓ
 pocket-panel-saved-save-tags = ਸੰਭਾਲੋ
@@ -27,6 +30,9 @@ pocket-panel-saved-saving-tags = …ਸੰਭਾਲਿਆ ਜਾ ਰਿਹਾ �
 pocket-panel-saved-suggested-tags = ਸੁਝਾਏ ਗਏ ਟੈਗ
 pocket-panel-saved-tags-saved = ਟੈਗ ਨੂੰ ਜੋੜਿਆ
 pocket-panel-signup-view-list = ਸੂਚੀ ਨੂੰ ਵੇਖੋ
+
+# This is displayed above a field where the user can add tags
+pocket-panel-signup-add-tags = ਟੈਗ ਜੋੜੋ:
 
 ## about:pocket-signup panel
 
@@ -40,6 +46,11 @@ pocket-panel-signup-tagline = { -brand-product-name } ਤੋਂ ਲੇਖਾਂ 
 pocket-panel-signup-tagline-story-one = ਕਿਸੇ ਵੀ ਲੇਖ, ਵੀਡੀਓ ਜਾਂ ਸਫ਼ੇ ਨੂੰ { -brand-product-name } ਤੋਂ ਸੰਭਾਲਣ ਲਈ { -pocket-brand-name }ਬਟਨ ਉੱਤੇ ਕਲਿੱਕ ਕਰੋ।
 pocket-panel-signup-tagline-story-two = ਕਿਸੇ ਵੀ ਡਿਵਾਈਸ, ਕਿਸੇ ਵੀ ਸਮੇਂ { -pocket-brand-name } ਵਿੱਚ ਦੇਖੋ।
 
+pocket-panel-signup-cta-a-fix = ਇੰਟਰਨੈੱਟ ਲਈ ਤੁਹਾਡਾ ਸੰਭਾਲੋ ਬਟਨ
+pocket-panel-signup-cta-b = ਲੇਖ, ਵੀਡੀਓ ਅਤੇ ਲਿੰਕਾਂ ਨੂੰ ਸੰਭਾਲਣ ਲਈ { -pocket-brand-name } ਬਟਨ ਨੂੰ ਕਲਿੱਕ ਕਰੋ। ਕਿਸੇ ਵੀ ਡਿਵਾਈਸ ਉੱਤੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਆਪਣੀ ਸੂਚੀ ਵੇਖੋ।
+pocket-panel-signup-cta-b-short = ਲੇਖ, ਵੀਡੀਓ ਤੇ ਲਿੰਕ ਸੰਭਾਲਣ ਲਈ { -pocket-brand-name } ਬਟਨ ਨੂੰ ਕਲਿੱਕ ਕਰੋ।
+pocket-panel-signup-cta-c = ਕਿਸੇ ਵੀ ਡਿਵਾਈਸ ਉੱਤੇ ਕਿਸੇ ਵੀ ਵੇਲੇ ਆਪਣੀ ਸੂਚੀ ਵੇਖੋ।
+
 ## about:pocket-home panel
 
 pocket-panel-home-my-list = ਮੇਰੀ ਸੂਚੀ
@@ -48,3 +59,19 @@ pocket-panel-home-paragraph = ਤੁਸੀਂ { -pocket-brand-name } ਨੂੰ �
 pocket-panel-home-explore-popular-topics = ਹਰਮਨਪਿਆਰੇ ਵਿਸ਼ਿਆਂ ਦੀ ਪੜਚੋਲ ਕਰੋ
 pocket-panel-home-discover-more = ਹੋਰ ਲੱਭੋ
 pocket-panel-home-explore-more = ਪੜਚੋਲ
+
+pocket-panel-home-most-recent-saves = ਤੁਹਾਡੇ ਵਲੋਂ ਹਾਲ ਵਿੱਚ ਸੰਭਾਲੇ ਇੱਥੇ ਹਨ:
+pocket-panel-home-most-recent-saves-loading = …ਸੱਜਰੇ ਸੰਭਾਲੇ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ
+pocket-panel-home-new-user-cta = ਲੇਖ, ਵੀਡੀਓ ਅਤੇ ਲਿੰਕ ਸੰਭਾਲਣ ਲਈ { -pocket-brand-name } ਬਟਨ ਨੂੰ ਕਲਿੱਕ ਕਰੋ।
+pocket-panel-home-new-user-message = ਤੁਹਾਡੇ ਵਲੋਂ ਹਾਲ ਵਿੱਚ ਸੰਭਾਲੇ ਇੱਥੇ ਵੇਖੋ।
+
+## Pocket panel header component
+
+pocket-panel-header-my-list = ਮੇਰੀ ਸੂਚੀ ਵੇਖੋ
+pocket-panel-header-sign-in = ਸਾਇਨ ਇਨ
+
+## Pocket panel buttons
+
+pocket-panel-button-show-all = ਸਭ ਵੇਖੋ
+pocket-panel-button-activate = { -brand-product-name } ਵਿੱਚ { -pocket-brand-name } ਸਰਗਰਮ ਕਰੋ
+pocket-panel-button-remove = ਹਟਾਓ

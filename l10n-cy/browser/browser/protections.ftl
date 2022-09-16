@@ -73,22 +73,20 @@ cryptominer-tab-content = Mae cryptogloddwyr yn defnyddio pŵer cyfrifiadurol ei
 protections-close-button2 =
     .aria-label = Cau
     .title = Cau
-  
+
 mobile-app-title = Rhwystrwch dracwyr hysbysebion ar draws rhagor o ddyfeisiau
 mobile-app-card-content = Defnyddiwch y porwr symudol gydag diogelwch mewnol rhag tracio gan hysbysebion.
 mobile-app-links = Porwr { -brand-product-name } ar gyfer <a data-l10n-name="android-mobile-inline-link">Android</a> a <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 
 lockwise-title = Peidiwch byth ag anghofio cyfrinair eto
-lockwise-title-logged-in2 = Rheoli Cyfrineiriau
-lockwise-header-content = Mae { -lockwise-brand-name } yn cadw'ch cyfrineiriau yn ddiogel yn eich porwr.
+passwords-title-logged-in = Rheoli'ch cyfrineiriau
+passwords-header-content = Mae { -brand-product-name } yn cadw'ch cyfrineiriau yn ddiogel yn eich porwr.
 lockwise-header-content-logged-in = Cadwch a chydweddwch eich cyfrineiriau'n ddiogel i'ch holl ddyfeisiau.
-protection-report-save-passwords-button = Cadw Cyfrineiriau
-    .title = Cadw Cyfrineiriau ar { -lockwise-brand-short-name }
-protection-report-manage-passwords-button = Rheoli Cyfrineiriau
-    .title = Rheoli Cyfrineiriau ar { -lockwise-brand-short-name }
-lockwise-mobile-app-title = Ewch â'ch cyfrineiriau i bob man
-lockwise-no-logins-card-content = Defnyddiwch gyfrineiriau wedi'u cadw yn { -brand-short-name } ar unrhyw ddyfais.
-lockwise-app-links = { -lockwise-brand-name } ar gyfer <a data-l10n-name="lockwise-android-inline-link">Android</a> a <a data-l10n-name = "lockwise-ios-inline-link" >iOS</a>
+protection-report-passwords-save-passwords-button = Cadw Cyfrineiriau
+    .title = Cadw Cyfrineiriau
+protection-report-passwords-manage-passwords-button = Rheoli Cyfrineiriau
+    .title = Rheoli Cyfrineiriau
+
 
 # Variables:
 # $count (Number) - Number of passwords exposed in data breaches.

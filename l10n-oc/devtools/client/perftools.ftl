@@ -22,6 +22,7 @@ perftools-heading-features-default = Foncionalitats (recomandadas per defaut)
 perftools-heading-features-disabled = Foncionalitats desactivadas
 perftools-heading-features-experimental = Experimentalas
 perftools-heading-threads = Fils d’execucion
+perftools-heading-threads-jvm = Fils JVM
 perftools-heading-local-build = « Build » local
 
 ##
@@ -48,9 +49,6 @@ perftools-devtools-settings-label = Paramètres
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Lo perfilador es desactivat quand la navegacion privada es activa.
-    Tampatz totas las fenèstras privadas per tornar activar lo perfilador
 perftools-status-recording-stopped-by-another-tool = Una autra aisina a arrestat l’enregistrament.
 perftools-status-restart-required = Aquesta foncionalitat requerís la reaviada del navegador.
 
@@ -96,6 +94,18 @@ perftools-thread-dns-resolver =
     .title = La resolucion DNS se passa sus aqueste fial
 perftools-thread-task-controller =
     .title = Fil d’execucion del grop de fils d’execucion de TaskController
+perftools-thread-jvm-gecko =
+    .title = Fil d’execucion principal de Gecko JVM
+perftools-thread-jvm-nimbus =
+    .title = Fils d’execucion principals del SDK d’experimentacion de Nimbus
+perftools-thread-jvm-default-dispatcher =
+    .title = Lo repartidor per defaut de la bibliotèca de corotinas Kotlin
+perftools-thread-jvm-glean =
+    .title = Fils d’execucion principals del SDK de telemetria Glean
+perftools-thread-jvm-arch-disk-io =
+    .title = Lo repartidor E/S per la bibliotèca de corotinas Kotlin
+perftools-thread-jvm-pool =
+    .title = Fils d’execucion creats al grop de fils sens nom
 
 ##
 
@@ -106,6 +116,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Novetat</b> { -profiler-brand-name } es ara integ{ -profiler-brand-name }rat a las aisinas de desvolopaire. <a>Ne saber mai</a> a prepaus d’aquesta aisina novèla.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -122,15 +136,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Desvolopaire web
 perftools-presets-web-developer-description = Reglatge recomandat pel desbugatge de la màger part de las aplicacions amb pauca subrecarga.
-perftools-presets-firefox-platform-label = Platafòrma Firefox
-perftools-presets-firefox-platform-description = Reglatge recomandat pel desbugatge intèrne de la platafòrma Firefox.
-perftools-presets-firefox-front-end-label = Interfàcia Firefox
-perftools-presets-firefox-front-end-description = Reglatge recomandat pel desbugatge intèrne de l’interfàcia Firefox.
-perftools-presets-firefox-graphics-label = Grafics de Firefox
-perftools-presets-firefox-graphics-description = Reglatge recomandat pels estudis de las performanças graficas de Firefox.
 perftools-presets-firefox-label = { -brand-shorter-name }
+perftools-presets-firefox-description = Reglatge recomandat pel perfilatge de { -brand-shorter-name }.
+perftools-presets-graphics-label = Acceleracion grafica
+perftools-presets-graphics-description = Preconfiguracion per analisar los bugs grafics dins { -brand-shorter-name }.
 perftools-presets-media-label = Multimèdia
-perftools-presets-media-description = Reglatge recomandat pel diagnosticar los problèmas àudio e vidèo.
+perftools-presets-media-description2 = Preconfiguracion per analisar los bugs àudio e vidèo dins { -brand-shorter-name }.
+perftools-presets-networking-label = Ret
+perftools-presets-networking-description = Preconfiguracion per analisar los bugs de ret { -brand-shorter-name }.
 perftools-presets-custom-label = Personalizat
 
 ##

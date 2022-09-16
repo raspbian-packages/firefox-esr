@@ -3,14 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 unknowncontenttype-handleinternally =
-    .label = Адкрываць у { -brand-short-name }
+    .label = Адкрыць у { -brand-short-name }
     .accesskey = у
+
 unknowncontenttype-settingschange =
     .value =
         { PLATFORM() ->
             [windows] Параметры могуць быць зменены ў наладах { -brand-short-name }.
            *[other] Параметры могуць быць зменены ў наладах { -brand-short-name }.
         }
+
 unknowncontenttype-intro = Вы хочаце адкрыць:
 unknowncontenttype-which-is = які:
 unknowncontenttype-from = з:

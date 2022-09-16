@@ -35,6 +35,11 @@ options-collapse-attrs-label = DOM 属性値を省略
 options-collapse-attrs-tooltip =
     .title = 値の長い属性を省略します
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = ドラッグでサイズの値を編集
+options-inspector-draggable-properties-tooltip =
+    .title = インスペクターのルール表示で、サイズの値をクリックしてドラッグすると値を編集できます。
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = 既定の色単位
@@ -42,6 +47,7 @@ options-default-color-unit-authored = 記述通りの単位
 options-default-color-unit-hex = 16 進数
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = 色の名前
 
 ## Style Editor section
@@ -106,6 +112,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = リモートデバッガーを有効化
 options-enable-remote-tooltip2 =
     .title = このオプションを有効にすると、このブラウザーインスタンスをリモートでデバッグできるようになります
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = カスタムフォーマッターを有効化
+options-enable-custom-formatters-tooltip =
+    .title = このオプションを有効にすると、DOM オブジェクトに対するカスタムフォーマッターの定義をサイトに許可します。
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = HTTP による Service Worker を有効化 (ツールボックスを開いたとき)

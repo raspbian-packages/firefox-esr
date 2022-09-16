@@ -3,7 +3,25 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Addressing widget
+## Send Format
+
+compose-send-format-menu =
+    .label = Słanski format
+    .accesskey = S
+compose-send-auto-menu-item =
+    .label = Awtomatiski
+    .accesskey = A
+compose-send-both-menu-item =
+    .label = HTML a luty tekst
+    .accesskey = H
+compose-send-html-menu-item =
+    .label = Jenož HTML
+    .accesskey = J
+compose-send-plain-menu-item =
+    .label = Jenož luty tekst
+    .accesskey = l
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -34,6 +52,13 @@ pill-tooltip-not-in-address-book = { $email } we wašim adresniku njeje
 pill-action-edit =
     .label = Adresu wobdźěłać
     .accesskey = A
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = Wšě adresy w { $type } wubrać
+    .accesskey = a
+pill-action-select-all-pills =
+    .label = Wšě adresy wubrać
+    .accesskey = b
 pill-action-move-to =
     .label = Do Komu přesunyć
     .accesskey = K
@@ -47,7 +72,7 @@ pill-action-expand-list =
     .label = Lisćinu pokazać
     .accesskey = i
 
-# Attachment widget
+## Attachment widget
 
 ctrl-cmd-shift-pretty-prefix =
     { PLATFORM() ->
@@ -63,9 +88,6 @@ menuitem-toggle-attachment-pane =
 toolbar-button-add-attachment =
     .label = Připowěsnyć
     .tooltiptext = Přiwěšk přidać ({ ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key })
-add-attachment-notification-reminder =
-    .label = Přiwěšk přidać…
-    .tooltiptext = { toolbar-button-add-attachment.tooltiptext }
 add-attachment-notification-reminder2 =
     .label = Přiwěšk přidać…
     .accesskey = P
@@ -78,21 +100,22 @@ context-menuitem-attach-files =
     .label = Dataje připowěsnyć…
     .accesskey = D
     .acceltext = { ctrl-cmd-shift-pretty-prefix }{ trigger-attachment-picker-key }
+# Note: Do not translate the term 'vCard'.
+context-menuitem-attach-vcard =
+    .label = Moja wizitka vCard
+    .accesskey = v
+context-menuitem-attach-openpgp-key =
+    .label = Mój zjawny kluč OpenPGP
+    .accesskey = l
 #   $count (Number) - the number of attachments in the attachment bucket
-attachment-bucket-count =
-    .value =
-        { $count ->
-            [1] { $count } přidatk
-            [one] { $count } přidatk
-            [two] { $count } přidatkaj
-            [few] { $count } přidatki
-           *[other] { $count } přidatkow
-        }
-    .accesskey = d
-expand-attachment-pane-tooltip =
-    .tooltiptext = Wobłuk přiwěškow pokazać ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
-collapse-attachment-pane-tooltip =
-    .tooltiptext = Wobłuk přiwěškow schować ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
+attachment-bucket-count-value =
+    { $count ->
+        [1] { $count } přiwěšk
+        [one] { $count } přiwěšk
+        [two] { $count } přiwěškaj
+        [few] { $count } přiwěški
+       *[other] { $count } přiwěškow
+    }
 attachment-area-show =
     .title = Wobłuk přiwěškow pokazać ({ ctrl-cmd-shift-pretty-prefix }{ toggle-attachment-pane-key })
 attachment-area-hide =
@@ -112,7 +135,7 @@ drop-file-label-inline =
        *[other] Inline připowěsnyć
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 move-attachment-first-panel-button =
     .label = Na spočatk přesunyć
@@ -126,47 +149,67 @@ button-return-receipt =
     .label = Kwitowanka
     .tooltiptext = Kwitowanku za tutu powěsć požadać
 
-# Encryption
+## Encryption
 
-message-to-be-signed-icon =
-    .alt = Powěsć signować
-message-to-be-encrypted-icon =
-    .alt = Powěsć zaklučować
-
-# Addressing Area
-
-to-compose-address-row-label =
-    .value = Komu
-#   $key (String) - the shortcut key for this field
-to-compose-show-address-row-menuitem =
-    .label = Polo { to-compose-address-row-label.value }
-    .accesskey = P
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-to-compose-show-address-row-label =
-    .value = { to-compose-address-row-label.value }
-    .tooltiptext = Polo { to-compose-address-row-label.value } pokazać ({ to-compose-show-address-row-menuitem.acceltext })
-cc-compose-address-row-label =
-    .value = Kopija
-#   $key (String) - the shortcut key for this field
-cc-compose-show-address-row-menuitem =
-    .label = Polo { cc-compose-address-row-label.value }
-    .accesskey = K
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-cc-compose-show-address-row-label =
-    .value = { cc-compose-address-row-label.value }
-    .tooltiptext = Polo { cc-compose-address-row-label.value } pokazać ({ cc-compose-show-address-row-menuitem.acceltext })
-bcc-compose-address-row-label =
-    .value = Schowana kopija
-#   $key (String) - the shortcut key for this field
-bcc-compose-show-address-row-menuitem =
-    .label = Polo { bcc-compose-address-row-label.value }
+encryption-menu =
+    .label = Wěstota
+    .accesskey = W
+encryption-toggle =
+    .label = Zaklučować
+    .tooltiptext = Zaklučowanje kónc do kónca za tutu powěsć wužiwać
+encryption-options-openpgp =
+    .label = OpenPGP
+    .tooltiptext = Nastajenja za zaklučowanje OpenPGP pokazać abo změnić
+encryption-options-smime =
+    .label = S/MIME
+    .tooltiptext = Nastajenja za zaklučowanje S/MIME pokazać abo změnić
+signing-toggle =
+    .label = Signować
+    .tooltiptext = Digitalny podpis za tutu powěsć wužiwać
+menu-openpgp =
+    .label = OpenPGP
+    .accesskey = O
+menu-smime =
+    .label = S/MIME
     .accesskey = S
-    .acceltext = { ctrl-cmd-shift-pretty-prefix }{ $key }
-bcc-compose-show-address-row-label =
-    .value = { bcc-compose-address-row-label.value }
-    .tooltiptext = Polo { bcc-compose-address-row-label.value } pokazać ({ bcc-compose-show-address-row-menuitem.acceltext })
-#   $count (Number) - the count of addresses in the "To" and "Cc" fields.
-many-public-recipients-info = Přijimarjo budu w polomaj Komu a Kopija adresu druhich widźeć. Ličba: { $count }. Wužiwajće město toho polo Schowana kopija, zo byšće tomu zadźěwał, zo so přijimarjo přeradźuja.
+menu-encrypt =
+    .label = Zaklučować
+    .accesskey = Z
+menu-encrypt-subject =
+    .label = Temu zaklučować
+    .accesskey = T
+menu-sign =
+    .label = Digitalnje signěrować
+    .accesskey = i
+menu-manage-keys =
+    .label = Klučowy asistent
+    .accesskey = K
+menu-view-certificates =
+    .label = Certifikaty přijimarjow pokazać
+    .accesskey = C
+menu-open-key-manager =
+    .label = Zrjadowak klučow
+    .accesskey = Z
+openpgp-key-issue-notification-one = Zaklučowanje kónc do kónca sej rozrisanje klučowych problemow za { $addr } wužaduje
+openpgp-key-issue-notification-many = Zaklučowanje kónc do kónca sej rozrisanje klučowych problemow za někotrych přijimarjow wužaduje ({ $count }).
+smime-cert-issue-notification-one = Zaklučowanje kónc do kónca sej rozrisanje certifikatowych problemow za { $addr } wužaduje
+smime-cert-issue-notification-many = Zaklučowanje kónc do kónca sej rozrisanje certifikatowych problemow za někotrych přijimarjow wužaduje ({ $count })
+key-notification-disable-encryption =
+    .label = Njezaklučować
+    .accesskey = N
+    .tooltiptext = Zaklučowanje kónc do kónca znjemóžnić
+key-notification-resolve =
+    .label = Rozeznawać…
+    .accesskey = R
+    .tooltiptext = Klučowy asistent OpenPGP wočinić
+can-encrypt-smime-notification = Zaklučowanje kónc do kónca S/MIME je móžne.
+can-encrypt-openpgp-notification = Zaklučowanje kónc do kónca OpenPGP je móžne.
+can-e2e-encrypt-button =
+    .label = Zaklučować
+    .accesskey = Z
+
+## Addressing Area
+
 to-address-row-label =
     .value = Komu
 #   $key (String) - the shortcut key for this field
@@ -255,3 +298,97 @@ encrypted-bcc-ignore-button = Sym zrozumił
 
 compose-tool-button-remove-text-styling =
     .tooltiptext = Tekstowy stil wotstronić
+
+## Filelink
+
+# A text used in a tooltip of Filelink attachments, whose account has been
+# removed or is unknown.
+cloud-file-unknown-account-tooltip = Je so do njeznateho konta Filelink nahrało.
+
+# Placeholder file
+
+# Title for the html placeholder file.
+# $filename - name of the file
+cloud-file-placeholder-title = { $filename } - přiwěšk Filelink
+# A text describing that the file was attached as a Filelink and can be downloaded
+# from the link shown below.
+# $filename - name of the file
+cloud-file-placeholder-intro = Dataja { $filename } je so jako Filelink připowěsnyła. Da so z pomocu slědowaceho wotkaza sćahnyć.
+
+# Template
+
+# A line of text describing how many uploaded files have been appended to this
+# message. Emphasis should be on sharing as opposed to attaching. This item is
+# used as a header to a list, hence the colon.
+cloud-file-count-header =
+    { $count ->
+        [one] Sym { $count } dataju z tutej mejlku zwjazał:
+        [two] Sym { $count } dataji z tutej mejlku zwjazał:
+        [few] Sym { $count } dataje z tutej mejlku zwjazał:
+       *[other] Sym { $count } datajow z tutej mejlku zwjazał:
+    }
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service provider.
+# $link (string) - html a-tag for a link pointing to the web page of the provider
+cloud-file-service-provider-footer-single = Dalše informacije wo { $link }.
+# A text used in a footer, instructing the reader where to find additional
+# information about the used service providers. Links for the used providers are
+# split into a comma separated list of the first n-1 providers and a single entry
+# at the end.
+# $firstLinks (string) - comma separated list of html a-tags pointing to web pages
+#                        of the first n-1 used providers
+# $lastLink (string) - html a-tag pointing the web page of the n-th used provider
+cloud-file-service-provider-footer-multiple = Dalše informacije wo { $firstLinks } a { $lastLink }.
+# Tooltip for an icon, indicating that the link is protected by a password.
+cloud-file-tooltip-password-protected-link = Přez hesło škitany wotkaz
+# Used in a list of stats about a specific file
+# Service - the used service provider to host the file (Filelink Service: BOX.com)
+# Size - the size of the file (Size: 4.2 MB)
+# Link - the link to the file (Link: https://some.provider.com)
+# Expiry Date - stating the date the link will expire (Expiry Date: 12.12.2022)
+# Download Limit - stating the maximum allowed downloads, before the link becomes invalid
+#                  (Download Limit: 6)
+cloud-file-template-service-name = Słužba Filelink:
+cloud-file-template-size = Wulkosć:
+cloud-file-template-link = Wotkaz
+cloud-file-template-password-protected-link = Přez hesło škitany wotkaz:
+cloud-file-template-expiry-date = Datum płaćiwosće:
+cloud-file-template-download-limit = Sćehnjenski limit:
+
+# Messages
+
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-connection-error-title = Zwiskowy zmylk
+cloud-file-connection-error = { -brand-short-name } je offline. Njemóžeše z { $provider } zwjazać.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was uploaded and caused the error
+cloud-file-upload-error-with-custom-message-title = Nahrawanje { $filename }  na { $provider } njeje so poradźiło
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-title = Přemjenowanski zmylk
+cloud-file-rename-error = Při přemjenowanju { $filename } na { $provider } je zmylk nastał.
+# $provider (string) - name of the online storage service that reported the error
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-rename-error-with-custom-message-title = Přemjenowanje { $filename }  na { $provider } njeje so poradźiło
+# $provider (string) - name of the online storage service that reported the error
+cloud-file-rename-not-supported = { $provider } přemjenowanje hižo nahratych datajow njepodpěruje.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-attachment-error-title = Přiwěškowy zmylk Filelink
+cloud-file-attachment-error = Přiwěšk { $filename } Filelink njeda so aktualizować, dokelž jeho lokalna dataja je so přesunyła abo zhašała.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-account-error-title = Kontowy zmylk Filelink
+cloud-file-account-error = Přiwěšk { $filename } Filelink njeda so aktualizować, dokelž jeho lokalna dataja je so zhašała.
+
+## Link Preview
+
+link-preview-title = Wotkazowy přehlad
+link-preview-description = { -brand-short-name } móže zasadźeny přehlad přidać, hdyž so wotkazy zasadźeja.
+link-preview-autoadd = Wotkazowe přehlady awtomatisce přidać, jeli móžno
+link-preview-replace-now = Wotkazowy přehlad za tutón wotkaz přidać?
+link-preview-yes-replace = Haj
+
+## Dictionary selection popup
+
+spell-add-dictionaries =
+    .label = Słowniki přidać…
+    .accesskey = S

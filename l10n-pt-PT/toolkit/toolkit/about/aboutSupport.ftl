@@ -76,6 +76,14 @@ app-basics-location-service-key-google = Chave do serviço de localização da G
 app-basics-safebrowsing-key-google = Chave do Google Safebrowsing
 app-basics-key-mozilla = Chave do serviço de localização da Mozilla
 app-basics-safe-mode = Modo de segurança
+app-basics-memory-size = Tamanho da Memória (RAM)
+app-basics-disk-available = Espaço em disco disponível
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Mostrar no Finder
@@ -343,6 +351,7 @@ fission-status-experiment-control = Desativado por experimento
 fission-status-experiment-treatment = Ativado por experimento
 fission-status-disabled-by-e10s-env = Desativado pelo ambiente
 fission-status-enabled-by-env = Ativado pelo ambiente
+fission-status-disabled-by-env = Desativada pelo ambiente
 fission-status-disabled-by-safe-mode = Desativado pelo modo de segurança
 fission-status-enabled-by-default = Ativado por predefinição
 fission-status-disabled-by-default = Desativado por predefinição

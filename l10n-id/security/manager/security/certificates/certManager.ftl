@@ -186,13 +186,14 @@ delete-email-cert-impact = Jika Anda menghapus sertifikat email seseorang, Anda 
 cert-with-serial =
     .value = Sertifikat dengan nomor seri: { $serialNumber }
 
-## Cert Viewer
-
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Tidak mengirim sertifikat klien
 
 # Used when no cert is stored for an override
 no-cert-stored-for-override = (Tidak Disimpan)
+
+# When a certificate is unavailable (for example, it has been deleted or the token it exists on has been removed).
+certificate-not-available = (Tidak tersedia)
 
 ## Used to show whether an override is temporary or permanent
 

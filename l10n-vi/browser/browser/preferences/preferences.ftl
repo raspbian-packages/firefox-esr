@@ -75,19 +75,19 @@ restart-later = Khởi động lại sau
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
-extension-controlled-password-saving = Một tiện ích mở rộng, <img data-l10n-name="icon"/> { $name }, đang kiểm soát cài đặt này.
+extension-controlling-password-saving = <img data-l10n-name="icon"/> <strong>{ $name }</strong> kiểm soát cài đặt này.
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
-extension-controlled-web-notifications = Một tiện ích mở rộng, <img data-l10n-name="icon"/> { $name }, đang kiểm soát cài đặt này.
+extension-controlling-web-notifications = <img data-l10n-name="icon"/> <strong>{ $name }</strong> kiểm soát cài đặt này.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlled-privacy-containers = Một tiện ích mở rộng, <img data-l10n-name="icon"/> { $name }, yêu cầu ngăn chứa thẻ.
+extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> yêu cầu ngăn chứa thẻ.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
-extension-controlled-websites-content-blocking-all-trackers = Một tiện ích mở rộng, <img data-l10n-name="icon"/> { $name }, đang kiểm soát cài đặt này.
+extension-controlling-websites-content-blocking-all-trackers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> kiểm soát cài đặt này.
 # This string is shown to notify the user that their proxy configuration preferences
 # are being controlled by an extension.
-extension-controlled-proxy-config = Một tiện ích mở rộng, <img data-l10n-name="icon"/> { $name }, đang kiểm soát cách { -brand-short-name } kết nối internet.
+extension-controlling-proxy-config = <img data-l10n-name ="icon"/> <strong>{ $name }</strong> kiểm soát cách { -brand-short-name } kết nối với Internet.
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -113,9 +113,6 @@ is-not-default = { -brand-short-name } không phải là trình duyệt mặc đ
 set-as-my-default-browser =
     .label = Đặt làm mặc định…
     .accesskey = D
-startup-restore-previous-session =
-    .label = Khôi phục phiên làm việc trước
-    .accesskey = s
 startup-restore-windows-and-tabs =
     .label = Mở các cửa sổ và thẻ trước đó
     .accesskey = s
@@ -130,9 +127,6 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Mở đường dẫn ở thẻ thay vì ở cửa sổ mới
     .accesskey = w
-warn-on-close-multiple-tabs =
-    .label = Cảnh báo bạn khi đóng nhiều thẻ một lúc
-    .accesskey = m
 confirm-on-close-multiple-tabs =
     .label = Xác nhận trước khi đóng nhiều thẻ
     .accesskey = m
@@ -174,7 +168,40 @@ containers-remove-cancel-button = Không xóa ngăn chứa này
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Ngôn ngữ và chủ đề
-fonts-and-colors-header = Phông & Màu sắc
+preferences-web-appearance-header = Diện mạo trang web
+preferences-web-appearance-description = Một số trang web điều chỉnh bảng màu của họ dựa trên tùy chỉnh của bạn. Chọn bảng màu mà bạn muốn sử dụng cho các trang web đó.
+preferences-web-appearance-choice-browser = Chủ đề { -brand-short-name }
+preferences-web-appearance-choice-system = Chủ đề hệ thống
+preferences-web-appearance-choice-light = Sáng
+preferences-web-appearance-choice-dark = Tối
+preferences-web-appearance-choice-tooltip-browser =
+    .title = Khớp cài đặt chủ đề { -brand-short-name } của bạn cho nền và nội dung trang web.
+preferences-web-appearance-choice-tooltip-system =
+    .title = Phù hợp với cài đặt hệ thống của bạn cho hình nền và nội dung trang web.
+preferences-web-appearance-choice-tooltip-light =
+    .title = Sử dụng giao diện sáng cho hình nền và nội dung trang web.
+preferences-web-appearance-choice-tooltip-dark =
+    .title = Sử dụng giao diện tối cho hình nền và nội dung trang web.
+preferences-web-appearance-choice-input-browser =
+    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
+preferences-web-appearance-choice-input-system =
+    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-light =
+    .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
+preferences-web-appearance-choice-input-dark =
+    .aria-description = { preferences-web-appearance-choice-tooltip-dark.title }
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning = Các lựa chọn màu sắc của bạn đang ghi đè diện mạo trang web. <a data-l10n-name="colors-link">Quản lý màu</a>
+# This message contains one link. It can be moved within the sentence as needed
+# to adapt to your language, but should not be changed.
+preferences-web-appearance-footer = Quản lý chủ đề { -brand-short-name } trong <a data-l10n-name="themes-link">Tiện ích mở rộng & chủ đề</a>
+preferences-colors-header = Màu
+preferences-colors-description = Ghi đè màu mặc định của { -brand-short-name } cho văn bản, nền trang web và liên kết.
+preferences-colors-manage-button =
+    .label = Quản lý màu…
+    .accesskey = C
+preferences-fonts-header = Phông chữ
 default-font = Phông mặc định
     .accesskey = D
 default-font-size = Kích thước
@@ -182,9 +209,6 @@ default-font-size = Kích thước
 advanced-fonts =
     .label = Nâng cao…
     .accesskey = o
-colors-settings =
-    .label = Màu sắc…
-    .accesskey = M
 # Zoom is a noun, and the message is used as header for a group of options
 preferences-zoom-header = Thu phóng
 preferences-default-zoom = Thu phóng mặc định
@@ -227,8 +251,7 @@ check-user-spelling =
 
 files-and-applications-title = Tập tin và ứng dụng
 download-header = Tải xuống
-download-save-to =
-    .label = Lưu các tập tin vào
+download-save-where = Lưu tập tin vào
     .accesskey = v
 download-choose-folder =
     .label =
@@ -319,6 +342,13 @@ applications-use-os-default-label =
 
 ##
 
+applications-handle-new-file-types-description = { -brand-short-name } nên làm gì với các tập tin khác?
+applications-save-for-new-types =
+    .label = Lưu tập tin
+    .accesskey = S
+applications-ask-before-handling =
+    .label = Hỏi xem có nên mở hay lưu tập tin hay không
+    .accesskey = A
 drm-content-header = Nội dung quản lý bản quyền kỹ thuật số (DRM)
 play-drm-content =
     .label = Phát nội dung DRM được kiểm soát
@@ -346,6 +376,9 @@ update-application-background-enabled =
 update-application-warning-cross-user-setting = Cài đặt này sẽ áp dụng cho tất cả các tài khoản Windows và hồ sơ { -brand-short-name } bằng cách sử dụng cài đặt { -brand-short-name } này.
 update-application-use-service =
     .label = Sử dụng dịch vụ chạy nền để cài đặt các cập nhật
+    .accesskey = n
+update-application-suppress-prompts =
+    .label = Hiển thị ít lời nhắc thông báo cập nhật hơn
     .accesskey = n
 update-setting-write-failure-title2 = Lỗi khi lưu cài đặt Cập nhật
 # Variables:
@@ -392,8 +425,11 @@ browsing-use-autoscroll =
 browsing-use-smooth-scrolling =
     .label = Cuộn uyển chuyển
     .accesskey = y
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Luôn hiển thị thanh cuộn
+    .accesskey = o
 browsing-use-onscreen-keyboard =
-    .label = Hiện bàn phím cảm ứng khi cần thiết
+    .label = Hiển thị bàn phím cảm ứng khi cần thiết
     .accesskey = b
 browsing-use-cursor-navigation =
     .label = Cho phép dùng con trỏ để di chuyển bên trong trang
@@ -469,11 +505,6 @@ home-prefs-content-header = Nội dung của Trang chủ Firefox
 home-prefs-content-description = Chọn nội dung mà bạn muốn thêm vào Trang chủ Firefox.
 home-prefs-search-header =
     .label = Tìm kiếm web
-home-prefs-topsites-header =
-    .label = Các trang Web hàng đầu
-home-prefs-topsites-description = Những trang bạn truy cập nhiều nhất
-home-prefs-topsites-by-option-sponsored =
-    .label = Các trang hàng đầu được tài trợ
 home-prefs-shortcuts-header =
     .label = Lối tắt
 home-prefs-shortcuts-description = Các trang web bạn lưu hoặc truy cập
@@ -485,7 +516,6 @@ home-prefs-shortcuts-by-option-sponsored =
 
 home-prefs-recommended-by-header =
     .label = Được đề xuất bởi { $provider }
-home-prefs-recommended-by-description-update = Nội dung đặc biệt trên web, được quản lý bởi { $provider }
 home-prefs-recommended-by-description-new = Nội dung đặc biệt do { $provider }, một phần của { -brand-product-name }, quản lý
 
 ##
@@ -493,9 +523,6 @@ home-prefs-recommended-by-description-new = Nội dung đặc biệt do { $provi
 home-prefs-recommended-by-learn-more = Nó hoạt động như thế nào
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Bài viết quảng cáo
-home-prefs-highlights-header =
-    .label = Nổi bật
-home-prefs-highlights-description = Một lựa chọn các trang web mà bạn đã lưu hoặc truy cập
 home-prefs-highlights-option-visited-pages =
     .label = Trang đã truy cập
 home-prefs-highlights-options-bookmarks =
@@ -513,7 +540,6 @@ home-prefs-recent-activity-description = Tuyển chọn các trang và nội dun
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Ghi chú nhỏ
-home-prefs-snippets-description = Cập nhật từ { -vendor-short-name } và { -brand-product-name }
 home-prefs-snippets-description-new = Mẹo và tin tức từ { -vendor-short-name } và { -brand-product-name }
 home-prefs-sections-rows-option =
     .label = { $num } hàng
@@ -545,11 +571,11 @@ search-show-suggestions-url-bar-option =
 # "ahead" refers to location (appearing most proximate to), not time
 # (appearing before).
 search-show-suggestions-above-history-option =
-    .label = Hiện những gợi ý tìm kiếm phía trước lịch sử duyệt web trong kết quả thanh địa chỉ
+    .label = Hiển thị những gợi ý tìm kiếm phía trước lịch sử duyệt web trong kết quả thanh địa chỉ
 search-show-suggestions-private-windows =
     .label = Hiển thị đề xuất tìm kiếm trong cửa sổ riêng tư
 suggestions-addressbar-settings-generic2 = Thay đổi cài đặt cho các đề xuất khác trên thanh địa chỉ
-search-suggestions-cant-show = Gợi ý tìm kiếm sẽ không được hiện ở thanh địa chỉ vì bạn đã thiết lập { -brand-short-name } không bao giờ ghi nhớ lịch sử.
+search-suggestions-cant-show = Gợi ý tìm kiếm sẽ không được hiển thị ở thanh địa chỉ vì bạn đã thiết lập { -brand-short-name } không bao giờ ghi nhớ lịch sử.
 search-one-click-header2 = Lối tắt tìm kiếm
 search-one-click-desc = Chọn các công cụ tìm kiếm thay thế xuất hiện bên dưới thanh địa chỉ và thanh tìm kiếm khi bạn bắt đầu nhập một từ khoá.
 search-choose-engine-column =
@@ -808,7 +834,7 @@ history-remember-search-option =
     .label = Ghi nhớ lịch sử biểu mẫu và tìm kiếm
     .accesskey = f
 history-clear-on-close-option =
-    .label = Xóa lịch sử khi { -brand-short-name } đóng
+    .label = Xóa lịch sử khi đóng { -brand-short-name }
     .accesskey = r
 history-clear-on-close-settings =
     .label = Cài đặt…
@@ -842,14 +868,10 @@ sitedata-block-desc = Loại bị chặn
     .accesskey = T
 sitedata-option-block-cross-site-trackers =
     .label = Trình theo dõi trên nhiều trang web
-sitedata-option-block-cross-site-and-social-media-trackers =
-    .label = Trình theo dõi trên nhiều trang web và truyền thông xã hội
-sitedata-option-block-cross-site-tracking-cookies-including-social-media =
-    .label = Cookie theo dõi trên nhiều trang web — bao gồm cookie truyền thông xã hội
-sitedata-option-block-cross-site-cookies-including-social-media =
-    .label = Cookie trên nhiều trang web — bao gồm cookie trên mạng xã hội
-sitedata-option-block-cross-site-and-social-media-trackers-plus-isolate =
-    .label = Trình theo dõi trên nhiều trang web và mạng xã hội, đồng thời cô lập các cookie còn lại
+sitedata-option-block-cross-site-tracking-cookies =
+    .label = Cookie theo dõi trên nhiều trang web
+sitedata-option-block-cross-site-cookies =
+    .label = Cookie theo dõi trên nhiều trang web và cô lập các cookie trên nhiều trang khác
 sitedata-option-block-unvisited =
     .label = Cookie từ các trang web không mong muốn
 sitedata-option-block-all-third-party =
@@ -939,7 +961,6 @@ content-blocking-etp-standard-tcp-rollout-checkbox =
 content-blocking-etp-standard-tcp-rollout-description = Trình chống cookie chung chứa các cookie cho trang web bạn đang truy cập, vì vậy, trình theo dõi không thể sử dụng chúng để theo dõi bạn giữa các trang web.
 content-blocking-etp-standard-tcp-rollout-learn-more = Tìm hiểu thêm
 content-blocking-warning-title = Hãy cân nhắc!
-content-blocking-and-isolating-etp-warning-description = Chặn trình theo dõi và cô lập cookie có thể ảnh hưởng đến chức năng của một số trang web. Tải lại một trang với trình theo dõi để tải tất cả nội dung.
 content-blocking-and-isolating-etp-warning-description-2 = Cài đặt này có thể khiến một số trang web không hiển thị nội dung hoặc hoạt động không chính xác. Nếu trang web có vẻ bị hỏng, bạn có thể muốn tắt trình chống theo dõi để trang web đó tải tất cả nội dung.
 content-blocking-warning-learn-how = Tìm hiểu cách thức
 content-blocking-reload-description = Bạn sẽ cần tải lại các thẻ của mình để áp dụng những thay đổi này.
@@ -1011,9 +1032,6 @@ permissions-autoplay-settings =
 permissions-block-popups =
     .label = Chặn các cửa sổ bật lên
     .accesskey = B
-permissions-block-popups-exceptions =
-    .label = Ngoại trừ…
-    .accesskey = E
 # "popup" is a misspelling that is more popular than the correct spelling of
 # "pop-up" so it's included as a search keyword, not displayed in the UI.
 permissions-block-popups-exceptions-button =
@@ -1103,7 +1121,3 @@ httpsonly-radio-disabled =
 desktop-folder-name = Bàn làm việc
 downloads-folder-name = Tải xuống
 choose-download-folder-title = Chọn thư mục tải xuống:
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Lưu tập tin vào { $service-name }

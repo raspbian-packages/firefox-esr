@@ -11,14 +11,18 @@
 # Placeholder text for tag input
 pocket-panel-saved-add-tags =
     .placeholder = Dodaj oznake
+
 pocket-panel-saved-error-generic = Med shranjevanjem na { -pocket-brand-name } je prišlo do napake.
 pocket-panel-saved-error-tag-length = Oznake so omejene na 25 znakov
 pocket-panel-saved-error-only-links = Shranite lahko samo povezave
 pocket-panel-saved-error-not-saved = Stran ni bila shranjena
 pocket-panel-saved-error-no-internet = Za shranjevanje v { -pocket-brand-name } morate biti povezani na internet. Povežite se z internetom in poskusite znova.
+pocket-panel-saved-error-remove = Pri odstranjevanju te strani je prišlo do napake.
 pocket-panel-saved-page-removed = Stran odstranjena
 pocket-panel-saved-page-saved = Shranjeno na { -pocket-brand-name }
+pocket-panel-saved-page-saved-b = Shranjeno v { -pocket-brand-name }!
 pocket-panel-saved-processing-remove = Odstranjevanje strani …
+pocket-panel-saved-removed = Stran je odstranjena s seznama
 pocket-panel-saved-processing-tags = Dodajanje oznak …
 pocket-panel-saved-remove-page = Odstrani stran
 pocket-panel-saved-save-tags = Shrani
@@ -26,6 +30,9 @@ pocket-panel-saved-saving-tags = Shranjevanje …
 pocket-panel-saved-suggested-tags = Predlagane oznake
 pocket-panel-saved-tags-saved = Oznake dodane
 pocket-panel-signup-view-list = Ogled seznama
+
+# This is displayed above a field where the user can add tags
+pocket-panel-signup-add-tags = Dodaj oznake:
 
 ## about:pocket-signup panel
 
@@ -39,6 +46,11 @@ pocket-panel-signup-tagline = Shranite članke in videe v { -brand-product-name 
 pocket-panel-signup-tagline-story-one = Kliknite gumb { -pocket-brand-name } v { -brand-product-name }u in shranite članek, video ali stran.
 pocket-panel-signup-tagline-story-two = Oglejte si v { -pocket-brand-name }u na kateri koli napravi.
 
+pocket-panel-signup-cta-a-fix = Vaš gumb za shranjevanje interneta
+pocket-panel-signup-cta-b = Kliknite gumb { -pocket-brand-name }, da shranite članke, videoposnetke in povezave. Oglejte si svoj seznam v kateri koli napravi in kadar koli.
+pocket-panel-signup-cta-b-short = Kliknite gumb { -pocket-brand-name }, da shranite članke, videoposnetke in povezave.
+pocket-panel-signup-cta-c = Oglejte si svoj seznam na katerikoli napravi, kadarkoli.
+
 ## about:pocket-home panel
 
 pocket-panel-home-my-list = Moj seznam
@@ -47,3 +59,19 @@ pocket-panel-home-paragraph = { -pocket-brand-name } lahko uporabljate za odkriv
 pocket-panel-home-explore-popular-topics = Razišči pogoste teme
 pocket-panel-home-discover-more = Odkrijte več
 pocket-panel-home-explore-more = Razišči
+
+pocket-panel-home-most-recent-saves = Tukaj so vaši nazadnje shranjeni predmeti:
+pocket-panel-home-most-recent-saves-loading = Nalaganje nedavno shranjene vsebine …
+pocket-panel-home-new-user-cta = Kliknite gumb { -pocket-brand-name } da shranite članke, videoposnetke in povezave.
+pocket-panel-home-new-user-message = Oglejte si svoje nedavne shranjene predmete.
+
+## Pocket panel header component
+
+pocket-panel-header-my-list = Prikaži moj seznam
+pocket-panel-header-sign-in = Prijava
+
+## Pocket panel buttons
+
+pocket-panel-button-show-all = Prikaži vse
+pocket-panel-button-activate = Vključi { -pocket-brand-name } v { -brand-product-name(sklon: "mestnik") }
+pocket-panel-button-remove = Odstrani

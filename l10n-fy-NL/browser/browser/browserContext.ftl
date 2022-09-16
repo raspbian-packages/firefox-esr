@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Keppeling bewarje nei { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = E-mailadres kopiearje
     .accesskey = m
+
+main-context-menu-copy-phone =
+    .label = Telefoannûmer kopiearje
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Keppeling kopiearje
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Keppeling yn in nij { $containerName }-ljepblêd iepenje
     .accesskey = l
+
+main-context-menu-reveal-password =
+    .label = Wachtwurd toane
+    .accesskey = u

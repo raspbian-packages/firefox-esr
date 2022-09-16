@@ -35,6 +35,8 @@ detail-version =
     .label = รุ่น
 detail-last-updated =
     .label = อัปเดตล่าสุด
+addon-detail-description-expand = แสดงเพิ่มเติม
+addon-detail-description-collapse = แสดงน้อยลง
 detail-contributions-description = นักพัฒนาส่วนเสริมนี้ใคร่ขอให้คุณช่วยสนับสนุนการพัฒนาอย่างต่อเนื่องโดยการสมทบทุนสักเล็กน้อย
 detail-contributions-button = มีส่วนร่วม
     .title = มีส่วนร่วมกับการพัฒนาส่วนเสริมนี้
@@ -137,6 +139,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = การอัปเดตล่าสุด
 addon-category-recent-updates-title =
     .title = การอัปเดตล่าสุด
+addon-category-sitepermission = สิทธิอนุญาตไซต์
+addon-category-sitepermission-title =
+    .title = สิทธิอนุญาตไซต์
 
 ## These are global warnings
 
@@ -283,14 +288,18 @@ extension-enabled-heading = ถูกเปิดใช้งาน
 extension-disabled-heading = ถูกปิดใช้งาน
 theme-enabled-heading = ถูกเปิดใช้งาน
 theme-disabled-heading = ถูกปิดใช้งาน
+theme-disabled-heading2 = ชุดตกแต่งที่บันทึกไว้
 theme-monochromatic-heading = ชุดรูปแบบสี
 theme-monochromatic-subheading = ชุดรูปแบบใหม่ที่สดใสจาก { -brand-product-name } มีให้ใช้ในช่วงเวลาจำกัด
+theme-colorways-button = ลอง Colorways
 plugin-enabled-heading = ถูกเปิดใช้งาน
 plugin-disabled-heading = ถูกปิดใช้งาน
 dictionary-enabled-heading = ถูกเปิดใช้งาน
 dictionary-disabled-heading = ถูกปิดใช้งาน
 locale-enabled-heading = ถูกเปิดใช้งาน
 locale-disabled-heading = ถูกปิดใช้งาน
+sitepermission-enabled-heading = เปิดใช้งานอยู่
+sitepermission-disabled-heading = ปิดใช้งานอยู่
 always-activate-button = เปิดใช้งานเสมอ
 never-activate-button = ไม่เปิดใช้งานเสมอ
 addon-detail-author-label = ผู้สร้าง
@@ -366,6 +375,7 @@ addon-permissions-optional = สิทธิอนุญาตที่เลื
 addon-permissions-learnmore = เรียนรู้เพิ่มเติมเกี่ยวกับสิทธิอนุญาต
 recommended-extensions-heading = ส่วนขยายที่แนะนำ
 recommended-themes-heading = ชุดตกแต่งที่แนะนำ
+addon-sitepermissions-required = มอบความสามารถต่อไปนี้ให้ <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = รู้สึกสร้างสรรค์ใช่ไหม? <a data-l10n-name="link">สร้างชุดตกแต่งในรูปแบบของคุณเองด้วย Firefox Color</a>
@@ -378,6 +388,7 @@ plugin-heading = จัดการปลั๊กอินของคุณ
 dictionary-heading = จัดการพจนานุกรมของคุณ
 locale-heading = จัดการภาษาของคุณ
 updates-heading = จัดการการอัปเดตของคุณ
+sitepermission-heading = จัดการสิทธิอนุญาตไซต์ของคุณ
 discover-heading = ปรับแต่ง { -brand-short-name } ของคุณ
 shortcuts-heading = จัดการทางลัดส่วนขยาย
 default-heading-search-label = ค้นหาส่วนเสริมเพิ่มเติม
@@ -385,3 +396,20 @@ addons-heading-search-input =
     .placeholder = ค้นหา addons.mozilla.org
 addon-page-options-button =
     .title = เครื่องมือสำหรับส่วนเสริมทั้งหมด
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } เข้ากันไม่ได้กับ { -brand-short-name } { $version }
+details-notification-unsigned-and-disabled = { $name } ไม่สามารถยืนยันสำหรับใช้ใน { -brand-short-name } และถูกปิดใช้งาน
+details-notification-unsigned-and-disabled-link = ข้อมูลเพิ่มเติม
+details-notification-unsigned = { $name } ไม่สามารถยืนยันสำหรับใช้ใน { -brand-short-name } ดำเนินการต่อด้วยความระมัดระวัง
+details-notification-unsigned-link = ข้อมูลเพิ่มเติม
+details-notification-blocked = { $name } ถูกปิดใช้งานเนื่องจากปัญหาด้านความปลอดภัยหรือเสถียรภาพ
+details-notification-blocked-link = ข้อมูลเพิ่มเติม
+details-notification-softblocked = { $name } เป็นที่ทราบว่าก่อให้เกิดปัญหาด้านความปลอดภัยหรือเสถียรภาพ
+details-notification-softblocked-link = ข้อมูลเพิ่มเติม
+details-notification-gmp-pending = { $name } จะถูกติดตั้งในไม่ช้า

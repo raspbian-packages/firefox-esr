@@ -42,7 +42,7 @@ newsgroups-label = Interesne grupe
 newsgroups-description = { -brand-short-name } omogućuje povezivanje sa svim mogućim interesnim grupama.
 
 import-title = Uvezi iz jednog drugog programa
-import-paragraph = { -brand-short-name } omogućuje uvoz poruka e-pošte, kontakata adresara, pretplata na feedove, postavki i/ili filtera iz drugih programa za e-poštu kao i uobičajenih formata adresara.
+import-paragraph2 = { -brand-short-name } omogućuje uvoz poruka e-pošte, kontakata adresara, pretplata na feedove, postavki i/ili filtera iz drugih programa za e-poštu kao i uobičajenih formata adresara.
 
 import-label = Uvoz
     .aria-label = Uvezi podatke iz drugih programa

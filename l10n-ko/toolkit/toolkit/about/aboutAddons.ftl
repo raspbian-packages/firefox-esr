@@ -35,6 +35,8 @@ detail-version =
     .label = 버전
 detail-last-updated =
     .label = 마지막 업데이트
+addon-detail-description-expand = 자세히 보기
+addon-detail-description-collapse = 간단히 보기
 detail-contributions-description = 이 부가 기능의 개발자가 여러분이 작은 기여로 지속적인 개발을 지원해 줄 것을 요청합니다.
 detail-contributions-button = 기여하기
     .title = 이 부가 기능의 개발에 기여하기
@@ -136,6 +138,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = 최근 업데이트
 addon-category-recent-updates-title =
     .title = 최근 업데이트
+addon-category-sitepermission = 사이트 권한
+addon-category-sitepermission-title =
+    .title = 사이트 권한
 
 ## These are global warnings
 
@@ -275,14 +280,18 @@ extension-enabled-heading = 사용함
 extension-disabled-heading = 사용 안 함
 theme-enabled-heading = 사용함
 theme-disabled-heading = 사용 안 함
+theme-disabled-heading2 = 저장된 테마
 theme-monochromatic-heading = 컬러웨이
 theme-monochromatic-subheading = { -brand-product-name }의 생동감 넘치는 새로운 컬러웨이입니다. 제한된 시간 동안 사용할 수 있습니다.
+theme-colorways-button = 컬러웨이 체험
 plugin-enabled-heading = 사용함
 plugin-disabled-heading = 사용 안 함
 dictionary-enabled-heading = 사용함
 dictionary-disabled-heading = 사용 안 함
 locale-enabled-heading = 사용함
 locale-disabled-heading = 사용 안 함
+sitepermission-enabled-heading = 사용함
+sitepermission-disabled-heading = 사용 안 함
 always-activate-button = 항상 사용
 never-activate-button = 사용 안 함
 addon-detail-author-label = 제작자
@@ -358,6 +367,7 @@ addon-permissions-optional = 추가 기능에 필요한 선택 권한:
 addon-permissions-learnmore = 권한에 대해 더 알아보기
 recommended-extensions-heading = 추천 확장 기능
 recommended-themes-heading = 추천 테마
+addon-sitepermissions-required = <span data-l10n-name="hostname">{ $hostname }</span>에 다음 권한을 부여합니다:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = 창의적인 느낌이 떠오르십니까? <a data-l10n-name="link">Firefox Color로 나만의 테마를 만들어 보세요.</a>
@@ -370,6 +380,7 @@ plugin-heading = 플러그인 관리
 dictionary-heading = 사전 관리
 locale-heading = 언어 관리
 updates-heading = 업데이트 관리
+sitepermission-heading = 사이트 권한 관리
 discover-heading = { -brand-short-name } 개인화
 shortcuts-heading = 확장 기능 단축키 관리
 default-heading-search-label = 더 많은 부가 기능 찾기
@@ -377,3 +388,20 @@ addons-heading-search-input =
     .placeholder = addons.mozilla.org 검색
 addon-page-options-button =
     .title = 부가 기능 도구
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name }는 { -brand-short-name } { $version }와 호환되지 않습니다.
+details-notification-unsigned-and-disabled = { $name } 부가 기능이 { -brand-short-name }에서 확인되지 않았기 때문에 비활성화되었습니다.
+details-notification-unsigned-and-disabled-link = 추가 정보
+details-notification-unsigned = { $name } 부가 기능이 { -brand-short-name }에서 사용할 수 있는지 확인할 수 없습니다. 주의해서 진행하세요.
+details-notification-unsigned-link = 추가 정보
+details-notification-blocked = { $name }는 보안이나 안정성 문제로 인해 사용 중지됩니다.
+details-notification-blocked-link = 추가 정보
+details-notification-softblocked = { $name }는 보안이나 안정성 문제를 일으킬 수 있습니다.
+details-notification-softblocked-link = 추가 정보
+details-notification-gmp-pending = { $name } 부가 기능이 곧 설치됩니다.

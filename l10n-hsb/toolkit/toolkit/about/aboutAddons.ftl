@@ -35,6 +35,8 @@ detail-version =
     .label = Wersija
 detail-last-updated =
     .label = Posledni raz zaktualizowany
+addon-detail-description-expand = Wjace pokazać
+addon-detail-description-collapse = Mjenje pokazać
 detail-contributions-description = Wuwiwar tutoho přidatka prosy, zo byšće pomhał, jeho stajne wuwiće podpěrać, darujo mały přinošk.
 detail-contributions-button = Přinošować
     .title = K wuwiwanju tutoho přidatka přinošować
@@ -57,8 +59,8 @@ detail-private-browsing-label = W priwatnych woknach wuwjesć
 detail-private-disallowed-label = W priwatnych woknach njedowoleny
 detail-private-disallowed-description2 = Tute rozšěrjenje w priwatnym modusu njefunguje. <a data-l10n-name="learn-more">Dalše informacije</a>
 # Some special add-ons are privileged, run in private windows automatically, and this permission can't be revoked
-detail-private-required-label = Wužaduje sej přistup na priwatne wokna
-detail-private-required-description2 = Tute rozšěrjenje ma přistup na waše aktiwity online w priwatnym modusu. <a data-l10n-name="learn-more">Dalše informacije</a>
+detail-private-required-label = Wužaduje sej přistup k priwatnym woknam
+detail-private-required-description2 = Tute rozšěrjenje ma přistup k wašim aktiwitam online w priwatnym modusu. <a data-l10n-name="learn-more">Dalše informacije</a>
 detail-private-browsing-on =
     .label = Dowolić
     .tooltiptext = W priwatnym modusu zmóžnić
@@ -110,8 +112,8 @@ legacy-extensions-description = Tute rozšěrjenja su so znjemóžnili, dokelž 
 private-browsing-description2 =
     { -brand-short-name } měnja, kak rozšěrjenja w priwatnym modusu funguja. Nowe rozšěrjenja, kotrež
     { -brand-short-name } přidawaće, po standardźe w priwatnych woknach njefunguja. Chibazo
-    dowoleće to w nastajenjach, rozšěrjenje w priwatnym modusu njefunguje a nima přistup na waše
-    aktiwity online. Smy tutu změnu sčinili, zo by waš priwatny modus priwatny wóstał. <label data-l10n-name="private-browsing-learn-more">Zhońće wjace wo rjadowanju nastajenjow rozšěrjenja.</label>
+    dowoleće to w nastajenjach, rozšěrjenje w priwatnym modusu njefunguje a nima přistup k wašim
+    aktiwitam online. Smy tutu změnu sčinili, zo by waš priwatny modus priwatny wóstał. <label data-l10n-name="private-browsing-learn-more">Zhońće wjace wo rjadowanju nastajenjow rozšěrjenja.</label>
 addon-category-discover = Doporučenja
 addon-category-discover-title =
     .title = Doporučenja
@@ -136,6 +138,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Nowe aktualizacije
 addon-category-recent-updates-title =
     .title = Nowe aktualizacije
+addon-category-sitepermission = Sydłowe prawa
+addon-category-sitepermission-title =
+    .title = Sydłowe prawa
 
 ## These are global warnings
 
@@ -278,14 +283,18 @@ extension-enabled-heading = Zmóžnjeny
 extension-disabled-heading = Znjemóžnjeny
 theme-enabled-heading = Zmóžnjeny
 theme-disabled-heading = Znjemóžnjeny
+theme-disabled-heading2 = Składowane drasty
 theme-monochromatic-heading = Barbowe kombinacije
 theme-monochromatic-subheading = Žiwe nowe barbowe kombinacije z { -brand-product-name }. Za wobmjezowany čas k dispoziciji.
+theme-colorways-button = Barbowe kombinacije wupruwować
 plugin-enabled-heading = Zmóžnjeny
 plugin-disabled-heading = Znjemóžnjeny
 dictionary-enabled-heading = Zmóžnjeny
 dictionary-disabled-heading = Znjemóžnjeny
 locale-enabled-heading = Zmóžnjeny
 locale-disabled-heading = Znjemóžnjeny
+sitepermission-enabled-heading = Zmóžnjeny
+sitepermission-disabled-heading = Znjemóžnjeny
 always-activate-button = Přeco aktiwizować
 never-activate-button = Ženje njeaktiwizować
 addon-detail-author-label = Awtor
@@ -333,7 +342,7 @@ install-update-button = Aktualizować
 addon-badge-private-browsing-allowed2 =
     .title = W priwatnych woknach dowoleny
     .aria-label = { addon-badge-private-browsing-allowed2.title }
-addon-detail-private-browsing-help = Jeli maće prawo, ma rozšěrjenje přistup na waše aktiwity online w priwatnym modusu. <a data-l10n-name="learn-more">Dalše informacije</a>
+addon-detail-private-browsing-help = Jeli maće prawo, ma rozšěrjenje přistup k wašim aktiwitam online w priwatnym modusu. <a data-l10n-name="learn-more">Dalše informacije</a>
 addon-detail-private-browsing-allow = Dowolić
 addon-detail-private-browsing-disallow = Njedowolić
 
@@ -364,6 +373,7 @@ addon-permissions-optional = Opcionalne prawa za přidatu funkcionalnosć:
 addon-permissions-learnmore = Dalše informacije wo prawach
 recommended-extensions-heading = Doporučene rozšěrjenja
 recommended-themes-heading = Doporučene drasty
+addon-sitepermissions-required = Garantuje <span data-l10n-name="hostname">{ $hostname }</span> slědowace kmanosće:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
 recommended-theme-1 = Čujeće so kreatiwny? <a data-l10n-name="link">Wutworće swójsku drastu z Firefox Color.</a>
@@ -376,6 +386,7 @@ plugin-heading = Waše tykače rjadować
 dictionary-heading = Rjadujće swoje słowniki
 locale-heading = Rjadujće swoje rěče
 updates-heading = Waše aktualizacije rjadować
+sitepermission-heading = Waše sydłowe prawa rjadować
 discover-heading = Personalizujće swój { -brand-short-name }
 shortcuts-heading = Tastowe skrótšenki rozšěrjenjow rjadować
 default-heading-search-label = Dalše přidatki pytać
@@ -383,3 +394,20 @@ addons-heading-search-input =
     .placeholder = Na addons.mozilla.org pytać
 addon-page-options-button =
     .title = Nastroje za wšě přidatki
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = { $name } kompatibelny z { -brand-short-name } { $version } njeje.
+details-notification-unsigned-and-disabled = { $name } njeda so za wužiwanje w { -brand-short-name } wobkrućić a je so znjemóžnił.
+details-notification-unsigned-and-disabled-link = Dalše informacije
+details-notification-unsigned = { $name } njeda so za wužiwanje w { -brand-short-name } wobkrućić. Pokročujće z kedźbliwosću.
+details-notification-unsigned-link = Dalše informacije
+details-notification-blocked = { $name } je so dla problemow wěstoty abo stabilnosće znjemóžnił.
+details-notification-blocked-link = Dalše informacije
+details-notification-softblocked = { $name } je za to znaty, zo problemy wěstoty abo stabilnosće zawinuje.
+details-notification-softblocked-link = Dalše informacije
+details-notification-gmp-pending = { $name } budźe so bórze instalować.

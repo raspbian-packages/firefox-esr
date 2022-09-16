@@ -43,15 +43,6 @@ menu-quit =
 menu-quit-mac =
     .label = Quit { -brand-shorter-name }
 
-# This menu-quit-button string is only used on Linux.
-menu-quit-button =
-    .label = { menu-quit.label }
-
-# This menu-quit-button-win string is only used on Windows.
-menu-quit-button-win =
-    .label = { menu-quit.label }
-    .tooltip = Ootgang fae { -brand-shorter-name }
-
 menu-about =
     .label = Aboot { -brand-shorter-name }
     .accesskey = A
@@ -81,9 +72,16 @@ menu-file-open-location =
 menu-file-open-file =
     .label = Open File…
     .accesskey = O
-menu-file-close =
-    .label = Sneck
-    .accesskey = C
+# Variables:
+#  $tabCount (Number): the number of tabs that are affected by the action.
+menu-file-close-tab =
+    .label =
+        { $tabCount ->
+            [1] Sneck { $tabCount } Tabs
+            [one] Sneck Tab
+           *[other] Sneck Tabs
+        }
+    .accesskey = S
 menu-file-close-window =
     .label = Sneck Windae
     .accesskey = d
@@ -99,9 +97,6 @@ menu-file-share-url =
 menu-file-print-setup =
     .label = Page Setup…
     .accesskey = u
-menu-file-print-preview =
-    .label = Prent Preview
-    .accesskey = v
 menu-file-print =
     .label = Prent…
     .accesskey = P
@@ -314,9 +309,6 @@ menu-help-more-troubleshooting-info =
     .accesskey = T
 menu-help-report-site-issue =
     .label = Report Site Issue…
-menu-help-feedback-page =
-    .label = Gie Feedback…
-    .accesskey = G
 menu-help-enter-troubleshoot-mode2 =
     .label = Fankle-fixin Mode…
     .accesskey = M

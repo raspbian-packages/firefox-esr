@@ -38,14 +38,13 @@
 <!ENTITY images.label "Bilder">
 <!ENTITY popups.label "Extrafönster">
 <!ENTITY passwords.label "Lösenord">
-<!ENTITY masterpass.label "Huvudlösenord">
 <!ENTITY ssltls.label "SSL/TLS">
 <!ENTITY certs.label "Certifikat">
 
 <!ENTITY sync.label "Synkronisering">
 
 <!ENTITY advance.label "Avancerat">
-<!ENTITY scriptsAndWindows.label "Skript/Insticksmoduler">
+<!ENTITY scriptsAndWindows2.label "Skript">
 <!ENTITY keynav.label "Tangentnavigering">
 <!ENTITY findAsYouType.label "Sök medan du skriver">
 <!ENTITY cache.label "Cache">
@@ -54,7 +53,6 @@
 <!ENTITY httpnetworking.label "HTTP-anslutning">
 <!ENTITY smart.label "Programinstallation">
 <!ENTITY mousewheel.label "Mushjul">
-
 <!ENTITY debugging.label "Felsökning">
 
 <!ENTITY focusSearch.key "f">

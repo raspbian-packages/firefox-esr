@@ -8,6 +8,8 @@
 
 # Page Title strings
 
+# Page title (ie tab title) for the Setup page
+about-debugging-page-title-setup-page = Отстраняване на грешки - Настройка
 
 # Sidebar strings
 
@@ -83,6 +85,9 @@ about-debugging-setup-usb-status-disabled = Забранено
 about-debugging-setup-usb-status-updating = Обновяване...
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Свържете устройството с Android към компютъра.
+# Text shown in the USB section of the setup page with a link to troubleshoot connection errors.
+# The link goes to https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html#connecting-to-a-remote-device
+about-debugging-setup-usb-troubleshoot = Имате проблеми при свързване към устройство през USB? <a>Отстраняване на неизправности</a>
 # Network section of the Setup page
 about-debugging-setup-network =
     .title = Местоположение в мрежата
@@ -125,11 +130,11 @@ about-debugging-runtime-other-workers =
 about-debugging-runtime-processes =
     .name = Процеси
 # This string is displayed in the runtime page if the current configuration of the
-# target runtime is incompatible with service workers. "Learn more" points to MDN.
-# https://developer.mozilla.org/en-US/docs/Tools/about%3Adebugging#Service_workers_not_compatible
+# target runtime is incompatible with service workers. "Learn more" points to:
+# https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html#service-workers-not-compatible
 about-debugging-runtime-service-workers-not-compatible = Настройките на вашия браузър са несъвместими със сервизните обслужващи процеси. <a>Научете повече</a>
 # This string is displayed in the runtime page if the remote browser version is too old.
-# "Troubleshooting" link points to https://developer.mozilla.org/docs/Tools/about:debugging#Troubleshooting
+# "Troubleshooting" link points to https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/
 # { $runtimeVersion } is the version of the remote browser (for instance "67.0a1")
 # { $minVersion } is the minimum version that is compatible with the current Firefox instance (same format)
 about-debugging-browser-version-too-old = Свързаният браузър е стара версия ({ $runtimeVersion }). Минимално поддържаната версия е ({ $minVersion }). Настройките по-долу не се поддържат и могат да доведат до неуспех на DevTools. Моля, актуализирайте свързания браузър. <a>Отстраняване</a>
@@ -197,6 +202,13 @@ about-debugging-worker-status-registering = Регистриране
 # Displayed for service workers in runtime pages, to label the scope of a worker
 about-debugging-worker-scope =
     .label = Обхват
+# Displayed for service workers in runtime pages, to label the push service endpoint (url)
+# of a worker
+about-debugging-worker-push-service =
+    .label = Услуга на Push
+# Displayed as title of the inspect button for zombie tabs (e.g. tabs loaded via a session restore).
+about-debugging-zombie-tab-inspect-action-disabled =
+    .title = Разделът не е напълно зареден и не може да бъде проверен
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-name = Основен процес

@@ -18,6 +18,8 @@ about-webrtc-aec-logging-msg-label = AEC ログ記録
 about-webrtc-aec-logging-off-state-label = AEC ログ記録を開始
 about-webrtc-aec-logging-on-state-label = AEC ログ記録を停止
 about-webrtc-aec-logging-on-state-msg = AEC ログ記録が有効です (数分間、通話相手と会話してから停止してください)
+# The autorefresh checkbox causes the page to autorefresh its content when checked
+about-webrtc-auto-refresh-label = 自動更新する
 
 ##
 
@@ -57,11 +59,6 @@ about-webrtc-ice-rollback-count-label = ICE ロールバック:
 about-webrtc-ice-pair-bytes-sent = 送信バイト数:
 about-webrtc-ice-pair-bytes-received = 受信バイト数:
 about-webrtc-ice-component-id = コンポーネント ID
-
-## "Avg." is an abbreviation for Average. These are used as data labels.
-
-about-webrtc-avg-bitrate-label = 平均ビットレート:
-about-webrtc-avg-framerate-label = 平均フレームレート:
 
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
@@ -183,30 +180,46 @@ about-webrtc-aec-logging-off-state-msg = 記録したログファイルの保存
 
 ##
 
+# This is the total number of frames encoded or decoded over an RTP stream.
+# Variables:
+#  $frames (Number) - The number of frames encoded or decoded.
+about-webrtc-frames =
+    { $frames ->
+        [one] { $frames } フレーム
+       *[other] { $frames } フレーム
+    }
+# This is the number of audio channels encoded or decoded over an RTP stream.
+# Variables:
+#  $channels (Number) - The number of channels encoded or decoded.
+about-webrtc-channels =
+    { $channels ->
+        [one] { $channels } チャンネル
+       *[other] { $channels } チャンネル
+    }
 # This is the total number of packets received on the PeerConnection.
 # Variables:
 #  $packets (Number) - The number of packets received.
 about-webrtc-received-label =
-  { $packets ->
-      [one] { $packets } パケット受信
-     *[other] { $packets } パケット受信
-  }
+    { $packets ->
+        [one] { $packets } パケット受信
+       *[other] { $packets } パケット受信
+    }
 # This is the total number of packets lost by the PeerConnection.
 # Variables:
 #  $packets (Number) - The number of packets lost.
 about-webrtc-lost-label =
-  { $packets ->
-      [one] { $packets } パケット損失
-     *[other] { $packets } パケット損失
-  }
+    { $packets ->
+        [one] { $packets } パケット損失
+       *[other] { $packets } パケット損失
+    }
 # This is the total number of packets sent by the PeerConnection.
 # Variables:
 #  $packets (Number) - The number of packets sent.
 about-webrtc-sent-label =
-  { $packets ->
-      [one] { $packets } パケット送信
-     *[other] { $packets } パケット送信
-  }
+    { $packets ->
+        [one] { $packets } パケット送信
+       *[other] { $packets } パケット送信
+    }
 # Jitter is the variance in the arrival time of packets.
 # See: https://w3c.github.io/webrtc-stats/#dom-rtcreceivedrtpstreamstats-jitter
 # Variables:

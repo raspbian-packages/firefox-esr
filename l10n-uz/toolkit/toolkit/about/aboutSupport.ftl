@@ -35,6 +35,13 @@ app-basics-service-workers = Ro‘yxatdan o‘tgan Service Workers
 app-basics-profiles = Profillar
 app-basics-multi-process-support = Multijarayon oynalari
 app-basics-safe-mode = Xavfsiz rejim
+
+show-dir-label =
+    { PLATFORM() ->
+        [macos] Topgichda koʻrsatish
+        [windows] Jildni ochish
+       *[other] Jildni ochish
+    }
 modified-key-prefs-title = Muhim o‘zgartirilgan moslamalar
 modified-prefs-name = Nomi
 modified-prefs-value = Qiymati
@@ -62,6 +69,9 @@ library-version-title = Kutubxona versiyasi
 copy-text-to-clipboard-label = Matndan nusxa olish
 copy-raw-data-to-clipboard-label = Manba ma’lumotlarni vaqtinchalik xotiraga nusxa olish
 sandbox-title = Sandbox
+troubleshoot-mode-title = Muammolarni aniqlash
+restart-in-troubleshoot-mode-label = Nosozliklarni tuzatish rejimi
+clear-startup-cache-title = Ishga tushish keshini tozalashga harakat qiling
 
 ## Media titles
 
@@ -188,6 +198,7 @@ apz-none = yo‘q
 wheel-enabled = g‘ildirakdan foydalanish yoqildi
 touch-enabled = sichqoncha tugmasidan foydalanish yoqildi
 drag-enabled = siljitish panelidan foydalanish yoqildi
+zooming-enabled = silliq chimdib masshtabni oʻzgartirish yoqilgan
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference
@@ -197,7 +208,9 @@ touch-warning = async teginib kiritish mos kelmadyigan qo‘shimcha tufayli o‘
 
 ## Strings representing the status of the Enterprise Policies engine.
 
+
 ## Printing section
+
 
 ## Normandy sections
 

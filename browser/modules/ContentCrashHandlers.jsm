@@ -38,6 +38,9 @@ const MAX_UNSEEN_CRASHED_SUBFRAME_IDS = 10;
 // Time after which we will begin scanning for unsubmitted crash reports
 const CHECK_FOR_UNSUBMITTED_CRASH_REPORTS_DELAY_MS = 60 * 10000; // 10 minutes
 
+// This is SIGUSR1 and indicates a user-invoked crash
+const EXIT_CODE_CONTENT_CRASHED = 245;
+
 const TABCRASHED_ICON_URI = "chrome://browser/skin/tab-crashed.svg";
 
 const SUBFRAMECRASH_LEARNMORE_URI =
@@ -174,7 +177,10 @@ var TabCrashHandler = {
             "A content process crashed and MOZ_CRASHREPORTER_SHUTDOWN is " +
               "set, shutting down\n"
           );
-          Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
+          Services.startup.quit(
+            Ci.nsIAppStartup.eForceQuit,
+            EXIT_CODE_CONTENT_CRASHED
+          );
         }
 
         break;
@@ -401,12 +407,6 @@ var TabCrashHandler = {
       }
     };
 
-    let doc = browser.ownerDocument;
-    let messageFragment = doc.createDocumentFragment();
-    let message = doc.createElement("span");
-    message.setAttribute("data-l10n-id", "crashed-subframe-message");
-    messageFragment.appendChild(message);
-
     let buttons = [
       {
         "l10n-id": "crashed-subframe-learnmore-link",
@@ -418,50 +418,46 @@ var TabCrashHandler = {
         popup: null,
         callback: async () => {
           if (dumpID) {
-            UnsubmittedCrashHandler.submitReports([dumpID]);
+            UnsubmittedCrashHandler.submitReports(
+              [dumpID],
+              CrashSubmit.SUBMITTED_FROM_CRASH_TAB
+            );
           }
           closeAllNotifications();
         },
       },
     ];
 
-    // Add telemetry indicating that the subframe crash UI is shown, but wait until the tab
-    // is switched to.
-    let removeTelemetryFn = this.telemetryIfTabSelected(
-      browser,
-      "dom.contentprocess.crash_subframe_ui_presented"
-    );
-
     notification = notificationBox.appendNotification(
-      messageFragment,
       value,
-      TABCRASHED_ICON_URI,
-      notificationBox.PRIORITY_INFO_MEDIUM,
-      buttons,
-      eventName => {
-        if (eventName == "disconnected") {
-          removeTelemetryFn();
+      {
+        label: { "l10n-id": "crashed-subframe-message" },
+        image: TABCRASHED_ICON_URI,
+        priority: notificationBox.PRIORITY_INFO_MEDIUM,
+        eventCallback: eventName => {
+          if (eventName == "disconnected") {
+            let existingItem = this.notificationsMap.get(childID);
+            if (existingItem) {
+              let idx = existingItem.indexOf(notification);
+              if (idx >= 0) {
+                existingItem.splice(idx, 1);
+              }
 
-          let existingItem = this.notificationsMap.get(childID);
-          if (existingItem) {
-            let idx = existingItem.indexOf(notification);
-            if (idx >= 0) {
-              existingItem.splice(idx, 1);
+              if (!existingItem.length) {
+                this.notificationsMap.delete(childID);
+              }
+            }
+          } else if (eventName == "dismissed") {
+            if (dumpID) {
+              CrashSubmit.ignore(dumpID);
+              this.childMap.delete(childID);
             }
 
-            if (!existingItem.length) {
-              this.notificationsMap.delete(childID);
-            }
+            closeAllNotifications();
           }
-        } else if (eventName == "dismissed") {
-          if (dumpID) {
-            CrashSubmit.ignore(dumpID);
-            this.childMap.delete(childID);
-          }
-
-          closeAllNotifications();
-        }
-      }
+        },
+      },
+      buttons
     );
 
     let existingItem = this.notificationsMap.get(childID);
@@ -470,40 +466,6 @@ var TabCrashHandler = {
     } else {
       this.notificationsMap.set(childID, [notification]);
     }
-  },
-
-  /**
-   * If the browser tab is selected, increase the telemetry probe. If the browser tab
-   * is not selected, wait until the browser tab is selected before increasing the
-   * telemetry probe. This means that a crash in a background tab won't trigger the
-   * probe until the tab is switched to.
-   *
-   * Returns a function to be called to cancel the telemetry when it no longer applies,
-   */
-  telemetryIfTabSelected(browser, telemetryKey) {
-    let gBrowser = browser.getTabBrowser();
-    let tab = gBrowser.getTabForBrowser(browser);
-
-    let seenNotification = event => {
-      if (tab == event.target) {
-        tab.removeEventListener("TabSelect", seenNotification, true);
-
-        Services.telemetry.scalarAdd(telemetryKey, 1);
-      }
-    };
-
-    // Add telemetry indicating that the subframe crash UI is shown, but wait until the tab
-    // is switched to.
-    if (gBrowser.selectedTab == tab) {
-      Services.telemetry.scalarAdd(telemetryKey, 1);
-      return () => {};
-    }
-
-    tab.addEventListener("TabSelect", seenNotification, true);
-
-    return () => {
-      tab.removeEventListener("TabSelect", seenNotification, true);
-    };
   },
 
   /**
@@ -534,7 +496,10 @@ var TabCrashHandler = {
       if (UnsubmittedCrashHandler.autoSubmit) {
         let dumpID = this.childMap.get(childID);
         if (dumpID) {
-          UnsubmittedCrashHandler.submitReports([dumpID]);
+          UnsubmittedCrashHandler.submitReports(
+            [dumpID],
+            CrashSubmit.SUBMITTED_FROM_AUTO
+          );
         }
       } else {
         this.sendToTabCrashedPage(browser);
@@ -563,6 +528,7 @@ var TabCrashHandler = {
 
     browser.docShell.displayLoadError(Cr.NS_ERROR_BUILDID_MISMATCH, uri, null);
     tab.setAttribute("crashed", true);
+    gBrowser.tabContainer.updateTabIndicatorAttr(tab);
 
     // Make sure to only count once even if there are multiple windows
     // that will all show about:restartrequired.
@@ -593,6 +559,7 @@ var TabCrashHandler = {
     browser.docShell.displayLoadError(Cr.NS_ERROR_CONTENT_CRASHED, uri, null);
     browser.removeAttribute("crashedPageTitle");
     tab.setAttribute("crashed", true);
+    gBrowser.tabContainer.updateTabIndicatorAttr(tab);
   },
 
   /**
@@ -669,7 +636,7 @@ var TabCrashHandler = {
       extraExtraKeyVals.URL = "";
     }
 
-    CrashSubmit.submit(dumpID, {
+    CrashSubmit.submit(dumpID, CrashSubmit.SUBMITTED_FROM_CRASH_TAB, {
       recordSubmission: true,
       extraExtraKeyVals,
     }).catch(Cu.reportError);
@@ -725,15 +692,6 @@ var TabCrashHandler = {
     let index = this.unseenCrashedChildIDs.indexOf(childID);
     if (index != -1) {
       this.unseenCrashedChildIDs.splice(index, 1);
-    }
-
-    // Add telemetry for each time the user has been shown a tab crash page. The
-    // tab crashed page should only appear in foreground tabs, but verify this.
-    if (browser.getTabBrowser().selectedBrowser == browser) {
-      Services.telemetry.scalarAdd(
-        "dom.contentprocess.crash_tab_ui_presented",
-        1
-      );
     }
 
     let dumpID = this.getDumpID(browser);
@@ -944,7 +902,7 @@ var UnsubmittedCrashHandler = {
 
     if (reportIDs.length) {
       if (this.autoSubmit) {
-        this.submitReports(reportIDs);
+        this.submitReports(reportIDs, CrashSubmit.SUBMITTED_FROM_AUTO);
       } else if (this.shouldShowPendingSubmissionsNotification()) {
         return this.showPendingSubmissionsNotification(reportIDs);
       }
@@ -1104,7 +1062,7 @@ var UnsubmittedCrashHandler = {
       {
         label: gNavigatorBundle.GetStringFromName("pendingCrashReports.send"),
         callback: () => {
-          this.submitReports(reportIDs);
+          this.submitReports(reportIDs, CrashSubmit.SUBMITTED_FROM_INFOBAR);
           if (onAction) {
             onAction();
           }
@@ -1116,7 +1074,7 @@ var UnsubmittedCrashHandler = {
         ),
         callback: () => {
           this.autoSubmit = true;
-          this.submitReports(reportIDs);
+          this.submitReports(reportIDs, CrashSubmit.SUBMITTED_FROM_INFOBAR);
           if (onAction) {
             onAction();
           }
@@ -1148,18 +1106,15 @@ var UnsubmittedCrashHandler = {
       }
     };
 
-    Services.telemetry.scalarAdd(
-      "dom.contentprocess.unsubmitted_ui_presented",
-      1
-    );
-
     return chromeWin.gNotificationBox.appendNotification(
-      message,
       notificationID,
-      TABCRASHED_ICON_URI,
-      chromeWin.gNotificationBox.PRIORITY_INFO_HIGH,
-      buttons,
-      eventCallback
+      {
+        label: message,
+        image: TABCRASHED_ICON_URI,
+        priority: chromeWin.gNotificationBox.PRIORITY_INFO_HIGH,
+        eventCallback,
+      },
+      buttons
     );
   },
 
@@ -1177,20 +1132,17 @@ var UnsubmittedCrashHandler = {
   },
 
   /**
-   * Attempt to submit reports to the crash report server. Each
-   * report will have the "SubmittedFromInfobar" annotation set
-   * to "1".
+   * Attempt to submit reports to the crash report server.
    *
    * @param reportIDs (Array<string>)
    *        The array of reportIDs to submit.
+   * @param submittedFrom (string)
+   *        One of the CrashSubmit.SUBMITTED_FROM_* constants representing
+   *        how this crash was submitted.
    */
-  submitReports(reportIDs) {
+  submitReports(reportIDs, submittedFrom) {
     for (let reportID of reportIDs) {
-      CrashSubmit.submit(reportID, {
-        extraExtraKeyVals: {
-          SubmittedFromInfobar: "1",
-        },
-      }).catch(Cu.reportError);
+      CrashSubmit.submit(reportID, submittedFrom).catch(Cu.reportError);
     }
   },
 };

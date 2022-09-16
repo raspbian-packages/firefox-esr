@@ -8,6 +8,8 @@ styleeditor-new-button =
 styleeditor-import-button =
     .tooltiptext = 导入并追加一个现有的样式表到该文档
     .accesskey = I
+styleeditor-filter-input =
+    .placeholder = 过滤样式表
 styleeditor-visibility-toggle =
     .tooltiptext = 切换样式表可见性
     .accesskey = S
@@ -25,3 +27,8 @@ styleeditor-open-link-new-tab =
     .label = 新建标签页打开链接
 styleeditor-copy-url =
     .label = 复制网址
+styleeditor-go-to-line =
+    .label = 跳转到某行…
+    .accesskey = J
+# Label displayed when searching a term that is not found in any stylesheet path
+styleeditor-stylesheet-all-filtered = 找不到匹配的样式表。

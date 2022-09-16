@@ -5,6 +5,8 @@
 close-button =
     .aria-label = Lukk
 
+preferences-doc-title2 = Innstillinger
+
 category-list =
     .aria-label = Kategorier
 
@@ -126,6 +128,7 @@ update-in-progress-ok-button = &Avvis
 update-in-progress-cancel-button = &Fortsett
 
 account-button = Kontoinnstillinger
+open-addons-sidebar-button = Tillegg og temaer
 
 ## OS Authentication dialog
 
@@ -162,12 +165,18 @@ restore-default-label =
     .accesskey = u
 
 default-search-engine = Standard søkemotor
-add-search-engine =
-    .label = Legg til fra fil
-    .accesskey = e
+add-web-search-engine =
+    .label = Legg til …
+    .accesskey = L
 remove-search-engine =
     .label = Fjern
     .accesskey = e
+
+add-opensearch-provider-title = Legg til OpenSearch-tilbyder
+add-opensearch-provider-text = Skriv inn adressen til OpenSearch-tilbyderen du vil legge til. Bruk enten den direkte adressen til OpenSearch-beskrivelsesfilen, eller en adresse der den kan oppdages automatisk.
+
+adding-opensearch-provider-failed-title = Kunne ikke legge til OpenSearch-tilbyder
+adding-opensearch-provider-failed-text = Kunne ikke legge til OpenSearch-tilbyder for { $url }.
 
 minimize-to-tray-label =
     .label = Når { -brand-short-name } er minimert, flytt den til systemstatusfeltet
@@ -194,7 +203,7 @@ app-icon-options =
     .label = Innstillinger for app-ikon …
     .accesskey = n
 
-notification-settings = Varsler og standardlyden kan deaktiveres i Varslinger-panelet i Systemvalg.
+notification-settings2 = Varsler og standardlyden kan deaktiveres i Varslinger-panelet i Systemvalg.
 
 animated-alert-label =
     .label = Vis en beskjed
@@ -202,6 +211,15 @@ animated-alert-label =
 customize-alert-label =
     .label = Avansert …
     .accesskey = e
+
+biff-use-system-alert =
+    .label = Bruk systemvarselet
+
+tray-icon-unread-label =
+    .label = Vis et ikon i systemkurven for uleste meldinger
+    .accesskey = V
+
+tray-icon-unread-description = Anbefalt ved bruk av små knapper på oppgavelinjen
 
 mail-system-sound-label =
     .label = Standard systemlyd for ny e-post
@@ -240,6 +258,9 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Bruk jevn rulling
     .accesskey = r
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Vis alltid rullefelt
+    .accesskey = V
 
 system-integration-legend = Systemintegrasjon
 always-check-default =
@@ -313,6 +334,10 @@ diskspace-legend = Diskplass
 offline-compact-folder =
     .label = Komprimer alle mapper når det vil spare mer enn
     .accesskey = K
+
+offline-compact-folder-automatically =
+    .label = Spør hver gang før det optimeres
+    .accesskey = h
 
 compact-folder-size =
     .value = MB totalt
@@ -392,13 +417,12 @@ quoted-text-color =
     .label = Farge:
     .accesskey = F
 
-type-column-label =
-    .label = Innholdstype
-    .accesskey = I
+search-handler-table =
+    .placeholder = Filtrer innholdstyper og handlinger
 
-action-column-label =
-    .label = Handling
-    .accesskey = H
+type-column-header = Innholdstype
+
+action-column-header = Handling
 
 save-to-label =
     .label = Lagre filer til
@@ -553,12 +577,6 @@ default-format-label =
     .label = Bruk paragrafformat i stedet for brødtekst som standard
     .accesskey = p
 
-format-description = Konfigurer oppførselen til tekstformatet
-
-send-options-label =
-    .label = Sendeinnstillinger …
-    .accesskey = n
-
 autocomplete-description = Ved adressering av meldinger, søk etter treff i:
 
 ab-label =
@@ -613,7 +631,6 @@ find-cloud-providers =
     .value = Finn flere leverandører…
 
 cloud-account-description = Legg til en Filelink lagringstjeneste
-
 
 ## Privacy Tab
 
@@ -678,7 +695,6 @@ passwords-description = { -brand-short-name } kan huske passordene for alle kont
 passwords-button =
     .label = Lagrede passord …
     .accesskey = L
-
 
 primary-password-description = Du kan bruke et hovedpassord for å beskytte alle passordene, men da må du skrive inn passordet en gang for hver programøkt.
 
@@ -841,8 +857,6 @@ theme-label =
     .value = Tema:
     .accesskey = T
 
-style-thunderbird =
-    .label = Thunderbird
 style-bubbles =
     .label = Bobler
 style-dark =
@@ -862,10 +876,24 @@ chat-variant-label =
 
 ## Preferences UI Search Results
 
+# This is used to determine the width of the search field in about:preferences,
+# in order to make the entire placeholder string visible
+#
+# Please keep the placeholder string short to avoid truncation.
+#
+# Notice: The value of the `.style` attribute is a CSS string, and the `width`
+# is the name of the CSS property. It is intended only to adjust the element's width.
+# Do not translate.
+search-preferences-input2 =
+    .style = width: 15.4em
+    .placeholder = Finn i Innstillinger
+
+## Settings UI Search Results
+
 search-results-header = Søkeresultat
 
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message =
+search-results-empty-message2 =
     { PLATFORM() ->
         [windows] Beklager! Det er ingen resultat i innstillinger for «<span data-l10n-name="query"></span>».
        *[other] Beklager! Det er ingen resultat i innstillinger for «<span data-l10n-name="query"></span>».

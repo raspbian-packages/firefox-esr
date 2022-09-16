@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Spara länk till { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Kopiera e-postadress
     .accesskey = K
+
+main-context-menu-copy-phone =
+    .label = Kopiera telefonnummer
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Kopiera länk
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Öppna länk i ny { $containerName }-flik
     .accesskey = f
+
+main-context-menu-reveal-password =
+    .label = Avslöja lösenord
+    .accesskey = v

@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Localized string used as the dialog window title (a new behavior locked
-# behind the "extensions.abuseReport.openDialog" preference).
+# Localized string used as the dialog window title.
 # "Report" is a noun in this case, "Report for AddonName".
 #
 # Variables:
@@ -37,12 +36,6 @@ abuse-report-goback-button = Vés enrere
 abuse-report-submit-button = Envia
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -60,6 +53,8 @@ abuse-report-messagebar-error-recent-submit = L'informe sobre <span data-l10n-na
 
 abuse-report-messagebar-action-remove-extension = Sí, elimina-la
 abuse-report-messagebar-action-keep-extension = No, mantén-la
+abuse-report-messagebar-action-remove-sitepermission = Sí, elimina'l
+abuse-report-messagebar-action-keep-sitepermission = No, mantén-lo
 abuse-report-messagebar-action-remove-theme = Sí, elimina'l
 abuse-report-messagebar-action-keep-theme = No, mantén-lo
 abuse-report-messagebar-action-retry = Reintenta
@@ -82,6 +77,7 @@ abuse-report-deceptive-reason-v2 = Pretén ser quelcom que no és
 abuse-report-deceptive-example = Exemple: imatges o descripcions enganyoses
 
 abuse-report-broken-reason-extension-v2 = No funciona, deixa llocs web inutilitzables o fa que el { -brand-product-name } vagi lent
+abuse-report-broken-reason-sitepermission-v2 = No funciona, deixa llocs web inutilitzables o fa que el { -brand-product-name } vagi lent
 abuse-report-broken-reason-theme-v2 = No funciona o fa que el navegador es vegi malament
 abuse-report-broken-example = Exemple: les funcions són lentes, difícils d’utilitzar o no funcionen; parts dels llocs web no es carreguen o tenen un aspecte inusual
 abuse-report-broken-suggestions-extension =
@@ -101,4 +97,3 @@ abuse-report-unwanted-reason-v2 = No l'he volgut mai i no sé com desfer-me'n
 abuse-report-unwanted-example = Exemple: una aplicació la va instal·lar sense el meu permís
 
 abuse-report-other-reason = Una altra cosa
-

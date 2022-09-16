@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Spremi poveznicu u { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -314,7 +309,7 @@ main-context-menu-audio-save-as =
     .accesskey = z
 
 main-context-menu-video-take-snapshot =
-    .label = Spremi snimku...
+    .label = Snimi sliku …
     .accesskey = S
 
 main-context-menu-video-email =
@@ -356,7 +351,7 @@ main-context-menu-use-saved-password =
 ##
 
 main-context-menu-suggest-strong-password =
-    .label = Predloži jaku lozinku...
+    .label = Predloži jaku lozinku …
     .accesskey = j
 
 main-context-menu-manage-logins2 =
@@ -455,3 +450,4 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Otvori poveznicu u novoj kontejnerskoj kartici { $containerName }
     .accesskey = t
+

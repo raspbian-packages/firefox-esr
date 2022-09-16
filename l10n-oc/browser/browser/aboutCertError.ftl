@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Los sites web pròvan lor identitat v
 
 cert-error-symantec-distrust-admin = Podètz avisar l’administrator d’aqueste site web d’aquel problèma.
 
+cert-error-old-tls-version = Aqueste site poiriá prendre pas en carga lo protocòl TLS 1.2, qu’es la version minimala presa en carga per { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = Seguretat estricta de transpòrt HTTP: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Responsa inesperada del servidor
 nssFailure2-title = La connexion segura a pas capitat
 csp-xfo-error-title = { -brand-short-name } pòt pas dobrir aquesta pagina
 corruptedContentError-title = Error deguda a un contengut corromput
-remoteXUL-title = XUL distant
 sslv3Used-title = Impossible d'establir una connexion securizada
 inadequateSecurityError-title = Vòstra connexion es pas segura
 blockedByPolicy-title = Pagina blocada

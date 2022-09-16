@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+screenshot-toolbarbutton =
+    .label = Skrinshot
+    .tooltiptext = Skrinshot olish
+
 screenshots-instructions = Hududni belgilash uchun kerakli hududni tanlang va bosing. Chiqish uchun “ESC” tugmasidan foydalaning.
 screenshots-cancel-button = Bekor qilish
 screenshots-save-visible-button = Ko‘rinadiganini saqlash

@@ -73,6 +73,14 @@ app-basics-location-service-key-google = Google Konum Hizmeti anahtarı
 app-basics-safebrowsing-key-google = Google Safebrowsing anahtarı
 app-basics-key-mozilla = Mozilla Konum Hizmeti anahtarı
 app-basics-safe-mode = Güvenli kip
+app-basics-memory-size = Bellek boyutu (RAM)
+app-basics-disk-available = Kullanılabilir disk alanı
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Finder'da göster
@@ -340,6 +348,7 @@ fission-status-experiment-control = Deney tarafından kapatıldı
 fission-status-experiment-treatment = Deney tarafından açıldı
 fission-status-disabled-by-e10s-env = Ortam tarafından kapatıldı
 fission-status-enabled-by-env = Ortam tarafından açıldı
+fission-status-disabled-by-env = Ortam tarafından kapatıldı
 fission-status-disabled-by-safe-mode = Güvenli mod tarafından kapatıldı
 fission-status-enabled-by-default = Varsayılan olarak açık
 fission-status-disabled-by-default = varsayılan olarak kapalı

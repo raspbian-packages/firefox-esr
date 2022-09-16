@@ -2,9 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-otr-finger =
-    .buttonlabelaccept = Zavřít
-    .title = Známé otisky klíčů OTR
+otr-finger-title = Dříve viděné otisky klíčů OTR
 
 finger-intro = Otisky klíčů OTR z předchozích šifrovaných konverzací.
 

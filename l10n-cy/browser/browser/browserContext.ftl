@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Cadw Dolen i { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Copïo Cyfeiriad E-bost
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = Copïo Rhif Ffôn
+    .accesskey = C
 
 main-context-menu-copy-link-simple =
     .label = Copïo'r Ddolen
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Agor Dolen mewn Tab { $containerName } Newydd
     .accesskey = A
+
+main-context-menu-reveal-password =
+    .label = Datgelu Cyfrinair
+    .accesskey = D

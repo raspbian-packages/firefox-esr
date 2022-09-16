@@ -41,6 +41,11 @@ options-collapse-attrs-label = 截短 DOM 属性
 options-collapse-attrs-tooltip =
     .title = 截短查看器中的长属性
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = 点击并拖动编辑大小值
+options-inspector-draggable-properties-tooltip =
+    .title = 在查看器规则视图中单击并拖动编辑大小值。
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = 默认颜色单位
@@ -48,6 +53,7 @@ options-default-color-unit-authored = 按原单位
 options-default-color-unit-hex = Hex
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = 颜色名
 
 ## Style Editor section
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = 启用远程调试
 options-enable-remote-tooltip2 =
     .title = 启用此选项将允许远程调试此浏览器实例
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = 启用自定义格式化程序
+options-enable-custom-formatters-tooltip =
+    .title = 打开此选项，将允许网站自行定义 DOM 对象的格式化程序
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = 启用 Service Workers over HTTP（在工具箱打开时）

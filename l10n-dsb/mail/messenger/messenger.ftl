@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Miniměrowaś
+messenger-window-maximize-button =
+    .tooltiptext = Maksiměrowaś
+messenger-window-restore-down-button =
+    .tooltiptext = Wótnowiś
+messenger-window-close-button =
+    .tooltiptext = Zacyniś
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -78,10 +89,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Nastajenja
 appmenu-save-as-file =
     .label = Dataja…
 appmenu-settings =
@@ -101,15 +108,57 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Dalej pósrědniś
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [one] Powěsć lašowaś
+            [two] Wubranej powěsći lašowaś
+            [few] Wubrane powěsći lašowaś
+           *[other] Wubrane powěsći lašowaś
+        }
+context-menu-decrypt-to-folder =
+    .label = Ako dešifrěrowanu kopěrowaś do
+    .accesskey = d
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Dalej pósrědniś
-message-header-msg-is-flagged =
-    .title = Powěsć z gwězdku
+message-header-msg-flagged =
+    .title = Z gwězdku
+    .aria-label = Z gwězdku
 message-header-msg-not-flagged =
     .title = Powěsć bźez gwězdki
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Profilowy wobraz { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Nastajenja głowy powěsći
+message-header-customize-button-style =
+    .value = Tłocaškowy stil
+    .accesskey = T
+message-header-button-style-default =
+    .label = Symbole a tekst
+message-header-button-style-text =
+    .label = Tekst
+message-header-button-style-icons =
+    .label = Symbole
+message-header-show-sender-full-address =
+    .label = Pśecej dopołnu adresu wótpósłarja pokazaś
+    .accesskey = d
+message-header-show-sender-full-address-description = E-mailowa adresa se pód zwobraznjeńskim mjenim pokažo.
+message-header-show-recipient-avatar =
+    .label = Profilowy wobraz wótpósłarja pokazaś
+    .accesskey = P
+message-header-hide-label-column =
+    .label = Słup pópisanjow schowaś
+    .accesskey = u
+message-header-large-subject =
+    .label = Wjelika tema
+    .accesskey = l
 
 ## Action Button Context Menu
 
@@ -119,13 +168,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Rozšyrjenje wótwónoźeś
     .accesskey = t
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Adresa jo w adresniku
-message-header-address-not-in-address-book-icon =
-    .alt = Adresa njejo w adresniku
 
 ## Add-on removal warning
 
@@ -146,3 +188,93 @@ repair-text-encoding-button =
 no-reply-title = Wótegrono se njepódpěra
 no-reply-message = Zda se, až wótegronjeńska adresa ({ $email }) njejo doglědowana adresa. Powěsći na toś tu adresu se nejskerjej wót nikogo njecytaju.
 no-reply-reply-anyway-button = Weto wotegroniś
+
+## error messages
+
+decrypt-and-copy-failures = { $failures } z { $total } powěsćow njejsu se dešifrěrowali a njejsu se kopěrowali.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Rědka źělnych programow
+    .aria-label = Rědka źělnych programow
+    .aria-description = Wertikalna symbolowa rědka, kótaraž mjazy rozdźělnymi źělnymi programami pśešaltujo. Wužywajśo šypkowe tasty, aby pó k dispoziciji stojecych tłocaškach nawigěrował.
+spaces-toolbar-button-mail2 =
+    .title = E-mail
+spaces-toolbar-button-address-book2 =
+    .title = Adresnik
+spaces-toolbar-button-calendar2 =
+    .title = Kalendaŕ
+spaces-toolbar-button-tasks2 =
+    .title = Nadawki
+spaces-toolbar-button-chat2 =
+    .title = Chat
+spaces-toolbar-button-overflow =
+    .title = Wěcej rumow…
+spaces-toolbar-button-settings2 =
+    .title = Nastajenja
+spaces-toolbar-button-hide =
+    .title = Rědku źělnych programow schowaś
+spaces-toolbar-button-show =
+    .title = Rědku źělnych programow pokazaś
+spaces-context-new-tab-item =
+    .label = W nowem rejtarku wócyniś
+spaces-context-new-window-item =
+    .label = W nowem woknje wócyniś
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = K { $tabName } pśejś
+settings-context-open-settings-item2 =
+    .label = Nastajenja
+settings-context-open-account-settings-item2 =
+    .label = Kontowe nastajenja
+settings-context-open-addons-item2 =
+    .label = Dodanki a drastwy
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Meni źělnych programow wócyniś
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [one] { $count } njecytana powěsć
+            [two] { $count } njecytanej powěsći
+            [few] { $count } njecytane powěsći
+           *[other] { $count } njecytanych powěsćow
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Pśiměriś…
+spaces-customize-panel-title = Nastajenja rědki źělnych programow
+spaces-customize-background-color = Slězynowa barwa
+spaces-customize-icon-color = Tłocaškowa barwa
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Slězynowa barwa wubranego tłocaška
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Barwa wubranego tłocaška
+spaces-customize-button-restore = Standard wótnowiś
+    .accesskey = S
+customize-panel-button-save = Dokóńcony
+    .accesskey = D

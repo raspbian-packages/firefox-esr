@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = 웹 사이트는 인증 기관에서 
 
 cert-error-symantec-distrust-admin = 웹 사이트의 관리자에게 이 문제에 대해 알려주실 수 있습니다.
 
+cert-error-old-tls-version = 이 웹 사이트는 { -brand-short-name }에서 지원하는 최소 버전인 TLS 1.2 프로토콜을 지원하지 않을 수 있습니다.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP 보안 강화 프로토콜: { $hasHSTS }
@@ -80,7 +82,7 @@ cert-error-details-key-pinning-label = HTTP 공개 키 고정: { $hasHPKP }
 
 cert-error-details-cert-chain-label = 인증 체인:
 
-open-in-new-window-for-csp-or-xfo-error = 사이트를 새 창에 열기
+open-in-new-window-for-csp-or-xfo-error = 사이트를 새 창에서 열기
 
 # Variables:
 # $hostname (String) - Hostname of the website blocked by csp or xfo error.
@@ -115,7 +117,6 @@ unknownSocketType-title = 서버에서 예기치 않은 응답
 nssFailure2-title = 보안 연결 실패
 csp-xfo-error-title = { -brand-short-name }가 이 페이지를 열 수 없음
 corruptedContentError-title = 손상된 콘텐츠 오류
-remoteXUL-title = 원격 XUL
 sslv3Used-title = 보안 연결을 할 수 없음
 inadequateSecurityError-title = 연결이 안전하지 않음
 blockedByPolicy-title = 차단된 페이지

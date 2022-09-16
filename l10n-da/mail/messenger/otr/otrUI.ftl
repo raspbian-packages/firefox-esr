@@ -19,6 +19,9 @@ auth-waiting = Venter på, at kontakten afslutter bekræftelsen...
 finger-verify = Bekræft
 finger-verify-access-key = B
 
+finger-ignore = Ignorer
+finger-ignore-access-key = g
+
 # Do not translate 'OTR' (name of an encryption protocol)
 buddycontextmenu-label = Tilføj ORT-fingeraftryk
 
@@ -43,7 +46,6 @@ finger-unseen = { $name }s identitet er ikke bekræftet endnu. Tilfældig aflytn
 finger-seen = { $name } kontakter dig fra en ukendt computer. Tilfældig aflytning er ikke mulig, men med en vis indsats kan nogen lytte med. Bekræft denne kontakts identitet for at forhindre overvågning.
 
 state-not-private = Den aktuelle samtale er ikke privat.
-
 state-generic-not-private = Den aktuelle samtale er ikke privat.
 
 # Variables:
@@ -78,13 +80,6 @@ afterauth-private = Du har bekræftet { $name }s identitet.
 # Variables:
 #   $name (String) - the screen name of a chat contact person
 afterauth-unverified = { $name }s identitet er ikke bekræftet.
-
-verify-title = Bekræft din kontakts identitet
-error-title = Fejl
-success-title = End to end-kryptering
-success-them-title = Bekræft din kontakts identitet
-fail-title = Kunne ikke bekræfte
-waiting-title = Bekræftelsesanmodning sendt
 
 # Do not translate 'OTR' (name of an encryption protocol)
 # Variables:

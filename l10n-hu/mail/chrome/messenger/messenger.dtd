@@ -24,8 +24,6 @@
 <!ENTITY moveToNewWindow.accesskey "t">
 <!ENTITY newVirtualFolderCmd.label "Mentett keresés…">
 <!ENTITY newVirtualFolderCmd.accesskey "k">
-<!ENTITY newOtherAccountsCmd.label "Más fiókok…">
-<!ENTITY newOtherAccountsCmd.accesskey "f">
 <!ENTITY newCreateEmailAccountCmd.label "Új postafiók létrehozása…">
 <!ENTITY newCreateEmailAccountCmd.accesskey "o">
 <!ENTITY newExistingEmailAccountCmd.label "Meglévő postafiók…">
@@ -48,8 +46,6 @@
 <!ENTITY openMessageFileCmd.accesskey "e">
 <!ENTITY saveAsMenu.label "Mentés másként">
 <!ENTITY saveAsMenu.accesskey "M">
-<!ENTITY saveAsFileCmd.label "Fájl">
-<!ENTITY saveAsFileCmd.accesskey "F">
 <!ENTITY saveAsFileCmd.key "s">
 <!ENTITY saveAsTemplateCmd.label "Sablon">
 <!ENTITY saveAsTemplateCmd.accesskey "S">
@@ -677,7 +673,7 @@
 <!ENTITY saveAsVirtualFolderMenu.label "Keresés mentése mappaként…">
 
 <!-- Thread Pane -->
-<!ENTITY selectColumn.label "Válasszon üzeneteket">
+<!ENTITY selectColumn.label "Üzenetek kiválasztása">
 <!ENTITY threadColumn.label "Témacsoport">
 <!ENTITY fromColumn.label "Feladó">
 <!ENTITY recipientColumn.label "Címzett">
@@ -941,7 +937,7 @@
 <!ENTITY showAllAppsCmdMac.label        "Mindet mutat">
 
 <!-- Mac OS X Dock Icon pop-up menu -->
-<!ENTITY dockOptions.label              "Appikon beállításai…">
+<!ENTITY dockOptions.label              "Alkalmazásikon beállításai…">
 <!ENTITY writeNewMessageDock.label      "Új üzenet írása">
 <!ENTITY openAddressBookDock.label      "Címjegyzék megnyitása">
 

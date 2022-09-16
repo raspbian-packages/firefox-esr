@@ -6,6 +6,10 @@ dock-options-window-dialog =
     .title = Opciones del icono de la aplicación
     .style = width: 42em;
 
+dock-options-show-badge =
+    .label = Mostrar icono de insignia
+    .accesskey = M
+
 bounce-system-dock-icon =
     .label = Animar el icono de la aplicación cuando llegue un mensaje nuevo
     .accesskey = A
@@ -23,4 +27,4 @@ count-new-messages-radio =
     .label = Cuenta de mensajes nuevos
     .accesskey = C
 
-notification-settings-info = Puede desactivar la insignia en el panel Notificaciones de las preferencias del sistema.
+notification-settings-info2 = Puede desactivar la insignia en el panel Notificaciones de los ajustes del sistema.

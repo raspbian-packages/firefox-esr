@@ -139,19 +139,19 @@ main-context-menu-open-link =
     .accesskey = O
 
 main-context-menu-open-link-new-tab =
-    .label = 링크를 새 탭에 열기
+    .label = 링크를 새 탭에서 열기
     .accesskey = T
 
 main-context-menu-open-link-container-tab =
-    .label = 링크를 새 컨테이너 탭에 열기
+    .label = 링크를 새 컨테이너 탭에서 열기
     .accesskey = C
 
 main-context-menu-open-link-new-window =
-    .label = 링크를 새 창에 열기
+    .label = 링크를 새 창에서 열기
     .accesskey = W
 
 main-context-menu-open-link-new-private-window =
-    .label = 링크를 새 사생활 보호 창에 열기
+    .label = 링크를 새 사생활 보호 창에서 열기
     .accesskey = P
 
 main-context-menu-bookmark-link =
@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = 링크를 { -pocket-brand-name }에 저장
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = 메일 주소 복사
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = 전화 번호 복사
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = 링크 복사
@@ -262,11 +261,11 @@ main-context-menu-image-reload =
     .accesskey = R
 
 main-context-menu-image-view-new-tab =
-    .label = 이미지를 새 탭에 열기
+    .label = 이미지를 새 탭에서 열기
     .accesskey = I
 
 main-context-menu-video-view-new-tab =
-    .label = 동영상을 새 탭에 열기
+    .label = 동영상을 새 탭에서 열기
     .accesskey = i
 
 main-context-menu-image-copy =
@@ -380,11 +379,11 @@ main-context-menu-frame-show-this =
     .accesskey = S
 
 main-context-menu-frame-open-tab =
-    .label = 프레임을 새 탭에 열기
+    .label = 프레임을 새 탭에서 열기
     .accesskey = T
 
 main-context-menu-frame-open-window =
-    .label = 프레임을 새 창에 열기
+    .label = 프레임을 새 창에서 열기
     .accesskey = W
 
 main-context-menu-frame-reload =
@@ -453,5 +452,9 @@ main-context-menu-eme-learn-more =
 # Variables
 #   $containerName (String): The name of the current container
 main-context-menu-open-link-in-container-tab =
-    .label = 링크를 새 { $containerName } 탭에 열기
+    .label = 링크를 새 { $containerName } 탭에서 열기
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = 비밀번호 표시
+    .accesskey = v

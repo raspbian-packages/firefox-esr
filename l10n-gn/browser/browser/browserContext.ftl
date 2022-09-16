@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Eñongatu juajuha { -pocket-brand-name }-pe
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Maranduveve rape mbohasarã
     .accesskey = E
+
+main-context-menu-copy-phone =
+    .label = Embokuatia pumbyry papapy
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Emonguatia juajuha
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Embojuruja juajuha { $containerName } rendayke pyahúpe
     .accesskey = T
+
+main-context-menu-reveal-password =
+    .label = Ñe’ẽñemi jehechauka
+    .accesskey = v

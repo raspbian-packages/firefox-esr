@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
-carddav-window =
-    .title = Ny CardDAV-adressbok
+carddav-window-title = Ny CardDAV-adressbok
 
 carddav-dialog =
     .buttonlabelaccept = Fortsätt
@@ -12,7 +11,6 @@ carddav-dialog =
 carddav-username-label =
     .value = Användarnamn:
     .accesskey = A
-
 carddav-location-label =
     .value = Plats:
     .accesskey = P

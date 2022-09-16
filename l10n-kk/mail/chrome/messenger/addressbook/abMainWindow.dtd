@@ -42,6 +42,9 @@
 <!ENTITY editMenu.accesskey                             "Т">
 <!ENTITY deleteCmd.label                                "Өшіру">
 <!ENTITY deleteAbCmd.label                              "Адрестік кітапшаны өшіру">
+<!ENTITY deleteAbCmd.accesskey                          "р">
+<!ENTITY removeAbCmd.label                              "Адрестік кітапшаны өшіру">
+<!ENTITY removeAbCmd.accesskey                          "ш">
 <!ENTITY deleteContactCmd.label                         "Контактты өшіру">
 <!ENTITY deleteContactsCmd.label                        "Контакттарды өшіру">
 <!ENTITY deleteListCmd.label                            "Тізімді өшіру">
@@ -108,6 +111,7 @@ because displayed names don't have the comma in between. -->
 <!ENTITY newContactButton.accesskey                     "к">
 <!ENTITY newlistButton.label                            "Жаңа тізім">
 <!ENTITY newlistButton.accesskey                        "т">
+
 <!ENTITY showAsDefault.label                            "Ашу кезінде негізгі бума">
 <!ENTITY showAsDefault.accesskey                        "ш">
 <!ENTITY editPropertiesButton.label                     "Түзету">
@@ -129,6 +133,8 @@ because displayed names don't have the comma in between. -->
 <!ENTITY printButton.accesskey                          "с">
 <!ENTITY deleteButton2.label                            "Өшіру">
 <!ENTITY deleteButton2.accesskey                        "Ө">
+<!ENTITY removeButton.label                             "Өшіру">
+<!ENTITY removeButton.accesskey                         "р">
 
 <!-- Address Book Toolbar Tooltips -->
 <!ENTITY columnChooser.tooltip                          "Көрсетілетін бағандарды таңдау">

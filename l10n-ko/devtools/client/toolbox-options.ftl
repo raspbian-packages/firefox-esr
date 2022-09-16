@@ -41,6 +41,11 @@ options-collapse-attrs-label = DOM 속성 줄이기
 options-collapse-attrs-tooltip =
     .title = 검사기에서 긴 속성을 줄입니다
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = 클릭하고 드래그하여 크기 값 편집
+options-inspector-draggable-properties-tooltip =
+    .title = 검사기 규칙 보기에서 크기 값을 편집하려면 클릭하고 드래그하세요.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = 기본 색상 단위
@@ -48,6 +53,7 @@ options-default-color-unit-authored = 작성된 대로
 options-default-color-unit-hex = Hex
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = 색상 이름
 
 ## Style Editor section
@@ -73,7 +79,7 @@ options-screenshot-clipboard-tooltip2 =
 # Label for the checkbox that toggles the camera shutter audio for screenshot tool
 options-screenshot-audio-label = 카메라 셔터 소리 재생
 options-screenshot-audio-tooltip =
-    .title = 스크린샷을 찍을 때 카메라 셔터 소리를 재생합니다
+    .title = 스크린샷을 찍을 때 카메라 오디오 소리를 사용
 
 ## Editor section
 
@@ -117,6 +123,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = 원격 디버깅 사용
 options-enable-remote-tooltip2 =
     .title = 이 옵션을 켜면 이 브라우저 인스턴스를 원격으로 디버깅 할 수 있습니다
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = 사용자 지정 포맷터 사용
+options-enable-custom-formatters-tooltip =
+    .title = 이 옵션을 켜면 사이트가 DOM 개체에 대한 사용자 지정 포맷터를 정의할 수 있습니다
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = HTTP를 통한 Service Worker 사용 (도구상자가 열려 있을 때)

@@ -20,6 +20,9 @@ about-webrtc-aec-logging-off-state-label = Avvia registrazione AEC
 about-webrtc-aec-logging-on-state-label = Interrompi registrazione AEC
 about-webrtc-aec-logging-on-state-msg = Registrazione AEC attiva (parlare per qualche minuto con un interlocutore e interrompere la registrazione)
 
+# The autorefresh checkbox causes the page to autorefresh its content when checked
+about-webrtc-auto-refresh-label = Aggiorna automaticamente
+
 ##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
@@ -60,9 +63,6 @@ about-webrtc-ice-pair-bytes-received = Byte ricevuti:
 about-webrtc-ice-component-id = ID componente
 
 ## "Avg." is an abbreviation for Average. These are used as data labels.
-
-about-webrtc-avg-bitrate-label = Bitrate medio:
-about-webrtc-avg-framerate-label = Frequenza frame media:
 
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
@@ -197,6 +197,21 @@ about-webrtc-debug-mode-on-state-msg = Modalità di debug attiva, scrittura regi
 about-webrtc-aec-logging-off-state-msg = I file di registro creati sono disponibili in: { $path }
 
 ##
+
+# This is the total number of frames encoded or decoded over an RTP stream.
+# Variables:
+#  $frames (Number) - The number of frames encoded or decoded.
+about-webrtc-frames = { $frames } frame
+
+# This is the number of audio channels encoded or decoded over an RTP stream.
+# Variables:
+#  $channels (Number) - The number of channels encoded or decoded.
+about-webrtc-channels =
+  { $channels ->
+      [one] { $channels } canale
+     *[other] { $channels } canali
+  }
+
 
 # This is the total number of packets received on the PeerConnection.
 # Variables:

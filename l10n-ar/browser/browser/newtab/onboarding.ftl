@@ -3,18 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding modal / about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
-## These button action text can be split onto multiple lines, so use explicit
-## newlines in translations to control where the line break appears (e.g., to
-## avoid breaking quoted text).
-
-## Welcome modal dialog strings
-
-
 ### UI strings for the simplified onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -24,29 +12,11 @@
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
 
+
 ## Welcome page strings
 
 onboarding-welcome-header = مرحبًا بك في { -brand-short-name }
 onboarding-start-browsing-button-label = ابدأ التصفح
-
-## Welcome full page string
-
-## Firefox Sync modal dialog strings.
-
-## This is part of the line "Enter your email to continue to Firefox Sync"
-
-## These are individual benefit messages shown with an image, title and
-## description.
-
-## These strings belong to the individual onboarding messages.
-
-
-## Each message has a title and a description of what the browser feature is.
-## Each message also has an associated button for the user to try the feature.
-## The string for the button is found above, in the UI strings section
-
-## Message strings belonging to the Return to AMO flow
-
 onboarding-not-now-button-label = ليس الآن
 
 ## Custom Return To AMO onboarding strings
@@ -61,41 +31,7 @@ return-to-amo-add-extension-label = أضِف الامتداد
 
 ## Multistage 3-screen onboarding flow strings (about:welcome pages)
 
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = مرحبًا في <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = المتصفّح السريع والآمن والخاص وتدعمه مؤسسة غير ربحية.
-onboarding-multistage-welcome-primary-button-label = ابدأ الإعداد
-onboarding-multistage-welcome-secondary-button-label = لِج
-onboarding-multistage-welcome-secondary-button-text = ألديك حسابًا؟
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = اضبط { -brand-short-name } ليكون <span data-l10n-name="zap">المبدئي</span>
-onboarding-multistage-set-default-subtitle = السرعة والأمان والخصوصية في كل مرة تتصفح فيها.
-onboarding-multistage-set-default-primary-button-label = اجعله المبدئي
-onboarding-multistage-set-default-secondary-button-label = ليس الآن
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = ابدأ أولًا بتسهيل الوصول إلى <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-pin-default-subtitle = تصفّح سريع وآمن وخاص كلّما استعملت الوِب.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = اختر { -brand-short-name } من ”مستعرض الويب“ حين تظهر الإعدادات
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = هذا سيُثبّت { -brand-short-name } في شريط المهام ويفتح الإعدادات
-onboarding-multistage-pin-default-primary-button-label = اضبط { -brand-short-name } ليكون متصفّحي الأساسي
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = استورِد كلمات السر <br/>والعلامات و<span data-l10n-name="zap">غيرها</span>
-onboarding-multistage-import-subtitle = انتقلت إلى { -brand-short-name } من متصفّح آخر؟ نقل أمورك إلى هنا أسهل مما تتخيل.
-onboarding-multistage-import-primary-button-label = ابدأ الاستيراد
-onboarding-multistage-import-secondary-button-label = ليس الآن
-
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = وجدنا المواقع أسفله في هذا الجهاز. لا يحفظ { -brand-short-name } البيانات ولا يُزامنها من متصفّحاتك الأخرى إلّا بموافقتك على استيرادها.
+return-to-amo-add-theme-label = أضِف السمة
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -105,21 +41,6 @@ onboarding-import-sites-disclaimer = وجدنا المواقع أسفله في �
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = البداية: شاشة { $current } من أصل { $total }
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = اختر <span data-l10n-name="zap">مظهرًا</span>
-onboarding-multistage-theme-subtitle = خصّص { -brand-short-name } باستعمال سمة.
-onboarding-multistage-theme-primary-button-label2 = تمّ
-onboarding-multistage-theme-secondary-button-label = ليس الآن
-
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = تلقائي
-
-onboarding-multistage-theme-label-light = فاتحة
-onboarding-multistage-theme-label-dark = داكنة
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
@@ -143,6 +64,12 @@ mr1-onboarding-reduce-motion-button-label = عطّل الرسوم المتحرك
 ## match the OS' application context menu item action where Windows uses "pin"
 ## and "taskbar" while macOS "keep" and "Dock" (proper noun).
 
+# Title used on welcome page when Firefox is not pinned
+mr1-onboarding-pin-header =
+    { PLATFORM() ->
+        [macos] أضِف { -brand-short-name } إلى شريط Dock للوصول إليه بسرعة
+       *[other] ثبّت { -brand-short-name } في شريط المهام للوصول إليه بسرعة
+    }
 # Primary button string used on welcome page when Firefox is not pinned.
 mr1-onboarding-pin-primary-button-label =
     { PLATFORM() ->
@@ -170,6 +97,7 @@ mr1-onboarding-sign-in-button-label = لِج
 ## when Firefox is not default browser
 
 mr1-onboarding-default-header = اضبط { -brand-short-name } ليكون المبدئي
+mr1-onboarding-default-subtitle = اجعل السرعة والأمان والخصوصية تعمل تلقائيا.
 mr1-onboarding-default-primary-button-label = اجعله المتصفح المبدئي
 
 ## Multistage MR1 onboarding strings (about:welcome pages)
@@ -185,6 +113,11 @@ mr1-onboarding-import-primary-button-label-attribution = استورِد من { $
 # This string will be used in cases where we can't detect the previous browser name.
 mr1-onboarding-import-primary-button-label-no-attribution = استورِدها من المتصفّح السابق
 mr1-onboarding-import-secondary-button-label = ليس الآن
+
+mr2-onboarding-colorway-header = الحياة ألوان
+mr2-onboarding-colorway-subtitle = أطقم ألوان جديدة وحيوية. متاحة لوقت محدود.
+mr2-onboarding-colorway-primary-button-label = احفظ طقم الألوان
+mr2-onboarding-colorway-secondary-button-label = ليس الآن
 
 mr1-onboarding-theme-header = طوّعه كما ترغب
 mr1-onboarding-theme-subtitle = خصّص { -brand-short-name } باستعمال سمة.
@@ -204,58 +137,11 @@ mr1-onboarding-theme-label-alpenglow = شفق ألبي (Alpenglow)
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
 
+
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title =
-        استعمل مظهر نظام التشغيل
-        لعرض الأزرار والقوائم والنوافذ.
-
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description =
-        استعمل مظهر نظام التشغيل
-        لعرض الأزرار والقوائم والنوافذ.
-
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title =
-        استعمل مظهرًا فاتحًا لعرض
-        الأزرار والقوائم والنوافذ.
-
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description =
-        استعمل مظهرًا فاتحًا لعرض
-        الأزرار والقوائم والنوافذ.
-
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title =
-        استعمل مظهرًا داكنًا لعرض
-        الأزرار والقوائم والنوافذ.
-
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description =
-        استعمل مظهرًا داكنًا لعرض
-        الأزرار والقوائم والنوافذ.
-
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title =
-        استعمل مظهرًا ملونًا لعرض
-        الأزرار والقوائم والنوافذ.
-
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description =
-        استعمل مظهرًا ملونًا لعرض
-        الأزرار والقوائم والنوافذ.
 
 ## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
@@ -306,3 +192,47 @@ mr1-onboarding-theme-description-alpenglow =
     .aria-description =
         استعمل سمة مفعمة بالألوان
         لعرض الأزرار والقوائم والنوافذ.
+
+# Tooltip displayed on hover of non-default colorway theme
+# variations e.g. soft, balanced, bold
+mr2-onboarding-theme-tooltip =
+    .title = استعمل طقم الألوان هذا.
+
+# Selector description for non-default colorway theme
+# variations e.g. soft, balanced, bold
+mr2-onboarding-theme-description =
+    .aria-description = استعمل طقم الألوان هذا.
+
+# Tooltip displayed on hover of colorway
+# Variables:
+#   $colorwayName (String) - Name of colorway
+mr2-onboarding-colorway-tooltip =
+    .title = استكشف أطقم الألوان { $colorwayName }.
+
+# Selector description for colorway
+# Variables:
+#   $colorwayName (String) - Name of colorway
+mr2-onboarding-colorway-label = استكشف أطقم الألوان { $colorwayName }.
+
+# Tooltip displayed on hover of default themes
+mr2-onboarding-default-theme-tooltip =
+    .title = استكشف السمات المبدئية.
+
+# Selector description for default themes
+mr2-onboarding-default-theme-label = استكشف السمات المبدئية.
+
+## Strings for Thank You page
+
+mr2-onboarding-thank-you-header = شكرًا لكم على اختيارنا
+mr2-onboarding-thank-you-text = متصفّح { -brand-short-name } هو متصفّح مستقل تدعمه مؤسسة غير ربحية. نعمل معكم لنبني منظومة وِب آمنة وصحية وخاصة.
+mr2-onboarding-start-browsing-button-label = ابدأ التصفح
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+## Firefox 100 Thank You screens
+

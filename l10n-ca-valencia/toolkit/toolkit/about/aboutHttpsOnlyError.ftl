@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 about-httpsonly-title-alert = Alerta del mode només HTTPS
-about-httpsonly-title-connection-not-available = Connexió segura no disponible
+about-httpsonly-title-site-not-available = Lloc segur no disponible
 
 # Variables:
 #   $websiteUrl (String) - Url of the website that failed to load. Example: www.example.com

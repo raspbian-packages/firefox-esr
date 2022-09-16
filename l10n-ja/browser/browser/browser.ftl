@@ -417,19 +417,19 @@ urlbar-placeholder-search-mode-web-2 =
 #  $name (String): the name of a search engine that searches a specific site
 #  (e.g. Amazon).
 urlbar-placeholder-search-mode-other-engine =
-    .placeholder = 検索語句を入力を入力します
+    .placeholder = 検索語句を入力します
     .aria-label = { $name } を検索
 # This placeholder is used when searching bookmarks.
 urlbar-placeholder-search-mode-other-bookmarks =
-    .placeholder = 検索語句を入力を入力します
+    .placeholder = 検索語句を入力します
     .aria-label = ブックマークを検索
 # This placeholder is used when searching history.
 urlbar-placeholder-search-mode-other-history =
-    .placeholder = 検索語句を入力を入力します
+    .placeholder = 検索語句を入力します
     .aria-label = 履歴を検索
 # This placeholder is used when searching open tabs.
 urlbar-placeholder-search-mode-other-tabs =
-    .placeholder = 検索語句を入力を入力します
+    .placeholder = 検索語句を入力します
     .aria-label = タブを検索
 # Variables
 #  $name (String): the name of the user's default search engine
@@ -512,14 +512,13 @@ urlbar-result-action-search-tabs = タブを検索
 # A label shown above the "Firefox Suggest" (bookmarks/history) group in the
 # urlbar results.
 urlbar-group-firefox-suggest =
-  .label = { -firefox-suggest-brand-name }
-
+    .label = { -firefox-suggest-brand-name }
 # A label shown above the search suggestions group in the urlbar results. It
 # should use title case.
 # Variables
 #  $engine (String): the name of the search engine providing the suggestions
 urlbar-group-search-suggestions =
-  .label = { $engine } の検索候補
+    .label = { $engine } の検索候補
 
 ## Full Screen and Pointer Lock UI
 
@@ -648,11 +647,6 @@ toolbar-settings-button =
            *[other] 設定を開きます
         }
 
-## More items
-
-more-menu-go-offline =
-    .label = オフライン作業
-    .accesskey = k
 toolbar-overflow-customize-button =
     .label = ツールバーをカスタマイズ...
     .accesskey = C
@@ -698,12 +692,6 @@ panel-save-update-password = パスワード
 addon-removal-title = { $name } を削除しますか？
 addon-removal-abuse-report-checkbox = この拡張機能を { -vendor-short-name } に報告する
 
-## Remote / Synced tabs
-
-remote-tabs-manage-account =
-    .label = アカウントを管理
-remote-tabs-sync-now = 今すぐ同期
-
 ##
 
 # "More" item in macOS share menu
@@ -727,11 +715,9 @@ popups-infobar-block =
 popups-infobar-dont-show-message =
     .label = ポップアップをブロックするとき、このメッセージを表示しない
     .accesskey = D
-
 edit-popup-settings =
     .label = ポップアップの設定を管理...
     .accesskey = M
-
 picture-in-picture-hide-toggle =
     .label = ピクチャーインピクチャーの切り替えボタンを隠す
     .accesskey = H
@@ -742,12 +728,12 @@ picture-in-picture-hide-toggle =
 picture-in-picture-move-toggle-right =
     .label = ピクチャーインピクチャーの切り替えボタンを右側に移動
     .accesskey = R
-
 picture-in-picture-move-toggle-left =
     .label = ピクチャーインピクチャーの切り替えボタンを左側に移動
     .accesskey = L
 
 ##
+
 
 # Navigator Toolbox
 
@@ -765,9 +751,6 @@ navbar-overflow =
 navbar-print =
     .label = 印刷
     .tooltiptext = このページを印刷します... ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = 印刷
-    .tooltiptext = このページを印刷します
 navbar-home =
     .label = ホーム
     .tooltiptext = { -brand-short-name } のホームページです
@@ -794,3 +777,10 @@ tabs-toolbar-list-all-tabs =
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
 restore-session-startup-suggestion-message = <strong>前回のタブを開きますか？</strong> { -brand-short-name } アプリケーションメニュー<img data-l10n-name="icon"/>の履歴から前回のセッションを復元できます。
 restore-session-startup-suggestion-button = 方法を確認
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = ユーザー体験の向上のため、{ -brand-short-name } は自動的にいくつかのデータを { -vendor-short-name } に送信します。
+data-reporting-notification-button =
+    .label = 共有するデータを選択
+    .accesskey = C

@@ -13,6 +13,10 @@ search-header-shortcut =
 
 list-empty-get-extensions-message = Nabavi proširenja i teme na <a data-l10n-name="get-extensions">{ $domain }</a>
 
+list-empty-get-dictionaries-message = Nabavi rječnike na <a data-l10n-name="get-extensions">{ $domain }</a>
+
+list-empty-get-language-packs-message = Nabavi jezične pakete na <a data-l10n-name="get-extensions">{ $domain }</a>
+
 list-empty-installed =
     .value = Nemate instaliran nijedan dodatak ove vrste
 
@@ -134,7 +138,7 @@ disabled-unsigned-heading =
 
 disabled-unsigned-description = Navedeni dodaci nisu mogli biti verificirani za korištenje u { -brand-short-name }u. Možete <label data-l10n-name="find-addons">pronaći zamjenske dodatke</label> ili kontaktirati autora dodataka da zatraži njihovu verifikaciju.
 
-disabled-unsigned-learn-more = Saznaj više o našim naporima da te zaštitimo na Internetu.
+disabled-unsigned-learn-more = Saznaj više o našim naporima da te zaštitimo na internetu.
 
 disabled-unsigned-devinfo = Programeri koji su zainteresirani za verifikaciju svojih dodataka, mogu nastaviti čitati naš <label data-l10n-name="learn-more">priručnik</label>.
 
@@ -173,6 +177,9 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Nedavne dopune
 addon-category-recent-updates-title =
     .title = Nedavne dopune
+addon-category-sitepermission = Dozvole web-mjesta
+addon-category-sitepermission-title =
+    .title = Dozvole web-mjesta
 
 ## These are global warnings
 
@@ -183,7 +190,6 @@ extensions-warning-check-compatibility-button = Omogući
 extensions-warning-update-security = Provjera dostupnosti sigurnosnih nadogradnji za dodatke je isključena. Nadogradnje mogu naškoditi tvojoj sigurnosti.
 extensions-warning-update-security-button = Omogući
     .title = Omogući provjeru dostupnosti sigurnosnih dopuna za dodatke
-
 
 ## Strings connected to add-on updates
 
@@ -305,6 +311,7 @@ install-theme-button = Instaliraj temu
 # the detailed add-on view is opened, from where the add-on can be managed.
 manage-addon-button = Upravljaj
 find-more-addons = Pronađi daljnje dodatke
+find-more-themes = Pronađi više tema
 
 # This is a label for the button to open the "more options" menu, it is only
 # used for screen readers.
@@ -337,6 +344,7 @@ extension-disabled-heading = Onemogućeno
 
 theme-enabled-heading = Aktivirano
 theme-disabled-heading = Onemogućeno
+theme-monochromatic-heading = Boje
 
 plugin-enabled-heading = Aktivirano
 plugin-disabled-heading = Onemogućeno
@@ -346,6 +354,9 @@ dictionary-disabled-heading = Onemogućeno
 
 locale-enabled-heading = Aktivirano
 locale-disabled-heading = Onemogućeno
+
+sitepermission-enabled-heading = Omogućeno
+sitepermission-disabled-heading = Onemogućeno
 
 always-activate-button = Uvijek aktiviraj
 never-activate-button = Ne aktiviraj
@@ -357,8 +368,8 @@ addon-detail-homepage-label = Početna stranica
 addon-detail-rating-label = Ocjena
 
 # Message for add-ons with a staged pending update.
-install-postponed-message = Ovo proširenje bit će ažurirano kad se { -brand-short-name } ponovno pokrene.
-install-postponed-button = Ažuriraj sada
+install-postponed-message = Ovo proširenje će se aktualizirati kad se { -brand-short-name } ponovno pokrene.
+install-postponed-button = Aktualiziraj sada
 
 # The average rating that the add-on has received.
 # Variables:
@@ -410,7 +421,6 @@ addon-detail-private-browsing-disallow = Nemoj dozvoliti
 addon-badge-recommended2 =
     .title = { -brand-product-name } preporučuje samo proširenja koja udovoljavaju našim standardima za sigurnost i performanse
     .aria-label = { addon-badge-recommended2.title }
-
 # We hard code "Mozilla" in the string below because the extensions are built
 # by Mozilla and we don't want forks to display "by Fork".
 addon-badge-line3 =
@@ -429,7 +439,6 @@ release-notes-loading = Učitavanje…
 release-notes-error = Došlo je do greške pri učitavanju napomena o izdanju.
 
 addon-permissions-empty = Ovaj dodatak ne zahtjeva nikakve dozvole.
-
 addon-permissions-required = Dozvole potrebne za osnovnu funkcionalnost:
 addon-permissions-optional = Opcionalne dozvole za dodatnu funkcionalnost:
 addon-permissions-learnmore = Saznaj više o dozvolama
@@ -458,3 +467,25 @@ addons-heading-search-input =
 
 addon-page-options-button =
     .title = Alati za sve dodatke
+
+## Detail notifications
+## Variables:
+##   $name (String): name of the add-on.
+
+# Variables:
+#   $version (String): application version.
+details-notification-incompatible = Dodatak { $name } je nekompatibilan s { -brand-short-name } { $version }.
+
+details-notification-unsigned-and-disabled = { $name } nije mogao biti verificiran za rad u { -brand-short-name } te je onemogućen.
+details-notification-unsigned-and-disabled-link = Više informacija
+
+details-notification-unsigned = { $name } nije mogao biti verificiran za upotrebu u { -brand-short-name }. Nastavi s oprezom.
+details-notification-unsigned-link = Više informacija
+
+details-notification-blocked = Dodatak { $name } je blokiran zbog problema sa sigurnosti ili stabilnosti.
+details-notification-blocked-link = Više informacija
+
+details-notification-softblocked = Dodatak { $name } je poznat po problemima sa sigurnosti ili stabilnosti.
+details-notification-softblocked-link = Više informacija
+
+details-notification-gmp-pending = { $name } će ubrzo biti instaliran.

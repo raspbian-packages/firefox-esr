@@ -9,11 +9,11 @@ thunderbird-import-name = Thunderbird
 thunderbird-import-description = Uvozite pošto iz Thunderbirdove mape s profilom.
 
 import-from-thunderbird-zip =
-    .label = Thunderbird (izvožena varnostna kopija profila; datoteka .zip, manjša od 2&nbsp;GB)
+    .label = Thunderbirda (izvožena varnostna kopija profila; datoteka .zip, manjša od 2 GB)
     .accesskey = Z
 
 import-from-thunderbird-dir =
-    .label = Thunderbird (mapa s profilom)
+    .label = Thunderbirda (mapa s profilom)
     .accesskey = T
 
 import-select-profile-zip = Izberite stisnjeno mapo s profilom

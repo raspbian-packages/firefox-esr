@@ -13,6 +13,7 @@
 policy-3rdparty = Defini politicas al quales le WebExtensions pote acceder via chrome.storage.managed.
 policy-AllowedDomainsForApps = Defini dominios con permission de acceder a Google Workspace.
 policy-AppAutoUpdate = Activar o disactivar le actualisation automatic del application.
+policy-AppUpdatePin = Impedi a { -brand-short-name } de esser actualisate ultra un certe version
 policy-AppUpdateURL = Definir un URL de actualisation personalisate pro le application.
 policy-Authentication = Configurar authentication integrate pro sitos web que lo supporta.
 policy-AutoLaunchProtocolsFromOrigins = Defini un lista de protocollos externe que pote esser usate, a partir de origines listate, sin demandar confirmation del usator.
@@ -58,6 +59,7 @@ policy-DownloadDirectory = Configurar e fixar le directorio de discargamentos.
 policy-EnableTrackingProtection = Activar o disactivar le blocage de contento e optionalmente serrar lo.
 # “lock” means that the user won’t be able to change this setting
 policy-EncryptedMediaExtensions = Activar o disactivar le extensiones de medios cryptate e optionalmente blocar los.
+policy-ExemptDomainFileTypePairsFromFileTypeDownloadWarnings = Disactivar le avisos basate super le file extension pro specific typos de file sur dominios.
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
@@ -92,6 +94,7 @@ policy-OfferToSaveLoginsDefault = Indica le valor predefinite pro permitter a { 
 policy-OverrideFirstRunPage = Supplantar le pagina de prime uso. Vacua le valor de iste directiva si tu vole disactivar le pagina de prime uso.
 policy-OverridePostUpdatePage = Supplantar le pagina de “Novas” post-actualisation. Defini iste criterio a blanc si tu desira disactivar le pagina de post-actualisation.
 policy-PasswordManagerEnabled = Activar salvamento de contrasignos al gestor de contrasignos.
+policy-PasswordManagerExceptions = Impedir a { -brand-short-name } de salvar le contrasigno pro sitos specific.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Disactivar o configurar PDF.js, le visor de PDF integrate in { -brand-short-name }.
 policy-Permissions2 = Configurar le permissiones pro camera, microphono, position, notificationes e autoreproduction.
@@ -110,8 +113,10 @@ policy-SecurityDevices = Installar modulos PKCS #11.
 policy-ShowHomeButton = Monstrar le button casa sur le barra de utensiles.
 policy-SSLVersionMax = Stabilir le version SSL maxime.
 policy-SSLVersionMin = Stabilir le version SSL minime.
+policy-StartDownloadsInTempDirectory = Fortiar le discargamento in un plica local temporari, plus tosto que in le directorio ordinari.
 policy-SupportMenu = Adder un selection de supporto personalisate al menu de adjuta.
 policy-UserMessaging = Non monstrar al usator certe messages.
+policy-UseSystemPrintDialog = Imprimer usante le fenestra de impression del systema…
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blocar le accesso a sitos web. Vider documentation pro plus detalios sur le formato.
 policy-Windows10SSO = Permitter le autorisation unic de Windows pro le contos de labor e schola de Microsoft.

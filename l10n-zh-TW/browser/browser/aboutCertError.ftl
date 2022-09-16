@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = 網站會透過憑證機構簽發的�
 
 cert-error-symantec-distrust-admin = 您可通知網站管理員這個問題。
 
+cert-error-old-tls-version = 此網站可能不支援 TLS 1.2 版通訊協定，而 { -brand-short-name } 最低僅支援 TLS 1.2 版。
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = 伺服器回應錯誤
 nssFailure2-title = 安全連線失敗
 csp-xfo-error-title = { -brand-short-name } 無法開啟此網頁
 corruptedContentError-title = 內容毀損錯誤
-remoteXUL-title = 遠端 XUL
 sslv3Used-title = 無法安全地連線
 inadequateSecurityError-title = 您的連線並不安全
 blockedByPolicy-title = 已封鎖頁面

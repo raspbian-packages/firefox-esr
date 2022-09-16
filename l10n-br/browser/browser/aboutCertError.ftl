@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Gant testenioù e vez prouet pivelezh
 
 cert-error-symantec-distrust-admin = Gallout a rit mont e darempred gant merour al lec’hienn diwar-benn ar gudenn-mañ.
 
+cert-error-old-tls-version = Gallout a ra al lec'hienn chom hep skorañ ar c'homenad TLS 1.2, hag a zo an handelv izelañ skoret gant { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = Diogelroez treuzdougen HTTP strizh: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Respont direizh
 nssFailure2-title = C’hwitadenn war ar c’hennaskañ diarvar
 csp-xfo-error-title = { -brand-short-name } n'hall ket digeriñ ar bajenn
 corruptedContentError-title = Fazi a-fet endalc’had bet kontronet
-remoteXUL-title = XUL a-bell
 sslv3Used-title = Ne c’haller ket kennaskañ outi ent diarvar
 inadequateSecurityError-title = N'eo ket diarvar ho kennask
 blockedByPolicy-title = Pajenn stanket

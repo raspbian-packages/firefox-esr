@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
-carddav-window =
-    .title = Libër Adresash vCard i Ri
+carddav-window-title = Libër Adresash vCard i Ri
 
 carddav-dialog =
     .buttonlabelaccept = Vazhdo
@@ -12,7 +11,6 @@ carddav-dialog =
 carddav-username-label =
     .value = Emër përdoruesi:
     .accesskey = E
-
 carddav-location-label =
     .value = Vendndodhje:
     .accesskey = V

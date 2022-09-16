@@ -10,6 +10,7 @@
 abuse-report-dialog-title = דיווח עבור { $addon-name }
 
 abuse-report-title-extension = דיווח על הרחבה זו ל־{ -vendor-short-name }
+abuse-report-title-sitepermission = דיווח על ההרחבה ״הרשאות אתר״ ל־{ -vendor-short-name }
 abuse-report-title-theme = דיווח על ערכת נושא זו ל־{ -vendor-short-name }
 abuse-report-subtitle = מה הבעיה?
 
@@ -32,13 +33,6 @@ abuse-report-goback-button = חזרה אחורה
 abuse-report-submit-button = שליחה
 
 ## Message bars descriptions.
-
-
-## Variables:
-##   $addon-name (string) - Name of the add-on
-
-
-## Message bars descriptions.
 ##
 ## Variables:
 ##   $addon-name (string) - Name of the add-on
@@ -48,6 +42,7 @@ abuse-report-messagebar-submitting = בשליחת דיווח עבור <span data
 abuse-report-messagebar-submitted = תודה ששלחת את הדיווח. האם ברצונך להסיר את <span data-l10n-name="addon-name">{ $addon-name }</span>?
 abuse-report-messagebar-submitted-noremove = תודה ששלחת את הדיווח.
 abuse-report-messagebar-removed-extension = תודה ששלחת את הדיווח. הסרת את ההרחבה <span data-l10n-name="addon-name">{ $addon-name }</span>.
+abuse-report-messagebar-removed-sitepermission = תודה ששלחת את הדיווח. הסרת את התוספת ״הרשאות אתר״ <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-removed-theme = תודה ששלחת את הדיווח. הסרת את ערכת הנושא <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error = אירעה שגיאה בשליחת הדיווח עבור <span data-l10n-name="addon-name">{ $addon-name }</span>.
 abuse-report-messagebar-error-recent-submit = הדיווח עבור <span data-l10n-name="addon-name">{ $addon-name }</span> לא נשלח מכיוון שדיווח נוסף נשלח לאחרונה.
@@ -56,6 +51,8 @@ abuse-report-messagebar-error-recent-submit = הדיווח עבור <span data-l
 
 abuse-report-messagebar-action-remove-extension = כן, להסיר אותה
 abuse-report-messagebar-action-keep-extension = לא, אשמור אותה
+abuse-report-messagebar-action-remove-sitepermission = כן, להסיר אותה
+abuse-report-messagebar-action-keep-sitepermission = לא, אשמור אותה
 abuse-report-messagebar-action-remove-theme = כן, להסיר אותה
 abuse-report-messagebar-action-keep-theme = לא, אשמור אותה
 abuse-report-messagebar-action-retry = ניסיון חוזר
@@ -77,12 +74,17 @@ abuse-report-settings-suggestions-homepage = שינוי דף הבית והלשו
 abuse-report-deceptive-example = למשל: תיאור או תמונה מטעים
 
 abuse-report-broken-reason-extension-v2 = היא לא עובדת, משבשת פעילות של אתרי אינטרנט או שמאטה את { -brand-product-name }
+abuse-report-broken-reason-sitepermission-v2 = היא לא עובדת, משבשת פעילות של אתרי אינטרנט או שמאטה את { -brand-product-name }
 abuse-report-broken-reason-theme-v2 = היא לא עובדת או שמשבשת את ניראות הדפדפן
 abuse-report-broken-example = לדוגמה: תכונות איטיות, קשה לשימוש או שאינה פועלת; חלקים מאתרי אינטרנט לא נטענים או לא נראים כשורה
 abuse-report-broken-suggestions-extension =
     נשמע שזיהית באג. בנוסף להגשת דוח כאן, הדרך הטובה ביותר
     כדי לפתור את בעיית הפונקציונליות היא ליצור קשר עם מפתח ההרחבה.
     <a data-l10n-name="support-link">ניתן לבקר באתר ההרחבה</a> לקבלת מידע על המפתח.
+abuse-report-broken-suggestions-sitepermission =
+    נשמע שזיהית באג. בנוסף להגשת דוח כאן, הדרך הטובה ביותר
+    כדי לפתור את בעיית הפונקציונליות היא ליצור קשר עם מפתח האתר.
+    <a data-l10n-name="support-link">ניתן לבקר באתר</a> לקבלת מידע מהמפתח.
 abuse-report-broken-suggestions-theme =
     נשמע שזיהית באג. בנוסף להגשת דוח כאן, הדרך הטובה ביותר
     כדי לפתור את בעיית הפונקציונליות היא ליצור קשר עם מפתח ערכת הנושא.
@@ -98,4 +100,3 @@ abuse-report-unwanted-reason-v2 = אף פעם לא רציתי את ההרחבה 
 abuse-report-unwanted-example = לדוגמה: יישום התקין אותה ללא רשותי
 
 abuse-report-other-reason = משהו אחר
-

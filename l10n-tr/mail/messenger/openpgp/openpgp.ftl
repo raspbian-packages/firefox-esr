@@ -35,6 +35,8 @@ openpgp-generate-key =
 openpgp-advanced-prefs-button-label =
     .label = Gelişmiş…
 openpgp-keygen-desc = <a data-l10n-name="openpgp-keygen-desc-link">NOT: Anahtarın oluşturulması birkaç dakika sürebilir.</a> Anahtar oluşturma devam ederken uygulamadan çıkmayın. Anahtar oluşturma sırasında internette gezinmeniz ve veya diskiniz kullanmanız "rastgelelik havuzunu" dolduracak ve süreci hızlandıracaktır. Anahtar oluşturma tamamlandığında bilgilendirileceksiniz.
+openpgp-key-created-label =
+    .label = Oluşturma
 openpgp-key-expiry-label =
     .label = Süre sonu
 openpgp-key-id-label =
@@ -159,6 +161,8 @@ openpgp-key-man-reload =
 openpgp-key-man-change-expiry =
     .label = Geçerlilik tarihini değiştir
     .accesskey = G
+openpgp-key-man-ignored-ids =
+    .label = E-posta adresleri
 openpgp-key-man-del-key =
     .label = Anahtar(lar)ı sil
     .accesskey = S
@@ -204,15 +208,14 @@ openpgp-key-man-select-all-key =
     .key = A
 openpgp-key-man-key-details-key =
     .key = I
-openpgp-key-details-title =
-    .title = Anahtar özellikleri
+openpgp-ign-addr-intro = Aşağıdaki seçili e-posta adresleri için bu anahtarı kullanmayı kabul ediyorsunuz:
 openpgp-key-details-signatures-tab =
     .label = Sertifikalar
 openpgp-key-details-structure-tab =
     .label = Yapı
 openpgp-key-details-uid-certified-col =
     .label = Kullanıcı kimliği / Onaylayan
-openpgp-key-details-user-id2-label = İddia edilen anahtar sahibi
+openpgp-key-details-key-id-label = Anahtar kimliği
 openpgp-key-details-id-label =
     .label = Kimlik
 openpgp-key-details-key-type-label = Türü
@@ -234,7 +237,6 @@ openpgp-key-details-fingerprint-label = Parmak izi
 openpgp-key-details-sel-action =
     .label = Eylem seçin…
     .accesskey = E
-openpgp-key-details-also-known-label = Anahtar sahibinin iddia edilen alternatif kimlikleri:
 openpgp-card-details-close-window-label =
     .buttonlabelaccept = Kapat
 openpgp-acceptance-label =
@@ -250,7 +252,6 @@ openpgp-acceptance-verified-label =
 key-accept-personal =
     Bu anahtarın hem ortak hem gizli parçasına sahipsiniz. Anahtarı Kişisel anahtar olarak kullanabilirsiniz.
     Ama bu anahtarı size başka birisi verdiyse kişisel anahtar olarak kullanmayın.
-key-personal-warning = Bu anahtarı kendiniz mi oluşturdunuz ve ekranda görünen anahtar sahibi siz misiniz?
 openpgp-personal-no-label =
     .label = Hayır, kişisel anahtarım olarak kullanma.
 openpgp-personal-yes-label =
@@ -260,14 +261,6 @@ openpgp-copy-cmd-label =
 
 ## e2e encryption settings
 
-#   $count (Number) - the number of configured keys associated with the current identity
-#   $identity (String) - the email address of the currently selected identity
-openpgp-description =
-    { $count ->
-        [0] Thunderbird <b>{ $identity }</b> için kişisel OpenPGP anahtarına sahip değil
-        [one] Thunderbird, <b>{ $identity }</b> ile ilişkili { $count } kişisel OpenPGP anahtarı buldu
-       *[other] Thunderbird, <b>{ $identity }</b> ile ilişkili { $count } kişisel OpenPGP anahtarı buldu
-    }
 #   $key (String) - the currently selected OpenPGP key
 openpgp-selection-status-have-key = Geçerli yapılandırmalarınızda <b>{ $key }</b> anahtar kimliği kullanılıyor
 #   $key (String) - the currently selected OpenPGP key
@@ -328,7 +321,6 @@ cannot-use-own-key-because = Kişisel anahtarınızla ilgili bir sorun olduğund
 cannot-encrypt-because-missing = Aşağıdaki alıcıların anahtarlarında sorun olduğu için bu ileti uçtan uca şifrelemeyle gönderilemedi: { $problem }
 window-locked = Oluşturma penceresi kilitli; gönderme iptal edildi
 # Strings in mimeDecrypt.jsm
-mime-decrypt-encrypted-part-attachment-label = Şifrelenmiş mesaj bölümü
 mime-decrypt-encrypted-part-concealed-data = Bu, şifrelenmiş bir ileti parçasıdır. Eke tıklayarak ayrı bir pencerede açmanız gerekiyor.
 # Strings in keyserver.jsm
 keyserver-error-aborted = Durduruldu
@@ -342,11 +334,6 @@ keyserver-error-unsupported = Anahtar sunucusu desteklenmiyor.
 wkd-message-body-process =
     Bu, ortak anahtarınızı OpenPGP Web Anahtar Dizini'ne yüklemek için otomatik işlemeyle ilgili bir e-postadır.
     Şu anda herhangi bir işlem yapmanız gerekmiyor.
-# Strings in gpg.jsm
-unknown-signing-alg = Bilinmeyen imzalama algoritması (ID: { $id })
-unknown-hash-alg = Bilinmeyen şifreleme hash’i (Kimlik: { $id })
-expiry-open-key-manager = OpenPGP anahtar yöneticisini aç
-expiry-open-key-properties = Anahtar özelliklerini aç
 # Strings filters.jsm
 filter-folder-required = Bir hedef klasör seçmelisiniz.
 filter-term-pgpencrypted-label = OpenPGP ile şifrelenmiş
@@ -418,8 +405,6 @@ key-in-use-title = Şu anda kullanılan OpenPGP anahtarı
 key-error-not-accepted-as-personal = '{ $keySpec }' kimliğine sahip anahtarın kişisel anahtarınız olduğunu doğrulamadınız.
 # Strings used in enigmailKeyManager.js & windows.jsm
 need-online = Seçtiğiniz işlev çevrimdışı modda kullanılamaz. Lütfen çevrimiçi olun ve tekrar deneyin.
-# Strings used in keyRing.jsm & keyLookupHelper.jsm
-no-key-found = Belirtilen arama ölçütleriyle eşleşen bir anahtar bulamadık.
 # Strings used in keyRing.jsm & GnuPGCryptoAPI.jsm
 fail-key-extract = Hata - Anahtar çıkarma komutu başarısız oldu
 # Strings used in keyRing.jsm
@@ -485,14 +470,8 @@ keys-to-export = Eklenecek OpenPGP anahtarlarını seçin
 msg-compose-cannot-save-draft = Taslak kaydedilirken hata oluştu
 msg-compose-partially-encrypted-short = Hassas bilgilerin sızmasına karşı dikkatli olun: Bu e-posta kısmen şifrelenmiş.
 save-attachment-header = Şifresi çözülmüş eki kaydet
-no-temp-dir =
-    Yazılacak geçici klasör bulunamadı
-    Lütfen TEMP ortam değişkenini ayarlayın
 cannot-send-sig-because-no-own-key = <{ $key }> için uçtan uca şifrelemeyi henüz yapılandırmadığınız için bu iletiyi dijital olarak imzalayamazsınız
 cannot-send-enc-because-no-own-key = <{ $key }> anahtarı için uçtan uca şifrelemeyi henüz yapılandırmadığınız için bu ileti şifrelenmiş olarak gönderilemiyor
-compose-menu-attach-key =
-    .label = Ortak anahtarımı ekle
-    .accesskey = e
 # Strings used in decryption.jsm
 do-import-multiple =
     Aşağıdaki anahtarlar içe aktarılsın mı?

@@ -5,17 +5,19 @@
 unknowncontenttype-handleinternally =
     .label = Otwórz w programie { -brand-short-name }
     .accesskey = O
+
 unknowncontenttype-settingschange =
     .value =
         { PLATFORM() ->
             [windows] Ustawienia można zmienić w oknie Opcje programu { -brand-short-name }.
            *[other] Ustawienia można zmienić w oknie Preferencje programu { -brand-short-name }.
         }
+
 unknowncontenttype-intro = Rozpoczęto pobieranie pliku:
 unknowncontenttype-which-is = Typ pliku:
 unknowncontenttype-from = Adres:
 unknowncontenttype-prompt = Czy zapisać ten plik?
-unknowncontenttype-action-question = Po ukończeniu pobierania:
+unknowncontenttype-action-question = Co { -brand-short-name } ma zrobić z tym plikiem?
 unknowncontenttype-open-with =
     .label = Otwórz za pomocą
     .accesskey = o

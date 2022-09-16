@@ -22,6 +22,7 @@ openpgp-view-your-encryption-key =
 openpgp-openpgp = OpenPGP
 
 openpgp-no-sig = Sinadura digitalik ez
+openpgp-no-sig-info = Mezu honek ez du bidaltzailearen sinadura digitalik. Horrek esan nahi balitekeela mezua beste norbaitek bidali izana, email helbide honen jabea delako itxurak eginez. Era berean, baliteke ere norbaitek mezua eraldatu izana sarean zebilen bitartean.
 openpgp-uncertain-sig = Zalantzazko sinadura digitala
 openpgp-invalid-sig = Sinadura digital baliogabea
 openpgp-good-sig = Sinadura digital ona
@@ -40,6 +41,17 @@ openpgp-sig-key-id-with-subkey-id = Sinatzailearen gako ID: { $key } (Azpi-gako 
 
 openpgp-enc-key-id = Zure deskribapen gako ID: { $key }
 openpgp-enc-key-with-subkey-id = Zure deskribapenaren gako ID: { $key } (Azpi-gako ID: { $subkey })
+
+openpgp-enc-none = Mezua EZ dago zifratuta
+openpgp-enc-none-label = Mezu hau ez da zifratu bidali aurretik. Zifratu gabeko informazioa Interneten zehar bidaltzerakoan beste edonork ikus lezake.
+
+openpgp-enc-invalid-label = Ezin da mezua deszifratu
+openpgp-enc-invalid = Mezu hau zifratu egin da zuri bidali aurretik, baina ezin da deszifratu.
+
+openpgp-enc-clueless = Zifratutako mezu honekin arazo ezezagunak daude.
+
+openpgp-enc-valid-label = Mezua zifratuta dago
+openpgp-enc-valid = Mezu hau zuri bidali aurretik zifratu zen. Zifratzeak, mezua zuzendu zaion hartzaileak bakarrik irakurtzea bermatzen du.
 
 openpgp-unknown-key-id = Gako ezezaguna
 

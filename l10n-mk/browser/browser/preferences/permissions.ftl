@@ -35,10 +35,17 @@ permissions-remove-all =
     .label = Отстрани ги сите мрежни места
     .accesskey = с
 
+permissions-capabilities-autoplay-block =
+    .label = Блокирај аудио
+permissions-capabilities-autoplay-blockall =
+    .label = Блокирај аудио и видео
+
 permissions-capabilities-allow =
     .label = Дозволи
 permissions-capabilities-block =
     .label = Блокирај
+permissions-capabilities-prompt =
+    .label = Секогаш прашувај
 
 permissions-capabilities-listitem-allow =
     .value = Дозволи
@@ -60,6 +67,7 @@ permissions-invalid-uri-label = Внесете точно име на домаќ
 
 ## Exceptions - HTTPS-Only Mode
 
+
 ## Exceptions - Pop-ups
 
 permissions-exceptions-popup-desc = Можете да одредите кои мрежни места смеат да отвораат скокачки прозорци. Внесете ја точната адреса за која сакате да дозволите и кликнете на „Дозволи“.
@@ -71,10 +79,8 @@ permissions-exceptions-popup-desc = Можете да одредите кои м
 
 permissions-exceptions-addons-desc = Можете да одредите од кои мрежни места смее да се инсталираат додатоци. Внесете ја точната адреса за коja сакате да дозволите и кликнете на „Дозволи“.
 
-## Exceptions - Autoplay Media
-
-
 ## Site Permissions - Autoplay
+
 
 ## Site Permissions - Notifications
 
@@ -83,6 +89,7 @@ permissions-exceptions-addons-desc = Можете да одредите од к�
 
 
 ## Site Permissions - Virtual Reality
+
 
 ## Site Permissions - Camera
 

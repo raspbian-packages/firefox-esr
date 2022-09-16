@@ -55,9 +55,6 @@ account-setup-password-label = Pasahitza
 account-provisioner-button = Eskuratu posta elektroniko berri bat
     .accesskey = p
 
-account-setup-password-toggle =
-    .title = Erakutsi/ezkutatu pasahitza
-
 account-setup-password-toggle-show =
     .title = Erakutsi pasahitza testu garbian
 
@@ -184,18 +181,9 @@ account-setup-results-area-title =
        *[other] Konfigurazio erabilgarriak
     }
 
-# Note: IMAP is the name of a protocol.
-account-setup-result-imap = IMAP
-
 account-setup-result-imap-description = Mantendu zure karpetak eta postak sinkronizatuak zure zerbitzarian
 
-# Note: POP3 is the name of a protocol.
-account-setup-result-pop = POP3
-
 account-setup-result-pop-description = Mantendu zure karpetak eta postak zure konputagailuan
-
-# Note: Exchange is the name of a product.
-account-setup-result-exchange = Exchange
 
 # Note: Exchange, Office365 are the name of products.
 account-setup-result-exchange2-description = Erabili Microsoft Exchange server edo Office365 cloud zerbitzuak
@@ -207,8 +195,6 @@ account-setup-outgoing-title = Irteerakoa
 account-setup-username-title = Erabiltzaile-izena
 
 account-setup-exchange-title = Zerbitzaria
-
-account-setup-result-smtp = SMTP
 
 account-setup-result-no-encryption = Zifraketarik ez
 
@@ -234,6 +220,8 @@ account-setup-find-settings-failed = { -brand-short-name }(e)k ez du zure posta-
 
 account-setup-exchange-config-unverifiable = Konfigurazioa ezin da egiaztatu. Zure erabiltzaile izena eta pasahitza zuzenak badira, litekeena da zerbitzari administratzaileak zure konturako aukeratutako konfigurazioa desgaitu izana. Saiatu beste protokolo bat aukeratuz.
 
+account-setup-provisioner-error = Errorea eman { -brand-short-name }(e)n zure kontu berria ezartzean. Mesedez, saiatu eskuz ezartzen zure kontua zure kredentzialekin.
+
 ## Manual configuration area
 
 account-setup-manual-config-title = Zerbitzariaren ezarpenak
@@ -241,12 +229,6 @@ account-setup-manual-config-title = Zerbitzariaren ezarpenak
 account-setup-incoming-server-legend = Hartzeko zerbitzaria
 
 account-setup-protocol-label = Protokoloa:
-
-protocol-imap-option = { account-setup-result-imap }
-
-protocol-pop-option = { account-setup-result-pop }
-
-protocol-exchange-option = { account-setup-result-exchange }
 
 account-setup-hostname-label = Ostalari-izena:
 

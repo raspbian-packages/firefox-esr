@@ -26,5 +26,7 @@ openpgp-key-verified = Acceptada (verifitgada)
 openpgp-key-unverified = Acceptada (betg verifitgada)
 openpgp-key-undecided = Betg acceptada (betg decidì)
 openpgp-key-rejected = Betg acceptada (refusada)
+openpgp-key-expired = Scrudà
 
 openpgp-intro = Clavs publicas disponiblas per { $key }
+

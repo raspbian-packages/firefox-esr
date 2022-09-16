@@ -5,7 +5,7 @@
 close-button =
     .aria-label = Schließen
 
-preferences-doc-title = Einstellungen
+preferences-doc-title2 = Einstellungen
 
 category-list =
     .aria-label = Kategorien
@@ -165,12 +165,18 @@ restore-default-label =
     .accesskey = w
 
 default-search-engine = Standardsuchmaschine
-add-search-engine =
-    .label = Aus Datei hinzufügen
-    .accesskey = D
+add-web-search-engine =
+    .label = Hinzufügen…
+    .accesskey = H
 remove-search-engine =
     .label = Entfernen
     .accesskey = f
+
+add-opensearch-provider-title = OpenSearch-Anbieter hinzufügen
+add-opensearch-provider-text = Geben Sie die Adresse des hinzuzufügenden OpenSearch-Anbieters ein. Verwenden Sie entweder die Adresse der OpenSearch-Definitionsdatei oder eine Webadresse, auf der sie sich automatisch erkennen lässt.
+
+adding-opensearch-provider-failed-title = Hinzufügen des OpenSearch-Anbieters fehlgeschlagen
+adding-opensearch-provider-failed-text = OpenSearch-Anbieter unter { $url } konnte nicht hinzugefügt werden.
 
 minimize-to-tray-label =
     .label = { -brand-short-name } beim Minimieren in die Infoleiste verschieben
@@ -197,7 +203,7 @@ app-icon-options =
     .label = Dock-Symbol-Einstellungen…
     .accesskey = D
 
-notification-settings = Benachrichtigungen und Standardton können in der Mitteilungszentrale der Systemeinstellungen deaktiviert werden.
+notification-settings2 = Benachrichtigungen und Standardton können in der Mitteilungszentrale der Systemeinstellungen deaktiviert werden.
 
 animated-alert-label =
     .label = Eine Benachrichtigung anzeigen
@@ -252,6 +258,10 @@ autoscroll-label =
 smooth-scrolling-label =
     .label = Sanften Bildlauf aktivieren
     .accesskey = f
+
+browsing-gtk-use-non-overlay-scrollbars =
+    .label = Bildlaufleisten immer anzeigen
+    .accesskey = B
 
 system-integration-legend = Systemintegration
 always-check-default =
@@ -411,9 +421,9 @@ quoted-text-color =
 search-handler-table =
     .placeholder = Dateitypen und Aktionen suchen
 
-type-column-label = Dateityp
+type-column-header = Dateityp
 
-action-column-label = Aktion
+action-column-header = Aktion
 
 save-to-label =
     .label = Dateien speichern unter
@@ -526,6 +536,10 @@ warn-on-send-accel-key =
     .label = Bestätigen, wenn die Tastenkombination zum Senden einer Nachricht verwendet wird
     .accesskey = B
 
+add-link-previews =
+    .label = Link-Vorschau beim Einfügen eines Links hinzufügen
+    .accesskey = V
+
 spellcheck-label =
     .label = Rechtschreibprüfung vor dem Senden
     .accesskey = R
@@ -568,11 +582,27 @@ default-format-label =
     .label = Format "Absatz" anstatt "Normaler Text" verwenden
     .accesskey = F
 
-format-description = Verhalten beim Senden von HTML-Nachrichten:
+compose-send-format-title = Sendeformat
 
-send-options-label =
-    .label = Sendeoptionen…
-    .accesskey = o
+compose-send-automatic-option =
+    .label = Automatisch
+
+compose-send-automatic-description = Falls keine Stilformatierungen verwendet werden, erfolgt die Verwendung von Reintext. Ansonsten wird HTML mit Reintext als Rückfallabsicherung eingesetzt.
+
+compose-send-both-option =
+    .label = HTML und Reintext
+
+compose-send-both-description = Das E-Mail-Programm des Empfängers bestimmt, welche Version angezeigt wird.
+
+compose-send-html-option =
+    .label = Nur HTML
+
+compose-send-html-description = Einige Empfänger können die Nachricht ohne Rückfallabsicherung im Reintextformat eventuell nicht lesen.
+
+compose-send-plain-option =
+    .label = Nur Reintext
+
+compose-send-plain-description = Einige Stilformatierungen werden in Alternativen für Reintext umgewandelt, während andere Funktionen zum Verfassen von Nachrichten deaktiviert werden.
 
 autocomplete-description = Beim Adressieren von Nachrichten nach passenden Einträgen suchen in:
 
@@ -628,7 +658,6 @@ find-cloud-providers =
     .value = Weitere Anbieter finden…
 
 cloud-account-description = Einen Filelink-Speicherdienst hinzufügen
-
 
 ## Privacy Tab
 
@@ -856,8 +885,8 @@ theme-label =
     .value = Erscheinungsbild:
     .accesskey = E
 
-style-thunderbird =
-    .label = Thunderbird
+style-mail =
+    .label = { -brand-short-name }
 style-bubbles =
     .label = Sprechblasen
 style-dark =
@@ -875,6 +904,8 @@ chat-variant-label =
     .value = Variante:
     .accesskey = V
 
+## Preferences UI Search Results
+
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible
 #
@@ -883,16 +914,16 @@ chat-variant-label =
 # Notice: The value of the `.style` attribute is a CSS string, and the `width`
 # is the name of the CSS property. It is intended only to adjust the element's width.
 # Do not translate.
-search-preferences-input =
+search-preferences-input2 =
     .style = width: 15.4em
     .placeholder = In Einstellungen suchen
 
-## Preferences UI Search Results
+## Settings UI Search Results
 
 search-results-header = Suchergebnisse
 
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message = { PLATFORM() ->
+search-results-empty-message2 = { PLATFORM() ->
     [windows] Keine Treffer in den Einstellungen für "<span data-l10n-name="query"></span>".
     *[other] Keine Treffer in den Einstellungen für "<span data-l10n-name="query"></span>".
 }

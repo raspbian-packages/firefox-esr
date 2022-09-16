@@ -4,8 +4,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 e2e-intro-description = Norėdami siųsti užšifruotus ar skaitmeniškai pasirašytus pranešimus, turite sukonfigūruoti šifravimo technologiją - „OpenPGP“ arba „S/MIME“.
-
 e2e-intro-description-more = Pasirinkite savo asmeninį raktą, kad galėtumėte naudoti „OpenPGP“, arba asmeninį sertifikatą, kad galėtumėte naudoti „S/MIME“. Kaip asmeninio rakto ar sertifikato savininkas, jūs turite atitinkamą slaptą raktą.
+
+e2e-advanced-section = Papildomi nustatymai
 
 openpgp-key-user-id-label = Paskyra / Vartotojo ID
 openpgp-keygen-title-label =
@@ -237,6 +238,7 @@ openpgp-key-man-key-details-key =
 
 openpgp-key-details-title =
     .title = Rakto savybės
+
 openpgp-key-details-signatures-tab =
     .label = Sertifikatai
 openpgp-key-details-structure-tab =
@@ -249,6 +251,7 @@ openpgp-key-details-id-label =
 openpgp-key-details-key-type-label = Tipas
 openpgp-key-details-key-part-label =
     .label = Rakto dalis
+
 openpgp-key-details-algorithm-label =
     .label = Algoritmas
 openpgp-key-details-size-label =
@@ -265,7 +268,6 @@ openpgp-key-details-fingerprint-label = „Pirštų atspaudas“
 openpgp-key-details-sel-action =
     .label = Pasirinkite veiksmą…
     .accesskey = P
-openpgp-key-details-also-known-label = Tariamos alternatyvios pagrindinio savininko tapatybės:
 openpgp-card-details-close-window-label =
     .buttonlabelaccept = Užverti
 openpgp-acceptance-label =
@@ -281,7 +283,6 @@ openpgp-acceptance-verified-label =
 key-accept-personal =
     Šiam raktui turite ir viešoją, ir slaptąją dalis. Galite naudoti jį kaip asmeninį raktą.
     Bet jei šį raktą jums davė kažkas kitas, nenaudokite jo kaip asmeninio rakto.
-key-personal-warning = Ar pats sukūrėte šį raktą, o rodomas rakto savininkas nurodo jus?
 openpgp-personal-no-label =
     .label = Ne, nenaudoti jo kaip mano asmeninio rakto.
 openpgp-personal-yes-label =
@@ -291,16 +292,6 @@ openpgp-copy-cmd-label =
     .label = Kopijuoti
 
 ## e2e encryption settings
-
-#   $count (Number) - the number of configured keys associated with the current identity
-#   $identity (String) - the email address of the currently selected identity
-openpgp-description =
-    { $count ->
-        [0] „Thunderbird“ nerado asmeninių „OpenPGP“ raktų, susietų su <b> { $identity } </b>
-        [one] „Thunderbird“ rado { $count } asmeninį „OpenPGP“ raktą, susietą su <b> { $identity } </b>
-        [few] „Thunderbird“ rado { $count } asmeninius „OpenPGP“ raktus, susietus su <b> { $identity } </b>
-       *[other] „Thunderbird“ rado { $count } asmeninių „OpenPGP“ raktus, susietų su <b> { $identity } </b>
-    }
 
 #   $key (String) - the currently selected OpenPGP key
 openpgp-selection-status-error = Dabartinėje konfigūracijoje naudojamas raktas <b> { $key } </b>, kurio galiojimo laikas baigėsi.
@@ -368,15 +359,12 @@ key-expired-date = Raktas negalioja nuo { $keyExpiry }
 key-expired-simple = Raktas nebegalioja
 key-revoked-simple = Raktas atšauktas
 key-do-you-accept = Ar priimate šį raktą skaitmeninių parašų tikrinimui ir pranešimų šifravimui?
-key-accept-warning = Venkite priimti nepatikrintą raktą. Norėdami patikrinti korespondento rakto „pirštų atspaudą“ naudokite ir kitokį nei elektroninis paštas ryšio kanalą.
 
 # Strings enigmailMsgComposeOverlay.js
 cannot-use-own-key-because = Nepavyko išsiųsti pranešimo, nes yra problema su jūsų asmeniniu raktu. { $problem }
 cannot-encrypt-because-missing = Nepavyko išsiųsti šio pranešimo su abipusiu šifravimu, nes kilo problemų su šių gavėjų raktais: { $problem }
 window-locked = Kūrimo langas yra užrakintas; siuntimas atšauktas
 
-# Strings in mimeDecrypt.jsm
-mime-decrypt-encrypted-part-attachment-label = Šifruota pranešimo dalis
 mime-decrypt-encrypted-part-concealed-data = Tai -  užšifruota pranešimo dalis. Turite šį priedą atidaryti atskirame lange.
 
 # Strings in keyserver.jsm
@@ -402,27 +390,6 @@ converter-decrypt-body-failed =
     Nepavyko iššifruoti pranešimo, kurio tema
     { $subject }.
     Galima bandyti dar kartą, naudojant kitą slaptažodį, arba praleisti pranešimą.
-
-# Strings in gpg.jsm
-unknown-signing-alg = Nežinomas pasirašymo algoritmas (ID: { $id })
-unknown-hash-alg = Nežinoma kriptografinė maiša (ID: { $id })
-
-# Strings in keyUsability.jsm
-expiry-key-expires-soon =
-    Jūsų „{ $desc }“ raktas baigs galioti po mažiau nei { $days } dienų.
-    Rekomenduojame sukurti naują raktų porą ir atitinkamai sukonfigūruoti paskyras.
-expiry-keys-expire-soon =
-    Šie raktai baigs galioti mažiau nei po { $days } dienų: { $desc }.
-    Rekomenduojame susikurti naujus raktus ir atitinkamai sukonfigūruoti paskyras.
-expiry-key-missing-owner-trust =
-    Jūsų slaptas raktas { $desc } nepakankamai patikimas.
-    Mes rekomenduojame pagrindinėse savybėse parinktį „Jūs pasitikite sertifikatais“ nustatyti kaip „Visiškas“.
-expiry-keys-missing-owner-trust =
-    Šie slapti raktai nepakankamai patikimo.
-    { $desc }.
-    Mes rekomenduojame pagrindinėse savybėse parinktį „Jūs pasitikite sertifikatais“ nustatyti kaip „Visiškas“.
-expiry-open-key-manager = Atverti „OpenPGP Key Manager“
-expiry-open-key-properties = Rakto savybės
 
 # Strings filters.jsm
 filter-folder-required = Reikia nurodyti aplanką.
@@ -655,9 +622,6 @@ send-to-news-warning =
     Tai nerekomenduojama, nes turi prasmę tik tuomet, kai visi grupės nariai galės iššifruoti šį pranešimą, todėl pranešimą reikia užšifruoti visų grupės dalyvių raktais. Siųskite šį pranešimą tik tada, jei tiksliai žinote, ką darote.
     Tęsti?
 save-attachment-header = Išsaugoti iššifruotą priedą
-no-temp-dir =
-    Nepavyko rasti laikino katalogo, į kurį galėtumėte rašyti.
-    Tinkamia nustatykite TEMP aplinkos kintamąjį.
 possibly-pgp-mime = Galbūt tai PGP/MIME šifruotas arba pasirašytas pranešimas; patikrinimui naudokite funkciją „Iššifruoti / patvirtinti“
 cannot-send-sig-because-no-own-key = Negalima pasirašyti šio pranešimo skaitmeniniu būdu, nes raktui „<{ $key }>“ dar nesukonfigūravote abipusio šifravimo
 cannot-send-enc-because-no-own-key = Negalima užšifruoti ir išsiųsti šio pranešimo, nes raktui „<{ $key }>“ dar nesukonfigūravote abipusio šifravimo

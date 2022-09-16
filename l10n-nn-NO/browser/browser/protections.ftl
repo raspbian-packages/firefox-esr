@@ -65,22 +65,20 @@ cryptominer-tab-content = Kryptoutvinnarar brukar datakrafta til systemet for å
 protections-close-button2 =
     .aria-label = Lat att
     .title = Lat att
-  
+
 mobile-app-title = Blokker annonsesporarar på fleire einingar
 mobile-app-card-content = Bruk mobilnettlesaren med innebygd vern mot annonsesporing.
 mobile-app-links = { -brand-product-name } Nettlesar for <a data-l10n-name="android-mobile-inline-link">Android</a> og <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 
 lockwise-title = Glæym aldri eit passord igjen
-lockwise-title-logged-in2 = Passordhandtering
-lockwise-header-content = { -lockwise-brand-name } lagrar passorda dine trygt i nettlesaren din.
+passwords-title-logged-in = Handsam passorda dine
+passwords-header-content = { -brand-product-name } lagrar passorda dine sikkert i nettlesaren din.
 lockwise-header-content-logged-in = Lagre passorda dine trygt og synkroniser dei med alle eniningane dine.
-protection-report-save-passwords-button = Lagre passord
-    .title = Lagre passord i { -lockwise-brand-short-name }
-protection-report-manage-passwords-button = Handtere passord
-    .title = Handtere passord i { -lockwise-brand-short-name }
-lockwise-mobile-app-title = Ta med deg passorda dine overalt
-lockwise-no-logins-card-content = Bruk passord som er lagra i { -brand-short-name } på kva som helst eining.
-lockwise-app-links = { -lockwise-brand-name } for <a data-l10n-name="lockwise-android-inline-link">Android</a> og <a data-l10n-name="lockwise-ios-inline-link">iOS</a>
+protection-report-passwords-save-passwords-button = Lagre passord
+    .title = Lagre passord
+protection-report-passwords-manage-passwords-button = Handtere passord
+    .title = Handtere passord
+
 
 # Variables:
 # $count (Number) - Number of passwords exposed in data breaches.

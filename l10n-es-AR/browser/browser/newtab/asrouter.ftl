@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Función recomendada
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Por qué estoy viendo esto
+
 cfr-doorhanger-extension-cancel-button = Ahora no
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Agregar ahora
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = Administrar opciones de recomendaciones
     .accesskey = m
+
 cfr-doorhanger-extension-never-show-recommendation = No mostrarme esta recomendación
     .accesskey = s
+
 cfr-doorhanger-extension-learn-more-link = Conocer más
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = por { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recomendación
 cfr-doorhanger-extension-notification2 = Recomendación
     .tooltiptext = Recomendación de complementos
     .a11y-announcement = Recomendación de complementos disponible
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Recomendación
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = Conocer más
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nueva función:
+
 cfr-whatsnew-button =
     .label = Novedades
     .tooltiptext = Novedades
+
 cfr-whatsnew-release-notes-link-text = Leer las notas de la versión
 
 ## Enhanced Tracking Protection Milestones
@@ -89,8 +99,8 @@ cfr-whatsnew-release-notes-link-text = Leer las notas de la versión
 #   $date (Datetime) - The date we began recording the count of blocked trackers
 cfr-doorhanger-milestone-heading2 =
     { $blockedCount ->
-        [one] { -brand-short-name } bloqueado en <b>{ $blockedCount }</b> rastreadores desde { DATETIME($date, month: "long", year: "numeric") }
-       *[other] { -brand-short-name } bloqueado en <b>{ $blockCount }</b> rastreadores desde { DATETIME($date, month: "long", year: "numeric") }
+        [one] { -brand-short-name } bloqueó más de <b>{ $blockedCount }</b> rastreadores desde { DATETIME($date, month: "long", year: "numeric") }
+       *[other] { -brand-short-name } bloqueó más de <b>{ $blockedCount }</b> rastreadores desde { DATETIME($date, month: "long", year: "numeric") }
     }
 cfr-doorhanger-milestone-ok-button = Ver todo
     .accesskey = V
@@ -156,3 +166,16 @@ spotlight-total-cookie-protection-body = Total Cookie Protection evita que los r
 spotlight-total-cookie-protection-expanded = { -brand-short-name } encierra las cookies con una cerca y las limita al sitio que las creó para que los rastreadores no puedan usarlas para seguirlo. Con el acceso anticipado, ayudará a optimizar esta función para que podamos seguir construyendo una Web mejor para todos.
 spotlight-total-cookie-protection-primary-button = Habilitar Total Cookie Protection
 spotlight-total-cookie-protection-secondary-button = No ahora
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = Una mejor internet comienza con usted
+spotlight-better-internet-body = Al usar { -brand-short-name }, está votando por una internet abierta y accesible que es mejor para todos.
+spotlight-peace-mind-header = Te tenemos cubierto
+spotlight-peace-mind-body = Cada mes, { -brand-short-name } bloquea un promedio de más de tres mil rastreadores por usuario. Porque nada, especialmente las molestias de privacidad, debería meterse entre usted y una buena internet.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Mantener en Dock
+       *[other] Pegar a la barra de tareas
+    }
+spotlight-pin-secondary-button = No ahora

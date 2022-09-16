@@ -160,7 +160,7 @@
 <!ENTITY sortByJunkStatusCmd.accesskey "J">
 <!ENTITY sortBySubjectCmd.label "主旨">
 <!ENTITY sortBySubjectCmd.accesskey "S">
-<!ENTITY sortByFromCmd.label "寄件者">
+<!ENTITY sortByFromCmd.label "從">
 <!ENTITY sortByFromCmd.accesskey "F">
 <!ENTITY sortByRecipientCmd.label "收件者">
 <!ENTITY sortByRecipientCmd.accesskey "c">
@@ -313,9 +313,17 @@
 <!ENTITY forwardAsInline.accesskey "I">
 <!ENTITY forwardAsAttachmentCmd.label "附件">
 <!ENTITY forwardAsAttachmentCmd.accesskey "A">
-<!ENTITY editMsgAsNewCmd.label "重新編輯郵件">
-<!ENTITY editMsgAsNewCmd.accesskey "E">
-<!ENTITY editMsgAsNewCmd.key "e">
+<!ENTITY editAsNewMsgCmd.label "作為新訊息編輯">
+<!ENTITY editAsNewMsgCmd.accesskey "E">
+<!ENTITY editAsNewMsgCmd.key "e">
+<!ENTITY editDraftMsgCmd.label "編輯草稿">
+<!ENTITY editDraftMsgCmd.accesskey "D">
+<!ENTITY editTemplateMsgCmd.label "編輯範本">
+<!ENTITY editTemplateMsgCmd.accesskey "T">
+<!ENTITY newMsgFromTemplateCmd.label "使用範本撰寫新訊息">
+<!-- LOCALIZATION NOTE (newMsgFromTemplateCmd.keycode):
+     Do not localize VK_RETURN. -->
+<!ENTITY newMsgFromTemplateCmd.keycode "VK_RETURN">
 <!ENTITY createFilter.label "依郵件建立篩選條件…">
 <!ENTITY createFilter.accesskey "a">
 <!ENTITY archiveMsgCmd.label "備存">
@@ -468,8 +476,12 @@
 <!ENTITY contextOpenNewWindow.accesskey "w">
 <!ENTITY contextOpenNewTab.label "用新分頁開啟郵件">
 <!ENTITY contextOpenNewTab.accesskey "T">
-<!ENTITY contextEditAsNew.label "另編新檔…">
-<!ENTITY contextEditAsNew.accesskey "E">
+<!ENTITY contextEditMsgAsNew.label "作為新訊息編輯">
+<!ENTITY contextEditMsgAsNew.accesskey "E">
+<!ENTITY contextEditDraftMsg.label "編輯草稿">
+<!ENTITY contextEditTemplate.label "編輯範本">
+<!ENTITY contextEditTemplate.accesskey "T">
+<!ENTITY contextNewMsgFromTemplate.label "使用範本撰寫新訊息">
 <!ENTITY contextReplySender.label "只回覆給寄件者">
 <!ENTITY contextReplySender.accesskey "o">
 <!ENTITY contextReplyList.label "回覆至清單">

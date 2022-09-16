@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Guardar enlace en { -pocket-brand-name }
     .accesskey = o
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Copiar dirección de correo electrónico
     .accesskey = e
+
+main-context-menu-copy-phone =
+    .label = Copiar número de teléfono
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Copiar enlace
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Abrir enlace en nueva pestaña { $containerName }
     .accesskey = t
+
+main-context-menu-reveal-password =
+    .label = Mostrar contraseña
+    .accesskey = c

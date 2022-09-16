@@ -21,6 +21,7 @@ perftools-heading-features-default = Features (Recommended on by default)
 perftools-heading-features-disabled = Disabled Features
 perftools-heading-features-experimental = Experimental
 perftools-heading-threads = Threads
+perftools-heading-threads-jvm = JVM Threads
 perftools-heading-local-build = Local build
 
 ##
@@ -49,9 +50,6 @@ perftools-devtools-settings-label = Settings
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    The profiler is disabled when Private Browsing is enabled.
-    Close all Private Windows to re-enable the profiler
 perftools-status-recording-stopped-by-another-tool = The recording was stopped by another tool.
 perftools-status-restart-required = The browser must be restarted to enable this feature.
 
@@ -97,6 +95,18 @@ perftools-thread-dns-resolver =
     .title = DNS resolution happens on this thread
 perftools-thread-task-controller =
     .title = TaskController thread pool threads
+perftools-thread-jvm-gecko =
+    .title = The main Gecko JVM thread
+perftools-thread-jvm-nimbus =
+    .title = The main threads for the Nimbus experiments SDK
+perftools-thread-jvm-default-dispatcher =
+    .title = The Default dispatcher for the Kotlin coroutines library
+perftools-thread-jvm-glean =
+    .title = The main threads for the Glean telemetry SDK
+perftools-thread-jvm-arch-disk-io =
+    .title = The IO dispatcher for the Kotlin coroutines library
+perftools-thread-jvm-pool =
+    .title = Threads created in an unnamed thread pool
 
 ##
 
@@ -107,6 +117,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>New</b>: { -profiler-brand-name } is now integrated into Developer Tools. <a>Learn more</a> about this powerful new tool.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -121,22 +135,17 @@ perftools-onboarding-close-button =
 # devtools/client/performance-new/popup/background.jsm.js
 # The same labels and descriptions are also defined in appmenu.ftl.
 
-perftools-presets-web-developer-label = ვებშემუშავება
-perftools-presets-web-developer-description = მზა პარამეტრები, განკუთვნილი პროგრამების ხარვეზების დასადგენად, ნაკლები დატვირთვით.
-perftools-presets-firefox-platform-label = Firefox-პლატფორმა
-perftools-presets-firefox-platform-description = მზა პარამეტრები, განკუთვნილი Firefox-პლატფორმის შიდა ხარვეზების დასადგენად.
-perftools-presets-firefox-front-end-label = Firefox კლიენტის მხარე
-perftools-presets-firefox-front-end-description = მზა პარამეტრები, განკუთვნილი Firefox-ის კლიენტის მხარის შიდა ხარვეზების გამოსავლენად.
-perftools-presets-firefox-graphics-label = Firefox-გრაფიკა
-perftools-presets-firefox-graphics-description = მზა პარამეტრები, განკუთვნილი Firefox-ის გრაფიკული წარმადობის გამოსაკვლევად.
+perftools-presets-web-developer-label = Web Developer
+perftools-presets-web-developer-description = Recommended preset for most web app debugging, with low overhead.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Recommended preset for profiling { -brand-shorter-name }.
 perftools-presets-graphics-label = Graphics
 perftools-presets-graphics-description = Preset for investigating graphics bugs in { -brand-shorter-name }.
-perftools-presets-media-label = ფაილები
-perftools-presets-media-description = მზა პარამეტრები, განკუთვნილი ხმოვანი და ვიდეოფაილების ხარვეზების გამოსავლენად.
+perftools-presets-media-label = Media
 perftools-presets-media-description2 = Preset for investigating audio and video bugs in { -brand-shorter-name }.
-perftools-presets-custom-label = მორგებული
+perftools-presets-networking-label = Networking
+perftools-presets-networking-description = Preset for investigating networking bugs in { -brand-shorter-name }.
+perftools-presets-custom-label = Custom
 
 ##
 

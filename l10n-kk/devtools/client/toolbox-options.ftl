@@ -41,6 +41,9 @@ options-collapse-attrs-label = DOM атрибуттарын қысқарту
 options-collapse-attrs-tooltip =
     .title = Бақылаушыда ұзын атрибуттарды қысқарту
 
+# The label for the checkbox option to enable the "drag to update" feature
+options-inspector-draggable-properties-label = Өлшем мәндерін түзету үшін басыңыз және сүйреңіз
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Негізгі түс бірлігі
@@ -48,6 +51,7 @@ options-default-color-unit-authored = As Authored
 options-default-color-unit-hex = Он алтылық
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Түстер аттары
 
 ## Style Editor section
@@ -65,6 +69,8 @@ options-stylesheet-autocompletion-tooltip =
 # The heading
 options-screenshot-label = Скриншот мінез-құлығы
 
+# Label for the checkbox that toggles screenshot to clipboard feature
+options-screenshot-clipboard-only-label = Тек алмасу буферіне скриншотты жасау
 options-screenshot-clipboard-tooltip2 =
     .title = Скриншотты тікелей алмасу буферіне сақтайды
 
@@ -115,6 +121,9 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Қашықтан жөндеуді іске қосу
 options-enable-remote-tooltip2 =
     .title = Бұл параметрді іске қосу осы браузер экземплярын қашықтан жөндеуге мүмкіндік береді
+
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Арнаулы пішімдеушілерді іске қосу
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = HTTP арқылы жасайтын қызметтік жұмыс үрдістерін іске қосу (құралдар панелі ашық болған кезде)

@@ -16,11 +16,6 @@ downloads-panel =
 # The style attribute has the width of the Downloads Panel expressed using
 # a CSS unit. The longest labels that should fit are usually those of
 # in-progress and blocked downloads.
-downloads-panel-list =
-    .style = width: 70ch
-# The style attribute has the width of the Downloads Panel expressed using
-# a CSS unit. The longest labels that should fit are usually those of
-# in-progress and blocked downloads.
 downloads-panel-items =
     .style = width: 35em
 downloads-cmd-pause =
@@ -33,14 +28,6 @@ downloads-cmd-cancel =
     .tooltiptext = Atsisakyti
 downloads-cmd-cancel-panel =
     .aria-label = Atsisakyti
-# This message is only displayed on Windows and Linux devices
-downloads-cmd-show-menuitem =
-    .label = Atverti aplanką
-    .accesskey = v
-# This message is only displayed on macOS devices
-downloads-cmd-show-menuitem-mac =
-    .label = Parodyti programoje „Finder“
-    .accesskey = F
 downloads-cmd-show-menuitem-2 =
     .label =
         { PLATFORM() ->
@@ -48,32 +35,33 @@ downloads-cmd-show-menuitem-2 =
            *[other] Rodyti aplanke
         }
     .accesskey = y
+
+## Displayed in the downloads context menu for files that can be opened.
+## Variables:
+##   $handler (String) - The name of the mime type's default file handler.
+##   Example: "Notepad", "Acrobat Reader DC", "7-Zip File Manager"
+
 downloads-cmd-use-system-default =
     .label = Atverti sistemos žiūryklėje
     .accesskey = v
+# This version is shown when the download's mime type has a valid file handler.
+downloads-cmd-use-system-default-named =
+    .label = Atverti per „{ $handler }“
+    .accesskey = i
 # We can use the same accesskey as downloads-cmd-always-open-similar-files.
 # Both should not be visible in the downloads context menu at the same time.
 downloads-cmd-always-use-system-default =
     .label = Visada atverti sistemos žiūryklėje
     .accesskey = d
-downloads-cmd-show-button =
-    .tooltiptext =
-        { PLATFORM() ->
-            [macos] Parodyti programoje „Finder“
-           *[other] Atverti aplanką
-        }
-downloads-cmd-show-panel =
-    .aria-label =
-        { PLATFORM() ->
-            [macos] Parodyti programoje „Finder“
-           *[other] Atverti aplanką
-        }
-downloads-cmd-show-description =
-    .value =
-        { PLATFORM() ->
-            [macos] Parodyti programoje „Finder“
-           *[other] Atverti aplanką
-        }
+# We can use the same accesskey as downloads-cmd-always-open-similar-files.
+# Both should not be visible in the downloads context menu at the same time.
+# This version is shown when the download's mime type has a valid file handler.
+downloads-cmd-always-use-system-default-named =
+    .label = Visada atverti per „{ $handler }“
+    .accesskey = s
+
+##
+
 # We can use the same accesskey as downloads-cmd-always-use-system-default.
 # Both should not be visible in the downloads context menu at the same time.
 downloads-cmd-always-open-similar-files =
@@ -118,6 +106,9 @@ downloads-cmd-clear-list =
 downloads-cmd-clear-downloads =
     .label = Išvalyti atsiuntimus
     .accesskey = v
+downloads-cmd-delete-file =
+    .label = Pašalinti
+    .accesskey = P
 # This command is shown in the context menu when downloads are blocked.
 downloads-cmd-unblock =
     .label = Leisti atsiuntimą
@@ -163,6 +154,8 @@ downloading-file-opens-in-minutes = Atveriama po { $minutes } min…
 downloading-file-opens-in-minutes-and-seconds = Atveriama po { $minutes } min. { $seconds } sek…
 downloading-file-opens-in-seconds = Atveriama po { $seconds } sek.
 downloading-file-opens-in-some-time = Bus atveriama užbaigus…
+downloading-file-click-to-open =
+    .value = Atverti užbaigus
 
 ##
 
@@ -184,6 +177,23 @@ downloads-history =
 # that we are showing the details of a single download.
 downloads-details =
     .title = Atsiuntimo informacija
+
+## Displayed when a site attempts to automatically download many files.
+## Variables:
+##   $num (number) - Number of blocked downloads.
+##   $url (string) - The url of the suspicious site, stripped of http, https and www prefix.
+
+downloads-files-not-downloaded =
+    { $num ->
+        [one] Failas neatsiųstas.
+        [few] { $num } neatsiųsti failai.
+       *[other] { $num } neatsiųstų failų.
+    }
+downloads-blocked-from-url = Užblokuoti atsiuntimai iš { $url }.
+downloads-blocked-download-detailed-info = { $url } bandė automatiškai parsiųsti keletą failų. Gali būti, kad svetainė veikia netinkamai, arba bando į jūsų įrenginį parsiųsti nepageidaujamų failų.
+
+##
+
 downloads-clear-downloads-button =
     .label = Išvalyti atsiuntimus
     .tooltiptext = Pašalinti iš sąrašo užbaigtus, nutrauktus ir nepavykusius atsiuntimus

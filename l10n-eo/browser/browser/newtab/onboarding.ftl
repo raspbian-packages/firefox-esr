@@ -3,11 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-### UI strings for the simplified onboarding / multistage about:welcome
-### Various strings use a non-breaking space to avoid a single dangling /
-### widowed word, so test on various window sizes if you also want this.
-
-
 ### UI strings for the MR1 onboarding / multistage about:welcome
 ### Various strings use a non-breaking space to avoid a single dangling /
 ### widowed word, so test on various window sizes if you also want this.
@@ -28,40 +23,7 @@ return-to-amo-subtitle = Bonege, vi havas { -brand-short-name }
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Nun, instalu ni <img data-l10n-name="icon"/><b>{ $addon-name }</b> por vi.
 return-to-amo-add-extension-label = Aldoni etendaĵon
-
-## Multistage 3-screen onboarding flow strings (about:welcome pages)
-
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-welcome-header = Bonvenon al <span data-l10n-name="zap">{ -brand-short-name }</span>
-onboarding-multistage-welcome-subtitle = La rapida, sekura kaj privata retumilo apogata de neprofitcela organizo.
-onboarding-multistage-welcome-primary-button-label = Komenci agordon
-onboarding-multistage-welcome-secondary-button-label = Komenci seancon
-onboarding-multistage-welcome-secondary-button-text = Ĉu vi havas konton?
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "default" should stay inside the span.
-onboarding-multistage-set-default-header = Igu { -brand-short-name } via <span data-l10n-name="zap">norma</span> retumilo
-onboarding-multistage-set-default-subtitle = Via tuta retumo rapida, sekura kaj privata.
-onboarding-multistage-set-default-primary-button-label = Igi norma
-onboarding-multistage-set-default-secondary-button-label = Ne nun
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. { -brand-short-name } should stay inside the span.
-onboarding-multistage-pin-default-header = Unue metu <span data-l10n-name="zap">{ -brand-short-name }</span> je unu alklako
-onboarding-multistage-pin-default-subtitle = Rapida, sekura kaj privata retumo en ĉiu vizito al la reto.
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-waiting-subtitle = Elektu { -brand-short-name } inter la retumiloj, kiam viaj agordoj malfermiĝas
-# The "settings" here refers to "Windows 10 Settings App" and not the browser's
-onboarding-multistage-pin-default-help-text = Tio ĉi alpinglos { -brand-short-name } al la taska strio kaj malfermos la agordojn
-onboarding-multistage-pin-default-primary-button-label = Igi { -brand-short-name } mia ĉefa retumilo
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "more" should stay inside the span.
-onboarding-multistage-import-header = Enporti viajn pasvortojn, <br/>legosignojn, kaj <span data-l10n-name="zap">pli</span>
-onboarding-multistage-import-subtitle = Ĉu vi venas el alia retumilo? Estas facile porti ĉion al { -brand-short-name }.
-onboarding-multistage-import-primary-button-label = Komenci enporton
-onboarding-multistage-import-secondary-button-label = Ne nun
-# Info displayed in the footer of import settings screen during onboarding flow.
-# This supports welcome screen showing top sites imported from the user's default browser.
-onboarding-import-sites-disclaimer = La retejoj listita ĉi tie estis trovitaj en tiu ĉi aparato. { -brand-short-name } ne konservas aŭ spegulas datumojn de aliaj retumiloj, krom se vi petas tion al ĝi.
+return-to-amo-add-theme-label = Aldoni la etoson
 
 ## Multistage onboarding strings (about:welcome pages)
 
@@ -71,18 +33,6 @@ onboarding-import-sites-disclaimer = La retejoj listita ĉi tie estis trovitaj e
 #   $total (Int) - Total number of pages
 onboarding-welcome-steps-indicator =
     .aria-label = Unua paŝoj: ekrano { $current } de { $total }
-# The <span data-l10n-name="zap"></span> in this string allows a "zap" underline style to be
-# automatically added to the text inside it. "look" should stay inside the span.
-onboarding-multistage-theme-header = Elektu <span data-l10n-name="zap">aspekton</span>
-onboarding-multistage-theme-subtitle = Personecigu { -brand-short-name } per etoso.
-onboarding-multistage-theme-primary-button-label2 = Farita
-onboarding-multistage-theme-secondary-button-label = Ne nun
-# Automatic theme uses operating system color settings
-onboarding-multistage-theme-label-automatic = Aŭtomate
-onboarding-multistage-theme-label-light = Hela
-onboarding-multistage-theme-label-dark = Malhela
-# "Firefox Alpenglow" here is the name of the theme, and should be kept in English.
-onboarding-multistage-theme-label-alpenglow = Firefox Alpenglow
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -171,44 +121,12 @@ mr1-onboarding-theme-label-light = Hela
 mr1-onboarding-theme-label-dark = Malhela
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+onboarding-theme-primary-button-label = Farita
 
 ## Please make sure to split the content of the title attribute into lines whose
 ## width corresponds to about 40 Latin characters, to ensure that the tooltip
 ## doesn't become too long. Line breaks will be preserved when displaying the
 ## tooltip.
-
-
-## Please make sure to split the content of the title attribute into lines whose
-## width corresponds to about 40 Latin characters, to ensure that the tooltip
-## doesn't become too long. Line breaks will be preserved when displaying the
-## tooltip.
-
-# Tooltip displayed on hover of automatic theme
-onboarding-multistage-theme-tooltip-automatic-2 =
-    .title = Heredi la aspekton de via mastruma sistemo por butonoj, menuoj kaj fenestroj.
-# Input description for automatic theme
-onboarding-multistage-theme-description-automatic-2 =
-    .aria-description = Heredi la aspekton de via mastruma sistemo por butonoj, menuoj kaj fenestroj.
-# Tooltip displayed on hover of light theme
-onboarding-multistage-theme-tooltip-light-2 =
-    .title = Uzi helan aspekton por butonoj, menuoj kaj fenestroj.
-# Input description for light theme
-onboarding-multistage-theme-description-light =
-    .aria-description = Uzi helan aspekton por butonoj, menuoj kaj fenestroj.
-# Tooltip displayed on hover of dark theme
-onboarding-multistage-theme-tooltip-dark-2 =
-    .title = Uzi malhelan aspekton por butonoj, menuoj kaj fenestroj.
-# Input description for dark theme
-onboarding-multistage-theme-description-dark =
-    .aria-description = Uzi malhelan aspekton por butonoj, menuoj kaj fenestroj.
-# Tooltip displayed on hover of Alpenglow theme
-onboarding-multistage-theme-tooltip-alpenglow-2 =
-    .title = Uzi kolorplenan aspekton por butonoj, menuoj kaj fenestroj.
-# Input description for Alpenglow theme
-onboarding-multistage-theme-description-alpenglow =
-    .aria-description = Uzi kolorplenan aspekton por butonoj, menuoj kaj fenestroj.
-
-## Multistage MR1 onboarding strings (MR1 about:welcome pages)
 
 # Tooltip displayed on hover of system theme
 mr1-onboarding-theme-tooltip-system =
@@ -266,17 +184,54 @@ mr2-onboarding-colorway-tooltip =
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-description =
-    .aria-description = Esplori kolorarojn { $colorwayName }.
+mr2-onboarding-colorway-label = Esplori kolorarojn { $colorwayName }.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Esplori normajn etosojn.
 # Selector description for default themes
-mr2-onboarding-default-theme-description =
-    .aria-description = Esplori normajn etosojn.
+mr2-onboarding-default-theme-label = Esplori normajn etosojn.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Dankon pro tio ke vi nin elektis
 mr2-onboarding-thank-you-text = { -brand-short-name } estas sendependa retumilo subtenata de neprofitcela organizo. Kune, ni igas la reton pli sekura, pli sana kaj pli privata.
 mr2-onboarding-start-browsing-button-label = Komenci retumi
+
+## Multistage live language reloading onboarding strings (about:welcome pages)
+##
+## The following language names are generated by the browser's Intl.DisplayNames API.
+##
+## Variables:
+##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
+
+onboarding-live-language-header = Elektu vian lingvon
+onboarding-live-language-button-label-downloading = Elŝuto de la lingva pako por { $negotiatedLanguage }…
+onboarding-live-language-waiting-button = Elŝuto de listo de disponeblaj lingvoj…
+onboarding-live-language-installing = Instalo de lingva pako por { $negotiatedLanguage }…
+onboarding-live-language-secondary-cancel-download = Nuligi
+onboarding-live-language-skip-button-label = Ignori
+
+## Firefox 100 Thank You screens
+
+# "Hero Text" displayed on left side of welcome screen. This text can be
+# formatted to span multiple lines as needed. The <span data-l10n-name="zap">
+# </span> in this string allows a "zap" underline style to be automatically
+# added to the text inside it. "Yous" should stay inside the zap span, but
+# "Thank" can be put inside instead if there's no "you" in the translation.
+# The English text would normally be "100 Thank-Yous" i.e., plural noun, but for
+# aesthetics of splitting it across multiple lines, the hyphen is omitted.
+fx100-thank-you-hero-text =
+    100
+    <span data-l10n-name="zap">dankojn</span>
+fx100-thank-you-subtitle = Tiu ĉi estas nia 100a eldono! Dankon pro tio ke vi helpas nin konstrui pli bonan, pli sanan, interreton.
+fx100-thank-you-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] Alpingli { -brand-short-name } al Dock
+       *[other] Alpingli { -brand-short-name } al la taska ilaro
+    }
+fx100-upgrade-thanks-header = 100 dankojn
+# Message shown with a start-browsing button. Emphasis <em> should be for "you"
+# but "Thank" can be used instead if there's no "you" in the translation.
+fx100-upgrade-thank-you-body = Tiu ĉi estas nia 100a eldono de { -brand-short-name }. <em>Dankon</em> pro tio ke vi helpas nin konstrui pli bonan, pli sanan, interreton.
+# Message shown with either a pin-to-taskbar or set-default button.
+fx100-upgrade-thanks-keep-body = Tiu ĉi estas nia 100a eldono! Dankon pro via partopreno en nia komunumo. Gardu { -brand-short-name } atingebla per unu alklako por la venontaj 100 eldonoj.

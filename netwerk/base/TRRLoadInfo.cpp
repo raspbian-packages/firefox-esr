@@ -58,11 +58,13 @@ nsIPrincipal* TRRLoadInfo::FindPrincipalToInherit(nsIChannel* aChannel) {
   return nullptr;
 }
 
-nsIPrincipal* TRRLoadInfo::GetSandboxedLoadingPrincipal() { return nullptr; }
+const nsID& TRRLoadInfo::GetSandboxedNullPrincipalID() {
+  return mSandboxedNullPrincipalID;
+}
+
+void TRRLoadInfo::ResetSandboxedNullPrincipalID() {}
 
 nsIPrincipal* TRRLoadInfo::GetTopLevelPrincipal() { return nullptr; }
-
-nsIPrincipal* TRRLoadInfo::GetTopLevelStorageAreaPrincipal() { return nullptr; }
 
 NS_IMETHODIMP
 TRRLoadInfo::GetLoadingDocument(Document** aResult) {
@@ -145,12 +147,14 @@ TRRLoadInfo::SetCookieJarSettings(nsICookieJarSettings* aCookieJarSettings) {
 }
 
 NS_IMETHODIMP
-TRRLoadInfo::GetHasStoragePermission(bool* aHasStoragePermission) {
+TRRLoadInfo::GetStoragePermission(
+    nsILoadInfo::StoragePermissionState* aHasStoragePermission) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP
-TRRLoadInfo::SetHasStoragePermission(bool aHasStoragePermission) {
+TRRLoadInfo::SetStoragePermission(
+    nsILoadInfo::StoragePermissionState aHasStoragePermission) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -387,7 +391,7 @@ TRRLoadInfo::GetInitialSecurityCheckDone(bool* aResult) {
 }
 
 NS_IMETHODIMP
-TRRLoadInfo::AppendRedirectHistoryEntry(nsIRedirectHistoryEntry* aEntry,
+TRRLoadInfo::AppendRedirectHistoryEntry(nsIChannel* aChannelToDeriveFrom,
                                         bool aIsInternalRedirect) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -571,6 +575,16 @@ NS_IMETHODIMP
 TRRLoadInfo::SetResultPrincipalURI(nsIURI* aURI) {
   mResultPrincipalURI = aURI;
   return NS_OK;
+}
+
+NS_IMETHODIMP
+TRRLoadInfo::GetChannelCreationOriginalURI(nsIURI** aURI) {
+  return NS_ERROR_NOT_IMPLEMENTED;
+}
+
+NS_IMETHODIMP
+TRRLoadInfo::SetChannelCreationOriginalURI(nsIURI* aURI) {
+  return NS_ERROR_NOT_IMPLEMENTED;
 }
 
 NS_IMETHODIMP

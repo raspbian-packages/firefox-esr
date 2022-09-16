@@ -166,11 +166,6 @@ main-context-menu-save-link-to-pocket =
     .label = Tallenna linkki { -pocket-brand-name }-palveluun
     .accesskey = k
 
-## The access keys for "Copy Link Location" and "Copy Email Address"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
-
-
 ## The access keys for "Copy Link" and "Copy Email Address"
 ## should be the same if possible; the two context menu items
 ## are mutually exclusive.
@@ -178,6 +173,10 @@ main-context-menu-save-link-to-pocket =
 main-context-menu-copy-email =
     .label = Kopioi sähköpostiosoite
     .accesskey = s
+
+main-context-menu-copy-phone =
+    .label = Kopioi puhelinnumero
+    .accesskey = o
 
 main-context-menu-copy-link-simple =
     .label = Kopioi linkki
@@ -455,3 +454,7 @@ main-context-menu-eme-learn-more =
 main-context-menu-open-link-in-container-tab =
     .label = Avaa linkki uudessa ”{ $containerName }”-välilehdessä
     .accesskey = v
+
+main-context-menu-reveal-password =
+    .label = Paljasta salasana
+    .accesskey = P

@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Menijowa lajsta
+    .accesskey = M
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Nastajenja
-    .accesskey = N
 menu-tools-settings =
     .label = Nastajenja
     .accesskey = N
@@ -52,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Pismowa wulkosć
+    .accesskey = i
+menuitem-font-size-enlarge =
+    .label = Pismowu wulkosć powjetšić
+    .accesskey = w
+menuitem-font-size-reduce =
+    .label = Pismowu wulkosć pomjeńšić
+    .accesskey = m
+menuitem-font-size-reset =
+    .label = Pismowu wulkosć wróćo stajić
+    .accesskey = r
 mail-uidensity-label =
     .label = Hustosć
     .accesskey = H
@@ -64,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Dótk
     .accesskey = D
+menu-spaces-toolbar-button =
+    .label = Lajsta dźělnych programow
+    .accesskey = d
 
 ## File
 

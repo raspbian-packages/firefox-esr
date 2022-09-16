@@ -11,14 +11,18 @@
 # Placeholder text for tag input
 pocket-panel-saved-add-tags =
     .placeholder = Pridať značky
+
 pocket-panel-saved-error-generic = Počas ukladania údajov do { -pocket-brand-name(case: "gen") } sa vyskytla chyba.
 pocket-panel-saved-error-tag-length = Značky môžu obsahovať najviac 25 znakov
 pocket-panel-saved-error-only-links = Uložené môžu byť len odkazy
 pocket-panel-saved-error-not-saved = Stránka nebola uložená
-pocket-panel-saved-error-no-internet = Ak chcete ukladať údaje do služby { -pocket-brand-name }, musíte byť pripojený k sieti Internet. Skontrolujte svoje pripojenie a skúste to znova.
+pocket-panel-saved-error-no-internet = Ak chcete ukladať údaje do { -pocket-brand-name(case: "gen") }, musíte byť pripojený k sieti Internet. Skontrolujte svoje pripojenie a skúste to znova.
+pocket-panel-saved-error-remove = Pri pokuse o odstránenie tejto stránky sa vyskytla chyba.
 pocket-panel-saved-page-removed = Stránka bola odstránená
 pocket-panel-saved-page-saved = Uložená do { -pocket-brand-name(case: "gen") }
+pocket-panel-saved-page-saved-b = Uložená do { -pocket-brand-name(case: "gen") }
 pocket-panel-saved-processing-remove = Stránka sa odstraňuje…
+pocket-panel-saved-removed = Stránka odstránená z Môjho zoznamu
 pocket-panel-saved-processing-tags = Pridávajú sa značky…
 pocket-panel-saved-remove-page = Odstrániť stránku
 pocket-panel-saved-save-tags = Uložiť
@@ -27,6 +31,9 @@ pocket-panel-saved-suggested-tags = Navrhované značky
 pocket-panel-saved-tags-saved = Značky boli pridané
 pocket-panel-signup-view-list = Zobraziť zoznam
 
+# This is displayed above a field where the user can add tags
+pocket-panel-signup-add-tags = Pridať značky:
+
 ## about:pocket-signup panel
 
 pocket-panel-signup-already-have = Už ste používateľom služby { -pocket-brand-name }?
@@ -34,10 +41,15 @@ pocket-panel-signup-learn-more = Ďalšie informácie
 pocket-panel-signup-login = Prihlásiť sa
 pocket-panel-signup-signup-email = Registrovať pomocou e-mailu
 pocket-panel-signup-signup-cta = Zaregistrujte sa v službe { -pocket-brand-name }. Je zadarmo.
-pocket-panel-signup-signup-firefox = Registrovať pomocou { -brand-product-name }u
+pocket-panel-signup-signup-firefox = Registrovať pomocou { -brand-product-name(case: "gen") }
 pocket-panel-signup-tagline = Ukladajte si články a videá z prehliadača { -brand-product-name } a majte ich vďaka službe { -pocket-brand-name } dostupné kdekoľvek a na akomkoľvek zariadení.
 pocket-panel-signup-tagline-story-one = Kliknutím na tlačidlo { -pocket-brand-name } v prehliadači { -brand-product-name } uložíte akýkoľvek článok, video alebo stránku.
 pocket-panel-signup-tagline-story-two = Tieto sú potom vďaka službe { -pocket-brand-name } dostupné kdekoľvek a na akomkoľvek zariadení.
+
+pocket-panel-signup-cta-a-fix = Vaše tlačidlo pre ukladanie pre internete
+pocket-panel-signup-cta-b = Kliknutím na tlačidlo { -pocket-brand-name } uložíte články, videá a odkazy. Svoj zoznam zobrazíte na akomkoľvek zariadení a kedykoľvek.
+pocket-panel-signup-cta-b-short = Kliknutím na tlačidlo { -pocket-brand-name } uložíte články, videá a odkazy.
+pocket-panel-signup-cta-c = Svoj zoznam zobrazíte na akomkoľvek zariadení a kedykoľvek.
 
 ## about:pocket-home panel
 
@@ -47,3 +59,19 @@ pocket-panel-home-paragraph = { -pocket-brand-name } môžete použiť na objavo
 pocket-panel-home-explore-popular-topics = Preskúmať populárne témy
 pocket-panel-home-discover-more = Objavte ďalšie
 pocket-panel-home-explore-more = Preskúmať
+
+pocket-panel-home-most-recent-saves = Tu sú vaše posledné uloženia:
+pocket-panel-home-most-recent-saves-loading = Načítavajú sa nedávno uložené položky...
+pocket-panel-home-new-user-cta = Kliknutím na tlačidlo { -pocket-brand-name } uložíte články, videá a odkazy.
+pocket-panel-home-new-user-message = Pozrite si svoje nedávne uloženia.
+
+## Pocket panel header component
+
+pocket-panel-header-my-list = Zobraziť Môj zoznam
+pocket-panel-header-sign-in = Prihlásiť sa
+
+## Pocket panel buttons
+
+pocket-panel-button-show-all = Zobraziť všetko
+pocket-panel-button-activate = Aktivovať { -pocket-brand-name } vo { -brand-product-name(case: "loc") }
+pocket-panel-button-remove = Odstrániť

@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Situs web membuktikan identitas merek
 
 cert-error-symantec-distrust-admin = Anda mungkin dapat memberitahu administrator situs web tentang masalah ini.
 
+cert-error-old-tls-version = Situs web ini mungkin tidak mendukung protokol TLS 1.2, yang merupakan versi minimum yang didukung oleh { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Jawaban yang tidak diharapkan dari server
 nssFailure2-title = Sambungan Aman Gagal
 csp-xfo-error-title = { -brand-short-name } Tidak Dapat Membuka Laman Ini
 corruptedContentError-title = Galat Konten Rusak
-remoteXUL-title = XUL Jarak Jauh
 sslv3Used-title = Gagal Tersambung dengan Aman
 inadequateSecurityError-title = Sambungan Anda tidak aman
 blockedByPolicy-title = Laman Diblokir

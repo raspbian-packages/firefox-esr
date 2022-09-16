@@ -76,6 +76,14 @@ app-basics-location-service-key-google = Clé du service de localisation de Goog
 app-basics-safebrowsing-key-google = Clé de Google Safebrowsing
 app-basics-key-mozilla = Clé du service de localisation de Mozilla
 app-basics-safe-mode = Mode sans échec
+app-basics-memory-size = Taille de la mémoire (RAM)
+app-basics-disk-available = Espace disque disponible
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
+
 show-dir-label =
     { PLATFORM() ->
         [macos] Afficher dans le Finder
@@ -343,6 +351,7 @@ fission-status-experiment-control = Désactivées par une expérience
 fission-status-experiment-treatment = Activées par une expérience
 fission-status-disabled-by-e10s-env = Désactivées par l’environnement
 fission-status-enabled-by-env = Activées par l’environnement
+fission-status-disabled-by-env = Désactivées par l’environnement
 fission-status-disabled-by-safe-mode = Désactivées par le mode sans échec
 fission-status-enabled-by-default = Activées par défaut
 fission-status-disabled-by-default = Désactivées par défaut

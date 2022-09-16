@@ -5,8 +5,6 @@
 
 about-logins-page-title = Přizjewjenja a hesła
 
-# "Google Play" and "App Store" are both branding and should not be translated
-
 login-filter =
     .placeholder = Přizjewjenja pytać
 
@@ -63,7 +61,6 @@ about-logins-list-item-breach-icon =
     .title = Zranjene websydło
 about-logins-list-item-vulnerable-password-icon =
     .title = Zranite hesło
-
 about-logins-list-section-breach = Websydła z datowymi dźěrami
 about-logins-list-section-vulnerable = Zranite hesła
 about-logins-list-section-nothing = Žane warnowanje
@@ -78,8 +75,8 @@ about-logins-login-intro-heading-logged-in = Žane synchronizowane přizjewjenja
 login-intro-description = Jeli sće swoje přizjewjenja { -brand-product-name } na druhim graće składował, tak móžeće je sem přinjesć:
 login-intro-instructions-fxa = Załožće abo přizjewće so pola swojeho { -fxaccount-brand-name } na graće, hdźež waše přizjewjenja su składowane
 login-intro-instructions-fxa-settings = Dźiće k Nastajenja > Sync > Synchronizaciju zmóžnić… Wubjerće kontrolny kašćik „Přizjewjenja a hesła“.
-login-intro-instructions-fxa-help = Wopytajće <a data-l10n-name="help-link">pomoc { -lockwise-brand-short-name }</a> za wjace pomocy.
-about-logins-intro-import = Jeli waše přizjewjenja su składowane w druhim wobhladowaku, móžeće <a data-l10n-name="import-link">je do { -lockwise-brand-short-name } importować</a>
+login-intro-instructions-fxa-passwords-help = Wopytajće <a data-l10n-name="passwords-help-link">pomoc hesłow</a> za wjace pomocy.
+about-logins-intro-browser-only-import = Jeli waše přizjewjenja su składowane w druhim wobhladowaku, móžeće <a data-l10n-name="import-link">je do{ -brand-product-name } importować</a>
 about-logins-intro-import2 = Jeli waše přizjewjenja so zwonka { -brand-product-name } składuja, móžeće <a data-l10n-name="import-browser-link">je z druheho wobhladowaka importować</a>, abo <a data-l10n-name="import-file-link">z dataje</a>
 
 ## Login
@@ -134,8 +131,6 @@ about-logins-copy-password-os-auth-dialog-message-win = Zapodajće swoje přizje
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = składowane hesło kopěrować
 
-## Master Password notification
-
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = Zapodajće swoje přizjewjenske daty Windows, zo byšće swoje přizjewjenja eksportował. To wěstotu wašich kontow škita.
 # This message can be seen when attempting to export a password in about:logins
@@ -148,8 +143,6 @@ about-logins-primary-password-notification-message = Prošu zapodajće swoje hł
 master-password-reload-button =
     .label = Přizjewić
     .accesskey = P
-
-## Password Sync notification
 
 ## Dialogs
 

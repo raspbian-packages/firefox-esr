@@ -12,19 +12,19 @@ Closes: #552426, #553453
  1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/browser/components/sessionstore/SessionStore.jsm b/browser/components/sessionstore/SessionStore.jsm
-index 2150c42..14996af 100644
+index 4611737..1d92679 100644
 --- a/browser/components/sessionstore/SessionStore.jsm
 +++ b/browser/components/sessionstore/SessionStore.jsm
-@@ -4812,7 +4812,7 @@ var SessionStoreInternal = {
-         !isNaN(aTop) &&
-         (aLeft != win_("screenX") || aTop != win_("screenY"))
-       ) {
--        aWindow.moveTo(aLeft, aTop);
-+        aWindow.moveTo((aLeft < -aWidth) ? 0 : aLeft, (aTop < -aHeight) ? 0 : aTop);
+@@ -5033,7 +5033,7 @@ var SessionStoreInternal = {
+         // _getWindowDimension.
+         let desktopToCssScale =
+           aWindow.desktopToDeviceScale / aWindow.devicePixelRatio;
+-        aWindow.moveTo(aLeft * desktopToCssScale, aTop * desktopToCssScale);
++        aWindow.moveTo((aLeft < -aWidth) ? 0 : aLeft * desktopToCssScale, (aTop < -aHeight) ? 0 : aTop * desktopToCssScale);
        }
        if (
          aWidth &&
-@@ -4841,9 +4841,8 @@ var SessionStoreInternal = {
+@@ -5062,9 +5062,8 @@ var SessionStoreInternal = {
            case "minimized":
              if (aSizeModeBeforeMinimized == "maximized") {
                aWindow.maximize();

@@ -2,6 +2,17 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+## Window controls
+
+messenger-window-minimize-button =
+    .tooltiptext = Lleihau
+messenger-window-maximize-button =
+    .tooltiptext = Mwyhau
+messenger-window-restore-down-button =
+    .tooltiptext = Adfer i Lawr
+messenger-window-close-button =
+    .tooltiptext = Cau
 # Variables:
 # $count (Number) - Number of unread messages.
 unread-messages-os-tooltip =
@@ -80,10 +91,6 @@ menu-file-save-as-file =
 
 ## AppMenu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-appmenu-preferences =
-    .label = Dewisiadau
 appmenu-save-as-file =
     .label = Ffeil…
 appmenu-settings =
@@ -103,15 +110,59 @@ appmenu-redirect-msg =
 
 context-menu-redirect-msg =
     .label = Ailgyfeirio
+mail-context-delete-messages =
+    .label =
+        { $count ->
+            [zero] Dileu'r Negeseuon Hyn
+            [one] Dileu'r Neges Hwn
+            [two] Dileu'r Negeseuon Hyn
+            [few] Dileu'r Negeseuon Hyn
+            [many] Dileu'r Negeseuon Hyn
+           *[other] Dileu'r Negeseuon Hyn
+        }
+context-menu-decrypt-to-folder =
+    .label = Copi Fel Wedi'i Ddatgryptio I.
+    .accesskey = D
 
 ## Message header pane
 
 other-action-redirect-msg =
     .label = Ailgyfeirio
-message-header-msg-is-flagged =
-    .title = Neges wedi'i marcio â seren
+message-header-msg-flagged =
+    .title = Serennog
+    .aria-label = Serennog
 message-header-msg-not-flagged =
     .title = Neges heb ei marcio â seren
+# Variables:
+# $address (String) - The email address of the recipient this picture belongs to.
+message-header-recipient-avatar =
+    .alt = Llun proffil { $address }.
+
+## Message header cutomize panel
+
+message-header-customize-panel-title = Gosodiadau Pennyn Neges
+message-header-customize-button-style =
+    .value = Arddull botwm
+    .accesskey = B
+message-header-button-style-default =
+    .label = Eiconau a thestun
+message-header-button-style-text =
+    .label = Testun
+message-header-button-style-icons =
+    .label = Eiconau
+message-header-show-sender-full-address =
+    .label = Dangos cyfeiriad llawn yr anfonwr bob tro
+    .accesskey = l
+message-header-show-sender-full-address-description = Bydd y cyfeiriad e-bost yn cael ei ddangos o dan yr enw dangos.
+message-header-show-recipient-avatar =
+    .label = Dangos llun proffil yr anfonwr
+    .accesskey = D
+message-header-hide-label-column =
+    .label = Cuddio colofn y labeli
+    .accesskey = u
+message-header-large-subject =
+    .label = Pwnc mawr
+    .accesskey = P
 
 ## Action Button Context Menu
 
@@ -121,13 +172,6 @@ toolbar-context-menu-manage-extension =
 toolbar-context-menu-remove-extension =
     .label = Tynnu Estyniad
     .accesskey = T
-
-## Message headers
-
-message-header-address-in-address-book-icon =
-    .alt = Cyfeiriad yn y Llyfr Cyfeiriadau
-message-header-address-not-in-address-book-icon =
-    .alt = Nid yw'r cyfeiriad yn y Llyfr Cyfeiriadau
 
 ## Add-on removal warning
 
@@ -148,3 +192,95 @@ repair-text-encoding-button =
 no-reply-title = Nid yw Ateb yn cael ei Gefnogi
 no-reply-message = Nid yw'n ymddangos bod y cyfeiriad ateb ({ $email }) yn gyfeiriad wedi'i fonitro. Mae'n bosib na fydd unrhyw un yn darllen negeseuon i'r cyfeiriad hwn.
 no-reply-reply-anyway-button = Ateb Beth Bynnag
+
+## error messages
+
+decrypt-and-copy-failures = Nid oedd modd dadgryptio { $failures } o { $total } o negeseuon ac heb eu copïo.
+
+## Spaces toolbar
+
+spaces-toolbar-element =
+    .toolbarname = Bar Offer Mannau
+    .aria-label = Bar Offer Mannau
+    .aria-description = Bar offer fertigol ar gyfer symud rhwng mannau gwahanol. Defnyddiwch y bysellau saeth i ddefnyddio'r botymau sydd ar gael.
+spaces-toolbar-button-mail2 =
+    .title = E-bost
+spaces-toolbar-button-address-book2 =
+    .title = Llyfr Cyfeiriadau
+spaces-toolbar-button-calendar2 =
+    .title = Calendr
+spaces-toolbar-button-tasks2 =
+    .title = Tasgau
+spaces-toolbar-button-chat2 =
+    .title = Sgwrsio
+spaces-toolbar-button-overflow =
+    .title = Rhagor o fannau…
+spaces-toolbar-button-settings2 =
+    .title = Gosodiadau
+spaces-toolbar-button-hide =
+    .title = Cuddio Bar Offer Mannau
+spaces-toolbar-button-show =
+    .title = Dangos Bar Offer Mannau
+spaces-context-new-tab-item =
+    .label = Agor mewn tab newydd
+spaces-context-new-window-item =
+    .label = Agor mewn ffenestr newydd
+# Variables:
+# $tabName (String) - The name of the tab this item will switch to.
+spaces-context-switch-tab-item =
+    .label = Newid i { $tabName }
+settings-context-open-settings-item2 =
+    .label = Gosodiadau
+settings-context-open-account-settings-item2 =
+    .label = Gosodiadau Cyfrif
+settings-context-open-addons-item2 =
+    .label = Ychwanegion a Themâu
+
+## Spaces toolbar pinned tab menupopup
+
+spaces-toolbar-pinned-tab-button =
+    .tooltiptext = Dewislen Mannau
+spaces-pinned-button-menuitem-mail =
+    .label = { spaces-toolbar-button-mail.title }
+spaces-pinned-button-menuitem-address-book =
+    .label = { spaces-toolbar-button-address-book.title }
+spaces-pinned-button-menuitem-calendar =
+    .label = { spaces-toolbar-button-calendar.title }
+spaces-pinned-button-menuitem-tasks =
+    .label = { spaces-toolbar-button-tasks.title }
+spaces-pinned-button-menuitem-chat =
+    .label = { spaces-toolbar-button-chat.title }
+spaces-pinned-button-menuitem-settings =
+    .label = { spaces-toolbar-button-settings2.title }
+spaces-pinned-button-menuitem-show =
+    .label = { spaces-toolbar-button-show.title }
+# Variables:
+# $count (Number) - Number of unread messages.
+chat-button-unread-messages = { $count }
+    .title =
+        { $count ->
+            [zero] Dim negeseuon heb eu darllen
+            [one] Un neges neb ei darllen
+            [two] { $count } heb eu darllen
+            [few] { $count } heb eu darllen
+            [many] { $count } heb eu darllen
+           *[other] { $count } heb eu darllen
+        }
+
+## Spaces toolbar customize panel
+
+menuitem-customize-label =
+    .label = Cyfaddasu…
+spaces-customize-panel-title = Gosodiadau Bar Offer Mannau
+spaces-customize-background-color = Lliw cefndir
+spaces-customize-icon-color = Lliw botwm
+# The background color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-background-color = Lliw cefndir botwm a ddewiswyd
+# The icon color used on the buttons of the spaces toolbar when they are
+# `current`, meaning the related space/tab is active and visible.
+spaces-customize-accent-text-color = Lliw botwm a ddewiswyd
+spaces-customize-button-restore = Adfer y Rhagosodiadau
+    .accesskey = R
+customize-panel-button-save = Gorffen
+    .accesskey = G

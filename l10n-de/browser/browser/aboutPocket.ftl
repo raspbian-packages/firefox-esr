@@ -17,9 +17,12 @@ pocket-panel-saved-error-tag-length = Tags dürfen höchsten 25 Zeichen lang sei
 pocket-panel-saved-error-only-links = Es können nur Links gespeichert werden
 pocket-panel-saved-error-not-saved = Seite nicht gespeichert
 pocket-panel-saved-error-no-internet = Sie müssen mit dem Internet verbunden sein, um bei { -pocket-brand-name } zu speichern. Bitte stellen Sie eine Internetverbindung her und versuchen Sie es erneut.
+pocket-panel-saved-error-remove = Beim Versuch, diese Seite zu entfernen, trat ein Fehler auf.
 pocket-panel-saved-page-removed = Seite entfernt
 pocket-panel-saved-page-saved = Bei { -pocket-brand-name } gespeichert
+pocket-panel-saved-page-saved-b = Bei { -pocket-brand-name } gespeichert!
 pocket-panel-saved-processing-remove = Seite wird entfernt…
+pocket-panel-saved-removed = Seite aus Meine Liste entfernt
 pocket-panel-saved-processing-tags = Tags werden hinzugefügt…
 pocket-panel-saved-remove-page = Seite entfernen
 pocket-panel-saved-save-tags = Speichern
@@ -27,6 +30,9 @@ pocket-panel-saved-saving-tags = Speichern…
 pocket-panel-saved-suggested-tags = Vorgeschlagene Tags
 pocket-panel-saved-tags-saved = Tags hinzugefügt
 pocket-panel-signup-view-list = Liste anzeigen
+
+# This is displayed above a field where the user can add tags
+pocket-panel-signup-add-tags = Tags hinzufügen:
 
 ## about:pocket-signup panel
 
@@ -40,6 +46,11 @@ pocket-panel-signup-tagline = Speichern Sie Artikel und Videos aus { -brand-prod
 pocket-panel-signup-tagline-story-one = Klicken Sie auf die { -pocket-brand-name }-Schaltfläche, um beliebige Artikel, Videos und Seiten aus { -brand-product-name } zu speichern.
 pocket-panel-signup-tagline-story-two = Lesen Sie diese mit { -pocket-brand-name }, jederzeit und auf jedem Gerät.
 
+pocket-panel-signup-cta-a-fix = Ihre Speichern-Taste für das Internet
+pocket-panel-signup-cta-b = Klicken Sie auf die { -pocket-brand-name }-Schaltfläche, um Artikel, Videos und Links zu speichern. Schauen Sie sich Ihre Liste an, jederzeit und auf jedem Gerät.
+pocket-panel-signup-cta-b-short = Klicken Sie auf die { -pocket-brand-name }-Schaltfläche, um Artikel, Videos und Links zu speichern.
+pocket-panel-signup-cta-c = Schauen Sie sich Ihre Liste an, jederzeit und auf jedem Gerät.
+
 ## about:pocket-home panel
 
 pocket-panel-home-my-list = Meine Liste
@@ -48,3 +59,19 @@ pocket-panel-home-paragraph = Mit { -pocket-brand-name } können Sie Webseiten, 
 pocket-panel-home-explore-popular-topics = Beliebte Themen entdecken
 pocket-panel-home-discover-more = Mehr entdecken
 pocket-panel-home-explore-more = Entdecken
+
+pocket-panel-home-most-recent-saves = Ihre zuletzt hinzugefügten Einträge:
+pocket-panel-home-most-recent-saves-loading = Zuletzt hinzugefügte Einträge werden geladen…
+pocket-panel-home-new-user-cta = Klicken Sie auf die { -pocket-brand-name }-Schaltfläche, um Artikel, Videos und Links zu speichern.
+pocket-panel-home-new-user-message = Ihre zuletzt hinzugefügten Einträge finden Sie hier.
+
+## Pocket panel header component
+
+pocket-panel-header-my-list = Meine Liste anzeigen
+pocket-panel-header-sign-in = Anmelden
+
+## Pocket panel buttons
+
+pocket-panel-button-show-all = Alle anzeigen
+pocket-panel-button-activate = { -pocket-brand-name } in { -brand-product-name } aktivieren
+pocket-panel-button-remove = Entfernen

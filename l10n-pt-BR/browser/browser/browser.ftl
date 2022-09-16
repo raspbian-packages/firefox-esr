@@ -263,7 +263,7 @@ identity-connection-not-secure = Conexão não segura
 identity-connection-secure = Conexão segura
 identity-connection-failure = Falha na conexão
 identity-connection-internal = Esta é uma página segura do { -brand-short-name }.
-identity-connection-file = Esta página está armazenada no seu computador.
+identity-connection-file = Esta página está armazenada neste computador.
 identity-extension-page = Esta página é carregada a partir de uma extensão.
 identity-active-blocked = O { -brand-short-name } bloqueou partes não seguras desta página.
 identity-custom-root = Conexão homologada por uma entidade certificadora que não é reconhecida pela Mozilla.
@@ -445,9 +445,9 @@ urlbar-placeholder-with-name =
 urlbar-remote-control-notification-anchor2 =
     .tooltiptext = O navegador está sob controle remoto (motivo: { $component })
 urlbar-permissions-granted =
-    .tooltiptext = Você concedeu permissões adicionais a este site.
+    .tooltiptext = Você definiu permissões neste site.
 urlbar-switch-to-tab =
-    .value = Alternar para a aba:
+    .value = Mudar para a aba:
 # Used to indicate that a selected autocomplete entry is provided by an extension.
 urlbar-extension =
     .value = Extensão:
@@ -473,7 +473,7 @@ urlbar-result-action-search-in-private = Pesquisar em uma janela privativa
 #  $engine (String): the name of a search engine
 urlbar-result-action-search-w-engine = Pesquisar com { $engine }
 urlbar-result-action-sponsored = Patrocinado
-urlbar-result-action-switch-tab = Alternar para a aba
+urlbar-result-action-switch-tab = Mudar para a aba
 urlbar-result-action-visit = Visitar
 # Directs a user to press the Tab key to perform a search with the specified
 # engine.
@@ -518,7 +518,7 @@ urlbar-result-action-search-tabs = Pesquisar nas abas
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
 # A label shown above the search suggestions group in the urlbar results. It
-# should use title case.
+# should use sentence case.
 # Variables
 #  $engine (String): the name of the search engine providing the suggestions
 urlbar-group-search-suggestions =
@@ -650,12 +650,6 @@ toolbar-settings-button =
             [macos] Abrir configurações ({ $shortcut })
            *[other] Abrir configurações
         }
-
-## More items
-
-more-menu-go-offline =
-    .label = Trabalhar offline
-    .accesskey = o
 toolbar-overflow-customize-button =
     .label = Personalizar barra de ferramentas…
     .accesskey = P
@@ -700,12 +694,6 @@ panel-save-update-password = Senha
 #  $name (String): The name of the addon that will be removed.
 addon-removal-title = Remover { $name }?
 addon-removal-abuse-report-checkbox = Denunciar esta extensão para a { -vendor-short-name }
-
-## Remote / Synced tabs
-
-remote-tabs-manage-account =
-    .label = Gerenciar conta
-remote-tabs-sync-now = Sincronizar agora
 
 ##
 
@@ -766,9 +754,6 @@ navbar-overflow =
 navbar-print =
     .label = Imprimir
     .tooltiptext = Imprimir esta página… ({ $shortcut })
-navbar-print-tab-modal-disabled =
-    .label = Imprimir
-    .tooltiptext = Imprimir a página
 navbar-home =
     .label = Página inicial
     .tooltiptext = Página inicial do { -brand-short-name }
@@ -795,3 +780,10 @@ tabs-toolbar-list-all-tabs =
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
 restore-session-startup-suggestion-message = <strong>Quer abrir abas anteriores?</strong> Você pode restaurar a sessão anterior através do menu <img data-l10n-name="icon"/> do { -brand-short-name }, em Histórico.
 restore-session-startup-suggestion-button = Mostrar como fazer
+
+## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
+
+data-reporting-notification-message = O { -brand-short-name } envia alguns dados automaticamente para a { -vendor-short-name } para que possamos aprimorar sua experiência.
+data-reporting-notification-button =
+    .label = Escolher o que compartilhar
+    .accesskey = E

@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Websydła swoju identitu přez certif
 
 cert-error-symantec-distrust-admin = Snano chceće administratora websydła wo tutym problemje informować.
 
+cert-error-old-tls-version = Tute websydło snano protokolTLS 1.2 njepodpěruje, kotryž je minimalna wersija, kotruž { -brand-short-name } podpěruje.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
@@ -94,7 +96,7 @@ deniedPortAccess-title = Tuta adresa je wobmjezowana
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hm. Mamy problemy, te sydło namakać.
 fileNotFound-title = Dataja njeje so namakała
-fileAccessDenied-title = Přistup na dataju je so wotpokazał
+fileAccessDenied-title = Přistup k dataji je so wotpokazał
 generic-title = Hopla.
 captivePortal-title = So pola syće přizjewić
 # "Hmm" is a sound made when considering or puzzling over something.
@@ -115,7 +117,6 @@ unknownSocketType-title = Njewočakowana wotmołwa ze serwera
 nssFailure2-title = Wěsty zwisk móžny njeje
 csp-xfo-error-title = { -brand-short-name } njemóže tutu stronu wočinić
 corruptedContentError-title = Zmylk - wobškodźeny wobsah
-remoteXUL-title = Zdaleny XUL
 sslv3Used-title = Wěsty zwisk móžny njeje
 inadequateSecurityError-title = Waš zwisk wěsty njeje
 blockedByPolicy-title = Zablokowana strona

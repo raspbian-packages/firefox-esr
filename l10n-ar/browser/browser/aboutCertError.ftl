@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = تثبت المواقع على الو
 
 cert-error-symantec-distrust-admin = يمكنك إعلام مدير الموقع عن هذه المشكلة.
 
+cert-error-old-tls-version = قد لا يدعم هذا الموقع بروتوكول TLS 1.2، وهو أقل إصدارة يدعمها { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = سياسة نقل HTTP الصارمة: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = استجابة غير متوقعة من الخادوم
 nssFailure2-title = فشل الاتصال الآمن
 csp-xfo-error-title = لا يمكن أن يعرض { -brand-short-name } الصفحة
 corruptedContentError-title = خطأ محتوى فاسد
-remoteXUL-title = XUL بعيد
 sslv3Used-title = تعذّر الاتصال بأمان
 inadequateSecurityError-title = اتّصالك غير آمن
 blockedByPolicy-title = الصفحة محجوبة

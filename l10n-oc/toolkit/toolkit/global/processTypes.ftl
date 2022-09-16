@@ -17,9 +17,6 @@ process-type-privilegedmozilla = Contengut Mozilla privilegiat
 process-type-extension = Extension
 # process used to open file:// URLs
 process-type-file = Fichièr local
-# process used to isolate webpages that requested special
-# permission to allocate large amounts of memory
-process-type-weblargeallocation = Allocacion larga
 # process used to isolate a webpage from other web pages
 # to improve security
 process-type-webisolated = Contengut Web isolat
@@ -42,6 +39,8 @@ process-type-gpu = GPU
 process-type-socket = Socket
 # process used to decode media
 process-type-rdd = RDD
+# process used to run some IPC actor in their own sandbox
+process-type-utility = Actor IPC en nauc de sable
 
 ##
 ## Other

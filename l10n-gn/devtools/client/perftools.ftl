@@ -21,6 +21,7 @@ perftools-heading-features-default = Búfer ñemboheko ijehegui reheguáva)
 perftools-heading-features-disabled = Tembiapoite pe’apyre
 perftools-heading-features-experimental = Mba’epyahu
 perftools-heading-threads = Inimbo
+perftools-heading-threads-jvm = JVM Ñe’ẽryru
 perftools-heading-local-build = Ñembyaty pypeguáva
 
 ##
@@ -49,9 +50,6 @@ perftools-devtools-settings-label = Ñemboheko
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Pe mbohapeha ogue hendy vove pe kundaha ñemigua.
-    Embotypaite umi ovetã ñemigua hendyjey hag̃ua pe mbohapeha.
 perftools-status-recording-stopped-by-another-tool = Ambue tembipuru ojoko ñeñongatu.
 perftools-status-restart-required = Emoñepyrũjey kundahára embojuruja hag̃ua tembiapoite.
 
@@ -97,6 +95,18 @@ perftools-thread-dns-resolver =
     .title = Pe DNS jehaipy oiko ko inimbópe
 perftools-thread-task-controller =
     .title = TaskControllerrapereko’i aty inimbo
+perftools-thread-jvm-gecko =
+    .title = Pe Gecko JVM rembiapokue tenondegua
+perftools-thread-jvm-nimbus =
+    .title = Umi rosca principal umi experimento Nimbus SDK-pe g̃uarã
+perftools-thread-jvm-default-dispatcher =
+    .title = Pe ñangarekohára  Kotlin coroutines aranduka’i rehegua
+perftools-thread-jvm-glean =
+    .title = Umi subproceso tuichavéva SDK Glean telemetría rehegua
+perftools-thread-jvm-arch-disk-io =
+    .title = Pe IO despachante Kotlin coroutines aranduka’i rehegua
+perftools-thread-jvm-pool =
+    .title = Subproceso heñóiva peteĩ subproceso aty hera’ỹvape
 
 ##
 
@@ -107,6 +117,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Ipyahu</b>: { -profiler-brand-name } ko’ág̃a oĩ juajúpe mboguatahára rembipuru ndive. <a>Eikuaave</a> ko tembipuru guasu rehegua.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -123,19 +137,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Ñanduti Mboguatahára
 perftools-presets-web-developer-description = Ñemboheko iporãva emopotĩ hag̃ua ñanduti tembipuru’i, nahenyhẽrasáiva.
-perftools-presets-firefox-platform-label = Firefox Pyendavusu
-perftools-presets-firefox-platform-description = Ñemboheko ypygua iporãva emopotĩ hag̃ua Firefox pyendavusu.
-perftools-presets-firefox-front-end-label = Firefox Rechaha
-perftools-presets-firefox-front-end-description = Ñemboheko iporãva emopotĩ hag̃ua Firefox jehechaha.
-perftools-presets-firefox-graphics-label = Firefox ra’ãngaryrugua
-perftools-presets-firefox-graphics-description = Ñemboheko ypygua iporãva ehapykuereka hag̃ua Firefox ra’ãngarenda.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Ñemboheko ypykue eipurukuaáva emoheñói hag̃ua mba’ete { -brand-shorter-name }.
 perftools-presets-graphics-label = Ta’ãnga
 perftools-presets-graphics-description = Oñemoĩva ohapykuerereka hag̃ua mba’epu ha ta’ãngamýi { -brand-shorter-name }.
 perftools-presets-media-label = Momaranduha
-perftools-presets-media-description = Ñemboheko ypygua eikuaa hag̃ua mba’epu ha ta’ãngamýi apañuãi.
 perftools-presets-media-description2 = Oñemoĩva ohapykuerereka hag̃ua mba’epu ha ta’ãngamýi { -brand-shorter-name }.
+perftools-presets-networking-label = Pyha
+perftools-presets-networking-description = Oñemoĩva ohapykuereka hag̃ua pyha apañuãi { -brand-shorter-name }-pe.
 perftools-presets-custom-label = Mboavapyre
 
 ##

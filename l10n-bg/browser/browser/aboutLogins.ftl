@@ -58,6 +58,7 @@ about-logins-list-item-vulnerable-password-icon =
     .title = Уязвима парола
 about-logins-list-section-breach = Взломени страници
 about-logins-list-section-vulnerable = Уязвими пароли
+about-logins-list-section-nothing = Няма предупреждение
 about-logins-list-section-today = Днес
 about-logins-list-section-yesterday = Вчера
 about-logins-list-section-week = Последните 7 дни
@@ -69,8 +70,8 @@ about-logins-login-intro-heading-logged-in = Не са намерени синх
 login-intro-description = Ако сте запазили данните си за вход в { -brand-product-name } на друго устройство, ето как да ги вземете тук:
 login-intro-instructions-fxa = Създайте или влезте в своята { -fxaccount-brand-name } на устройството, където са запазени вашите данни за вход
 login-intro-instructions-fxa-settings = Отидете в "Настройки" > Sync > Включване на синхронизиране… Изберете отметката за регистрации и пароли.
-login-intro-instructions-fxa-help = Посетете <a data-l10n-name="help-link">Поддръжка за { -lockwise-brand-short-name }</a> за повече помощ.
-about-logins-intro-import = Ако вашите регистрации са запазени в друг мрежов четец, можете да ги <a data-l10n-name="import-link">внесете във { -lockwise-brand-short-name }</a>.
+login-intro-instructions-fxa-passwords-help = Посетете <a data-l10n-name="passwords-help-link">поддръжка на пароли</a> за помощ.
+about-logins-intro-browser-only-import = Ако вашите регистрации са запазени в друг мрежов четец, можете да ги <a data-l10n-name="import-link">внесете във { -brand-product-name }</a>.
 about-logins-intro-import2 = Ако вашите данни за вписване се съхраняват извън { -brand-product-name }, можете <a data-l10n-name="import-browser-link">да ги внесете от друг четец</a> или <a data-l10n-name="import-file-link">от файл</a>
 
 ## Login
@@ -107,15 +108,23 @@ about-logins-os-auth-dialog-caption = { -brand-full-name }
 ## and includes subtitle of "Enter password for the user "xxx" to allow this." These
 ## notes are only valid for English. Please test in your respected locale.
 
+# This message can be seen when attempting to edit a login in about:logins on Windows.
+about-logins-edit-login-os-auth-dialog-message-win = За да промените регистрацията, въведете данните си за вход в Windows. Това се прави с цел защита на регистрациите.
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = прави промени в данни за вход
+# This message can be seen when attempting to reveal a password in about:logins on Windows.
+about-logins-reveal-password-os-auth-dialog-message-win = За да видите паролата, въведете данните си за вход в Windows. Това се прави с цел защита на регистрациите.
 # This message can be seen when attempting to reveal a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
-about-logins-reveal-password-os-auth-dialog-message-macosx = разкрие запазена парола
+about-logins-reveal-password-os-auth-dialog-message-macosx = показва запазената парола
+# This message can be seen when attempting to copy a password in about:logins on Windows.
+about-logins-copy-password-os-auth-dialog-message-win = За да копирате паролата, въведете данните си за вход в Windows. Това се прави с цел защита на регистрациите.
 # This message can be seen when attempting to copy a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = копира запазена парола
+# This message can be seen when attempting to export a password in about:logins on Windows.
+about-logins-export-password-os-auth-dialog-message-win = За да изнесете регистрациите, въведете данните си за вход в Windows. Това се прави с цел защита на регистрациите.
 # This message can be seen when attempting to export a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-export-password-os-auth-dialog-message-macosx = изнасяне на запазени регистрации и пароли
@@ -150,10 +159,20 @@ about-logins-confirm-remove-all-dialog-title =
         [one] Премахване на { $count } регистрация?
        *[other] Премахване на { $count } регистрации?
     }
+about-logins-confirm-remove-all-dialog-message =
+    { $count ->
+        [one] Така ще бъде премахната запазената във { -brand-short-name } регистрация и всички известия за пробиви, появяващи се тук. Действието е необратимо.
+       *[other] Така ще бъдат премахнати запазените във { -brand-short-name } регистрации и всички известия за пробиви, появяващи се тук. Действието е необратимо.
+    }
 about-logins-confirm-remove-all-sync-dialog-title =
     { $count ->
         [one] Премахване на { $count } регистрация от всички устройства?
        *[other] Премахване на { $count } регистрации от всички устройства?
+    }
+about-logins-confirm-remove-all-sync-dialog-message =
+    { $count ->
+        [one] Така ще бъде премахната запазената във { -brand-short-name } регистрация от всички устройства, синхронизирани с { -fxaccount-brand-name }. Също и всички известия за пробиви, появяващи се тук. Действието е необратимо.
+       *[other] Така ще бъдат премахнати запазените във { -brand-short-name } регистрации от всички устройства, синхронизирани с { -fxaccount-brand-name }. Също и всички известия за пробиви, появяващи се тук. Действието е необратимо.
     }
 about-logins-confirm-export-dialog-title = Изнасяне на регистрации и пароли
 about-logins-confirm-export-dialog-message = Вашите пароли ще бъдат запазени като четим текст (например Лош@Пар0ла), така че всеки, който има достъп до изнесения файл ще може да ги види.
@@ -167,7 +186,7 @@ confirm-discard-changes-dialog-confirm-button = Отхвърляне
 ## Breach Alert notification
 
 about-logins-breach-alert-title = Пробив в страница
-breach-alert-text = Паролите са изтекли или откраднати от този уебсайт, откакто последно сте обновили данните си за вход. Променете паролата си, за да защитите сметката си.
+breach-alert-text = Паролите са изтекли или откраднати от този уебсайт, откакто последно сте обновили данните си за вход. Променете паролата си, за да защитите профила си.
 about-logins-breach-alert-date = Пробивът е станал на { DATETIME($date, day: "numeric", month: "long", year: "numeric") }
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
@@ -177,7 +196,7 @@ about-logins-breach-alert-learn-more-link = Научете повече
 ## Vulnerable Password notification
 
 about-logins-vulnerable-alert-title = Уязвима парола
-about-logins-vulnerable-alert-text2 = Тази парола е използвана в друга сметка, вероятно жертва на изтичане на данни. Преизползването на информация за удостоверяване излага на риск всички ваши сметки. Сменете паролата.
+about-logins-vulnerable-alert-text2 = Тази парола е използвана в друг профил, вероятно жертва на изтичане на данни. Преизползването на информация за удостоверяване излага на риск всички ваши профили. Сменете паролата си.
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-vulnerable-alert-link = Към { $hostname }

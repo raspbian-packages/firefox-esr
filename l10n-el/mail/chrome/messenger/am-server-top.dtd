@@ -35,8 +35,8 @@
 <!ENTITY leaveOnServer.accesskey "τ">
 <!ENTITY headersOnly.label "Λήψη μόνο κεφαλίδων">
 <!ENTITY headersOnly.accesskey "φ">
-<!ENTITY deleteByAgeFromServer.label "Για το περισσότερο">
-<!ENTITY deleteByAgeFromServer.accesskey "π">
+<!ENTITY deleteByAgeFromServer.label "Για έως">
+<!ENTITY deleteByAgeFromServer.accesskey "ω">
 <!ENTITY daysEnd.label "ημέρες">
 <!ENTITY deleteOnServer2.label "Μέχρι να τα διαγράψω">
 <!ENTITY deleteOnServer2.accesskey "γ">
@@ -52,7 +52,7 @@
 <!-- LOCALIZATION NOTE (expungeOnExit.label) : do not translate two of "&quot;" in below line -->
 <!ENTITY expungeOnExit.label "Εκκαθάριση («Διαγραφή») εισερχομένων κατά την έξοδο">
 <!ENTITY expungeOnExit.accesskey "θ">
-<!ENTITY emptyTrashOnExit.label "Άδειασμα του κάδου απορριμμάτων κατά την έξοδο">
+<!ENTITY emptyTrashOnExit.label "Άδειασμα απορριμμάτων κατά την έξοδο">
 <!ENTITY emptyTrashOnExit.accesskey "δ">
 <!ENTITY loginAtStartup.label "Έλεγχος για νέα μηνύματα κατά την εκκίνηση">
 <!ENTITY loginAtStartup.accesskey "λ">
@@ -68,7 +68,7 @@
 <!ENTITY alwaysAuthenticate.accesskey "π">
 <!ENTITY newsrcFilePath1.label "Αρχείο News.rc:">
 <!ENTITY newsrcPicker1.label "Επιλογή αρχείου News.rc">
-<!ENTITY abbreviate.label "Προβολή ονομάτων ομάδων συζήτησης σαν:">
+<!ENTITY abbreviate.label "Εμφάνιση ονομάτων ομάδων συζητήσεων στην περιοχή φακέλων ως:">
 <!ENTITY abbreviateOn.label "Πλήρη ονόματα (για παράδειγμα, «netscape.public.mozilla.mail-news»)">
 <!ENTITY abbreviateOff.label "Συντόμευση ονομάτων (για παράδειγμα, «n.p.m.mail-news»)">
 <!ENTITY advancedButton.label "Σύνθετα…">

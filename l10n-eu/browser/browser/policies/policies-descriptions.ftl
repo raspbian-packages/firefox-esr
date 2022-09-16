@@ -13,6 +13,7 @@
 policy-3rdparty = Ezarri politikak WebExtension gehigarriek chrome.storage.managed bidez sarbidea izan dezaten.
 policy-AllowedDomainsForApps = Definitu Google Workspace-rako sarbidea izango duten domeinuak.
 policy-AppAutoUpdate = Gaitu edo desgaitu aplikazioaren eguneraketa automatikoa.
+policy-AppUpdatePin = Eragotzi { -brand-short-name } eguneratzea bertsio zehatz batetik aurrera.
 policy-AppUpdateURL = Ezarri aplikazioa-eguneraketen URL pertsonalizatua
 policy-Authentication = Konfiguratu onartzen duten webguneentzat integratutako autentifikazioa.
 policy-AutoLaunchProtocolsFromOrigins = Definitu erabiltzaileari galdetu gabe jatorri zehatzetatik erabil daitezkeen kanpoko protokoloen zerrenda.
@@ -58,6 +59,7 @@ policy-DownloadDirectory = Ezarri eta blokeatu deskarga-direktorioa.
 policy-EnableTrackingProtection = Gaitu edo desgaitu edukia blokeatzea eta blokeatu ezarpen hau.
 # “lock” means that the user won’t be able to change this setting
 policy-EncryptedMediaExtensions = Gaitu edo desgaitu Encrypted Media Extensions eta aukeran blokeatu ezarpen hau.
+policy-ExemptDomainFileTypePairsFromFileTypeDownloadWarnings = Desgaitu fitxategi-luzapenetan oinarritutako abisuak domeinuetako fitxategi-mota zehatzetarako.
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
@@ -92,6 +94,7 @@ policy-OfferToSaveLoginsDefault = Ezarri balio lehenetsia { -brand-short-name }(
 policy-OverrideFirstRunPage = Gainidatzi lehen abioko orria. Utzi zurian politika hau lehen abioko orria desgaitu nahi baduzu.
 policy-OverridePostUpdatePage = Gainidatzi eguneraketen ondoko "Nobedadeak" orria. Utzi politika hau zurian eguneraketen ondoko orria desgaitu nahi baduzu.
 policy-PasswordManagerEnabled = Gaitu pasahitzak pasahitz-kudeatzailean gordetzea.
+policy-PasswordManagerExceptions = Eragotzi { -brand-short-name }(r)i gune jakinetako pasahitzak gordetzea.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Desgaitu edo konfiguratu PDF.js, { -brand-short-name }(r)en integratutako PDF ikustailea.
 policy-Permissions2 = Konfiguratu kamera, mikrofonoa, kokapena, jakinarazpenak eta erreprodukzio automatikoa erabiltzeko baimenak.

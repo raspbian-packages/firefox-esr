@@ -70,6 +70,8 @@ cert-error-symantec-distrust-description = Ismal web ttebganen-d timagit-nsen s 
 
 cert-error-symantec-distrust-admin = Tzemreḍ ad telɣuḍ anebdal n usmel web ɣef ugur-agi.
 
+cert-error-old-tls-version = Asmel-a web yezmer ur issefrak ara aneggaf n TLS 1.2, i yellan d lqem adday yettusefraken sɣur { -brand-short-name }.
+
 # Variables:
 # $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = Taɣellist n umesni ufrin HTTP: { $hasHSTS }
@@ -115,7 +117,6 @@ unknownSocketType-title = Aqeddac yerra-d yir tiririt ur nettwaṛǧi ara
 nssFailure2-title = Tuqqna taɣelsant ur teddi ara
 csp-xfo-error-title = { -brand-short-name } ur yezmir ara ad yeldi asebter-a
 corruptedContentError-title = Tuccḍa tekka-d seg ugbur ixesṛen
-remoteXUL-title = XUL anmeggag
 sslv3Used-title = Ur yezmir ara ad yeqqen s wudem aɣelsan
 inadequateSecurityError-title = Tuqqna-inek d taraɣelsant
 blockedByPolicy-title = Asebter iwḥel

@@ -21,6 +21,7 @@ perftools-heading-features-default = Funkcije (pó standarźe dopórucone)
 perftools-heading-features-disabled = Znjemóžnjone funkcije
 perftools-heading-features-experimental = Eksperimentelne
 perftools-heading-threads = Nitki
+perftools-heading-threads-jvm = JVM-nitki
 perftools-heading-local-build = Lokalna wersija
 
 ##
@@ -48,9 +49,6 @@ perftools-devtools-settings-label = Nastajenja
 
 ## Various statuses that affect the current state of profiling, not typically displayed.
 
-perftools-status-private-browsing-notice =
-    Profilowak jo znjemóžnjony, gaž jo priwatny modus zmóžnjony.
-    Zacyńśo wšykne priwatne wokna, aby profilowak zasej zmóžnił
 perftools-status-recording-stopped-by-another-tool = Nagraśe jo se zastajiło pśez drugi rěd.
 perftools-status-restart-required = Wobglědowak musy se znowego startowaś, aby se toś ta funkcija zmóžniła.
 
@@ -96,6 +94,18 @@ perftools-thread-dns-resolver =
     .title = Na toś tej nitce se DNS-rozeznaśe stawa
 perftools-thread-task-controller =
     .title = Nitki nitkowego poola TaskController
+perftools-thread-jvm-gecko =
+    .title = Głowna nitka Gecko JVM
+perftools-thread-jvm-nimbus =
+    .title = Głowne nitki za SDK eksperimentow Nimbus
+perftools-thread-jvm-default-dispatcher =
+    .title = Standardny dispatcher za biblioteku korutinow  Kotlin
+perftools-thread-jvm-glean =
+    .title = Głowne nitki za SDK telemetrije Glean
+perftools-thread-jvm-arch-disk-io =
+    .title = Dispatcher IO za biblioteku korutinow  Kotlin
+perftools-thread-jvm-pool =
+    .title = Nitki napórane w kupce nitkow bźez mjenja
 
 ##
 
@@ -106,6 +116,10 @@ perftools-tools-threads-input-label =
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
 ## preferences are true.
+
+
+## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
+## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Nowy</b>: { -profiler-brand-name } jo něnto we wuwijaŕskich rědach integrěrowany. <a>Dalšne informacije</a> wó toś tom mócnem nowem rěźe.
 # `options-context-advanced-settings` is defined in toolbox-options.ftl
@@ -122,19 +136,14 @@ perftools-onboarding-close-button =
 
 perftools-presets-web-developer-label = Webwuwijaŕ
 perftools-presets-web-developer-description = Dopórucone pśednastajenje za pytanje zmólkow za nejwecej webnałoženjow z mało zastojańskimi datami.
-perftools-presets-firefox-platform-label = Platforma Firefox
-perftools-presets-firefox-platform-description = Dopórucone pśednastajenje za nutśikowne pytanje zmólkow platformy Firefox.
-perftools-presets-firefox-front-end-label = Frontend Firefox
-perftools-presets-firefox-front-end-description = Dopórucone pśednastajenje za nutśikowne pytanje zmólkow frontenda Firefox.
-perftools-presets-firefox-graphics-label = Grafika Firefox
-perftools-presets-firefox-graphics-description = Dopórucone pśednastajenje za pśepytowanje wugbaśa grafiki Firefox.
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Dopórucone pśednastajenje za profilěrowanje { -brand-shorter-name }
 perftools-presets-graphics-label = Grafika
 perftools-presets-graphics-description = Pśednastajenje za wuslěźenje zmólkow grafiki w { -brand-shorter-name }.
 perftools-presets-media-label = Medije
-perftools-presets-media-description = Dopórucone pśednastajenje za diagnosticěrowanje awdio- a wideoproblemow.
 perftools-presets-media-description2 = Pśednastajenje za wuslěźenje zmólkow awdio a wideo w { -brand-shorter-name }.
+perftools-presets-networking-label = Seś
+perftools-presets-networking-description = Pśednastajenje za wuslěźenje seśowych zmólkow w { -brand-shorter-name }.
 perftools-presets-custom-label = Swójski
 
 ##

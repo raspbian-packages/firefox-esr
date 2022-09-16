@@ -4,7 +4,7 @@
 
 about-telemetry-ping-data-source = Ping gagnastaðsetning:
 about-telemetry-show-archived-ping-data = Vistuð ping gögn
-about-telemetry-show-subsession-data = Sýna subsession gögn
+about-telemetry-show-subsession-data = Sýna undirlotugögn
 about-telemetry-choose-ping = Velja ping:
 about-telemetry-archive-ping-type = Ping tegund
 about-telemetry-archive-ping-header = Ping
@@ -14,16 +14,17 @@ about-telemetry-option-group-older = Eldra
 about-telemetry-previous-ping = <<
 about-telemetry-next-ping = >>
 about-telemetry-page-title = Fjarmælingargögn
+about-telemetry-current-store = Núverandi geymsla:
 about-telemetry-more-information = Ertu að leita að meiri upplýsingum?
 about-telemetry-firefox-data-doc = <a data-l10n-name="data-doc-link">Firefox gagna skjölun</a> inniheldur leiðbeiningar um hvernig á að vinna með gagnatólunum okkar.
 about-telemetry-telemetry-client-doc = <a data-l10n-name="client-doc-link">Firefox Telemetry client skjölunin</a> inniheldur skilgreiningar á hugtökum, API skjölun og gagna vísunum.
 about-telemetry-telemetry-dashboard = <a data-l10n-name="dashboard-link">Fjarmælinga skjáborðið</a> sýnir þér hvaða gögn Mozilla tekur á móti í gegnum fjarmælingar.
 about-telemetry-telemetry-probe-dictionary = <a data-l10n-name="probe-dictionary-link">Rannsóknaorðasafnið</a> útvegar smáatriði og lýsingar um rannsóknarsafn úr fjarmælingum.
 about-telemetry-show-in-Firefox-json-viewer = Opna í JSON skoðara
-about-telemetry-home-section = Heim
+about-telemetry-home-section = Upphafssíða
 about-telemetry-general-data-section = Almenn gögn
 about-telemetry-environment-data-section = Umhverfisgögn
-about-telemetry-session-info-section = Lotuupplýsingar
+about-telemetry-session-info-section = Upplýsingar um lotu
 about-telemetry-scalar-section = Kvarðar
 about-telemetry-keyed-scalar-section = Keyed Scalars
 about-telemetry-histograms-section = Súlurit
@@ -32,7 +33,6 @@ about-telemetry-events-section = Atburðir
 about-telemetry-simple-measurements-section = Einfaldar mælingar
 about-telemetry-slow-sql-section =   Sýna hægar SQL tengingar
 about-telemetry-addon-details-section = Upplýsingar um viðbót
-about-telemetry-captured-stacks-section = Vistaðir staflar
 about-telemetry-late-writes-section = Skrifað seint
 about-telemetry-raw-payload-section = Hrá gögn
 about-telemetry-raw = Hrátt JSON
@@ -44,8 +44,8 @@ about-telemetry-hide-stack-symbols = Sýna hrá staflagögn
 #   $channel (String): represents the corresponding release data string
 about-telemetry-data-type =
     { $channel ->
-        [release] sleppa gögnum
-       *[prerelease] for-gögn
+        [release] gögn útgáfunnar
+       *[prerelease] forútgáfugögn
     }
 # Selects the correct upload string
 # Variables:
@@ -54,6 +54,16 @@ about-telemetry-upload-type =
     { $uploadcase ->
         [enabled] virkt
        *[disabled] óvirkt
+    }
+# Example Output: 1 sample, average = 0, sum = 0
+# Variables:
+#   $sampleCount (Integer): amount of histogram samples
+#   $prettyAverage (Integer): average of histogram samples
+#   $sum (Integer): sum of histogram samples
+about-telemetry-histogram-stats =
+    { $sampleCount ->
+        [one] { $sampleCount } sýni, meðaltal = { $prettyAverage }, summa = { $sum }
+       *[other] { $sampleCount } sýni, meðaltal = { $prettyAverage }, summa = { $sum }
     }
 # Variables:
 #   $telemetryServerOwner (String): the value of the toolkit.telemetry.server_owner preference. Typically "Mozilla"
@@ -107,16 +117,12 @@ about-telemetry-keys-header = Eiginleiki
 about-telemetry-names-header = Nafn
 about-telemetry-values-header = Gildi
 # Variables:
-#   $stackKey (String): the string key for this stack
-#   $capturedStacksCount (Integer):  the number of times this stack was captured
-about-telemetry-captured-stacks-title = { $stackKey } (fjöldi gripa: { $capturedStacksCount })
-# Variables:
 #   $lateWriteCount (Integer): the number of the late writes
 about-telemetry-late-writes-title = Skrifað seint #{ $lateWriteCount }
 about-telemetry-stack-title = Stafli:
 about-telemetry-memory-map-title = Minniskort:
 about-telemetry-error-fetching-symbols = Upp kom villa við að ná í tákn. Athugaðu að þú sért tengdur við netið og reyndu aftur.
-about-telemetry-time-stamp-header = tímastimpill
+about-telemetry-time-stamp-header = tímamerki
 about-telemetry-category-header = flokkur
 about-telemetry-method-header = aðferð
 about-telemetry-object-header = hlutur

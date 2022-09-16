@@ -2,14 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+toolbar-context-menu-menu-bar =
+    .toolbarname = Menu-barra
+    .accesskey = M
 
 ## Tools Menu
 
-# Since v89 we dropped the platforms distinction between Options or Preferences
-# and consolidated everything with Preferences.
-menu-tools-preferences =
-    .label = Hobespenak
-    .accesskey = H
+menu-tools-settings =
+    .label = Ezarpenak
+    .accesskey = E
 menu-addons-and-themes =
     .label = Gehigarriak eta itxurak
     .accesskey = G
@@ -49,6 +50,18 @@ menu-view-repair-text-encoding =
 
 ## View / Layout
 
+menu-font-size-label =
+    .label = Letra-tamaina
+    .accesskey = t
+menuitem-font-size-enlarge =
+    .label = Handiagotu letra-tipoaren tamaina
+    .accesskey = H
+menuitem-font-size-reduce =
+    .label = Txikitu letra-tipoaren tamaina
+    .accesskey = T
+menuitem-font-size-reset =
+    .label = Berrezarri testuaren tamaina
+    .accesskey = B
 mail-uidensity-label =
     .label = Dentsitatea
     .accesskey = D
@@ -61,6 +74,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Ukipena
     .accesskey = U
+menu-spaces-toolbar-button =
+    .label = Guneen tresna-barra
+    .accesskey = G
 
 ## File
 

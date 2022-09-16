@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = შემოთავაზებული შ�
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = რატომ ვხედავ ამას
+
 cfr-doorhanger-extension-cancel-button = ახლა არა
     .accesskey = რ
+
 cfr-doorhanger-extension-ok-button = დამატება ახლავე
     .accesskey = ხ
+
 cfr-doorhanger-extension-manage-settings-button = შემოთავაზებების პარამეტრების მართვა
     .accesskey = შ
+
 cfr-doorhanger-extension-never-show-recommendation = ამ შემოთავაზების ჩვენების შეწყვეტა
     .accesskey = წ
+
 cfr-doorhanger-extension-learn-more-link = იხილეთ ვრცლად
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = შემქმნელი: { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = შემოთავაზება
 cfr-doorhanger-extension-notification2 = შემოთავაზება
     .tooltiptext = გაფართოების შემოთავაზება
     .a11y-announcement = ხელმისაწვდომია გაფართოების შემოთავაზება
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = შემოთავაზება
@@ -77,9 +85,11 @@ cfr-protections-panel-link-text = ვრცლად
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = ახალი შესაძლებლობა:
+
 cfr-whatsnew-button =
     .label = რა სიახლეებია
     .tooltiptext = რა სიახლეებია
+
 cfr-whatsnew-release-notes-link-text = იხილეთ გამოშვების შენიშვნები
 
 ## Enhanced Tracking Protection Milestones
@@ -156,3 +166,16 @@ spotlight-total-cookie-protection-body = ფუნთუშების სრ�
 spotlight-total-cookie-protection-expanded = { -brand-short-name } ზღუდეს შემოავლებს ფუნთუშებს, რომ ვერ გასცდეს იმ საიტს, რომელზეც იმყოფებით და მეთვალყურეებიც ვეღარ დაგედევნებიან. ადრეული წვდომით, დაგვეხმარებით ამ შესაძლებლობის დახვეწაში, შედეგად შევძლებთ გავხადოთ ვებსამყარო უკეთესი, ყველასათვის.
 spotlight-total-cookie-protection-primary-button = ჩართეთ ფუნთუშების სრული გამიჯვნა
 spotlight-total-cookie-protection-secondary-button = ახლა არა
+
+## Emotive Continuous Onboarding
+
+spotlight-better-internet-header = უკეთესი ინტერნეტი თქვენით იწყება
+spotlight-better-internet-body = როცა იყენებთ { -brand-short-name }-ს, ამით მხარს უჭერთ გახნილ და ხელმისაწვდომ საყოველთაო ინტერნეტს.
+spotlight-peace-mind-header = ჩვენ გიცავთ
+spotlight-peace-mind-body = ყოველთვე, { -brand-short-name } ზღუდავს საშუალოდ 3,000-ზე მეტ მეთვალყურეს, თითოეული მომხმარებლისთვის. ვერაფერი, მით უმეტეს მომაბეზრებელი თვალყურის მდევნებლები ვერ ჩადგებიან თქვენსა და ჯანსაღ ინტერნეტს შორის.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] დარჩეს Dock-ზე
+       *[other] სამუშაო ზოლზე მიმაგრება
+    }
+spotlight-pin-secondary-button = ახლა არა

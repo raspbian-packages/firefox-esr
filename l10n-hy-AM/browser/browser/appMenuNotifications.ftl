@@ -38,10 +38,11 @@ appmenu-update-other-instance-message = Հասանելի է { -brand-shorter-nam
 appmenu-addon-private-browsing-installed2 =
     .buttonlabel = Լավ
     .buttonaccesskey = O
+appmenu-addon-post-install-message3 = Կառավարեք ձեր հավելումները և թեմաները հավելվածի ցանկի միջոցով:
 appmenu-addon-post-install-incognito-checkbox =
     .label = Թույլատրել այս ընդլայնմանը աշխատեցնել Գաղտնի պատուհանը
     .accesskey = A
-    
+
 appmenu-new-tab-controlled-changes =
     .label = Ձեր նոր ներդիրը փոխվել է:
     .buttonlabel = Պահել փոփոխությունները

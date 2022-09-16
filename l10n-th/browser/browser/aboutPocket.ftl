@@ -17,9 +17,12 @@ pocket-panel-saved-error-tag-length = ป้ายกำกับถูกจำ
 pocket-panel-saved-error-only-links = ลิงก์เท่านั้นที่สามารถถูกบันทึกได้
 pocket-panel-saved-error-not-saved = หน้าไม่ถูกบันทึก
 pocket-panel-saved-error-no-internet = คุณต้องเชื่อต่อกับอินเทอร์เน็ตเพื่อบันทึกไปยัง { -pocket-brand-name } กรุณาเชื่อมต่ออินเทอร์เน็ตและลองใหม่อีกครั้ง
+pocket-panel-saved-error-remove = เกิดข้อผิดพลาดขณะพยายามลบหน้านี้
 pocket-panel-saved-page-removed = ลบหน้าแล้ว
 pocket-panel-saved-page-saved = บันทึกไปยัง { -pocket-brand-name } แล้ว
+pocket-panel-saved-page-saved-b = บันทึกไปยัง { -pocket-brand-name } แล้ว!
 pocket-panel-saved-processing-remove = กำลังลบหน้า…
+pocket-panel-saved-removed = ลบหน้าออกจาก “รายการของฉัน” แล้ว
 pocket-panel-saved-processing-tags = กำลังเพิ่มป้ายกำกับ…
 pocket-panel-saved-remove-page = ลบหน้า
 pocket-panel-saved-save-tags = บันทึก
@@ -27,6 +30,9 @@ pocket-panel-saved-saving-tags = กำลังบันทึก…
 pocket-panel-saved-suggested-tags = ป้ายกำกับที่ถูกแนะนำ
 pocket-panel-saved-tags-saved = ป้ายกำกับถูกเพิ่มแล้ว
 pocket-panel-signup-view-list = ดูรายการ
+
+# This is displayed above a field where the user can add tags
+pocket-panel-signup-add-tags = เพิ่มป้ายกำกับ:
 
 ## about:pocket-signup panel
 
@@ -40,6 +46,11 @@ pocket-panel-signup-tagline = บันทึกบทความและว�
 pocket-panel-signup-tagline-story-one = คลิกปุ่ม { -pocket-brand-name } เพื่อบันทึกบทความ วิดีโอ หรือหน้าจาก { -brand-product-name }
 pocket-panel-signup-tagline-story-two = ดูใน { -pocket-brand-name } บนอุปกรณ์ต่าง ๆ เวลาไหนก็ได้
 
+pocket-panel-signup-cta-a-fix = ปุ่มบันทึกของคุณสำหรับอินเทอร์เน็ต
+pocket-panel-signup-cta-b = คลิกปุ่ม { -pocket-brand-name } เพื่อบันทึกบทความ วิดีโอ และลิงก์ ดูรายการของคุณบนอุปกรณ์ต่าง ๆ เวลาไหนก็ได้
+pocket-panel-signup-cta-b-short = คลิกปุ่ม { -pocket-brand-name } เพื่อบันทึกบทความ วิดีโอ และลิงก์
+pocket-panel-signup-cta-c = ดูรายการของคุณบนอุปกรณ์ต่าง ๆ เวลาไหนก็ได้
+
 ## about:pocket-home panel
 
 pocket-panel-home-my-list = รายการของฉัน
@@ -48,3 +59,19 @@ pocket-panel-home-paragraph = คุณสามารถใช้ { -pocket-bra
 pocket-panel-home-explore-popular-topics = สำรวจหัวข้อยอดนิยม
 pocket-panel-home-discover-more = ค้นพบเพิ่มเติม
 pocket-panel-home-explore-more = สำรวจ
+
+pocket-panel-home-most-recent-saves = นี่คือรายการที่บันทึกล่าสุดของคุณ:
+pocket-panel-home-most-recent-saves-loading = กำลังโหลดรายการที่บันทึกล่าสุด…
+pocket-panel-home-new-user-cta = คลิกปุ่ม { -pocket-brand-name } เพื่อบันทึกบทความ วิดีโอ และลิงก์
+pocket-panel-home-new-user-message = ดูรายการที่บันทึกล่าสุดของคุณที่นี่
+
+## Pocket panel header component
+
+pocket-panel-header-my-list = ดูรายการของฉัน
+pocket-panel-header-sign-in = ลงชื่อเข้า
+
+## Pocket panel buttons
+
+pocket-panel-button-show-all = แสดงทั้งหมด
+pocket-panel-button-activate = เปิดใช้งาน { -pocket-brand-name } ใน { -brand-product-name }
+pocket-panel-button-remove = เอาออก

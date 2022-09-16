@@ -49,32 +49,28 @@ class TimerThreadWrapper {
   nsresult Init();
   void Shutdown();
 
-  nsresult AddTimer(nsTimerImpl* aTimer);
-  nsresult RemoveTimer(nsTimerImpl* aTimer);
+  nsresult AddTimer(nsTimerImpl* aTimer, const MutexAutoLock& aProofOfLock)
+      REQUIRES(aTimer->mMutex);
+  nsresult RemoveTimer(nsTimerImpl* aTimer, const MutexAutoLock& aProofOfLock)
+      REQUIRES(aTimer->mMutex);
   TimeStamp FindNextFireTimeForCurrentThread(TimeStamp aDefault,
                                              uint32_t aSearchBound);
   uint32_t AllowedEarlyFiringMicroseconds();
 
  private:
   static mozilla::StaticMutex sMutex;
-  TimerThread* mThread;
+  TimerThread* mThread GUARDED_BY(sMutex);
 };
 
 mozilla::StaticMutex TimerThreadWrapper::sMutex;
 
 nsresult TimerThreadWrapper::Init() {
-  nsresult rv;
   mozilla::StaticMutexAutoLock lock(sMutex);
   mThread = new TimerThread();
 
   NS_ADDREF(mThread);
-  rv = mThread->InitLocks();
 
-  if (NS_FAILED(rv)) {
-    NS_RELEASE(mThread);
-  }
-
-  return rv;
+  return NS_OK;
 }
 
 void TimerThreadWrapper::Shutdown() {
@@ -97,18 +93,20 @@ void TimerThreadWrapper::Shutdown() {
   }
 }
 
-nsresult TimerThreadWrapper::AddTimer(nsTimerImpl* aTimer) {
+nsresult TimerThreadWrapper::AddTimer(nsTimerImpl* aTimer,
+                                      const MutexAutoLock& aProofOfLock) {
   mozilla::StaticMutexAutoLock lock(sMutex);
   if (mThread) {
-    return mThread->AddTimer(aTimer);
+    return mThread->AddTimer(aTimer, aProofOfLock);
   }
   return NS_ERROR_NOT_AVAILABLE;
 }
 
-nsresult TimerThreadWrapper::RemoveTimer(nsTimerImpl* aTimer) {
+nsresult TimerThreadWrapper::RemoveTimer(nsTimerImpl* aTimer,
+                                         const MutexAutoLock& aProofOfLock) {
   mozilla::StaticMutexAutoLock lock(sMutex);
   if (mThread) {
-    return mThread->RemoveTimer(aTimer);
+    return mThread->RemoveTimer(aTimer, aProofOfLock);
   }
   return NS_ERROR_NOT_AVAILABLE;
 }
@@ -260,6 +258,28 @@ nsresult NS_NewTimerWithFuncCallback(nsITimer** aTimer,
   return NS_OK;
 }
 
+mozilla::Result<nsCOMPtr<nsITimer>, nsresult> NS_NewTimerWithFuncCallback(
+    nsTimerCallbackFunc aCallback, void* aClosure, const TimeDuration& aDelay,
+    uint32_t aType, const char* aNameString, nsIEventTarget* aTarget) {
+  nsCOMPtr<nsITimer> timer;
+  MOZ_TRY(NS_NewTimerWithFuncCallback(getter_AddRefs(timer), aCallback,
+                                      aClosure, aDelay, aType, aNameString,
+                                      aTarget));
+  return std::move(timer);
+}
+nsresult NS_NewTimerWithFuncCallback(nsITimer** aTimer,
+                                     nsTimerCallbackFunc aCallback,
+                                     void* aClosure, const TimeDuration& aDelay,
+                                     uint32_t aType, const char* aNameString,
+                                     nsIEventTarget* aTarget) {
+  auto timer = nsTimer::WithEventTarget(aTarget);
+
+  MOZ_TRY(timer->InitHighResolutionWithNamedFuncCallback(
+      aCallback, aClosure, aDelay, aType, aNameString));
+  timer.forget(aTimer);
+  return NS_OK;
+}
+
 // This module prints info about which timers are firing, which is useful for
 // wakeups for the purposes of power profiling. Set the following environment
 // variable before starting the browser.
@@ -285,9 +305,14 @@ static mozilla::LogModule* GetTimerFiringsLog() { return sTimerFiringsLog; }
 
 #include <math.h>
 
-double nsTimerImpl::sDeltaSumSquared = 0;
-double nsTimerImpl::sDeltaSum = 0;
-double nsTimerImpl::sDeltaNum = 0;
+/* static */
+mozilla::StaticMutex nsTimerImpl::sDeltaMutex;
+/* static */
+double nsTimerImpl::sDeltaSumSquared GUARDED_BY(nsTimerImpl::sDeltaMutex) = 0;
+/* static */
+double nsTimerImpl::sDeltaSum GUARDED_BY(nsTimerImpl::sDeltaMutex) = 0;
+/* static */
+double nsTimerImpl::sDeltaNum GUARDED_BY(nsTimerImpl::sDeltaMutex) = 0;
 
 static void myNS_MeanAndStdDev(double n, double sumOfValues,
                                double sumOfSquaredValues, double* meanResult,
@@ -345,6 +370,7 @@ nsresult nsTimerImpl::Startup() { return gThreadWrapper.Init(); }
 
 void nsTimerImpl::Shutdown() {
   if (MOZ_LOG_TEST(GetTimerLog(), LogLevel::Debug)) {
+    mozilla::StaticMutexAutoLock lock(sDeltaMutex);
     double mean = 0, stddev = 0;
     myNS_MeanAndStdDev(sDeltaNum, sDeltaSum, sDeltaSumSquared, &mean, &stddev);
 
@@ -358,22 +384,14 @@ void nsTimerImpl::Shutdown() {
   gThreadWrapper.Shutdown();
 }
 
-nsresult nsTimerImpl::InitCommon(uint32_t aDelayMS, uint32_t aType,
-                                 Callback&& aNewCallback) {
-  return InitCommon(TimeDuration::FromMilliseconds(aDelayMS), aType,
-                    std::move(aNewCallback));
-}
-
 nsresult nsTimerImpl::InitCommon(const TimeDuration& aDelay, uint32_t aType,
-                                 Callback&& newCallback) {
-  mMutex.AssertCurrentThreadOwns();
-
+                                 Callback&& newCallback,
+                                 const MutexAutoLock& aProofOfLock) {
   if (!mEventTarget) {
-    NS_ERROR("mEventTarget is NULL");
     return NS_ERROR_NOT_INITIALIZED;
   }
 
-  gThreadWrapper.RemoveTimer(this);
+  gThreadWrapper.RemoveTimer(this, aProofOfLock);
 
   // If we have an existing callback, using `swap` ensures it's destroyed after
   // the mutex is unlocked in our caller.
@@ -384,13 +402,20 @@ nsresult nsTimerImpl::InitCommon(const TimeDuration& aDelay, uint32_t aType,
   mDelay = aDelay;
   mTimeout = TimeStamp::Now() + mDelay;
 
-  return gThreadWrapper.AddTimer(this);
+  return gThreadWrapper.AddTimer(this, aProofOfLock);
 }
 
 nsresult nsTimerImpl::InitWithNamedFuncCallback(nsTimerCallbackFunc aFunc,
                                                 void* aClosure, uint32_t aDelay,
                                                 uint32_t aType,
                                                 const char* aName) {
+  return InitHighResolutionWithNamedFuncCallback(
+      aFunc, aClosure, TimeDuration::FromMilliseconds(aDelay), aType, aName);
+}
+
+nsresult nsTimerImpl::InitHighResolutionWithNamedFuncCallback(
+    nsTimerCallbackFunc aFunc, void* aClosure, const TimeDuration& aDelay,
+    uint32_t aType, const char* aName) {
   if (NS_WARN_IF(!aFunc)) {
     return NS_ERROR_INVALID_ARG;
   }
@@ -398,7 +423,7 @@ nsresult nsTimerImpl::InitWithNamedFuncCallback(nsTimerCallbackFunc aFunc,
   Callback cb{FuncCallback{aFunc, aClosure, aName}};
 
   MutexAutoLock lock(mMutex);
-  return InitCommon(aDelay, aType, std::move(cb));
+  return InitCommon(aDelay, aType, std::move(cb), lock);
 }
 
 nsresult nsTimerImpl::InitWithCallback(nsITimerCallback* aCallback,
@@ -417,7 +442,7 @@ nsresult nsTimerImpl::InitHighResolutionWithCallback(
   Callback cb{nsCOMPtr{aCallback}};
 
   MutexAutoLock lock(mMutex);
-  return InitCommon(aDelay, aType, std::move(cb));
+  return InitCommon(aDelay, aType, std::move(cb), lock);
 }
 
 nsresult nsTimerImpl::Init(nsIObserver* aObserver, uint32_t aDelayInMs,
@@ -429,7 +454,8 @@ nsresult nsTimerImpl::Init(nsIObserver* aObserver, uint32_t aDelayInMs,
   Callback cb{nsCOMPtr{aObserver}};
 
   MutexAutoLock lock(mMutex);
-  return InitCommon(aDelayInMs, aType, std::move(cb));
+  return InitCommon(TimeDuration::FromMilliseconds(aDelayInMs), aType,
+                    std::move(cb), lock);
 }
 
 nsresult nsTimerImpl::InitWithClosureCallback(
@@ -442,7 +468,7 @@ nsresult nsTimerImpl::InitWithClosureCallback(
   Callback cb{ClosureCallback{std::move(aCallback), aNameString}};
 
   MutexAutoLock lock(mMutex);
-  return InitCommon(aDelay, aType, std::move(cb));
+  return InitCommon(aDelay, aType, std::move(cb), lock);
 }
 
 nsresult nsTimerImpl::Cancel() {
@@ -456,7 +482,7 @@ void nsTimerImpl::CancelImpl(bool aClearITimer) {
 
   {
     MutexAutoLock lock(mMutex);
-    gThreadWrapper.RemoveTimer(this);
+    gThreadWrapper.RemoveTimer(this, lock);
 
     // The swap ensures our callback isn't dropped until after the mutex is
     // unlocked.
@@ -487,13 +513,13 @@ nsresult nsTimerImpl::SetDelay(uint32_t aDelay) {
   }
 
   bool reAdd = false;
-  reAdd = NS_SUCCEEDED(gThreadWrapper.RemoveTimer(this));
+  reAdd = NS_SUCCEEDED(gThreadWrapper.RemoveTimer(this, lock));
 
   mDelay = TimeDuration::FromMilliseconds(aDelay);
   mTimeout = TimeStamp::Now() + mDelay;
 
   if (reAdd) {
-    gThreadWrapper.AddTimer(this);
+    gThreadWrapper.AddTimer(this, lock);
   }
 
   return NS_OK;
@@ -577,8 +603,15 @@ void nsTimerImpl::Fire(int32_t aGeneration) {
     // If some other thread Cancels/Inits after this, they're just too late.
     MutexAutoLock lock(mMutex);
     if (aGeneration != mGeneration) {
+      // This timer got rescheduled or cancelled before we fired, so ignore this
+      // firing
       return;
     }
+
+    // We modify mTimeout, so we must not be in the current TimerThread's
+    // mTimers list.  Adding to that list calls SetHolder(), so use mHolder
+    // as a proxy to know if we're in the list
+    MOZ_ASSERT(!mHolder);
 
     ++mFiring;
     callbackDuringFire = mCallback;
@@ -593,13 +626,16 @@ void nsTimerImpl::Fire(int32_t aGeneration) {
 
   AUTO_PROFILER_LABEL("nsTimerImpl::Fire", OTHER);
 
-  TimeStamp now = TimeStamp::Now();
+  TimeStamp fireTime = TimeStamp::Now();
   if (MOZ_LOG_TEST(GetTimerLog(), LogLevel::Debug)) {
-    TimeDuration delta = now - oldTimeout;
+    TimeDuration delta = fireTime - oldTimeout;
     int32_t d = delta.ToMilliseconds();  // delta in ms
-    sDeltaSum += abs(d);
-    sDeltaSumSquared += double(d) * double(d);
-    sDeltaNum++;
+    {
+      mozilla::StaticMutexAutoLock lock(sDeltaMutex);
+      sDeltaSum += abs(d);
+      sDeltaSumSquared += double(d) * double(d);
+      sDeltaNum++;
+    }
 
     MOZ_LOG(GetTimerLog(), LogLevel::Debug,
             ("[this=%p] expected delay time %4ums\n", this, oldDelay));
@@ -624,16 +660,28 @@ void nsTimerImpl::Fire(int32_t aGeneration) {
       [&](const FuncCallback& f) { f.mFunc(timer, f.mClosure); },
       [&](const ClosureCallback& c) { c.mFunc(timer); });
 
+  TimeStamp now = TimeStamp::Now();
+
   MutexAutoLock lock(mMutex);
   if (aGeneration == mGeneration) {
     if (IsRepeating()) {
       // Repeating timer has not been re-init or canceled; reschedule
       if (IsSlack()) {
-        mTimeout = TimeStamp::Now() + mDelay;
+        mTimeout = now + mDelay;
       } else {
-        mTimeout = mTimeout + mDelay;
+        if (mDelay) {
+          // If we are late enough finishing the callback that we have missed
+          // some firings, do not attempt to play catchup, just get back on the
+          // cadence we're supposed to maintain.
+          unsigned missedFirings =
+              static_cast<unsigned>((now - mTimeout) / mDelay);
+          mTimeout += mDelay * (missedFirings + 1);
+        } else {
+          // Can we stop allowing repeating timers with delay 0?
+          mTimeout = now;
+        }
       }
-      gThreadWrapper.AddTimer(this);
+      gThreadWrapper.AddTimer(this, lock);
     } else {
       // Non-repeating timer that has not been re-scheduled. Clear.
       // XXX(nika): Other callsites seem to go to some effort to avoid
@@ -646,7 +694,7 @@ void nsTimerImpl::Fire(int32_t aGeneration) {
 
   MOZ_LOG(GetTimerLog(), LogLevel::Debug,
           ("[this=%p] Took %fms to fire timer callback\n", this,
-           (TimeStamp::Now() - now).ToMilliseconds()));
+           (now - fireTime).ToMilliseconds()));
 }
 
 // See the big comment above GetTimerFiringsLog() to understand this code.
@@ -702,8 +750,8 @@ void nsTimerImpl::LogFiring(const Callback& aCallback, uint8_t aType,
       });
 }
 
-void nsTimerImpl::GetName(nsACString& aName) {
-  MutexAutoLock lock(mMutex);
+void nsTimerImpl::GetName(nsACString& aName,
+                          const MutexAutoLock& aProofOfLock) {
   GetCallback().match(
       [&](const UnknownCallback&) { aName.AssignLiteral("Canceled_timer"); },
       [&](const InterfaceCallback& i) {
@@ -724,6 +772,11 @@ void nsTimerImpl::GetName(nsACString& aName) {
       [&](const ClosureCallback& c) { aName.Assign(c.mName); });
 }
 
+void nsTimerImpl::GetName(nsACString& aName) {
+  MutexAutoLock lock(mMutex);
+  GetName(aName, lock);
+}
+
 void nsTimerImpl::SetHolder(nsTimerImplHolder* aHolder) { mHolder = aHolder; }
 
 nsTimer::~nsTimer() = default;
@@ -741,13 +794,8 @@ RefPtr<nsTimer> nsTimer::WithEventTarget(nsIEventTarget* aTarget) {
 }
 
 /* static */
-nsresult nsTimer::XPCOMConstructor(nsISupports* aOuter, REFNSIID aIID,
-                                   void** aResult) {
+nsresult nsTimer::XPCOMConstructor(REFNSIID aIID, void** aResult) {
   *aResult = nullptr;
-  if (aOuter != nullptr) {
-    return NS_ERROR_NO_AGGREGATION;
-  }
-
   auto timer = WithEventTarget(nullptr);
 
   return timer->QueryInterface(aIID, aResult);
