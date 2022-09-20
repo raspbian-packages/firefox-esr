@@ -10,7 +10,7 @@ from mozboot.util import get_tools_dir
 from mozfile import which
 from packaging.version import Version
 
-NODE_MIN_VERSION = Version("12.22.12")
+NODE_MIN_VERSION = Version("12.22")
 NPM_MIN_VERSION = Version("6.14.16")
 
 
