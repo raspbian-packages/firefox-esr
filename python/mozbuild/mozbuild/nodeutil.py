@@ -12,7 +12,7 @@ from mozfile import which
 from mozfile.mozfile import remove as mozfileremove
 from packaging.version import Version
 
-NODE_MIN_VERSION = Version("12.22.12")
+NODE_MIN_VERSION = Version("12.22")
 NPM_MIN_VERSION = Version("6.14.16")
 
 NODE_MACHING_VERSION_NOT_FOUND_MESSAGE = """
