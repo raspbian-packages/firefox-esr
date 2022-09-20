@@ -21,7 +21,14 @@ firefox-esr (102.2.0esr-1+rpi1) bookworm-staging; urgency=medium
     definitions error.
 
   [changes brought over from thunderbird 1:102.1.1-1+rpi1 by Peter Michael Green]
-   * Disable more armv7/neon stuff.
+  * Disable more armv7/neon stuff.
+
+  [changes introduced in 102.2.0esr-1+rpi1 by Peter Michael Green]
+  * Disable jit (or at least try to)
+    + Pass disable-jit from debian/rules
+    + Nerf jit detection in s/moz.configure
+    + Disable arm atomics (which require armv7) in js/src/jit/GenerateAtomicOperations.py
+    + Remove architecture restrictions in jit/shared/AtomicOperations-feeling-lucky-gcc.h
 
  -- Peter Michael Green <plugwash@raspbian.org>  Fri, 16 Sep 2022 18:44:17 +0000
 

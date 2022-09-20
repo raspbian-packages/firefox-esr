@@ -148,9 +148,9 @@ ifeq (default,$(origin CXX))
 CXX := g++
 endif
 
-ifneq (,$(filter mips mipsel,$(DEB_HOST_ARCH)))
+#ifneq (,$(filter mips mipsel,$(DEB_HOST_ARCH)))
 CONFIGURE_FLAGS += --disable-jit
-endif
+#endif
 
 CXXFLAGS = $(CFLAGS)
 RUSTFLAGS = --remap-path-prefix=$(CURDIR)=.
