@@ -30,10 +30,10 @@
 
 // Explicitly exclude tier-1 platforms.
 
-#if (defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || \
-     defined(_M_IX86) || defined(__arm__) || defined(__aarch64__))
-#  error "Do not use on a tier-1 platform where inline assembly is available"
-#endif
+//#if (defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || \
+//     defined(_M_IX86) || defined(__arm__) || defined(__aarch64__))
+//#  error "Do not use on a tier-1 platform where inline assembly is available"
+//#endif
 
 #if !(defined(__clang__) || defined(__GNUC__))
 #  error "This file only for gcc/Clang"
