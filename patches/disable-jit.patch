@@ -1,0 +1,96 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Date: Tue, 20 Sep 2022 21:54:38 +0000
+X-Dgit-Generated: 102.2.0esr-1+rpi1 e351c33a6ff4b5d2ff37573db2b0b8e6df0a0b8a
+Subject: Disable jit.
+
+
+---
+
+diff --git a/js/moz.configure b/js/moz.configure
+index 7a241cac76d..a040b58407f 100644
+--- a/js/moz.configure
++++ b/js/moz.configure
+@@ -154,18 +154,18 @@ set_define("ENABLE_RECORD_TUPLE", enable_record_tuple)
+ # =======================================================
+ @depends(target, "--enable-record-tuple")
+ def jit_default(target, enable_record_tuple):
+-    if enable_record_tuple:
+-        return False
+-    if target.cpu in (
+-        "x86",
+-        "x86_64",
+-        "arm",
+-        "aarch64",
+-        "mips32",
+-        "mips64",
+-        "loongarch64",
+-    ):
+-        return True
++    #if enable_record_tuple:
++    #    return False
++    #if target.cpu in (
++    #    "x86",
++    #    "x86_64",
++    #    "arm",
++    #    "aarch64",
++    #    "mips32",
++    #    "mips64",
++    #    "loongarch64",
++    #):
++    #    return True
+     return False
+ 
+ 
+diff --git a/js/src/jit/GenerateAtomicOperations.py b/js/src/jit/GenerateAtomicOperations.py
+index d8a38a0bbbc..63878e99a74 100644
+--- a/js/src/jit/GenerateAtomicOperations.py
++++ b/js/src/jit/GenerateAtomicOperations.py
+@@ -32,13 +32,13 @@ def gen_seqcst(fun_name):
+             }""" % {
+             "fun_name": fun_name,
+         }
+-    if cpu_arch == "arm":
+-        return r"""
+-            INLINE_ATTR void %(fun_name)s() {
+-                asm volatile ("dmb sy\n\t" ::: "memory");
+-            }""" % {
+-            "fun_name": fun_name,
+-        }
++    #if cpu_arch == "arm":
++    #    return r"""
++    #        INLINE_ATTR void %(fun_name)s() {
++    #            asm volatile ("dmb sy\n\t" ::: "memory");
++    #        }""" % {
++    #        "fun_name": fun_name,
++    #    }
+     raise Exception("Unexpected arch")
+ 
+ 
+@@ -721,7 +721,7 @@ namespace jit {
+ 
+ def generate_atomics_header(c_out):
+     contents = ""
+-    if cpu_arch in ("x86", "x86_64", "arm", "aarch64"):
++    if cpu_arch in ("x86", "x86_64", "aarch64"):
+         contents += "#define JS_HAVE_GENERATED_ATOMIC_OPS 1"
+ 
+         # `fence` performs a full memory barrier.
+diff --git a/js/src/jit/shared/AtomicOperations-feeling-lucky-gcc.h b/js/src/jit/shared/AtomicOperations-feeling-lucky-gcc.h
+index 2e384337a31..e532d8813dc 100644
+--- a/js/src/jit/shared/AtomicOperations-feeling-lucky-gcc.h
++++ b/js/src/jit/shared/AtomicOperations-feeling-lucky-gcc.h
+@@ -30,10 +30,10 @@
+ 
+ // Explicitly exclude tier-1 platforms.
+ 
+-#if (defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || \
+-     defined(_M_IX86) || defined(__arm__) || defined(__aarch64__))
+-#  error "Do not use on a tier-1 platform where inline assembly is available"
+-#endif
++//#if (defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || \
++//     defined(_M_IX86) || defined(__arm__) || defined(__aarch64__))
++//#  error "Do not use on a tier-1 platform where inline assembly is available"
++//#endif
+ 
+ #if !(defined(__clang__) || defined(__GNUC__))
+ #  error "This file only for gcc/Clang"
