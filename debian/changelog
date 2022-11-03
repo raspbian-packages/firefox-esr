@@ -1,4 +1,4 @@
-firefox-esr (102.4.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (102.4.0esr-1+rpi1) bookworm-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -28,9 +28,9 @@ firefox-esr (102.4.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 21 Oct 2022 01:45:18 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 03 Nov 2022 18:41:14 +0000
 
-firefox-esr (102.4.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.4.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2022-45, also known as:
@@ -38,7 +38,7 @@ firefox-esr (102.4.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 19 Oct 2022 05:04:39 +0900
 
-firefox-esr (102.3.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.3.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2022-41, also known as:
