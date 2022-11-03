@@ -32,13 +32,13 @@ def gen_seqcst(fun_name):
             }""" % {
             "fun_name": fun_name,
         }
-    #if cpu_arch == "arm":
-    #    return r"""
-    #        INLINE_ATTR void %(fun_name)s() {
-    #            asm volatile ("dmb sy\n\t" ::: "memory");
-    #        }""" % {
-    #        "fun_name": fun_name,
-    #    }
+    if cpu_arch == "arm":
+        return r"""
+            INLINE_ATTR void %(fun_name)s() {
+                asm volatile ("dmb sy\n\t" ::: "memory");
+            }""" % {
+            "fun_name": fun_name,
+        }
     raise Exception("Unexpected arch")
 
 
@@ -721,7 +721,9 @@ namespace jit {
 
 def generate_atomics_header(c_out):
     contents = ""
-    if cpu_arch in ("x86", "x86_64", "aarch64"):
+    if cpu_arch in ("x86", "x86_64", "aarch64") or (
+        cpu_arch == "arm" and int(buildconfig.substs["ARM_ARCH"]) >= 7
+    ):
         contents += "#define JS_HAVE_GENERATED_ATOMIC_OPS 1"
 
         # `fence` performs a full memory barrier.
