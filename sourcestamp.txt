@@ -1,0 +1,2 @@
+20221107191025
+https://hg.mozilla.org/releases/mozilla-esr102/rev/28738f45597b736e5689c199131d5da9ae0a6cec
