@@ -17,7 +17,7 @@ $(call lazy,DEB_BUILD_ARCH_BITS,$$(shell dpkg-architecture -qDEB_BUILD_ARCH_BITS
 $(call lazy,DEB_BUILD_ARCH,$$(shell dpkg-architecture -qDEB_BUILD_ARCH))
 $(call lazy,DEB_HOST_ARCH,$$(shell dpkg-architecture -qDEB_HOST_ARCH))
 
-PYTHON := python3 -B
+PYTHON := PYTHONDONTWRITEBYTECODE=y python3
 
 PRODUCT := browser
 include debian/upstream.mk
@@ -26,7 +26,7 @@ SYSTEM_LIBS = zlib ffi
 ifeq (,$(filter stretch buster bullseye,$(DIST)))
 SYSTEM_LIBS += nspr nss
 endif
-ifeq (,$(filter stretch,$(DIST)))
+ifeq (,$(filter stretch buster,$(DIST)))
 SYSTEM_LIBS += libevent
 endif
 ifeq (,$(filter stretch buster,$(DIST)))

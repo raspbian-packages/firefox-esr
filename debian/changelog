@@ -1,4 +1,4 @@
-firefox-esr (102.4.0esr-1+rpi1) bookworm-staging; urgency=medium
+firefox-esr (102.6.0esr-1+rpi1) bookworm-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -28,7 +28,35 @@ firefox-esr (102.4.0esr-1+rpi1) bookworm-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 03 Nov 2022 18:41:14 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 23 Dec 2022 01:26:37 +0000
+
+firefox-esr (102.6.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2022-52, also known as:
+    CVE-2022-46880, CVE-2022-46872, CVE-2022-46881, CVE-2022-46874,
+    CVE-2022-46882, CVE-2022-46878.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 14 Dec 2022 07:48:39 +0900
+
+firefox-esr (102.5.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2022-48, also known as:
+    CVE-2022-45403, CVE-2022-45404, CVE-2022-45405, CVE-2022-45406,
+    CVE-2022-45408, CVE-2022-45409, CVE-2022-45410, CVE-2022-45411,
+    CVE-2022-45412, CVE-2022-45416, CVE-2022-45418, CVE-2022-45420,
+    CVE-2022-45421.
+
+  * debian/rules:
+    - Use internal libevent on buster.
+    - Invoke python with PYTHONDONTWRITEBYTECODE instead of -B.
+
+  * ipc/chromium/src/third_party/libevent/linux/event2/event-config.h,
+    toolkit/crashreporter/client/ping.cpp: Avoid build bustage when
+    building against glibc 2.36 or newer. bz#1782988.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 16 Nov 2022 06:20:30 +0900
 
 firefox-esr (102.4.0esr-1) unstable; urgency=medium
 

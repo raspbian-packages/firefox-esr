@@ -31,7 +31,7 @@ RLBoxHunspell* RLBoxHunspell::Create(const nsCString& affpath,
                                      const nsCString& dpath) {
   MOZ_DIAGNOSTIC_ASSERT(NS_IsMainThread());
 
-  mozilla::UniquePtr<rlbox_sandbox_hunspell, RLBoxDeleter> sandbox(
+  mozilla::UniquePtr<rlbox_sandbox_hunspell> sandbox(
       new rlbox_sandbox_hunspell());
 
 #if defined(MOZ_WASM_SANDBOXING_HUNSPELL) && !defined(HAVE_64BIT_BUILD)
@@ -42,13 +42,15 @@ RLBoxHunspell* RLBoxHunspell::Create(const nsCString& affpath,
   const uint64_t defaultMaxSizeForSandbox =
       wasm_rt_get_default_max_linear_memory_size();
 
-  // We first get the size of the dictionary
+  // We first get the size of the dictionary.
+  // This is actually the first read we try on dpath and it might fail for
+  // whatever filesystem reasons (invalid path, unaccessible, ...).
   Result<int64_t, nsresult> dictSizeResult =
       mozHunspellFileMgrHost::GetSize(dpath);
-  MOZ_RELEASE_ASSERT(dictSizeResult.isOk());
+  NS_ENSURE_TRUE(dictSizeResult.isOk(), nullptr);
 
   int64_t dictSize = dictSizeResult.unwrap();
-  MOZ_RELEASE_ASSERT(dictSize >= 0);
+  NS_ENSURE_TRUE(dictSize >= 0, nullptr);
 
   // Next, we compute the expected memory needed for hunspell spell checking.
   // This will vary based on the size of the dictionary file, which varies by
@@ -73,6 +75,9 @@ RLBoxHunspell* RLBoxHunspell::Create(const nsCString& affpath,
 
   NS_ENSURE_TRUE(success, nullptr);
 
+  mozilla::UniquePtr<rlbox_sandbox_hunspell, RLBoxDeleter> sandbox_initialized(
+      sandbox.release());
+
   // Add the aff and dict files to allow list
   if (!affpath.IsEmpty()) {
     mozHunspellCallbacks::AllowFile(affpath);
@@ -81,7 +86,8 @@ RLBoxHunspell* RLBoxHunspell::Create(const nsCString& affpath,
     mozHunspellCallbacks::AllowFile(dpath);
   }
 
-  return new RLBoxHunspell(std::move(sandbox), affpath, dpath);
+  // TODO Bug 1788857: Verify error handling in case of inaccessible file
+  return new RLBoxHunspell(std::move(sandbox_initialized), affpath, dpath);
 }
 
 RLBoxHunspell::RLBoxHunspell(

@@ -228,6 +228,18 @@
 #endif
   mirror: once
 
+# Whether to avoid accessibility activation on Windows shortly after clipboard
+# copy.
+#
+# Possible values are:
+#  * 0: never
+#  * 1: always
+#  * 2 (or others): when needed
+- name: accessibility.windows.suppress-after-clipboard-copy
+  type: uint32_t
+  value: 2
+  mirror: always
+
 #---------------------------------------------------------------------------
 # Prefs starting with "alerts."
 #---------------------------------------------------------------------------
@@ -10499,7 +10511,11 @@
 # prevent proxies from being used for that specific request.
 - name: network.proxy.allow_bypass
   type: bool
+#ifdef MOZ_PROXY_BYPASS_PROTECTION
+  value: false
+#else
   value: true
+#endif
   mirror: always
 
 - name: network.proxy.parse_pac_on_socket_process
@@ -11164,6 +11180,11 @@
 - name: network.max_socket_process_failed_count
   type: RelaxedAtomicUint32
   value: 1
+  mirror: always
+
+- name: network.allow_large_stack_size_for_socket_thread
+  type: RelaxedAtomicBool
+  value: true
   mirror: always
 
 #---------------------------------------------------------------------------
@@ -13666,6 +13687,16 @@
   value: false
   mirror: always
 #endif
+
+# Whether to flush the Ole clipboard synchronously.
+# Possible values are:
+#  * 0: never
+#  * 1: always
+#  * 2 (or others): when needed
+- name: widget.windows.sync-clipboard-flush
+  type: uint32_t
+  value: 2
+  mirror: always
 
 # Whether to disable SwipeTracker (e.g. swipe-to-nav).
 - name: widget.disable-swipe-tracker

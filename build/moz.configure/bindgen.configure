@@ -94,7 +94,7 @@ set_config("CBINDGEN", cbindgen)
 set_define(
     "CBINDGEN_0_24",
     True,
-    when=depends(cbindgen)(
+    when=depends_if(cbindgen)(
         lambda c: Version(check_cmd_output(c, "--version").strip().split(" ")[1])
         >= "0.24.0"
     ),

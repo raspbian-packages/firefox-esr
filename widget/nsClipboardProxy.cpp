@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#if defined(ACCESSIBILITY) && defined(XP_WIN)
+#  include "mozilla/a11y/Compatibility.h"
+#endif
 #include "mozilla/dom/ContentChild.h"
 #include "mozilla/Unused.h"
 #include "nsArrayUtils.h"
@@ -23,6 +26,10 @@ nsClipboardProxy::nsClipboardProxy() : mClipboardCaps(false, false) {}
 NS_IMETHODIMP
 nsClipboardProxy::SetData(nsITransferable* aTransferable,
                           nsIClipboardOwner* anOwner, int32_t aWhichClipboard) {
+#if defined(ACCESSIBILITY) && defined(XP_WIN)
+  a11y::Compatibility::SuppressA11yForClipboardCopy();
+#endif
+
   ContentChild* child = ContentChild::GetSingleton();
 
   IPCDataTransfer ipcDataTransfer;
@@ -51,7 +58,7 @@ nsClipboardProxy::GetData(nsITransferable* aTransferable,
                                                  &dataTransfer);
   return nsContentUtils::IPCTransferableToTransferable(
       dataTransfer, false /* aAddDataFlavor */, aTransferable,
-      ContentChild::GetSingleton());
+      ContentChild::GetSingleton(), false /* aFilterUnknownFlavors */);
 }
 
 NS_IMETHODIMP

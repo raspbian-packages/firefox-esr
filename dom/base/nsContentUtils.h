@@ -2758,7 +2758,8 @@ class nsContentUtils {
    * Returns whether a given header is forbidden for an XHR or fetch
    * request.
    */
-  static bool IsForbiddenRequestHeader(const nsACString& aHeader);
+  static bool IsForbiddenRequestHeader(const nsACString& aHeader,
+                                       const nsACString& aValue);
 
   /**
    * Returns whether a given header is forbidden for a system XHR
@@ -2766,6 +2767,14 @@ class nsContentUtils {
    */
   static bool IsForbiddenSystemRequestHeader(const nsACString& aHeader);
 
+  /**
+   * Checks whether the header overrides any http methods
+   */
+  static bool IsOverrideMethodHeader(const nsACString& headerName);
+  /**
+   * Checks whether the  header value contains any forbidden method
+   */
+  static bool ContainsForbiddenMethod(const nsACString& headerValue);
   /**
    * Returns whether a given header has characters that aren't permitted
    */
@@ -2875,17 +2884,20 @@ class nsContentUtils {
    */
   static bool IsFlavorImage(const nsACString& aFlavor);
 
+  static bool IPCDataTransferItemHasKnownFlavor(
+      const mozilla::dom::IPCDataTransferItem& aItem);
+
   static nsresult IPCTransferableToTransferable(
       const mozilla::dom::IPCDataTransfer& aDataTransfer, bool aAddDataFlavor,
       nsITransferable* aTransferable,
-      mozilla::ipc::IShmemAllocator* aAllocator);
+      mozilla::ipc::IShmemAllocator* aAllocator, bool aFilterUnknownFlavors);
 
   static nsresult IPCTransferableToTransferable(
       const mozilla::dom::IPCDataTransfer& aDataTransfer,
       const bool& aIsPrivateData, nsIPrincipal* aRequestingPrincipal,
       const nsContentPolicyType& aContentPolicyType, bool aAddDataFlavor,
       nsITransferable* aTransferable,
-      mozilla::ipc::IShmemAllocator* aAllocator);
+      mozilla::ipc::IShmemAllocator* aAllocator, bool aFilterUnknownFlavors);
 
   static nsresult IPCTransferableItemToVariant(
       const mozilla::dom::IPCDataTransferItem& aDataTransferItem,
