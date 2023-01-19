@@ -1,0 +1,127 @@
+From: Mike Hommey <mh+mozilla@glandium.org>
+Date: Tue, 17 Jan 2023 10:41:35 +0900
+Subject: Bug 1747145 - Add more configure checks for the wasm toolchain setup.
+ r?build
+
+Differential Revision: https://phabricator.services.mozilla.com/D166977
+---
+ build/moz.configure/compilers-util.configure |  8 ++-
+ toolkit/moz.configure                        | 62 +++++++++++++++-----
+ 2 files changed, 55 insertions(+), 15 deletions(-)
+
+diff --git a/build/moz.configure/compilers-util.configure b/build/moz.configure/compilers-util.configure
+index 1d89303..2c9fe02 100644
+--- a/build/moz.configure/compilers-util.configure
++++ b/build/moz.configure/compilers-util.configure
+@@ -96,16 +96,22 @@ def compiler_class(compiler, host_or_target):
+                 def checking_fn(fn):
+                     return fn
+ 
++            # We accept onerror being a @depends function that returns a callable.
++            # So, create a similar @depends function when it's not already one.
++            if not isinstance(onerror, SandboxDependsFunction):
++                onerror = dependable(lambda: onerror)
++
+             @depends(
+                 self,
+                 dependable(flags),
+                 extra_toolchain_flags,
+                 stlport_cppflags,
+                 dependable(header),
++                onerror,
+                 when=when,
+             )
+             @checking_fn
+-            def func(compiler, flags, extra_flags, stlport_flags, header):
++            def func(compiler, flags, extra_flags, stlport_flags, header, onerror):
+                 flags = list(flags or [])
+                 if is_target:
+                     flags += extra_flags or []
+diff --git a/toolkit/moz.configure b/toolkit/moz.configure
+index 0dd52bd..4c356e6 100644
+--- a/toolkit/moz.configure
++++ b/toolkit/moz.configure
+@@ -2437,24 +2437,57 @@ with only_when(requires_wasm_sandboxing & compile_environment):
+ 
+         return wasi_sysroot
+ 
++    @depends(wasi_sysroot)
++    def wasi_sysroot_flags(wasi_sysroot):
++        log.info("Using wasi sysroot in %s", wasi_sysroot)
++        return ["--sysroot=%s" % wasi_sysroot]
++
+     set_config("WASI_SYSROOT", wasi_sysroot)
+ 
+-    def wasm_compiler_with_flags(compiler, sysroot):
+-        if not sysroot:
+-            return
+-        elif compiler:
++    def wasm_compiler_with_flags(compiler, sysroot_flags):
++        if compiler:
+             return (
+-                compiler.wrapper
+-                + [compiler.compiler]
+-                + compiler.flags
+-                + ["--sysroot=%s" % sysroot]
++                compiler.wrapper + [compiler.compiler] + compiler.flags + sysroot_flags
+             )
+ 
++    @template
++    def wasm_compiler_error(msg):
++        @depends("--with-wasm-sandboxed-libraries")
++        def wasm_compiler_error(sandboxed_libs):
++            suggest_disable = ""
++            if sandboxed_libs.origin == "default":
++                suggest_disable = " Or build with --without-wasm-sandboxed-libraries."
++            return lambda: die(msg + suggest_disable)
++
++        return wasm_compiler_error
++
++    @template
++    def check_wasm_compiler(compiler, language):
++        compiler.try_compile(
++            includes=["cstring" if language == "C++" else "string.h"],
++            flags=wasi_sysroot_flags,
++            check_msg="the wasm %s compiler can find wasi headers" % language,
++            onerror=wasm_compiler_error(
++                "Cannot find wasi headers or problem with the wasm compiler. "
++                "Please fix the problem."
++            ),
++        )
++
++        compiler.try_run(
++            flags=wasi_sysroot_flags,
++            check_msg="the wasm %s linker can find wasi libraries" % language,
++            onerror=wasm_compiler_error(
++                "Cannot find wasi libraries or problem with the wasm linker. "
++                "Please fix the problem."
++            ),
++        )
++
+     wasm_cc = compiler("C", wasm, other_compiler=c_compiler)
++    check_wasm_compiler(wasm_cc, "C")
+ 
+-    @depends(wasm_cc, wasi_sysroot)
+-    def wasm_cc_with_flags(wasm_cc, wasi_sysroot):
+-        return wasm_compiler_with_flags(wasm_cc, wasi_sysroot)
++    @depends(wasm_cc, wasi_sysroot_flags)
++    def wasm_cc_with_flags(wasm_cc, wasi_sysroot_flags):
++        return wasm_compiler_with_flags(wasm_cc, wasi_sysroot_flags)
+ 
+     set_config("WASM_CC", wasm_cc_with_flags)
+ 
+@@ -2465,10 +2498,11 @@ with only_when(requires_wasm_sandboxing & compile_environment):
+         other_compiler=cxx_compiler,
+         other_c_compiler=c_compiler,
+     )
++    check_wasm_compiler(wasm_cxx, "C++")
+ 
+-    @depends(wasm_cxx, wasi_sysroot)
+-    def wasm_cxx_with_flags(wasm_cxx, wasi_sysroot):
+-        return wasm_compiler_with_flags(wasm_cxx, wasi_sysroot)
++    @depends(wasm_cxx, wasi_sysroot_flags)
++    def wasm_cxx_with_flags(wasm_cxx, wasi_sysroot_flags):
++        return wasm_compiler_with_flags(wasm_cxx, wasi_sysroot_flags)
+ 
+     set_config("WASM_CXX", wasm_cxx_with_flags)
+ 

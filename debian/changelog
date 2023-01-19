@@ -1,4 +1,4 @@
-firefox-esr (102.6.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (102.7.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -28,7 +28,32 @@ firefox-esr (102.6.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 15 Dec 2022 22:47:09 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 19 Jan 2023 04:44:22 +0000
+
+firefox-esr (102.7.0esr-1~deb11u1) bullseye-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2023-02, also known as:
+    CVE-2022-46871, CVE-2023-23598, CVE-2023-23601, CVE-2023-23602,
+    CVE-2022-46877, CVE-2023-23603, CVE-2023-23605.
+
+  * debian/browser.mozconfig.in, debian/control*: Enable wasm sandboxing
+    on bookworm.
+
+  * dom/base/usecounters.py,
+    python/mozbuild/mozbuild/action/process_define_files.py,
+    python/mozbuild/mozbuild/backend/base.py,
+    python/mozbuild/mozbuild/preprocessor.py,
+    python/mozbuild/mozbuild/util.py,
+    python/mozbuild/mozpack/files.py,
+    xpcom/idl-parser/xpidl/xpidl.py: Fix FTBFS with python 3.11.
+    bz#1769631, bz#1799982, Closes: #1028809.
+  * build/moz.configure/compilers-util.configure,
+    toolkit/moz.configure: Add more configure checks for the wasm toolchain
+    setup. bz#1747145.
+    toolkit/moz.configure: Allow to build without a wasi sysroot. bz#1810627
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 18 Jan 2023 05:33:36 +0900
 
 firefox-esr (102.6.0esr-1~deb11u1) bullseye-security; urgency=medium
 
