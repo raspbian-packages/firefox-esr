@@ -1,4 +1,8 @@
 fixes/Allow-.js-preference-files-to-set-locked-prefs-with-.patch
+fixes/Bug-1769631-Remove-U-from-mode-parameters-for-variou.patch
+fixes/Bug-1799982-Remove-uses-of-inline-flags-from-XPIDL-r.patch
+fixes/Bug-1747145-Add-more-configure-checks-for-the-wasm-t.patch
+fixes/Bug-1810627-Allow-to-build-without-a-wasi-sysroot.-r.patch
 porting/Add-xptcall-support-for-SH4-processors.patch
 porting/NSS-Fix-FTBFS-on-Hurd-because-of-MAXPATHLEN.patch
 porting/Use-NEON_FLAGS-instead-of-VPX_ASFLAGS-for-libaom-neo.patch

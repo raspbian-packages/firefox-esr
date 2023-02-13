@@ -64,6 +64,11 @@ Build-Depends: autotools-dev,
                llvm-dev,
                libclang-dev,
                clang,
+%if DIST != bullseye && DIST != buster && DIST != stretch
+               libc++-dev-wasm32,
+               libclang-rt-dev-wasm32,
+               lld,
+%endif
 %endif
                cbindgen (>= 0.23.0),
 %if DIST == stretch
