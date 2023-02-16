@@ -57,10 +57,33 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } usatores
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Bandieras pro cookies adeo!
+cfr-cookie-banner-handling-body = Permitter a { -brand-short-name } de rejectar automaticamente tote le requestas de bandieras pro cookie, quando possibile. Alteremente, tote le cookies sera acceptate pro dimitter ancora plus bandieras.
+cfr-cookie-banner-accept-button = Dimitter le requestas
+    .accesskey = D
+cfr-cookie-banner-reject-button = Non ora
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-1 = Vider minus quadros resaltante de cookies
+cfr-cookie-banner-handling-body-variant-1 = Lassa que { -brand-short-name } responde automaticamente al quadros resaltante de cookies pro te, assi que tu pote navigar de novo libere de distractiones. { -brand-short-name } rejectara tote le requestas si possibile o, si non, los acceptara tote.
+cfr-cookie-banner-accept-button-variant-1 = Dimitter le quadros resaltante
+    .accesskey = D
+cfr-cookie-banner-reject-button-variant-1 = No, gratias
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Reduction de banner pro le cookie
+cfr-cookie-banner-handling-body-variant-2 = Permitter a { -brand-short-name } de refusar le requesta de consenso al cookies de un sito, si possibile, o acceptar le accesso de cookies quando impossibile?
+cfr-cookie-banner-accept-button-variant-2 = Permitter
+    .accesskey = P
+cfr-cookie-banner-reject-button-variant-2 = Non ora
+    .accesskey = N
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Synchronisa tu marcapaginas ubique.
-cfr-doorhanger-bookmark-fxa-body = Grande discoperta! Ora non restar sin iste marcapaginas sur tu apparatos mobile. Comencia con un { -fxaccount-brand-name }.
+cfr-doorhanger-bookmark-fxa-body = Grande discoperta! Ora non resta sin iste marcapagina sur tu apparatos mobile. Comencia con un { -fxaccount-brand-name }.
 cfr-doorhanger-bookmark-fxa-link-text = Synchronisar marcapaginas ora…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Button Clauder
@@ -156,10 +179,6 @@ spotlight-total-cookie-protection-body = Le protection total del cookies bloca l
 spotlight-total-cookie-protection-expanded = { -brand-short-name } crea un barriera circa le cookies, limitante los al sito que tu visita de maniera que le traciatores non pote usar los pro sequer te. Como usator del prime hora, tu nos adjuta a optimisar iste function de sorta que nos pote continuar a construer un web melior pro totes.
 spotlight-total-cookie-protection-primary-button = Activar Protection total del cookies
 spotlight-total-cookie-protection-secondary-button = Non ora
-cfr-total-cookie-protection-header = Gratias a te, { -brand-short-name } es plus private e secur que mais
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Le protection total del cookies es jam nostre plus forte protection del confidentialitate, e illo es ora ubique un parametro predefinite pro le usatores de { -brand-short-name }. Nos non lo poteva haber facite sin precoce accesso del participantes como te. Assi gratias pro adjutar nos a crear un internet melior e pus private.
 
 ## Emotive Continuous Onboarding
 
@@ -173,3 +192,85 @@ spotlight-pin-primary-button =
        *[other] Appunctar al barra del activitates
     }
 spotlight-pin-secondary-button = Non ora
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Nove { -brand-short-name }. Plus private. Minus traciatores. Sin compromissos.
+mr2022-background-update-toast-text = Prova ora le nove { -brand-short-name }, actualisate con nostre plus forte protection anti-traciamento jammais realisate.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Aperir { -brand-shorter-name } ora
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Rememora me plus tarde
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Prova lo
+    .accesskey = P
+firefoxview-cfr-secondarybutton = Non ora
+    .accesskey = N
+firefoxview-cfr-header-v2 = Rapidemente reprende de ubi tu lassava
+firefoxview-cfr-body-v2 = Reobtene le schedas claudite recentemente, plus salta sin problemas inter apparatos con { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Nos te presenta { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Vole tu transferer ille scheda aperte a tu telephono? Prende lo. Ha tu besonio de ille sito que tu ha justo ora visitate? Puf, es de retorno con { -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = Vider como functiona
+firefoxview-spotlight-promo-secondarybutton = Saltar
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Elige combination de colores
+    .accesskey = E
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Colora tu navigator con exclusive tonalitates de { -brand-short-name } inspirate per voces que cambiava le cultura.
+colorways-cfr-header-28days = Le combinationes de colores Independent Voices expira le 16 de januario
+colorways-cfr-header-14days = Le combinationes de colores Independent Voices expira in duo septimanas
+colorways-cfr-header-7days = Le combinationes de colores Independent Voices expira iste septimana
+colorways-cfr-header-today = Le combinationes de colores Independent Voices expira hodie
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Bandieras pro cookies adeo!
+cfr-cookiebanner-body = Permitter a { -brand-short-name } de rejectar automaticamente, quando possibile, tote le requestas de bandieras pro cookie.
+cfr-cookiebanner-accept-button = Dimitter bandieras
+    .accesskey = D
+cfr-cookiebanner-reject-button = Non ora
+    .accesskey = N
+cfr-cookiebanner-header-variant-1 = Vider minus quadros resaltante de cookies
+cfr-cookiebanner-body-variant-1 = Lassa que { -brand-short-name } responde automaticamente al quadros resaltante de cookies pro te, assi que tu pote navigar de novo libere de distractiones. { -brand-short-name } rejectara tote le requestas si possibile.
+cfr-cookiebanner-accept-button-variant-1 = Dimitter quadros resaltante
+    .accesskey = D
+cfr-cookiebanner-reject-button-variant-1 = No, gratias
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = Reduction de bandieras pro cookie
+cfr-cookiebanner-body-variant-2 = Reduce le amonta de bandieras pro cookies que tu vide permittente a { -brand-short-name }, si possibile, de refusar un requesta de consenso al cookie de sito web.
+cfr-cookiebanner-accept-button-variant-2 = Permitter
+    .accesskey = P
+cfr-cookiebanner-reject-button-variant-2 = Non ora
+    .accesskey = N
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Nos te mantene secur
+july-jam-body = Cata mense, { -brand-short-name } bloca un media de plus de 3000 traciatores per usator pro dar te accesso secur e veloce al bon internet.
+july-jam-set-default-primary = Aperir mi ligamines con { -brand-short-name }

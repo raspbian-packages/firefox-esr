@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Viŝi datumojn
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Viŝi datumojn
+    .style = min-width: 35em
+
 clear-site-data-description = Viŝo de ĉiuj kuketoj kaj datumoj de retejo konservitaj de { -brand-short-name } povus okazigi finon de viaj seancoj en retejoj kaj forigon de teksaĵaj malkonektitaĵoj.  Viŝo de la staplo ne efikos sur viaj seancoj.
 
 clear-site-data-close-key =

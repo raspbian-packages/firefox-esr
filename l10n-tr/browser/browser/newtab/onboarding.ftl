@@ -25,6 +25,12 @@ return-to-amo-addon-title = Şimdi <img data-l10n-name="icon"/> <b>{ $addon-name
 return-to-amo-add-extension-label = Uzantıyı ekle
 return-to-amo-add-theme-label = Temayı ekle
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = { -brand-short-name } ile tanışın
+mr1-return-to-amo-addon-title = Hızlı ve gizlilik yanlısı tarayıcınız artık parmaklarınızın ucunda. Şimdi <b>{ $addon-name }</b> uzantısını ekleyerek { -brand-short-name } tarayıcınızı daha da geliştirebilirsiniz.
+mr1-return-to-amo-add-extension-label = { $addon-name } uzantısını ekle
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = İlerleme: adım { $current } / { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = İlerleme: adım { $current } / { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -323,40 +331,40 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Önceki tarayıc�
 
 mr2022-onboarding-colorway-title = Size ilham veren rengi seçin
 mr2022-onboarding-colorway-subtitle = Bağımsız sesler kültürü değiştirebilir.
-mr2022-onboarding-colorway-primary-button-label = Renk kuşağını ayarla
+mr2022-onboarding-colorway-primary-button-label-continue = Ayarla ve devam et
 mr2022-onboarding-existing-colorway-checkbox-label = { -firefox-home-brand-name } renkli giriş sayfanız olsun
 mr2022-onboarding-colorway-label-default = Varsayılan
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Varsayılan
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Mevcut { -brand-short-name } renkleri
 mr2022-onboarding-colorway-description-default = <b>Mevcut { -brand-short-name } renklerimi kullan.</b>
 mr2022-onboarding-colorway-label-playmaker = Oyun Kurucu
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Oyun Kurucu
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Oyun kurucu (kırmızı)
 mr2022-onboarding-colorway-description-playmaker = <b>Siz bir oyun kurucusunuz.</b> Hem kazanmanızı sağlayacak hem de çevrenizdeki herkese fayda sağlayacak fırsatlar yaratıyorsunuz.
 mr2022-onboarding-colorway-label-expressionist = Dışavurumcu
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Dışavurumcu
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Dışavurumcu (sarı)
 mr2022-onboarding-colorway-description-expressionist = <b>Siz bir dışavurumcusunuz.</b> Dünyayı farklı görüyorsunuz ve eserleriniz başkalarının duygularını harekete geçiriyor.
 mr2022-onboarding-colorway-label-visionary = Vizyoner
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Vizyoner
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Vizyoner (yeşil)
 mr2022-onboarding-colorway-description-visionary = <b>Siz bir vizyonersiniz.</b> Statükoyu sorguluyor ve insanları daha iyi bir gelecek hayal etmeye yönlendiriyorsunuz.
 mr2022-onboarding-colorway-label-activist = Aktivist
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aktivist
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktivist (mavi)
 mr2022-onboarding-colorway-description-activist = <b>Siz bir aktivistsiniz.</b> Dünyayı bulduğunuzdan daha iyi bir yer olarak bırakmak için insanlara önderlik ediyorsunuz.
 mr2022-onboarding-colorway-label-dreamer = Hayalperest
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Hayalperest
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Hayalperest (mor)
 mr2022-onboarding-colorway-description-dreamer = <b>Siz bir hayalperestsiniz.</b> Şansın cesurdan yana olduğuna inanıyor ve cesur olmaları için insanlara ilham veriyorsunuz.
 mr2022-onboarding-colorway-label-innovator = Yenilikçi
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Yenilikçi
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Yenilikçi (turuncu)
 mr2022-onboarding-colorway-description-innovator = <b>Siz bir yenilikçisiniz.</b> Her yerde fırsatları görüyor ve çevrenizdeki herkesin hayatında bir etki yaratıyorsunuz.
 
 ## MR2022 Multistage Mobile Download screen strings
 
-mr2022-onboarding-mobile-download-title = Bilgisayardan telefona, telefondan bilgisayar atlayın
+mr2022-onboarding-mobile-download-title = Bilgisayardan telefona, telefondan bilgisayara atlayın
 mr2022-onboarding-mobile-download-subtitle = Bir cihazınızdaki sekmelere diğer cihazınızdan ulaşıp kaldığınız yerden devam edebilirsiniz. Üstelik { -brand-product-name } kullandığınız her yerden yer imlerinize ve parolalarınıza erişebilirsiniz.
 mr2022-onboarding-mobile-download-cta-text = { -brand-product-name } mobil uygulamasını indirmek için QR kodunu okutun veya <a data-l10n-name="download-label">kendinize indirme linkini gönderin</a>.
 mr2022-onboarding-no-mobile-download-cta-text = { -brand-product-name } mobil uygulamasını indirmek için QR kodunu okutun.
@@ -382,7 +390,33 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Ayrıntılı bil
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-title = Daha iyi bir web inşa etmemize yardım ediyorsunuz.
+mr2022-onboarding-gratitude-title = Daha iyi bir web inşa etmemize yardım ediyorsunuz
 mr2022-onboarding-gratitude-subtitle = Mozilla Vakfı tarafından geliştirilen { -brand-short-name } tarayıcısını kullandığınız için teşekkür ederiz. Desteğinizle interneti herkes için daha açık, daha erişilebilir ve daha iyi bir yere dönüştürüyoruz.
 mr2022-onboarding-gratitude-primary-button-label = Yeniliklere bak
 mr2022-onboarding-gratitude-secondary-button-label = Gezinmeye başla
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Kendinizi evinizde gibi hissedin
+onboarding-infrequent-import-subtitle = Yer imlerinizi, parolalarınızı ve daha fazlasını kolayca içe aktarabilirsiniz.
+onboarding-infrequent-import-primary-button = { -brand-short-name } tarayıcısına aktar
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Yıldızlar ve çiçeklerle çevrili, dizüstü bilgisayarda çalışan bir kişi
+mr2022-onboarding-default-image-alt =
+    .aria-label = { -brand-product-name } logosuna sarılan bir kişi
+mr2022-onboarding-import-image-alt =
+    .aria-label = Yazılım simgeleriyle dolu bir kutuyla kaykay süren bir kişi
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Nilüfer yaprakları arasında zıplayan kurbağalar ve ortada mobil { -brand-product-name } tarayıcısını indirmeye yaran QR kodu
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Şapkadan { -brand-product-name } gizli gezinti logosunun çıkmasını sağlayan sihirli değnek
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Beşlik çakan açık ve koyu tenli eller
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Pencere kenarında bir tilki ve bir ev bitkisi olan bir pencereden gün batımı manzarası
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Yeşil göz, turuncu ayakkabı, kırmızı basketbol topu, mor kulaklık, mavi kalp ve sarı taçtan oluşan renkli bir kolajı boyayan el spreyi

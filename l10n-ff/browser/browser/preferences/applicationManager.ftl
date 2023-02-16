@@ -6,6 +6,10 @@ app-manager-window =
     .title = Sifaaji kuutorgal
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Sifaaji kuutorgal
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Ittu
     .accesskey = I

@@ -3,6 +3,22 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Syngronisearje
+appmenu-signin-panel =
+    .label = Oanmelde om te syngronisearjen
+    .accesskey = m
+appmenu-sync-sync =
+    .value = Accountsyngronisaasje
+    .accesskey = A
+appmenu-sync-manage =
+    .value = Account beheare
+    .accesskey = b
+appmenu-sync-account =
+    .value = foarbyld@example.com
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -66,10 +82,35 @@ appmenu-create-contact =
     .label = Kontakt
     .accesskey = K
 
+## Open
+
+appmenu-open-file-panel =
+    .label = Iepenje fan bestân út
+    .accesskey = I
+appmenu-open-file-panel-title =
+    .title = Iepenje fan bestân út
+appmenu-open-message =
+    .label = Berjocht…
+    .accesskey = B
+appmenu-open-calendar =
+    .label = Aginda…
+    .accesskey = A
+
 ## View / Layout
 
+appmenu-view-panel-title =
+    .title = Byld
+appmenu-view-panel =
+    .label = Byld
+    .accesskey = y
 appmenu-font-size-value = Lettergrutte
 appmenu-mail-uidensity-value = Tichtens
+appmenu-uidensity-compact =
+    .tooltiptext = Kompakt
+appmenu-uidensity-default =
+    .tooltiptext = Standert
+appmenu-uidensity-relaxed =
+    .tooltiptext = Untspand
 appmenuitem-font-size-enlarge =
     .tooltiptext = Lettergrutte fergrutsje
 appmenuitem-font-size-reduce =

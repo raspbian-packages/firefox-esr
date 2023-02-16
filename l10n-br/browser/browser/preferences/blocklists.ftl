@@ -6,6 +6,10 @@ blocklist-window =
     .title = Rolloù stankañ
     .style = width: 50em
 
+blocklist-window2 =
+    .title = Rolloù stankañ
+    .style = min-width: 50em
+
 blocklist-description = Dibabit ar roll arveret gant { -brand-short-name } evit stankañ heulierien enlinenn. Pourchaset eo ar roll gant <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

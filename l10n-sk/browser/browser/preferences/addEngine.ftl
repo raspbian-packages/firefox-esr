@@ -6,6 +6,10 @@ add-engine-window =
     .title = Pridať vyhľadávací modul
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Pridať vyhľadávací modul
+    .style = min-width: 32em;
+
 add-engine-button = Pridať vlastný vyhľadávací modul
 
 add-engine-name = Názov vyhľadávacieho modulu

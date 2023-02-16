@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Rétt í þessu
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Afhending flipa
 firefoxview-tabpickup-description = Opna síður úr öðrum tækjum.
-firefoxview-tabpickup-recenttabs-description = Listi yfir nýlega flipa myndi koma hér
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% lokið
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Reyndu aftur
 firefoxview-tabpickup-sync-disconnected-header = Kveiktu á samstillingu til að halda áfram
 firefoxview-tabpickup-sync-disconnected-description = Til að ná í flipana þína þarftu að leyfa samstillingu í { -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Kveiktu á samstillingu í stillingum
+firefoxview-tabpickup-password-locked-header = Settu inn aðallykilorðið þitt til að skoða flipa
+firefoxview-tabpickup-password-locked-description = Til að ná í flipana þína þarftu að setja inn aðallykilorðið fyrir { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Kanna nánar
+firefoxview-tabpickup-password-locked-primarybutton = Settu inn aðallykilorð
+firefoxview-tabpickup-signed-out-header = Skráðu þig inn til að tengjast aftur
+firefoxview-tabpickup-signed-out-description = Skráðu þig inn á { -fxaccount-brand-name } til að tengjast aftur og ná í flipana þína.
+firefoxview-tabpickup-signed-out-primarybutton = Skrá inn
 firefoxview-tabpickup-syncing = Ekki fara neitt meðan fliparnir þínir samstillast. Þetta tekur bara augnablik.
 firefoxview-mobile-promo-header = Náðu í flipa úr símanum þínum eða spjaldtölvunni
 firefoxview-mobile-promo-description = Til að skoða nýjustu farsímaflipana þína skaltu skrá þig inn á { -brand-product-name } á iOS eða Android.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Náðu í { -brand-product-name } fyrir
 firefoxview-mobile-confirmation-header = 🎉 Allt tilbúið!
 firefoxview-mobile-confirmation-description = Nú geturðu náð í { -brand-product-name }-flipana þína úr spjaldtölvunni eða símanum.
 firefoxview-closed-tabs-title = Nýlega lokað
-firefoxview-closed-tabs-description = Opnaðu aftur síður sem þú hefur lokað á þessu tæki.
-firefoxview-closed-tabs-placeholder = <strong>Engar nýlega lokaðar síður</strong><br/>Ekki hræðast að tapa lokuðum flipum. Þú getur alltaf sótt þá hér.
+firefoxview-closed-tabs-description2 = Opnaðu aftur síður sem þú hefur lokað í þessum glugga.
+firefoxview-closed-tabs-placeholder-header = Engir nýlega lokaðir flipar
+firefoxview-closed-tabs-placeholder-body = Þegar þú lokar flipa í þessum glugga geturðu sótt hann hingað.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Afgreiða { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Síðasta virkni
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Breyta litasetti
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Ekkert að sjá hér ennþá</strong><br/>Næst þegar þú opnar síðu í { -brand-product-name } í öðru tæki skaltu grípa hana hér eins og fyrir töfra.
+firefoxview-synced-tabs-placeholder-header = Ekkert að sjá ennþá
+firefoxview-synced-tabs-placeholder-body = Næst þegar þú opnar síðu í { -brand-product-name } í öðru tæki skaltu ná í hana hér.
 firefoxview-collapse-button-show =
     .title = Birta lista
 firefoxview-collapse-button-hide =

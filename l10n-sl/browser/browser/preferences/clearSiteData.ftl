@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Počisti podatke
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Počisti podatke
+    .style = min-width: 35em
+
 clear-site-data-description = Brisanje vseh piškotkov in podatkov strani, ki jih hrani { -brand-short-name }, vas lahko odjavi iz spletnih strani in odstrani vsebino za delo brez povezave. Brisanje podatkov v predpomnilniku ne bo vplivalo na vaše prijave.
 
 clear-site-data-close-key =

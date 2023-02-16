@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Golygu gosodiadau ymddiried tystysgrif CA
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Golygu gosodiadau ymddiried tystysgrif CA
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Golygu gosodiadau ymddiried:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Dileu Tystysgrif
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Dileu Tystysgrif
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Gwesteiwr
@@ -185,8 +193,6 @@ delete-email-cert-impact = Os fyddwch yn dileu tystysgrif e-bost y person, ni fy
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Tystysgrif gyda rhif cyfresol : { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Anfonwyd dim tystysgrif cleient

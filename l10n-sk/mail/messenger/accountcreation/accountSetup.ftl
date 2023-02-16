@@ -101,7 +101,7 @@ account-setup-looking-up-settings-guess = Vyhľadáva sa konfigurácia: skúšaj
 
 account-setup-looking-up-settings-half-manual = Vyhľadáva sa konfigurácia: prebieha testovanie servera…
 
-account-setup-looking-up-disk = Vyhľadáva sa konfigurácia: v inštalácii { -brand-short-name }u…
+account-setup-looking-up-disk = Vyhľadáva sa konfigurácia: v inštalácii { -brand-short-name(case: "gen") }…
 
 account-setup-looking-up-isp = Vyhľadáva sa konfigurácia: u poskytovateľa e-mailu…
 
@@ -129,7 +129,7 @@ account-setup-success-addon = Doplnok bol úspešne nainštalovaný
 # Note: Do not translate or replace Mozilla. It stands for the public project mozilla.org, not Mozilla Corporation. The database is a generic, public domain facility usable by any client.
 account-setup-success-settings-db = Konfigurácia bola nájdená v databáze Mozilla ISP.
 
-account-setup-success-settings-disk = Konfigurácia bola nájdená v inštalácii { -brand-short-name }u.
+account-setup-success-settings-disk = Konfigurácia bola nájdená v inštalácii { -brand-short-name(case: "gen") }.
 
 account-setup-success-settings-isp = Konfigurácia bola nájdená u poskytovateľa e-mailu.
 
@@ -215,7 +215,7 @@ account-setup-credentials-incomplete = Overenie zlyhalo. Buď sú zadané prihla
 
 account-setup-credentials-wrong = Overenie zlyhalo. Skontrolujte používateľské meno a heslo
 
-account-setup-find-settings-failed = { -brand-short-name }u sa nepodarilo nájsť nastavenia pre váš e-mailový účet
+account-setup-find-settings-failed = { -brand-short-name(case: "dat") } sa nepodarilo nájsť nastavenia pre váš e-mailový účet
 
 account-setup-exchange-config-unverifiable = Konfiguráciu sa nepodarilo overiť. Ak sú vaše používateľské meno a heslo správne, je pravdepodobné, že správca servera zakázal vybratú konfiguráciu vášho účtu. Skúste zvoliť iný protokol.
 

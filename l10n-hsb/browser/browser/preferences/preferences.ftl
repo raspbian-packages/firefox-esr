@@ -197,6 +197,8 @@ preferences-web-appearance-choice-tooltip-browser =
     .title = Přiměrće swoje drastowe nastajenja { -brand-short-name } za pozadki a wobsah websydłow.
 preferences-web-appearance-choice-tooltip-system =
     .title = Přiměrće swoje systemowe nastajenja za pozadki a wobsah websydłow.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Změńće awtomatisce pozadki websydła a wobsah na zakładźe swojich systemowych nastajenjow a drasty { -brand-short-name }.
 preferences-web-appearance-choice-tooltip-light =
     .title = Swětły napohlad za pozadki websydłow a wobsah wužiwać.
 preferences-web-appearance-choice-tooltip-dark =
@@ -598,6 +600,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Pytanske namjety we wuslědkach adresoweho pola pokazać
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Pytanske wurazy město URL na stronje wuslědkow standardneje pytawy pokazać
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -725,6 +732,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Dźělić
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Wubjerće, štož ma so synchronizować
+    .style = min-width: 36em;
+    .buttonlabelaccept = Změny składować
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Dźělić
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Zapołožki
     .accesskey = Z
@@ -793,6 +807,9 @@ forms-breach-alerts =
     .label = Warnowanja za hesła přez datowu dźěru potrjechenych websydłow
     .accesskey = z
 forms-breach-alerts-learn-more-link = Dalše informacije
+relay-integration =
+    .label = Zmóžńće { -relay-brand-name } w swojim zrjadowaku hesłow { -brand-short-name }
+relay-integration-learn-more-link = Dalše informacije
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Přizjewjenja a hesła awtomatisce zapisać
@@ -988,6 +1005,7 @@ content-blocking-all-cookies = Wšě placki
 content-blocking-unvisited-cookies = Placki z njewopytanych sydłow
 content-blocking-all-windows-tracking-content = Slědowacy wobsah we wšěch woknach
 content-blocking-all-third-party-cookies = Wšě placki třećich
+content-blocking-all-cross-site-cookies = Wšě sydła přesahowace placki
 content-blocking-cryptominers = Kryptokopanje
 content-blocking-fingerprinters = Porstowe wotćišće
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -995,6 +1013,9 @@ content-blocking-fingerprinters = Porstowe wotćišće
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Testujće našu najmócnišu funkciju priwatnosće wšěch časow
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Dospołny plackowy škit placki k sydłu, na kotrymž sće, zo njebychu přesćěhowaki móhli je wužiwać, zo bychu was na rozdźělnych sydłach slědowali.
 content-blocking-etp-standard-tcp-rollout-learn-more = Dalše informacije
@@ -1107,6 +1128,7 @@ collection-health-report-disabled = Datowe rozprawjenje je znjemóžnjene za tut
 collection-backlogged-crash-reports-with-link = { -brand-short-name } dowolić, zo bychu so njepósłane spadowe rozprawy we wašim mjenje pósłali <a data-l10n-name="crash-reports-link">Dalše informacije</a>
     .accesskey = d
 privacy-segmentation-section-header = Nowe funkcije, kotrež waše přehladowanje polěpšeja
+privacy-segmentation-section-description = Hdyž funkcije poskicámy, kotrež waše daty wužiwaja, zo bychmy wam bóle wosobinske dožiwjenje skićili:
 privacy-segmentation-radio-off =
     .label = Doporučenja { -brand-product-name } wužiwać
 privacy-segmentation-radio-on =

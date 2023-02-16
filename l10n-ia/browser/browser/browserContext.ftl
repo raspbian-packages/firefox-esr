@@ -87,20 +87,20 @@ main-context-menu-page-save =
 ## Simple menu items
 
 main-context-menu-bookmark-add =
-    .aria-label = Adder un marcapaginas
+    .aria-label = Adder iste pagina al marcapaginas
     .accesskey = m
-    .tooltiptext = Adder un marcapaginas sur iste pagina
+    .tooltiptext = Adder un marcapagina pro iste pagina
 # This menuitem is only visible on macOS
 # Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
 # so should probably have the same access key if possible.
 main-context-menu-bookmark-add-mac =
-    .label = Marcar le pagina
-    .accesskey = c
+    .label = Adder pagina al marcapaginas
+    .accesskey = m
 # This menuitem is only visible on macOS
 # Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
 # so should probably have the same access key if possible.
 main-context-menu-bookmark-edit-mac =
-    .label = Rediger marcapaginas
+    .label = Modificar marcapagina
     .accesskey = m
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
@@ -119,14 +119,14 @@ main-context-menu-bookmark-change-with-shortcut =
     .accesskey = m
     .tooltiptext = Modificar iste marcapaginas ({ $shortcut })
 main-context-menu-bookmark-page =
-    .aria-label = Adder al marcapaginas pagina…
+    .aria-label = Adder pagina al marcapaginas…
     .accesskey = m
-    .tooltiptext = Adde pagina al marcapaginas
+    .tooltiptext = Adde le pagina al marcapaginas
 # This menuitem is only visible on macOS
 # Cannot be shown at the same time as main-context-menu-edit-bookmark-mac,
 # so should probably have the same access key if possible.
 main-context-menu-bookmark-page-mac =
-    .label = adder al marcapaginas pagina…
+    .label = Adder pagina al marcapaginas…
     .accesskey = m
 # This menuitem is only visible on macOS
 # Cannot be shown at the same time as main-context-menu-bookmark-page-mac,
@@ -169,7 +169,7 @@ main-context-menu-bookmark-link =
     .label = Adder ligamine al marcapaginas
     .accesskey = m
 main-context-menu-bookmark-link-2 =
-    .label = Adder le ligamine al marcapaginas…
+    .label = Adder ligamine al marcapaginas…
     .accesskey = A
 main-context-menu-save-link =
     .label = Salvar le ligamine como…
@@ -361,7 +361,7 @@ main-context-menu-frame-reload =
     .label = Recargar le quadro
     .accesskey = R
 main-context-menu-frame-bookmark =
-    .label = Adder un marcapaginas sur iste quadro
+    .label = Adder iste quadro al marcapaginas
     .accesskey = m
 main-context-menu-frame-add-bookmark =
     .label = Adder quadro al marcapaginas…

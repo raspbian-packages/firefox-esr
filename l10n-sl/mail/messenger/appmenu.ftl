@@ -3,6 +3,28 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Sinhronizacija
+appmenu-signin-panel =
+    .label = Prijava v sinhronizacijo
+    .accesskey = i
+appmenu-sync-manage =
+    .value = Upravljanje računa
+    .accesskey = U
+appmenu-sync-account =
+    .value = e-posta@example.com
+appmenu-sync-now =
+    .label = Sinhroniziraj zdaj
+    .accesskey = z
+appmenu-sync-settings =
+    .label = Nastavitve sinhronizacije
+    .accesskey = t
+appmenu-sync-sign-out =
+    .label = Odjava …
+    .accesskey = O
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -10,6 +32,12 @@ appmenu-new-account-panel-title =
 appmenu-new-account-panel =
     .label = Nov račun
     .accesskey = N
+appmenu-create-new-mail-account =
+    .label = Pridobite nov naslov
+    .accesskey = b
+appmenu-new-mail-account =
+    .label = Obstoječ e-poštni naslov
+    .accesskey = O
 appmenu-new-calendar =
     .label = Koledar
     .accesskey = K
@@ -60,10 +88,35 @@ appmenu-create-contact =
     .label = Stik
     .accesskey = k
 
+## Open
+
+appmenu-open-file-panel =
+    .label = Odpri iz datoteke
+    .accesskey = O
+appmenu-open-file-panel-title =
+    .title = Odpri iz datoteke
+appmenu-open-message =
+    .label = Sporočilo …
+    .accesskey = S
+appmenu-open-calendar =
+    .label = Koledar …
+    .accesskey = K
+
 ## View / Layout
 
+appmenu-view-panel-title =
+    .title = Pogled
+appmenu-view-panel =
+    .label = Pogled
+    .accesskey = P
 appmenu-font-size-value = Velikost pisave
 appmenu-mail-uidensity-value = Gostota
+appmenu-uidensity-compact =
+    .tooltiptext = Strnjeno
+appmenu-uidensity-default =
+    .tooltiptext = Privzeto
+appmenu-uidensity-relaxed =
+    .tooltiptext = Razmaknjeno
 appmenuitem-font-size-enlarge =
     .tooltiptext = Povečaj velikost pisave
 appmenuitem-font-size-reduce =
@@ -107,6 +160,9 @@ appmenu-tools-dev-tools =
 
 appmenu-help-panel-title =
     .title = Pomoč
+appmenu-help-get-help =
+    .label = Poiščite pomoč
+    .accesskey = P
 appmenu-help-explore-features =
     .label = Raziščite možnosti
     .accesskey = š
@@ -134,3 +190,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = O { -brand-short-name(sklon: "mestnik") }
     .accesskey = O
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Prenašanje posodobitve za { -brand-shorter-name(sklon: "tozilnik") }
+appmenuitem-banner-update-available =
+    .label = Na voljo je posodobitev – prenesi zdaj
+appmenuitem-banner-update-manual =
+    .label = Na voljo je posodobitev – prenesi zdaj
+appmenuitem-banner-update-unsupported =
+    .label = Posodobitev ni mogoča – nezdružljiv sistem
+appmenuitem-banner-update-restart =
+    .label = Na voljo je posodobitev – zaženi znova

@@ -6,6 +6,10 @@ app-manager-window =
     .title = Butiran aplikasi
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Butiran aplikasi
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Buang
     .accesskey = B

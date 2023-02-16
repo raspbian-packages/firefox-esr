@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = تنظیمات اتصال
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = پروکسی HTTP
     .accesskey = x
 connection-proxy-http-port = درگاه
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = از این پروکسی برای HTTPS نیز استفاده شود
     .accesskey = H

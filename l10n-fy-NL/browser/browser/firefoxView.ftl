@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Sa krekt
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Syngronisearre ljepblêden
 firefoxview-tabpickup-description = Siden fan oare apparaten ôf iepenje
-firefoxview-tabpickup-recenttabs-description = Hjir komt de list mei resinte ljepblêden
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% foltôge
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Opnij probearje
 firefoxview-tabpickup-sync-disconnected-header = Skeakelje syngronisaasje yn om troch te gean
 firefoxview-tabpickup-sync-disconnected-description = Om jo ljepblêden op te pakken, moatte jo syngronisaasje yn { -brand-short-name } tastean.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Syngronisaasje ynskeakelje yn ynstellingen
+firefoxview-tabpickup-password-locked-header = Fier jo haadwachtwurd yn om ljepblêden te besjen
+firefoxview-tabpickup-password-locked-description = Om jo ljepblêden op te heljen, moatte jo jo haadwachtwurd foar { -brand-short-name } ynjaan.
+firefoxview-tabpickup-password-locked-link = Mear ynfo
+firefoxview-tabpickup-password-locked-primarybutton = Haadwachtwurd ynfiere
+firefoxview-tabpickup-signed-out-header = Oanmelde om opnij te ferbinen
+firefoxview-tabpickup-signed-out-description = Meld jo oan by jo { -fxaccount-brand-name } om opnij te ferbinen en jo ljepblêden op te pakken.
+firefoxview-tabpickup-signed-out-primarybutton = Oanmelde
 firefoxview-tabpickup-syncing = Bliuw sitten wylst jo ljepblêden syngronisearje. It duorret mar in amerijke.
 firefoxview-mobile-promo-header = Iepenje ljepblêden fan jo telefoan of tablet
 firefoxview-mobile-promo-description = Meld jo oan by { -brand-product-name } op iOS of Android om jo lêste mobile ljepblêden te besjen.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = { -brand-product-name } foar mobyl down
 firefoxview-mobile-confirmation-header = 🎉 Jo binne ree!
 firefoxview-mobile-confirmation-description = No kinne jo jo { -brand-product-name }-ljepblêden fan jo tablet of telefoan iepenje.
 firefoxview-closed-tabs-title = Koartlyn sluten
-firefoxview-closed-tabs-description = Siden dy't jo sluten hawwe op dit apparaat opnij iepenje.
-firefoxview-closed-tabs-placeholder = <strong>Gjin koartlyn sletten siden</strong><br/>Wês nea bang wer in sletten ljepblêd te ferliezen. Jo kinne it hjir altyd ophelje.
+firefoxview-closed-tabs-description2 = Iepenje siden opnij dy’t jo yn dit finster sluten hawwe.
+firefoxview-closed-tabs-placeholder-header = Gjin koartlyn sluten ljepblêden
+firefoxview-closed-tabs-placeholder-body = Wannear’t jo in ljepblêd yn dit finster slute, kinne jo it hjir ophelje.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = { $tabTitle } slute
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Lêst aktyf
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Kleurstelling wizigje
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Noch neat te sjen</strong><br/>De folgjende kear as jo in side iepenje yn { -brand-product-name } op in oar apparaat, iepenje it hjir as yn magy.
+firefoxview-synced-tabs-placeholder-header = Noch neat te sjen
+firefoxview-synced-tabs-placeholder-body = De folgjende kear dat jo op in oar apparaat in side iepenje yn { -brand-product-name }, pak dy dan hjir as is it magy.
 firefoxview-collapse-button-show =
     .title = List toane
 firefoxview-collapse-button-hide =

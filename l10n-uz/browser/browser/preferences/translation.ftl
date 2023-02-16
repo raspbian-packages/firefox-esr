@@ -6,6 +6,10 @@ translation-window =
     .title = Istisnolar - Tarjima
     .style = width: 36em
 
+translation-window2 =
+    .title = Istisnolar - Tarjima
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

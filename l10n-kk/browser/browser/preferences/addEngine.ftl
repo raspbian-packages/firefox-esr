@@ -6,6 +6,10 @@ add-engine-window =
     .title = Іздеу жүйесін қосу
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Іздеу жүйесін қосу
+    .style = min-width: 32em;
+
 add-engine-button = Таңдауыңызша жүйені қосу
 
 add-engine-name = Іздеу жүйесінің аты

@@ -354,7 +354,7 @@ cloud-file-rename-error = Il habeva un problema al renomination de { $filename }
 # $filename (string) - name of the file that was renamed and caused the error
 cloud-file-rename-error-with-custom-message-title = Renomination de { $filename } sur { $provider } fallite
 # $provider (string) - name of the online storage service that reported the error
-cloud-file-rename-not-supported = { $provider } non supporta le renomination de files jam cargate.
+cloud-file-rename-not-supported = { $provider } non supporta le renomination de files jam incargate.
 # $filename (string) - name of the file that was renamed and caused the error
 cloud-file-attachment-error-title = Error de annexo Filelink
 cloud-file-attachment-error = Impossibile actualisar le annexo Filelink { $filename }, perque su file local ha essite movite o delite.

@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 38em !important
         }
 
+colors-dialog-window2 =
+    .title = Litir
+
 colors-dialog-legend = Texti og Bakgrunnur
 
 text-color-label =

@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Options de l’icône de l’application
     .style = width: 45em;
 
+dock-options-window-dialog2 =
+    .title = Options de l’icône de l’application
+
 dock-options-show-badge =
     .label = Afficher la pastille sur l’icône
     .accesskey = p

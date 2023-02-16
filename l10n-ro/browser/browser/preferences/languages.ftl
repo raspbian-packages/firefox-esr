@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Setări privind limba pe paginile web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Setări privind limba pe paginile web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Setări de limbă { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Setări de limbă { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } va afișa limba implicită pe prima poziție și pe cele alternative, dacă este necesar, în ordinea în care apar.
 

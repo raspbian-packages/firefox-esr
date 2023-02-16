@@ -9,6 +9,10 @@ devmgr =
     .title = 设备管理器
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = 设备管理器
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = 安全模块和设备
 

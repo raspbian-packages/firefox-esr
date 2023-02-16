@@ -241,6 +241,9 @@ newtab-pocket-last-card-title = Už jste všechno přečetli.
 newtab-pocket-last-card-desc = Další články zde najdete později.
 newtab-pocket-last-card-image =
     .alt = Už jste všechno přečetli
+# A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-save = Uložit
+newtab-pocket-saved = Uloženo
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.

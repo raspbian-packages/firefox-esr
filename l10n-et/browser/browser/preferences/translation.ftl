@@ -6,6 +6,10 @@ translation-window =
     .title = Erandid - Tõlkimine
     .style = width: 36em
 
+translation-window2 =
+    .title = Erandid - Tõlkimine
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

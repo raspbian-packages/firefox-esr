@@ -21,6 +21,10 @@ certmgr-edit-ca-cert =
     .title = CA تصدیق نامہ بھروسا سیٹنگز تدوین کریں
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA تصدیق نامہ بھروسا سیٹنگز تدوین کریں
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = بھروسا سیٹنگز تدوین کریں:
 
 certmgr-edit-cert-trust-ssl =
@@ -32,6 +36,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = تصدیق نامہ حذف کریں
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = تصدیق نامہ حذف کریں
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = نام تصدیق نامہ
@@ -169,9 +177,8 @@ delete-email-cert-impact = اگر آپ ای میل تصدیق نامہ حذف ک
 cert-with-serial =
     .value = تصدیق نامہ مع سیریل نمبر: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

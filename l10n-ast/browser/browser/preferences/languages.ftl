@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Axustes de llingua pa los sitios web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Axustes de llingua pa los sitios web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Axustes de llingua de { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Axustes de llingua de { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } va usar la primer llingua predeterminada y, si ye preciso, les alternatives pol orde nel qu'apaecen.
 

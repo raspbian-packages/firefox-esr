@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Arventennoù yezh ar bajenn
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Arventennoù yezh ar bajenn
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Arventennoù yezh { -brand-short-name }7
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Arventennoù yezh { -brand-short-name }7
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } a ziskouezo ar yezh kentañ evel an hini dre ziouer ha skrammañ a raio yezhoù all m’eo dleet en urzh ma vezont diskouezet.
 

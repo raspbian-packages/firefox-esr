@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = { -brand-short-name }-taalinstellingen
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = { -brand-short-name }-taalinstellingen
+
 messenger-languages-description = { -brand-short-name } zal de eerste taal als uw standaardtaal weergeven en zo nodig alternatieve talen weergeven in de volgorde waarin ze verschijnen.
 
 messenger-languages-search = Meer talen zoeken…

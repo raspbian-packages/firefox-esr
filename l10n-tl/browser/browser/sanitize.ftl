@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Mga pagtatakda para sa Pagbura ng Kasaysayan
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Mga pagtatakda para sa Pagbura ng Kasaysayan
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

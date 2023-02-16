@@ -113,7 +113,14 @@ about-processes-frame-name-one = Podokvir: { $url }
 #   $shortUrl (String) The shared prefix for the subframes in the group.
 about-processes-frame-name-many = Podokviri ({ $number }): { $shortUrl }
 
+## Utility process actor names
+
 about-processes-utility-actor-audio-decoder = Zvočni dekoder
+
+about-processes-utility-actor-audio-decoder-generic = Splošni zvočni dekodirnik
+about-processes-utility-actor-audio-decoder-applemedia = Zvočni dekodirnik Apple Media
+about-processes-utility-actor-audio-decoder-wmf = Zvočni dekodirnik Windows Media Framework
+about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
 
 ## Displaying CPU (percentage and total)
 ## Variables:

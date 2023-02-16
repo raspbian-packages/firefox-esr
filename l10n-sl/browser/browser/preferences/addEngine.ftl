@@ -6,6 +6,10 @@ add-engine-window =
     .title = Dodaj iskalnik
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Dodaj iskalnik
+    .style = min-width: 32em;
+
 add-engine-button = Dodaj iskalnik po meri
 
 add-engine-name = Ime iskalnika

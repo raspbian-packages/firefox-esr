@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Tùy chọn biểu tượng ứng dụng
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Tùy chọn biểu tượng ứng dụng
+
 dock-options-show-badge =
     .label = Hiển thị biểu tượng huy hiệu
     .accesskey = b

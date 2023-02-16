@@ -9,6 +9,10 @@ devmgr =
     .title = მოწყობილობის მმართველი
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = მოწყობილობის მმართველი
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = უსაფრთხოების მოდულები და მოწყობილობები
 

@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = { -brand-short-name } Dil Ayarları
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = { -brand-short-name } dil ayarları
+
 messenger-languages-description = { -brand-short-name } ilk dili varsayılan olarak kullanacak, gerekirse alternatif dilleri göründükleri sırayla kullanacaktır.
 
 messenger-languages-search = Daha fazla dil ara…

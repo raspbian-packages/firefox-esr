@@ -36,6 +36,10 @@ vcard-n-suffix = Sufiks
 vcard-n-add-suffix =
     .title = Dodaj sufiks
 
+# Nickname
+
+vcard-nickname = Nadimak
+
 # Email vCard field
 
 vcard-email-header = Adrese e-pošte
@@ -54,6 +58,10 @@ vcard-url-label = Web stranica
 vcard-tel-header = Brojevi telefona
 vcard-tel-add = Dodaj broj telefona
 vcard-tel-label = Broj telefona
+# Or "Mobile"
+vcard-entry-type-cell = Mobitel
+vcard-entry-type-fax = Faks
+vcard-entry-type-pager = Pager
 
 # TZ vCard field
 
@@ -62,9 +70,13 @@ vcard-tz-add = Dodaj vremensku zonu
 
 # IMPP vCard field
 
-vcard-impp-header = Računi razgovora
+vcard-impp2-header = Instant poruke
 vcard-impp-add = Dodaj račun razgovora
 vcard-impp-label = Račun razgovora
+vcard-impp-select = Protokol
+vcard-impp-option-other = Ostalo
+vcard-impp-input-label = URI
+vcard-impp-input-title = URI za instant poruke
 
 # BDAY and ANNIVERSARY vCard field
 
@@ -101,10 +113,26 @@ vcard-note-add = Dodaj bilješku
 vcard-org-header = Svojstva organizacije
 vcard-org-add = Dodaj svojstva organizacije
 vcard-org-title = Naslov
+vcard-org-title-input =
+    .title = Pozicija ili posao
+    .placeholder = Naziv posla
 vcard-org-role = Uloga
+vcard-org-role-input =
+    .title = Funkcija ili uloga u određenoj situaciji
+    .placeholder = Uloga u projektu
 vcard-org-org = Organizacija
+vcard-org-org-input =
+    .title = Naziv organizacije
+    .placeholder = Naziv tvrtke
+vcard-org-org-unit = Odjel
+vcard-org-org-unit-input =
+    .title = Naziv organizacijske jedinice
+    .placeholder = Odjel
 
 # Custom properties
 
 vcard-custom-header = Prilagođene postavke
 vcard-custom-add = Dodaj prilagođene postavke
+vcard-remove-button-title =
+    .title = Ukloni
+vcard-remove-button = Ukloni

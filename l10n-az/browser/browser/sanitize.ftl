@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Tarixçə Təmizləmə Tənzimləmələri
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Tarixçə Təmizləmə Tənzimləmələri
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

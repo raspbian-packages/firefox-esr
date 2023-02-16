@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Chuir thu gu dol seann-tionndadh de { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Chuir thu gu dol seann-tionndadh de { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Cruthaich pròifil ùr
 

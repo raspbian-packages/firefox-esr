@@ -6,6 +6,10 @@ containers-window-new =
     .title = Додај нов контејнер
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Додај нов контејнер
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

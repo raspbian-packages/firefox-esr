@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Uygulama simgesi seçenekleri
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Uygulama simgesi seçenekleri
+
 dock-options-show-badge =
     .label = Rozet simgesini göster
     .accesskey = R

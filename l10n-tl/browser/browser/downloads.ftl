@@ -146,3 +146,12 @@ downloads-list-empty =
 # This string is shown when there are no items in the Downloads Panel.
 downloads-panel-empty =
     .value = Walang mga donwload para sa session na ito.
+
+## Download errors
+
+downloads-error-alert-title = Error sa Pag-download
+# Line breaks in this message are meaningful, and should be maintained.
+downloads-error-generic =
+    Hindi ma-save ang download dahil may unknown error.
+    
+    Pakisubukan ulit.

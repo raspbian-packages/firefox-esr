@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Jwa data
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Jwa data
+    .style = min-width: 35em
+
 clear-site-data-description = Jwano angija ki data me kakube weng ma { -brand-short-name } ogwoko twero kwanyi woko ki ii kakube ki kwanyo jami me kakube mape iwiyamo. Jwano data ma kigwoko pe bi yelo donyo iyie mamegi.
 
 clear-site-data-close-key =

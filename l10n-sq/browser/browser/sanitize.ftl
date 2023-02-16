@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Rregullime për Spastrim Historiku
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Rregullime për Spastrim Historiku
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

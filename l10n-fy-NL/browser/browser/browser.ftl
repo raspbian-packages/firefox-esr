@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name }-priveenavigaasje
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name }-priveenavigaasje
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Help krije
 urlbar-search-tips-confirm = Oké, begrepen
+urlbar-search-tips-confirm-short = Begrepen
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Tip:
+urlbar-result-menu-button =
+    .title = Menu iepenje
+urlbar-result-menu-remove-from-history =
+    .label = Fuortsmite út skiednis
+    .accesskey = F
+urlbar-result-menu-tip-get-help =
+    .label = Help krije
+    .accesskey = H
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Type minder, fyn mear: Sykje nei { $engineName } streekrjocht fan jo adresbalke út.
 urlbar-search-tips-redirect-2 = Begjin yn de adresbalke mei sykjen om suggestjes fan { $engineName } en jo browserskiednis te sjen.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Sykjen is no noch ienfâldiger wurden. Probearje jo sykopdracht hjir yn de adresbalke mear spesifyk te meitsjen. As jo yn stee derfan de URL sjen litte wolle, gean dan nei Sykjen yn de ynstellingen.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Selektearje dizze fluchkeppeling om flugger te finen wat jo nedich hawwe.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Aksjes ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Add-ons besjen
-quickactions-cmd-addons = add-ons, útwreidingen, tema’s
 quickactions-cmd-addons2 = add-ons
 # Opens the bookmarks library window
-quickactions-bookmarks = Blêdwizers besjen
+quickactions-bookmarks2 = Blêdwizers beheare
 quickactions-cmd-bookmarks = blêdwizers
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Skiednis wiskje
 quickactions-cmd-clearhistory = skiednis wiskje
 # Opens about:downloads page
-quickactions-downloads = Downloads iepenje
+quickactions-downloads2 = Downloads besjen
 quickactions-cmd-downloads = downloads
 # Opens about:addons page in the extensions section
 quickactions-extensions = Utwreidingen beheare
 quickactions-cmd-extensions = útwreidingen
 # Opens the devtools web inspector
-quickactions-inspector = Inspector iepenje
+quickactions-inspector2 = Developer Tools iepenje
 quickactions-cmd-inspector = inspector, devtools
 # Opens about:logins
-quickactions-logins = Oanmeldingen werjaan
+quickactions-logins2 = Wachtwurden beheare
 quickactions-cmd-logins = oanmeldingen, wachtwurden
 # Opens about:addons page in the plugins section
 quickactions-plugins = Ynstekkers beheare…
 quickactions-cmd-plugins = ynstekkers
 # Opens the print dialog
-quickactions-print = Ofdrukke
+quickactions-print2 = Side ôfdrukke
 quickactions-cmd-print = ôfdrukke
 # Opens a new private browsing window
-quickactions-private = Priveenavigaasjefinster iepenje
+quickactions-private2 = Priveefinster iepenje
 quickactions-cmd-private = priveenavigaasje
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } opfrisse
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = fernije
 quickactions-restart = { -brand-short-name } opnij starte
 quickactions-cmd-restart = opnij starte
 # Opens the screenshot tool
-quickactions-screenshot2 = In skermôfdruk meitsje
+quickactions-screenshot3 = In skermôfbylding meitsje
 quickactions-cmd-screenshot = skermôfdruk
 # Opens about:preferences
-quickactions-settings = Ynstellingen iepenje
+quickactions-settings2 = Ynstellingen beheare
 quickactions-cmd-settings = ynstellingen, foarkarren, opsjes
 # Opens about:addons page in the themes section
 quickactions-themes = Tema’s beheare
@@ -323,8 +332,11 @@ quickactions-cmd-themes = tema’s
 quickactions-update = { -brand-short-name } bywurkje
 quickactions-cmd-update = bywurkje
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Boarne besjen
+quickactions-viewsource2 = Sideboarne besjen
 quickactions-cmd-viewsource = boarne besjen, boarne
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Mear ynfo oer Flugge aksjes
 
 ## Bookmark Panel
 
@@ -485,6 +497,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofoan
 popup-select-speaker-icon =
     .tooltiptext = Lûdsprekkers
+popup-select-window-or-screen =
+    .label = Finster of skerm:
+    .accesskey = F
 popup-all-windows-shared = Alle sichtbere finsters op jo skerm sille dield wurde.
 popup-screen-sharing-block =
     .label = Blokkearje
@@ -506,6 +521,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Iepenje earst DevTools yn it menu Webûntwikkeler om de fluchtoets F12 te brûken.
+enable-devtools-popup-description2 = Iepenje earst DevTools yn it menu Ekstra om de fluchtoets F12 te brûken.
 
 ## URL Bar
 
@@ -637,6 +653,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Flugge aksjes
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Lêzerwerjefte iepenje
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Lêzerwerjefte slute
 
 ## Full Screen and Pointer Lock UI
 
@@ -914,3 +939,29 @@ private-browsing-indicator-label = Priveenavigaasje
 unified-extensions-button =
     .label = Utwreidingen
     .tooltiptext = Utwreidingen
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Utwreidingen
+    .tooltiptext =
+        Utwreidingen
+        Machtigingen benedige
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } hat opkeard dat dizze side automatysk opnij laden waard.
+refresh-blocked-redirect-label = { -brand-short-name } hat opkeard dat dizze side automatysk trochstjoerd waard nei in oare side.
+refresh-blocked-allow =
+    .label = Tastean
+    .accesskey = T
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } maskearret jo wiere e-mailadres om jo te beskermjen tsjin datalekken en spam.
+firefox-relay-offer-how-we-integrate = As jo trochgean, kinne jo nije { -relay-brand-short-name } e-mailmaskers streekrjocht fan jo { -brand-shorter-name }-wachtwurdenbehearder út oanmeitsje.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Wy stjoere alle e-mailberjochten fan <strong>{ $sitename }</strong> troch nei <strong>{ $useremail }</strong>.

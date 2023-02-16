@@ -6,6 +6,10 @@ containers-window-new =
     .title = Ավելացնել նոր պարունակ
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Ավելացնել նոր պարունակ
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

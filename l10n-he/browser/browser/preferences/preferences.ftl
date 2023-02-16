@@ -592,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = הצגת הצעות חיפוש בתוצאות שורת הכתובת
     .accesskey = ח
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = הצגת מונחי חיפוש במקום כתובת האתר בדף התוצאות של מנוע החיפוש ברירת המחדל
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = ש
     .buttonlabelextra2 = התנתקות…
     .buttonaccesskeyextra2 = ה
+sync-choose-what-to-sync-dialog3 =
+    .title = בחירת הפריטים לסנכרון
+    .style = min-width: 36em;
+    .buttonlabelaccept = שמירת השינויים
+    .buttonaccesskeyaccept = ש
+    .buttonlabelextra2 = התנתקות…
+    .buttonaccesskeyextra2 = ה
 sync-engine-bookmarks =
     .label = סימניות
     .accesskey = ס
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = הצגת התרעות על ססמאות עבור אתרים שנפרצו
     .accesskey = ס
 forms-breach-alerts-learn-more-link = מידע נוסף
+relay-integration =
+    .label = הפעלת { -relay-brand-name } במנהל הססמאות של { -brand-short-name } שלך
+relay-integration-learn-more-link = מידע נוסף
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = מילוי אוטומטי של כניסות וססמאות
@@ -900,6 +915,8 @@ sitedata-option-block-unvisited =
     .label = עוגיות מאתרים שלא ביקרתי בהם
 sitedata-option-block-all-third-party =
     .label = כל העוגיות צד־שלישי (עשוי לשבש פעילות של חלק מהאתרים)
+sitedata-option-block-all-cross-site-cookies =
+    .label = כל העוגיות חוצות האתרים (עשוי לשבש פעילות של חלק מהאתרים)
 sitedata-option-block-all =
     .label = כל העוגיות (ישבש פעילות של אתרים)
 sitedata-clear =
@@ -979,6 +996,7 @@ content-blocking-all-cookies = כל העוגיות
 content-blocking-unvisited-cookies = עוגיות מאתרים שלא ביקרתי בהם
 content-blocking-all-windows-tracking-content = תוכן מעקב בכל החלונות
 content-blocking-all-third-party-cookies = כל העוגיות צד־שלישי
+content-blocking-all-cross-site-cookies = כל העוגיות חוצות האתרים
 content-blocking-cryptominers = כורי מטבעות דיגיטליים
 content-blocking-fingerprinters = רכיבי זהות דיגיטלית
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -986,6 +1004,9 @@ content-blocking-fingerprinters = רכיבי זהות דיגיטלית
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = נסו את תכונת הפרטיות העוצמתית ביותר שלנו אי פעם
     .accesskey = נ
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = הגנת עוגיות מלאה מגבילה עוגיות לאתר שבו אתה נמצא, כך שרכיבי מעקב לא יכולים להשתמש בהן כדי לעקוב אחריך בין אתרים.
 content-blocking-etp-standard-tcp-rollout-learn-more = מידע נוסף

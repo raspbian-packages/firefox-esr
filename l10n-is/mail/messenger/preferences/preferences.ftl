@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Strax við birtingu
     .accesskey = x
 
+view-attachments-inline =
+    .label = Skoða viðhengi innanmáls
+    .accesskey = v
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Þetta þema er ekki gilt eða er ekki tiltækt í augn
 chat-variant-label =
     .value = Tilbrigði:
     .accesskey = T
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

@@ -11,6 +11,15 @@ containers-window-update-settings =
     .title = Dewisiadau Cynwysyddion { $name }
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Ychwanegu Cynhwysydd Newydd
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Dewisiadau Cynwysyddion { $name }
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

@@ -6,6 +6,10 @@ permissions-window =
     .title = अपवादहरू
     .style = width: 45em
 
+permissions-window2 =
+    .title = अपवादहरू
+    .style = min-width: 45em
+
 permissions-close-key =
     .key = w
 
@@ -69,6 +73,10 @@ permissions-exceptions-cookie-window =
     .title = अपवादहरु - कुकिजहरु र साइट डाटा
     .style = { permissions-window.style }
 
+permissions-exceptions-cookie-window2 =
+    .title = अपवादहरु - कुकिजहरु र साइट डाटा
+    .style = { permissions-window2.style }
+
 ## Exceptions - HTTPS-Only Mode
 
 
@@ -77,6 +85,10 @@ permissions-exceptions-cookie-window =
 permissions-exceptions-popup-window =
     .title = अनुमति दिइएको वेबसाइटहरू - पप-अपहरू
     .style = { permissions-window.style }
+
+permissions-exceptions-popup-window2 =
+    .title = अनुमति दिइएको वेबसाइटहरू - पप-अपहरू
+    .style = { permissions-window2.style }
 permissions-exceptions-popup-desc = You can specify which web sites are allowed to open pop-up windows. Type the exact address of the site you want to allow and then click Allow.
 
 ## Exceptions - Saved Logins
@@ -84,6 +96,10 @@ permissions-exceptions-popup-desc = You can specify which web sites are allowed 
 permissions-exceptions-saved-logins-window =
     .title = अपवादहरू - सङ्ग्रहित लग-इनहरू
     .style = { permissions-window.style }
+
+permissions-exceptions-saved-logins-window2 =
+    .title = अपवादहरू - सङ्ग्रहित लग-इनहरू
+    .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = निम्न वेबसाइटहरू को लागि लगइनहरू संग्रह गरिँदैन
 
 ## Exceptions - Add-ons
@@ -91,6 +107,10 @@ permissions-exceptions-saved-logins-desc = निम्न वेबसाइट
 permissions-exceptions-addons-window =
     .title = अनुमति दिइएको वेबसाइटहरू - एड-अन स्थापना
     .style = { permissions-window.style }
+
+permissions-exceptions-addons-window2 =
+    .title = अनुमति दिइएको वेबसाइटहरू - एड-अन स्थापना
+    .style = { permissions-window2.style }
 permissions-exceptions-addons-desc = You can specify which web sites are allowed to install add-ons. Type the exact address of the site you want to allow and then click Allow.
 
 ## Site Permissions - Autoplay
@@ -102,11 +122,19 @@ permissions-site-notification-window =
     .title = सेटिङस् - सूचना अनुमतिहरु
     .style = { permissions-window.style }
 
+permissions-site-notification-window2 =
+    .title = सेटिङस् - सूचना अनुमतिहरु
+    .style = { permissions-window2.style }
+
 ## Site Permissions - Location
 
 permissions-site-location-window =
     .title = सेटिङस् - स्थान अनुमतिहरु
     .style = { permissions-window.style }
+
+permissions-site-location-window2 =
+    .title = सेटिङस् - स्थान अनुमतिहरु
+    .style = { permissions-window2.style }
 permissions-site-location-disable-label =
     .label = तपाईंको स्थान सोध्ने अनुरोधहरूलाई ब्लक गर्नुहोस्
 
@@ -119,8 +147,16 @@ permissions-site-camera-window =
     .title = सेटिङस् - क्यामेरा अनुमतिहरु
     .style = { permissions-window.style }
 
+permissions-site-camera-window2 =
+    .title = सेटिङस् - क्यामेरा अनुमतिहरु
+    .style = { permissions-window2.style }
+
 ## Site Permissions - Microphone
 
 permissions-site-microphone-window =
     .title = सेटिङस् - माइक्रोफोन अनुमतिहरु
     .style = { permissions-window.style }
+
+permissions-site-microphone-window2 =
+    .title = सेटिङस् - माइक्रोफोन अनुमतिहरु
+    .style = { permissions-window2.style }

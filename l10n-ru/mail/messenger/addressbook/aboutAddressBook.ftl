@@ -21,9 +21,20 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = Все адресные книги
 all-address-books = Все адресные книги
+# Variables:
+# $name (String) - The name of the selected book/list.
+# $count (Number) - The number of contacts in the selected book/list.
+about-addressbook-card-count = Всего контактов в { $name }: { $count }
+# Variables:
+# $count (Number) - The number of contacts in all address books.
+about-addressbook-card-count-all = Всего контактов во всех адресных книгах: { $count }
 about-addressbook-books-context-properties =
     .label = Свойства
+about-addressbook-books-context-edit-list =
+    .label = Изменить список
 about-addressbook-books-context-synchronize =
     .label = Синхронизовать
 about-addressbook-books-context-edit =
@@ -75,6 +86,8 @@ about-addressbook-horizontal-layout =
     .label = Переключиться на горизонтальную раскладку
 about-addressbook-vertical-layout =
     .label = Переключиться на вертикальную компоновку
+about-addressbook-table-layout =
+    .label = Макет таблицы
 
 ## Card column headers
 ## Each string is listed here twice, and the values should match.
@@ -85,6 +98,9 @@ about-addressbook-column-label-generatedname =
 about-addressbook-column-header-emailaddresses = Адреса электронной почты
 about-addressbook-column-label-emailaddresses =
     .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-nickname = Псевдоним
+about-addressbook-column-label-nickname =
+    .label = { about-addressbook-column-header-nickname }
 about-addressbook-column-header-phonenumbers = Номера телефонов
 about-addressbook-column-label-phonenumbers =
     .label = { about-addressbook-column-header-phonenumbers }
@@ -173,10 +189,23 @@ about-addressbook-placeholder-no-search-results = Контакты не найд
 
 ## Details
 
+# Variables:
+# $count (Number) - The number of selected items (will never be fewer than two)
+about-addressbook-selection-mixed-header = { $count } выбранных контактов и списков
+# Variables:
+# $count (Number) - The number of selected contacts
+about-addressbook-selection-contacts-header = { $count } выбранных контактов
+# Variables:
+# $count (Number) - The number of selected lists
+about-addressbook-selection-lists-header = { $count } выбранных списков
+about-addressbook-details-edit-photo =
+    .title = Изменить фото контакта
+about-addressbook-new-contact-header = Новый контакт
 about-addressbook-prefer-display-name = Использовать отображаемое имя вместо имени из заголовка сообщения
 about-addressbook-write-action-button = Записать
 about-addressbook-event-action-button = Событие
 about-addressbook-search-action-button = Поиск
+about-addressbook-new-list-action-button = Новый список
 about-addressbook-begin-edit-contact-button = Изменить
 about-addressbook-delete-edit-contact-button = Удалить
 about-addressbook-cancel-edit-contact-button = Отмена
@@ -186,10 +215,13 @@ about-addressbook-details-email-addresses-header = Адреса электрон
 about-addressbook-details-phone-numbers-header = Номера телефонов
 about-addressbook-details-addresses-header = Адреса
 about-addressbook-details-notes-header = Заметки
+about-addressbook-details-impp-header = Мгновенные сообщения
+about-addressbook-details-websites-header = Веб-сайты
 about-addressbook-details-other-info-header = Дополнительная информация
 about-addressbook-entry-type-work = Рабочий
 about-addressbook-entry-type-home = Домашний
 about-addressbook-entry-type-fax = Факс
+# Or "Mobile"
 about-addressbook-entry-type-cell = Мобильный телефон
 about-addressbook-entry-type-pager = Пейджер
 about-addressbook-entry-name-birthday = День рождения
@@ -199,6 +231,10 @@ about-addressbook-entry-name-role = Роль
 about-addressbook-entry-name-organization = Организация
 about-addressbook-entry-name-website = Веб-сайт
 about-addressbook-entry-name-time-zone = Часовой пояс
+about-addressbook-entry-name-custom1 = Прочее 1
+about-addressbook-entry-name-custom2 = Прочее 2
+about-addressbook-entry-name-custom3 = Прочее 3
+about-addressbook-entry-name-custom4 = Прочее 4
 about-addressbook-unsaved-changes-prompt-title = Несохранённые изменения
 about-addressbook-unsaved-changes-prompt = Вы хотите сохранить изменения перед выходом из режима редактирования?
 
@@ -211,3 +247,7 @@ about-addressbook-photo-filepicker-title = Выберите файл изобр�
 about-addressbook-photo-discard = Удалить существующее фото
 about-addressbook-photo-cancel = Отмена
 about-addressbook-photo-save = Сохранить
+
+# Keyboard shortcuts
+
+about-addressbook-new-contact-key = N

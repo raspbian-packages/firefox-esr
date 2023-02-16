@@ -184,12 +184,15 @@ preferences-web-appearance-header = Utseende på nettstedet
 preferences-web-appearance-description = Noen nettsteder tilpasser fargeskjemaet basert på dine innstillinger. Velg hvilket fargeskjema du vil bruke for disse nettstedene.
 preferences-web-appearance-choice-browser = { -brand-short-name }-tema
 preferences-web-appearance-choice-system = Systemtema
+preferences-web-appearance-choice-auto = Automatisk
 preferences-web-appearance-choice-light = Lyst
 preferences-web-appearance-choice-dark = Mørkt
 preferences-web-appearance-choice-tooltip-browser =
     .title = Samsvar temainnstillingene for { -brand-short-name } for nettsidebakgrunn og innhold på nettstedet.
 preferences-web-appearance-choice-tooltip-system =
     .title = Samsvar systeminnstillingene for nettsidebakgrunn og innhold på nettstedet.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Endre nettsidebakgrunn og innhold automatisk basert på systeminnstillingene og { -brand-short-name }-temaet.
 preferences-web-appearance-choice-tooltip-light =
     .title = Bruk et lyst utseende for nettsidebakgrunn og innhold.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Vis søkeforslag i adresselinjens resultater
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Vis søkeord i stedet for adresse på standard søkemotorens resultatside
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = L
     .buttonlabelextra2 = Koble fra
     .buttonaccesskeyextra2 = K
+sync-choose-what-to-sync-dialog3 =
+    .title = Velg hva som skal synkroniseres
+    .style = min-width: 36em;
+    .buttonlabelaccept = Lagre endringer
+    .buttonaccesskeyaccept = L
+    .buttonlabelextra2 = Koble fra
+    .buttonaccesskeyextra2 = K
 sync-engine-bookmarks =
     .label = Bokmerker
     .accesskey = B
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Vis varsler om passord for datalekkasjer på nettsteder
     .accesskey = p
 forms-breach-alerts-learn-more-link = Les mer
+relay-integration =
+    .label = Slå på { -relay-brand-name } i passordbehandleren for { -brand-short-name }
+relay-integration-learn-more-link = Les mer
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Autoutfyll innlogginger og passord
@@ -984,6 +1004,9 @@ content-blocking-fingerprinters = Fingerprinters
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Test ut vår kraftigste personvernfunksjon noensinne
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Total beskyttelse mot infokapsler isolerer infokapsler til nettstedet du er på, så sporere ikke kan bruke dem til å følge deg mellom nettsteder.
 content-blocking-etp-standard-tcp-rollout-learn-more = Les mer

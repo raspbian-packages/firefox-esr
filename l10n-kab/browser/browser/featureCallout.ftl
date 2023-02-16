@@ -18,3 +18,21 @@ callout-firefox-view-recently-closed-subtitle = Akk accaren-ik·im i imedlen ad 
 callout-firefox-view-colorways-title = Rnu ṛucc s yini
 # "Shade" refer to different color options in each colorway.
 callout-firefox-view-colorways-subtitle = Fren tiɣmi ara ak·am-d-yettmeslayen s ufran n yiniten. Yella kan deg { -brand-product-name }.
+callout-firefox-view-colorways-reminder-title = Snirem afran-nneɣ n yiniten aneggaru
+# “Shades” refers to the different color options in each colorways
+callout-firefox-view-colorways-reminder-subtitle = Seɣmu iminig-ik·im s tiɣma-a ifazen, i d-yettwadmen seg tuɣactilelliyin. Deg { -brand-product-name } kan.
+
+## Continuous Onboarding - Firefox View: Tab pick up
+
+# “Boost your browsing” refers to the added benefit the user receives from having
+# access to the same browsing experience when moving from one browser to another.
+# Alternative: ”Improve your browsing experience with tab pickup”
+continuous-onboarding-firefox-view-tab-pickup-title = Snerni tunigin-inek·inem s tririt n waccaren
+continuous-onboarding-firefox-view-tab-pickup-primary-button-label = Bdu
+
+## PDF.js Feature Tour Strings
+
+callout-pdfjs-edit-title = Ẓreg PDFs s ufecku-nneɣ n yiḍrisen amaynut
+callout-pdfjs-edit-button = Uḍfir
+callout-pdfjs-draw-title = Sezmel isemliyensufecku-nneɣ amaynut n usuneɣ
+callout-pdfjs-draw-button = Awi-t!

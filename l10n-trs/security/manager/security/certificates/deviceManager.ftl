@@ -9,6 +9,10 @@ devmgr =
     .title = Sa dugumî nej aga'a
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Sa dugumî nej aga'a
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Sa dugûmi ni nej aga'a
 

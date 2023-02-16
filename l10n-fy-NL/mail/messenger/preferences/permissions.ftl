@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Utsûnderingen
     .style = width: 45em;
 
+permissions-reminder-window2 =
+    .title = Utsûnderingen
+
 permission-preferences-close-window =
     .key = w
 

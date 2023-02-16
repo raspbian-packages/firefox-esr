@@ -6,12 +6,22 @@ create-profile-window =
     .title = Profil Oluşturma Sihirbazı
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Profil Oluşturma Sihirbazı
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Giriş
        *[other] { create-profile-window.title } bölümüne hoş geldiniz
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Giriş
+       *[other] { create-profile-window2.title } bölümüne hoş geldiniz
     }
 
 profile-creation-explanation-1 = { -brand-short-name }, ayarlarınız ve tercihlerinizle ilgili bilgileri kişisel profilinizde saklar.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Bitiş
        *[other] { create-profile-window.title } tamamlanıyor
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Bitiş
+       *[other] { create-profile-window2.title } tamamlanıyor
     }
 
 profile-creation-intro = Birden fazla profil oluşturursanız bunları profil adlarıyla ayırabilirsiniz. Burada sunulan adı veya kendi seçtiğiniz bir adı kullanabilirsiniz.

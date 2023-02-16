@@ -592,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Adres çubuğu sonuçlarında arama önerilerini göster
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Varsayılan arama motoru sonuç sayfasında adres yerine aranan terimleri göster
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = D
     .buttonlabelextra2 = Bağlantıyı kes…
     .buttonaccesskeyextra2 = B
+sync-choose-what-to-sync-dialog3 =
+    .title = Nelerin eşitleneceğini seçin
+    .style = min-width: 36em;
+    .buttonlabelaccept = Değişiklikleri kaydet
+    .buttonaccesskeyaccept = D
+    .buttonlabelextra2 = Bağlantıyı kes…
+    .buttonaccesskeyextra2 = B
 sync-engine-bookmarks =
     .label = Yer imleri
     .accesskey = m
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = Veri ihlaline uğrayan sitelerdeki parolalarla ilgili uyarı göster
     .accesskey = V
 forms-breach-alerts-learn-more-link = Daha fazla bilgi al
+relay-integration =
+    .label = { -brand-short-name } parola yöneticinizde { -relay-brand-name }’i etkinleştirin
+relay-integration-learn-more-link = Daha fazla bilgi al
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Kullanıcı adı ve parolaları otomatik doldur
@@ -903,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Ziyaret etmediğim sitelerden gelen çerezler
 sitedata-option-block-all-third-party =
     .label = Tüm üçüncü taraf çerezleri (Bazı siteler bozulabilir.)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Tüm siteler arası çerezler (Bazı siteler düzgün çalışmayabilir)
 sitedata-option-block-all =
     .label = Tüm çerezler (Bazı siteler bozulabilir.)
 sitedata-clear =
@@ -982,6 +999,7 @@ content-blocking-all-cookies = Tüm çerezler
 content-blocking-unvisited-cookies = Ziyaret etmediğim sitelerden gelen çerezler
 content-blocking-all-windows-tracking-content = Tüm pencerelerde takip amaçlı içerikler
 content-blocking-all-third-party-cookies = Tüm üçüncü taraf çerezlerini engeller
+content-blocking-all-cross-site-cookies = Tüm siteler arası çerezler
 content-blocking-cryptominers = Kripto madencileri
 content-blocking-fingerprinters = Parmak izi toplayıcılar
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -989,6 +1007,9 @@ content-blocking-fingerprinters = Parmak izi toplayıcılar
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Şimdiye kadarki en güçlü gizlilik özelliğimizi ilk deneyen siz olun
     .accesskey = m
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Komple çerez koruması, çerezleri sadece bulunduğunuz sitenin kullanabileceği şekilde sınırlar. Bu sayede çerezler hangi sitelerde gezindiğinizi izlemek için kullanılamaz.
 content-blocking-etp-standard-tcp-rollout-learn-more = Daha fazla bilgi al

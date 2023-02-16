@@ -6,6 +6,10 @@ app-manager-window =
     .title = Падрабязнасці пра праграму
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Падрабязнасці пра праграму
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Выдаліць
     .accesskey = В

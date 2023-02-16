@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = Yub CA tero gen me waraga
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Yub CA tero gen me waraga
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Yub ter me gen:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Kwany Waraga
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Kwany Waraga
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Nying Waraga
@@ -173,9 +181,8 @@ delete-email-cert-impact = Ka i kwanyo waraga me e-mail pa dano, pe dong iromo c
 cert-with-serial =
     .value = Catibiket ma ciral namba ne: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

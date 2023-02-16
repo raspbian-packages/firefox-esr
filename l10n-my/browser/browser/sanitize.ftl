@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = မှတ်တမ်း ရှင်းလင်းရန် အပြင်အဆင်များ
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = မှတ်တမ်း ရှင်းလင်းရန် အပြင်အဆင်များ
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

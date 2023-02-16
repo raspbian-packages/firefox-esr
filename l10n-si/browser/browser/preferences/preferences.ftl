@@ -79,6 +79,9 @@ extension-controlling-password-saving = <img data-l10n-name="icon"/> <strong>{ $
 # This string is shown to notify the user that their notifications permission
 # is being controlled by an extension.
 extension-controlling-web-notifications = <img data-l10n-name="icon"/> <strong>{ $name }</strong> මෙම සැකසුම පාලනය කරයි.
+# This string is shown to notify the user that Container Tabs
+# are being enabled by an extension.
+extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> සඳහා පටිති අඩංගු අවශ්‍යයි.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
 extension-controlling-websites-content-blocking-all-trackers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> මෙම සැකසුම පාලනය කරයි.
@@ -139,16 +142,40 @@ warn-on-open-many-tabs =
     .label = පටිති කිහිපයක් විවෘත කිරීමේදී { -brand-short-name } මන්දගාමී වීමට හැකි බව දන්වන්න
     .accesskey = d
 switch-to-new-tabs =
-    .label = ඔබ නව පටිත්තක සබැඳියක්, රූපයක් හෝ මාධ්‍යයක් විවෘත කළ විට, වහාම එයට මාරු වන්න
+    .label = නව පටිත්තක සබැඳියක්, රූපයක් හෝ මාධ්‍යයක් විවෘත කළ විට, වහාම එයට මාරු වන්න
     .accesskey = h
 show-tabs-in-taskbar =
     .label = පටිති පෙරදසුන් වින්ඩෝස් කාර්ය තීරුවේ පෙන්වන්න
     .accesskey = k
+browser-containers-enabled =
+    .label = පටිති අඩංගුව සබල කරන්න
+    .accesskey = n
 browser-containers-learn-more = තව දැනගන්න
 browser-containers-settings =
     .label = සැකසුම්…
     .accesskey = i
+containers-disable-alert-title = සියළු පටිති අඩංගු වසන්නද?
+containers-disable-alert-desc =
+    { $tabCount ->
+        [one] ඔබ දැන් පටිති අඩංගු අබල කළහොත්, පටිති අඩංගු { $tabCount } ක් වසා දමනු ඇත. ඔබට පටිති අඩංගු අබල කිරීමට වුවමනා ද?
+       *[other] ඔබ දැන් පටිති අඩංගු අබල කළහොත්, පටිති අඩංගු { $tabCount } ක් වසා දමනු ඇත. ඔබට පටිති අඩංගු අබල කිරීමට වුවමනා ද?
+    }
+containers-disable-alert-ok-button =
+    { $tabCount ->
+        [one] පටිති අඩංගු { $tabCount } ක් වසන්න
+       *[other] පටිති අඩංගු { $tabCount } ක් වසන්න
+    }
 containers-disable-alert-cancel-button = සබලව තබන්න
+containers-remove-alert-title = මෙම අඩංගුව ඉවත් කරන්නද?
+# Variables:
+#   $count (Number) - Number of tabs that will be closed.
+containers-remove-alert-msg =
+    { $count ->
+        [one] ඔබ දැන් මෙම අඩංගුව ඉවත් කළහොත්, පටිති අඩංගු { $count } ක් වසා දමනු ඇත. ඔබට අඩංගුව ඉවත් කිරීමට වුවමනා ද?
+       *[other] ඔබ දැන් මෙම අඩංගුව ඉවත් කළහොත්, පටිති අඩංගු { $count } ක් වසා දමනු ඇත. ඔබට අඩංගුව ඉවත් කිරීමට වුවමනා ද?
+    }
+containers-remove-ok-button = මෙම අඩංගුව ඉවත් කරන්න
+containers-remove-cancel-button = මෙම අඩංගුව ඉවත් නොකරන්න
 
 ## General Section - Language & Appearance
 
@@ -157,6 +184,7 @@ preferences-web-appearance-header = අඩවියේ පෙනුම
 preferences-web-appearance-description = ඔබගේ අභිප්‍රේත මත පදනම්ව ඇතැම් වියමන අඩවිවල වර්ණ රටාව සැකසෙයි. එම අඩවි සඳහා භාවිතා කිරීමට කැමති වර්ණ රටාව තෝරන්න.
 preferences-web-appearance-choice-browser = { -brand-short-name } තේමාව
 preferences-web-appearance-choice-system = පද්ධතියේ තේමාව
+preferences-web-appearance-choice-auto = ස්වයංක්‍රීය
 preferences-web-appearance-choice-light = දීප්ත
 preferences-web-appearance-choice-dark = අඳුරු
 preferences-web-appearance-choice-tooltip-browser =
@@ -171,6 +199,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -204,7 +234,7 @@ preferences-zoom-text-only =
     .label = පෙළ පමණක් විශාලනය
     .accesskey = t
 language-header = භාෂාව
-choose-language-description = පිටු පෙන්වීම සඳහා ඔබ කැමති භාෂාව තෝරන්න
+choose-language-description = පිටු පෙන්වීම සඳහා ඔබ කැමති භාෂාවක් තෝරන්න
 choose-button =
     .label = තෝරන්න…
     .accesskey = o
@@ -226,9 +256,9 @@ translate-exceptions =
 # Variables:
 #    $localeName (string) - Localized name of the locale to be used.
 use-system-locale =
-    .label = දින, වේලා, අංක, සහ මිනුම් ආකෘතිකරණයට “{ $localeName }” සඳහා ඔබගේ මෙහෙයුම් පද්ධතියේ සැකසුම් භාවිතා කරන්න.
+    .label = “{ $localeName }” සඳහා මෙ. පද්. සැකසුම් යොදා ගන්න. (උදා. දින, වේලා, අංක, හා මිනුම්)
 check-user-spelling =
-    .label = ඔබ ලියන විට අකුරු වින්‍යාසය බලන්න
+    .label = ඔබ ලියන විට අකුරු වින්‍යාසය පරීක්‍ෂා කරන්න
     .accesskey = t
 
 ## General Section - Files and Applications
@@ -363,6 +393,7 @@ update-application-suppress-prompts =
     .label = යාවත්කාල දැනුම්දීම් ප්‍රේරක අඩුවෙන් පෙන්වන්න
     .accesskey = n
 update-setting-write-failure-title2 = යාවත්කාල සැකසුම් සුරැකීමේ දෝෂයකි
+update-in-progress-title = යාවත්කාලය සිදු වෙමින්
 update-in-progress-ok-button = &ඉවතලන්න
 # Continue is the cancel button so pressing escape or using a platform standard
 # method of closing the UI will not discard the update.
@@ -447,7 +478,7 @@ home-restore-defaults =
 # "Firefox" should be treated as a brand and kept in English,
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
-    .label = ෆයර්ෆෝක්ස් මුල්පිටුව (පෙරනිමි)
+    .label = ෆයර්ෆොක්ස් මුල්පිටුව (පෙරනිමි)
 home-mode-choice-default-fx =
     .label = { -firefox-home-brand-name } (පෙරනිමි)
 home-mode-choice-custom =
@@ -473,8 +504,8 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = ෆයර්ෆෝක්ස් මුල්පිටුවේ අන්තර්ගතය
-home-prefs-content-description = ෆයර්ෆෝක්ස් මුල් තිරයට වුවමනා අන්තර්ගත තෝරන්න.
+home-prefs-content-header = ෆයර්ෆොක්ස් මුල්පිටුවේ අන්තර්ගතය
+home-prefs-content-description = ෆයර්ෆොක්ස් මුල් තිරයට වුවමනා අන්තර්ගත තෝරන්න.
 home-prefs-content-header2 = { -firefox-home-brand-name } අන්තර්ගතය
 home-prefs-content-description2 = ඔබගේ { -firefox-home-brand-name } තිරයට අවශ්‍ය අන්තර්ගතය තෝරන්න.
 home-prefs-search-header =
@@ -583,6 +614,13 @@ search-keyword-warning-bookmark = ඔබ තෝරාගත් මූල පද�
 
 containers-back-button2 =
     .aria-label = සැකසුම් වෙත ආපසු
+containers-header = පටිති අඩංගු
+containers-add-button =
+    .label = නව අඩංගුවක් යොදන්න
+    .accesskey = A
+containers-new-tab-check =
+    .label = එක් එක් නව පටිත්තක් සඳහා අඩංගුවක් තෝරන්න
+    .accesskey = S
 containers-settings-button =
     .label = සැකසුම්
 containers-remove-button =
@@ -604,7 +642,7 @@ sync-signedout-account-signin3 =
 #
 # They can be moved within the sentence as needed to adapt
 # to your language, but should not be changed or translated.
-sync-mobile-promo = ඔබගේ ජංගම උපාංගය සමඟ සමමුහූර්තයට <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">ඇන්ඩ්‍රොයිඩ්</a> හෝ <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">අයිඕඑස්</a> සඳහා ෆයර්ෆෝක්ස් බාගන්න.
+sync-mobile-promo = ඔබගේ ජංගම උපාංගය සමඟ සමමුහූර්තයට <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">ඇන්ඩ්‍රොයිඩ්</a> හෝ <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">අයිඕඑස්</a> සඳහා ෆයර්ෆොක්ස් බාගන්න.
 
 ## Firefox Account - Signed in
 
@@ -664,6 +702,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = විසන්ධි…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = සමමුහූර්ත කළ යුතු දෑ තෝරන්න
+    .style = min-width: 36em;
+    .buttonlabelaccept = වෙනස්කම් සුරකින්න
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = විසන්ධි…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = පොත්යොමු
     .accesskey = m
@@ -690,6 +735,10 @@ sync-engine-addons =
     .label = එක්කහු
     .tooltiptext = ෆයර්ෆොක්ස් වැඩතලය සඳහා එක්කහු හා තේමා
     .accesskey = A
+sync-engine-settings =
+    .label = සැකසුම්
+    .tooltiptext = ඔබ වෙනස් කළ සාමාන්‍ය, රහස්‍යතා, හා ආරක්‍ෂණ සැකසුම්
+    .accesskey = s
 
 ## The device name controls.
 
@@ -862,7 +911,7 @@ addressbar-locbar-bookmarks-option =
     .label = පොත්යොමු
     .accesskey = k
 addressbar-locbar-openpage-option =
-    .label = පටිති අරින්න
+    .label = විවෘත පටිති
     .accesskey = O
 # Shortcuts refers to the shortcut tiles on the new tab page, previously known as top sites. Translation should be consistent.
 addressbar-locbar-shortcuts-option =
@@ -918,12 +967,15 @@ content-blocking-unvisited-cookies = නොගිය අඩවිවල දත�
 content-blocking-all-windows-tracking-content = සියළු කවුළුවල ලුහුබැඳීමේ අන්තර්ගත
 content-blocking-all-third-party-cookies = සියළු තෙවන පාර්ශ්ව දත්තකඩ
 content-blocking-fingerprinters = ඇඟිලි සටහන්
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
-content-blocking-etp-standard-tcp-rollout-description = පූර්ණ දත්තකඩ ආරක්‍ෂණය ඔබ සිටින අඩවියෙහි දත්තකඩ හුදකලා කරන බැවින් ලුහුබඳින්නන්ට අඩවි අතරින් ඔබව හඹා යාමට ඒවා භාවිතා කළ නොහැකිය.
+content-blocking-etp-standard-tcp-rollout-description = පූර්ණ දත්තකඩ රැකවරණය ඔබ සිටින අඩවියෙහි දත්තකඩ හුදකලා කරන බැවින් ලුහුබඳින්නන්ට අඩවි අතරින් ඔබව හඹා යාමට ඒවා භාවිතා කළ නොහැකිය.
 content-blocking-etp-standard-tcp-rollout-learn-more = තව දැනගන්න
-content-blocking-etp-standard-tcp-title = අපගේ බලවත්ම රහස්‍යතා විශේෂාංගය වන පූර්ණ දත්තකඩ රැකවරණය ඇතුළත්ය
+content-blocking-etp-standard-tcp-title = බලවත්ම රහස්‍යතා විශේෂාංගය වන පූර්ණ දත්තකඩ රැකවරණය ඇතුළත්ය
 content-blocking-warning-title = අවධානය!
-content-blocking-and-isolating-etp-warning-description-2 = මෙම සැකසුම ඇතැම් අඩවිවල අන්තර්ගත දර්ශනය නොවීමට හෝ හරිහැටි වැඩ නොකිරීමට හේතු විය හැකිය. එසේ පෙනේ නම්, ඔබට එම අඩවියේ සියළුම අන්තර්ගත පූරණය කිරීම සඳහා ලුහුබැඳීමේ රැකවරණය අක්‍රිය කිරීමට සිදු වනු ඇත.
+content-blocking-and-isolating-etp-warning-description-2 = මෙම සැකසුම ඇතැම් අඩවිවල අන්තර්ගත දර්ශනය නොවීමට හෝ හරිහැටි වැඩ නොකිරීමට හේතු විය හැකිය. එසේ පෙනෙයි නම්, එම අඩවියේ සියළුම අන්තර්ගත පූරණය කිරීම සඳහා ලුහුබැඳීමේ රැකවරණය අක්‍රිය කිරීමට සිදු වනු ඇත.
 content-blocking-warning-learn-how = කෙසේදැයි දැනගන්න
 content-blocking-reload-description = මෙම වෙනස්කම් යෙදීමට ඔබගේ පටිති යළි පූරණය කළ යුතුය.
 content-blocking-reload-tabs-button =
@@ -1008,6 +1060,7 @@ permissions-addon-exceptions =
 collection-header = { -brand-short-name } දත්ත රැස් කිරීම හා භාවිතය
 collection-description = අපි බොහෝ විට ඔබට තෝරාගැනීම් ලබා දීමට වෙහෙසෙන අතර සැමට { -brand-short-name } වැඩිදියුණු කිරීමට හා සැපයීමට අවශ්‍ය දෑ පමණක් රැස් කරන්නෙමු. පෞද්ගලික තොරතුරු ලැබීමට පෙර ද සැමවිට අවසර ඉල්ලා සිටින්නෙමු.
 collection-privacy-notice = පෞද්ගලිකත්‍ව දැන්වීම
+collection-health-report-telemetry-disabled = ඔබ තවදුරටත් { -vendor-short-name } සඳහා තාක්‍ෂණික සහ අන්තර්ක්‍රියා දත්ත ග්‍රහණය කර ගැනීමට ඉඩ නොදේ. සියළුම අතීත දත්ත දවස් 30 ක් ඇතුළත මකා දැමෙනු ඇත.
 collection-health-report-telemetry-disabled-link = තව දැනගන්න
 collection-health-report =
     .label = තාක්‍ෂණික හා අන්තර්ක්‍රියා දත්ත { -vendor-short-name } වෙත යැවීමට ඉඩ දෙන්න
@@ -1024,6 +1077,7 @@ addon-recommendations-link = තව දැනගන්න
 collection-health-report-disabled = මෙම තැනීමේ වින්‍යාසය සඳහා දත්ත වාර්තාකරණය අබල කර ඇත
 collection-backlogged-crash-reports-with-link = ඔබට අතපසු වූ බිඳ වැටීම් වාර්තා යැවීමට { -brand-short-name } සඳහා ඉඩ දෙන්න <a data-l10n-name="crash-reports-link">තව දැනගන්න</a>
     .accesskey = c
+privacy-segmentation-section-header = ඔබගේ පිරික්සීම ඉහළ නංවන නව විශේෂාංග
 privacy-segmentation-radio-off =
     .label = { -brand-product-name } නිර්දේශ භාවිතා කරන්න
 privacy-segmentation-radio-on =

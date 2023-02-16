@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = למנוע מהמשתמש לעקוף אזהרות
 policy-DisableSetAsDesktopBackground = להשבית את הפקודה לקביעה כרקע שולחן העבודה בתפריט עבור תמונות.
 policy-DisableSystemAddonUpdate = למנוע מהדפדפן להתקין ולעדכן תוספות מערכת.
 policy-DisableTelemetry = כיבוי Telemetry.
+policy-DisableThirdPartyModuleBlocking = למנוע מהמשתמש לחסום מודולים של צד שלישי המוזרקים לתהליך של { -brand-short-name }.
 policy-DisplayBookmarksToolbar = הצגת סרגל הכלים של הסימניות כברירת מחדל.
 policy-DisplayMenuBar = הצגת סרגל התפריטים כברירת מחדל.
 policy-DNSOverHTTPS = הגדרת DNS על גבי HTTPS.

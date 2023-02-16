@@ -52,9 +52,9 @@ newtab-topsites-url-label = URL
 newtab-topsites-url-input =
     .placeholder = Увядзіце або ўстаўце URL
 newtab-topsites-url-validation = Патрабуецца сапраўдны URL
-newtab-topsites-image-url-label = URL уласнага відарыса
-newtab-topsites-use-image-link = Выкарыстоўваць уласны відарыс…
-newtab-topsites-image-validation = Не ўдалося атрымаць відарыс. Паспрабуйце іншы URL.
+newtab-topsites-image-url-label = Уласны URL выявы
+newtab-topsites-use-image-link = Выкарыстоўваць уласную выяву…
+newtab-topsites-image-validation = Не ўдалося атрымаць выяву. Паспрабуйце іншы URL.
 
 ## Top Sites - General form dialog buttons. These are verbs/actions.
 
@@ -201,7 +201,7 @@ newtab-section-header-pocket = Рэкамендавана { $provider }
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
-newtab-empty-section-highlights = Пачніце агляданне, і мы пакажам вам тут некаторыя з найлепшых артыкулаў, відэаролікаў і іншых старонак, якія вы нядаўна наведалі або дадалі ў закладкі.
+newtab-empty-section-highlights = Пачніце агляданне, і мы пакажам вам тут некаторыя з найлепшых артыкулаў, відэаролікаў і іншых старонак, якія вы нядаўна наведалі або зрабілі закладкі.
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
 #  $provider (String): Name of the content provider for this section, e.g "Pocket".

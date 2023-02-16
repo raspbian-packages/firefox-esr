@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Synchroniseren
+appmenu-signin-panel =
+    .label = Aanmelden om te synchroniseren
+    .accesskey = m
+appmenu-sync-sync =
+    .value = Accountsynchronisatie
+    .accesskey = A
+appmenu-sync-manage =
+    .value = Account beheren
+    .accesskey = b
+appmenu-sync-account =
+    .value = voorbeeld@example.com
+appmenu-sync-now =
+    .label = Nu synchroniseren
+    .accesskey = N
+appmenu-sync-settings =
+    .label = Synchronisatie-instellingen
+    .accesskey = S
+appmenu-sync-sign-out =
+    .label = Afmelden…
+    .accesskey = A
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -66,10 +91,35 @@ appmenu-create-contact =
     .label = Contact
     .accesskey = C
 
+## Open
+
+appmenu-open-file-panel =
+    .label = Openen vanuit bestand
+    .accesskey = O
+appmenu-open-file-panel-title =
+    .title = Openen vanuit bestand
+appmenu-open-message =
+    .label = Bericht…
+    .accesskey = B
+appmenu-open-calendar =
+    .label = Agenda…
+    .accesskey = A
+
 ## View / Layout
 
+appmenu-view-panel-title =
+    .title = Beeld
+appmenu-view-panel =
+    .label = Beeld
+    .accesskey = e
 appmenu-font-size-value = Lettergrootte
 appmenu-mail-uidensity-value = Dichtheid
+appmenu-uidensity-compact =
+    .tooltiptext = Compact
+appmenu-uidensity-default =
+    .tooltiptext = Standaard
+appmenu-uidensity-relaxed =
+    .tooltiptext = Ontspannen
 appmenuitem-font-size-enlarge =
     .tooltiptext = Lettergrootte vergroten
 appmenuitem-font-size-reduce =
@@ -143,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = Over { -brand-short-name }
     .accesskey = O
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = { -brand-shorter-name }-update wordt gedownload
+appmenuitem-banner-update-available =
+    .label = Update beschikbaar – nu downloaden
+appmenuitem-banner-update-manual =
+    .label = Update beschikbaar – nu downloaden
+appmenuitem-banner-update-unsupported =
+    .label = Kan niet bijwerken – systeem niet compatibel
+appmenuitem-banner-update-restart =
+    .label = Update beschikbaar – nu herstarten

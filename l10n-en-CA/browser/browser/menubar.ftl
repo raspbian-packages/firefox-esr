@@ -38,11 +38,9 @@ menu-quit =
             [windows] x
            *[other] Q
         }
-
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Quit { -brand-shorter-name }
-
 menu-about =
     .label = About { -brand-shorter-name }
     .accesskey = A
@@ -182,6 +180,17 @@ menu-view-full-screen =
     .label = Full Screen
     .accesskey = F
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Enter Reader View
+    .accesskey = R
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Close Reader View
+    .accesskey = R
+
 ##
 
 menu-view-show-all-tabs =
@@ -224,6 +233,10 @@ menu-bookmark-current-tab =
     .label = Bookmark Current Tab
 menu-bookmark-edit =
     .label = Edit This Bookmark
+menu-bookmark-tab =
+    .label = Bookmark Current Tab…
+menu-edit-bookmark =
+    .label = Edit This Bookmark…
 menu-bookmarks-all-tabs =
     .label = Bookmark All Tabs…
 menu-bookmarks-toolbar =

@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Veebilehtede keele-eelistused
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Veebilehtede keele-eelistused
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name }i keele-eelistused
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name }i keele-eelistused
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } kuvab esimest keelt vaikeväärtusena ja teisi keeli vastavalt vajadusele nende esinemise järjekorras.
 

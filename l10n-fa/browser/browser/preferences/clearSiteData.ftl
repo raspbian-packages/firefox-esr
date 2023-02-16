@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = پاک کردن داده‌ها
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = پاک کردن داده‌ها
+    .style = min-width: 35em
+
 clear-site-data-description = پاک کردن تمام کوکی‌ها و داده‌های سایت‌ها توسط { -brand-short-name } ممکن از شما را از برخی سایت‌ها خارج و داده‌های برون‌خط شما را حذف کند. حذف داده‌های نهان، تاثیری بر ورودهای شما در سایت‌های مختلف ندارد.
 
 clear-site-data-close-key =

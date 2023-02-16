@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Olet käynnistänyt vanhan { -brand-product-name }-version
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Olet käynnistänyt vanhan { -brand-product-name }-version
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Luo uusi profiili
 

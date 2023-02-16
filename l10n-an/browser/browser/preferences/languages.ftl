@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Achustes d'idioma d'as pachinas web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Achustes d'idioma d'as pachinas web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Achustes d'idioma
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Achustes d'idioma
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } fará servir lo primer idioma como valor per defecto y amostrar los idiomas alternativos si ye necesario, en l'orden en que i amaneixen.
 

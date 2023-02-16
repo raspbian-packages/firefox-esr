@@ -6,6 +6,10 @@ blocklist-window =
     .title = Блоктізімдер
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Блоктізімдер
+    .style = min-width: 55em
+
 blocklist-description = { -brand-short-name } онлайн трекерлерді блоктау үшін қолданатын тізімді таңдаңыз. Тізімдерді <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a> қызметі ұсынған.
 blocklist-close-key =
     .key = w

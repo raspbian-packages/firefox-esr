@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Ko’ag̃aite
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Tendayke mbojuehepyre
 firefoxview-tabpickup-description = Embojuruja kuatiarogue ambue mba’e’oka guive.
-firefoxview-tabpickup-recenttabs-description = Tendayke rysýi ipyahuvéva ohóta ápe
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% henyhẽma
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Eha’ãjey
 firefoxview-tabpickup-sync-disconnected-header = Emyandy ñembojuehe eku’ejey hag̃ua
 firefoxview-tabpickup-sync-disconnected-description = Eru hag̃ua tendayke, oñemoneĩva’erã ñembojuehe { -brand-short-name }-pe.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Emyandy ñembojuehe mbohekohápe
+firefoxview-tabpickup-password-locked-header = Ehai ne ñe’ẽñemi ha’etéva ehecha hag̃ua tendayke
+firefoxview-tabpickup-password-locked-description = Eguerujey hag̃ua tendayke, ehaiva’erã ñe’ẽñemi ha’etéva { -brand-short-name }-pe.
+firefoxview-tabpickup-password-locked-link = Kuaave
+firefoxview-tabpickup-password-locked-primarybutton = Ehai Ñe’ẽñemi Ha’etéva
+firefoxview-tabpickup-signed-out-header = Eñepyrũ tembiapo eikejey hag̃ua
+firefoxview-tabpickup-signed-out-description = Eikejey ha ereko hag̃ua ne rendayke, emoñepyrũ tembiapo nde { -fxaccount-brand-name }-pe.
+firefoxview-tabpickup-signed-out-primarybutton = Eñepyrũ tembiapo
 firefoxview-tabpickup-syncing = Eha’arõ tendayke toñembojuehe. Ndahi’aremo’ãi.
 firefoxview-mobile-promo-header = Ehecha tendayke ne pumbyry térã tabléta rupive
 firefoxview-mobile-promo-description = Ehecha hag̃ua tendayke eipuramovéva, emoñepyrũ tembiapo { -brand-product-name } iOS térã Android rupive.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Ereko { -brand-product-name } ne pumbyr
 firefoxview-mobile-confirmation-header = 🎉 ¡Eguerahakuaáma!
 firefoxview-mobile-confirmation-description = Ko’ág̃a ikatu ehecha { -brand-product-name } rendayke nde tabléta térã pumbyry guive.
 firefoxview-closed-tabs-title = Oñembotyramovéva
-firefoxview-closed-tabs-description = Embojurujajey kuatiarogue ko mba’e’okápe.
-firefoxview-closed-tabs-placeholder = <strong>Ndaipóri kuatiarogue oñembotyramóva</strong><br/>Ani ekyhyje tendayke oñembotyjeývagui. Eguerukuaajey ko’ápe.
+firefoxview-closed-tabs-description2 = Embojurujajey kuatiarogue embotýva ko ovetãme.
+firefoxview-closed-tabs-placeholder-header = Ndaipóri tendayke oñembotyramóva
+firefoxview-closed-tabs-placeholder-body = Embotývo peteĩ tendayke ko ovetãme, ehekakuaa ko’a guive.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Emboyke { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Hendyramovéva
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Emoambue sa’y ojueheguáva
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Ndaipóri gueteri jehecharã</strong><br/>Embojurujajeývo kuatiarogue { -brand-product-name } ndive ambue mba’e’okápe, ehecháta ko’ápe mba’eve’ỹre.
+firefoxview-synced-tabs-placeholder-header = Ndaipóri jehecharã
+firefoxview-synced-tabs-placeholder-body = Embojurujajeývo kuatiarogue { -brand-product-name }-pe ambue mba’e’okápe, osẽta ko’ápe ha’eñoreínte.
 firefoxview-collapse-button-show =
     .title = Ehechauka tysýi
 firefoxview-collapse-button-hide =

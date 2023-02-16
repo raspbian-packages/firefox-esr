@@ -6,6 +6,10 @@ add-engine-window =
     .title = افزودن موتور جست‌وجو
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = افزودن موتور جست‌وجو
+    .style = min-width: 32em;
+
 add-engine-button = اضافه کردن موتور سفارشی
 
 add-engine-name = نام موتور جست‌وجو

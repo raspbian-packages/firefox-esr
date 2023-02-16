@@ -9,6 +9,10 @@ devmgr =
     .title = Administrador de Dispositivo
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Administrador de Dispositivo
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Este certificado personal no puede ser instalado porque no posees la clave privada correspondiente que fue creada cuando el certificado fue solicitado.
 

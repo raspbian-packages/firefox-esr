@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Gehitu edukiontzi berria
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = { $name } edukiontziaren ezarpenak
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Gehitu edukiontzi berria
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = { $name } edukiontziaren ezarpenak
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

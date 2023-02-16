@@ -118,6 +118,38 @@ main-context-menu-bookmark-change-with-shortcut =
     .aria-label = Modificar aqueste marcapagina
     .accesskey = m
     .tooltiptext = Modificar aqueste marcapagina ({ $shortcut })
+main-context-menu-bookmark-page =
+    .aria-label = Apondre la pagina als marcapaginas…
+    .accesskey = m
+    .tooltiptext = Apondre la pagina als marcapaginas
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-edit-bookmark-mac,
+# so should probably have the same access key if possible.
+main-context-menu-bookmark-page-mac =
+    .label = Apondre la pagina als marcapaginas…
+    .accesskey = m
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-bookmark-page-mac,
+# so should probably have the same access key if possible.
+main-context-menu-edit-bookmark-mac =
+    .label = Modificar lo marcapagina…
+    .accesskey = o
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
+main-context-menu-bookmark-page-with-shortcut =
+    .aria-label = Apondre la pagina als marcapaginas…
+    .accesskey = m
+    .tooltiptext = Apondre la pagina als marcapaginas ({ $shortcut })
+main-context-menu-edit-bookmark =
+    .aria-label = Modificar lo marcapagina…
+    .accesskey = o
+    .tooltiptext = Modificar lo marcapagina
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
+main-context-menu-edit-bookmark-with-shortcut =
+    .aria-label = Modificar lo marcapagina…
+    .accesskey = M
+    .tooltiptext = Modificar lo marcapagina ({ $shortcut })
 main-context-menu-open-link =
     .label = Dobrir lo ligam
     .accesskey = o
@@ -136,6 +168,9 @@ main-context-menu-open-link-new-private-window =
 main-context-menu-bookmark-link =
     .label = Marcar lo ligam
     .accesskey = M
+main-context-menu-bookmark-link-2 =
+    .label = Marcar lo ligam…
+    .accesskey = l
 main-context-menu-save-link =
     .label = Enregistrar la cibla del ligam jos…
     .accesskey = E
@@ -208,10 +243,10 @@ main-context-menu-media-hide-controls =
 ##
 
 main-context-menu-media-video-fullscreen =
-    .label = Ecran complet
+    .label = Ecran complèt
     .accesskey = c
 main-context-menu-media-video-leave-fullscreen =
-    .label = Sortir del mòde ecran complet
+    .label = Sortir del mòde ecran complèt
     .accesskey = c
 # This is used when right-clicking on a video in the
 # content area when the Picture-in-Picture feature is enabled.
@@ -248,6 +283,9 @@ main-context-menu-image-email =
 main-context-menu-image-set-image-as-background =
     .label = Definir l'imatge coma fons d'ecran…
     .accesskey = D
+main-context-menu-image-copy-text =
+    .label = Copiar lo tèxt de l’imatge
+    .accesskey = x
 main-context-menu-image-info =
     .label = Informacions sus l'imatge
     .accesskey = I
@@ -324,6 +362,9 @@ main-context-menu-frame-reload =
     .accesskey = c
 main-context-menu-frame-bookmark =
     .label = Marcapagina sus aqueste quadre
+    .accesskey = M
+main-context-menu-frame-add-bookmark =
+    .label = Marcar aqueste quadre…
     .accesskey = M
 main-context-menu-frame-save-as =
     .label = Enregistrar lo quadre jos…

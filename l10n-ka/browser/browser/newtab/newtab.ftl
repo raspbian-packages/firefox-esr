@@ -263,6 +263,6 @@ newtab-custom-pocket-subtitle = გამორჩეული მასალ�
 newtab-custom-pocket-sponsored = დაფინანსებული ამბები
 newtab-custom-pocket-show-recent-saves = ბოლოს შენახულის ჩვენება
 newtab-custom-recent-title = ბოლო მოქმედებები
-newtab-custom-recent-subtitle = შერჩეული ბოლოს ნანახი საიტებისა და მასალებიდან
+newtab-custom-recent-subtitle = ბოლოს ნანახი საიტებისა და მასალებიდან შერჩეული
 newtab-custom-close-button = დახურვა
 newtab-custom-settings = დამატებითი პარამეტრების მართვა

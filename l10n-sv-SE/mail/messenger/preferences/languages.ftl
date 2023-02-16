@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = { -brand-short-name } Språkinställningar
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = { -brand-short-name } Språkinställningar
+
 messenger-languages-description = { -brand-short-name } visar första språket som standard och kommer att visa alternativa språk om det behövs i den ordning de tillkommer.
 
 messenger-languages-search = Sök efter fler språk…

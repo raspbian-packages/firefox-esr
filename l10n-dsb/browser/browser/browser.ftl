@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Priwatny modus { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Priwatny modus { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,17 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Pomoc wobstaraś
 urlbar-search-tips-confirm = W pórěźe, som zrozměł
+urlbar-search-tips-confirm-short = Som zrozměł
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Tip:
+urlbar-result-menu-button =
+    .title = Meni wócyniś
+urlbar-result-menu-remove-from-history =
+    .label = Z historije wótwónoźeś
+    .accesskey = h
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -267,42 +275,38 @@ search-one-offs-actions =
     .tooltiptext = Akcije ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Dodanki pokazaś
-quickactions-cmd-addons = dodanki, rozšyrjenja, drastwy
 quickactions-cmd-addons2 = dodanki
 # Opens the bookmarks library window
-quickactions-bookmarks = Cytańske znamjenja pokazaś
+quickactions-bookmarks2 = Cytańske znamjenja zastojaś
 quickactions-cmd-bookmarks = cytańske znamjenja
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Historiju wuprozniś
 quickactions-cmd-clearhistory = historiju wuprozniś
 # Opens about:downloads page
-quickactions-downloads = Ześěgnjenja wócyniś
+quickactions-downloads2 = Ześěgnjenja pokazaś
 quickactions-cmd-downloads = ześěgnjenja
 # Opens about:addons page in the extensions section
 quickactions-extensions = Rozšyrjenja zastojaś
 quickactions-cmd-extensions = rozšyrjenja
 # Opens the devtools web inspector
-quickactions-inspector = Inspektor wócyniś
+quickactions-inspector2 = Wuwijaŕske rědy wócyniś
 quickactions-cmd-inspector = inspektor, wuwijaŕske rědy
 # Opens about:logins
-quickactions-logins = Pśizjawjenja pokazaś
+quickactions-logins2 = Gronidła zastojaś
 quickactions-cmd-logins = pśizjawjenja, gronidła
 # Opens about:addons page in the plugins section
 quickactions-plugins = Tykace zastojaś
 quickactions-cmd-plugins = tykace
 # Opens the print dialog
-quickactions-print = Śišćaś
+quickactions-print2 = Bok śišćaś
 quickactions-cmd-print = śišćaś
 # Opens a new private browsing window
-quickactions-private = Priwatne wokno wócyniś
+quickactions-private2 = Priwatne wokno wócyniś
 quickactions-cmd-private = priwatny modus
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } wótnowiś
@@ -311,10 +315,10 @@ quickactions-cmd-refresh = aktualizěrowaś
 quickactions-restart = { -brand-short-name } znowego startowaś
 quickactions-cmd-restart = znowego startowaś
 # Opens the screenshot tool
-quickactions-screenshot2 = Foto wobrazowki gótowaś
+quickactions-screenshot3 = Foto wobrazowki cyniś
 quickactions-cmd-screenshot = foto wobrazowki
 # Opens about:preferences
-quickactions-settings = Nastajenja wócyniś
+quickactions-settings2 = Nastajenja zastojaś
 quickactions-cmd-settings = nastajenja
 # Opens about:addons page in the themes section
 quickactions-themes = Drastwy zastojaś
@@ -323,8 +327,11 @@ quickactions-cmd-themes = drastwy
 quickactions-update = { -brand-short-name } aktualizěrowaś
 quickactions-cmd-update = aktualizěrowaś
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Žrědłowy kod pokazaś
+quickactions-viewsource2 = Žrědłowy tekst boka pokazaś
 quickactions-cmd-viewsource = žrědło pokazaś, žrědło
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Zgóńśo wěcej wó malsnych akcijach
 
 ## Bookmark Panel
 
@@ -493,6 +500,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
     .tooltiptext = Awdiowudawańske rědy
+popup-select-window-or-screen =
+    .label = Wokno abo wobrazowka:
+    .accesskey = W
 popup-all-windows-shared = Wšykne widobne wokna na wašej wobrazowce budu se źěliś.
 popup-screen-sharing-block =
     .label = Blokěrowaś
@@ -514,6 +524,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Aby tastu F12 wužywał, wócyńśo nejpjerwjej DevTools pśez meni Webwuwijaŕ.
+enable-devtools-popup-description2 = Aby tastu F12 wužywał, wócyńśo nejpjerwjej DevTools pśez meni Rědy wobglědowaka.
 
 ## URL Bar
 
@@ -645,6 +656,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Malsne akcije
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Do cytańskego naglěda stupiś
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Cytański naglěd zacyniś
 
 ## Full Screen and Pointer Lock UI
 
@@ -922,3 +942,23 @@ private-browsing-indicator-label = Priwatny modus
 unified-extensions-button =
     .label = Rozšyrjenja
     .tooltiptext = Rozšyrjenja
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Rozšyrjenja
+    .tooltiptext =
+        Rozšyrjenja
+        Pšawa trjebne
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } jo toś ten bok pśi awtomatiskem znowegocytanju zajźował.
+refresh-blocked-redirect-label = { -brand-short-name } jo toś ten bok pśi awtomatiskem dalejpósrědnjanju k drugemu bokoju zajźował.
+refresh-blocked-allow =
+    .label = Dowóliś
+    .accesskey = l
+
+## Firefox Relay integration
+

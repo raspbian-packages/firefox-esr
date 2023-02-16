@@ -25,6 +25,7 @@ update-failed-main = Aggiornamento non riuscito. <a data-l10n-name="failed-link-
 
 update-adminDisabled = Aggiornamenti disattivati dall’amministratore di sistema
 update-noUpdatesFound = { -brand-short-name } è aggiornato
+aboutdialog-update-checking-failed = Impossibile controllare la disponibilità di aggiornamenti.
 update-otherInstanceHandlingUpdates = Aggiornamento di { -brand-short-name } in corso in un’altra istanza
 
 update-manual = Aggiornamenti disponibili su <label data-l10n-name="manual-link"/>
@@ -32,6 +33,8 @@ update-manual = Aggiornamenti disponibili su <label data-l10n-name="manual-link"
 update-unsupported = Non è possibile installare ulteriori aggiornamenti su questo sistema. <label data-l10n-name="unsupported-link">Ulteriori informazioni</label>
 
 update-restarting = Riavvio…
+
+update-internal-error = Impossibile verificare la disponibilità di aggiornamenti a causa di un errore interno. Aggiornamenti disponibili a <label data-l10n-name="manual-link"/>
 
 channel-description = Canale di aggiornamento attuale: <label data-l10n-name="current-channel"></label>.
 

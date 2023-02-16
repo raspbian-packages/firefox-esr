@@ -6,6 +6,10 @@ app-manager-window =
     .title = Подробности за приложение
     .style = width: 35em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Подробности за приложение
+    .style = min-width: 35em; min-height: 20em;
+
 app-manager-remove =
     .label = Премахване
     .accesskey = П

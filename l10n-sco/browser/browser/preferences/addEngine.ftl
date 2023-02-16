@@ -6,6 +6,10 @@ add-engine-window =
     .title = Eik On Airt-oot Engine
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Eik On Airt-oot Engine
+    .style = min-width: 32em;
+
 add-engine-button = Eik On Custom Engine
 
 add-engine-name = Airt-oot engine nemme

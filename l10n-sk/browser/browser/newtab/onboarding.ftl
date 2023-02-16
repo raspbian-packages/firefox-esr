@@ -25,6 +25,12 @@ return-to-amo-addon-title = Teraz naspäť k doplnku <img data-l10n-name="icon"/
 return-to-amo-add-extension-label = Pridať rozšírenie
 return-to-amo-add-theme-label = Pridať tému vzhľadu
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Privítajte { -brand-short-name }
+mr1-return-to-amo-addon-title = V rukách máte rýchly prehliadač zameraný na ochranu súkromia. A keď si pridáte doplnok <b>{ $addon-name }</b>, dostanete zo svojho { -brand-short-name(case: "gen") } ešte viac.
+mr1-return-to-amo-add-extension-label = Pridať { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Priebeh: krok { $current } z { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Priebeh: krok { $current } z { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -70,7 +78,7 @@ mr1-onboarding-pin-header =
 # Primary button string used on welcome page when Firefox is not pinned.
 mr1-onboarding-pin-primary-button-label =
     { PLATFORM() ->
-        [macos] Pridať do Docku
+        [macos] Ponechať v Docku
        *[other] Pripnúť na panel úloh
     }
 
@@ -289,7 +297,7 @@ mr2022-onboarding-existing-pin-subtitle = Spustite zdravší internet odkiaľko�
 # Subtitle will be used on the welcome screen for existing users
 # when they already have Firefox pinned but not set as default
 mr2022-onboarding-existing-set-default-only-subtitle = Používajte prehliadač, ktorý chráni vaše súkromie, keď sa pohybujete po webe. Naša najnovšia aktualizácia je plná vecí, ktoré zbožňujete.
-mr2022-onboarding-existing-pin-checkbox-label = Pridajte si aj Súkromné prehliadanie { -brand-short-name(case: "gen") }
+mr2022-onboarding-existing-pin-checkbox-label = Pridať aj Súkromné prehliadanie { -brand-short-name(case: "gen") }
 
 ## MR2022 New User Set Default screen strings
 
@@ -306,8 +314,8 @@ mr2022-onboarding-set-default-subtitle = Použite prehliadač podporovaný nezis
 
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
-mr2022-onboarding-get-started-primary-subtitle = Naša najnovšia verzia je postavená okolo vás, vďaka čomu je prehliadanie webu jednoduchšie ako kedykoľvek predtým. Je nabitý funkciami, o ktorých si myslíme, že si ich zamilujete.
-mr2022-onboarding-get-started-primary-button-label = Nastavenie za pár sekúnd
+mr2022-onboarding-get-started-primary-subtitle = Naša najnovšia verzia je postavená okolo vás, vďaka čomu je prehliadanie webu jednoduchšie ako kedykoľvek predtým. Je nabitá funkciami, o ktorých si myslíme, že si ich zamilujete.
+mr2022-onboarding-get-started-primary-button-label = Nastavte si ju za pár sekúnd
 
 ## MR2022 Import Settings screen strings
 
@@ -322,35 +330,35 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Importovať z pre
 
 mr2022-onboarding-colorway-title = Vyberte si farbu, ktorá vás inšpiruje
 mr2022-onboarding-colorway-subtitle = Nezávislé hlasy môžu zmeniť kultúru.
-mr2022-onboarding-colorway-primary-button-label = Použiť farebnú tému
+mr2022-onboarding-colorway-primary-button-label-continue = Nastaviť a pokračovať
 mr2022-onboarding-existing-colorway-checkbox-label = Urobte z { -firefox-home-brand-name(case: "gen") } svoju farebnú domovskú stránku
 mr2022-onboarding-colorway-label-default = Predvolená
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Predvolená
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Aktuálne farby { -brand-short-name(case: "gen") }
 mr2022-onboarding-colorway-description-default = <b>Použijú sa moje aktuálne farby { -brand-short-name(case: "gen") }.</b>
 mr2022-onboarding-colorway-label-playmaker = Tvorca hry
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Tvorca hry
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Tvorca hry (červená)
 mr2022-onboarding-colorway-description-playmaker = <b>Ste tvorca hry.</b> Vytvárate príležitosti na výhru a pomáhate všetkým okolo vás pozdvihnúť ich hru.
 mr2022-onboarding-colorway-label-expressionist = Expresionista
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Expresionista
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Expresionista (žltá)
 mr2022-onboarding-colorway-description-expressionist = <b>Ste expresionista.</b> Vidíte svet inak a vaše výtvory vzbudzujú u ostatných emócie.
 mr2022-onboarding-colorway-label-visionary = Vizionár
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Vizionár
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Vizionár (zelená)
 mr2022-onboarding-colorway-description-visionary = <b>Ste vizionár.</b> Spochybňujete status quo a podnecujete ostatných, aby si predstavovali lepšiu budúcnosť.
 mr2022-onboarding-colorway-label-activist = Aktivista
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aktivista
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktivista (modrá)
 mr2022-onboarding-colorway-description-activist = <b>Ste aktivista.</b> Zanecháte svet lepším miestom, ako ste ho našli, a vediete ostatných, aby verili.
 mr2022-onboarding-colorway-label-dreamer = Zasnívaný
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Zasnívaný
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Zasnívaný (fialová)
 mr2022-onboarding-colorway-description-dreamer = <b>Snívate.</b> Veríte, že šťastie praje odvážnym a inšpirujete ostatných, aby boli odvážni.
 mr2022-onboarding-colorway-label-innovator = Inovátor
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Inovátor
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Inovátor (oranžová)
 mr2022-onboarding-colorway-description-innovator = <b>Ste inovátor.</b> Všade vidíte príležitosti a ovplyvňujete životy všetkých okolo vás.
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -375,9 +383,6 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 
 mr2022-onboarding-privacy-segmentation-title = Vždy rešpektujeme vaše súkromie
 mr2022-onboarding-privacy-segmentation-subtitle = Od inteligentných návrhov po inteligentnejšie vyhľadávanie, neustále pracujeme na vytvorení lepšieho a osobnejšieho { -brand-product-name(case: "gen") }.
-mr2022-onboarding-privacy-segmentation-cta-text = Keď ponúkame nové funkcie, ktoré využívajú vaše údaje na zlepšenie vášho prehliadania, chcete vidieť:
-mr2022-onboarding-privacy-segmentation-primary-button-label = Odporúčania { -brand-product-name(case: "gen") }
-mr2022-onboarding-privacy-segmentation-secondary-button-label = Detailné informácie
 mr2022-onboarding-privacy-segmentation-text-cta = Čo chcete vidieť, keď ponúkame nové funkcie, ktoré využívajú vaše údaje na zlepšenie vášho prehliadania?
 mr2022-onboarding-privacy-segmentation-button-primary-label = Použiť odporúčania { -brand-product-name(case: "gen") }
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Zobraziť podrobné informácie
@@ -388,3 +393,29 @@ mr2022-onboarding-gratitude-title = Pomáhate nám vytvárať lepší web
 mr2022-onboarding-gratitude-subtitle = Ďakujeme, že používate { -brand-short-name }, ktorý podporuje Mozilla Foundation. S vašou podporou pracujeme na tom, aby bol internet otvorenejší, prístupnejší a lepší pre každého.
 mr2022-onboarding-gratitude-primary-button-label = Pozrite sa, čo je nové
 mr2022-onboarding-gratitude-secondary-button-label = Poďme prehliadať
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Cíťte sa ako doma
+onboarding-infrequent-import-subtitle = Či už sa chcete tu zabývať alebo sa len zastavíte, nezabudnite, že môžete importovať svoje záložky, heslá a ďalšie položky.
+onboarding-infrequent-import-primary-button = Importovať do { -brand-short-name(case: "gen") }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Osoba pracujúca na notebooku obklopená hviezdami a kvetmi
+mr2022-onboarding-default-image-alt =
+    .aria-label = Osoba objímajúca logo { -brand-product-name(case: "gen") }
+mr2022-onboarding-import-image-alt =
+    .aria-label = Osoba jazdiaca na skateboarde s krabicou softvérových ikon
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Žaby skákajúce po ľaliových vankúšikoch s QR kódom na stiahnutie { -brand-product-name(case: "gen") } pre mobilné zariadenia v strede
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Kúzelná palička spôsobí, že sa z klobúka objaví logo Súkromného prehliadania { -brand-product-name(case: "gen") }
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Ruky svetlej a tmavej pleti si dávajú high five
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Pohľad na západ slnka cez okno s líškou a izbovou rastlinou na parapete
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Ručný sprej maľuje farebnú koláž zeleného oka, oranžovej topánky, červenej basketbalovej lopty, fialových slúchadiel, modrého srdca a žltej koruny

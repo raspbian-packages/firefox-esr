@@ -57,6 +57,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } usuaris
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Adeu als bàners de galetes!
+cfr-cookie-banner-handling-body = Permeteu que el { -brand-short-name } rebutgi automàticament totes les sol·licituds de bàners de galetes, quan sigui possible. Si no ho és, s'acceptaran totes les galetes per tancar encara més bàners.
+cfr-cookie-banner-accept-button = Descarta les sol·licituds
+    .accesskey = D
+cfr-cookie-banner-reject-button = Ara no
+    .accesskey = n
+cfr-cookie-banner-handling-header-variant-1 = Vegeu menys finestres emergents de galetes
+cfr-cookie-banner-handling-body-variant-1 = Permeteu que el { -brand-short-name } gestioni automàticament les finestres emergents de galetes per a una navegació sense distraccions. El { -brand-short-name } rebutjarà totes les sol·licituds, si és possible; si no, les acceptarà totes.
+cfr-cookie-banner-accept-button-variant-1 = Tanca les finestres emergents
+    .accesskey = T
+cfr-cookie-banner-reject-button-variant-1 = No, gràcies
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Reducció de bàners de galetes
+cfr-cookie-banner-handling-body-variant-2 = Voleu permetre que el { -brand-short-name } rebutgi la sol·licitud de consentiment de galetes d’un lloc si és possible o que accepti l’accés a les galetes quan no sigui possible?
+cfr-cookie-banner-accept-button-variant-2 = Permet
+    .accesskey = P
+cfr-cookie-banner-reject-button-variant-2 = Ara no
+    .accesskey = n
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sincronitzeu les adreces d'interès a tot arreu.
@@ -153,10 +176,6 @@ spotlight-total-cookie-protection-body = La protecció total de galetes impedeix
 spotlight-total-cookie-protection-expanded = El { -brand-short-name } crea una tanca al voltant de les galetes, limitant-les al lloc on us trobeu perquè els seguidors no les puguin utilitzar per a seguir-vos. Amb l'accés anticipat, ajudareu a optimitzar aquesta funció perquè puguem seguir construint una web millor per a tothom.
 spotlight-total-cookie-protection-primary-button = Activa la protecció total de galetes
 spotlight-total-cookie-protection-secondary-button = Ara no
-cfr-total-cookie-protection-header = Gràcies al vostre suport, el { -brand-short-name } és més privat i segur que mai
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = La Protecció total de galetes és la funció de protecció de privadesa més potent en l'actualitat, i ara aquesta funció està activada per defecte per a tots els usuaris del { -brand-short-name }. No hauria estat possible sense les participacions en l'accés anticipat com la vostra. Gràcies per ajudar-nos a crear una Internet millor i més privada.
 
 ## Emotive Continuous Onboarding
 
@@ -170,3 +189,60 @@ spotlight-pin-primary-button =
        *[other] Fixa'l a la barra de tasques
     }
 spotlight-pin-secondary-button = Ara no
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Nou { -brand-short-name }. Més privat. Menys seguiment. Sense compromisos.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Obre el { -brand-shorter-name } ara
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Recorda-m'ho més tard
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Prova-ho
+    .accesskey = P
+firefoxview-cfr-secondarybutton = Ara no
+    .accesskey = A
+firefoxview-cfr-header-v2 = Continueu des d’on ho deixeu
+firefoxview-cfr-body-v2 = Recupereu les pestanyes tancades recentment i salteu d'un dispositiu a l'altre de forma transparent amb la { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Us presentem la { -firefoxview-brand-name }
+firefoxview-spotlight-promo-primarybutton = Com funciona?
+firefoxview-spotlight-promo-secondarybutton = Omet
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Tria la combinació de colors
+    .accesskey = c
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Acoloriu el navegador amb aquests tons exclusius del { -brand-short-name } inspirats en veus que han canviat la cultura.
+colorways-cfr-header-28days = Les combinacions de colors de Veus independents caduquen el 16 de gener
+colorways-cfr-header-14days = Les combinacions de colors de Veus independents caduquen d'aquí a dues setmanes
+colorways-cfr-header-7days = Les combinacions de colors de Veus independents caduquen aquesta setmana
+colorways-cfr-header-today = Les combinacions de colors de Veus independents caduquen avui
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Teniu les espatlles ben cobertes
+july-jam-body = Cada mes, el { -brand-short-name } bloca una mitjana de 3.000 elements de seguiment per usuari, per tal d'oferir-vos un accés segur i ràpid al bon contingut d'Internet.
+july-jam-set-default-primary = Obre els enllaços amb el { -brand-short-name }

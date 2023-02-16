@@ -17,6 +17,27 @@ menu-addons-and-themes =
 
 ## Help Menu
 
+menu-help-help-title =
+    .label = Agid
+    .accesskey = g
+menu-help-get-help =
+    .label = Ir per agid
+    .accesskey = p
+menu-help-explore-features =
+    .label = Scuvrir las funcziuns
+    .accesskey = f
+menu-help-shortcuts =
+    .label = Scursanidas da tastas
+    .accesskey = c
+menu-help-get-involved =
+    .label = Sa participar
+    .accesskey = r
+menu-help-donation =
+    .label = Far ina donaziun
+    .accesskey = d
+menu-help-share-feedback =
+    .label = Cundivider ideas e resuns
+    .accesskey = s
 menu-help-enter-troubleshoot-mode =
     .label = Modus per schliar problems…
     .accesskey = M
@@ -26,6 +47,29 @@ menu-help-exit-troubleshoot-mode =
 menu-help-more-troubleshooting-info =
     .label = Dapli infurmaziuns per schliar problems
     .accesskey = m
+menu-help-troubleshooting-info =
+    .label = Infurmaziuns per schliar problems
+    .accesskey = p
+menu-help-about-product =
+    .label = Davart { -brand-short-name }
+    .accesskey = a
+# These menu-quit strings are only used on Windows and Linux.
+menu-quit =
+    .label =
+        { PLATFORM() ->
+            [windows] Terminar
+           *[other] Terminar
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] T
+           *[other] T
+        }
+# This menu-quit-mac string is only used on macOS.
+menu-quit-mac =
+    .label = Terminar { -brand-shorter-name }
+quit-app-shortcut =
+    .key = T
 
 ## Mail Toolbar
 
@@ -74,6 +118,12 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Touch
     .accesskey = T
+mail-uidensity-default =
+    .label = Standard
+    .accesskey = d
+mail-uidensity-relaxed =
+    .label = Luc
+    .accesskey = L
 menu-spaces-toolbar-button =
     .label = Trav d'utensils da locals
     .accesskey = s

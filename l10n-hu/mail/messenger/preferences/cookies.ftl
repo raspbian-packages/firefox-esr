@@ -6,6 +6,9 @@ cookies-window-dialog =
     .title = Sütik
     .style = width: 36em;
 
+cookies-window-dialog2 =
+    .title = Sütik
+
 window-close-key =
     .key = w
 

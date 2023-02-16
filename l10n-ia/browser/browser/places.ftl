@@ -103,6 +103,9 @@ places-delete-bookmark =
            *[other] Deler marcapaginas
         }
     .accesskey = D
+places-untag-bookmark =
+    .label = Remover tag
+    .accesskey = R
 places-manage-bookmarks =
     .label = Gerer marcapaginas
     .accesskey = G
@@ -110,10 +113,18 @@ places-forget-about-this-site-confirmation-title = Oblidante iste sito
 # Variables:
 # $hostOrBaseDomain (string) - The base domain (or host in case there is no base domain) for which data is being removed
 places-forget-about-this-site-confirmation-message = Iste action removera tote le datos associate a { $hostOrBaseDomain } includite chronologia, contrasignos, cookies, cache e preferentias de contento. Es tu secur de voler continuar?
+# Variables:
+# $hostOrBaseDomain (string) - The base domain (or host in case there is no base domain) for which data is being removed
+places-forget-about-this-site-confirmation-msg = Iste action removera datos correlate a { $hostOrBaseDomain } includite chronologia, cookies, cache e preferentias de contento. Le marcapaginas e le contrasignos non sera removite.
 places-forget-about-this-site-forget = Oblidar
 places-library =
     .title = Bibliotheca
     .style = width:700px; height:500px;
+places-library2 =
+    .title = Bibliotheca
+    .style = min-width:700px; min-height:500px;
+places-library3 =
+    .title = Bibliotheca
 places-organize-button =
     .label = Organisar
     .tooltiptext = Organisar tu marcapaginas

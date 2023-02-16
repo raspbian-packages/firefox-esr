@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 # DO NOT ADD THINGS OTHER THAN ERROR MESSAGES HERE.
 # This file gets parsed into a JS dictionary of all known error message ids in
 # gen_aboutneterror_codes.py . If we end up needing fluent attributes or
@@ -11,20 +12,16 @@
 # $hostname (String) - Hostname of the website with SSL error.
 # $errorMessage (String) - Error message corresponding to the type of error we are experiencing.
 ssl-connection-error = Ndodhi një gabim gjatë lidhjes me { $hostname }. { $errorMessage }
-
 # Variables:
 # $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 cert-error-code-prefix = Kod gabimi: { $error }
-
 psmerr-ssl-disabled = S’lidhet dot në mënyrë të sigurt, sepse protokolli SSL është çaktivizuar.
 psmerr-ssl2-disabled = S’lidhet dot në mënyrë të sigurt, sepse sajti përdor një version të vjetër, të pasigurt të protokollit SSL.
-
 # This is a multi-line message.
 psmerr-hostreusedissuerandserial =
     Keni marrë një dëshmi të pavlefshme. Ju lutemi, lidhuni me administratorin e shërbyesit ose i dërgoni një email korrespondentit dhe jepuni atyre të dhënat vijuese:
     
     Dëshmia juaj përmban të njëjtin numër serial me një tjetër dëshmi të lëshuar nga autoriteti i dëshmive. Ju lutemi, merrni një dëshmi të re që të përmbajë një numër serial unik.
-
 ssl-error-export-only-server = S’arrihet të komunikohet në mënyrë të sigurt. Ana tjetër s’mbulon fshehtëzim të shkallës së lartë.
 ssl-error-us-only-server = S’arrihet të komunikohet në mënyrë të sigurt. Ana tjetër kërkon fshehtëzim të shkallës së lartë, i cili nuk mbulohet.
 ssl-error-no-cypher-overlap = S’komunikohet dot në mënyrë të sigurt me anën tjetër: s’ka algoritëm(e) të njëjtë fshehtëzimesh.
@@ -83,7 +80,7 @@ ssl-error-rx-unknown-handshake = SSL-ja mori mesazh duarshtrëngimi me lloj të 
 ssl-error-rx-unknown-alert = SSL-ja mori regjistrim alarmi me përshkrim të panjohur alarmi.
 ssl-error-close-notify-alert = Ana tjetër SSL e mbylli këtë lidhje.
 ssl-error-handshake-unexpected-alert = Ana tjetër SSL s’e priste mesazhin e duarshtrëngimit që mori.
-ssl-error-decompression-failure-alert = Ana tjetër SSL s’qe në gjendje të shngjeshte me sukses regjistrimin SSL që mori.
+ssl-error-decompression-failure-alert = Ana tjetër SSL s’qe në gjendje të çngjishte me sukses regjistrimin SSL që mori.
 ssl-error-handshake-failure-alert = Ana tjetër SSL s’qe i zoti të ndërmjetësonte një grup të pranueshëm parametrash sigurie.
 ssl-error-illegal-parameter-alert = Ana tjetër SSL hodhi tej një mesazh duarshtrëngimi për shkak lënde të papranueshme.
 ssl-error-unsupported-cert-alert = Ana tjetër SSL s’mbulon dëshmi të llojit që mori.
@@ -134,7 +131,7 @@ ssl-error-bad-cert-status-response-alert = Ana tjetër SSL s’qe në gjendje t�
 ssl-error-bad-cert-hash-value-alert = Ana tjetër SSL njoftoi vlerë hashi dëshmie të gabuar.
 ssl-error-rx-unexpected-new-session-ticket = SSL-ja mori një mesazh duarshtrëngimi Pusullë Sesioni të Ri të papritur.
 ssl-error-rx-malformed-new-session-ticket = SSL-ja mori një mesazh duarshtrëngimi Pusullë Sesioni të Ri të keqformuar.
-ssl-error-decompression-failure = SSL-ja mori një regjistrim të ngjeshur që s’mund të shngjeshet.
+ssl-error-decompression-failure = SSL-ja mori një regjistrim të ngjeshur që s’mund të çngjishet.
 ssl-error-renegotiation-not-allowed = Në këtë "socket" SSL s’lejohet negocimi.
 ssl-error-unsafe-negotiation = Ana tjetër provoi duarshtrëngim të stilit të vjetër (potencialisht i cenueshëm).
 ssl-error-rx-unexpected-uncompressed-record = SSL-ja mori një regjistrim të pangjeshur të papritur.
@@ -165,7 +162,7 @@ sec-error-io = Ndodhi një gabim I/O gjatë autorizimit të sigurisë.
 sec-error-library-failure = dështim librarie sigurie.
 sec-error-bad-data = librari sigurie: u morën të dhëna të dëmtuara.
 sec-error-output-len = librari sigurie: gabim gjatësie daljeje.
-sec-error-input-len = librarisë së sigurisë i ndodhi një gabim gjatësie hyrjeje.
+sec-error-input-len = bibliotekës së sigurisë i ndodhi një gabim gjatësie dhënieje.
 sec-error-invalid-args = librari sigurie: argumente të pavlefshëm.
 sec-error-invalid-algorithm = librari sigurie: algoritëm i pavlefshëm.
 sec-error-invalid-ava = librari sigurie: AVA e pavlefshme.
@@ -178,7 +175,7 @@ sec-error-unknown-issuer = Dëshmia e anës tjetër përmban lëshues të panjoh
 sec-error-bad-key = Kyçi publik i anës tjetër është i pavlefshëm.
 sec-error-bad-password = Fjalëkalimi i sigurisë i dhënë është i pasaktë.
 sec-error-retry-password = Fjalëkalim i ri i dhënë në mënyrë të pasaktë. Ju lutemi, riprovoni.
-sec-error-no-nodelock = librari sigurie: pa "nodelock".
+sec-error-no-nodelock = bibliotekë: pa “nodelock”.
 sec-error-bad-database = librari sigurie: bazë e dëmtuar të dhënash.
 sec-error-no-memory = librari sigurie: dështim në sigurim kujtese.
 sec-error-untrusted-issuer = Lëshuesi i dëshmisë së anës tjetër është shënuar nga përdoruesi si jo i besuar.
@@ -206,8 +203,8 @@ sec-error-unknown-critical-extension = Dëshmia përmban zgjerim kritik të panj
 sec-error-old-crl = LShD-ja (Listë Shfuqizimesh Dëshmish) e re s’është më e vonshme se ajo e tanishmja.
 sec-error-no-email-cert = E pafshehtëzuar ose e panënshkruar: ende s’keni dëshmi email-i.
 sec-error-no-recipient-certs-query = E pafshehtëzuar: s’keni dëshmi për secilin nga marrësit.
-sec-error-not-a-recipient = S’e shfshehtëzon dot: s’jeni marrës, ose s’u gjet dëshmi dhe kyç privat me përputhje.
-sec-error-pkcs7-keyalg-mismatch = S’e shfshehtëzon dot: algoritmi i fshehtëzimit të kyçit s’përputhet me dëshminë tuaj.
+sec-error-not-a-recipient = Nuk shfshehtëzohet dot: s’jeni marrës, ose s’u gjet dëshmi dhe kyç privat me përputhje.
+sec-error-pkcs7-keyalg-mismatch = Nuk shfshehtëzohet dot: algoritmi i fshehtëzimit të kyçit s’përputhet me dëshminë tuaj.
 sec-error-pkcs7-bad-signature = Vërtetimi i nënshkrimit dështoi: ose s’u gjet nënshkrues, ose u gjetën shumë nënshkrues, ose të dhëna të papërshtatshme ose të dëmtuara.
 sec-error-unsupported-keyalg = Algoritëm i pambuluar ose i panjohur.
 sec-error-decryption-disallowed = S’e shfshehtëzon dot: fshehtëzuar përmes përdorimit të një algoritmi apo madhësie kyçi me leje të mohuara.
@@ -325,7 +322,7 @@ sec-error-policy-validation-failed = Vargu i dëshmive s’i plotëson rregullat
 sec-error-unknown-aia-location-type = Lloj i panjohur vendndodhjesh te zgjerimi AIA i dëshmisë
 sec-error-bad-http-response = Shërbyesi ktheu përgjigje HTTP negative
 sec-error-bad-ldap-response = Shërbyesi ktheu përgjigje LDAP negative
-sec-error-failed-to-encode-data = Dështoi në kodim të dhënash me koduesin ASN1
+sec-error-failed-to-encode-data = S’u arrit të kodoheshin të dhëna me koduesin ASN1
 sec-error-bad-info-access-location = Vendndodhje e gabuar hyrjesh në të dhëna te zgjerim dëshmie
 sec-error-libpkix-internal = Ndodhi gabim i brendshëm libpkix gjatë vleftësimit të dëshmisë.
 sec-error-pkcs11-general-error = Një modul PKCS #11 u përgjigj me CKR_GENERAL_ERROR, duke treguar kështu që ndodhi një problem i pandreqshëm.
@@ -338,7 +335,7 @@ sec-error-locked-password = Fjalëkalimi është bllokuar.
 sec-error-unknown-pkcs11-error = Gabim i panjohur PKCS #11.
 sec-error-bad-crl-dp-url = URL e pavlefshme ose e pambuluar te emër pike shpërndarjesh CRL.
 sec-error-cert-signature-algorithm-disabled = Dëshmia është nënshkruar duke përdorur një algoritëm nënshkrimi që është i çaktivizuar, sepse s’është i sigurt.
-mozilla-pkix-error-key-pinning-failure = Shërbyesi përdor key pinning (HPKP) por s’u krijua dot zinxhir dëshmish të besuara dhe që i korrespondojnë pinset-it. Shkeljet e key pinning-ut s’mund të anashkalohen.
+mozilla-pkix-error-key-pinning-failure = Shërbyesi përdor “key pinning” (HPKP), por s’u krijua dot zinxhir dëshmish të besuara dhe që i korrespondojnë pinset-it. Shkeljet e “key pinning”-ut s’mund të anashkalohen.
 mozilla-pkix-error-ca-cert-used-as-end-entity = Shërbyesi përdor një dëshmi me një zgjerim të thjeshtë kufizimesh që e identifikon atë si autoritet dëshmish. S’do të duhej të ishte kështu, për një dëshmi të lëshuar siç duhet.
 mozilla-pkix-error-inadequate-key-size = Shërbyesi paraqiti një dëshmi me madhësi kyçi që është shumë e vogël për të vendosur një lidhje të sigurt.
 mozilla-pkix-error-v1-cert-used-as-ca = Për emetimin e dëshmisë së shërbyesit u përdor një dëshmi X.509 version 1, e cila s’është spirancë besimi. Shkësillohen dëshmitë X.509 version 1 dhe s’duhet të përdoren për të nënshkruar dëshmi të tjera.
@@ -348,7 +345,7 @@ mozilla-pkix-error-signature-algorithm-mismatch = Algoritmi i nënshkrimit tek f
 mozilla-pkix-error-ocsp-response-for-cert-missing = Përgjigja OCSP s’përmban gjendje për dëshminë që po verifikohet.
 mozilla-pkix-error-validity-too-long = Shërbyesi paraqiti një dëshmi që është e vlefshme për një kohë shumë të gjatë.
 mozilla-pkix-error-required-tls-feature-missing = Mungon një veçori TLS e domosdoshme.
-mozilla-pkix-error-invalid-integer-encoding = Shërbyesi paraqiti një dëshmi që përmban kodim të pavlefshëm të një numri të plotë. Ndër shkaqet e rëndomtë përfshihen numra seriale negativë, module RSA negativë, dhe kodime që janë më të gjatë se sa është e nevojshme.
+mozilla-pkix-error-invalid-integer-encoding = Shërbyesi paraqiti një dëshmi që përmban kodim të pavlefshëm të një numri të plotë. Ndër shkaqet e rëndomtë përfshihen numra serialë negativë, module RSA negativë dhe kodime që janë më të gjatë se sa është e nevojshme.
 mozilla-pkix-error-empty-issuer-name = Shërbyesi paraqiti një dëshmi me emër të dalluar lëshuesi të zbrazët.
 mozilla-pkix-error-additional-policy-constraint-failed = Dështoi një kufizim shtesë rregulli teksa vlerësohej kjo dëshmi.
 mozilla-pkix-error-self-signed-cert = Dëshmia nuk besohet, ngaqë është e vetënënshkruar.

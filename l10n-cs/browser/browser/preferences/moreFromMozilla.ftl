@@ -53,3 +53,8 @@ more-from-moz-qr-code-firefox-mobile-img =
         }
 more-from-moz-button-mozilla-vpn-2 = Získat VPN
 more-from-moz-learn-more-link = Zjistit více
+
+## These strings are for the Firefox Relay card in about:preferences moreFromMozilla page
+
+more-from-moz-firefox-relay-title = { -relay-brand-name }
+more-from-moz-firefox-relay-button = Získejte { -relay-brand-short-name(case: "acc") }

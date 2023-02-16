@@ -6,12 +6,22 @@ create-profile-window =
     .title = Asistent pentru crearea profilului
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Asistent pentru crearea profilului
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Introducere
        *[other] Bine ai venit la { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Introducere
+       *[other] Bine ai venit la { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } stochează informații despre setări și preferințe în profilul tău personal.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Încheiere
        *[other] Încheiere { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Încheiere
+       *[other] Încheiere { create-profile-window2.title }
     }
 
 profile-creation-intro = Dacă creezi mai multe profiluri, le poți deosebi după denumirile profilurilor. Poți folosi denumirea sugerată aici sau denumirea pe care o dorești tu.

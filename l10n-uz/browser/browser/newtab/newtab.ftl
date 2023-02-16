@@ -8,6 +8,11 @@
 newtab-page-title = Yangi varaq
 newtab-settings-button =
     .title = Yangi varaq sahifasini sozlash
+newtab-personalize-icon-label =
+    .title = Yangi varaqni moslashtirish
+    .aria-label = Yangi varaqni moslashtirish
+newtab-personalize-dialog-label =
+    .aria-label = Moslashtirish
 
 ## Search box component.
 
@@ -31,10 +36,17 @@ newtab-search-box-handoff-input-no-engine =
     .title = Qidiring yoki manzilni kiriting
     .aria-label = Qidiring yoki manzilni kiriting
 
+newtab-search-box-text = Internetdan qidirish
+newtab-search-box-input =
+    .placeholder = Internetdan qidirish
+    .aria-label = Internetdan izlash
+
 ## Top Sites - General form dialog.
 
 newtab-topsites-add-search-engine-header = Qidiruv tizimini qoʻshish
+newtab-topsites-add-shortcut-header = Yangi tugmalar birikmasi
 newtab-topsites-edit-topsites-header = Ommabop saytni tahrirlash
+newtab-topsites-edit-shortcut-header = Tugmalar birikmasini tahrirlash
 newtab-topsites-title-label = Nomi
 newtab-topsites-title-input =
     .placeholder = Nomini kiriting
@@ -64,6 +76,7 @@ newtab-confirm-delete-history-p2 = Bu amalni ortga qaytarib boʻlmaydi.
 
 ## Top Sites - Sponsored label
 
+newtab-topsite-sponsored = Homiylik qilgan
 
 ## Context Menu - Action Tooltips.
 
@@ -185,6 +198,7 @@ newtab-section-expand-section-label =
 ## Section Headers.
 
 newtab-section-header-topsites = Ommabop saytlar
+newtab-section-header-recent-activity = Soʻnggi faoliyat
 # Variables:
 #  $provider (String): Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } tomonidan tavsiya qilingan

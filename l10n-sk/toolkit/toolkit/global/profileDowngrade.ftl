@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Spustili ste staršiu verziu { -brand-product-name(case: "gen") }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Spustili ste staršiu verziu { -brand-product-name(case: "gen") }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Vytvoriť nový profil
 

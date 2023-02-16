@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Ajaloo kustutamise sätted
     .style = width: 50em
 
+sanitize-prefs2 =
+    .title = Ajaloo kustutamise sätted
+    .style = min-width: 50em
+
 sanitize-prefs-style =
     .style = width: 25em
 

@@ -6,6 +6,10 @@ app-manager-window =
     .title = Mionsonraí feidhmchláir
     .style = width: 36em; min-height: 24em;
 
+app-manager-window2 =
+    .title = Mionsonraí feidhmchláir
+    .style = min-width: 36em; min-height: 24em;
+
 app-manager-remove =
     .label = Bain
     .accesskey = B

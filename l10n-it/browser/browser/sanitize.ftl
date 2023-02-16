@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Impostazioni per la cancellazione della cronologia
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Impostazioni per la cancellazione della cronologia
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

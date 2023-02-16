@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Подешавања за брисање историје
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Подешавања за брисање историје
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

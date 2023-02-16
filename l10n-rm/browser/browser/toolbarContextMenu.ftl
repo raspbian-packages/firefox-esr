@@ -60,6 +60,11 @@ toolbar-context-menu-view-customize-toolbar =
 toolbar-context-menu-view-customize-toolbar-2 =
     .label = Modifitgar la trav da simbols…
     .accesskey = M
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = Agiuntar a la trav d'utensils
+    .accesskey = A
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = Adina mussar
     .accesskey = A

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Borrar los datos
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Borrar los datos
+    .style = min-width: 35em
+
 clear-site-data-description = Limpiar totas las cookies y datos d'e puestos web almagazenaus per { -brand-short-name } podrían zarrar-te la sesión en bells puestos web, y eliminar lo conteniu web offline. Borrar lo datos de caché no afectará a los tuyos inicios de sesión.
 
 clear-site-data-close-key =

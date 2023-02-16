@@ -5,12 +5,20 @@
 containers-window-new =
     .title = افزودن حامل جدید
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = تنظیمات کانتینر { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = افزودن حامل جدید
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = تنظیمات کانتینر { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

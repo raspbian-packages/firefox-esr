@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Neteja les dades
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Neteja les dades
+    .style = min-width: 35em
+
 clear-site-data-description = Esborrar totes les galetes i dades dels llocs emmagatzemades pel { -brand-short-name } pot fer que es tanqui la sessió dels llocs web i que s'elimini el contingut web fora de línia. Esborrar les dades de la memòria cau no afecta les sessions iniciades.
 
 clear-site-data-close-key =

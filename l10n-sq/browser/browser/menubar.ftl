@@ -38,11 +38,9 @@ menu-quit =
             [windows] D
            *[other] l
         }
-
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Dilni prej { -brand-shorter-name }-it
-
 menu-about =
     .label = Mbi { -brand-shorter-name }-in
     .accesskey = R
@@ -182,6 +180,17 @@ menu-view-full-screen =
     .label = Sa Krejt Ekrani
     .accesskey = E
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Kalo në Pamjen Lexues
+    .accesskey = L
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Mbylle Pamjen Lexues
+    .accesskey = L
+
 ##
 
 menu-view-show-all-tabs =
@@ -224,6 +233,10 @@ menu-bookmark-current-tab =
     .label = Faqeruaj Skedën e Tanishme
 menu-bookmark-edit =
     .label = Përpunojeni Këtë Faqerojtës
+menu-bookmark-tab =
+    .label = Faqeruani Skedën e Tanishme…
+menu-edit-bookmark =
+    .label = Përpunojeni Këtë Faqerojtës…
 menu-bookmarks-all-tabs =
     .label = Faqeruani Krejt Skedat…
 menu-bookmarks-toolbar =
@@ -308,6 +321,9 @@ menu-help-more-troubleshooting-info =
     .accesskey = M
 menu-help-report-site-issue =
     .label = Njoftoni Problem Sajti…
+menu-help-share-ideas =
+    .label = Ndani me të tjerët Ide dhe Përshtypje…
+    .accesskey = N
 menu-help-enter-troubleshoot-mode2 =
     .label = Mënyra Diagnostikim…
     .accesskey = D
@@ -320,5 +336,5 @@ menu-help-report-deceptive-site =
     .label = Raportoni Sajt të Rremë…
     .accesskey = m
 menu-help-not-deceptive =
-    .label = Ky s'është sajt i rremë…
+    .label = Ky s'është Sajt i Rremë…
     .accesskey = r

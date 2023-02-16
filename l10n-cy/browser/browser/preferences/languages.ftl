@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Gosodiadau Iaith Tudalen Gwe
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Gosodiadau Iaith Tudalen Gwe
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Gosodiadau Iaith
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Gosodiadau Iaith
+    .style = min-width: 40em
 
 browser-languages-description = Bydd { -brand-short-name } yn dangos yr iaith gyntaf fel eich rhagosodedig a bydd yn danogs ieithoedd eraill yn y drefn fyddan nhw'n ymddangos.
 

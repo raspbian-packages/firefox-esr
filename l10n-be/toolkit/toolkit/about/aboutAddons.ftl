@@ -142,6 +142,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Дазволы для сайтаў
 addon-category-sitepermission-title =
     .title = Дазволы для сайтаў
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Дазволы сайта для { $host }
 
 ## These are global warnings
 
@@ -296,10 +300,6 @@ theme-monochromatic-heading = Расфарбоўкі
 theme-monochromatic-subheading = Яркія новыя колеры ад { -brand-product-name }. Даступныя абмежаваны час.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Паспрабаваць расфарбоўкі
-colorway-collection-independent-voices-subheading = Зрабіце так, каб { -brand-short-name } больш пасаваў да вас.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Згасае { DATETIME($expiryDate, day: "numeric", month: "long") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Змяніць расфарбоўку
 # Variables:

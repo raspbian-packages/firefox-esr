@@ -6,6 +6,10 @@ containers-window-new =
     .title = Yangi konteyner qo‘shish
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Yangi konteyner qo‘shish
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

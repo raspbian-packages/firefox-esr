@@ -77,6 +77,8 @@ perftools-thread-jvm-nimbus =
     .title = Glavne niti za SDK poskusov Nimbus
 perftools-thread-jvm-glean =
     .title = Glavne niti za SDK telemetrije Glean
+perftools-thread-jvm-pool =
+    .title = Niti, ustvarjene v neimenovanem bazenu niti
 
 ##
 
@@ -86,6 +88,8 @@ perftools-record-all-registered-threads = Preglasi zgornje izbire in spremljaj v
 ## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Novo</b>: { -profiler-brand-name } je sedaj vključen med razvojna orodja. <a>Preberite več</a> o tem zmogljivem novem orodju.
+perftools-onboarding-close-button =
+    .aria-label = Zapri uvodno sporočilo
 
 ## Profiler presets
 

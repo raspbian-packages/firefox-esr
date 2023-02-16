@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Priwatny modus { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Priwatny modus { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Pomoc wobstarać
 urlbar-search-tips-confirm = W porjadku, sym zrozumił
+urlbar-search-tips-confirm-short = Sym zrozumił
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Pokiw:
+urlbar-result-menu-button =
+    .title = Meni wočinić
+urlbar-result-menu-remove-from-history =
+    .label = Z historije wotstronić
+    .accesskey = h
+urlbar-result-menu-tip-get-help =
+    .label = Pomoc wobstarać
+    .accesskey = P
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Pisajće mjenje, namakajće wjace: Pytajće z { $engineName } direktnje ze swojeho adresoweho pola.
 urlbar-search-tips-redirect-2 = Započńće swoje pytanje w adresowym polu, zo byšće namjety wot { $engineName } a ze swojeje přehladowanskeje historije widźał.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Pytanje je nětko lóše. Čińće swoje pytanje bóle specifiske w adresowym polu. Zo byšće město toho URL pokazał, dźiće k pytanskim nastajenjam.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Wubjerće tute zwjazanje, zo byšće spěšnišo namakał, štož trjebaće.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Akcije ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Přidatki pokazać
-quickactions-cmd-addons = přidatki, rozšěrjenja, drasty
 quickactions-cmd-addons2 = přidatki
 # Opens the bookmarks library window
-quickactions-bookmarks = Zapołožki pokazać
+quickactions-bookmarks2 = Zapołožki rjadować
 quickactions-cmd-bookmarks = zapołožki
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Historiju zhašeć
 quickactions-cmd-clearhistory = historiju zhašeć
 # Opens about:downloads page
-quickactions-downloads = Sćehnjenja wočinić
+quickactions-downloads2 = Sćehnjenja pokazać
 quickactions-cmd-downloads = sćehnjenja
 # Opens about:addons page in the extensions section
 quickactions-extensions = Rozšěrjenja rjadować
 quickactions-cmd-extensions = rozšěrjenja
 # Opens the devtools web inspector
-quickactions-inspector = Inspektor wočinić
+quickactions-inspector2 = Wuwiwarske nastroje wočinić
 quickactions-cmd-inspector = inspektor, wuwiwarske nastroje
 # Opens about:logins
-quickactions-logins = Přizjewjenja pokazać
+quickactions-logins2 = Hesła rjadować
 quickactions-cmd-logins = přizjewjenja, hesła
 # Opens about:addons page in the plugins section
 quickactions-plugins = Tykače rjadować
 quickactions-cmd-plugins = tykače
 # Opens the print dialog
-quickactions-print = Ćišćeć
+quickactions-print2 = Stronu ćišćeć
 quickactions-cmd-print = ćišćeć
 # Opens a new private browsing window
-quickactions-private = Priwatne wokno wočinić
+quickactions-private2 = Priwatne wokno wočinić
 quickactions-cmd-private = priwatny modus
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } wobnowić
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = aktualizować
 quickactions-restart = { -brand-short-name } znowa startować
 quickactions-cmd-restart = znowa startować
 # Opens the screenshot tool
-quickactions-screenshot2 = Foto wobrazowki činić
+quickactions-screenshot3 = Foto wobrazowki činić
 quickactions-cmd-screenshot = foto wobrazowki
 # Opens about:preferences
-quickactions-settings = Nastajenja wočinić
+quickactions-settings2 = Nastajenja rjadować
 quickactions-cmd-settings = nastajenja
 # Opens about:addons page in the themes section
 quickactions-themes = Drasty rjadować
@@ -323,8 +332,11 @@ quickactions-cmd-themes = drasty
 quickactions-update = { -brand-short-name } aktualizować
 quickactions-cmd-update = aktualizować
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Žórłowy kod pokazać
+quickactions-viewsource2 = Žórłowy tekst strony pokazać
 quickactions-cmd-viewsource = žórło pokazać, žórło
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Zhońće wjace wo spěšnych akcijach
 
 ## Bookmark Panel
 
@@ -493,6 +505,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
     .tooltiptext = Awdiowudawanske nastroje
+popup-select-window-or-screen =
+    .label = Wokno abo wobrazowka:
+    .accesskey = W
 popup-all-windows-shared = Wšě widźomne wokna na wašej wobrazowce budu so dźělić.
 popup-screen-sharing-block =
     .label = Blokować
@@ -514,6 +529,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Zo byšće tastu F12 wužiwał, wočińće najprjedy DevTools přez meni Webwuwiwar.
+enable-devtools-popup-description2 = Zo byšće tastu F12 wužiwał, wočińće najprjedy DevTools přez meni Graty wobhladowaka.
 
 ## URL Bar
 
@@ -645,6 +661,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Spěšne akcije
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Do čitanskeho napohlada zastupić
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Čitanski napohlad začinić
 
 ## Full Screen and Pointer Lock UI
 
@@ -922,3 +947,29 @@ private-browsing-indicator-label = Priwatny modus
 unified-extensions-button =
     .label = Rozšěrjenja
     .tooltiptext = Rozšěrjenja
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Rozšěrjenja
+    .tooltiptext =
+        Rozšěrjenja
+        Prawa trěbne
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } je tutu stronu při awtomatiskim znowačitanju haćił.
+refresh-blocked-redirect-label = { -brand-short-name } je tutu stronu při awtomatiskim dalesposrědkowanju k druhej stronje haćił.
+refresh-blocked-allow =
+    .label = Dowolić
+    .accesskey = l
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } wašu woprawdźitu e-mejlowu adresu maskuje, zo by was před datowymi dźěrami a spamom škitał.
+firefox-relay-offer-how-we-integrate = Hdyž pokročujeće, móžeće nowe e-mejlowe maski { -relay-brand-short-name } direktnje ze swojeho zrjadowaka hesło { -brand-shorter-name } generować.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Posrědkujemy wšě mejlki wot <strong>{ $sitename }</strong> do <strong>{ $useremail }</strong> dale.

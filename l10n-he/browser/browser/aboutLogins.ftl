@@ -7,6 +7,8 @@ about-logins-page-title = כניסות וססמאות
 login-filter =
     .placeholder = חיפוש כניסות
 create-login-button = יצירת כניסה חדשה
+create-new-login-button =
+    .title = יצירת כניסה חדשה
 fxaccounts-sign-in-text = קבלת הססמאות שלך במכשירים האחרים שלך
 fxaccounts-sign-in-sync-button = כניסה כדי לסנכרן
 fxaccounts-avatar-button =
@@ -99,6 +101,15 @@ login-item-cancel-button = ביטול
 login-item-time-changed = שינוי אחרון: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
 login-item-time-created = תאריך יצירה: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
 login-item-time-used = שימוש אחרון: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = תאריך יצירה
+login-item-timeline-action-updated = תאריך עדכון
+login-item-timeline-action-used = תאריך שימוש
 
 ## OS Authentication dialog
 

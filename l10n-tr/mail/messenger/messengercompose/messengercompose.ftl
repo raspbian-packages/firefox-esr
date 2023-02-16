@@ -180,6 +180,14 @@ menu-view-certificates =
 menu-open-key-manager =
     .label = Anahtar yöneticisi
     .accesskey = n
+openpgp-key-issue-notification-one = Uçtan uca şifreleme için { $addr } anahtar sorunlarını çözmeniz gerekiyor
+openpgp-key-issue-notification-many = Uçtan uca şifreleme için { $count } alıcının anahtar sorunlarını çözmeniz gerekiyor.
+smime-cert-issue-notification-one = Uçtan uca şifreleme için { $addr } sertifika sorunlarını çözmeniz gerekiyor.
+smime-cert-issue-notification-many = Uçtan uca şifreleme için { $count } alıcının sertifika sorunlarını çözmeniz gerekiyor.
+key-notification-disable-encryption =
+    .label = Şifreleme yapma
+    .accesskey = f
+    .tooltiptext = Uçtan uca şifrelemeyi kapat
 can-encrypt-smime-notification = S/MIME uçtan uca şifreleme mümkün.
 can-encrypt-openpgp-notification = OpenPGP uçtan uca şifreleme mümkün.
 can-e2e-encrypt-button =
@@ -241,6 +249,7 @@ many-public-recipients-bcc =
 many-public-recipients-ignore =
     .label = Alıcılar herkese açık kalsın
     .accesskey = A
+many-public-recipients-prompt-title = Çok fazla ortak alıcı
 many-public-recipients-prompt-cancel = Göndermekten vazgeç
 many-public-recipients-prompt-send = Yine de gönder
 
@@ -249,6 +258,7 @@ many-public-recipients-prompt-send = Yine de gönder
 # Variables:
 # $identity (string) - The name of the used identity, most likely an email address.
 compose-missing-identity-warning = Gönderen adresiyle eşleşen benzersiz kimlik bulunamadı. İleti, mevcut "Gönderen" alanı ve { $identity } kimliğine ait ayarlarla gönderilecek.
+encrypted-bcc-warning = Şifrelenmiş ileti gönderirken Bcc’deki alıcılar tamamen gizlenmez. Tüm alıcılar diğer alıcıları görebilir.
 encrypted-bcc-ignore-button = Anladım
 
 ## Editing
@@ -261,12 +271,19 @@ compose-tool-button-remove-text-styling =
 
 ## Filelink
 
+# A text used in a tooltip of Filelink attachments, whose account has been
+# removed or is unknown.
+cloud-file-unknown-account-tooltip = Bilinmeyen bir Filelink hesabına yüklendi.
 
 # Placeholder file
 
 # Title for the html placeholder file.
 # $filename - name of the file
 cloud-file-placeholder-title = { $filename } - Filelink Eki
+# A text describing that the file was attached as a Filelink and can be downloaded
+# from the link shown below.
+# $filename - name of the file
+cloud-file-placeholder-intro = { $filename } dosyası Filelink olarak eklendi. Dosyayı aşağıdaki bağlantıdan indirebilirsiniz.
 
 # Template
 
@@ -316,6 +333,12 @@ cloud-file-connection-error = { -brand-short-name } çevrimdışı. { $provider 
 cloud-file-rename-error-title = Yeniden adlandırma hatası
 # $provider (string) - name of the online storage service that reported the error
 cloud-file-rename-not-supported = { $provider } önceden yüklenmiş dosyaların yeniden adlandırılmasını desteklemiyor.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-attachment-error-title = Filelink Ek Hatası
+cloud-file-attachment-error = Bilgisayarınızdaki dosya taşındığı veya silindiği için { $filename } Filelink eki güncellenemedi.
+# $filename (string) - name of the file that was renamed and caused the error
+cloud-file-account-error-title = Filelink Hesap Hatası
+cloud-file-account-error = Filelink hesabı silindiği için Filelink eki { $filename } güncellenemedi.
 
 ## Link Preview
 

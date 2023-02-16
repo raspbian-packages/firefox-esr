@@ -20,6 +20,10 @@ return-to-amo-subtitle = කදිමයි, දැන් ඔබ සතුව { 
 return-to-amo-add-extension-label = දිගුව එක් කරන්න
 return-to-amo-add-theme-label = තේමාව එක් කරන්න
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-add-extension-label = { $addon-name } එක් කරන්න
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -36,6 +40,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = ප්‍රගතිය: { $total } න් { $current } වන පියවර
+onboarding-welcome-steps-indicator-label =
+    .aria-label = ප්‍රගතිය: { $total } න් { $current } වන පියවර
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -103,6 +109,7 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous } වෙත
 # This string will be used in cases where we can't detect the previous browser name.
 mr1-onboarding-import-primary-button-label-no-attribution = කලින් අතිරික්සුවෙන් ආයාත කරන්න
 mr1-onboarding-import-secondary-button-label = දැන් නොවේ
+mr2-onboarding-colorway-header = ජීවිතය වර්ණයෙන්
 mr2-onboarding-colorway-subtitle = උද්දීප්ත නව වර්ණ පරාස. සීමිත කාලයක් සඳහා තිබේ.
 mr2-onboarding-colorway-primary-button-label = වර්ණ පරාසය සුරකින්න
 mr2-onboarding-colorway-secondary-button-label = දැන් නොවේ
@@ -184,16 +191,16 @@ mr2-onboarding-theme-description =
 # Variables:
 #   $colorwayName (String) - Name of colorway
 mr2-onboarding-colorway-tooltip =
-    .title = { $colorwayName } වර්ණ පරාස ගවේශණය.
+    .title = { $colorwayName } වර්ණ පරාස ගවේශනය.
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-label = { $colorwayName } වර්ණ පරාස ගවේශණය.
+mr2-onboarding-colorway-label = { $colorwayName } වර්ණ පරාස ගවේශනය.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
-    .title = පෙරනිමි තේමා ගවේශණය.
+    .title = පෙරනිමි තේමා ගවේශනය.
 # Selector description for default themes
-mr2-onboarding-default-theme-label = පෙරනිමි තේමා ගවේශණය.
+mr2-onboarding-default-theme-label = පෙරනිමි තේමා ගවේශනය.
 
 ## Strings for Thank You page
 
@@ -252,6 +259,11 @@ mr2022-onboarding-secondary-skip-button-label = පියවර මඟ හරි
 
 ## MR2022 New User Pin Firefox screen strings
 
+# Title used on about:welcome for new users when Firefox is not pinned.
+# In this context, open up is synonymous with "Discover".
+# The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
+# If this translation does not make sense in your language, feel free to use the word "discover."
+mr2022-onboarding-welcome-pin-header = විස්මජනක අන්තර්ජාලය බලන්න
 # Subtitle is used on onboarding page for new users page when Firefox is not pinned
 mr2022-onboarding-welcome-pin-subtitle = තනි එබීමකින් ඕනෑම තැනක සිට { -brand-short-name } දියත් කරන්න. එම සෑම අවස්ථාවකම, ඔබ වඩාත් විවෘත සහ ස්වාධීන වියමනක් තෝරා ගනියි.
 # Primary button string used on welcome page for when Firefox is not pinned.
@@ -264,7 +276,8 @@ mr2022-onboarding-pin-primary-button-label =
 ## MR2022 Existing User Pin Firefox Screen Strings
 
 # Title used on multistage onboarding page for existing users when Firefox is not pinned
-mr2022-onboarding-existing-pin-header = { -brand-product-name } වෙත ආදරයට ස්තුතියි
+mr2022-onboarding-existing-pin-header = { -brand-product-name } තෝරා ගැනීමට තුති!
+mr2022-onboarding-existing-pin-checkbox-label = එසේම { -brand-short-name } පෞද්. පිරික්සුමට යොදන්න
 
 ## MR2022 New User Set Default screen strings
 
@@ -278,7 +291,7 @@ mr2022-onboarding-set-default-primary-button-label = { -brand-short-name } ප�
 
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
-mr2022-onboarding-get-started-primary-subtitle = අපගේ නවතම අනුවාදය ඔබ වෙනුවෙන්ම තනන ලදි, වියමන පුරා වේගයෙන් සැරිසැරීමට අන් කවරදාටත් වඩා පහසු කරයි. එය ඔබ ඇලුම් කරනු ඇතැයි අප සිතන විශේෂාංගවලින් පුරවා ඇත.
+mr2022-onboarding-get-started-primary-subtitle = අපගේ නවතම අනුවාදය ඔබ වෙනුවෙන්ම තනන ලදි, වියමන පුරා වේගයෙන් සැරිසැරීමට අන් කවරදාටත් වඩා පහසු කරයි. ඔබ ඇලුම් කරනු ඇතැයි අපේක්‍ෂිත විශේෂාංගවලින් පුරවා ඇත.
 mr2022-onboarding-get-started-primary-button-label = තත්පර කිහිපයකින් සකසන්න
 
 ## MR2022 Import Settings screen strings
@@ -291,47 +304,50 @@ mr2022-onboarding-import-primary-button-label-no-attribution = කලින් �
 ## Playmaker. You create…") to "X: you…" ("Playmaker: You create…"). This might
 ## help creating a more inclusive translation.
 
+mr2022-onboarding-colorway-title = ප්‍රබෝධමත් වර්ණයක් තෝරන්න
 mr2022-onboarding-colorway-subtitle = ස්වාධීන හඬ සංස්කෘතියට බලපායි.
-mr2022-onboarding-colorway-primary-button-label = වර්ණ පරාසය සකසන්න
+mr2022-onboarding-colorway-primary-button-label-continue = සකස් කර ඉදිරියට
 mr2022-onboarding-existing-colorway-checkbox-label = { -firefox-home-brand-name } ඔබගේ වර්ණවත් මුල්පිටුව ලෙස යොදන්න
 mr2022-onboarding-colorway-label-default = පෙරනිමි
-mr2022-onboarding-colorway-tooltip-default =
-    .title = පෙරනිමි
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = වත්මන් { -brand-short-name } වර්ණ
 mr2022-onboarding-colorway-description-default = <b>මාගේ වත්මන් { -brand-short-name } වර්ණ යොදා ගන්න.</b>
 mr2022-onboarding-colorway-label-playmaker = තරඟකරුවෙකි
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = තරඟකරුවෙකි
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = තරඟකරුවෙකි (රතු)
 mr2022-onboarding-colorway-description-playmaker = <b>ඔබ තරඟකරුවෙකි</b> ඔබ ජයග්‍රහණය සඳහා අවස්ථා සාදන අතර ඔබ වටා සිටින සැමගේ ක්‍රීඩාව උසස් කිරීමට උපකාර කරයි.
 mr2022-onboarding-colorway-label-expressionist = විභාවනවාදියෙකි
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = විභාවනවාදියෙකි
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = විභාවනවාදියෙකි (කහ)
 mr2022-onboarding-colorway-description-expressionist = <b>ඔබ විභාවනවාදියෙකි</b> ඔබ ලෝකය යථාවාදීව දකින අතර ඔබගේ මාපන අන් අයගේ උනන්දුවට හේතු වේ.
 mr2022-onboarding-colorway-label-visionary = දූරදර්ශියෙකි
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = දූරදර්ශියෙකි
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = දූරදර්ශියෙකි (කොළ)
 mr2022-onboarding-colorway-description-visionary = <b>ඔබ දූරදර්ශියෙකි</b> ඔබ පවතින තත්‍වය ප්‍රශ්න කරන අතර වඩාත් ධර්මිෂ්ඨ අනාගතයක් ගැන සිතීමට අන් අයව පොලඹවයි.
 mr2022-onboarding-colorway-label-activist = ක්‍රියාකාරිකයෙකි
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = ක්‍රියාකාරිකයෙකි
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = ක්‍රියාකාරිකයෙකි (නිල්)
 mr2022-onboarding-colorway-description-activist = <b>ඔබ ක්‍රියාකාරිකයෙකි</b> ලෝකයෙහි ඔබට හමු වූවාට වඩා යහපත් තත්‍වයක් විශ්වාස කිරීමට අන් අයව යොමු කරයි.
 mr2022-onboarding-colorway-label-dreamer = සිහින දකින්නෙකි
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = සිහින දකින්නෙකි
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = සිහින දකින්නෙකි (දම්)
 mr2022-onboarding-colorway-description-dreamer = <b>ඔබ සිහින දකින්නෙකි</b> ධෛර්යය සම්පන්න අයට සෞභාග්‍යය ළඟා වන බව ඔබ විශ්වාස කරයි සහ අන් අයට නිර්භීත වීමට පොළඹවයි.
 mr2022-onboarding-colorway-label-innovator = නවෝත්පාදකයෙකි
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = නවෝත්පාදකයෙකි
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = නවෝත්පාදකයෙකි (තැඹිලි)
 mr2022-onboarding-colorway-description-innovator = <b>ඔබ නවෝත්පාදකයෙකි</b> ඔබ සෑම තැනකම අවස්ථා දකින අතර ඔබ වටා සිටින සැමගේ ජීවිතවලට ප්‍රතිලාභ අත්කර දෙයි.
 
 ## MR2022 Multistage Mobile Download screen strings
 
-mr2022-onboarding-mobile-download-title = පරිගණකයෙන් දුරකථනයට ගොස් නැවත ආපසු
+mr2022-onboarding-mobile-download-title = පරිගණකය සහ දුරකථනය අතර පනින්න
+mr2022-onboarding-mobile-download-subtitle = එක් උපාංගයකින් පටිති ඇහිඳගෙන තවත් උපාංගයක ඔබ නතර කළ තැනින් අතට ගන්න. තවද { -brand-product-name } භාවිතා කරන ඕනෑම තැනකට ඔබගේ පොත්යොමු සහ මුරපද සමමුහූර්ත කිරීමට හැකිය.
 mr2022-onboarding-mobile-download-cta-text = ජංගම දුරකථන සඳහා { -brand-product-name } ලබා ගැනීමට QR කේතය සුපිරික්සන්න හෝ <a data-l10n-name="download-label">ඔබටම බාගැනීමේ සබැඳියක් යවන්න.</a>
-mr2022-onboarding-no-mobile-download-cta-text = දුරකථනයට { -brand-product-name } ගැනීමට QR කේතය සුපිරික්සන්න.
+mr2022-onboarding-no-mobile-download-cta-text = දුරකථනයට { -brand-product-name } ගැනීම සඳහා QR කේතය සුපිරික්සන්න.
 
 ## MR2022 Upgrade Dialog screens
 ## Pin private window screen shown only for users who don't have Firefox private pinned
 
+mr2022-upgrade-onboarding-pin-private-window-header = තනි එබීමකින් නිදහසේ රහසිගතව පිරික්සන්න
 mr2022-upgrade-onboarding-pin-private-window-subtitle = සුරකින ලද දත්තකඩ හෝ ඉතිහාස නැත. ඔබගේ වැඩතලය හරහා කිසිවෙකු නොබලන ලෙස පිරික්සන්න.
 mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
     { PLATFORM() ->
@@ -341,10 +357,21 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 
 ## MR2022 Privacy Segmentation screen strings
 
+mr2022-onboarding-privacy-segmentation-title = අපි සැමවිට පෞද්ගලිකත්‍වයට ගරු කරන්නෙමු
 mr2022-onboarding-privacy-segmentation-button-primary-label = { -brand-product-name } නිර්දේශ භාවිතා කරන්න
 mr2022-onboarding-privacy-segmentation-button-secondary-label = විස්තරාත්මක තොරතුරු පෙන්වන්න
 
 ## MR2022 Multistage Gratitude screen strings
 
+mr2022-onboarding-gratitude-title = ඔබ යහපත් වියමනක් තැනීමට උපකාර කරයි
+mr2022-onboarding-gratitude-subtitle = මොසිල්ලා පදනම මගින් පිටුබලය ලබන { -brand-short-name } භාවිතා කිරීමට තුති. ඔබගේ සහාය ඇතිව, වඩාත් විවෘත, ප්‍රවේශ්‍ය සහ සැවොම සඳහා යහපත් අන්තර්ජාලයක් ගොඩනැගීමට කටයුතු කරමින් සිටින්නෙමු.
 mr2022-onboarding-gratitude-primary-button-label = අළුත් දෑ බලන්න
 mr2022-onboarding-gratitude-secondary-button-label = පිරික්සුම අරඹන්න
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-primary-button = { -brand-short-name } වෙත ආයාත කරන්න
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+

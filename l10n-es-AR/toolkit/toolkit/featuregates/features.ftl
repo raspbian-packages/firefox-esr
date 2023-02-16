@@ -6,7 +6,7 @@
 # by various online articles and is technical in nature.
 experimental-features-css-masonry2 =
     .label = CSS: diseño de mampostería
-experimental-features-css-masonry-description = Habilita la compatibilidad con la función de diseño de mampostería CSS experimental. Consulte el <a data-l10n-name="explainer"> explicador </a> para obtener una descripción de alto nivel de la función. Para enviar comentarios, comente en <a data-l10n-name="w3c-issue"> este problema de GitHub </a> o <a data-l10n-name="bug"> este error </a>.
+experimental-features-css-masonry-description = Habilita la compatibilidad con la función de diseño de mampostería CSS experimental. Consulte el <a data-l10n-name="explainer">explicador</a> para obtener una descripción de alto nivel de la función. Para enviar comentarios, comente en <a data-l10n-name="w3c-issue">este problema de GitHub</a> o <a data-l10n-name="bug">este error</a>.
 # The title of the experiment should be kept in English as it may be referenced
 # by various online articles and is technical in nature.
 experimental-features-web-gpu2 =
@@ -60,10 +60,6 @@ experimental-features-js-warp-description = Habilitar Warp, un proyecto para mej
 experimental-features-ime-search =
     .label = Barra de direcciones: mostrar los resultados durante la composición IME
 experimental-features-ime-search-description = Una IME (Input Method Editor) es una herramienta que le permite ingresar símbolos complejos, como los que se usan en los idiomas escritos de Asia oriental o índica, utilizando un teclado estándar. Habilitar este experimento mantendrá abierto el panel de la barra de direcciones, mostrando resultados de búsqueda y sugerencias, mientras se usa IME para ingresar texto. Tenga en cuenta que el IME puede mostrar un panel que cubre los resultados de la barra de direcciones, por lo tanto esta preferencia solo se sugiere para IME que no utilice este tipo de panel.
-# Text recognition for images
-experimental-features-text-recognition =
-    .label = Reconocimiento de texto
-experimental-features-text-recognition-description = Habilitar funciones para reconocer texto en imágenes.
 experimental-features-accessibility-cache =
     .label = Cache de accesibilidad
 experimental-features-accessibility-cache-description = Guarda en caché toda la información de accesibilidad de todos los documentos en el proceso principal de { -brand-short-name }. Esto mejora el rendimiento de los lectores de pantalla y otras aplicaciones que usan APIs de accesibilidad.

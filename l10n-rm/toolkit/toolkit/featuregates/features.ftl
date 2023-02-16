@@ -60,7 +60,6 @@ experimental-features-js-warp-description = Activar Warp, in project per meglier
 experimental-features-ime-search =
     .label = Trav d'adressas: mussar resultats durant la cumposiziun IME
 experimental-features-ime-search-description = In IME (Input Method Editor) è in utensil che permetta dad endatar simbols cumplexs sco quels da linguas da l'Asia da l'Ost u da linguas scrittas en l'India, cun agid dad ina tastatura da standard. L'activaziun da quest experiment vegn a laschar avert la panela da la trav d'adressas e mussar resultats e propostas da tschertga durant l'endataziun da text cun l'IME. Remartga: L'IME mussa eventualmain ina panela che cuvra ils resultats da la trav d'adressas. Perquai è questa preferenza mo recumandabla per IMEs che n'utiliseschan betg quest tip da panela.
-# Text recognition for images
-experimental-features-text-recognition =
-    .label = Reconuschientscha da text
-experimental-features-text-recognition-description = Activar las funcziunalitads per reconuscher text en maletgs.
+experimental-features-accessibility-cache =
+    .label = Cache d’accessibilitad
+experimental-features-accessibility-cache-description = Memorisescha tut las infurmaziuns d'accessibilitad da tut ils documents en il process principal da { -brand-short-name } en il cache . Quai meglierescha la prestaziun da lecturs dal visur ed autras applicaziuns che utiliseschan APIs d'accessibilitad.

@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } приватно прегледање
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } приватно прегледање
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Потражи помоћ
 urlbar-search-tips-confirm = Разумем
+urlbar-search-tips-confirm-short = Важи
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Савет:
+urlbar-result-menu-button =
+    .title = Отвори мени
+urlbar-result-menu-remove-from-history =
+    .label = Уклони из историје
+    .accesskey = У
+urlbar-result-menu-tip-get-help =
+    .label = Потражите помоћ
+    .accesskey = п
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Куцајте мање, нађите више: користите претраживач { $engineName } директно из траке за адресу.
 urlbar-search-tips-redirect-2 = Почните да куцате у траци за адресу и приказаће вам се предлози које обезбеђује { $engineName } и историја прегледања.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Претраживање је постало лакше. Покушајте да своју претрагу учините конкретнијом у адресној траци. Да прикажете веб адресу, отворите Претрага у подешавањима.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Изаберите ову пречицу за бржу претраживање.
@@ -200,11 +213,11 @@ page-action-manage-extension =
 page-action-remove-extension =
     .label = Уклони додатак
 page-action-manage-extension2 =
-    .label = Управљај проширењем…
-    .accesskey = E
+    .label = Управљај додатком…
+    .accesskey = д
 page-action-remove-extension2 =
-    .label = Уклони проширење
-    .accesskey = v
+    .label = Уклони додатак
+    .accesskey = н
 
 ## Auto-hide Context Menu
 
@@ -213,7 +226,7 @@ full-screen-autohide =
     .accesskey = т
 full-screen-exit =
     .label = Обустави приказ преко целог екрана
-    .accesskey = F
+    .accesskey = ц
 
 ## Search Engine selection buttons (one-offs)
 
@@ -267,39 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Радње ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Прикажи додатке
-quickactions-cmd-addons = додаци, проширења, теме
 quickactions-cmd-addons2 = додаци
 # Opens the bookmarks library window
-quickactions-bookmarks = Прикажи обележиваче
+quickactions-bookmarks2 = Управљај обележивачима
 quickactions-cmd-bookmarks = обележивачи
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Обриши историју
 quickactions-cmd-clearhistory = обриши историју
 # Opens about:downloads page
-quickactions-downloads = Отвори преузимања
+quickactions-downloads2 = Прикажи преузимања
 quickactions-cmd-downloads = преузимања
 # Opens about:addons page in the extensions section
 quickactions-extensions = Управљај проширењима
 quickactions-cmd-extensions = проширења
+# Opens the devtools web inspector
+quickactions-inspector2 = Отвори алате за програмере
+quickactions-cmd-inspector = инспектор, алати за програмере
 # Opens about:logins
-quickactions-logins = Прикажи пријаве
+quickactions-logins2 = Управљај лозинкама
 quickactions-cmd-logins = пријаве, лозинке
 # Opens about:addons page in the plugins section
 quickactions-plugins = Управљај прикључцима
 quickactions-cmd-plugins = прикључци
 # Opens the print dialog
-quickactions-print = Штампај
+quickactions-print2 = Штампај страницу
 quickactions-cmd-print = штампај
 # Opens a new private browsing window
-quickactions-private = Отвори прозор за приватно прегледање
+quickactions-private2 = Отвори приватни прозор
 quickactions-cmd-private = приватно прегледање
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Освежи { -brand-short-name }
@@ -308,10 +320,10 @@ quickactions-cmd-refresh = освежи
 quickactions-restart = Рестартуј { -brand-short-name }
 quickactions-cmd-restart = рестартуј
 # Opens the screenshot tool
-quickactions-screenshot2 = Направи снимак екрана
+quickactions-screenshot3 = Направи снимак екрана
 quickactions-cmd-screenshot = снимак екрана
 # Opens about:preferences
-quickactions-settings = Отвори подешавања
+quickactions-settings2 = Управљај подешавањима
 quickactions-cmd-settings = подешавања, преференце, опције
 # Opens about:addons page in the themes section
 quickactions-themes = Управљај темама
@@ -320,8 +332,11 @@ quickactions-cmd-themes = теме
 quickactions-update = Ажурирај { -brand-short-name }
 quickactions-cmd-update = ажурирај
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Прикажи изворни код
+quickactions-viewsource2 = Прикажи извор странице
 quickactions-cmd-viewsource = изворни код
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Сазнајте више о брзим радњама
 
 ## Bookmark Panel
 
@@ -396,7 +411,7 @@ identity-https-only-info-turn-on2 = Укључите режим „Само HTTP
 identity-https-only-info-turn-off2 = Ако страница делује неисправно, можете искључити режим „Само HTTPS” и поново је учитати преко небезбедног HTTP-а.
 identity-https-only-info-no-upgrade = Није могуће надоградити HTTP везу.
 identity-permissions-storage-access-header = Колачићи трећих страна
-identity-permissions-storage-access-hint = Ове стране могу користити вишестраничне колачиће и страничне податке током ваше посете страници.
+identity-permissions-storage-access-hint = Ове стране могу користити колачиће трећих страна и страничне податке током ваше посете страници.
 identity-permissions-storage-access-learn-more = Сазнајте више
 identity-permissions-reload-hint = Можда ћете морати поново учитати страницу да примените промене.
 identity-clear-site-data =
@@ -498,6 +513,9 @@ popup-select-microphone-icon =
     .tooltiptext = Микрофон
 popup-select-speaker-icon =
     .tooltiptext = Звучници
+popup-select-window-or-screen =
+    .label = Прозор или екран:
+    .accesskey = П
 popup-all-windows-shared = Сви видљиви прозори на екрану ће бити подељени.
 popup-screen-sharing-block =
     .label = Блокирај
@@ -519,6 +537,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Да бисте користили пречицу F12, из менија „За веб-програмере” отворите алатке за програмере.
+enable-devtools-popup-description2 = Да бисте користили пречицу F12, из менија „За веб-програмере” отворите алатке за програмере.
 
 ## URL Bar
 
@@ -650,6 +669,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Брзе радње
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Уђи у приказ читача
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Затвори приказ читача
 
 ## Full Screen and Pointer Lock UI
 
@@ -860,6 +888,12 @@ picture-in-picture-hide-toggle =
 ## Since the default position for PiP controls does not change for RTL layout,
 ## right-to-left languages should use "Left" and "Right" as in the English strings,
 
+picture-in-picture-move-toggle-right =
+    .label = Помери „Слика у слици” прекидач удесно
+    .accesskey = д
+picture-in-picture-move-toggle-left =
+    .label = Помери „Слика у слици” прекидач улево
+    .accesskey = л
 
 ##
 
@@ -921,3 +955,29 @@ private-browsing-indicator-label = Приватно прегледање
 unified-extensions-button =
     .label = Проширења
     .tooltiptext = Проширења
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Додаци
+    .tooltiptext =
+        Додаци
+        Потребне су дозволе
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } је спречио ову страницу да се аутоматски освежи.
+refresh-blocked-redirect-label = { -brand-short-name } је спречио ову страницу да аутоматски проследи на другу страницу.
+refresh-blocked-allow =
+    .label = Дозволи
+    .accesskey = Д
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } маскира вашу праву адресу е-поште како би вас заштитио од цурења података и нежељене поште.
+firefox-relay-offer-how-we-integrate = Ако наставите, моћи ћете да правите нове { -relay-brand-short-name } маске е-поште директно из вашег { -brand-shorter-name } управљача лозинки.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Проследићемо све е-поруке са <strong>{ $sitename }</strong> на <strong>{ $useremail }</strong>.

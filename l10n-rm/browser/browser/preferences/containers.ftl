@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Agiuntar in nov container
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Parameters dal container «{ $name }»
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Agiuntar in nov container
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Parameters dal container «{ $name }»
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

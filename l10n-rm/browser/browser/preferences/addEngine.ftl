@@ -6,6 +6,10 @@ add-engine-window =
     .title = Agiuntar ina maschina da tschertgar
     .style = width: 40em;
 
+add-engine-window2 =
+    .title = Agiuntar ina maschina da tschertgar
+    .style = min-width: 40em;
+
 add-engine-button = Agiuntar ina maschina persunalisada
 
 add-engine-name = Num da la maschina da tschertgar

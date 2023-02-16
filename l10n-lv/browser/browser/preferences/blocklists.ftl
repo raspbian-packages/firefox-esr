@@ -6,6 +6,10 @@ blocklist-window =
     .title = Bloķēto saraksts
     .style = width: 50em
 
+blocklist-window2 =
+    .title = Bloķēto saraksts
+    .style = min-width: 50em
+
 blocklist-close-key =
     .key = w
 

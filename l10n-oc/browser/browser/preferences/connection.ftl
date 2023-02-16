@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Paramètres de connexion
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Servidor mandatari HTTP
     .accesskey = H
 connection-proxy-http-port = Pòrt
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = Utilizar tanben aqueste servidor mandatari pel HTTPS
     .accesskey = t

@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Nastavenie pripojenia
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Server proxy HTTP
     .accesskey = x
 connection-proxy-http-port = Port
     .accesskey = t
-
 connection-proxy-https-sharing =
     .label = Použiť tento server proxy aj pre HTTPS
     .accesskey = T

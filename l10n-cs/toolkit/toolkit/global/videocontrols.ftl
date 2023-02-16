@@ -50,7 +50,7 @@ videocontrols-picture-in-picture-toggle-label2 = Zobrazit video v samostatném o
 # This string is used as part of a variation of the Picture-in-Picture video toggle
 # button. When using this variation, this string appears below the toggle when the
 # mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer2 = Více obrazovek, více zábavy. Sledujte toto video během prohlížení dalších stránek.
+videocontrols-picture-in-picture-explainer3 = Více obrazovek znamená více zábavy. Přehrajte si toto video i když děláte něco jiného.
 videocontrols-error-aborted = Nahrávání videa zastaveno.
 videocontrols-error-network = Přehrávání videa selhalo z důvodu chyby sítě.
 videocontrols-error-decode = Video nelze přehrát, protože soubor je poškozen.

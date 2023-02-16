@@ -6,8 +6,8 @@ tab-context-new-tab =
     .label = زبانهٔ جدید
     .accesskey = ز
 reload-tab =
-    .label = بازآوری زبانه
-    .accesskey = ب
+    .label = بازخوانی زبانه
+    .accesskey = خ
 select-all-tabs =
     .label = انتخاب همه‌ی زبانه‌ها
     .accesskey = S
@@ -37,8 +37,8 @@ close-other-tabs =
     .label = بستن زبانه‌های دیگر
     .accesskey = ب
 reload-tabs =
-    .label = بازآوری زبانه‌ها
-    .accesskey = R
+    .label = بازخوانی زبانه‌ها
+    .accesskey = خ
 pin-tab =
     .label = سنجاق کردن زبانه
     .accesskey = س
@@ -57,6 +57,9 @@ bookmark-selected-tabs =
 bookmark-tab =
     .label = نشانک‌گذاری زبانه
     .accesskey = B
+tab-context-bookmark-tab =
+    .label = نشانک‌گذاری زبانه…
+    .accesskey = ن
 tab-context-open-in-new-container-tab =
     .label = باز کردن در محفظهٔ جدید
     .accesskey = ک
@@ -100,7 +103,6 @@ tab-context-move-tabs =
            *[other] جابجایی زبانه‌ها
         }
     .accesskey = v
-
 tab-context-send-tabs-to-device =
     .label =
         { $tabCount ->

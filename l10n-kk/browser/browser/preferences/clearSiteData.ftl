@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Мәліметті өшіру
     .style = width: 45em
 
+clear-site-data-window2 =
+    .title = Мәліметті өшіру
+    .style = min-width: 45em
+
 clear-site-data-description = { -brand-short-name } сақтаған барлық cookies және сайт деректері өшіру нәтижесінде веб сайттардан шығып, желіден тыс веб құрамасы өшірілуі мүмкін. Кэштелген деректерді өшіру логиндерге әсер етпейді.
 
 clear-site-data-close-key =

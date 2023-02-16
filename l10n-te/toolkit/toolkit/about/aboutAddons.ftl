@@ -55,6 +55,9 @@ detail-update-manual =
     .label = ఆఫ్ చేయి
     .tooltiptext = తాజాకరణలను స్వయంచాలకంగా స్థాపించవద్దు
 
+# Used as a description for the option to allow or block an add-on in private windows.
+detail-private-browsing-label = అంతరంగిక కిటికీలలో నడుపు
+
 detail-private-browsing-on =
     .label = అనుమతించు
     .tooltiptext = అంతరంగిక విహరణలో చేతనంచేయి

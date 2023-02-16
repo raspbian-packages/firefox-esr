@@ -21,6 +21,10 @@ certmgr-edit-ca-cert =
     .title = CA sertifikati ishonch sozlamalarini oʻzgartirish
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA sertifikati ishonch sozlamalarini oʻzgartirish
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Ishonch sozlalamalarini oʻzgartirish:
 
 certmgr-edit-cert-trust-ssl =
@@ -32,6 +36,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Sertifikatni o‘chirish
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Sertifikatni o‘chirish
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Sertifikat nomi
@@ -162,9 +170,8 @@ delete-email-cert-title =
 delete-email-cert-confirm = Ushbu odamlarning e-pochta sertifikatlarini o‘chirmoqchi ekanligingizga ishonchingiz komilmi?
 delete-email-cert-impact = Agar shaxsning e-pochta sertifikatini o‘chsangiz, siz ushbu shaxsga kodlangan xatni jo‘nata olmaysiz.
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

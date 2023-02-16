@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Jerohoryvéva tembiasakue ñemopotĩrã
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Jerohoryvéva tembiasakue ñemopotĩrã
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

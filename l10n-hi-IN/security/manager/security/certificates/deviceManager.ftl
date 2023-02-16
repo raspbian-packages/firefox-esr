@@ -9,6 +9,10 @@ devmgr =
     .title = युक्ति प्रबंधक
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = युक्ति प्रबंधक
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = सुरक्षा मौड्यूल और युक्तियां
 

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Borrar datos
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Borrar datos
+    .style = min-width: 35em
+
 clear-site-data-description = Borrar todas as cookies e datos dos sitios almacenados polo { -brand-short-name } pode pechar as sesións e eliminar o contido web sen conexión. Borrar os datos da caché non afectará ao estado das sesións.
 
 clear-site-data-close-key =

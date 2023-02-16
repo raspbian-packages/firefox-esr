@@ -10,7 +10,9 @@ crashes-id = Naoudi an danevell
 crashes-send-date = Kaset
 crashes-all-reports = An holl zanevelloù sac'hadenn
 crashes-no-config = N'eo ket bet kefluniet an arload-mañ evit skrammañ danevelloù sac'hadenn.
+support-addons-title = Askouezhioù
 support-addons-name = Anv
+support-addons-enabled = Gweredekaet
 support-addons-version = Handelv
 support-addons-id = Naoudi
 security-software-title = Meziant diogelroez
@@ -30,6 +32,7 @@ app-basics-title = Arventennoù diazez an arload
 app-basics-name = Anv
 app-basics-version = Handelv
 app-basics-build-id = Naoudi ar c'hempunañ
+app-basics-distribution-id = ID an dasparzh
 app-basics-update-channel = Sanell hizivadur
 # This message refers to the folder used to store updates on the device,
 # as in "Folder for updates". "Update" is a noun, not a verb.
@@ -49,6 +52,10 @@ app-basics-enabled-plugins = Enlugelladoù gweredekaet
 app-basics-build-config = Kefluniad kempunadur
 app-basics-user-agent = Gwezher arveriad
 app-basics-os = Reizhiad Korvoiñ
+app-basics-os-theme = Neuz ar Reizhiad Korvoiñ
+# Rosetta is Apple's translation process to run apps containing x86_64
+# instructions on Apple Silicon. This should remain in English.
+app-basics-rosetta = Troet gant Rosetta
 app-basics-memory-use = Arver ar vemor
 app-basics-performance = Digonusted
 app-basics-service-workers = Labourerien gwazerezh marilhet
@@ -61,6 +68,12 @@ app-basics-location-service-key-google = Alc'hwez gwazerezh Google Loation
 app-basics-safebrowsing-key-google = Alc'hwez Google Safebrowsing
 app-basics-key-mozilla = Alc'hwez Gwazerezh Lec'hiadur Mozilla
 app-basics-safe-mode = Mod diarvar
+app-basics-memory-size = Ment ar memor (RAM)
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
 
 show-dir-label =
     { PLATFORM() ->
@@ -68,6 +81,7 @@ show-dir-label =
         [windows] Digeriñ ar poull-traezh
        *[other] Digeriñ ar c'havlec'h
     }
+environment-variables-name = Anv
 modified-key-prefs-title = Gwellvezioù pouezus kemmet
 modified-prefs-name = Anv
 modified-prefs-value = Gwerzh

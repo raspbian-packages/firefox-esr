@@ -6,6 +6,10 @@ translation-window =
     .title = Բացառություններ - Թարգմանություն
     .style = width: 36em
 
+translation-window2 =
+    .title = Բացառություններ - Թարգմանություն
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

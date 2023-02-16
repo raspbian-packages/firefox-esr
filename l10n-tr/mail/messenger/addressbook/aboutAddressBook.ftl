@@ -21,9 +21,20 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = Tüm adres defterleri
 all-address-books = Tüm Adres Defterleri
+# Variables:
+# $name (String) - The name of the selected book/list.
+# $count (Number) - The number of contacts in the selected book/list.
+about-addressbook-card-count = { $name } içindeki toplam kişi sayısı: { $count }
+# Variables:
+# $count (Number) - The number of contacts in all address books.
+about-addressbook-card-count-all = Tüm adres defterlerindeki toplam kişi sayısı: { $count }
 about-addressbook-books-context-properties =
     .label = Özellikler
+about-addressbook-books-context-edit-list =
+    .label = Listeyi düzenle
 about-addressbook-books-context-synchronize =
     .label = Eşitle
 about-addressbook-books-context-edit =
@@ -75,6 +86,8 @@ about-addressbook-horizontal-layout =
     .label = Yatay düzene geç
 about-addressbook-vertical-layout =
     .label = Dikey düzene geç
+about-addressbook-table-layout =
+    .label = Tablo düzeni
 
 ## Card column headers
 ## Each string is listed here twice, and the values should match.
@@ -85,6 +98,9 @@ about-addressbook-column-label-generatedname =
 about-addressbook-column-header-emailaddresses = E-posta adresleri
 about-addressbook-column-label-emailaddresses =
     .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-nickname = Takma ad
+about-addressbook-column-label-nickname =
+    .label = { about-addressbook-column-header-nickname }
 about-addressbook-column-header-phonenumbers = Telefon numaraları
 about-addressbook-column-label-phonenumbers =
     .label = { about-addressbook-column-header-phonenumbers }
@@ -167,10 +183,23 @@ about-addressbook-placeholder-no-search-results = Kişi bulunamadı
 
 ## Details
 
-about-addressbook-prefer-display-name = İleti başlığında gösterilen adı tercih et
+# Variables:
+# $count (Number) - The number of selected items (will never be fewer than two)
+about-addressbook-selection-mixed-header = { $count } kişi ve liste seçili
+# Variables:
+# $count (Number) - The number of selected contacts
+about-addressbook-selection-contacts-header = { $count } kişi seçili
+# Variables:
+# $count (Number) - The number of selected lists
+about-addressbook-selection-lists-header = { $count } liste seçili
+about-addressbook-details-edit-photo =
+    .title = Kişi fotoğrafını düzenle
+about-addressbook-new-contact-header = Yeni kişi
+about-addressbook-prefer-display-name = İleti başlığında görünen adı tercih et
 about-addressbook-write-action-button = Yaz
 about-addressbook-event-action-button = Etkinlik
 about-addressbook-search-action-button = Ara
+about-addressbook-new-list-action-button = Yeni liste
 about-addressbook-begin-edit-contact-button = Düzenle
 about-addressbook-delete-edit-contact-button = Sil
 about-addressbook-cancel-edit-contact-button = Vazgeç
@@ -180,6 +209,8 @@ about-addressbook-details-email-addresses-header = E-posta adresleri
 about-addressbook-details-phone-numbers-header = Telefon numaraları
 about-addressbook-details-addresses-header = Adresler
 about-addressbook-details-notes-header = Notlar
+about-addressbook-details-impp-header = Anlık mesajlaşma
+about-addressbook-details-websites-header = Web siteleri
 about-addressbook-details-other-info-header = Diğer bilgiler
 about-addressbook-entry-type-work = İş
 about-addressbook-entry-type-home = Ev
@@ -194,6 +225,10 @@ about-addressbook-entry-name-role = Rol
 about-addressbook-entry-name-organization = Şirket
 about-addressbook-entry-name-website = Web sitesi
 about-addressbook-entry-name-time-zone = Saat dilimi
+about-addressbook-entry-name-custom1 = Özel 1
+about-addressbook-entry-name-custom2 = Özel 2
+about-addressbook-entry-name-custom3 = Özel 3
+about-addressbook-entry-name-custom4 = Özel 4
 about-addressbook-unsaved-changes-prompt-title = Kaydedilmemiş değişiklikler
 about-addressbook-unsaved-changes-prompt = Düzenleme görünümünden çıkmadan önce değişikliklerinizi kaydetmek ister misiniz?
 
@@ -206,3 +241,7 @@ about-addressbook-photo-filepicker-title = Bir resim dosyası seçin
 about-addressbook-photo-discard = Mevcut fotoğrafı sil
 about-addressbook-photo-cancel = Vazgeç
 about-addressbook-photo-save = Kaydet
+
+# Keyboard shortcuts
+
+about-addressbook-new-contact-key = N

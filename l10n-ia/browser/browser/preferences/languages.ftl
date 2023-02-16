@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Configurationes del linguas del pagina web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Configurationes del linguas del pagina web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Configurationes del linguas
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Configurationes del linguas
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } monstrara le prime lingua como tu predefiniva e monstrara altere linguas si illos es necesse in le ordine de apparition.
 

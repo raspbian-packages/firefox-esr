@@ -6,6 +6,10 @@ blocklist-window =
     .title = Jami bulok
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Jami bulok
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

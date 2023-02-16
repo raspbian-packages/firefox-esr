@@ -18,7 +18,7 @@ toolbar-context-menu-bookmark-selected-tabs =
     .label = Закладкі на выбраныя карткі…
     .accesskey = З
 toolbar-context-menu-select-all-tabs =
-    .label = Выбраць усе карткі
+    .label = Вылучыць усе карткі
     .accesskey = ы
 toolbar-context-menu-reopen-closed-tabs =
     .label =
@@ -60,8 +60,13 @@ toolbar-context-menu-view-customize-toolbar =
     .label = Уладкаваць…
     .accesskey = л
 toolbar-context-menu-view-customize-toolbar-2 =
-    .label = Уладкаваць паліцы прылад…
+    .label = Уладкаваць паліцу прылад…
     .accesskey = У
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = Замацаваць на паліцы прылад
+    .accesskey = З
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = Заўсёды паказваць
     .accesskey = З

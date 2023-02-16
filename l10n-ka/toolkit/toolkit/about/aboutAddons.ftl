@@ -20,7 +20,7 @@ list-empty-recent-updates =
 list-empty-find-updates =
     .label = განახლებების შემოწმება
 list-empty-button =
-    .label = იხილეთ ვრცლად, დამატებების შესახებ
+    .label = იხილეთ ვრცლად დამატებების შესახებ
 help-button = დამატებების მხარდაჭერა
 sidebar-help-button-title =
     .title = დამატებების მხარდაჭერა
@@ -108,7 +108,7 @@ plugin-deprecation-description = რამეს ვერ პოულობთ
 legacy-warning-show-legacy = მოძველებული გაფართოებების ჩვენება
 legacy-extensions =
     .value = მოძველებული გაფართოებები
-legacy-extensions-description = ეს გაფართოებები არ შეესაბამება მოთხოვნებს, რომელთაც { -brand-short-name } ადგენს და შესაბამისად ამორთულია. <label data-l10n-name="legacy-learn-more">ვრცლად, დამატებებთან დაკავშირებული ცვლილებების შესახებ</label>
+legacy-extensions-description = ეს გაფართოებები არ შეესაბამება მოთხოვნებს, რომელთაც { -brand-short-name } ადგენს და შესაბამისად ამორთულია. <label data-l10n-name="legacy-learn-more">ვრცლად დამატებებთან დაკავშირებული ცვლილებების შესახებ</label>
 private-browsing-description2 =
     { -brand-short-name } ცვლის გაფართოებების მუშაობას პირადი თვალიერებისას. ნებისმიერ ახლადჩადგმულ დამატებას
     { -brand-short-name } არ გაუშვებს ნაგულისხმევად პირად ფანჯრებში. მანამ, სანამ თავად არ დაუშვებთ პარამეტრებიდან,
@@ -142,6 +142,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = საიტის ნებართვები
 addon-category-sitepermission-title =
     .title = საიტის ნებართვები
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = ნებართვები საიტისთვის { $host }
 
 ## These are global warnings
 
@@ -258,7 +262,7 @@ install-theme-button = თემის ჩადგმა
 # The label of the button that appears after installing an add-on. Upon click,
 # the detailed add-on view is opened, from where the add-on can be managed.
 manage-addon-button = მართვა
-find-more-addons = სხვა დამატებების მოძიება
+find-more-addons = სხვა დამატებების მონახვა
 find-more-themes = სხვა თემების მოძიება
 # This is a label for the button to open the "more options" menu, it is only
 # used for screen readers.
@@ -294,10 +298,6 @@ theme-monochromatic-heading = შეფერილობები
 theme-monochromatic-subheading = ახალი ხასხასა შეფერილობები, რომელთაც { -brand-product-name } გთავაზობთ. ხელმისაწვდომია მცირე დროით.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = მოსინჯეთ ახალი შეფერილობა
-colorway-collection-independent-voices-subheading = გახადეთ { -brand-short-name } ცოტათი უფრო თქვენებური.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = ბოლო ვადაა { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = შეფერილობის შეცვლა
 # Variables:
@@ -384,7 +384,7 @@ release-notes-error = სამწუხაროდ, ვერსიის მ�
 addon-permissions-empty = გაფართოება არ ითხოვს რამე ნებართვას
 addon-permissions-required = მოთხოვნილი ნებართვები ძირითადი შესაძლებლობებისთვის:
 addon-permissions-optional = მოთხოვნილი ნებართვები დამატებითი შესაძლებლობებისთვის:
-addon-permissions-learnmore = ვრცლად, ნებართვების შესახებ
+addon-permissions-learnmore = ვრცლად ნებართვების შესახებ
 recommended-extensions-heading = შემოთავაზებული გაფართოებები
 recommended-themes-heading = შემოთავაზებული თემები
 addon-sitepermissions-required = მოცემული შესაძლებლობებით აღიჭურვება <span data-l10n-name="hostname">{ $hostname }</span>:
@@ -403,7 +403,7 @@ updates-heading = განახლებების მართვა
 sitepermission-heading = საიტის ნებართვების მართვა
 discover-heading = მოირგეთ თქვენი { -brand-short-name }
 shortcuts-heading = გაფართოებების ღილაკების მართვა
-default-heading-search-label = სხვა დამატებების მოძიება
+default-heading-search-label = სხვა დამატებების მონახვა
 addons-heading-search-input =
     .placeholder = addons.mozilla.org საიტზე მოძიება
 addon-page-options-button =

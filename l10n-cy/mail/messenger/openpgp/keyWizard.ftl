@@ -10,6 +10,10 @@ key-wizard-button =
     .buttonlabelaccept = Parhau
     .buttonlabelhelp = Nôl
 
+key-wizard-dialog =
+    .buttonlabelaccept = Parhau
+    .buttonlabelextra1 = Mynd nôl
+
 key-wizard-warning = <b>Os oes gennych allwedd bersonol bresennol</b> ar gyfer y cyfeiriad e-bost hwn, dylech ei fewnforio. Fel arall ni fydd gennych fynediad i'ch archifau o e-byst wedi'u hamgryptio, nac yn gallu darllen e-byst wedi'u hamgryptio rydych yn eu derbyn gan bobl sy'n dal i ddefnyddio'ch allwedd bresennol.
 
 key-wizard-learn-more = Dysgu rhagor

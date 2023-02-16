@@ -21,9 +21,20 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = Todos os livros de endereços
 all-address-books = Todos os livros de endereços
+# Variables:
+# $name (String) - The name of the selected book/list.
+# $count (Number) - The number of contacts in the selected book/list.
+about-addressbook-card-count = Total de contactos em { $name }: { $count }
+# Variables:
+# $count (Number) - The number of contacts in all address books.
+about-addressbook-card-count-all = Total de contactos em todos os livros de endereços: { $count }
 about-addressbook-books-context-properties =
     .label = Propriedades
+about-addressbook-books-context-edit-list =
+    .label = Editar lista
 about-addressbook-books-context-synchronize =
     .label = Sincronizar
 about-addressbook-books-context-edit =
@@ -75,12 +86,17 @@ about-addressbook-horizontal-layout =
     .label = Mudar para vista horizontal
 about-addressbook-vertical-layout =
     .label = Mudar para vista vertical
+about-addressbook-table-layout =
+    .label = Disposição da tabela
 
 ## Card column headers
 ## Each string is listed here twice, and the values should match.
 
 about-addressbook-column-header-generatedname = Nome
 about-addressbook-column-header-emailaddresses = Endereços de e-mail
+about-addressbook-column-header-nickname = Pseudónimo
+about-addressbook-column-label-nickname =
+    .label = { about-addressbook-column-header-nickname }
 about-addressbook-column-header-phonenumbers = Números de Telefone
 about-addressbook-column-header-addresses = Endereços
 about-addressbook-column-header-title = Título
@@ -124,4 +140,7 @@ about-addressbook-confirm-remove-contacts-title =
 
 
 # Photo dialog
+
+
+# Keyboard shortcuts
 

@@ -25,6 +25,12 @@ return-to-amo-addon-title = Ara anem vos installar <img data-l10n-name="icon"/> 
 return-to-amo-add-extension-label = Apondre l’extension
 return-to-amo-add-theme-label = Apondre lo tèma
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Saludatz { -brand-short-name }
+mr1-return-to-amo-addon-title = Avètz un navegador rapid, privat, a man. Podètz ara apondre <b>{ $addon-name }</b> e encara mai amb { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = Apondre { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Progression : etapa { $current } de { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Progression : etapa { $current } de { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -262,22 +270,59 @@ mr2022-onboarding-secondary-skip-button-label = Passar aquesta etapa
 
 ## MR2022 New User Pin Firefox screen strings
 
+# Title used on about:welcome for new users when Firefox is not pinned.
+# In this context, open up is synonymous with "Discover".
+# The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
+# If this translation does not make sense in your language, feel free to use the word "discover."
+mr2022-onboarding-welcome-pin-header = Descobrissètz un Internet de pas creire
+# Subtitle is used on onboarding page for new users page when Firefox is not pinned
+mr2022-onboarding-welcome-pin-subtitle = Lançatz { -brand-short-name } d’ont volètz amb un sol clic. Cada còp qu’o fasètz, causissètz un Web mai dobèrt e independent.
+# Primary button string used on welcome page for when Firefox is not pinned.
+mr2022-onboarding-pin-primary-button-label =
+    { PLATFORM() ->
+        [macos] Gardar { -brand-short-name } al Dock
+       *[other] Penjar { -brand-short-name } a la barra de prètzfaches
+    }
+# Subtitle will be used when user already has Firefox pinned, but
+# has not set it as their default browser.
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-set-default-only-subtitle = Començatz per utilizar un navegador sostengut per una organizacion sens but lucratiu. Defendèm vòstra vida privada pendent que navegatz pel web.
 
 ## MR2022 Existing User Pin Firefox Screen Strings
 
 # Title used on multistage onboarding page for existing users when Firefox is not pinned
 mr2022-onboarding-existing-pin-header = Mercés d’apreciar { -brand-product-name }
+# Subtitle is used on onboarding page for existing users when Firefox is not pinned
+mr2022-onboarding-existing-pin-subtitle = Aviatz un Internet mai sanitós d’ont volètz amb un sol clic. Nòstra darrièra mesa a jorn es cargada de novetats que vos agradaràn.
+# Subtitle will be used on the welcome screen for existing users
+# when they already have Firefox pinned but not set as default
+mr2022-onboarding-existing-set-default-only-subtitle = Utilizatz un navegador que defend vòstra vida privada quand navegatz pel web. Nòstra darrièra mesa a jorn es cargada de novetat que vos agradaràn.
+mr2022-onboarding-existing-pin-checkbox-label = Ajustatz tanben la navegacion privada { -brand-short-name }
 
 ## MR2022 New User Set Default screen strings
 
+# This string is the title used when the user already has pinned the browser, but has not set default.
+mr2022-onboarding-set-default-title = Fasètz de { -brand-short-name } vòstre navegador per defaut
+mr2022-onboarding-set-default-primary-button-label = Definir { -brand-short-name } coma navegador per defaut
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-set-default-subtitle = Utilizatz un navegador sostengut per una organizacion sens tòca lucrativa. Defendèm vòstra vida privada pendent que navegatz pel web.
 
 ## MR2022 Get Started screen strings.
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-get-started-primary-subtitle = Nòstra darrièra version es concebuda per vos, per far venir mai simpla la navegacion pel Web. Aquesta darrièra version es fargada de foncionalitats que vos agradarà.
+mr2022-onboarding-get-started-primary-button-label = Configuracion dins un ai
 
 ## MR2022 Import Settings screen strings
 
+mr2022-onboarding-import-header = Configuracion dins un ai
+mr2022-onboarding-import-subtitle = Configuratz { -brand-short-name } coma volètz. Ajustatz vòstres marcapaginas, senhals e encara mai a partir de vòstre ancian navegador.
+mr2022-onboarding-import-primary-button-label-no-attribution = Importar d’un autre navegador
 
 ## If your language uses grammatical genders, in the description for the
 ## colorway feel free to switch from "You are a X. You…" (e.g. "You are a
@@ -286,42 +331,92 @@ mr2022-onboarding-existing-pin-header = Mercés d’apreciar { -brand-product-na
 
 mr2022-onboarding-colorway-title = Causissètz una color que vos inspira
 mr2022-onboarding-colorway-subtitle = Voses independentas pòdon cambiar una cultura.
-mr2022-onboarding-colorway-primary-button-label = Causir lo colorit
+mr2022-onboarding-colorway-primary-button-label-continue = Definir e contunhar
+mr2022-onboarding-existing-colorway-checkbox-label = Convertissètz { -firefox-home-brand-name } en vòstra pagina d’acuèlh acolorida
 mr2022-onboarding-colorway-label-default = Per defaut
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Per defaut
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Colors actualas de { -brand-short-name }
+mr2022-onboarding-colorway-description-default = <b>Utilizar mas colors actualas de { -brand-short-name }.</b>
 mr2022-onboarding-colorway-label-playmaker = Menatz
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Menatz
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Menaire/Menaira (roge)
+mr2022-onboarding-colorway-description-playmaker = <b>Menaire/Menaira.</b> Creatz d’escasenças per ganhar e ajudar lo monde a l'entorn de vos a elevar lor jòc.
 mr2022-onboarding-colorway-label-expressionist = Exprimissètz
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Exprimissètz
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Expressionista (jaune)
+mr2022-onboarding-colorway-description-expressionist = <b>Expressionista.</b> Vesètz lo monde diferentament e vòstras creacions provòcan l’admiracion.
 mr2022-onboarding-colorway-label-visionary = Endevenissètz
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Endevenissètz
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Visionari/ària (verd)
+mr2022-onboarding-colorway-description-visionary = <b>Visionari/Visionària.</b> Questionatz los estatuts quo e incitatz los autres a imaginar un futur melhor.
 mr2022-onboarding-colorway-label-activist = Militatz
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Militatz
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Militant/Militanta (blau)
+mr2022-onboarding-colorway-description-activist = <b>Activista.</b> Rendètz lo monde melhor qu’èra quand lo trobèretz e menatz los autres a creire al cambiament.
 mr2022-onboarding-colorway-label-dreamer = Somiatz
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Somiatz
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Somiaire/somiaira  (violet)
+mr2022-onboarding-colorway-description-dreamer = <b>Somiaire/somiaira.</b> Cresètz que la fortuna afavorís los audacioses e inspira los demai a èsser valents.
 mr2022-onboarding-colorway-label-innovator = Innovatz
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Innovatz
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Innovador/Innovadora (irange)
+mr2022-onboarding-colorway-description-innovator = <b>Inventor/Inventritz.</b>Vesètz d’oportunitats pertot e afectatz la vida de vòstre monde.
 
 ## MR2022 Multistage Mobile Download screen strings
 
+mr2022-onboarding-mobile-download-title = Passatz d’un ordenador portatiu a un mobil e invèrsament
+mr2022-onboarding-mobile-download-subtitle = Trapatz los onglets d’un aparelh e tornatz ont eratz sus un autre. Sincronizatz tanben los marcapaginas e senhals pertot ont utilizatz { -brand-product-name }.
+mr2022-onboarding-mobile-download-cta-text = Numerizatz lo còdi QR per installar { -brand-product-name } per mobil o <a data-l10n-name="download-label">enviatz un ligam de telecargament.</a>
+mr2022-onboarding-no-mobile-download-cta-text = Numerizatz lo còdi QR per telecargar { -brand-product-name } mobile.
 
 ## MR2022 Upgrade Dialog screens
 ## Pin private window screen shown only for users who don't have Firefox private pinned
 
+mr2022-upgrade-onboarding-pin-private-window-header = La libertat d’una navegacion privada en un clic
+mr2022-upgrade-onboarding-pin-private-window-subtitle = Cap de cookies o d’istoric pas enregistrat. Navegatz sens vos sentir observat.
+mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
+    { PLATFORM() ->
+        [macos] Gardar la navegacion privada de { -brand-short-name } al Dock
+       *[other] Penjar la navegacion privada de { -brand-short-name } a la barra de prètzfaches
+    }
 
 ## MR2022 Privacy Segmentation screen strings
 
+mr2022-onboarding-privacy-segmentation-title = Respectam totjorn vòstra vida privada
+mr2022-onboarding-privacy-segmentation-subtitle = De las suggestions intelligentas a la recèrca fina, sèm totjorn a crear un { -brand-product-name } melhor e mai personal.
+mr2022-onboarding-privacy-segmentation-text-cta = De qué volètz veire quand vos ensenham de foncionalitats novèlas qu’utilizan vòstras donadas per melhorar vòstra navegacion ?
 mr2022-onboarding-privacy-segmentation-button-primary-label = Utilizar las recomandacions { -brand-product-name }
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Mostrar las informacions detalhadas
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-primary-button-label = Descobrissètz las novetats
+mr2022-onboarding-gratitude-title = Nos ajudatz a crear un Web melhor
+mr2022-onboarding-gratitude-subtitle = Mercés d’utilizar { -brand-short-name }, sostengut per la Fondacion Mozilla. Amb vòstre sosten, nos esforçam a far venir Internet mai dubèrt, accessible e melhor tot lo monde.
+mr2022-onboarding-gratitude-primary-button-label = Descobrir las novetats
 mr2022-onboarding-gratitude-secondary-button-label = Començar de navegar
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Siatz tan ben coma a l’ostal
+onboarding-infrequent-import-subtitle = Que siatz per demorar aicí o sonque de passatge, remembratz que podètz importatz vòstres marcapaginas, senhals e encara mai.
+onboarding-infrequent-import-primary-button = Importar dins { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Persona que trabalha amb un ordenador portable enrodada d’estelas e flors
+mr2022-onboarding-default-image-alt =
+    .aria-label = Persona que calinha lo logotipe { -brand-product-name }
+mr2022-onboarding-import-image-alt =
+    .aria-label = Persona que condutz una planca a rodetas amb una bóstia d’icòns de logicials
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Granhòtas sautan pels nenufars amb un còdi QR per telecargar { -brand-product-name } per mobil al centre.
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = La bagueta magica fa sortir lo logotipe de navegacion privada de { -brand-product-name } d’un capèl
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Mans picants una a la pèl clara e una moreta
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Vista d’un solelh que cabussa per una fenèstra amb un rainal e un pòt de flors sul rebòrd d’una fenèstra
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Bomba de pintura colora un empegatge d’un uèlh verd, d’una cauçadura iranja, d’una palma de basquet roge, d’un casc de musica violet, d’un còr blau e d’una corona jauna

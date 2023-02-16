@@ -6,6 +6,10 @@ app-manager-window =
     .title = Munudoù an arload
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Munudoù an arload
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Dilemel
     .accesskey = D

@@ -6,6 +6,10 @@ blocklist-window =
     .title = Liostaichean bacaidh
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Liostaichean bacaidh
+    .style = min-width: 55em
+
 blocklist-description = Tagh an liosta a chleachdas { -brand-short-name } airson tracaichean air loidhne a bhacadh. Tha na liostaichean ’gan solar le <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

@@ -33,7 +33,7 @@ cfr-doorhanger-extension-notification2 = Tillaga
     .a11y-announcement = Fyrirliggjandi er tillaga að viðbót
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
-cfr-doorhanger-feature-notification = Meðmæli
+cfr-doorhanger-feature-notification = Mælt með
     .tooltiptext = Eiginleiki sem mælt er með
     .a11y-announcement = Meðmæli með eiginleika eru tiltæk
 
@@ -56,6 +56,29 @@ cfr-doorhanger-extension-total-users =
         [one] { $total } notandi
        *[other] { $total } notendur
     }
+
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Vefkökuborðar fyrir bí!
+cfr-cookie-banner-handling-body = Leyfa { -brand-short-name } að hafna sjálfkrafa öllum beiðnum um vefkökuborða, þegar mögulegt er. Annars verða allar vefkökur samþykktar til að hafna enn fleiri borðum.
+cfr-cookie-banner-accept-button = Hafna beiðnum
+    .accesskey = H
+cfr-cookie-banner-reject-button = Ekki núna
+    .accesskey = n
+cfr-cookie-banner-handling-header-variant-1 = Sjá færri sprettglugga fyrir vefkökur
+cfr-cookie-banner-handling-body-variant-1 = Leyfa { -brand-short-name } að svara sjálfkrafa vefkökugluggum fyrir þig svo þú getir vafrað áfram án truflunar. { -brand-short-name } mun hafna öllum beiðnum ef mögulegt er, eða samþykkja allar ef ekki.
+cfr-cookie-banner-accept-button-variant-1 = Afgreiða sprettglugga
+    .accesskey = g
+cfr-cookie-banner-reject-button-variant-1 = Nei takk
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Fækkun vefkökuborða
+cfr-cookie-banner-handling-body-variant-2 = Á að leyfa { -brand-short-name } að hafna beiðni um samþykki á vefkökum ef mögulegt er eða að samþykkja aðgang að vefkökum þegar það er ekki hægt?
+cfr-cookie-banner-accept-button-variant-2 = Leyfa
+    .accesskey = a
+cfr-cookie-banner-reject-button-variant-2 = Ekki núna
+    .accesskey = n
 
 ## Firefox Accounts Message
 
@@ -156,10 +179,6 @@ spotlight-total-cookie-protection-body = Allsherjar-vefkökuvörn kemur í veg f
 spotlight-total-cookie-protection-expanded = { -brand-short-name } byggir girðingu utan um vefkökur og takmarkar þær við vefsvæðið sem þú ert á svo rekjarar geti ekki notað þær til að fylgjast með þér. Með snemmbærum aðgangi muntu hjálpa til við að fínstilla þennan eiginleika svo við getum haldið áfram að byggja betri vef fyrir alla.
 spotlight-total-cookie-protection-primary-button = Kveiktu á allsherjar-vefkökuvörnum
 spotlight-total-cookie-protection-secondary-button = Ekki núna
-cfr-total-cookie-protection-header = Þökk sé þér fer { -brand-short-name } betur með persónuleg gögn þín og er öruggari en nokkru sinni fyrr
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Allsherjar-vefkökuvörn er öflugasti persónuverndareiginleikinn okkar frá upphafi - sem er núna sjálfgefin stilling fyrir alla notendur { -brand-short-name }. Við hefðum ekki náð að gera þetta nema með aðstoð notenda eins og þín sem prófa snemmbúna eiginleika. Þannig að þú færð þakkir fyrir að hjálpa til við að gera internetið meira einka og betra.
 
 ## Emotive Continuous Onboarding
 
@@ -173,3 +192,85 @@ spotlight-pin-primary-button =
        *[other] Festa á verkefnastikuna
     }
 spotlight-pin-secondary-button = Ekki núna
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Nýr { -brand-short-name }. Meira einkamál. Færri rekjarar. Engar málamiðlanir.
+mr2022-background-update-toast-text = Prófaðu nýjasta { -brand-short-name } núna, uppfærður með sterkustu rakningarvörn okkar hingað til.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Opna { -brand-shorter-name } núna
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Minna mig á seinna
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Prófaðu það
+    .accesskey = P
+firefoxview-cfr-secondarybutton = Ekki núna
+    .accesskey = n
+firefoxview-cfr-header-v2 = Haltu strax áfram þar sem frá var horfið
+firefoxview-cfr-body-v2 = Fáðu nýokaða flipa til baka, auk þess að skipta óaðfinnanlega á milli tækja með { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Segðu hæ við { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Viltu þennan opna flipa á símann þinn? Gríptu það. Þarftu þessa vefsíðu sem þú heimsóttir nýlega? Bang, þetta er komið með { -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = Sjá hvernig þetta virkar
+firefoxview-spotlight-promo-secondarybutton = Sleppa
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Veldu litasett
+    .accesskey = d
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Litaðu vafrann þinn með { -brand-short-name } einstökum tónum innblásnum af röddum sem breyttu menningunni.
+colorways-cfr-header-28days = Litasett Independent Voices rennur út 16. janúar
+colorways-cfr-header-14days = Litasett Independent Voices rennur út eftir tvær vikur
+colorways-cfr-header-7days = Litasett Independent Voices rennur út í þessari viku
+colorways-cfr-header-today = Litasett Independent Voices rennur út í dag
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Vefkökuborðar fyrir bí!
+cfr-cookiebanner-body = Leyfa { -brand-short-name } að hafna sjálfkrafa öllum beiðnum um vefkökuborða þegar mögulegt er.
+cfr-cookiebanner-accept-button = Sleppa vefkökuborðum
+    .accesskey = p
+cfr-cookiebanner-reject-button = Ekki núna
+    .accesskey = n
+cfr-cookiebanner-header-variant-1 = Sjá færri sprettglugga fyrir vefkökur
+cfr-cookiebanner-body-variant-1 = Leyfa { -brand-short-name } að svara sjálfkrafa vefkökugluggum fyrir þig svo þú getir vafrað áfram án truflunar. { -brand-short-name } mun hafna öllum beiðnum ef mögulegt er.
+cfr-cookiebanner-accept-button-variant-1 = Afgreiða sprettglugga
+    .accesskey = p
+cfr-cookiebanner-reject-button-variant-1 = Nei, takk
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = Fækkun vefkökuborða
+cfr-cookiebanner-body-variant-2 = Fækkaðu þeim vefkökuborðum sem þú sérð með því að leyfa { -brand-short-name } að hafna beiðnum vefsvæða um samþykki á vefkökum, ef mögulegt er.
+cfr-cookiebanner-accept-button-variant-2 = Leyfa
+    .accesskey = a
+cfr-cookiebanner-reject-button-variant-2 = Ekki núna
+    .accesskey = n
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Við erum með það sem þú þarft
+july-jam-body = Í hverjum mánuði lokar { -brand-short-name } að meðaltali á meira en 3.000 rekjara á hvern notanda, sem tryggir þér öruggan, skjótan aðgang að góðu interneti.
+july-jam-set-default-primary = Opna tenglana mína með { -brand-short-name }

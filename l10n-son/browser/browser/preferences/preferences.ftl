@@ -136,10 +136,6 @@ check-user-spelling =
 
 download-header = Zumandiyaney
 
-download-save-to =
-    .label = Tukey gaabu ga
-    .accesskey = g
-
 download-save-where = Tukey gaabu ga
     .accesskey = g
 
@@ -563,4 +559,3 @@ certs-enable-ocsp =
 desktop-folder-name = Goytaabal
 downloads-folder-name = Zumandey
 choose-download-folder-title = Zumandi foolo suuba:
-

@@ -180,6 +180,17 @@ menu-view-full-screen =
     .label = Plen schermo
     .accesskey = P
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Entrar in vista de lectura
+    .accesskey = R
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Clauder le vista de lectura
+    .accesskey = R
+
 ##
 
 menu-view-show-all-tabs =
@@ -221,13 +232,13 @@ menu-bookmarks-manage =
 menu-bookmark-current-tab =
     .label = Adder scheda actual al marcapaginas
 menu-bookmark-edit =
-    .label = Modificar iste marcapaginas
+    .label = Modificar iste marcapagina
 menu-bookmark-tab =
     .label = Adder scheda actual al marcapaginas…
 menu-edit-bookmark =
-    .label = Rediger iste marcapaginas…
+    .label = Modificar iste marcapagina…
 menu-bookmarks-all-tabs =
-    .label = Adder marcapaginas sur tote le schedas…
+    .label = Adder tote le schedas al marcapaginas…
 menu-bookmarks-toolbar =
     .label = Barra de marcapaginas
 menu-bookmarks-other =

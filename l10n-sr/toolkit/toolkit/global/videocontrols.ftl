@@ -44,7 +44,7 @@ videocontrols-picture-in-picture-toggle-label2 = Гледајте видео у 
 # This string is used as part of a variation of the Picture-in-Picture video toggle
 # button. When using this variation, this string appears below the toggle when the
 # mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer2 = Што више екрана то је занимљивије. Гледајте овај видео у режиму слика-у-слици док прегледате.
+videocontrols-picture-in-picture-explainer3 = Забавније је уз више екрана. Пуштајте овај видео док радите друге ствари.
 videocontrols-error-aborted = Учитавање видео-снимка је заустављено.
 videocontrols-error-network = Репродукција видео-снимка је прекинута због грешке на мрежи.
 videocontrols-error-decode = Видео се не може репродуковати јер је датотека оштећена.

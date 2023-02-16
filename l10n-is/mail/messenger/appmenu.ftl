@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Samstiling
+appmenu-signin-panel =
+    .label = Skráðu þig inn til að samstilla
+    .accesskey = i
+appmenu-sync-sync =
+    .value = Samstilling reiknings
+    .accesskey = a
+appmenu-sync-manage =
+    .value = Sýsla með reikning
+    .accesskey = m
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = Samstilla núna
+    .accesskey = n
+appmenu-sync-settings =
+    .label = Stillingar samstillingar
+    .accesskey = S
+appmenu-sync-sign-out =
+    .label = Útskráning…
+    .accesskey = k
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +93,11 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = Opna
+appmenu-open-file-panel =
+    .label = Opna úr skrá
     .accesskey = O
-appmenu-open-panel-title =
-    .title = Opna
+appmenu-open-file-panel-title =
+    .title = Opna úr skrá
 appmenu-open-message =
     .label = Skilaboð…
     .accesskey = k
@@ -168,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = Um { -brand-short-name }
     .accesskey = m
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Sæki { -brand-shorter-name } uppfærslu
+appmenuitem-banner-update-available =
+    .label = Uppfærsla í boði — sækja núna
+appmenuitem-banner-update-manual =
+    .label = Uppfærsla í boði — sækja núna
+appmenuitem-banner-update-unsupported =
+    .label = Ekki hægt að uppfæra — kerfi ósamhæft
+appmenuitem-banner-update-restart =
+    .label = Uppfærsla í boði — endurræstu núna

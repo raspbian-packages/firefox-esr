@@ -6,7 +6,7 @@
 ## Colorway collections
 
 colorway-collection-independent-voices = Voces independente
-colorway-collection-independent-voices-description = Le colores pote cambiar le cultura. Le ultima combinationes de colores celebra le voces rendente le mundo un placia melior.
+colorway-collection-independent-voices-description = Le colores pote cambiar le cultura. Le ultime combinationes de colores celebra le voces que rende le mundo melior.
 # Used as a subheading for the colorway collection card in about:addons
 colorway-collection-independent-voices-short-description = Colores que cambia le cultura.
 

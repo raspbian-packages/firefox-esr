@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = Amaɣnu itegg tuṭṭfa n ugdil i umaqnu
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Sken ugar n talɣut
 profiler-popup-description-title =

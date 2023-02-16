@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = Profil sortzailea profila kapturatzen ari da
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Agerrarazi informazio gehiago
 profiler-popup-description-title =

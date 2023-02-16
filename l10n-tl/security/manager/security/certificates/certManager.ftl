@@ -28,6 +28,10 @@ certmgr-edit-ca-cert =
     .title = i-Edit ang CA certificate trust settings
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = i-Edit ang CA certificate trust settings
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = i-Edit ang trust settings:
 
 certmgr-edit-cert-trust-ssl =
@@ -39,6 +43,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Burahin ang Sertipiko
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Burahin ang Sertipiko
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Host
@@ -180,8 +188,6 @@ delete-email-cert-impact = Kung tatangalin mo ang e-mail certificate ng isang ta
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Certificate na may serial number: { $serialNumber }
-
-## Cert Viewer
 
 # Used when no cert is stored for an override
 no-cert-stored-for-override = (Hindi Nakaimbak)

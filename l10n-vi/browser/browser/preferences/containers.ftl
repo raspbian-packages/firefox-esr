@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Thêm ngăn chứa mới
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Cài đặt ngăn chứa { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Thêm ngăn chứa mới
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Cài đặt ngăn chứa { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

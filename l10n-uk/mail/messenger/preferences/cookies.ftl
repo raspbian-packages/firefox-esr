@@ -6,6 +6,9 @@ cookies-window-dialog =
     .title = Куки
     .style = width: 36em;
 
+cookies-window-dialog2 =
+    .title = Куки
+
 window-close-key =
     .key = w
 

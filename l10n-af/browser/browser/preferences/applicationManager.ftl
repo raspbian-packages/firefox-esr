@@ -6,6 +6,10 @@ app-manager-window =
     .title = Toepassingdetails
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Toepassingdetails
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Verwyder
     .accesskey = V

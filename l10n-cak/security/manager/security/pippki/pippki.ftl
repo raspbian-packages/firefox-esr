@@ -16,8 +16,6 @@ change-password-old = Ewan tzij wakami:
 change-password-new = K'ak'a' ewan tzij:
 change-password-reenter = K'ak'a' ewan tzij (tijikib'äx):
 
-## Reset Password dialog
-
 pippki-failed-pw-change = Man tikirel ta xjal ri ewan tzij.
 pippki-incorrect-pw = Man ütz ta ri ewan tzij xatz'ib'aj. Tatojtob'ej chik.
 pippki-pw-change-ok = Ütz xjal ri nab'ey ewan tzij.
@@ -33,9 +31,12 @@ pippki-pw-change2empty-in-fips-mode = Wakami at k'o pa rub'eyal FIPS. FIPS nrajo
 reset-primary-password-window =
     .title = Titzolïx Nab'ey Ewan Tzij
     .style = width: 40em
+
+reset-primary-password-window2 =
+    .title = Titzolïx Nab'ey Ewan Tzij
+    .style = min-width: 40em
 reset-password-button-label =
     .label = Titzolïx
-
 reset-primary-password-text = We natzolij ri Nab'ey Ewan Atzij, xkeyujtäj el ri nab'ey ewan taq tzij richin ajk'amaya'l chuqa' taqoya'l kichin tzij, ri taq kitzij nojwuj, ichinan ruwujil taq b'i'aj chuqa' ichinan ewan taq tzij. ¿La kan nawajo' natzolij ri nab'ey ewan atzij?
 
 pippki-reset-password-confirmation-title = Titzolïx Nab'ey Ewan Tzij
@@ -46,6 +47,10 @@ pippki-reset-password-confirmation-message = Xtzolïx Nab'ey Ewan Atzij.
 download-cert-window =
     .title = Tajin niqasäx ri ruwujil rub'i'
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Tajin niqasäx ri ruwujil rub'i'
+    .style = min-width: 46em
 download-cert-message = Nik'utüx chawe chi tatz'eta' ütz ri k'ak'a' Taqonel Ya'öl Ruwujil B'i'aj (CA).
 download-cert-trust-ssl =
     .label = Takuqub'a' ak'u'x rik'in re CA richin ye'atz'ët ajk'amaya'l taq ruxaq k'amaya'l.

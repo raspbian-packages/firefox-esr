@@ -15,7 +15,7 @@ perftools-intro-description =
 
 ## All of the headings for the various sections.
 
-perftools-heading-settings = Paramètres complets
+perftools-heading-settings = Paramètres complèts
 perftools-heading-buffer = Paramètre del tap
 perftools-heading-features = Foncionalitats
 perftools-heading-features-default = Foncionalitats (recomandadas per defaut)
@@ -82,6 +82,8 @@ perftools-thread-render-backend =
     .title = Lo fila d’execucion RenderBackend de WebRender
 perftools-thread-paint-worker =
     .title = Quand la pintura es fòra fil d’execucion principal es activada, lo fil ont se realiza la pintura
+perftools-thread-timer =
+    .title = Minutadors gerits pel fil d’execucion (setTimeout, setInterval, nsITimer)
 perftools-thread-style-thread =
     .title = Lo calcul de l’estil es partejat entre mantun fial
 pref-thread-stream-trans =
@@ -139,6 +141,7 @@ perftools-presets-networking-label = Ret
 perftools-presets-networking-description = Preconfiguracion per analisar los bugs de ret { -brand-shorter-name }.
 # "Power" is used in the sense of energy (electricity used by the computer).
 perftools-presets-power-label = Energia
+perftools-presets-power-description = Preconfiguracion per analisar las avarias ligada a la consomacion energetica dins { -brand-shorter-name }, amb una subrecarga febla.
 perftools-presets-custom-label = Personalizat
 
 ##

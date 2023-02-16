@@ -6,6 +6,10 @@ blocklist-window =
     .title = Popisi blokiranja
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Popisi blokiranja
+    .style = min-width: 55em
+
 blocklist-description = Odaberi popis koji će { -brand-short-name } koristiti za blokiranje programa za praćenje. Popise pruža <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

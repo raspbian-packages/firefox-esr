@@ -38,7 +38,7 @@ category-privacy =
 pane-sync-title3 = Synchronizacja
 category-sync3 =
     .tooltiptext = Ustawienia dotyczące synchronizacji
-pane-experimental-title = Eksperymenty
+pane-experimental-title = Eksperymenty { -brand-short-name(case: "gen") }
 category-experimental =
     .tooltiptext = Eksperymenty przeglądarki { -brand-short-name }
 pane-experimental-subtitle = Zachowaj ostrożność
@@ -47,7 +47,7 @@ pane-experimental-description2 = Modyfikacja zaawansowanych ustawień może wpł
 pane-experimental-reset =
     .label = Przywróć domyślne
     .accesskey = P
-help-button-label = Wsparcie programu { -brand-short-name }
+help-button-label = Wsparcie { -brand-short-name(case: "gen") }
 addons-button-label = Rozszerzenia i motywy
 focus-search =
     .key = f
@@ -58,8 +58,8 @@ close-button =
 
 feature-enable-requires-restart = Konieczne jest ponowne uruchomienie przeglądarki { -brand-short-name }, aby włączyć tę funkcję.
 feature-disable-requires-restart = Konieczne jest ponowne uruchomienie przeglądarki { -brand-short-name }, aby wyłączyć tę funkcję.
-should-restart-title = Ponowne uruchomienie przeglądarki { -brand-short-name }
-should-restart-ok = Uruchom przeglądarkę { -brand-short-name } ponownie
+should-restart-title = Ponowne uruchomienie { -brand-short-name(case: "gen") }
+should-restart-ok = Uruchom { -brand-short-name(case: "acc") } ponownie
 cancel-no-restart-button = Anuluj
 restart-later = Później
 
@@ -215,7 +215,7 @@ preferences-web-appearance-choice-input-dark =
 preferences-web-appearance-override-warning = Wybrane kolory mają pierwszeństwo przed ustawieniami wyglądu witryn. <a data-l10n-name="colors-link">Zarządzaj kolorami</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
-preferences-web-appearance-footer = Zarządzaj motywami przeglądarki { -brand-short-name } w <a data-l10n-name="themes-link">Rozszerzenia i motywy</a>
+preferences-web-appearance-footer = Zarządzaj motywami { -brand-short-name(case: "gen") } w <a data-l10n-name="themes-link">Rozszerzenia i motywy</a>
 preferences-colors-header = Kolory
 preferences-colors-description = Zastąp domyślne kolory przeglądarki { -brand-short-name } dla tekstu, teł witryn i odnośników.
 preferences-colors-manage-button =
@@ -566,7 +566,7 @@ home-prefs-recent-activity-description = Wybierane z ostatnio odwiedzanych stro
 # and non-essential but also not entirely trivial and useless.
 home-prefs-snippets-header =
     .label = Od Mozilli
-home-prefs-snippets-description-new = Wskazówki i aktualności od organizacji { -vendor-short-name } i przeglądarki { -brand-product-name }.
+home-prefs-snippets-description-new = Wskazówki i aktualności od { -vendor-short-name(case: "gen") } i { -brand-product-name(case: "gen") }.
 home-prefs-sections-rows-option =
     .label =
         { $num ->
@@ -596,6 +596,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Podpowiedzi wyszukiwania w wynikach paska adresu
     .accesskey = e
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Wyszukiwane słowa zamiast adresu na stronie wyników domyślnej wyszukiwarki
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -723,6 +728,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = Z
     .buttonlabelextra2 = Rozłącz…
     .buttonaccesskeyextra2 = R
+sync-choose-what-to-sync-dialog3 =
+    .title = Wybierz, co synchronizować
+    .style = min-width: 36em;
+    .buttonlabelaccept = Zapisz zmiany
+    .buttonaccesskeyaccept = Z
+    .buttonlabelextra2 = Rozłącz…
+    .buttonaccesskeyextra2 = R
 sync-engine-bookmarks =
     .label = zakładki
     .accesskey = z
@@ -791,6 +803,9 @@ forms-breach-alerts =
     .label = Powiadomienia o hasłach do stron, z których wyciekły dane.
     .accesskey = o
 forms-breach-alerts-learn-more-link = Więcej informacji
+relay-integration =
+    .label = Włącz { -relay-brand-name } w menedżerze haseł { -brand-short-name(case: "gen") }
+relay-integration-learn-more-link = Więcej informacji
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Automatyczne wypełnianie formularzy logowania
@@ -993,6 +1008,9 @@ content-blocking-fingerprinters = elementy śledzące przez zbieranie informacji
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Przetestuj naszą najpotężniejszą funkcję ochrony prywatności w historii
     .accesskey = P
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Całkowita ochrona ciasteczek ogranicza ciasteczka do odwiedzanej witryny, więc elementy śledzące nie mogą ich używać do śledzenia Cię między witrynami.
 content-blocking-etp-standard-tcp-rollout-learn-more = Więcej informacji
@@ -1090,7 +1108,7 @@ collection-privacy-notice = Prywatność
 collection-health-report-telemetry-disabled = { -vendor-short-name } nie ma już zezwolenia na zbieranie danych technicznych i o interakcjach z przeglądarką. Wszystkie wcześniej zebrane dane zostaną usunięte w ciągu 30 dni.
 collection-health-report-telemetry-disabled-link = Więcej informacji
 collection-health-report =
-    .label = Przesyłanie do organizacji { -vendor-short-name } danych technicznych i o interakcjach z przeglądarką { -brand-short-name }.
+    .label = Przesyłanie do { -vendor-short-name(case: "gen") } danych technicznych i o interakcjach z przeglądarką { -brand-short-name }.
     .accesskey = z
 collection-health-report-link = Więcej informacji
 collection-studies =

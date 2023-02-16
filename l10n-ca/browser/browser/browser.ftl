@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Navegació privada del { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Navegació privada del { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,17 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Obteniu ajuda
 urlbar-search-tips-confirm = Entesos
+urlbar-search-tips-confirm-short = Entesos
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Consell:
+urlbar-result-menu-button =
+    .title = Obre el menú
+urlbar-result-menu-remove-from-history =
+    .label = Elimina de l'historial
+    .accesskey = r
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +155,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Escriviu menys i trobeu més: Cerqueu amb { $engineName } directament des de la barra d'adreces.
 urlbar-search-tips-redirect-2 = Comenceu la vostra cerca en la barra d'adreces per veure suggeriments de { $engineName } i del vostre historial de navegació.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Ara la cerca és més senzilla. Proveu de fer la cerca més específica aquí a la barra d'adreces. Per a mostrar l'URL, visiteu Cerca, als paràmetres.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Seleccioneu aquesta drecera per trobar el que necessiteu més ràpidament.
@@ -267,42 +277,50 @@ search-one-offs-actions =
     .tooltiptext = Accions ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Mostra els complements
-quickactions-cmd-addons = complements, extensions, temes
 quickactions-cmd-addons2 = complements
 # Opens the bookmarks library window
 quickactions-bookmarks = Mostra les adreces d'interès
+# Opens the bookmarks library window
+quickactions-bookmarks2 = Gestiona les adreces d'interès
 quickactions-cmd-bookmarks = adreces d'interès
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Esborra l'historial
 quickactions-cmd-clearhistory = esborra l'historial
 # Opens about:downloads page
 quickactions-downloads = Obre les baixades
+# Opens about:downloads page
+quickactions-downloads2 = Mostra les baixades
 quickactions-cmd-downloads = baixades, descàrregues
 # Opens about:addons page in the extensions section
 quickactions-extensions = Gestiona les extensions
 quickactions-cmd-extensions = extensions
 # Opens the devtools web inspector
 quickactions-inspector = Obre l'inspector
+# Opens the devtools web inspector
+quickactions-inspector2 = Obre les eines per a desenvolupadors
 quickactions-cmd-inspector = inspector, devtools, desenvolupador
 # Opens about:logins
 quickactions-logins = Mostra els inicis de sessió
+# Opens about:logins
+quickactions-logins2 = Gestiona les contrasenyes
 quickactions-cmd-logins = inicis de sessió, contrasenyes, credencials
 # Opens about:addons page in the plugins section
 quickactions-plugins = Gestiona els connectors
 quickactions-cmd-plugins = connectors
 # Opens the print dialog
 quickactions-print = Imprimeix
+# Opens the print dialog
+quickactions-print2 = Imprimeix la pàgina
 quickactions-cmd-print = imprimir, impressió, imprimeix
 # Opens a new private browsing window
 quickactions-private = Obre una finestra de navegació privada
+# Opens a new private browsing window
+quickactions-private2 = Obre una finestra privada
 quickactions-cmd-private = navegació privada
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Restableix el { -brand-short-name } a l'estat inicial
@@ -312,9 +330,13 @@ quickactions-restart = Reinicia el { -brand-short-name }
 quickactions-cmd-restart = reiniciar
 # Opens the screenshot tool
 quickactions-screenshot2 = Fes una captura de pantalla
+# Opens the screenshot tool
+quickactions-screenshot3 = Fes una captura de pantalla
 quickactions-cmd-screenshot = captura de pantalla
 # Opens about:preferences
 quickactions-settings = Obre els paràmetres
+# Opens about:preferences
+quickactions-settings2 = Gestiona els paràmetres
 quickactions-cmd-settings = paràmetres, configuració, preferències, opcions
 # Opens about:addons page in the themes section
 quickactions-themes = Gestiona els temes
@@ -324,7 +346,12 @@ quickactions-update = Actualitza el { -brand-short-name }
 quickactions-cmd-update = actualitzar
 # Opens the view-source UI with current pages source
 quickactions-viewsource = Codi font
+# Opens the view-source UI with current pages source
+quickactions-viewsource2 = Codi font de la pàgina
 quickactions-cmd-viewsource = mostra codi font, codi font
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Més informació sobre les accions ràpides
 
 ## Bookmark Panel
 
@@ -482,6 +509,9 @@ popup-select-microphone-icon =
     .tooltiptext = Micròfon
 popup-select-speaker-icon =
     .tooltiptext = Altaveus
+popup-select-window-or-screen =
+    .label = Finestra o pantalla:
+    .accesskey = F
 popup-all-windows-shared = Es compartiran totes les finestres visibles de la pantalla.
 popup-screen-sharing-block =
     .label = Bloca
@@ -503,6 +533,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Per a usar la drecera F12, primer obriu DevTools en el menú Desenvolupador web.
+enable-devtools-popup-description2 = Per a usar la drecera F12, primer obriu les eines per a desenvolupadors des del menú Eines del navegador.
 
 ## URL Bar
 
@@ -634,6 +665,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Accions ràpides
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Entra a la vista de lectura
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Tanca la vista de lectura
 
 ## Full Screen and Pointer Lock UI
 
@@ -911,3 +951,29 @@ private-browsing-indicator-label = Navegació privada
 unified-extensions-button =
     .label = Extensions
     .tooltiptext = Extensions
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Extensions
+    .tooltiptext =
+        Extensions
+        Calen permisos
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = El { -brand-short-name } ha evitat que la pàgina s'actualitzi automàticament.
+refresh-blocked-redirect-label = El { -brand-short-name } ha evitat que la pàgina redirigeixi automàticament a una altra.
+refresh-blocked-allow =
+    .label = Permet
+    .accesskey = P
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = El { -relay-brand-name } emmascara la vostra adreça electrònica real per ajudar a protegir-vos de les filtracions de dades i del correu brossa.
+firefox-relay-offer-how-we-integrate = Si continueu, podreu generar noves màscares de correu electrònic del { -relay-brand-short-name } directament des del gestor de contrasenyes del { -brand-shorter-name }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Tots els missatges de correu electrònic de <strong>{ $sitename }</strong> es reenviaran a <strong>{ $useremail }</strong>.

@@ -40,9 +40,9 @@ category-sync3 =
     .tooltiptext = { pane-sync-title3 }
 pane-experimental-title = 実験的な機能
 category-experimental =
-    .tooltiptext = 実験的な機能
+    .tooltiptext = { -brand-short-name } の実験的な機能
 pane-experimental-subtitle = 注意して進んでください
-pane-experimental-search-results-header = 実験的な機能: 注意して進んでください
+pane-experimental-search-results-header = { -brand-short-name } の実験的な機能: 注意して進んでください
 pane-experimental-description2 = 高度な設定を変更すると、{ -brand-short-name } の性能と安全性に影響を及ぼす可能性があります。
 pane-experimental-reset =
     .label = 既定値に戻す
@@ -172,12 +172,15 @@ preferences-web-appearance-header = ウェブサイトの外観
 preferences-web-appearance-description = 一部のウェブサイトはあなたの設定をもとにカラースキームを適用します。これらのサイトでどのカラースキームを使用するか選択してください。
 preferences-web-appearance-choice-browser = { -brand-short-name } テーマ
 preferences-web-appearance-choice-system = システムテーマ
+preferences-web-appearance-choice-auto = 自動
 preferences-web-appearance-choice-light = Light
 preferences-web-appearance-choice-dark = Dark
 preferences-web-appearance-choice-tooltip-browser =
     .title = { -brand-short-name } のテーマ設定をウェブサイトの背景と内容に適用させる。
 preferences-web-appearance-choice-tooltip-system =
     .title = システムの設定をウェブサイトの背景と内容に適用させる。
+preferences-web-appearance-choice-tooltip-auto =
+    .title = システムの設定と { -brand-short-name } のテーマをもとに、ウェブサイトの背景と内容を自動的に設定する。
 preferences-web-appearance-choice-tooltip-light =
     .title = 明るい外観をウェブサイトの背景と内容に使用する。
 preferences-web-appearance-choice-tooltip-dark =
@@ -186,6 +189,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -571,6 +576,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = アドレスバーに検索候補を表示する
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = 既定の検索エンジンの結果ページで URL の代わりに検索語句を表示する
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -581,7 +591,7 @@ search-show-suggestions-above-history-option =
 search-show-suggestions-private-windows =
     .label = プライベートウィンドウで検索候補を表示する
 suggestions-addressbar-settings-generic2 = アドレスバーの入力候補のその他の設定を変更
-search-suggestions-cant-show = 履歴を保存しない設定となっているため、ロケーションバーに検索候補が表示されません。
+search-suggestions-cant-show = { -brand-short-name } に履歴を保存しないよう設定されているため、ロケーションバーに検索候補が表示されません。
 search-one-click-header2 = 検索ショートカット
 search-one-click-desc = キーワードの入力開始時にアドレスバーや検索バーの下に現れる代替検索エンジンを選んでください。
 search-choose-engine-column =
@@ -698,6 +708,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = 切断...
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = 同期する項目を選択
+    .style = min-width: 36em;
+    .buttonlabelaccept = 変更を保存
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = 切断...
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = ブックマーク
     .accesskey = m
@@ -766,6 +783,9 @@ forms-breach-alerts =
     .label = 漏洩したウェブサイトのパスワードの警告を表示する
     .accesskey = b
 forms-breach-alerts-learn-more-link = 詳細情報
+relay-integration =
+    .label = { -brand-short-name } のパスワードマネージャーで { -relay-brand-name } を有効にする
+relay-integration-learn-more-link = 詳細情報
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = ログイン情報とパスワードを自動入力する
@@ -801,7 +821,6 @@ forms-windows-sso-desc = 端末の設定でアカウントを管理します
 
 # This message can be seen by trying to add a Primary Password.
 primary-password-os-auth-dialog-message-win = マスターパスワードを作成するには、Windows でのあなたの資格情報を入力してください。これはアカウントのセキュリティ保護に役立ちます。
-
 # This message can be seen by trying to add a Primary Password.
 # The macOS strings are preceded by the operating system with "Firefox is trying to "
 # and includes subtitle of "Enter password for the user "xxx" to allow this." These
@@ -883,6 +902,8 @@ sitedata-option-block-unvisited =
     .label = 未訪問のウェブサイトの Cookie
 sitedata-option-block-all-third-party =
     .label = すべてのサードパーティ Cookie (ウェブサイトが動作しない可能性があります)
+sitedata-option-block-all-cross-site-cookies =
+    .label = すべてのクロスサイト Cookie (ウェブサイトが動作しない可能性があります)
 sitedata-option-block-all =
     .label = すべての Cookie (ウェブサイトが動作しなくなります)
 sitedata-clear =
@@ -961,7 +982,8 @@ content-blocking-social-media-trackers = ソーシャルメディアトラッカ
 content-blocking-all-cookies = すべての Cookie
 content-blocking-unvisited-cookies = 未訪問のサイトの Cookie
 content-blocking-all-windows-tracking-content = すべてのウィンドウのトラッキングコンテンツ
-content-blocking-all-third-party-cookies = サードパーティ Cookie すべて
+content-blocking-all-third-party-cookies = すべてのサードパーティ Cookie
+content-blocking-all-cross-site-cookies = すべてのクロスサイト Cookie
 content-blocking-cryptominers = 暗号通貨マイニング
 content-blocking-fingerprinters = フィンガープリント採取
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -969,6 +991,7 @@ content-blocking-fingerprinters = フィンガープリント採取
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = これまでにない最も強力なプライバシー保護機能を試す
     .accesskey = T
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = 包括的 Cookie 保護機能により現在のサイトへの Cookie が制限されているため、トラッカーはサイトを横断してあなたを追跡する Cookie を利用できません。
 content-blocking-etp-standard-tcp-rollout-learn-more = 詳細情報

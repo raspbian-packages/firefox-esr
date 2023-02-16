@@ -38,7 +38,6 @@ browser-main-window-mac =
     .data-title-private = { -brand-full-name } — (プライベートブラウジング)
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } — (プライベートブラウジング)
-
 # These are the default window titles everywhere except macOS. The first two
 # attributes are used when the web content opened has no title:
 #
@@ -53,7 +52,6 @@ browser-main-window-window-titles =
     .data-title-private = { -brand-full-name } プライベートブラウジング
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — { -brand-full-name } プライベートブラウジング
-
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
@@ -73,14 +71,14 @@ browser-main-window-mac-window-titles =
     .data-title-private = { -brand-full-name } — プライベートブラウジング
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } — プライベートブラウジング
-
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-
-private-browsing-shortcut-text = { -brand-short-name } プライベートブラウジング
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } プライベートブラウジング
 
 ##
 
@@ -138,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = ヘルプを表示
 urlbar-search-tips-confirm = 了解しました
+urlbar-search-tips-confirm-short = 了解
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = ヒント:
+urlbar-result-menu-button =
+    .title = メニューを開く
+urlbar-result-menu-remove-from-history =
+    .label = 履歴から削除
+    .accesskey = R
+urlbar-result-menu-tip-get-help =
+    .label = ヘルプを表示
+    .accesskey = h
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -151,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = 少ない入力でたくさん見つかる: アドレスバーから { $engineName } ですぐ検索します。
 urlbar-search-tips-redirect-2 = アドレスバーで検索を始めると、{ $engineName } からの検索候補と閲覧履歴が表示されます。
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = 検索がシンプルになりました。アドレスバーで具体的な語句を用いて検索してみてください。代わりに URL を表示するには、設定の検索パネルを開いてください。
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = このショートカットを選択すると、より素早く検索できます。
@@ -203,7 +212,6 @@ page-action-manage-extension =
     .label = 拡張機能を管理...
 page-action-remove-extension =
     .label = 拡張機能を削除
-
 page-action-manage-extension2 =
     .label = 拡張機能を管理...
     .accesskey = E
@@ -272,41 +280,38 @@ search-one-offs-actions =
     .tooltiptext = アクション ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = アドオンを表示
-quickactions-cmd-addons = add-ons, extensions, themes
 quickactions-cmd-addons2 = add-ons
 # Opens the bookmarks library window
-quickactions-bookmarks = ブックマークを表示
+quickactions-bookmarks2 = ブックマークを管理
 quickactions-cmd-bookmarks = bookmarks
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = 履歴を消去
 quickactions-cmd-clearhistory = clear history
 # Opens about:downloads page
-quickactions-downloads = ダウンロードを開く
+quickactions-downloads2 = ダウンロードを表示
 quickactions-cmd-downloads = downloads
 # Opens about:addons page in the extensions section
 quickactions-extensions = 拡張機能を管理
 quickactions-cmd-extensions = extensions
 # Opens the devtools web inspector
-quickactions-inspector = インスペクターを開く
+quickactions-inspector2 = 開発ツールを開く
 quickactions-cmd-inspector = inspector, devtools
 # Opens about:logins
-quickactions-logins = ログイン情報を表示
+quickactions-logins2 = パスワードを管理
 quickactions-cmd-logins = logins, passwords
 # Opens about:addons page in the plugins section
 quickactions-plugins = プラグインを管理
 quickactions-cmd-plugins = plugins
 # Opens the print dialog
-quickactions-print = 印刷
+quickactions-print2 = ページを印刷
 quickactions-cmd-print = print
 # Opens a new private browsing window
-quickactions-private = プライベートブラウジングウィンドウを開く
+quickactions-private2 = プライベートウィンドウを開く
 quickactions-cmd-private = private browsing
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } をリフレッシュ
@@ -315,10 +320,10 @@ quickactions-cmd-refresh = refresh
 quickactions-restart = { -brand-short-name } を再起動
 quickactions-cmd-restart = restart
 # Opens the screenshot tool
-quickactions-screenshot2 = スクリーンショットを撮影
+quickactions-screenshot3 = スクリーンショットを撮影
 quickactions-cmd-screenshot = screenshot
 # Opens about:preferences
-quickactions-settings = 設定を開く
+quickactions-settings2 = 設定を管理
 quickactions-cmd-settings = settings, preferences, options
 # Opens about:addons page in the themes section
 quickactions-themes = テーマを管理
@@ -327,8 +332,11 @@ quickactions-cmd-themes = themes
 quickactions-update = { -brand-short-name } を更新
 quickactions-cmd-update = update
 # Opens the view-source UI with current pages source
-quickactions-viewsource = ソースを表示
+quickactions-viewsource2 = ページのソースを表示
 quickactions-cmd-viewsource = view source, source
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = クイックアクションについての詳細
 
 ## Bookmark Panel
 
@@ -482,6 +490,9 @@ popup-select-microphone-icon =
     .tooltiptext = マイク
 popup-select-speaker-icon =
     .tooltiptext = スピーカー
+popup-select-window-or-screen =
+    .label = ウィンドウまたは画面:
+    .accesskey = W
 popup-all-windows-shared = 画面に表示されているすべてのウィンドウを共有します。
 popup-screen-sharing-block =
     .label = ブロック
@@ -503,6 +514,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = F12 ショートカットを使うには、最初にメニューのウェブ開発から開発ツールを開いてください。
+enable-devtools-popup-description2 = F12 ショートカットを使うには、最初にメニューのブラウザーツールから開発ツールを開いてください。
 
 ## URL Bar
 
@@ -635,6 +647,15 @@ urlbar-group-search-suggestions =
 urlbar-group-quickactions =
     .label = クイックアクション
 
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = リーダービューで開く
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = リーダービューを閉じる
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -711,7 +732,6 @@ bookmarks-bookmark-edit-panel =
     .label = このブックマークを編集
 bookmarks-subview-edit-bookmark =
     .label = このブックマークを編集...
-
 # The aria-label is a spoken label that should not include the word "toolbar" or
 # such, because screen readers already know that this container is a toolbar.
 # This avoids double-speaking.
@@ -912,3 +932,29 @@ private-browsing-indicator-label = プライベートブラウジング
 unified-extensions-button =
     .label = 拡張機能
     .tooltiptext = 拡張機能
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = 拡張機能
+    .tooltiptext =
+        拡張機能
+        権限が必要です
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } がこのページの自動再読み込みをブロックしました。
+refresh-blocked-redirect-label = { -brand-short-name } がこのページから他のページへの自動転送をブロックしました。
+refresh-blocked-allow =
+    .label = 許可
+    .accesskey = A
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } が本当のメールアドレスにマスクをして、データ漏洩とスパムからあなたを保護します。
+firefox-relay-offer-how-we-integrate = 続行すると、{ -brand-shorter-name } のパスワードマネージャーから直ちに新しい { -relay-brand-short-name } のメールマスクを生成できるようになります。
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = <strong>{ $sitename }</strong> に届いたすべてのメールが <strong>{ $useremail }</strong> へ転送されます。

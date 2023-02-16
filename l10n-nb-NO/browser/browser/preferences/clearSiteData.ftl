@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Tøm data
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Tøm data
+    .style = min-width: 35em
+
 clear-site-data-description = Om du fjerner alle infokapsler og nettstedsdata som er lagret av { -brand-short-name } vil dette kunne logge deg ut av nettsteder og fjerne frakoblet nettinnhold. Fjerning av hurtiglager (cache-) data vil ikke påvirke innloggingene dine.
 
 clear-site-data-close-key =

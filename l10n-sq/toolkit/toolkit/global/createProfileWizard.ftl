@@ -6,12 +6,22 @@ create-profile-window =
     .title = Pjesa e Krijimit të Profileve
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Pjesa e Krijimit të Profileve
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Hyrje
        *[other] Mirë se vini te { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Hyrje
+       *[other] Mirë se vini te { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name }-i ruan të dhëna rreth rregullimeve dhe parapëlqimeve tuaj te profili juaj vetjak.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Përfundim
        *[other] Po përfundohet { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Përfundim
+       *[other] Po përfundohet { create-profile-window2.title }
     }
 
 profile-creation-intro = Nëse krijoni disa profile, mund t'i dalloni nga emrat e profileve. Mund të përdorni emrin e dhënë këtu ose një të tuajin.

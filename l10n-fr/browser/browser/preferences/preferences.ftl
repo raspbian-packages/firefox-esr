@@ -592,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Afficher les suggestions de recherche parmi les résultats de la barre d’adresse
     .accesskey = c
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Afficher l’expression recherchée à la place de l’adresse web sur la page des résultats du moteur de recherche par défaut
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = E
     .buttonlabelextra2 = Se déconnecter…
     .buttonaccesskeyextra2 = S
+sync-choose-what-to-sync-dialog3 =
+    .title = Choisir les éléments à synchroniser
+    .style = min-width: 38em;
+    .buttonlabelaccept = Enregistrer les modifications
+    .buttonaccesskeyaccept = E
+    .buttonlabelextra2 = Se déconnecter…
+    .buttonaccesskeyextra2 = S
 sync-engine-bookmarks =
     .label = Marque-pages
     .accesskey = M
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = Afficher des alertes pour les mots de passe de sites concernés par des fuites de données
     .accesskey = A
 forms-breach-alerts-learn-more-link = En savoir plus
+relay-integration =
+    .label = Activer { -relay-brand-name } dans votre gestionnaire de mots de passe { -brand-short-name }
+relay-integration-learn-more-link = En savoir plus
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Renseigner automatiquement les identifiants et les mots de passe
@@ -903,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies de sites web non visités
 sitedata-option-block-all-third-party =
     .label = Tous les cookies tiers (peut empêcher certains sites de fonctionner)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Tous les cookies intersites (peut provoquer des problèmes avec certains sites web)
 sitedata-option-block-all =
     .label = Tous les cookies (empêche certains sites de fonctionner)
 sitedata-clear =
@@ -982,6 +999,7 @@ content-blocking-all-cookies = Tous les cookies
 content-blocking-unvisited-cookies = Cookies de sites non visités
 content-blocking-all-windows-tracking-content = Contenu utilisé pour le pistage dans toutes les fenêtres
 content-blocking-all-third-party-cookies = Tous les cookies tiers
+content-blocking-all-cross-site-cookies = Tous les cookies intersites
 content-blocking-cryptominers = Mineurs de cryptomonnaies
 content-blocking-fingerprinters = Détecteurs d’empreinte numérique
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -989,6 +1007,9 @@ content-blocking-fingerprinters = Détecteurs d’empreinte numérique
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Tester en avant-première la fonctionnalité de confidentialité la plus puissante que nous avons jamais conçue
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = La protection totale contre les cookies restreint les cookies au site sur lequel vous vous trouvez et les traqueurs ne peuvent donc pas s’en servir pour vous pister de site en site.
 content-blocking-etp-standard-tcp-rollout-learn-more = En savoir plus

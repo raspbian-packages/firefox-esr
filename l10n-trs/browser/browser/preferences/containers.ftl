@@ -6,6 +6,10 @@ containers-window-new =
     .title = Nuto' kontenedor nakàa
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Nuto' kontenedor nakàa
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

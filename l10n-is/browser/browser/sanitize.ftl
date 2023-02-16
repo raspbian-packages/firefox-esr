@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Stillingar fyrir ferilhreinsun
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Stillingar fyrir ferilhreinsun
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

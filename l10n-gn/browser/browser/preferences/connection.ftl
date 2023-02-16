@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Mba’epytyvõrã jeikekatu rehegua
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = HTTP Proxy
     .accesskey = x
 connection-proxy-http-port = Mbojuajuhaite
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = Eipuru avei ko proxy HTTPS peg̃uarã
     .accesskey = s

@@ -21,6 +21,8 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = Kaikki osoitekirjat
 all-address-books = Kaikki osoitekirjat
 about-addressbook-books-context-properties =
     .label = Ominaisuudet
@@ -81,6 +83,7 @@ about-addressbook-column-label-generatedname =
 about-addressbook-column-header-emailaddresses = Sähköpostiosoitteet
 about-addressbook-column-label-emailaddresses =
     .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-nickname = Kutsumanimi
 about-addressbook-column-header-phonenumbers = Puhelinnumerot
 about-addressbook-column-label-phonenumbers =
     .label = { about-addressbook-column-header-phonenumbers }
@@ -136,3 +139,6 @@ about-addressbook-photo-filepicker-title = Valitse kuvatiedosto
 about-addressbook-photo-discard = Hylkää olemassa oleva kuva
 about-addressbook-photo-cancel = Peruuta
 about-addressbook-photo-save = Tallenna
+
+# Keyboard shortcuts
+

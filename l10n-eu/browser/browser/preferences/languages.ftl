@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Webgunearen hizkuntza-ezarpenak
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Webgunearen hizkuntza-ezarpenak
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } hizkuntza-ezarpenak
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } hizkuntza-ezarpenak
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name }(e)k lehen hizkuntza erakutsiko dizu lehenetsita eta ordezkoak zerrendako ordenan erakutsiko dizkizu behar izanez gero.
 

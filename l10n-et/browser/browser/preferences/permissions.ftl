@@ -6,6 +6,10 @@ permissions-window =
     .title = Erandid
     .style = width: 36em
 
+permissions-window2 =
+    .title = Erandid
+    .style = min-width: 36em
+
 permissions-close-key =
     .key = W
 
@@ -91,6 +95,10 @@ permissions-invalid-uri-label = Palun sisesta korrektne masinanimi
 permissions-exceptions-etp-window =
     .title = Erandid - täiustatud jälitamisvastane kaitse
     .style = { permissions-window.style }
+
+permissions-exceptions-etp-window2 =
+    .title = Erandid - täiustatud jälitamisvastane kaitse
+    .style = { permissions-window2.style }
 permissions-exceptions-etp-desc = Kaitse on järgnevatel saitidel välja lülitatud.
 
 ## Exceptions - Cookies
@@ -98,6 +106,10 @@ permissions-exceptions-etp-desc = Kaitse on järgnevatel saitidel välja lülita
 permissions-exceptions-cookie-window =
     .title = Erandid - küpsised ja saidi andmed
     .style = { permissions-window.style }
+
+permissions-exceptions-cookie-window2 =
+    .title = Erandid - küpsised ja saidi andmed
+    .style = { permissions-window2.style }
 permissions-exceptions-cookie-desc = Siin saad määrata, millistel saitidel on alati või mitte kunagi lubatud küpsiste ja saidi andmete kasutamine.  Sisesta hallatava saidi täpne aadress ning seejärel klõpsa Bloki, Luba selleks seansiks või Luba.
 
 ## Exceptions - HTTPS-Only Mode
@@ -105,6 +117,10 @@ permissions-exceptions-cookie-desc = Siin saad määrata, millistel saitidel on 
 permissions-exceptions-https-only-window =
     .title = HTTPS-režiim - erandid
     .style = { permissions-window.style }
+
+permissions-exceptions-https-only-window2 =
+    .title = HTTPS-režiim - erandid
+    .style = { permissions-window2.style }
 permissions-exceptions-https-only-desc = Kindlate saitide puhul on võimalik HTTPS-režiim välja lülitada. Nende saitide puhul ei ürita { -brand-short-name } ühendust turvaliseks sundida. Erandid ei rakendu privaatsetele akendele.
 
 ## Exceptions - Pop-ups
@@ -112,6 +128,10 @@ permissions-exceptions-https-only-desc = Kindlate saitide puhul on võimalik HTT
 permissions-exceptions-popup-window =
     .title = Lubatud saidid - hüpikaknad
     .style = { permissions-window.style }
+
+permissions-exceptions-popup-window2 =
+    .title = Lubatud saidid - hüpikaknad
+    .style = { permissions-window2.style }
 permissions-exceptions-popup-desc = Sa võid määrata, millistel veebilehtedel on hüpikakende avamine lubatud. Sisesta vastava veebilehe täpne aadress ning klõpsa Luba.
 
 ## Exceptions - Saved Logins
@@ -119,6 +139,10 @@ permissions-exceptions-popup-desc = Sa võid määrata, millistel veebilehtedel 
 permissions-exceptions-saved-logins-window =
     .title = Erandid - Salvestatud kasutajakontod
     .style = { permissions-window.style }
+
+permissions-exceptions-saved-logins-window2 =
+    .title = Erandid - Salvestatud kasutajakontod
+    .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = Järgnevate saitide kasutajakontosid ei salvestata
 
 ## Exceptions - Add-ons
@@ -126,6 +150,10 @@ permissions-exceptions-saved-logins-desc = Järgnevate saitide kasutajakontosid 
 permissions-exceptions-addons-window =
     .title = Lubatud saidid - lisade paigaldamine
     .style = { permissions-window.style }
+
+permissions-exceptions-addons-window2 =
+    .title = Lubatud saidid - lisade paigaldamine
+    .style = { permissions-window2.style }
 permissions-exceptions-addons-desc = Sa võid määrata, millistel veebilehtedel on lubatud lisasid paigaldada. Sisesta vastava veebilehe täpne aadress ning klõpsa Luba.
 
 ## Site Permissions - Autoplay
@@ -133,6 +161,10 @@ permissions-exceptions-addons-desc = Sa võid määrata, millistel veebilehtedel
 permissions-site-autoplay-window =
     .title = Sätted - automaatne esitamine
     .style = { permissions-window.style }
+
+permissions-site-autoplay-window2 =
+    .title = Sätted - automaatne esitamine
+    .style = { permissions-window2.style }
 permissions-site-autoplay-desc = Siin saad määrata, millised saidid ei järgi automaatse esitamise vaikeväärtust.
 
 ## Site Permissions - Notifications
@@ -140,6 +172,10 @@ permissions-site-autoplay-desc = Siin saad määrata, millised saidid ei järgi 
 permissions-site-notification-window =
     .title = Sätted - teavituste õigused
     .style = { permissions-window.style }
+
+permissions-site-notification-window2 =
+    .title = Sätted - teavituste õigused
+    .style = { permissions-window2.style }
 permissions-site-notification-desc = Järgmised saidid on avaldanud soovi saata teavitusi. Siin saad määrata, millistel saitidel on teavituste saatmine lubatud. Samuti saad blokkida uusi saatmise soove.
 permissions-site-notification-disable-label =
     .label = Bloki uued teavituste saatmise soovid
@@ -150,6 +186,10 @@ permissions-site-notification-disable-desc = See takistab kõigil ülal mitte v�
 permissions-site-location-window =
     .title = Sätted - asukoha õigused
     .style = { permissions-window.style }
+
+permissions-site-location-window2 =
+    .title = Sätted - asukoha õigused
+    .style = { permissions-window2.style }
 permissions-site-location-desc = Järgmised saidid on avaldanud soovi ligipääsuks sinu asukohale. Siin saad määrata, millistel saitidel on ligipääs sinu asukohale. Samuti saad blokkida uusi soove pääseda ligi sinu asukohateabele.
 permissions-site-location-disable-label =
     .label = Bloki uued asukohateabe saamise soovid
@@ -160,6 +200,10 @@ permissions-site-location-disable-desc = See takistab kõigil ülal mitte välja
 permissions-site-xr-window =
     .title = Sätted - virtuaalreaalsuse õigused
     .style = { permissions-window.style }
+
+permissions-site-xr-window2 =
+    .title = Sätted - virtuaalreaalsuse õigused
+    .style = { permissions-window2.style }
 permissions-site-xr-desc = Järgnevad saidid on avaldanud soovi ligipääsuks sinu virtuaalreaalsuse seadmetele. Siin saad määrata, millistel saitidel on ligipääs sinu virtuaalreaalsuse seadmetele. Samuti saad blokkida uusi soove pääseda ligi sinu virtuaalreaalsuse seadmetele.
 permissions-site-xr-disable-label =
     .label = Bloki uued virtuaalreaalsuse seadmete ligipääsemise soovid
@@ -170,6 +214,10 @@ permissions-site-xr-disable-desc = See takistab kõigil ülal mitte välja toodu
 permissions-site-camera-window =
     .title = Sätted - kaamera õigused
     .style = { permissions-window.style }
+
+permissions-site-camera-window2 =
+    .title = Sätted - kaamera õigused
+    .style = { permissions-window2.style }
 permissions-site-camera-desc = Järgmised saidid on avaldanud soovi ligipääsuks sinu kaamerale. Siin saad määrata, millised saidid pääsevad ligi sinu kaamerale. Samuti saad blokkida uusi soove pääseda ligi sinu kaamerale.
 permissions-site-camera-disable-label =
     .label = Bloki uued kaamerale ligipääsemise soovid
@@ -180,6 +228,10 @@ permissions-site-camera-disable-desc = See takistab kõigil ülal mitte välja t
 permissions-site-microphone-window =
     .title = Sätted - mikrofoni õigused
     .style = { permissions-window.style }
+
+permissions-site-microphone-window2 =
+    .title = Sätted - mikrofoni õigused
+    .style = { permissions-window2.style }
 permissions-site-microphone-desc = Järgmised saidid on avaldanud soovi ligipääsuks sinu mikrofonile. Siin saad määrata, millised saidid pääsevad ligi sinu mikrofonile. Samuti saad blokkida uusi soove ligi pääseda sinu mikrofonile.
 permissions-site-microphone-disable-label =
     .label = Bloki uued mikrofonile ligipääsemise soovid

@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Rydych chi wedi cychwyn fersiwn hŷn o { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Rydych chi wedi cychwyn fersiwn hŷn o { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Creu Proffil Newydd
 

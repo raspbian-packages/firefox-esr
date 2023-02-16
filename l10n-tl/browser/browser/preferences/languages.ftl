@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Mga Setting ng Lingwahe sa Webpage
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Mga Setting ng Lingwahe sa Webpage
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Mga Setting sa Lingwahe
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Mga Setting sa Lingwahe
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } will display the first language as your default and will display alternate languages if necessary in the order they appear.
 

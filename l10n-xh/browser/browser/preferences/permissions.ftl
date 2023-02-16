@@ -6,6 +6,10 @@ permissions-window =
     .title = Izinxaxhi
     .style = width: 45em
 
+permissions-window2 =
+    .title = Izinxaxhi
+    .style = min-width: 45em
+
 permissions-close-key =
     .key = w
 
@@ -43,10 +47,12 @@ permissions-invalid-uri-label = Nceda ngenisa igama lomamkeli elisebenzayo
 
 ## Exceptions - Tracking Protection
 
+
 ## Exceptions - Cookies
 
 
 ## Exceptions - HTTPS-Only Mode
+
 
 ## Exceptions - Pop-ups
 
@@ -58,14 +64,16 @@ permissions-exceptions-saved-logins-window =
     .title = Ezikhethekileyo - IiLogini Ezigciniweyo
     .style = { permissions-window.style }
 
+permissions-exceptions-saved-logins-window2 =
+    .title = Ezikhethekileyo - IiLogini Ezigciniweyo
+    .style = { permissions-window2.style }
+
 ## Exceptions - Add-ons
 
 permissions-exceptions-addons-desc = Ungabalula ukuba zeziphi na iiwebhusayithi ezivumeleke ukufakela izongezelelo. Tayipha idilesi yokwenene yesayithi ofuna ukuyivumela uze ucofe Vumela.
 
-## Exceptions - Autoplay Media
-
-
 ## Site Permissions - Autoplay
+
 
 ## Site Permissions - Notifications
 
@@ -74,6 +82,7 @@ permissions-exceptions-addons-desc = Ungabalula ukuba zeziphi na iiwebhusayithi 
 
 
 ## Site Permissions - Virtual Reality
+
 
 ## Site Permissions - Camera
 

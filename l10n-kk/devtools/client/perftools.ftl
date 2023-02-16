@@ -83,6 +83,8 @@ perftools-thread-render-backend =
     .title = WebRender RenderBackend ағыны
 perftools-thread-paint-worker =
     .title = Басты ағыннан тыс суреттеу іске қосылған кезде, суреттеу орын алатын ағын
+perftools-thread-timer =
+    .title = Ағынды өңдеу таймерлері (setTimeout, setInterval, nsITimer)
 perftools-thread-style-thread =
     .title = Стильдерді есептеу бірнеше ағын арасында бөлінген
 pref-thread-stream-trans =
@@ -97,6 +99,16 @@ perftools-thread-task-controller =
     .title = TaskController ағындар пулының ағындары
 perftools-thread-jvm-gecko =
     .title = Негізгі Gecko JVM ағыны
+perftools-thread-jvm-nimbus =
+    .title = Nimbus SDK тәжірибелері үшін негізгі ағындар
+perftools-thread-jvm-default-dispatcher =
+    .title = Kotlin қосалқы программалар кітапханасы үшін үнсіз келісім бойынша диспетчері
+perftools-thread-jvm-glean =
+    .title = Glean SDK телеметриясы үшін негізгі ағындар
+perftools-thread-jvm-arch-disk-io =
+    .title = Kotlin қосалқы программалар кітапханасы үшін енгізу-шығару диспетчері
+perftools-thread-jvm-pool =
+    .title = Аты жоқ ағын пулында жасалған ағындар
 
 ##
 
@@ -105,16 +117,9 @@ perftools-tools-threads-input-label =
     .title = Бұл ағын атаулары - профильдеушіде ағындар профильдеуін іске қосу үшін қолданылатын үтірлермен ажыратылған тізім. Бұл атау қосылатын ағын атауымен жартылай сәйкестік де бола алады. Ол бос аралықтарға сезімтал.
 
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
-## both devtools.performance.new-panel-onboarding & devtools.performance.new-panel-enabled
-## preferences are true.
-
-
-## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Жаңа</b>: { -profiler-brand-name } енді әзірлеуші құралдарына ендірілген. Бұл мүмкіндігі көп жаңа құрал туралы <a>көбірек біліңіз</a>.
-# `options-context-advanced-settings` is defined in toolbox-options.ftl
-perftools-onboarding-reenable-old-panel = (Белгілі бір шектелген уақыт ішінде, сіз түпнұсқа өнімділік панеліне <a>{ options-context-advanced-settings }</a> арқылы қатынай аласыз)
 perftools-onboarding-close-button =
     .aria-label = Қарсы алу хабарламасын жабу
 
@@ -135,6 +140,9 @@ perftools-presets-media-label = Медиа
 perftools-presets-media-description2 = { -brand-shorter-name } ішінде аудио және видео ақаулықтарын зерттеуге арналған баптаулар жиынтығы.
 perftools-presets-networking-label = Желі
 perftools-presets-networking-description = { -brand-shorter-name } ішінде желі ақаулықтарын зерттеуге арналған баптаулар жиынтығы.
+# "Power" is used in the sense of energy (electricity used by the computer).
+perftools-presets-power-label = Эл. қорегі
+perftools-presets-power-description = { -brand-shorter-name } ішінде эл. қорегін қолдану ақаулықтарын зерттеуге арналған баптаулар жиынтығы, қосымша жүктемесі аз.
 perftools-presets-custom-label = Таңдауыңызша
 
 ##

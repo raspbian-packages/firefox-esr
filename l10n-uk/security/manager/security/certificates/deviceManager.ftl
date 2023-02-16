@@ -9,6 +9,10 @@ devmgr =
     .title = Менеджер пристроїв
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Менеджер пристроїв
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Модулі і пристрої захисту
 

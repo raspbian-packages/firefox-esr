@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Nastavení mazání historie
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Nastavení mazání historie
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

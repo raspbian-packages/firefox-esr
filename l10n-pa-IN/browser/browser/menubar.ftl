@@ -161,7 +161,7 @@ menu-view-page-style-no-style =
     .label = ਕੋਈ ਸਟਾਇਲ ਨਹੀਂ
     .accesskey = n
 menu-view-page-basic-style =
-    .label = ਡਿਫਾਲਟ ਸਫ਼ੇ ਦਾ ਸਟਾਇਲ
+    .label = ਸਫ਼ੇ ਦਾ ਮੂਲ ਸਟਾਇਲ
     .accesskey = b
 menu-view-repair-text-encoding =
     .label = ਲਿਖਤ ਇੰਕੋਡਿੰਗ ਰਿਪੇਅਰ ਕਰੋ
@@ -179,6 +179,17 @@ menu-view-exit-full-screen =
 menu-view-full-screen =
     .label = ਪੂਰੀ ਸਕਰੀਨ ਉੱਤੇ
     .accesskey = F
+
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = ਪੜ੍ਹਨ ਝਲਕ ਖੋਲ੍ਹੋ
+    .accesskey = R
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = ਪੜ੍ਹਨ ਝਲਕ ਬੰਦ ਕਰੋ
+    .accesskey = R
 
 ##
 
@@ -203,7 +214,7 @@ menu-history-synced-tabs =
 menu-history-restore-last-session =
     .label = ਪਿਛਲੇ ਸ਼ੈਸ਼ਨ ਨੂੰ ਬਹਾਲ ਕਰੋ
 menu-history-hidden-tabs =
-    .label = ਟੈਬਾਂ ਲੁਕਾਓ
+    .label = ਲੁਕਵੀਆਂ ਟੈਬਾਂ
 menu-history-undo-menu =
     .label = ਤਾਜ਼ਾ ਖੋਲ੍ਹੀਆਂ ਟੈਬਾਂ
 menu-history-undo-window-menu =

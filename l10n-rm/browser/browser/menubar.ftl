@@ -38,11 +38,9 @@ menu-quit =
             [windows] T
            *[other] T
         }
-
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Terminar { -brand-shorter-name }
-
 menu-about =
     .label = Davart { -brand-shorter-name }
     .accesskey = D
@@ -182,6 +180,17 @@ menu-view-full-screen =
     .label = Maletg entir
     .accesskey = M
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Midar a la vista da lectura
+    .accesskey = R
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Serrar la vista da lectura
+    .accesskey = R
+
 ##
 
 menu-view-show-all-tabs =
@@ -224,6 +233,10 @@ menu-bookmark-current-tab =
     .label = Agiuntar in segnapagina per il tab actual
 menu-bookmark-edit =
     .label = Modifitgar quest segnapagina
+menu-bookmark-tab =
+    .label = Agiuntar in segnapagina per il tab actual…
+menu-edit-bookmark =
+    .label = Modifitgar quest segnapagina…
 menu-bookmarks-all-tabs =
     .label = Agiuntar segnapaginas per tut ils tabs…
 menu-bookmarks-toolbar =

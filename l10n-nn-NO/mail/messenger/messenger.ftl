@@ -50,6 +50,8 @@ show-recent-folders-label =
 
 ## AppMenu
 
+appmenu-save-as-file =
+    .label = Fil…
 appmenu-settings =
     .label = Innstillingar
 appmenu-addons-and-themes =

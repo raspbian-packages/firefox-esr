@@ -34,6 +34,10 @@ text-action-paste =
     .label = Кірістіру
     .accesskey = р
 
+text-action-paste-no-formatting =
+    .label = Пішімдеусіз кірістіру
+    .accesskey = м
+
 text-action-paste-shortcut =
     .key = V
 

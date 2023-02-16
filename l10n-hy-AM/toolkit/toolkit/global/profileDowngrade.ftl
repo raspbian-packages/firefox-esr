@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Դուք օգտագործում եք { -brand-product-name }֊ի հին տարբերակը
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Դուք օգտագործում եք { -brand-product-name }֊ի հին տարբերակը
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Ստեղծել նոր հաշիվ
 

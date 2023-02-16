@@ -22,6 +22,7 @@ pocket-panel-saved-page-saved = Salvate in { -pocket-brand-name }
 pocket-panel-saved-page-saved-b = Salvate in { -pocket-brand-name }!
 pocket-panel-saved-processing-remove = Remotion del pagina…
 pocket-panel-saved-removed = Pagina removite de mi lista
+pocket-panel-saved-removed-updated = Pagina removite del salvamentos
 pocket-panel-saved-processing-tags = Addente le etiquettas…
 pocket-panel-saved-remove-page = Remover le pagina
 pocket-panel-saved-save-tags = Salvar
@@ -45,8 +46,10 @@ pocket-panel-signup-tagline-story-one = Clicca le button de { -pocket-brand-name
 pocket-panel-signup-tagline-story-two = Vide in { -pocket-brand-name } sur omne apparatos, omne tempore.
 pocket-panel-signup-cta-a-fix = Tu button Salvar pro internet
 pocket-panel-signup-cta-b = Clicca le button { -pocket-brand-name } pro salvar articulos, videos e ligamines. Vide tu lista sur ulle apparato, quandocunque.
+pocket-panel-signup-cta-b-updated = Clicca le button { -pocket-brand-name } pro salvar articulos, videos e ligamines. Vide tu salvamentos sur ulle apparato, quandocunque.
 pocket-panel-signup-cta-b-short = Clicca le button { -pocket-brand-name } pro salvar articulos, videos e ligamines.
 pocket-panel-signup-cta-c = Vide tu lista sur ulle apparato, quandocunque.
+pocket-panel-signup-cta-c-updated = Vide tu salvamentos sur ulle apparato, quandocunque.
 
 ## about:pocket-home panel
 
@@ -64,6 +67,7 @@ pocket-panel-home-new-user-message = Vide hic tu recente salvamentos.
 ## Pocket panel header component
 
 pocket-panel-header-my-list = Vider mi lista
+pocket-panel-header-my-saves = Vider mi salvamentos
 pocket-panel-header-sign-in = Aperir session
 
 ## Pocket panel buttons

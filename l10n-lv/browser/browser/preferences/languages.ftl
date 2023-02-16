@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Lapas valodu iestatījumi
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Lapas valodu iestatījumi
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } valodu iestatījumi
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } valodu iestatījumi
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } attēlos pirmo valodu kā noklusēto un pārējās valodas, ja nepieciešams tādā secībā, kādā tās būs sarakstā.
 

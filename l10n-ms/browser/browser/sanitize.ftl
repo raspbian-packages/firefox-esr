@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Tetapan untuk Buang Sejarah
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Tetapan untuk Buang Sejarah
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

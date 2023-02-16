@@ -9,6 +9,10 @@ devmgr =
     .title = यन्त्र प्रबन्धक
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = यन्त्र प्रबन्धक
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = सुरक्षा मोड्युलहरू र यन्त्रहरू
 

@@ -6,6 +6,10 @@ add-engine-window =
     .title = Gehitu bilaketa-motorra
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Gehitu bilaketa-motorra
+    .style = min-width: 32em;
+
 add-engine-button = Gehitu bilaketa-motor pertsonalizatua
 
 add-engine-name = Bilaketa-motorraren izena

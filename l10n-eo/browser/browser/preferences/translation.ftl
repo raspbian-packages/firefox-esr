@@ -6,6 +6,10 @@ translation-window =
     .title = Esceptoj - Traduko
     .style = width: 36em
 
+translation-window2 =
+    .title = Esceptoj - Traduko
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

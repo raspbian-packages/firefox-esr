@@ -65,6 +65,9 @@ media-dimension =
     .value = Ofmjittingen:
 media-long-desc =
     .value = Lange omskriuwing:
+media-select-all =
+    .label = Alles selektearje
+    .accesskey = k
 media-save-as =
     .label = Bewarje as…
     .accesskey = j
@@ -251,7 +254,7 @@ media-block-image =
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:
-#   $website (string) - The url of the website pageInfo is getting info for
+#   $website (string) — The url of the website pageInfo is getting info for
 page-info-page =
     .title = Sydeynfo - { $website }
 page-info-frame =

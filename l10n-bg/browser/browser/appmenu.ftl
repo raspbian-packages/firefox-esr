@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = Профилаторът записва
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Показване на повече информация
 profiler-popup-description-title =

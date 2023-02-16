@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Paramètres de lenga de la pagina
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Paramètres de lenga de la pagina
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Paramètres de lenga de { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Paramètres de lenga de { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } utilizarà la primièra lenga per defaut e se cal utilizarà las lengas alternativas dins l’òrdre qu’apareisson.
 

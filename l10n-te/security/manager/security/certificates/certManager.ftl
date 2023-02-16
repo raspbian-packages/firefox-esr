@@ -21,6 +21,10 @@ certmgr-edit-ca-cert =
     .title = CA ధృవీకరణపత్రం నమ్మిక అమరికలను సరిచేయి
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA ధృవీకరణపత్రం నమ్మిక అమరికలను సరిచేయి
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = విశ్సనీయత అమరికలను మార్చు:
 
 certmgr-edit-cert-trust-ssl =
@@ -32,6 +36,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = ధృవీకరణపత్రంను తొలగించు
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = ధృవీకరణపత్రంను తొలగించు
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = ధృవీకరణపత్రపు పేరు
@@ -169,9 +177,8 @@ delete-email-cert-impact = మీరు ఒక వ్యక్తియొక్
 cert-with-serial =
     .value = సీరియల్ నంబర్ తో సర్టిఫికెట్: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

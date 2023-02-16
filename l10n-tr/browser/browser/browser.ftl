@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } Gizli Gezinti
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } Gizli Gezinti
 
 ##
 
@@ -134,11 +136,17 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Yardım al
 urlbar-search-tips-confirm = Tamam, anladım
+urlbar-search-tips-confirm-short = Anladım
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = İpucu:
+urlbar-result-menu-button =
+    .title = Menüyü aç
+urlbar-result-menu-remove-from-history =
+    .label = Geçmişten kaldır
+    .accesskey = G
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +155,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Daha az yazın, daha çok bulun: Adres çubuğunuzdan { $engineName } ile arama yapın.
 urlbar-search-tips-redirect-2 = { $engineName } ve gezinti geçmişinizden gelen önerileri görmek için adres çubuğunda arama yapmaya başlayın.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Arama yapmak artık daha basit. Aramanızı doğrudan adres çubuğunda düzenlemeyi deneyin. Bunun yerine adresi görmek isterseniz ayarlardaki Arama kısmına bakın.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Aradığınızı daha hızlı bulmak için bu kısayolu seçin.
@@ -267,42 +277,38 @@ search-one-offs-actions =
     .tooltiptext = Eylemler ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Eklentileri görüntüle
-quickactions-cmd-addons = eklentiler, uzantılar, temalar
 quickactions-cmd-addons2 = eklentiler
 # Opens the bookmarks library window
-quickactions-bookmarks = Yer imlerini görüntüle
+quickactions-bookmarks2 = Yer imlerini yönet
 quickactions-cmd-bookmarks = yer imleri
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Geçmişi temizle
 quickactions-cmd-clearhistory = geçmişi temizle
 # Opens about:downloads page
-quickactions-downloads = İndirilenleri aç
+quickactions-downloads2 = İndirilenleri göster
 quickactions-cmd-downloads = indirilenler
 # Opens about:addons page in the extensions section
 quickactions-extensions = Uzantıları yönet
 quickactions-cmd-extensions = uzantılar
 # Opens the devtools web inspector
-quickactions-inspector = Denetçiyi aç
+quickactions-inspector2 = Geliştirici araçlarını aç
 quickactions-cmd-inspector = denetçi, geliştirici araçları
 # Opens about:logins
-quickactions-logins = Hesapları göster
+quickactions-logins2 = Parolaları yönet
 quickactions-cmd-logins = hesaplar, parolalar
 # Opens about:addons page in the plugins section
 quickactions-plugins = Yan uygulamaları yönet
 quickactions-cmd-plugins = yan uygulamalar
 # Opens the print dialog
-quickactions-print = Yazdır
+quickactions-print2 = Sayfayı yazdır
 quickactions-cmd-print = yazdır
 # Opens a new private browsing window
-quickactions-private = Gizli gezinti penceresini aç
+quickactions-private2 = Gizli pencere aç
 quickactions-cmd-private = gizli gezinti
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } tarayıcısını yenile
@@ -311,10 +317,10 @@ quickactions-cmd-refresh = tazele
 quickactions-restart = { -brand-short-name } tarayıcısını yeniden başlat
 quickactions-cmd-restart = yeniden başlat
 # Opens the screenshot tool
-quickactions-screenshot2 = Ekran görüntüsü al
+quickactions-screenshot3 = Ekran görüntüsü al
 quickactions-cmd-screenshot = ekran görüntüsü
 # Opens about:preferences
-quickactions-settings = Ayarları aç
+quickactions-settings2 = Ayarları yönet
 quickactions-cmd-settings = ayarlar, tercihler, seçenekler
 # Opens about:addons page in the themes section
 quickactions-themes = Temaları yönet
@@ -323,8 +329,11 @@ quickactions-cmd-themes = temalar
 quickactions-update = { -brand-short-name } tarayıcısını güncelle
 quickactions-cmd-update = güncelle
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Kaynağı göster
+quickactions-viewsource2 = Sayfa kaynağını göster
 quickactions-cmd-viewsource = kaynağı görüntüle, kaynak
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Hızlı eylemler hakkında daha fazla bilgi alın
 
 ## Bookmark Panel
 
@@ -484,6 +493,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
     .tooltiptext = Hoparlör
+popup-select-window-or-screen =
+    .label = Pencere veya ekran:
+    .accesskey = P
 popup-all-windows-shared = Ekranınızdaki tüm görünür pencereler paylaşılacaktır.
 popup-screen-sharing-block =
     .label = Engelle
@@ -505,6 +517,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = F12 kısayolunu kullanmak için önce Web geliştirici menüsünden geliştirici araçlarını açın.
+enable-devtools-popup-description2 = F12 kısayolunu kullanmak için önce tarayıcı araçları menüsünden geliştirici araçlarını açın.
 
 ## URL Bar
 
@@ -636,6 +649,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Hızlı Eylemler
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Okuyucu Görünümü'ne geç
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Okuyucu Görünümü'nü kapat
 
 ## Full Screen and Pointer Lock UI
 
@@ -896,7 +918,7 @@ tabs-toolbar-list-all-tabs =
 ## Infobar shown at startup to suggest session-restore
 
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
-restore-session-startup-suggestion-message = <strong>Önceki sekmeler açılsın mı?</strong> Önceki oturumunuzu { -brand-short-name } uygulama menüsündeki <img data-l10n-name="icon"/> “Geçmiş” kısmından geri yükleyebilirsiniz.
+restore-session-startup-suggestion-message = <strong>Önceki sekmeler açılsın mı?</strong> Önceki oturumunuzu { -brand-short-name } menüsündeki (<img data-l10n-name="icon"/>) “Geçmiş” kısmından geri yükleyebilirsiniz.
 restore-session-startup-suggestion-button = Nasıl yapacağımı göster
 
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
@@ -913,3 +935,29 @@ private-browsing-indicator-label = Gizli gezinti
 unified-extensions-button =
     .label = Uzantılar
     .tooltiptext = Uzantılar
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Uzantılar
+    .tooltiptext =
+        Uzantılar
+        İzin gerekli
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } bu sayfanın kendiliğinden yenilenmesini önledi.
+refresh-blocked-redirect-label = { -brand-short-name } bu sayfanın başka sayfaya yönlenmesini önledi.
+refresh-blocked-allow =
+    .label = İzin ver
+    .accesskey = z
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } sizi veri ihlallerinden ve spam’den korumak için gerçek e-posta adresinizi maskeler.
+firefox-relay-offer-how-we-integrate = Devam ettiğinizde doğrudan { -brand-shorter-name } parola yöneticiniz üzerinden yeni { -relay-brand-short-name } e-posta maskeleri oluşturabileceksiniz.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = <strong>{ $sitename }</strong> adresinden gelen tüm e-postaları <strong>{ $useremail }</strong> adresine yönlendireceğiz.

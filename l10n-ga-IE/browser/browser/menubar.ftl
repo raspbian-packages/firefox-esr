@@ -11,6 +11,8 @@
 
 ## Application Menu (macOS only)
 
+menu-application-preferences =
+    .label = Sainroghanna
 menu-application-services =
     .label = Seirbhísí
 menu-application-hide-this =
@@ -36,11 +38,9 @@ menu-quit =
             [windows] S
            *[other] S
         }
-
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Scoir { -brand-shorter-name }
-
 menu-about =
     .label = Maidir le { -brand-shorter-name }
     .accesskey = M
@@ -70,6 +70,19 @@ menu-file-open-location =
 menu-file-open-file =
     .label = Oscail Comhad…
     .accesskey = O
+# Variables:
+#  $tabCount (Number): the number of tabs that are affected by the action.
+menu-file-close-tab =
+    .label =
+        { $tabCount ->
+            [1] Dún Cluaisín
+            [one] Dún Cluaisín
+            [two] Dún { $tabCount } Chluaisín
+            [few] Dún { $tabCount } Chluaisín
+            [many] Dún { $tabCount } gCluaisín
+           *[other] Dún { $tabCount } Cluaisín
+        }
+    .accesskey = D
 menu-file-close-window =
     .label = Dún an Fhuinneog
     .accesskey = F
@@ -79,12 +92,18 @@ menu-file-save-page =
 menu-file-email-link =
     .label = Seol an Nasc trí Ríomhphost…
     .accesskey = S
+menu-file-share-url =
+    .label = Roinn
+    .accesskey = R
 menu-file-print-setup =
     .label = Socrú Leathanaigh…
     .accesskey = L
 menu-file-print =
     .label = Priontáil…
     .accesskey = P
+menu-file-import-from-another-browser =
+    .label = Iompórtáil ó Bhrabhsálaí Eile…
+    .accesskey = I
 menu-file-go-offline =
     .label = Oibrigh As Líne
     .accesskey = b
@@ -112,6 +131,9 @@ menu-view =
 menu-view-toolbars-menu =
     .label = Barraí Uirlisí
     .accesskey = U
+menu-view-customize-toolbar2 =
+    .label = Saincheap an Barra Uirlisí…
+    .accesskey = S
 menu-view-sidebar =
     .label = Barra Taoibh
     .accesskey = T
@@ -130,6 +152,9 @@ menu-view-full-zoom-enlarge =
 menu-view-full-zoom-reduce =
     .label = Súmáil Amach
     .accesskey = A
+menu-view-full-zoom-actual-size =
+    .label = Fíormhéid
+    .accesskey = F
 menu-view-full-zoom-toggle =
     .label = Súmáil Téacs Amháin
     .accesskey = T
@@ -142,6 +167,9 @@ menu-view-page-style-no-style =
 menu-view-page-basic-style =
     .label = Stíl Leathanaigh Bhunúsach
     .accesskey = B
+menu-view-repair-text-encoding =
+    .label = Deisigh Ionchódú an Téacs
+    .accesskey = D
 
 ## These should match what Safari and other Apple applications
 ## use on macOS.
@@ -155,6 +183,17 @@ menu-view-exit-full-screen =
 menu-view-full-screen =
     .label = Lánscáileán
     .accesskey = i
+
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Oscail an tAmharc Léitheoireachta
+    .accesskey = R
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Dún an tAmharc Léitheoireachta
+    .accesskey = R
 
 ##
 
@@ -188,8 +227,14 @@ menu-history-undo-window-menu =
 menu-bookmarks-menu =
     .label = Leabharmharcanna
     .accesskey = L
+menu-bookmarks-manage =
+    .label = Bainistigh Leabharmharcanna
+menu-bookmark-current-tab =
+    .label = Leabharmharcáil Cluaisín Reatha
 menu-bookmark-edit =
     .label = Cuir an Leabharmharc Seo in Eagar
+menu-bookmark-tab =
+    .label = Leabharmharcáil Cluaisín Reatha…
 menu-bookmarks-all-tabs =
     .label = Leabharmharcáil Gach Cluaisín…
 menu-bookmarks-toolbar =

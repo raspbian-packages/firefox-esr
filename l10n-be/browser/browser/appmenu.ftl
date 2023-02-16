@@ -36,7 +36,7 @@ appmenuitem-find-in-page =
 appmenuitem-zoom =
     .value = Павелічэнне
 appmenuitem-more-tools =
-    .label = Іншыя прылады
+    .label = Іншыя інструменты
 appmenuitem-help =
     .label = Даведка
 appmenuitem-exit2 =
@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = Прафайлер захоплівае профіль
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Раскрыць больш звестак
 profiler-popup-description-title =
@@ -166,9 +167,9 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/popup/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
-profiler-popup-presets-web-developer-description = Рэкамендаваны прадусталяваны варыянт для адладкі большасці вэб-прыкладанняў, з невялікімі выдаткамі.
+profiler-popup-presets-web-developer-description = Рэкамендаваныя папярэднія налады для адладкі большасці вэб-праграм, з невялікімі выдаткамі.
 profiler-popup-presets-web-developer-label =
-    .label = Распрацоўшчык Сеціва
+    .label = Распрацоўка Сеціва
 profiler-popup-presets-firefox-description = Рэкамендаваныя налады для прафілявання { -brand-shorter-name }.
 profiler-popup-presets-firefox-label =
     .label = { -brand-shorter-name }
@@ -246,7 +247,7 @@ appmenu-help-not-deceptive =
 ## More Tools
 
 appmenu-customizetoolbar =
-    .label = Уладкаваць паліцы прылад…
+    .label = Уладкаваць паліцу прылад…
 appmenu-developer-tools-subheader = Інструменты браўзера
 appmenu-developer-tools-extensions =
     .label = Пашырэнні для распрацоўшчыкаў

@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = 阻止用户绕过某些安全性警告。
 policy-DisableSetAsDesktopBackground = 禁用将图像“设为桌面背景”的菜单命令。
 policy-DisableSystemAddonUpdate = 阻止浏览器安装或更新“系统附加组件”。
 policy-DisableTelemetry = 关闭“遥测”组件。
+policy-DisableThirdPartyModuleBlocking = 防止用户屏蔽注入 { -brand-short-name } 进程的第三方模块。
 policy-DisplayBookmarksToolbar = 默认显示书签工具栏。
 policy-DisplayMenuBar = 默认显示菜单栏。
 policy-DNSOverHTTPS = 配置基于 HTTPS 的 DNS。

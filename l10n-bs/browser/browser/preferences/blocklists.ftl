@@ -6,6 +6,10 @@ blocklist-window =
     .title = Liste za blokiranje
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Liste za blokiranje
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

@@ -2,4 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-account-hub-tab-title = Centrum účtov
+
+## Header
+
+account-hub-brand = { -brand-full-name }
+account-hub-welcome-line = Víta vás <span data-l10n-name="brand-name">{ -brand-full-name }</span>
+account-hub-title = Centrum účtov
+
+## Footer
+
+account-hub-release-notes = Poznámky k vydaniu
+account-hub-support = Podpora
+account-hub-donate = Prispieť

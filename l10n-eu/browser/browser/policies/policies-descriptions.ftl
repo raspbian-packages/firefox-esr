@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Eragotzi erabiltzaileak zenbait segurtasun-abisu 
 policy-DisableSetAsDesktopBackground = Desgaitu irudientzat 'Jarri idazmahaiaren atzeko planoan' menu-komandoa.
 policy-DisableSystemAddonUpdate = Eragotzi nabigatzaileak sistemaren gehigarriak instalatzea eta eguneratzea.
 policy-DisableTelemetry = Desgaitu Telemetry.
+policy-DisableThirdPartyModuleBlocking = Eragotzi erabiltzaileak { -brand-short-name } prozesuan txertatzen diren hirugarrenen moduluak blokeatzea.
 policy-DisplayBookmarksToolbar = Bistaratu lehenespenez laster-marken tresna-barra.
 policy-DisplayMenuBar = Bistaratu lehenespenez menu-barra.
 policy-DNSOverHTTPS = Konfiguratu HTTPS gaineko DNSa.

@@ -6,6 +6,10 @@ add-engine-window =
     .title = Titz'aqatisäx Kanob'äl
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Titz'aqatisäx Kanob'äl
+    .style = min-width: 32em;
+
 add-engine-button = Titz'aqatisäx Ichinan Kanob'äl
 
 add-engine-name = Rub'i' ri kanob'äl

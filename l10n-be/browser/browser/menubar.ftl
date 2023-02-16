@@ -88,8 +88,8 @@ menu-file-save-page =
     .label = Захаваць старонку як…
     .accesskey = я
 menu-file-email-link =
-    .label = Даслаць спасылку эл.поштай…
-    .accesskey = с
+    .label = Даслаць спасылку поштай…
+    .accesskey = у
 menu-file-share-url =
     .label = Падзялiцца
     .accesskey = П
@@ -130,7 +130,7 @@ menu-view-toolbars-menu =
     .label = Паліцы прылад
     .accesskey = л
 menu-view-customize-toolbar2 =
-    .label = Уладкаваць паліцы прылад…
+    .label = Уладкаваць паліцу прылад…
     .accesskey = У
 menu-view-sidebar =
     .label = Бакавая панэль
@@ -182,6 +182,17 @@ menu-view-full-screen =
     .label = Увесь экран
     .accesskey = У
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Увайсці ў Рэжым чытання
+    .accesskey = Ч
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Закрыць Рэжым чытання
+    .accesskey = Ч
+
 ##
 
 menu-view-show-all-tabs =
@@ -221,11 +232,11 @@ menu-bookmarks-menu =
 menu-bookmarks-manage =
     .label = Кіраванне закладкамі
 menu-bookmark-current-tab =
-    .label = Зрабіць закладку на гэту картку
+    .label = Зрабіць закладку на дзейную картку
 menu-bookmark-edit =
     .label = Правіць гэтую закладку
 menu-bookmark-tab =
-    .label = Зрабіць закладку на гэту картку…
+    .label = Зрабіць закладку на дзейную картку…
 menu-edit-bookmark =
     .label = Правіць гэтую закладку…
 menu-bookmarks-all-tabs =
@@ -240,8 +251,8 @@ menu-bookmarks-mobile =
 ## Tools Menu
 
 menu-tools =
-    .label = Прылады
-    .accesskey = л
+    .label = Інструменты
+    .accesskey = е
 menu-tools-downloads =
     .label = Сцягванні
     .accesskey = С
@@ -316,7 +327,7 @@ menu-help-share-ideas =
     .label = Падзяліцца ідэямі ці водгукам…
     .accesskey = ц
 menu-help-enter-troubleshoot-mode2 =
-    .label = Рэжым вырашэння праблем…
+    .label = Рэжым вырашэння праблемаў…
     .accesskey = Р
 menu-help-exit-troubleshoot-mode =
     .label = Выключыць рэжым вырашэння праблем

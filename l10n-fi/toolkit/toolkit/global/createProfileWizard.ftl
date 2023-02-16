@@ -6,9 +6,19 @@ create-profile-window =
     .title = Ohjattu profiilin luonti
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Ohjattu profiilin luonti
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
+    { PLATFORM() ->
+        [macos] Esittely
+       *[other] Tervetuloa
+    }
+
+create-profile-first-page-header2 =
     { PLATFORM() ->
         [macos] Esittely
        *[other] Tervetuloa
@@ -29,6 +39,12 @@ profile-creation-explanation-4 =
 ## Second wizard page
 
 create-profile-last-page-header =
+    { PLATFORM() ->
+        [macos] Viimeistely
+       *[other] Viimeistely
+    }
+
+create-profile-last-page-header2 =
     { PLATFORM() ->
         [macos] Viimeistely
        *[other] Viimeistely

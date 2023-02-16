@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Modificar le parametros de confidentia del CA
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Modificar le parametros de confidentia del certificato del CA
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Modificar le parametros de confidentialitate:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Deler le certificato
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Deler le certificato
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Hoste

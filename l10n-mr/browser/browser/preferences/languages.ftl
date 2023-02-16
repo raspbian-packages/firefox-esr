@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = वेबपृष्ठ भाषा सेटिंग
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = वेबपृष्ठ भाषा सेटिंग
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } भाषा सेटिंग
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } भाषा सेटिंग
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } आपली डीफॉल्ट म्हणून प्रथम भाषा प्रदर्शित करेल आणि आवश्यक असल्यास वैकल्पिक भाषा प्रदर्शित करेल.
 

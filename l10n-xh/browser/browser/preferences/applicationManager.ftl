@@ -6,6 +6,10 @@ app-manager-window =
     .title = Iinkcukacha ze-aplikheshini
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Iinkcukacha ze-aplikheshini
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Susa
     .accesskey = S

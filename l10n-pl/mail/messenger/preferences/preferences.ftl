@@ -353,6 +353,9 @@ auto-mark-as-read =
 mark-read-no-delay =
     .label = natychmiast po wyświetleniu
     .accesskey = n
+view-attachments-inline =
+    .label = Pokazuj załączniki w treści wiadomości
+    .accesskey = z
 
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).

@@ -6,6 +6,10 @@ app-manager-window =
     .title = કાર્યક્રમ વિગતો
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = કાર્યક્રમ વિગતો
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = દૂર કરો
     .accesskey = R

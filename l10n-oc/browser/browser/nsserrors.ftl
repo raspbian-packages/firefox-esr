@@ -12,20 +12,16 @@
 # $hostname (String) - Hostname of the website with SSL error.
 # $errorMessage (String) - Error message corresponding to the type of error we are experiencing.
 ssl-connection-error = Una error s'es producha pendent una connexion a { $hostname }. { $errorMessage }
-
 # Variables:
 # $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 cert-error-code-prefix = Còdi d’error : { $error }
-
 psmerr-ssl-disabled = Connexion securizada impossibla perque lo protocòl SSL es estat desactivat.
 psmerr-ssl2-disabled = Connexion securizada impossibla perque lo site utiliza una version anciana pas segura del protocòl SSL.
-
 # This is a multi-line message.
 psmerr-hostreusedissuerandserial =
     Avètz recebut un certificat invalid. Contactatz l'administrator del servidor o vòstre correspondent de messatjariá e provesissètz-li las entresenhas seguentas :
     
     Vòstre certificat conten lo meteis numèro de seria qu'un autre certificat emes per l'autoritat de certificacion. Provesissètz-vos un certificat novèl amb un numèro de seria unic.
-
 ssl-error-export-only-server = Impossible de comunicar en mòde securizat. Lo par gerís pas lo chiframent de naut nivèl.
 ssl-error-us-only-server = Impossible de comunicar en mòde securizat. Lo par requerís un chiframent de naut nivèl qu'es pas gerit.
 ssl-error-no-cypher-overlap = Impossible de comunicar en mòde securizat amb lo par : pas cap d'algoritme de chiframent en comun.
@@ -90,7 +86,7 @@ ssl-error-illegal-parameter-alert = Lo pqr SSL a regetat un messatge d'establime
 ssl-error-unsupported-cert-alert = Lo par SSL gerís pas lo tipe dels certificats qu'a recebuts.
 ssl-error-certificate-unknown-alert = Lo par SSL a agut un problèma pas especificat amb lo certificat qu'a recebut.
 ssl-error-generate-random-failure = SSL a rencontrat un fracàs de son generator de nombres aleatòris.
-ssl-error-sign-hashes-failure = Impossible de signar numericament las donadas requesas per verificar vòstre certificat.
+ssl-error-sign-hashes-failure = Impossible de signar numericament las donadas requeridas per verificar vòstre certificat.
 ssl-error-extract-public-key-failure = SSL a pas pogut extraire la clau publica del certificat del par.
 ssl-error-server-key-exchange-failure = Fracàs pas especificat al moment del tractament de l'establiment de ligason « SSL Server Key Exchange ».
 ssl-error-client-key-exchange-failure = Fracàs pas especificat al moment del tractament de l'establiment de ligason « SSL Client Key Exchange ».
@@ -108,7 +104,7 @@ ssl-error-init-cipher-suite-failure = Fracàs de l'inicializacion de la seguida 
 ssl-error-session-key-gen-failure = Lo client a pas capitat de generar de claus de session per la session SSL.
 ssl-error-no-server-key-for-alg = Lo servidor a pas de clau per l'algoritme d'escambi de claus utilizat.
 ssl-error-token-insertion-removal = Lo geton PKCS#11 es estat inserit o suprimit alara qu'una operacion èra en cors.
-ssl-error-token-slot-not-found = Cap de geton PKCS#11 es pas estat trobat per acomplir una operacion requesa.
+ssl-error-token-slot-not-found = Cap de geton PKCS#11 es pas estat trobat per acomplir una operacion requerida.
 ssl-error-no-compression-overlap = Impossible de comunicar en mòde securizat amb lo par : pas cap d'algoritme de compression en comun.
 ssl-error-handshake-not-completed = Impossible d'inicializar un autre establiment de ligason SSL tant que lo qu'es en cors es pas acabat.
 ssl-error-bad-handshake-hash-value = Recepcion de valors d'emprentas numericas incorrèctas al moment de l'establiment de ligason amb lo pair.
@@ -267,7 +263,7 @@ sec-error-invalid-password = Lo senhal picat es invalid. Causissètz-ne un autre
 sec-error-retry-old-password = Lo senhal ancian es pas estat picat corrèctament. Tornatz ensajar.
 sec-error-bad-nickname = Aqueste escais de certificat ja es utilizat.
 sec-error-not-fortezza-issuer = Aqueste escais de certificat ja es utilizat.
-sec-error-cannot-move-sensitive-key = Una clau sensibla a pas pogut èsser deplaçada dins lo slot ont èra requesa.
+sec-error-cannot-move-sensitive-key = Una clau sensibla a pas pogut èsser desplaçada dins lo slot ont èra requerida.
 sec-error-js-invalid-module-name = Nom de modul invalid.
 sec-error-js-invalid-dll = Camin/fichièr de modul invalid
 sec-error-js-add-mod-failure = Apondon de modul impossible
@@ -311,7 +307,7 @@ sec-error-revoked-certificate-crl = Lo certificat es revocat dins la lista de ce
 sec-error-revoked-certificate-ocsp = Lo respondeire OCSP de l'autoritat senhala que lo certificat es revocat.
 sec-error-crl-invalid-version = La lista de certificats revocats de l'autoritat a un numèro de version desconegut.
 sec-error-crl-v1-critical-extension = La lista de certificats revocats V1 de l'autoritat a una extension critica.
-sec-error-crl-unknown-critical-extension = La lista de certificats revocats V2 de l'autoritat a une extension critica desconeguda.
+sec-error-crl-unknown-critical-extension = La lista de certificats revocats V2 de l'autoritat a una extension critica desconeguda.
 sec-error-unknown-object-type = Tipe d'objècte desconegut especificat.
 sec-error-incompatible-pkcs11 = Lo pilòt KCS #11 viòla las especificacions d'un biais incompatible.
 sec-error-no-event = Cap d'eveniment novèl de slot es pas disponible pel moment.

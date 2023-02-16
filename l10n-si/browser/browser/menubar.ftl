@@ -53,6 +53,9 @@ menu-file =
 menu-file-new-tab =
     .label = නව පටිත්ත
     .accesskey = T
+menu-file-new-container-tab =
+    .label = නව පටිති අඩංගුව
+    .accesskey = b
 menu-file-new-window =
     .label = නව කවුළුව
     .accesskey = N
@@ -157,6 +160,9 @@ menu-view-page-style-no-style =
 menu-view-page-basic-style =
     .label = පිටුවේ මූලික ශෛලිය
     .accesskey = B
+menu-view-repair-text-encoding =
+    .label = පෙළ ආකේතනය අලුත්වැඩියාව
+    .accesskey = c
 
 ## These should match what Safari and other Apple applications
 ## use on macOS.
@@ -171,11 +177,25 @@ menu-view-full-screen =
     .label = පූර්ණ තිරය
     .accesskey = F
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = කියවීමේ දැක්මට යන්න
+    .accesskey = R
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = කියවීමේ දැක්ම වසන්න
+    .accesskey = R
+
 ##
 
 menu-view-show-all-tabs =
     .label = සියළු පටිති පෙන්වන්න
     .accesskey = A
+menu-view-bidi-switch-page-direction =
+    .label = පිටුවේ දිශාව මාරුව
+    .accesskey = D
 
 ## History Menu
 

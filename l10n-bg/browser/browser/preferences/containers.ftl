@@ -11,6 +11,15 @@ containers-window-update-settings =
     .title = Настройки на изолатора „{ $name }“
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Нов изолатор
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Настройки на изолатора „{ $name }“
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

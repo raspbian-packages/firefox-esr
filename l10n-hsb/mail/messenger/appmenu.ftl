@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Sync
+appmenu-signin-panel =
+    .label = Pola Sync přizjewić
+    .accesskey = P
+appmenu-sync-sync =
+    .value = Kontowa synchronizacija
+    .accesskey = K
+appmenu-sync-manage =
+    .value = Konto rjadować
+    .accesskey = r
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = Nětko synchronizować
+    .accesskey = N
+appmenu-sync-settings =
+    .label = Nastajenja synchronizacije
+    .accesskey = s
+appmenu-sync-sign-out =
+    .label = Wotzjewić…
+    .accesskey = o
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +93,11 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = Wočinić
-    .accesskey = o
-appmenu-open-panel-title =
-    .title = Wočinić
+appmenu-open-file-panel =
+    .label = Z dataje wočinić
+    .accesskey = d
+appmenu-open-file-panel-title =
+    .title = Z dataje wočinić
 appmenu-open-message =
     .label = Powěsć…
     .accesskey = P
@@ -168,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = Wo { -brand-short-name }
     .accesskey = o
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Aktualizaciju { -brand-shorter-name } sćahnyć
+appmenuitem-banner-update-available =
+    .label = Aktualizacija k dispoziciji – nětko sćahnyć
+appmenuitem-banner-update-manual =
+    .label = Aktualizacija k dispoziciji – nětko sćahnyć
+appmenuitem-banner-update-unsupported =
+    .label = Aktualizacija móžna njeje – system je inkompatibelny
+appmenuitem-banner-update-restart =
+    .label = Aktualizacija k dispoziciji – nětko znowa startować

@@ -6,12 +6,22 @@ create-profile-window =
     .title = Assistent da profil
     .style = width: 45em; height: 36em;
 
+create-profile-window2 =
+    .title = Assistent da profil
+    .style = min-width: 45em; min-height: 36em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Entschatta
        *[other] { create-profile-window.title } - Bainvegni
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Entschatta
+       *[other] { create-profile-window2.title } - Bainvegni
     }
 
 profile-creation-explanation-1 = { -brand-short-name } memorisescha parameters e datas en tes profil persunal.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Finiziun
        *[other] { create-profile-window.title } - Terminar
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Finiziun
+       *[other] { create-profile-window2.title } - Terminar
     }
 
 profile-creation-intro = Differents profils pon vegnir distinguids cun agid da lur num. Ti pos utilisar il num inditgà u in agen num.

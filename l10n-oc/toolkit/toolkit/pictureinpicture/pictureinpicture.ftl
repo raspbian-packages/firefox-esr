@@ -19,36 +19,42 @@ pictureinpicture-close =
 ## Variables:
 ##   $shortcut (String) - Keyboard shortcut to execute the command.
 
-pictureinpicture-pause-cmd =
+pictureinpicture-pause-btn =
     .aria-label = Pausa
-    .title = Pausa (barra d’espaci)
-pictureinpicture-play-cmd =
+    .tooltip = Pausa (barra d’espaci)
+pictureinpicture-play-btn =
     .aria-label = Legir
-    .title = Legir (barra d’espaci)
-pictureinpicture-mute-cmd =
+    .tooltip = Legir (barra d’espaci)
+pictureinpicture-mute-btn =
     .aria-label = Amudir
-    .title = Amudir ({ $shortcut })
-pictureinpicture-unmute-cmd =
+    .tooltip = Amudir ({ $shortcut })
+pictureinpicture-unmute-btn =
     .aria-label = Restablir lo son
-    .title = Restablir lo son ({ $shortcut })
-pictureinpicture-unpip-cmd =
+    .tooltip = Restablir lo son ({ $shortcut })
+pictureinpicture-unpip-btn =
     .aria-label = Renviar a l’onglet
-    .title = Tornar a l’onglet
-pictureinpicture-close-cmd =
+    .tooltip = Tornar a l’onglet
+pictureinpicture-close-btn =
     .aria-label = Tampar
-    .title = Tampar ({ $shortcut })
-pictureinpicture-subtitles-cmd =
+    .tooltip = Tampar ({ $shortcut })
+pictureinpicture-subtitles-btn =
     .aria-label = Sostitoles
-    .title = Sostitoles
+    .tooltip = Sostitoles
 
 ##
 
-pictureinpicture-fullscreen-cmd =
-    .aria-label = Ecran complet
-    .title = Ecran complet (clic doble)
-pictureinpicture-exit-fullscreen-cmd =
-    .aria-label = Quitar l’ecran complet
-    .title = Quitar l’ecran complet (clic doble)
+pictureinpicture-fullscreen-btn =
+    .aria-label = Ecran complèt
+    .tooltip = Ecran complèt (clic doble)
+pictureinpicture-exit-fullscreen-btn =
+    .aria-label = Quitar l’ecran complèt
+    .tooltip = Quitar l’ecran complèt (clic doble)
+pictureinpicture-seekbackward-btn =
+    .aria-label = Retorn arrièr
+    .tooltip = Retorn arrièr (←)
+pictureinpicture-seekforward-btn =
+    .aria-label = Avança
+    .tooltip = Avança (→)
 pictureinpicture-subtitles-label = Sostitoles
 pictureinpicture-font-size-label = Talha de polissa
 pictureinpicture-font-size-small = Pichona

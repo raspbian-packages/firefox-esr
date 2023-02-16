@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = Uredi postavke povjerenja CA-ovih certifikata
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Uredi postavke povjerenja CA-ovih certifikata
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Uredi postavke povjerenja:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Izbriši certifikat
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Izbriši certifikat
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Poslužitelj

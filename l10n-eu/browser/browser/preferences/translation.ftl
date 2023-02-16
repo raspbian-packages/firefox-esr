@@ -6,6 +6,10 @@ translation-window =
     .title = Salbuespenak - Itzulpena
     .style = width: 36em
 
+translation-window2 =
+    .title = Salbuespenak - Itzulpena
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

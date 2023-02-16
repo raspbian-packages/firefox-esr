@@ -6,6 +6,10 @@ translation-window =
     .title = ব্যতিক্রম অনুবাদ।
     .style = width: 36em
 
+translation-window2 =
+    .title = ব্যতিক্রম অনুবাদ।
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

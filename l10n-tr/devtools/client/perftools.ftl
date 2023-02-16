@@ -7,7 +7,7 @@
 ### the remote profiling panel. There are additional profiler strings in the appmenu.ftl
 ### file that are used for the profiler popup.
 
-perftools-intro-title = Profilleyici Ayarları
+perftools-intro-title = Profiler Ayarları
 perftools-intro-description = Kayıtlar yeni bir sekmede profiler.firefox.com adresini açar. Tüm veriler cihazınızda yerel olarak depolanır. Paylaşmak istediklerinizi upload edebilirsiniz.
 
 ## All of the headings for the various sections.
@@ -83,7 +83,7 @@ perftools-thread-style-thread =
 pref-thread-stream-trans =
     .title = Ağ akışı aktarımı
 perftools-thread-socket-thread =
-    .title = Ağ kodunun egelleyici soket çağrılarını çalıştırdığı iş parçacığı.
+    .title = Ağ kodunun egelleyici soket çağrılarını çalıştırdığı iş parçacığı
 perftools-thread-img-decoder =
     .title = Görüntü çözme iş parçacıkları
 perftools-thread-dns-resolver =
@@ -107,7 +107,7 @@ perftools-thread-jvm-pool =
 
 perftools-record-all-registered-threads = Yukarıdaki seçimleri atla ve tüm kayıtlı iş parçacıklarını kaydet
 perftools-tools-threads-input-label =
-    .title = Bu iş parçacığı adları, profilleyicide profili çıkarılacak iş parçacıklarının virgülle ayrılmış listesidir. İç parçacığı adının dahil edilmesi için kısmi eşleşme olması yeterlidir. Adlar boşluk karakterine duyarlıdır.
+    .title = Bu iş parçacığı adları, profilleyicide profili çıkarılacak iş parçacıklarının virgülle ayrılmış listesidir. İş parçacığı adının dahil edilmesi için kısmi eşleşme olması yeterlidir. Adlar boşluk karakterine duyarlıdır.
 
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## devtools.performance.new-panel-onboarding preference is true.

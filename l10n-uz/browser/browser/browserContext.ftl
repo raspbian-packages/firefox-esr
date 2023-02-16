@@ -218,6 +218,10 @@ main-context-menu-image-view-new-tab =
     .label = Rasmni yangi varaqda ochish
     .accesskey = o
 
+main-context-menu-video-view-new-tab =
+    .label = Videoni yangi varaqda ochish
+    .accesskey = i
+
 main-context-menu-image-copy =
     .label = Rasmdan nusxa olish
     .accesskey = u

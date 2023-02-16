@@ -9,6 +9,10 @@ devmgr =
     .title = சாதன மேலாளர்
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = சாதன மேலாளர்
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = பாதுகாப்பு பகுதிகள் மற்றும் சாதனங்கள்
 

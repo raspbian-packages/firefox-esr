@@ -76,7 +76,6 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } поверително разглеждане
 
 ##
 
@@ -267,15 +266,11 @@ search-one-offs-actions =
     .tooltiptext = Действия ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page
 quickactions-addons = Преглед на добавките
-quickactions-cmd-addons = добавки, разширения, теми
 # Opens the bookmarks library window
 quickactions-bookmarks = Преглед на отметките
 quickactions-cmd-bookmarks = отметки
@@ -625,6 +620,15 @@ urlbar-group-search-suggestions =
 urlbar-group-quickactions =
     .label = Бързи действия
 
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Отваря изгледа за четене
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Затваря изгледа за четене
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -896,3 +900,11 @@ private-browsing-indicator-label = Поверително разглеждане
 unified-extensions-button =
     .label = Разширения
     .tooltiptext = Разширения
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } попречи на автоматичното презареждане на страницата.
+refresh-blocked-redirect-label = { -brand-short-name } попречи на автоматичното пренасочване на страницата.
+refresh-blocked-allow =
+    .label = Разрешаване
+    .accesskey = ш

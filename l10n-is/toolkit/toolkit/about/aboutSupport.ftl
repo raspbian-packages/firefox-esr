@@ -42,7 +42,7 @@ app-basics-update-dir =
        *[other] Uppfæra möppu
     }
 app-basics-update-history = Uppfærslusaga
-app-basics-show-update-history = Sýna uppfærslusögu
+app-basics-show-update-history = Sýna uppfærsluferil
 # Represents the path to the binary used to start the application.
 app-basics-binary = Keyrsluskrá forrits
 app-basics-profile-dir =
@@ -107,11 +107,21 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Atvikaskrá fyrir ákvarðanir
 graphics-crash-guards-title = Óvirkar stillingar fyrir hrunvara
 graphics-workarounds-title = Leiðir framhjá villum
+graphics-device-pixel-ratios = Mynddílahlutföll gluggatækis
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Samskiptaregla glugga
 # Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
 graphics-desktop-environment = Skjáborðsumhverfi
 place-database-title = Gagnagrunnur fyrir staði
+place-database-stats = Tölfræði
+place-database-stats-show = Sýna tölfræði
+place-database-stats-hide = Fela tölfræði
+place-database-stats-entity = Eining
+place-database-stats-count = Fjöldi
+place-database-stats-size-kib = Stærð (KiB)
+place-database-stats-size-perc = Stærð (%)
+place-database-stats-efficiency-perc = Skilvirkni (%)
+place-database-stats-sequentiality-perc = Röðun (%)
 place-database-integrity = Áreiðanleiki
 place-database-verify-integrity = Sannprófa áreiðanleika
 a11y-title = Aukið aðgengi
@@ -304,6 +314,7 @@ can-sandbox-media = Media Plugin Sandboxing
 content-sandbox-level = Content Process Sandbox Level
 effective-content-sandbox-level = Effective Content Process Sandbox Level
 content-win32k-lockdown-state = Win32k-læsingarástand (Lockdown State) fyrir efnisferli
+support-sandbox-gpu-level = GPU Process Sandbox Level
 sandbox-proc-type-content = innihald
 sandbox-proc-type-file = innihald skráar
 sandbox-proc-type-media-plugin = margmiðlunar-tengiforrit

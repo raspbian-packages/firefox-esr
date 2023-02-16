@@ -49,9 +49,9 @@ browser-main-window-mac =
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
     .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } Privat nettleseing
+    .data-title-private = { -brand-full-name } Privat nettlesing
     .data-content-title-default = { $content-title } — { -brand-full-name }
-    .data-content-title-private = { $content-title } — { -brand-full-name } Privat nettleseing
+    .data-content-title-private = { $content-title } — { -brand-full-name } Privat nettlesing
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
@@ -68,15 +68,17 @@ browser-main-window-window-titles =
 #  $content-title (String): the title of the web content.
 browser-main-window-mac-window-titles =
     .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } — Privat nettleseing
+    .data-title-private = { -brand-full-name } — Privat nettlesing
     .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } — Privat nettleseing
+    .data-content-title-private = { $content-title } — Privat nettlesing
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } Privat nettleseing
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } Privat nettlesing
 
 ##
 
@@ -134,11 +136,17 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Få hjelp
 urlbar-search-tips-confirm = Ok, jeg forstår
+urlbar-search-tips-confirm-short = Jeg forstår
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Tips:
+urlbar-result-menu-button =
+    .title = Åpne meny
+urlbar-result-menu-remove-from-history =
+    .label = Fjern fra historikk
+    .accesskey = F
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +155,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Skriv mindre, finn mer: Søk med { $engineName } direkte fra adresselinjen din.
 urlbar-search-tips-redirect-2 = Start ditt søk i adressefeltet for å se forslag fra { $engineName } og din nettleserhistorikk.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Det ble enklere å søke. Prøv å gjøre søket mer spesifikt her i adressefeltet. For å vise nettadressen i stedet, gå til Søk i innstillingene.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Velg denne snarveien for å finne det du trenger raskere.
@@ -267,42 +277,50 @@ search-one-offs-actions =
     .tooltiptext = Handlinger ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Vis tillegg
-quickactions-cmd-addons = tillegg, utvidelser, temaer
 quickactions-cmd-addons2 = tillegg
 # Opens the bookmarks library window
 quickactions-bookmarks = Vis bokmerker
+# Opens the bookmarks library window
+quickactions-bookmarks2 = Behandle bokmerker
 quickactions-cmd-bookmarks = bokmerker
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Tøm historikk
 quickactions-cmd-clearhistory = tøm historikk
 # Opens about:downloads page
 quickactions-downloads = Åpne nedlastinger
+# Opens about:downloads page
+quickactions-downloads2 = Vis nedlastinger
 quickactions-cmd-downloads = nedlastinger
 # Opens about:addons page in the extensions section
 quickactions-extensions = Behandle utvidelser
 quickactions-cmd-extensions = utvidelser
 # Opens the devtools web inspector
 quickactions-inspector = Åpne inspeksjon
+# Opens the devtools web inspector
+quickactions-inspector2 = Åpne utviklerverktøy
 quickactions-cmd-inspector = inspektør, utviklerverktøy
 # Opens about:logins
 quickactions-logins = Vis innlogginger
+# Opens about:logins
+quickactions-logins2 = Behandle passord
 quickactions-cmd-logins = innlogginger, passord
 # Opens about:addons page in the plugins section
 quickactions-plugins = Behandle programtillegg
 quickactions-cmd-plugins = programtillegg
 # Opens the print dialog
 quickactions-print = Skriv ut
+# Opens the print dialog
+quickactions-print2 = Skriv ut side
 quickactions-cmd-print = utskrift, skriv ut
 # Opens a new private browsing window
 quickactions-private = Åpne privat nettlesingsvindu
+# Opens a new private browsing window
+quickactions-private2 = Åpne privat vindu
 quickactions-cmd-private = privat nettlesing
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Tilbakestill { -brand-short-name }
@@ -312,9 +330,13 @@ quickactions-restart = Start { -brand-short-name } på nytt
 quickactions-cmd-restart = omstart, start på nytt
 # Opens the screenshot tool
 quickactions-screenshot2 = Ta et skjermbilde
+# Opens the screenshot tool
+quickactions-screenshot3 = Ta et skjermbilde
 quickactions-cmd-screenshot = skjermbilde, skjermdump
 # Opens about:preferences
 quickactions-settings = Åpne innstillinger
+# Opens about:preferences
+quickactions-settings2 = Behandle innstillinger
 quickactions-cmd-settings = valg, innstillinger, alternativer
 # Opens about:addons page in the themes section
 quickactions-themes = Behandle temaer
@@ -324,7 +346,12 @@ quickactions-update = Oppdater { -brand-short-name }
 quickactions-cmd-update = oppdater
 # Opens the view-source UI with current pages source
 quickactions-viewsource = Vis kildekode
+# Opens the view-source UI with current pages source
+quickactions-viewsource2 = Vis kildekode
 quickactions-cmd-viewsource = se kilde, kilde
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Les mer om hurtige handlinger
 
 ## Bookmark Panel
 
@@ -482,6 +509,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
     .tooltiptext = Høyttalere
+popup-select-window-or-screen =
+    .label = Vindu eller skjerm:
+    .accesskey = V
 popup-all-windows-shared = Alle synlige vinduer på skjermen vil deles.
 popup-screen-sharing-block =
     .label = Blokker
@@ -503,6 +533,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = For å bruke F12-snarveien, må du først åpne DevTools via menyen for Nettsideutvikling
+enable-devtools-popup-description2 = For å bruke F12-snarveien, må du først åpne DevTools via menyen Nettleserverktøy.
 
 ## URL Bar
 
@@ -634,6 +665,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Hurtige handlinger
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Gå til lesevisning
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Lukk lesevisning
 
 ## Full Screen and Pointer Lock UI
 
@@ -911,3 +951,29 @@ private-browsing-indicator-label = Privat nettlesing
 unified-extensions-button =
     .label = Utvidelser
     .tooltiptext = Utvidelser
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Utvidelser
+    .tooltiptext =
+        Utvidelser
+        Trenger tillatelser
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } forhindret denne nettsiden fra å automatisk laste inn på nytt.
+refresh-blocked-redirect-label = { -brand-short-name } forhindret denne nettsiden fra å automatisk omdirigere til en annen nettside.
+refresh-blocked-allow =
+    .label = Tillat
+    .accesskey = T
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } skjuler den egentlige e-postadressen din for å beskytte deg mot datainnbrudd og spam.
+firefox-relay-offer-how-we-integrate = Ved å fortsette kan du generere nye { -relay-brand-short-name } e-postmasker direkte fra passordbehandleren for { -brand-shorter-name }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Vi videresender alle e-poster fra <strong>{ $sitename }</strong> til <strong>{ $useremail }</strong>.

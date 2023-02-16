@@ -9,6 +9,10 @@ devmgr =
     .title = مدیر دستگاه‌ها
     .style = width: 52em; height: 32em;
 
+devmgr-window =
+    .title = مدیر دستگاه‌ها
+    .style = min-width: 52em; min-height: 32em;
+
 devmgr-devlist =
     .label = واحد‌ها و دستگاه‌های امنیتی
 

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Eliminar datos
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Eliminar datos
+    .style = min-width: 35em
+
 clear-site-data-description = Le elimination de tote le cookies e datos de sitos web immagazinate per { -brand-short-name } pote clauder tu sessiones active in sitos web e remover contento web immagazinate pro uso sin connexion. Eliminar le datos del cache non afficera tu sessiones active.
 
 clear-site-data-close-key =

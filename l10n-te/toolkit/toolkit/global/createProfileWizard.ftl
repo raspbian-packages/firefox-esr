@@ -6,12 +6,22 @@ create-profile-window =
     .title = ప్రొఫైల్ విజార్డును సృష్టించు
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = ప్రొఫైల్ విజార్డును సృష్టించు
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] పరిచయం
        *[other] { create-profile-window.title }కు స్వాగతం
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] పరిచయం
+       *[other] { create-profile-window2.title }కు స్వాగతం
     }
 
 profile-creation-explanation-1 = { -brand-short-name } మీ అమరికలు మరియు అభీష్టాలకు సంభందిచిన సమాచారాన్ని మీ వ్యక్తిగత ప్రొఫైల్‌నందు నిల్వవుంచుతుంది.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] ముగింపు
        *[other] { create-profile-window.title }ను పూర్తిచేయుచున్నది
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] ముగింపు
+       *[other] { create-profile-window2.title }ను పూర్తిచేయుచున్నది
     }
 
 profile-creation-intro = మీరు చాలా ప్రొఫైల్సు సృష్టించినట్లైతే వాటని ప్రొఫైల్ నామాలద్వారా తెలుపవచ్చు. ఇక్కడ ఇవ్వబడిన నామమును వాడవచ్చు లేదా మీ స్వంత దానిని వాడవచ్చు.

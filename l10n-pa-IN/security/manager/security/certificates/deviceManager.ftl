@@ -9,6 +9,10 @@ devmgr =
     .title = ਜੰਤਰ ਮੈਨੇਜਰ
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = ਜੰਤਰ ਮੈਨੇਜਰ
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = ਸੁਰੱਖਿਆ ਮੋਡੀਊਲ ਅਤੇ ਜੰਤਰ
 

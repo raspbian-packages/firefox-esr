@@ -353,6 +353,9 @@ auto-mark-as-read =
 mark-read-no-delay =
     .label = Immediat cun mussar
     .accesskey = e
+view-attachments-inline =
+    .label = Mussar las agiuntas a l'intern
+    .accesskey = M
 
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).

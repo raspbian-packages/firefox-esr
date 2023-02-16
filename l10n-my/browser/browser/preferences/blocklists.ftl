@@ -6,6 +6,10 @@ blocklist-window =
     .title = ပိတ်ပင်ထားသည့် စာရင်းများ
     .style = width: 55em
 
+blocklist-window2 =
+    .title = ပိတ်ပင်ထားသည့် စာရင်းများ
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

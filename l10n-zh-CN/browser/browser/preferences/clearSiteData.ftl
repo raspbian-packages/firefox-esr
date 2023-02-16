@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = 清除数据
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = 清除数据
+    .style = min-width: 35em
+
 clear-site-data-description = 清除 { -brand-short-name } 存储的所有 Cookie 和网站数据可能使您的网站登录状态丢失，还会删除离线网页内容。仅清除缓存数据则不会影响您的登录状态。
 
 clear-site-data-close-key =

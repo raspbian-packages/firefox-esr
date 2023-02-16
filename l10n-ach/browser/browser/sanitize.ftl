@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Ter pi jwayo gin mukato
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Ter pi jwayo gin mukato
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

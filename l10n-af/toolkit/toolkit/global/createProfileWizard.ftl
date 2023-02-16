@@ -6,12 +6,22 @@ create-profile-window =
     .title = Skep profielslimmerd
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Skep profielslimmerd
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Inleiding
        *[other] Welkom by die { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Inleiding
+       *[other] Welkom by die { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } stoor inligting oor u opstelling en voorkeure in u persoonlike profiel.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Slotsom
        *[other] Klaar met die { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Slotsom
+       *[other] Klaar met die { create-profile-window2.title }
     }
 
 profile-creation-intro = Indien u verskeie profiele skep, kan u hulle herken deur hul profielname. U kan die naam gebruik wat hier verskaf word, of een van u eie gebruik.

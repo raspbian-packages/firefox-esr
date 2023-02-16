@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } Yksityinen selaus
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } - Yksityinen selaus
 
 ##
 
@@ -134,11 +136,17 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Apua ongelmiin
 urlbar-search-tips-confirm = Selvä
+urlbar-search-tips-confirm-short = Selvä
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Vinkki:
+urlbar-result-menu-button =
+    .title = Avaa valikko
+urlbar-result-menu-remove-from-history =
+    .label = Poista historiasta
+    .accesskey = R
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +155,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Kirjoita vähemmän, löydä enemmän: Hae hakukoneella { $engineName } suoraan osoitepalkista.
 urlbar-search-tips-redirect-2 = Aloita hakeminen osoitepalkista, niin näet ehdotukset palvelusta { $engineName } ja selaushistoriastasi.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Haku yksinkertaistui. Yritä tarkentaa hakuasi täällä osoitepalkissa. Jos haluat haun sijaan näkyviin URL-osoitteen, siirry asetusten hakuosioon.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Valitse tämä, niin löydät etsimäsi nopeammin.
@@ -267,57 +277,80 @@ search-one-offs-actions =
     .tooltiptext = Toiminnot ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Näytä lisäosat
-quickactions-cmd-addons = lisäosat, laajennukset, teemat
 quickactions-cmd-addons2 = lisäosat
 # Opens the bookmarks library window
 quickactions-bookmarks = Näytä kirjanmerkit
+# Opens the bookmarks library window
+quickactions-bookmarks2 = Hallitse kirjanmerkkejä
 quickactions-cmd-bookmarks = kirjanmerkit
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Tyhjennä historia
 quickactions-cmd-clearhistory = tyhjennä historia
 # Opens about:downloads page
 quickactions-downloads = Avaa lataukset
+# Opens about:downloads page
+quickactions-downloads2 = Näytä lataukset
 quickactions-cmd-downloads = lataukset
 # Opens about:addons page in the extensions section
 quickactions-extensions = Hallitse laajennuksia
 quickactions-cmd-extensions = laajennukset
+# Opens the devtools web inspector
+quickactions-inspector = Avaa Inspector
+# Opens the devtools web inspector
+quickactions-inspector2 = Avaa kehittäjätyökalut
 quickactions-cmd-inspector = tarkastaja, inspector, devtools
 # Opens about:logins
 quickactions-logins = Näytä kirjautumistiedot
+# Opens about:logins
+quickactions-logins2 = Hallitse salasanoja
 quickactions-cmd-logins = käyttäjätunnukset, salasanat
 # Opens about:addons page in the plugins section
 quickactions-plugins = Hallitse liitännäisiä
 quickactions-cmd-plugins = liitännäiset
 # Opens the print dialog
 quickactions-print = Tulosta
+# Opens the print dialog
+quickactions-print2 = Tulosta sivu
 quickactions-cmd-print = tulosta
 # Opens a new private browsing window
 quickactions-private = Avaa yksityinen selausikkuna
+# Opens a new private browsing window
+quickactions-private2 = Avaa yksityinen ikkuna
 quickactions-cmd-private = yksityinen selaus
+# Opens a SUMO article explaining how to refresh
+quickactions-refresh = Palauta { -brand-short-name } uudenveroiseksi
 # Restarts the browser
 quickactions-restart = Käynnistä { -brand-short-name } uudelleen
+quickactions-cmd-restart = käynnistä uudelleen
 # Opens the screenshot tool
 quickactions-screenshot2 = Ota kuvakaappaus
+# Opens the screenshot tool
+quickactions-screenshot3 = Ota kuvakaappaus
 quickactions-cmd-screenshot = kuvakaappaus
 # Opens about:preferences
 quickactions-settings = Avaa asetukset
+# Opens about:preferences
+quickactions-settings2 = Hallitse asetuksia
 quickactions-cmd-settings = asetukset, valinnat
 # Opens about:addons page in the themes section
 quickactions-themes = Hallitse teemoja
 quickactions-cmd-themes = teemat
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Päivitä { -brand-short-name }
+quickactions-cmd-update = päivitä
 # Opens the view-source UI with current pages source
 quickactions-viewsource = Näytä lähdekoodi
+# Opens the view-source UI with current pages source
+quickactions-viewsource2 = Näytä sivun lähdekoodi
 quickactions-cmd-viewsource = näytä lähde, lähdekoodi
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Lue lisää pikatoiminnoista
 
 ## Bookmark Panel
 
@@ -476,6 +509,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofoni
 popup-select-speaker-icon =
     .tooltiptext = Kaiuttimet
+popup-select-window-or-screen =
+    .label = Ikkuna tai näyttö:
+    .accesskey = I
 popup-all-windows-shared = Kaikki näkyvissä olevat ikkunat jaetaan.
 popup-screen-sharing-block =
     .label = Estä
@@ -628,6 +664,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Pikatoiminnot
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Avaa lukunäkymä
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Sulje lukunäkymä
 
 ## Full Screen and Pointer Lock UI
 
@@ -905,3 +950,29 @@ private-browsing-indicator-label = Yksityinen selaus
 unified-extensions-button =
     .label = Laajennukset
     .tooltiptext = Laajennukset
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Laajennukset
+    .tooltiptext =
+        Laajennukset
+        Lupia vaaditaan
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } esti sivua päivittymästä.
+refresh-blocked-redirect-label = { -brand-short-name } esti sivua ohjautumasta automaattisesti toiselle sivulle.
+refresh-blocked-allow =
+    .label = Salli
+    .accesskey = S
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } peittää todellisen sähköpostiosoitteesi ja auttaa siten sinua suojautumaan tietomurroilta sekä roskapostilta.
+firefox-relay-offer-how-we-integrate = Jatkamalla voit luoda uusia { -relay-brand-short-name }-sähköpostimaskeja suoraan { -brand-shorter-name }in salasanojen hallinnasta.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Välitämme kaikki sähköpostit sivustolta <strong>{ $sitename }</strong> osoitteeseen <strong>{ $useremail }</strong>.

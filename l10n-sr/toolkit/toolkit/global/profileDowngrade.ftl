@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Покренули сте старију { -brand-product-name } верзију
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Покренули сте старију { -brand-product-name } верзију
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Направи нови профил
 

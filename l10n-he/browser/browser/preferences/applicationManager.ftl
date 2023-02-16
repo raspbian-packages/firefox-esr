@@ -6,6 +6,10 @@ app-manager-window =
     .title = פרטי יישום
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = פרטי יישום
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = הסרה
     .accesskey = ה

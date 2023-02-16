@@ -4,6 +4,10 @@
 
 e2e-intro-description = Salattujen tai digitaalisesti allekirjoitettujen viestien lähettämistä varten on määritettävä joko OpenPGP- tai S/MIME-salaustekniikka.
 e2e-intro-description-more = Ota OpenPGP käyttöösi valitsemalla henkilökohtainen avaimesi, tai S/MIME valitsemalla henkilökohtainen varmenteesi. Henkilökohtaista avainta tai varmennetta varten sinulla on vastaava oma salainen avain.
+e2e-signing-description = Digitaalinen allekirjoitus varmistaa vastaanottajille, että viesti on sinun lähettämä ja että viestin sisältöä ei ole muutettu. Salatut viestit allekirjoitetaan aina oletuksena.
+e2e-sign-message =
+    .label = Allekirjoita salaamattomat viestit
+    .accesskey = A
 e2e-disable-enc =
     .label = Poista uusien viestien salaus käytöstä
     .accesskey = P
@@ -177,6 +181,9 @@ openpgp-key-man-reload =
 openpgp-key-man-change-expiry =
     .label = Muuta vanhemenispäivää
     .accesskey = t
+openpgp-key-man-refresh-online =
+    .label = Päivitä verkossa
+    .accesskey = P
 openpgp-key-man-ignored-ids =
     .label = Sähköpostiosoitteet
 openpgp-key-man-del-key =
@@ -224,8 +231,7 @@ openpgp-key-man-select-all-key =
     .key = K
 openpgp-key-man-key-details-key =
     .key = T
-openpgp-key-details-title =
-    .title = Avaimen ominaisuudet
+openpgp-ign-addr-intro = Hyväksyt tämän avaimen käytön seuraaville valituille sähköpostiosoitteille:
 openpgp-key-details-doc-title = Avaimen ominaisuudet
 openpgp-key-details-signatures-tab =
     .label = Varmenteet
@@ -234,7 +240,7 @@ openpgp-key-details-structure-tab =
 openpgp-key-details-uid-certified-col =
     .label = Käyttäjätunnus / varmentanut
 openpgp-key-details-key-id-label = Avaimen tunniste
-openpgp-key-details-user-id2-label = Oletettu avaimen omistaja
+openpgp-key-details-user-id3-label = Väitetty avaimen omistaja
 openpgp-key-details-id-label =
     .label = Tunniste
 openpgp-key-details-key-type-label = Tyyppi
@@ -479,7 +485,8 @@ key-error-not-accepted-as-personal = Et ole vahvistanut, että avain tunnisteell
 # Strings used in enigmailKeyManager.js & windows.jsm
 need-online = Valitsemasi toiminto ei ole käytettävissä yhteydettömässä tilassa. Yhdistä verkkoon ja yritä uudelleen.
 # Strings used in keyRing.jsm & keyLookupHelper.jsm
-no-key-found = Hakuehtoja vastaavia avaimia ei löytynyt.
+no-key-found2 = Hakuehtoja vastaavia avaimia ei löytynyt.
+no-update-found = Sinulla on jo avaimet, jotka löydettiin verkosta.
 # Strings used in keyRing.jsm & GnuPGCryptoAPI.jsm
 fail-key-extract = Virhe - avaimen purkamiskomento epäonnistui
 # Strings used in keyRing.jsm

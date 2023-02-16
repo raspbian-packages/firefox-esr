@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Վեբ էջի լեզվի կարգավորումներ
     .style = width: 45em
 
+webpage-languages-window2 =
+    .title = Վեբ էջի լեզվի կարգավորումներ
+    .style = min-width: 45em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name }-ի լեզվի կարգավորումներ
     .style = width: 45em
+
+browser-languages-window2 =
+    .title = { -brand-short-name }-ի լեզվի կարգավորումներ
+    .style = min-width: 45em
 
 browser-languages-description = { -brand-short-name }-ը կցուցադրի առաջին լեզուն որպես սկզբնադիր և կցուցադրի այլ լեզուներ, եթե անհրաժեշտ լինի:
 

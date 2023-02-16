@@ -172,3 +172,59 @@ spotlight-pin-primary-button =
        *[other] Kiinnitä tehtäväpalkkiin
     }
 spotlight-pin-secondary-button = Ei nyt
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Uusi { -brand-short-name }. Entistä yksityisempi. Vähemmän seuraimia. Ei kompromisseja.
+mr2022-background-update-toast-text = Kokeile uusinta { -brand-short-name }ia nyt. Päivitetty tähän mennessä vahvimmalla seurantasuojauksella.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Avaa { -brand-shorter-name } nyt
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Muistuta minua myöhemmin
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Kokeile
+    .accesskey = o
+firefoxview-cfr-secondarybutton = Ei nyt
+    .accesskey = n
+firefoxview-cfr-header = Palauta äskettäin suljetut välilehdet käyttämällä { -firefoxview-brand-name }iä
+firefoxview-cfr-body = Lisäksi voit siirtyä saumattomasti laitteiden välillä sekä lisätä selaimeesi väriä.
+firefoxview-cfr-header-v2 = Jatka siitä mihin jäit
+firefoxview-cfr-body-v2 = Hanki äskettäin suljetut välilehdet takaisin ja siirry saumattomasti laitteiden välillä { -firefoxview-brand-name }llä.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Tervehdi { -firefoxview-brand-name }ä
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Haluatko avoimen välilehden puhelimeltasi? Nappaa se. Tarvitsetko sivuston, jolla juuri vierailit? Hokkuspokkus, se on palannut { -firefoxview-brand-name }llä.
+firefoxview-spotlight-promo-primarybutton = Katso miten se toimii
+firefoxview-spotlight-promo-secondarybutton = Ohita
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Valitse väriteema
+    .accesskey = ä
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Väritä selaimesi { -brand-short-name }in erityisillä sävyillä, jotka ovat saaneet vaikutteita kulttuuria muuttaneista äänistä.
+colorways-cfr-header-28days = Itsenäiset äänet -väriteemat vanhenevat 16. tammikuuta
+colorways-cfr-header-14days = Itsenäiset äänet -väriteemat vanhenevat kahden viikon kuluttua
+colorways-cfr-header-7days = Itsenäiset äänet -väriteemat vanhenevat tällä viikolla
+colorways-cfr-header-today = Itsenäiset äänet -väriteemat vanhenevat tänään

@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 38em !important
         }
 
+colors-dialog-window2 =
+    .title = Χρώματα
+
 colors-dialog-legend = Κείμενο και φόντο
 
 text-color-label =

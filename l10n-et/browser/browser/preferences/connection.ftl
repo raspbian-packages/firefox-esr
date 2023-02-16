@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 53em
         }
 
+connection-window2 =
+    .title = Ühenduse sätted
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 48em
+           *[other] min-width: 53em
+        }
+
 connection-close-key =
     .key = w
 

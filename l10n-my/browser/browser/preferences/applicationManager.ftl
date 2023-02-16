@@ -6,6 +6,10 @@ app-manager-window =
     .title = လုပ်ငန်းသုံးပရိုဂရမ်အသေးစိတ်များ
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = လုပ်ငန်းသုံးပရိုဂရမ်အသေးစိတ်များ
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = ဖယ်ရှားပါ
     .accesskey = R

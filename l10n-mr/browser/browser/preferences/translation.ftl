@@ -6,6 +6,10 @@ translation-window =
     .title = अपवाद - भाषांतरन
     .style = width: 36em
 
+translation-window2 =
+    .title = अपवाद - भाषांतरन
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

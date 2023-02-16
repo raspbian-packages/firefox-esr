@@ -6,6 +6,10 @@ translation-window =
     .title = ਛੋਟ - ਉਲੱਥਾ
     .style = width: 36em
 
+translation-window2 =
+    .title = ਛੋਟ - ਉਲੱਥਾ
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

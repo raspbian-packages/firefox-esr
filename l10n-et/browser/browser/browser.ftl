@@ -76,7 +76,6 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } (privaatne veebilehitsemine)
 
 ##
 
@@ -261,17 +260,17 @@ search-one-offs-actions =
     .tooltiptext = Tegevused ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
+## The -cmd- strings are comma separated list of keywords that will match
+## the action.
 
-quickactions-clear = Tühjenda ajalugu
-quickactions-print = Prindi
-quickactions-screenshot = Tee ekraanipilt
-quickactions-settings = Ava sätted
 quickactions-downloads = Ava allalaadimised
-quickactions-viewsource = Vaata lähtekoodi
 quickactions-inspector = Ava inspekteerimine
+quickactions-print = Prindi
 quickactions-refresh = Värskenda { -brand-short-name }
 quickactions-restart = Taaskäivita { -brand-short-name }
+quickactions-settings = Ava sätted
 quickactions-update = Uuenda { -brand-short-name }
+quickactions-viewsource = Vaata lähtekoodi
 
 ## Bookmark Panel
 
@@ -432,6 +431,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
     .tooltiptext = Kõlarid
+popup-select-window-or-screen =
+    .label = Jagatav aken või ekraan:
+    .accesskey = J
 popup-all-windows-shared = Jagatakse kõiki nähtavaid aknaid sinu ekraanil.
 popup-screen-sharing-block =
     .label = Bloki
@@ -583,6 +585,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Kiired tegevused
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Lülitu lugemisvaatesse
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Sulge lugemisvaade
 
 ## Full Screen and Pointer Lock UI
 
@@ -849,3 +860,14 @@ data-reporting-notification-button =
     .accesskey = V
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Privaatne veebilehitsemine
+
+## Unified extensions (toolbar) button
+
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } keelas sellel lehel automaatse uuestilaadimise.
+refresh-blocked-redirect-label = { -brand-short-name } keelas sellel lehel automaatse edasisuunamise muule lehele.
+refresh-blocked-allow =
+    .label = Luba
+    .accesskey = L

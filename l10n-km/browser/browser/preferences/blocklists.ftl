@@ -6,6 +6,10 @@ blocklist-window =
     .title = បញ្ជី​ទប់ស្កាត់
     .style = width: 55em
 
+blocklist-window2 =
+    .title = បញ្ជី​ទប់ស្កាត់
+    .style = min-width: 55em
+
 blocklist-description = ជ្រើសរើសបញ្ជី { -brand-short-name } ដែលប្រើដើម្បីទប់ស្កាត់​អ្នកតាមដាន​នៅលើ​អ៊ីនធឺណិត។ បញ្ជីដែលបាន​ផ្តល់ដោយ <a data-l10n-name="disconnect-link" title="Disconnect">ផ្តាច់</a> ។
 blocklist-close-key =
     .key = w

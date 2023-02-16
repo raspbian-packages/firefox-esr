@@ -171,10 +171,6 @@ files-and-applications-title = ឯកសារ និងកម្មវិធី
 
 download-header = ទាញ​យក
 
-download-save-to =
-    .label = រក្សា​ទុក​ឯកសារ​ទៅ
-    .accesskey = ក
-
 download-save-where = រក្សា​ទុក​ឯកសារ​ទៅ
     .accesskey = ក
 
@@ -857,4 +853,3 @@ certs-devices =
 desktop-folder-name = ផ្ទៃតុ
 downloads-folder-name = ទាញ​យក
 choose-download-folder-title = ជ្រើស​ថត​ទាញ​យក ៖
-

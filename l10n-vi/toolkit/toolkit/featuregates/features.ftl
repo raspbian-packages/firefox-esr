@@ -6,7 +6,7 @@
 # by various online articles and is technical in nature.
 experimental-features-css-masonry2 =
     .label = CSS: Masonry Layout
-experimental-features-css-masonry-description = Cho phép hỗ trợ cho tính năng thử nghiệm CSS Masonry Layout. Xem <a data-l10n-name="explainer">giải thích</a> để biết mô tả cấp cao về tính năng. Để cung cấp phản hồi, vui lòng nhận xét trong <a data-l10n-name="w3c-su">GitHub issue này</a> hoặc <a data-l10n-name="bug">báo cáo lỗi này</a>.
+experimental-features-css-masonry-description = Cho phép hỗ trợ cho tính năng thử nghiệm CSS Masonry Layout. Xem <a data-l10n-name="explainer">giải thích</a> để biết mô tả cấp cao về tính năng. Để cung cấp phản hồi, vui lòng nhận xét trong <a data-l10n-name="w3c-issue">GitHub issue này</a> hoặc <a data-l10n-name="bug">báo cáo lỗi này</a>.
 # The title of the experiment should be kept in English as it may be referenced
 # by various online articles and is technical in nature.
 experimental-features-web-gpu2 =
@@ -60,10 +60,6 @@ experimental-features-js-warp-description = Kích hoạt Warp, một dự án đ
 experimental-features-ime-search =
     .label = Thanh địa chỉ: hiển thị kết quả trong quá trình thành phần IME
 experimental-features-ime-search-description = IME (Trình chỉnh sửa phương thức nhập) là một công cụ cho phép bạn nhập các ký hiệu phức tạp, chẳng hạn như các ký hiệu được sử dụng trong các ngôn ngữ viết Đông Á hoặc Ấn Độ, bằng bàn phím tiêu chuẩn. Bật thử nghiệm này sẽ giữ cho bảng thanh địa chỉ luôn mở, hiển thị kết quả tìm kiếm và đề xuất, trong khi sử dụng IME để nhập văn bản. Lưu ý rằng IME có thể hiển thị một bảng che các kết quả trên thanh địa chỉ, do đó tùy chọn này chỉ được đề xuất cho IME không sử dụng loại bảng này.
-# Text recognition for images
-experimental-features-text-recognition =
-    .label = Nhận dạng văn bản
-experimental-features-text-recognition-description = Bật tính năng nhận dạng văn bản trong hình ảnh.
 experimental-features-accessibility-cache =
     .label = Bộ nhớ đệm hỗ trợ tiếp cận
 experimental-features-accessibility-cache-description = Lưu trữ tất cả thông tin trợ năng từ tất cả các tài liệu trong quy trình chính của { -brand-short-name }. Điều này cải thiện hiệu suất cho trình đọc màn hình và các ứng dụng khác sử dụng API hỗ trợ tiếp cận.

@@ -139,6 +139,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ
 addon-category-sitepermission-title =
     .title = ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = { $host } ਲਈ ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ
 
 ## These are global warnings
 
@@ -279,7 +283,7 @@ preferences-addon-button =
        *[other] ਪਸੰਦਾਂ
     }
 details-addon-button = ਵੇਰਵੇ
-release-notes-addon-button = ਰੀਲਿਜ਼ ਨੋਟਿਸ
+release-notes-addon-button = ਰੀਲੀਜ਼ ਨੋਟਸ
 permissions-addon-button = ਇਜਾਜ਼ਤਾਂ
 extension-enabled-heading = ਸਮਰੱਥ ਹੈ
 extension-disabled-heading = ਅਸਮਰੱਥ ਹੈ
@@ -290,10 +294,6 @@ theme-monochromatic-heading = ਰੰਗਢੰਗ
 theme-monochromatic-subheading = { -brand-product-name } ਤੋਂ ਨਵੇਂ ਵੱਖ-ਵੱਖ ਰੰਗਢੰਗਸ ਸੀਮਿਤ ਸਮੇਂ ਲਈ ਹੀ ਉਪਲੱਬਧ ਹਨ।
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = ਰੰਗ-ਢੰਗ ਵਰਤ ਕੇ ਵੇਖੋ
-colorway-collection-independent-voices-subheading = { -brand-short-name } ਨੂੰ ਹੋਰ ਆਪਣਾ ਮਹਿਸੂਸ ਕਰੋ।
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = { DATETIME($expiryDate, month: "long", day: "numeric") } ਮਿਆਦ
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = ਰੰਗ-ਢੰਗ ਬਦਲੋ
 # Variables:

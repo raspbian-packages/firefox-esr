@@ -9,6 +9,10 @@ devmgr =
     .title = Gestor de dispositius
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Gestor de dispositius
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Mòduls i dispositius de seguretat
 

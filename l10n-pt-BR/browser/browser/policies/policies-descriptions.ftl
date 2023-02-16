@@ -33,7 +33,7 @@ policy-DisableBuiltinPDFViewer = Desativar PDF.js, o visor de PDF integrado no {
 policy-DisableDefaultBrowserAgent = Impedir que o agente padrão do navegador execute qualquer ação. Aplicável apenas a Windows; outras plataformas não têm o agente.
 policy-DisableDeveloperTools = Bloquear acesso às ferramentas de desenvolvimento.
 policy-DisableFeedbackCommands = Desativar comandos de envio de comentários no menu Ajuda (Enviar opinião e Denunciar site enganoso).
-policy-DisableFirefoxAccounts = Desativar serviços baseados em { -fxaccount-brand-name }, incluindo o Sync.
+policy-DisableFirefoxAccounts = Desativar serviços baseados em { -fxaccount-brand-name }, incluindo a sincronização.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Desativar o recurso de captura de tela do Firefox.
 policy-DisableFirefoxStudies = Impedir que o { -brand-short-name } execute estudos.
@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Impedir que o usuário ignore determinados alerta
 policy-DisableSetAsDesktopBackground = Desativar o comando de menu Definir como papel de parede da área de trabalho para imagens.
 policy-DisableSystemAddonUpdate = Impedir que o navegador instale e atualize extensões do sistema.
 policy-DisableTelemetry = Desligar telemetria.
+policy-DisableThirdPartyModuleBlocking = Evitar que o usuário bloqueie módulos de terceiros injetados no processo { -brand-short-name }.
 policy-DisplayBookmarksToolbar = Exibir a barra de favoritos por padrão.
 policy-DisplayMenuBar = Exibir a barra de menu por padrão.
 policy-DNSOverHTTPS = Configurar DNS sobre HTTPS.

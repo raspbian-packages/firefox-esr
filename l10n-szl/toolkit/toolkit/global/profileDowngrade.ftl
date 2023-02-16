@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Sztartła starszo wersyjo aplikacyje { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Sztartła starszo wersyjo aplikacyje { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Zrychtuj nowy profil
 

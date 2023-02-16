@@ -6,6 +6,10 @@ translation-window =
     .title = استثناها - ترجمه
     .style = width: 36em
 
+translation-window2 =
+    .title = استثناها - ترجمه
+    .style = min-width: 36em
+
 translation-close-key =
     .key = W
 

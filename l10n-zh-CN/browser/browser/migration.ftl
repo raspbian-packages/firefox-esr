@@ -4,13 +4,11 @@
 
 migration-wizard =
     .title = 导入向导
-
 import-from =
     { PLATFORM() ->
         [windows] 从下列来源导入选项、书签、历史记录、密码以及其他数据：
        *[other] 从下列来源导入首选项、书签、历史记录、密码以及其他数据：
     }
-
 import-from-bookmarks = 从下列来源导入书签：
 import-from-ie =
     .label = 微软 IE 浏览器
@@ -28,8 +26,14 @@ import-from-nothing =
     .label = 不导入任何数据
     .accesskey = D
 import-from-safari =
-    .label = Safari
+    .label = Safari 浏览器
     .accesskey = S
+import-from-opera =
+    .label = Opera
+    .accesskey = O
+import-from-vivaldi =
+    .label = Vivaldi
+    .accesskey = V
 import-from-brave =
     .label = Brave
     .accesskey = r
@@ -54,38 +58,27 @@ import-from-firefox =
 import-from-360se =
     .label = 360 安全浏览器
     .accesskey = 3
-
+import-from-opera-gx =
+    .label = Opera GX
+    .accesskey = G
 no-migration-sources = 找不到存有书签、历史记录或密码数据的浏览器。
-
 import-source-page-title = 导入设置及数据
 import-items-page-title = 要导入的项目
-
 import-items-description = 请选择要导入的项目：
-
 import-permissions-page-title = 请授权 { -brand-short-name }
-
 # Do not translate "Bookmarks.plist"; the file name is the same everywhere.
-import-permissions-description = macOS 要求您明确允许 { -brand-short-name } 访问 Safari 书签才能继续。请点击“继续”，并从显示的打开文件面板中选择“Bookmarks.plist”文件。
-
+import-permissions-description = macOS 要求您明确允许 { -brand-short-name } 访问 Safari 浏览器书签才能继续。请点击“继续”，并从显示的打开文件面板中选择“Bookmarks.plist”文件。
 import-migrating-page-title = 正在导入…
-
 import-migrating-description = 正在导入下列项目…
-
 import-select-profile-page-title = 选择配置文件
-
 import-select-profile-description = 下列配置文件可以导入：
-
 import-done-page-title = 导入完成
-
 import-done-description = 成功导入下列各项：
-
 import-close-source-browser = 请先关闭选定的浏览器，再继续操作。
-
 source-name-ie = 微软 IE 浏览器
 source-name-edge = Microsoft Edge
 source-name-chrome = Google Chrome
-
-imported-safari-reading-list = 阅读列表（来自 Safari）
+imported-safari-reading-list = 阅读列表（来自 Safari 浏览器）
 imported-edge-reading-list = 阅读列表（来自 Edge）
 
 ## Browser data types
@@ -106,7 +99,6 @@ browser-data-cookies-checkbox =
     .label = Cookie
 browser-data-cookies-label =
     .value = Cookie
-
 browser-data-history-checkbox =
     .label =
         { $browser ->
@@ -119,12 +111,10 @@ browser-data-history-label =
             [firefox] 浏览历史
            *[other] 浏览历史和书签
         }
-
 browser-data-formdata-checkbox =
     .label = 已保存的表单记录
 browser-data-formdata-label =
     .value = 已保存的表单记录
-
 # This string should use the same phrase for "logins and passwords" as the
 # label in the main hamburger menu that opens about:logins.
 browser-data-passwords-checkbox =
@@ -133,7 +123,6 @@ browser-data-passwords-checkbox =
 # label in the main hamburger menu that opens about:logins.
 browser-data-passwords-label =
     .value = 登录名和密码
-
 browser-data-bookmarks-checkbox =
     .label =
         { $browser ->
@@ -148,12 +137,10 @@ browser-data-bookmarks-label =
             [edge] 收藏夹
            *[other] 书签
         }
-
 browser-data-otherdata-checkbox =
     .label = 其他数据
 browser-data-otherdata-label =
     .label = 其他数据
-
 browser-data-session-checkbox =
     .label = 窗口和标签页
 browser-data-session-label =

@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Iɣewwaṛen n Tutlayt n Usebter Web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Iɣewwaṛen n Tutlayt n Usebter Web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Iɣewwaṛen n Tutlayt
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Iɣewwaṛen n Tutlayt
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } Ad yesken tutlayt tamezwarut d tutlayt-ik amezwer u ad yesken tutlayin nniḍen ma yessefk s umsizwer akken i d-tbanent.
 

@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Oraintxe bertan
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Fitxa-bilketa
 firefoxview-tabpickup-description = Ireki orriak beste gailuetatik.
-firefoxview-tabpickup-recenttabs-description = Azken fitxen zerrenda hemen joango litzateke
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = %{ $percentValue } osatuta
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Saiatu berriro
 firefoxview-tabpickup-sync-disconnected-header = Jarraitzeko, aktibatu sinkronizazioa
 firefoxview-tabpickup-sync-disconnected-description = Zure fitxak eskura izateko, sinkronizazioa gaitu behar duzu { -brand-short-name }(e)n.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Aktibatu sinkronizazioa ezarpenetan
+firefoxview-tabpickup-password-locked-header = Fitxak ikusteko, idatzi zure pasahitz nagusia
+firefoxview-tabpickup-password-locked-description = Zure fitxak eskura izateko,  { -brand-short-name }(e)n pasahitz nagusia idatzi behar duzu.
+firefoxview-tabpickup-password-locked-link = Argibide gehiago
+firefoxview-tabpickup-password-locked-primarybutton = Idatzi pasahitz nagusia
+firefoxview-tabpickup-signed-out-header = Hasi saioa birkonektatzeko
+firefoxview-tabpickup-signed-out-description = Berriro konektatu eta zure fitxak hartzeko, hasi saioa zure { -fxaccount-brand-name }(e)n.
+firefoxview-tabpickup-signed-out-primarybutton = Hasi saioa
 firefoxview-tabpickup-syncing = Itxaron apur bat zure fitxak sinkronizatu bitartean. Une bat izango da soilik.
 firefoxview-mobile-promo-header = Hartu zure telefono edo tabletako fitxak
 firefoxview-mobile-promo-description = Zure mugikorreko azken fitxak ikusteko, hasi saioa iOS edo Androideko { -brand-product-name }(e)n.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Eskuratu mugikorrerako { -brand-product
 firefoxview-mobile-confirmation-header = 🎉 Dena prest!
 firefoxview-mobile-confirmation-description = Hemendik aurrera zure tableta edo telefonoko { -brand-product-name }(e)n fitxak hartu ahal izango dituzu.
 firefoxview-closed-tabs-title = Itxitako azkenak
-firefoxview-closed-tabs-description = Berrireki gailu honetan itxi dituzun orriak.
-firefoxview-closed-tabs-placeholder = <strong>Itxitako azken orririk ez</strong><br/>Ez izan itxitako fitxak galtzeko beldurrik. Edozein unetan berreskura ditzakezu hemen.
+firefoxview-closed-tabs-description2 = Berrireki leiho honetan itxi dituzun orriak.
+firefoxview-closed-tabs-placeholder-header = Itxitako azken fitxarik ez
+firefoxview-closed-tabs-placeholder-body = Leiho honetan fitxa bat ixtean, hemendik eskura dezakezu.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Baztertu { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Erabilitako azkena
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Aldatu kolore-konbinazioa
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Momentuz ikustekorik ez</strong><br/>Beste gailu batean { -brand-product-name } irekitzen duzun hurrengo aldian, esku-eskura izango duzu hemen.
+firefoxview-synced-tabs-placeholder-header = Ikusteko ezer ez momentuz
+firefoxview-synced-tabs-placeholder-body = Beste gailu bateko { -brand-product-name }(e)n orri bat irekitzen duzun hurrengo aldian, esku-eskura izango duzu hemen.
 firefoxview-collapse-button-show =
     .title = Erakutsi zerrenda
 firefoxview-collapse-button-hide =

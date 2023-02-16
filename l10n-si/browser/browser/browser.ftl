@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } පෞද්. පිරික්සුම
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } පෞද්. පිරික්සුම
 
 ##
 
@@ -117,6 +119,8 @@ urlbar-translated-notification-anchor =
     .tooltiptext = පිටු පරිවර්තනය කළමනාකරණය
 urlbar-plugins-notification-anchor =
     .tooltiptext = පේනු භාවිතය කළමනාකරණය
+urlbar-web-rtc-share-devices-notification-anchor =
+    .tooltiptext = අඩවිය සමඟ රූගතය හා/හෝ ශබ්දවාහිනිය බෙදා ගැනීම කළමනාකරණය
 # "Speakers" is used in a general sense that might include headphones or
 # another audio output connection.
 urlbar-web-rtc-share-speaker-notification-anchor =
@@ -130,11 +134,14 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = උදව් ගන්න
 urlbar-search-tips-confirm = හරි, තේරුණා
+urlbar-search-tips-confirm-short = තේරුණා
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = ඉඟිය:
+urlbar-result-menu-button =
+    .title = වට්ටෝරුව අරින්න
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -162,6 +169,8 @@ urlbar-xr-blocked =
     .tooltiptext = ඔබ මෙම අඩවිය සඳහා අතථ්‍ය යථාර්ථ උපාංග ප්‍රවේශය අවහිර කර ඇත.
 urlbar-web-notifications-blocked =
     .tooltiptext = ඔබ මෙම අඩවිය සඳහා දැනුම්දීම් අවහිර කර ඇත.
+urlbar-camera-blocked =
+    .tooltiptext = ඔබ මෙම අඩවියට ඔබගේ රූගතය අවහිර කර ඇත.
 urlbar-microphone-blocked =
     .tooltiptext = ඔබ මෙම අඩවියට ඔබගේ ශබ්දවාහිනිය අවහිර කර ඇත.
 urlbar-screen-blocked =
@@ -259,41 +268,50 @@ search-one-offs-actions =
     .tooltiptext = ක්‍රියාමාර්ග ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = එක්කහු බලන්න
-quickactions-cmd-addons = එක්කහු, දිගු, තේමා
 quickactions-cmd-addons2 = එක්කහු
 # Opens the bookmarks library window
 quickactions-bookmarks = පොත්යොමු බලන්න
+# Opens the bookmarks library window
+quickactions-bookmarks2 = පොත්යොමු කළමනාකරණය
 quickactions-cmd-bookmarks = පොත්යොමු
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = ඉතිහාසය මකන්න
 quickactions-cmd-clearhistory = ඉතිහාසය මකන්න
 # Opens about:downloads page
 quickactions-downloads = බාගැනීම් අරින්න
+# Opens about:downloads page
+quickactions-downloads2 = බාගැනීම් බලන්න
 quickactions-cmd-downloads = බාගැනීම්
 # Opens about:addons page in the extensions section
 quickactions-extensions = දිගු කළමනාකරණය
 quickactions-cmd-extensions = දිගු
 # Opens the devtools web inspector
 quickactions-inspector = සෝදිසිය අරින්න
+# Opens the devtools web inspector
+quickactions-inspector2 = සංවර්ධක මෙවලම් අරින්න
+quickactions-cmd-inspector = සෝදිසිකරු, සං.මෙවලම්
 # Opens about:logins
 quickactions-logins = පිවිසුම් බලන්න
+# Opens about:logins
+quickactions-logins2 = මුරපද කළමනාකරණය
 quickactions-cmd-logins = පිවිසුම්, මුරපද
 # Opens about:addons page in the plugins section
 quickactions-plugins = පේනු කළමණාකරණය
 quickactions-cmd-plugins = පේනු
 # Opens the print dialog
 quickactions-print = මුද්‍රණය
+# Opens the print dialog
+quickactions-print2 = මුද්‍රණ පිටුව
 quickactions-cmd-print = මුද්‍රණය
 # Opens a new private browsing window
 quickactions-private = පෞද්. පිරික්සුම් කවුළුව අරින්න
+# Opens a new private browsing window
+quickactions-private2 = නව පෞද්. කවුළුව
 quickactions-cmd-private = පෞද්. පිරික්සුම
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } නැවුම් කරන්න
@@ -303,9 +321,13 @@ quickactions-restart = { -brand-short-name } යළි අරඹන්න
 quickactions-cmd-restart = යළි අරඹන්න
 # Opens the screenshot tool
 quickactions-screenshot2 = තිර සේයාවක් ගන්න
+# Opens the screenshot tool
+quickactions-screenshot3 = තිර සේයාවක් ගන්න
 quickactions-cmd-screenshot = තිරසේයාව
 # Opens about:preferences
 quickactions-settings = සැකසුම් අරින්න
+# Opens about:preferences
+quickactions-settings2 = සැකසුම් කළමනාකරණය
 quickactions-cmd-settings = සැකසුම්, අභිප්‍රේත, විකල්ප
 # Opens about:addons page in the themes section
 quickactions-themes = තේමා කළමනාකරණය
@@ -315,7 +337,12 @@ quickactions-update = { -brand-short-name } යාවත්කාල
 quickactions-cmd-update = යාවත්කාල
 # Opens the view-source UI with current pages source
 quickactions-viewsource = මූලාශ්‍රය පෙන්වන්න
+# Opens the view-source UI with current pages source
+quickactions-viewsource2 = පිටුවේ මූලාශ්‍රය බලන්න
 quickactions-cmd-viewsource = මූලාශ්‍රය බලන්න, මූලාශ්‍රය
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = ඉක්මන් ක්‍රියාමාර්ග ගැන තව දැනගන්න
 
 ## Bookmark Panel
 
@@ -434,12 +461,28 @@ browser-tab-audio-pip = ඡායාරූපයෙන්-ඡායාරූප�
 ## Variables:
 ##  $count (number): number of affected tabs
 
+browser-tab-mute =
+    { $count ->
+        [1] පටිත්ත නිහඬව
+       *[other] පටිති { $count } ක් නිහඬව
+    }
+browser-tab-unmute =
+    { $count ->
+        [1] පටිත්ත නොනිහඬව
+       *[other] පටිති { $count } ක් නොනිහඬව
+    }
+browser-tab-unblock =
+    { $count ->
+        [1] පටිත්ත වාදනය
+       *[other] පටිති { $count } ක් වාදනය
+    }
 
 ## Bookmarks toolbar items
 
 browser-import-button2 =
     .label = පොත්යොමු ආයාතය...
     .tooltiptext = අන් අතිරික්සුවකින් පොත්යොමු { -brand-short-name } වෙත ආයාත කරන්න
+bookmarks-toolbar-empty-message = පොත්යොමු මෙවලම් තීරුවේ ඔබගේ පොත්යොමු තැබීමෙන් ඉක්මනින් ප්‍රවේශ වන්න. <a data-l10n-name="manage-bookmarks">පොත්යොමු කළමනාකරණය …</a>
 
 ## WebRTC Pop-up notifications
 
@@ -455,6 +498,9 @@ popup-select-microphone-icon =
     .tooltiptext = ශබ්දවාහිනිය
 popup-select-speaker-icon =
     .tooltiptext = විකාශක
+popup-select-window-or-screen =
+    .label = කවුළුව හෝ තිරය:
+    .accesskey = W
 popup-all-windows-shared = ඔබගේ තිරයේ දිස්වන සියළුම කවුළු බෙදා ගනු ඇත.
 popup-screen-sharing-block =
     .label = අවහිර
@@ -608,6 +654,15 @@ urlbar-group-search-suggestions =
 urlbar-group-quickactions =
     .label = ඉක්මන් ක්‍රියාමාර්ග
 
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = කියවීමේ දැක්මට යන්න
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = කියවීමේ දැක්ම වසන්න
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -626,6 +681,11 @@ pointerlock-warning-no-domain = මෙම ලේඛනයට ඔබගේ ඊත
 
 ## Subframe crash notification
 
+crashed-subframe-message = <strong>මෙම පිටුවේ කොටසක් බිඳ වැටුණි.</strong> මෙම ගැටළුව පිළිබඳව { -brand-product-name } වෙත වාර්තාවක් යොමු කිරීමෙන් ඉක්මනින් විසඳා ගැනීමට හැකිවනු ඇත.
+# The string for crashed-subframe-title.title should match crashed-subframe-message,
+# but without any markup.
+crashed-subframe-title =
+    .title = මෙම පිටුවේ කොටසක් බිඳ වැටුණි. මෙම ගැටළුව පිළිබඳව { -brand-product-name } වෙත වාර්තාවක් යොමු කිරීමෙන් ඉක්මනින් විසඳා ගැනීමට හැකිවනු ඇත.
 crashed-subframe-learnmore-link =
     .value = තව දැනගන්න
 crashed-subframe-submit =
@@ -714,6 +774,9 @@ save-to-pocket-button =
 
 ## Repair text encoding toolbar button
 
+repair-text-encoding-button =
+    .label = පෙළ ආකේතනය අලුත්වැඩියාව
+    .tooltiptext = පිටුවේ අන්තර්ගතයෙන් නිවරදි පෙළ ආකේතනය අනුමාන කරන්න
 
 ## Customize Toolbar Buttons
 
@@ -755,6 +818,7 @@ toolbar-button-new-private-window =
 
 ## EME notification panel
 
+eme-notifications-drm-content-playing = මෙම වියමන අඩවියෙහි තිබෙන ඇතැම් හඬපට හෝ දෘශ්‍යක සඳහා DRM මෘදුකාංග භාවිතා කරන නිසා { -brand-short-name } හරහා ඔබට එය සමඟ කළ හැකි දෑ සීමා විය හැකිය.
 eme-notifications-drm-content-playing-manage = සැකසුම් අරින්න
 eme-notifications-drm-content-playing-manage-accesskey = M
 eme-notifications-drm-content-playing-dismiss = ඉවතලන්න
@@ -863,3 +927,23 @@ private-browsing-indicator-label = පෞද්. පිරික්සුම
 unified-extensions-button =
     .label = දිගු
     .tooltiptext = දිගු
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = දිගු
+    .tooltiptext =
+        දිගු
+        අවසර අවශ්‍යයි
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } මෙම පිටුව ස්වයංක්‍රීයව යළි පූරණය වීම වළක්වා ඇත.
+refresh-blocked-redirect-label = { -brand-short-name } මෙම පිටුව වෙනත් පිටුවකට ස්වයංක්‍රීයව හරවා යැවීමෙන් වළක්වා ඇත.
+refresh-blocked-allow =
+    .label = ඉඩ දෙන්න
+    .accesskey = A
+
+## Firefox Relay integration
+

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Məlumatları təmizlə
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Məlumatları təmizlə
+    .style = min-width: 35em
+
 clear-site-data-description = { -brand-short-name } tərəfindən saxlanılan bütün çərəz və sayt məlumatlarını təmizləmə saytlardan çıxma və oflayn web məzmunlarının silinməsi ilə nəticələnəcək. Keş məlumatlarını silmə sayt girişlərinizi dəyişdirməyəcək.
 
 clear-site-data-close-key =

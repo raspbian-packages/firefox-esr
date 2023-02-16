@@ -7,6 +7,14 @@
 ### feature.
 
 about-unloads-page-title = Välilehtien latauksen purkaminen
+about-unloads-intro =
+    { -brand-short-name } sisältää ominaisuuden, joka purkaa välilehtien latauksen automaattisesti
+    estääkseen sovelluksen kaatumisen riittämättömän muistin vuoksi,
+    kun järjestelmän käytettävissä oleva muisti on vähissä. Seuraava välilehti, jonka lataus puretaan, on
+    valittu useiden ominaisuuksien perusteella. Tämä sivu näyttää kuinka
+    { -brand-short-name } priorisoi välilehdet ja minkä välilehden lataus puretaan
+    kun välilehtien purkaminen käynnistyy. Voit käynnistää välilehtien purkamisen manuaalisesti
+    napsauttamalla alla olevaa <em>Pura lataus</em> -painiketta.
 
 # The link points to a Firefox documentation page, only available in English,
 # with title "Tab Unloading"

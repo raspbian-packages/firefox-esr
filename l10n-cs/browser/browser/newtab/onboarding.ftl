@@ -25,6 +25,17 @@ return-to-amo-addon-title = Teď zpět k doplňku <img data-l10n-name="icon"/> <
 return-to-amo-add-extension-label = Přidat rozšíření
 return-to-amo-add-theme-label = Přidat motiv vzhledu
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle =
+    { -brand-short-name.gender ->
+        [masculine] Přivítejte { -brand-short-name(case: "acc") }
+        [feminine] Přivítejte { -brand-short-name(case: "acc") }
+        [neuter] Přivítejte { -brand-short-name(case: "acc") }
+       *[other] Přivítejte aplikaci { -brand-short-name }
+    }
+mr1-return-to-amo-add-extension-label = Přidat doplněk { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -46,6 +57,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Postup: krok { $current } z { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Postup: krok { $current } z { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -339,8 +352,167 @@ fx100-upgrade-thanks-keep-body =
         [neuter] Toto je 100. vydání! Mějte { -brand-short-name(case: "acc") } na dosah ještě dalších 100 vydání.
        *[other] Toto je 100. vydání! Mějte aplikaci { -brand-short-name } na dosah ještě dalších 100 vydání.
     }
+mr2022-onboarding-secondary-skip-button-label = Přeskočit tento krok
+
+## MR2022 New User Pin Firefox screen strings
+
+# Title used on about:welcome for new users when Firefox is not pinned.
+# In this context, open up is synonymous with "Discover".
+# The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
+# If this translation does not make sense in your language, feel free to use the word "discover."
+mr2022-onboarding-welcome-pin-header = Objevte úžasný internet
+
+## MR2022 Existing User Pin Firefox Screen Strings
+
+# Title used on multistage onboarding page for existing users when Firefox is not pinned
+mr2022-onboarding-existing-pin-header =
+    { -brand-product-name.gender ->
+        [masculine] Děkujeme, že máte rádi { -brand-product-name(case: "acc") }
+        [feminine] Děkujeme, že máte rádi { -brand-product-name(case: "acc") }
+        [neuter] Děkujeme, že máte rádi { -brand-product-name(case: "acc") }
+       *[other] Děkujeme, že máte rádi aplikaci { -brand-product-name }
+    }
+
+## MR2022 New User Set Default screen strings
+
+mr2022-onboarding-set-default-primary-button-label =
+    { -brand-short-name.gender ->
+        [masculine] Nastavit { -brand-short-name(case: "acc") } jako výchozí prohlížeč
+        [feminine] Nastavit { -brand-short-name(case: "acc") } jako výchozí prohlížeč
+        [neuter] Nastavit { -brand-short-name(case: "acc") } jako výchozí prohlížeč
+       *[other] Nastavit aplikaci { -brand-short-name } jako výchozí prohlížeč
+    }
+
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
+
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-get-started-primary-subtitle = Naše nejnovější verze je postavená podle vás, díky čemuž je procházení webu snazší než kdykoli předtím. Je nabitá funkcemi, které si podle nás zamilujete.
+mr2022-onboarding-get-started-primary-button-label = Nastavení během okamžiku
+
+## MR2022 Import Settings screen strings
+
+mr2022-onboarding-import-header = Bleskové nastaveni
+mr2022-onboarding-import-subtitle =
+    { -brand-short-name.gender ->
+        [masculine] Nastavte si { -brand-short-name(case: "acc") } podle svých představ. Přidejte si do něj své záložky, hesla a další položky ze svého starého prohlížeče.
+        [feminine] Nastavte si { -brand-short-name(case: "acc") } podle svých představ. Přidejte si do ní své záložky, hesla a další položky ze svého starého prohlížeče.
+        [neuter] Nastavte si { -brand-short-name(case: "acc") } podle svých představ. Přidejte si do něj své záložky, hesla a další položky ze svého starého prohlížeče.
+       *[other] Nastavte si aplikaci { -brand-short-name } podle svých představ. Přidejte si do ní své záložky, hesla a další položky ze svého starého prohlížeče.
+    }
+mr2022-onboarding-import-primary-button-label-no-attribution = Importovat z dříve používaného prohlížeče
+
+## If your language uses grammatical genders, in the description for the
+## colorway feel free to switch from "You are a X. You…" (e.g. "You are a
+## Playmaker. You create…") to "X: you…" ("Playmaker: You create…"). This might
+## help creating a more inclusive translation.
+
+mr2022-onboarding-colorway-title = Vyberte si barvu, která vás inspiruje
+mr2022-onboarding-colorway-subtitle = Hlasy nezávislosti mohou změnit kulturu.
+mr2022-onboarding-colorway-primary-button-label-continue = Nastavit a pokračovat
+mr2022-onboarding-existing-colorway-checkbox-label = Nastavte si barvy { -firefox-home-brand-name(case: "gen", capitalization: "lower") } podle svého
+mr2022-onboarding-colorway-label-default = Výchozí
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title =
+        { -brand-short-name.gender ->
+            [masculine] Aktuální barvy { -brand-short-name(case: "gen") }
+            [feminine] Aktuální barvy { -brand-short-name(case: "gen") }
+            [neuter] Aktuální barvy { -brand-short-name(case: "gen") }
+           *[other] Aktuální barvy aplikace { -brand-short-name }
+        }
+mr2022-onboarding-colorway-description-default =
+    { -brand-short-name.gender ->
+        [masculine] <b>Použít mé současné barvy { -brand-short-name(case: "gen") }.</b>
+        [feminine] <b>Použít mé současné barvy { -brand-short-name(case: "gen") }.</b>
+        [neuter] <b>Použít mé současné barvy { -brand-short-name(case: "gen") }.</b>
+       *[other] <b>Použít mé současné barvy aplikace { -brand-short-name }.</b>
+    }
+mr2022-onboarding-colorway-label-playmaker = Tvůrce hry
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Tvůrce hry (červená)
+mr2022-onboarding-colorway-description-playmaker = <b>Tvůrce hry:</b> Vytváříte příležitosti pro vítězství a pomáháte každému okolo vás pozvednout jejich hru.
+mr2022-onboarding-colorway-label-expressionist = Expresionista
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Expresionista (žlutá)
+mr2022-onboarding-colorway-description-expressionist = <b>Expresionista:</b> Vidíte svět jinak a vaše výtvory vzbuzují v ostatních emoce.
+mr2022-onboarding-colorway-label-visionary = Vizionář
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Vizionář (zelená)
+mr2022-onboarding-colorway-description-visionary = <b>Vizionář:</b> Zpochybňujete status quo a nutíte ostatní, aby mysleli na lepší budoucnost.
+mr2022-onboarding-colorway-label-activist = Aktivista
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktivista (modrá)
+mr2022-onboarding-colorway-description-activist = <b>Aktivista:</b> Přetváříte svět v lepší místo, než jste ho našli, a vedete ostatní k tomu, aby v něj věřili.
+mr2022-onboarding-colorway-label-dreamer = Snílek
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Snílek (fialová)
+mr2022-onboarding-colorway-description-dreamer = <b>Snílek:</b> Věříte, že štěstí přeje odvážným, a inspirujete ostatní, aby odvážní byli.
+mr2022-onboarding-colorway-label-innovator = Inovátor
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Inovátor (oranžová)
+mr2022-onboarding-colorway-description-innovator = <b>Inovátor:</b> Všude vidíte příležitosti a ovlivňujete životy všech kolem sebe.
+
+## MR2022 Multistage Mobile Download screen strings
+
+mr2022-onboarding-mobile-download-title = Přecházejte mezi notebookem a telefonem
+mr2022-onboarding-mobile-download-subtitle =
+    { -brand-short-name.gender ->
+        [masculine] Vezměte si panely z jednoho zařízení a pokračujte na jiném tam, kde jste skončili. Navíc můžete synchronizovat své záložky a hesla kdekoli, kde používáte { -brand-product-name(case: "acc") }.
+        [feminine] Vezměte si panely z jednoho zařízení a pokračujte na jiném tam, kde jste skončili. Navíc můžete synchronizovat své záložky a hesla kdekoli, kde používáte { -brand-product-name(case: "acc") }.
+        [neuter] Vezměte si panely z jednoho zařízení a pokračujte na jiném tam, kde jste skončili. Navíc můžete synchronizovat své záložky a hesla kdekoli, kde používáte { -brand-product-name(case: "acc") }.
+       *[other] Vezměte si panely z jednoho zařízení a pokračujte na jiném tam, kde jste skončili. Navíc můžete synchronizovat své záložky a hesla kdekoli, kde používáte aplikaci { -brand-product-name }.
+    }
+mr2022-onboarding-mobile-download-cta-text =
+    { -brand-short-name.gender ->
+        [masculine] Naskenujte QR kód a získejte { -brand-product-name(case: "acc") } pro mobily nebo si <a data-l10n-name="download-label">pošlete odkaz ke stažení</a>.
+        [feminine] Naskenujte QR kód a získejte { -brand-product-name(case: "acc") } pro mobily nebo si <a data-l10n-name="download-label">pošlete odkaz ke stažení</a>.
+        [neuter] Naskenujte QR kód a získejte { -brand-product-name(case: "acc") } pro mobily nebo si <a data-l10n-name="download-label">pošlete odkaz ke stažení</a>.
+       *[other] Naskenujte QR kód a získejte aplikaci { -brand-product-name } pro mobily nebo si <a data-l10n-name="download-label">pošlete odkaz ke stažení</a>.
+    }
+mr2022-onboarding-no-mobile-download-cta-text =
+    { -brand-short-name.gender ->
+        [masculine] Naskenujte QR kód a získejte { -brand-product-name(case: "acc") } pro mobily.
+        [feminine] Naskenujte QR kód a získejte { -brand-product-name(case: "acc") } pro mobily.
+        [neuter] Naskenujte QR kód a získejte { -brand-product-name(case: "acc") } pro mobily.
+       *[other] Naskenujte QR kód a získejte aplikaci { -brand-product-name } pro mobily.
+    }
 
 ## MR2022 Upgrade Dialog screens
 ## Pin private window screen shown only for users who don't have Firefox private pinned
 
-mr2022-onboarding-skip-step-button-label = Přeskočit tento krok
+mr2022-upgrade-onboarding-pin-private-window-subtitle = Žádné uložené cookies ani historie, přímo z vaší plochy. Prohlížejte, jako když se nikdo nedívá.Žádné uložené soubory cookies ani historie, přímo z vaší plochy. Prohlížejte, jako by se nikdo nedíval.
+
+## MR2022 Privacy Segmentation screen strings
+
+mr2022-onboarding-privacy-segmentation-title = Vždy respektujeme vaše soukromí
+mr2022-onboarding-privacy-segmentation-button-secondary-label = Zobrazit podrobnosti
+
+## MR2022 Multistage Gratitude screen strings
+
+mr2022-onboarding-gratitude-title = Pomáháte nám vytvářet lepší web
+mr2022-onboarding-gratitude-subtitle =
+    { -brand-short-name.gender ->
+        [masculine] Děkujeme, že používáte { -brand-short-name(case: "acc") }, za kterým stojí Mozilla Foundation. S vaší podporou pracujeme na tom, aby byl internet otevřenější, přístupnější a lepší pro všechny.
+        [feminine] Děkujeme, že používáte { -brand-short-name(case: "acc") }, za kterou stojí Mozilla Foundation. S vaší podporou pracujeme na tom, aby byl internet otevřenější, přístupnější a lepší pro všechny.
+        [neuter] Děkujeme, že používáte { -brand-short-name(case: "acc") }, za kterým stojí Mozilla Foundation. S vaší podporou pracujeme na tom, aby byl internet otevřenější, přístupnější a lepší pro všechny.
+       *[other] Děkujeme, že používáte aplikaci { -brand-short-name }, za kterou stojí Mozilla Foundation. S vaší podporou pracujeme na tom, aby byl internet otevřenější, přístupnější a lepší pro všechny.
+    }
+mr2022-onboarding-gratitude-primary-button-label = Co je nového
+mr2022-onboarding-gratitude-secondary-button-label = Začít prohlížet
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Ciťte se jako doma
+onboarding-infrequent-import-primary-button =
+    { -brand-short-name.gender ->
+        [masculine] Importovat do { -brand-short-name(case: "gen") }
+        [feminine] Importovat do { -brand-short-name(case: "gen") }
+        [neuter] Importovat do { -brand-short-name(case: "gen") }
+       *[other] Importovat do aplikace { -brand-short-name }
+    }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+

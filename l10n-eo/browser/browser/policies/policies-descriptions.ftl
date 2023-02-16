@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Malpermesi al uzanto ignori kelkajn sekurecajn av
 policy-DisableSetAsDesktopBackground = Malaktivigi la menueron "Difini kiel labortablan fonon" por bildoj.
 policy-DisableSystemAddonUpdate = Malpermesi al retumilo instali kaj ĝisdatigi sistemajn aldonaĵojn.
 policy-DisableTelemetry = Malŝalti telemezuron.
+policy-DisableThirdPartyModuleBlocking = Eviti ke la uzanto bloku modulojn de aliaj, injektitaj en la procezo de { -brand-short-name }.
 policy-DisplayBookmarksToolbar = Norme montri la ilaron de legosignoj.
 policy-DisplayMenuBar = Norme montri la menuan strion.
 policy-DNSOverHTTPS = Agordi DNS per HTTPS.
@@ -95,7 +96,7 @@ policy-OfferToSaveLogins = Respekti la agordon kiu permesas al { -brand-short-na
 policy-OfferToSaveLoginsDefault = Elekti ĉu { -brand-short-name } norme proponas memori legitimilojn. Akcepteblas la valoroj: vera, malvera.
 policy-OverrideFirstRunPage = Ŝanĝi la paĝon de unua starto. Lasu tiun ĉi politikon malplena se vi volas malaktivigi la paĝon de unua starto.
 policy-OverridePostUpdatePage = Ŝanĝi la postĝisdatigan paĝon "Kio estas nova". Lasu tiun ĉi politikon malplena se vi volas malaktivigi la paĝon post ĝisdatigo.
-policy-PasswordManagerEnabled = Aktivigi konservadon de pasvortoj en la pasvorta administranto.
+policy-PasswordManagerEnabled = Aktivigi konservadon de pasvortoj en la pasvorta administrilo.
 policy-PasswordManagerExceptions = Malpermesi al { -brand-short-name } konservi pasvortojn por specifaj retejoj.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Malaktivigi aŭ agordi PDF.js, la integritan legilon de PDF en { -brand-short-name }.

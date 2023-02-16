@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Daty zhašeć
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Daty zhašeć
+    .style = min-width: 35em
+
 clear-site-data-description = Přez zhašenje wšěch plackow a datow sydła přez { -brand-short-name } móže k wotzjewjenju z websydłow a wotstronjenju webwobsaha offline dóńć. Zhašenje datow pufrowaka waše přizjewjenja njewobwliwuje.
 
 clear-site-data-close-key =

@@ -38,6 +38,20 @@ browser-main-window-mac =
     .data-title-private = { -brand-full-name } - (Գաղտնի Դիտարկում)
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } - (Գաղտնի Դիտարկում)
+# These are the default window titles everywhere except macOS. The first two
+# attributes are used when the web content opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# The last two are for use when there *is* a content title.
+# Variables:
+#  $content-title (String): the title of the web content.
+browser-main-window-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } Գաղտնի դիտարկում
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } Գաղտնի դիտարկում
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
@@ -96,11 +110,14 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Ստանալ օգնություն
 urlbar-search-tips-confirm = Հասկանալի է։
+urlbar-search-tips-confirm-short = Հասկացա
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Հուշում.
+urlbar-result-menu-button =
+    .title = Բացել ցանկը
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -218,24 +235,38 @@ search-one-offs-history =
     .tooltiptext = Պատմություն ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
+# Opens the about:addons page in the home / recommendations section
+quickactions-addons = Դիտել հավելումները
+quickactions-cmd-addons2 = Հավելումներ
+# Opens the bookmarks library window
+quickactions-bookmarks = Դիտել էջանիշները
 quickactions-cmd-bookmarks = Էջանիշեր
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Մաքրել պատմությունը
 quickactions-cmd-clearhistory = մաքրել պատմությունը
 # Opens about:downloads page
 quickactions-downloads = Բացել Ներբեռնումները
+# Opens about:downloads page
+quickactions-downloads2 = Ցուցադրել ներբեռնումները
 quickactions-cmd-downloads = ներբեռնումներ
+# Opens about:addons page in the extensions section
+quickactions-extensions = Կառավարել ընդլայնումները
+quickactions-cmd-extensions = ընդլայնումներ
+# Opens the devtools web inspector
+quickactions-inspector = Բացել տեսուչը
+quickactions-cmd-plugins = բաղադրիչներ
 # Opens the print dialog
 quickactions-print = Տպել
+# Opens the print dialog
+quickactions-print2 = Տպել էջը
 quickactions-cmd-print = տպել
 # Opens a new private browsing window
 quickactions-private = Բացել Գաղտնի դիտարկման պատուհանը
+# Opens a new private browsing window
+quickactions-private2 = Սկսել Գաղտնի դիտարկում
 quickactions-cmd-private = գաղտնի դիտարկում
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Թարմացնել { -brand-short-name }-ը
@@ -245,11 +276,25 @@ quickactions-restart = Վերամեկնարկել { -brand-short-name }-ը
 quickactions-cmd-restart = վերամեկնարկել
 # Opens the screenshot tool
 quickactions-screenshot2 = Ստանալ էկրանի հանույթը
+# Opens the screenshot tool
+quickactions-screenshot3 = Ստանալ էկրանի հանույթը
 quickactions-cmd-screenshot = էկրանի հանույթ
 # Opens about:preferences
 quickactions-settings = Բացել կարգավորումները
+# Opens about:preferences
+quickactions-settings2 = Կառավարել կարգավորումները
+quickactions-cmd-settings = կարգավորումներ, նախապատվություններ, ընտրանքներ
+# Opens about:addons page in the themes section
+quickactions-themes = Կառավարեք ոճերը
+quickactions-cmd-themes = Ոճեր
+# Opens a SUMO article explaining how to update the browser
+quickactions-update = Արդիացնել { -brand-short-name }­-ը
+quickactions-cmd-update = արդիացնել
 # Opens the view-source UI with current pages source
 quickactions-viewsource = Նայել աղբյուրը
+# Opens the view-source UI with current pages source
+quickactions-viewsource2 = Դիտել Էջի Կոդը
+quickactions-cmd-viewsource = դիտել աղբյուրը, աղբյուրը
 
 ## Bookmark Panel
 
@@ -425,6 +470,18 @@ urlbar-placeholder-search-mode-web-2 =
 urlbar-placeholder-search-mode-other-engine =
     .placeholder = Մուտքագրել որոնվող բառը
     .aria-label = Որոնել { $name }-ը
+# This placeholder is used when searching bookmarks.
+urlbar-placeholder-search-mode-other-bookmarks =
+    .placeholder = Մուտքագրեք որոնվող բառը
+    .aria-label = Որոնել էջանիշ
+# This placeholder is used when searching history.
+urlbar-placeholder-search-mode-other-history =
+    .placeholder = Մուտքագրեք որոնվող բառը
+    .aria-label = Որոնման պատմություն
+# This placeholder is used when searching open tabs.
+urlbar-placeholder-search-mode-other-tabs =
+    .placeholder = Մուտքագրեք որոնվող բառը
+    .aria-label = Որոնել ներդիրներ
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
@@ -457,6 +514,7 @@ urlbar-result-action-search-in-private = Դուք գաղտնի դիտարկմա�
 # Variables
 #  $engine (String): the name of a search engine
 urlbar-result-action-search-w-engine = Որոնել { $engine }-ով
+urlbar-result-action-sponsored = Հովանավորված
 urlbar-result-action-switch-tab = Փոխանջատել ներդիրը
 urlbar-result-action-visit = Այցելել
 # Action text for copying to clipboard.
@@ -480,6 +538,15 @@ urlbar-result-action-search-tabs = Որոնել ներդիրներ
 # urlbar results.
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Մուտք Ընթերցելու եղանակ
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Փակել Ընթերցելու եղանակը
 
 ## Full Screen and Pointer Lock UI
 
@@ -532,6 +599,12 @@ bookmarks-tools-toolbar-visibility-menuitem =
             [true] Թաքցնել Էջանիշերի Գործիքագոտին
            *[other] Դիտել էջանիշերի վահանակը
         }
+bookmarks-tools-toolbar-visibility-panel =
+    .label =
+        { $isVisible ->
+            [true] Թաքցնել էջանիշների գործիքագոտին
+           *[other] Ցույց տալ էջանիշների գործիքագոտին
+        }
 bookmarks-tools-menu-button-visibility =
     .label =
         { $isVisible ->
@@ -543,6 +616,8 @@ bookmarks-search =
 bookmarks-tools =
     .label = Էջանշելու գործիքներ
 bookmarks-bookmark-edit-panel =
+    .label = Խմբագրել այս էջանիշը
+bookmarks-subview-edit-bookmark =
     .label = Խմբագրել այս էջանիշը
 # The aria-label is a spoken label that should not include the word "toolbar" or
 # such, because screen readers already know that this container is a toolbar.
@@ -557,6 +632,12 @@ bookmarks-toolbar-placeholder =
     .title = Էջանիշերի Վահանակի տարրերը
 bookmarks-toolbar-placeholder-button =
     .label = Էջանիշերի Վահանակի տարրերը
+# "Bookmark" is a verb, as in "Add current tab to bookmarks".
+bookmarks-current-tab =
+    .label = Էջանշել ընթացիկ ներդիրը
+# "Bookmark" is a verb, as in "Add current tab to bookmarks".
+bookmarks-subview-bookmark-tab =
+    .label = Էջանշել ընթացիկ ներդիրը…
 
 ## Library Panel items
 
@@ -724,3 +805,18 @@ data-reporting-notification-button =
 
 ## Unified extensions (toolbar) button
 
+unified-extensions-button =
+    .label = Ընդլայնումներ
+    .tooltiptext = Ընդլայնումներ
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name }-ը կասեցրեց այս էջի ինքնաբար վերբեռնումը:
+refresh-blocked-redirect-label = { -brand-short-name } -ը կասեցրեց այս էջի ինքնակամ վերահասցեավորումը մեկ ուրիշ էջ:
+refresh-blocked-allow =
+    .label = Թույլատրել
+    .accesskey = A

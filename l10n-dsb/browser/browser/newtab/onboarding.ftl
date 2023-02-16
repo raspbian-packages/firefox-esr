@@ -25,6 +25,11 @@ return-to-amo-addon-title = Wobstarajśo se něnto <img data-l10n-name="icon"/> 
 return-to-amo-add-extension-label = Rozšyrjenje pśidaś
 return-to-amo-add-theme-label = Drastwu pśidaś
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Witajśo k { -brand-short-name }
+mr1-return-to-amo-add-extension-label = { $addon-name } pśidaś
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +46,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Póstup: kšac { $current } z { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Póstup: kšac { $current } z { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -310,6 +317,7 @@ mr2022-onboarding-get-started-primary-button-label = Instalacija za sekundy
 ## MR2022 Import Settings screen strings
 
 mr2022-onboarding-import-header = Spěšnučka instalacija
+mr2022-onboarding-import-subtitle = Zarědujśo { -brand-short-name }, kak se wam spódoba. Pśidajśo swóje cytańske znamjenja, gronidła a wěcej ze swójogo starego wobglědowaka.
 mr2022-onboarding-import-primary-button-label-no-attribution = Z pjerwjejšnego wobglědowaka importěrowaś
 
 ## If your language uses grammatical genders, in the description for the
@@ -319,40 +327,41 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Z pjerwjejšnego 
 
 mr2022-onboarding-colorway-title = Wubjeŕśo barwu, kótaraž was inspirěrujo
 mr2022-onboarding-colorway-subtitle = Njewótwisne głose mógu kulturu změniś.
-mr2022-onboarding-colorway-primary-button-label = Barwowu kombinaciju nastajiś
+mr2022-onboarding-colorway-primary-button-label-continue = Nastajiś a pókšacowaś
 mr2022-onboarding-existing-colorway-checkbox-label = { -firefox-home-brand-name } k wašomu barbnemu startowemu bokoju cyniś
 mr2022-onboarding-colorway-label-default = Standard
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Standard
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Aktualne barwy { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>Móje aktualne barwy { -brand-short-name } wužywaś.</b>
 mr2022-onboarding-colorway-label-playmaker = Wjeźecy grajaŕ
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Wjeźecy grajaŕ
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Wjeźecy grajaŕ (cerwjeny)
 mr2022-onboarding-colorway-description-playmaker = <b>Sćo wjeźecy grajaŕ.</b> Napórajośo góźby, aby dobył a kuždemu wokoło was pomagał, jich graśe pólěpšyś.
 mr2022-onboarding-colorway-label-expressionist = Ekspresionist
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Ekspresionist
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Ekspresionist (žołty)
 mr2022-onboarding-colorway-description-expressionist = <b>Sćo ekspresionist.</b> Wiźiśo swět hynac a waše źěła zacuśa drugich wóźe.
 mr2022-onboarding-colorway-label-visionary = Wizionaŕ
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Wizionaŕ
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Wizionaŕ (zeleny)
 mr2022-onboarding-colorway-description-visionary = <b>Sćo wizionaŕ.</b> Stajaśo status quo do pšašanja a pógnuwaśo druge, se lěpšy pśichod pśedstajiś.
 mr2022-onboarding-colorway-label-activist = Aktiwist
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aktiwist
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktiwist (módry)
 mr2022-onboarding-colorway-description-activist = <b>Sćo aktiwist.</b> Zawóstajaśo swět ako lěpše městno, ako sćo jen namakał a wjeźośo druge k wěrje.
 mr2022-onboarding-colorway-label-dreamer = Cowaŕ
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Cowaŕ
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Cowaŕ (violetny)
 mr2022-onboarding-colorway-description-dreamer = <b>Sćo cowaŕ.</b> Wěriśo, až gluka skobodnego lěbgoźi a inspirěrujośo druge, aby skobodne byli.
 mr2022-onboarding-colorway-label-innovator = Inowator
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Inowator
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Inowator (oranžowy)
 mr2022-onboarding-colorway-description-innovator = <b>Sćo inowator.</b> Wiźiśo wšuźi šanse a wustatkujośo se na žywjenja wšych wokoło was.
 
 ## MR2022 Multistage Mobile Download screen strings
 
 mr2022-onboarding-mobile-download-title = Skócćo wót laptopa do telefona a zasej slědk
+mr2022-onboarding-mobile-download-cta-text = Scannujśo QR-kod, aby { -brand-product-name } za swój mobilny rěd dostał abo <a data-l10n-name="download-label">sćelśo se ześěgnjeński wótkaz.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Skannujśo QR-kod, aby se { -brand-product-name } za mobilny rěd wobstarał.
 
 ## MR2022 Upgrade Dialog screens
@@ -369,6 +378,8 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 ## MR2022 Privacy Segmentation screen strings
 
 mr2022-onboarding-privacy-segmentation-title = Wašu priwatnosć pśecej respektěrujomy.
+mr2022-onboarding-privacy-segmentation-subtitle = Wót inteligentnych naraźenjow do mudrjejšego pytanja, źěłamy stawnje , aby lěpšy, wěcej wósobinski { -brand-product-name } napórali.
+mr2022-onboarding-privacy-segmentation-text-cta = Co cośo wiźeś, gaž nowe funkcije póbitujomy, kótarež waše daty wužywaju, aby se wašo pśeglědowanje pólěpšyło?
 mr2022-onboarding-privacy-segmentation-button-primary-label = Dopórucenja { -brand-product-name } wužywaś
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Detailěrowane informacije pokazaś
 
@@ -377,3 +388,16 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Detailěrowane i
 mr2022-onboarding-gratitude-title = Pomagajśo nam lěpšy web natwariś.
 mr2022-onboarding-gratitude-primary-button-label = Cytajśo, což jo nowe
 mr2022-onboarding-gratitude-secondary-button-label = Pśeglědowanje zachopiś
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Cujśo se ako doma
+onboarding-infrequent-import-primary-button = Do { -brand-short-name } importěrowaś
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-default-image-alt =
+    .aria-label = Wósoba, kótaraž logo { -brand-product-name } wobejma
+mr2022-onboarding-import-image-alt =
+    .aria-label = Wósoba, kótaraž skateboard z tejzu softwarowych symbolow jězdźi

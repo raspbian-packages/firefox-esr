@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Optiones del icone del app
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Optiones del icone del app
+
 dock-options-show-badge =
     .label = Exhibir icone del emblema
     .accesskey = b

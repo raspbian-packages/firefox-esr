@@ -36,6 +36,10 @@ vcard-n-suffix = Suffix
 vcard-n-add-suffix =
     .title = Agiuntar in suffix
 
+# Nickname
+
+vcard-nickname = Surnum
+
 # Email vCard field
 
 vcard-email-header = Adressas dad e-mail
@@ -54,6 +58,10 @@ vcard-url-label = Website
 vcard-tel-header = Numers da telefon
 vcard-tel-add = Agiuntar in numer da telefon
 vcard-tel-label = Numer da telefon
+# Or "Mobile"
+vcard-entry-type-cell = Telefonin
+vcard-entry-type-fax = Fax
+vcard-entry-type-pager = Pager
 
 # TZ vCard field
 
@@ -62,9 +70,13 @@ vcard-tz-add = Agiuntar ina zona d'urari
 
 # IMPP vCard field
 
-vcard-impp-header = Contos da chat
+vcard-impp2-header = Messadis immediats
 vcard-impp-add = Agiuntar in conto da chat
 vcard-impp-label = Conto da chat
+vcard-impp-select = Protocol
+vcard-impp-option-other = Auter
+vcard-impp-input-label = URI
+vcard-impp-input-title = URI per messadis immediats
 
 # BDAY and ANNIVERSARY vCard field
 
@@ -82,8 +94,6 @@ vcard-adr-header = Adressas
 vcard-adr-add = Agiuntar ina adressa
 vcard-adr-label = Adressa
 vcard-adr-delivery-label = Etichetta da spediziun
-vcard-adr-pobox = Chascha postala
-vcard-adr-ext = Adressa extendida
 vcard-adr-street = Adressa postala
 # Or "Locality"
 vcard-adr-locality = Lieu
@@ -103,5 +113,26 @@ vcard-note-add = Agiuntar ina notizia
 vcard-org-header = Infurmaziuns da l'organisaziun
 vcard-org-add = Agiuntar infurmaziuns da l'organisaziun
 vcard-org-title = Titel
+vcard-org-title-input =
+    .title = Posiziun u lavur
+    .placeholder = Designaziun da la professiun
 vcard-org-role = Rolla
+vcard-org-role-input =
+    .title = Funcziun u rolla en ina situaziun specifica
+    .placeholder = Rolla en in project
 vcard-org-org = Organisaziun
+vcard-org-org-input =
+    .title = Num da l'organisaziun
+    .placeholder = Num da l'interpresa
+vcard-org-org-unit = Partiziun
+vcard-org-org-unit-input =
+    .title = Num da l'unitad da l'organisaziun
+    .placeholder = Partiziun
+
+# Custom properties
+
+vcard-custom-header = Caracteristicas persunalisadas
+vcard-custom-add = Agiuntar caracteristicas persunalisadas
+vcard-remove-button-title =
+    .title = Allontanar
+vcard-remove-button = Allontanar

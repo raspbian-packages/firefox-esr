@@ -184,12 +184,15 @@ preferences-web-appearance-header = Website appearance
 preferences-web-appearance-description = Some websites adapt their colour scheme based on your preferences. Choose which colour scheme you’d like to use for those sites.
 preferences-web-appearance-choice-browser = { -brand-short-name } theme
 preferences-web-appearance-choice-system = System theme
+preferences-web-appearance-choice-auto = Automatic
 preferences-web-appearance-choice-light = Light
 preferences-web-appearance-choice-dark = Dark
 preferences-web-appearance-choice-tooltip-browser =
     .title = Match your { -brand-short-name } theme settings for website backgrounds and content.
 preferences-web-appearance-choice-tooltip-system =
     .title = Match your system settings for website backgrounds and content.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Automatically change website backgrounds and content based on your system settings and { -brand-short-name } theme.
 preferences-web-appearance-choice-tooltip-light =
     .title = Use a light appearance for website backgrounds and content.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -490,6 +495,8 @@ home-restore-defaults =
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
     .label = Firefox Home (Default)
+home-mode-choice-default-fx =
+    .label = { -firefox-home-brand-name } (Default)
 home-mode-choice-custom =
     .label = Custom URLs…
 home-mode-choice-blank =
@@ -515,6 +522,8 @@ choose-bookmark =
 
 home-prefs-content-header = Firefox Home Content
 home-prefs-content-description = Choose what content you want on your Firefox Home screen.
+home-prefs-content-header2 = { -firefox-home-brand-name } Content
+home-prefs-content-description2 = Choose what content you want on your { -firefox-home-brand-name } screen.
 home-prefs-search-header =
     .label = Web Search
 home-prefs-shortcuts-header =
@@ -583,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Show search suggestions in address bar results
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Show search terms instead of URL on default search engine results page
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -710,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Disconnect…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Choose What To Sync
+    .style = min-width: 36em;
+    .buttonlabelaccept = Save Changes
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Disconnect…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Bookmarks
     .accesskey = m
@@ -778,6 +799,7 @@ forms-breach-alerts =
     .label = Show alerts about passwords for breached websites
     .accesskey = b
 forms-breach-alerts-learn-more-link = Learn more
+relay-integration-learn-more-link = Learn more
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Autofill logins and passwords
@@ -929,7 +951,11 @@ addressbar-locbar-topsites-option =
 addressbar-locbar-engines-option =
     .label = Search engines
     .accesskey = a
+addressbar-locbar-quickactions-option =
+    .label = Quick actions
+    .accesskey = Q
 addressbar-suggestions-settings = Change preferences for search engine suggestions
+addressbar-quickactions-learn-more = Learn more
 
 ## Privacy Section - Content Blocking
 
@@ -976,6 +1002,9 @@ content-blocking-fingerprinters = Fingerprinters
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Test pilot our most powerful privacy feature ever
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Total Cookie Protection contains cookies to the site you’re on, so trackers can’t use them to follow you between sites.
 content-blocking-etp-standard-tcp-rollout-learn-more = Learn more
@@ -1087,6 +1116,12 @@ addon-recommendations-link = Learn more
 collection-health-report-disabled = Data reporting is disabled for this build configuration
 collection-backlogged-crash-reports-with-link = Allow { -brand-short-name } to send backlogged crash reports on your behalf <a data-l10n-name="crash-reports-link">Learn more</a>
     .accesskey = c
+privacy-segmentation-section-header = New features that enhance your browsing
+privacy-segmentation-section-description = When we offer features that use your data to give you a more personal experience:
+privacy-segmentation-radio-off =
+    .label = Use { -brand-product-name } recommendations
+privacy-segmentation-radio-on =
+    .label = Show detailed information
 
 ## Privacy Section - Security
 ##

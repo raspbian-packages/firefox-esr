@@ -5,6 +5,8 @@
 # Variables:
 #   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
 colorway-collection-expiry-label = Hekopaháta { DATETIME($expiryDate, month: "long", day: "numeric") }
+# Document title, not shown in the UI but exposed through accessibility APIs
+colorways-modal-title = Eiporavo sa’y ojueheguáva
 colorway-intensity-selector-label = Tekoatã
 colorway-intensity-soft = Kangy
 colorway-intensity-balanced = Tekopyta

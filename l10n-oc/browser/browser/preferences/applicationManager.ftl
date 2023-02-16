@@ -6,6 +6,10 @@ app-manager-window =
     .title = Detalhs de l'aplicacion
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Detalhs de l'aplicacion
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Suprimir
     .accesskey = S

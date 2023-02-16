@@ -25,6 +25,12 @@ return-to-amo-addon-title = Hankitaanpa sinulle nyt <img data-l10n-name="icon"/>
 return-to-amo-add-extension-label = Lisää laajennus
 return-to-amo-add-theme-label = Lisää teema
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Tervehdi { -brand-short-name }ia
+mr1-return-to-amo-addon-title = Sinulla on nopea, yksityinen selain sormiesi ulottuvilla. Nyt voit lisätä laajennuksen <b>{ $addon-name }</b> ja tehdä entistä enemmän { -brand-short-name }illa.
+mr1-return-to-amo-add-extension-label = Lisää { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Edistyminen: vaihe { $current }/{ $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Edistyminen: vaihe { $current }/{ $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -273,6 +281,8 @@ mr2022-onboarding-secondary-skip-button-label = Ohita tämä vaihe
 # The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
 # If this translation does not make sense in your language, feel free to use the word "discover."
 mr2022-onboarding-welcome-pin-header = Avaa hämmästyttävä internet
+# Subtitle is used on onboarding page for new users page when Firefox is not pinned
+mr2022-onboarding-welcome-pin-subtitle = Käynnistä { -brand-short-name } mistä tahansa yhdellä napsautuksella. Joka kerta kun teet niin, valitset entistä avoimemman ja itsenäisemmän internetin.
 # Primary button string used on welcome page for when Firefox is not pinned.
 mr2022-onboarding-pin-primary-button-label =
     { PLATFORM() ->
@@ -291,10 +301,15 @@ mr2022-onboarding-set-default-only-subtitle = Aloita voittoa tavoittelemattoman 
 mr2022-onboarding-existing-pin-header = Kiitos että arvostat { -brand-product-name }ia
 # Subtitle is used on onboarding page for existing users when Firefox is not pinned
 mr2022-onboarding-existing-pin-subtitle = Käynnistä terveellisempi internet missä tahansa yhdellä napsautuksella. Uusin päivityksemme on täynnä uusia asioita, joista uskomme sinun pitävän.
+# Subtitle will be used on the welcome screen for existing users
+# when they already have Firefox pinned but not set as default
+mr2022-onboarding-existing-set-default-only-subtitle = Käytä selainta, joka suojaa yksityisyyttäsi selatessasi verkkoa. Uusin päivityksemme on täynnä asioita, joita tulet arvostamaan.
 mr2022-onboarding-existing-pin-checkbox-label = Lisää myös { -brand-short-name }in yksityinen selaus
 
 ## MR2022 New User Set Default screen strings
 
+# This string is the title used when the user already has pinned the browser, but has not set default.
+mr2022-onboarding-set-default-title = Tee { -brand-short-name }ista selaimesi
 mr2022-onboarding-set-default-primary-button-label = Aseta { -brand-short-name } oletusselaimeksi
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
@@ -304,6 +319,9 @@ mr2022-onboarding-set-default-subtitle = Käytä voittoa tavoittelemattoman sä�
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-get-started-primary-subtitle = Uusin versiomme on rakennettu ympärillesi; verkossa liikkuminen on helpompaa kuin koskaan. Se on täynnä ominaisuuksia, joihin uskomme sinun ihastuvan.
 mr2022-onboarding-get-started-primary-button-label = Määritä sekunneissa
 
 ## MR2022 Import Settings screen strings
@@ -319,8 +337,36 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Tuo edellisestä 
 
 mr2022-onboarding-colorway-title = Valitse väri, joka inspiroi sinua
 mr2022-onboarding-colorway-subtitle = Itsenäiset äänet voivat muuttaa kulttuuria.
-mr2022-onboarding-colorway-primary-button-label = Aseta väriteema
+mr2022-onboarding-colorway-primary-button-label-continue = Aseta ja jatka
+mr2022-onboarding-existing-colorway-checkbox-label = Tee { -firefox-home-brand-name }ista värikäs kotisivusi
+mr2022-onboarding-colorway-label-default = Oletus
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Nykyiset { -brand-short-name }-värit
 mr2022-onboarding-colorway-description-default = <b>Käytä nykyisiä { -brand-short-name }-värejä.</b>
+mr2022-onboarding-colorway-label-playmaker = Pelinrakentaja
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Pelinrakentaja (punainen)
+mr2022-onboarding-colorway-description-playmaker = <b>Olet pelinrakentaja.</b> Luot mahdollisuuksia voittaa ja autat kaikkia ympärilläsi olevia nostamaan panostaan.
+mr2022-onboarding-colorway-label-expressionist = Ekspressionisti
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Ekspressionisti (keltainen)
+mr2022-onboarding-colorway-description-expressionist = <b>Olet ekspressionisti.</b> Näet maailman eri tavalla ja luomuksesi herättävät muissa tunteita.
+mr2022-onboarding-colorway-label-visionary = Visionääri
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Visionääri (vihreä)
+mr2022-onboarding-colorway-description-visionary = <b>Olet visionääri.</b> Kyseenalaistat nykytilan ja kannustat muita kuvittelemaan parempaa tulevaisuutta.
+mr2022-onboarding-colorway-label-activist = Aktivisti
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktivisti (sininen)
+mr2022-onboarding-colorway-description-activist = <b>Olet aktivisti.</b> Jätät maailman aiempaa paremmaksi paikaksi ja saat muut uskomaan parempaan.
+mr2022-onboarding-colorway-label-dreamer = Unelmoija
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Unelmoija (violetti)
+mr2022-onboarding-colorway-description-dreamer = <b>Olet unelmoija.</b> Uskot, että onni suosii rohkeita ja innostat muita olemaan rohkeita.
+mr2022-onboarding-colorway-label-innovator = Uudistaja
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Uudistaja (oranssi)
+mr2022-onboarding-colorway-description-innovator = <b>Olet uudistaja.</b> Näet mahdollisuuksia kaikkialla ja vaikutat muiden ympärilläsi olevien elämään.
 
 ## MR2022 Multistage Mobile Download screen strings
 
@@ -350,7 +396,33 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Näytä yksityis
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-title = Autat meitä rakentamaan parempaa verkkoa.
+mr2022-onboarding-gratitude-title = Autat meitä rakentamaan parempaa verkkoa
 mr2022-onboarding-gratitude-subtitle = Kiitos, että käytit { -brand-short-name }ia, jota Mozilla Foundation tukee. Tukesi avulla pyrimme tekemään internetistä entistä avoimemman, saavutettavamman ja paremman kaikille.
 mr2022-onboarding-gratitude-primary-button-label = Katso, mikä on uutta
 mr2022-onboarding-gratitude-secondary-button-label = Aloita selaaminen
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Tee olosi kotoisaksi
+onboarding-infrequent-import-subtitle = Oletpa sitten asettumassa tai vain poikkeamassa, muista, että voit tuoda kirjanmerkkisi, salasanasi ja paljon muuta.
+onboarding-infrequent-import-primary-button = Tuo { -brand-short-name }iin
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Henkilö työskentelemässä kannettavalla tietokoneella tähtien ja kukkien ympäröimänä
+mr2022-onboarding-default-image-alt =
+    .aria-label = Henkilö halaamassa { -brand-product-name }-logoa
+mr2022-onboarding-import-image-alt =
+    .aria-label = Henkilö rullalautailemassa ohjelmistokuvakkeiden keskellä
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Sammakot hyppimässä QR-koodin sävytteisten liljalehtien kanssa, ladatakseen { -brand-product-name }in mobiililaitteelle.
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Taikasauva saa { -brand-product-name }in yksityisen selauksen logon ilmestymään hatusta
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Vaalea- ja tummaihoiset kädet tekemässä ylävitosta
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Näkymä auringonlaskuun ikkunan läpi, jossa on kettu ja huonekasvi ikkunalaudalla
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Käsisuihke maalaa värikkään kollaasin vihreästä silmästä, oranssista kengästä, punaisesta koripallosta, violeteista kuulokkeista, sinisestä sydämestä ja keltaisesta kruunusta

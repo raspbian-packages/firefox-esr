@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Rhwystro'r defnyddiwr rhag osgoi rhai rhybuddion 
 policy-DisableSetAsDesktopBackground = Analluogi'r dewislen gorchymyn Gosod fel Delwedd Cefndir ar gyfer delwddau.
 policy-DisableSystemAddonUpdate = Rhwystro'r porwr rhag gosod a diweddaru ychwanegion y system.
 policy-DisableTelemetry = Diffodd Telemetreg
+policy-DisableThirdPartyModuleBlocking = Rhwystrwch y defnyddiwr rhag rhwystro modiwlau trydydd parti sy'n cael eu chwistrellu i'r broses { -brand-short-name }.
 policy-DisplayBookmarksToolbar = Dangos y Bar Offer Nodau Tudalen drwy ragosodiad.
 policy-DisplayMenuBar = Dangos y Bar Dewislen drwy ragosodiad
 policy-DNSOverHTTPS = Ffurfweddu DNS dros HTTPS.

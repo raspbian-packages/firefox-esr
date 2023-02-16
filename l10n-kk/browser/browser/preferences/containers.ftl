@@ -11,6 +11,15 @@ containers-window-update-settings =
     .title = { $name } контейнер баптаулары
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Жаңа контейнерді қосу
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = { $name } контейнер баптаулары
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

@@ -6,6 +6,10 @@ translation-window =
     .title = અપવાદ - અનુવાદ
     .style = width: 36em
 
+translation-window2 =
+    .title = અપવાદ - અનુવાદ
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

@@ -108,6 +108,10 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Omogoči oddaljeno razhroščevanje
 options-enable-remote-tooltip2 =
     .title = Vklop te možnosti omogoči oddaljeno razhroščevanje tega primerka brskalnika
+# The label for checkbox that toggles custom formatters for objects
+options-enable-custom-formatters-label = Omogoči oblikovalnike po meri
+options-enable-custom-formatters-tooltip =
+    .title = Če vključite to možnost, bodo spletna mesta lahko določila oblikovalnike po meri za predmete DOM
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = Omogoči Service Workerje preko HTTP (ko so razvojna orodja odprta)
 options-enable-service-workers-http-tooltip =

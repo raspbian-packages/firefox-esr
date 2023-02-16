@@ -44,3 +44,13 @@ about-private-browsing-search-banner-close-button =
     .aria-label = Փակել
 about-private-browsing-promo-close-button =
     .title = Փակել
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = Մասնավոր զննման ազատություն մեկ քլիքով
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Պահել ամրակցված
+       *[other] Ամրացնել Խնդրագոտուն
+    }
+about-private-browsing-pin-promo-title = Ոչ մի պահված թխուկ կամ պատմություն: Աշխատեք այնպես, կարծես ոչ ոք չի հետևում Ձեզ:

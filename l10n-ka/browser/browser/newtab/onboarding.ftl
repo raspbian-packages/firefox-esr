@@ -25,6 +25,12 @@ return-to-amo-addon-title = ახლა, მოდით დავამატ�
 return-to-amo-add-extension-label = გაფართოების დამატება
 return-to-amo-add-theme-label = დაამატეთ გაფორმება
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = უკეთ გაიცანით { -brand-short-name }
+mr1-return-to-amo-addon-title = თქვენ ხელთაა მეტად სწრაფი და პირადი ბრაუზერი. შეგიძლიათ დაამატოთ <b>{ $addon-name }</b> და მეტად გაამრავალფეროვნოთ { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = დაამატეთ { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = წინსვლა: ნაბიჯი { $current }, სულ { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = წინსვლა: ნაბიჯი { $current }, სულ { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -104,7 +112,7 @@ mr1-onboarding-import-subtitle = გადმოიტანეთ პარო�
 # The primary import button label will depend on whether we can detect which browser was used to download Firefox.
 # Variables:
 #   $previous (Str) - Previous browser name, such as Edge, Chrome
-mr1-onboarding-import-primary-button-label-attribution = გადმოტანა { $previous }-(ი)დან
+mr1-onboarding-import-primary-button-label-attribution = გადმოტანა – { $previous }
 # This string will be used in cases where we can't detect the previous browser name.
 mr1-onboarding-import-primary-button-label-no-attribution = გადმოტანა წინა ბრაუზერიდან
 mr1-onboarding-import-secondary-button-label = ახლა არა
@@ -152,17 +160,17 @@ mr1-onboarding-theme-description-system =
 mr1-onboarding-theme-tooltip-light =
     .title =
         ნათელი გაფორმება ღილაკებზე,
-        მენიუსა და ფანჯრებზე
+        მენიუსა და ფანჯრებზე.
 # Input description for light theme
 mr1-onboarding-theme-description-light =
     .aria-description =
         ნათელი გაფორმება ღილაკებზე,
-        მენიუსა და ფანჯრებზე
+        მენიუსა და ფანჯრებზე.
 # Tooltip displayed on hover of dark theme
 mr1-onboarding-theme-tooltip-dark =
     .title =
         მუქი გაფორმება ღილაკებზე,
-        მენიუსა და ფანჯრებზე
+        მენიუსა და ფანჯრებზე.
 # Input description for dark theme
 mr1-onboarding-theme-description-dark =
     .aria-description =
@@ -172,12 +180,12 @@ mr1-onboarding-theme-description-dark =
 mr1-onboarding-theme-tooltip-alpenglow =
     .title =
         ცვალებადი, ფერადი გაფორმება ღილაკებზე,
-        მენიუსა და ფანჯრებზე
+        მენიუსა და ფანჯრებზე.
 # Input description for Alpenglow theme
 mr1-onboarding-theme-description-alpenglow =
     .aria-description =
         ცვალებადი, ფერადი გაფორმება ღილაკებზე,
-        მენიუსა და ფანჯრებზე
+        მენიუსა და ფანჯრებზე.
 # Tooltip displayed on hover of non-default colorway theme
 # variations e.g. soft, balanced, bold
 mr2-onboarding-theme-tooltip =
@@ -197,14 +205,14 @@ mr2-onboarding-colorway-tooltip =
 mr2-onboarding-colorway-label = მოსინჯეთ { $colorwayName } შეფერილობა.
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
-    .title = მოსინჯეთ ნაგულისხმევი შეფერილობა.
+    .title = მოსინჯეთ ნაგულისხმევი იერსახე.
 # Selector description for default themes
-mr2-onboarding-default-theme-label = მოსინჯეთ ნაგულისხმევი შეფერილობა.
+mr2-onboarding-default-theme-label = მოსინჯეთ ნაგულისხმევი იერსახე.
 
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = გმადლობთ, რომ ჩვენ აგვირჩიეთ
-mr2-onboarding-thank-you-text = { -brand-short-name } დამოუკიდებელი ბრაუზერია, არამომგებიანი დაწესებულებისგან. ერთად, ჩვენ ვქმნით მეტად უსაფრთხო, ჯანსაღ და პირადულ ვებსამყაროს.
+mr2-onboarding-thank-you-text = { -brand-short-name } დამოუკიდებელი ბრაუზერია არამომგებიანი დაწესებულებისგან. ერთად, ჩვენ ვქმნით მეტად უსაფრთხო, ჯანსაღ და პირადულ ვებსამყაროს.
 mr2-onboarding-start-browsing-button-label = გვერდების მონახულება
 
 ## Multistage live language reloading onboarding strings (about:welcome pages)
@@ -226,7 +234,7 @@ mr2-onboarding-start-browsing-button-label = გვერდების მო�
 
 onboarding-live-language-header = აირჩიეთ თქვენი ენა
 mr2022-onboarding-live-language-text = { -brand-short-name } თქვენს ენაზე ლაპარაკობს
-mr2022-language-mismatch-subtitle = ჩვენი ერთობის წევრების დამსახურებით, { -brand-short-name } ნათარგმნია 90-ზე მეტ ენაზე. როგორც ჩანს, თქვენი სისტემის ენად მითითებული { $systemLanguage }, ხოლო { -brand-short-name } არის { $appLanguage }.
+mr2022-language-mismatch-subtitle = ჩვენი ერთობის წევრების დამსახურებით { -brand-short-name } ნათარგმნია 90-ზე მეტ ენაზე. როგორც ჩანს, თქვენი სისტემის ენად მითითებულია { $systemLanguage }, ხოლო { -brand-short-name } არის { $appLanguage }.
 onboarding-live-language-button-label-downloading = ჩამოიტვირთება ენის კრებულად { $negotiatedLanguage }…
 onboarding-live-language-waiting-button = ხელმისაწვდომი ენების მოძიება…
 onboarding-live-language-installing = ჩაიდგმება ენის კრებულად { $negotiatedLanguage }…
@@ -268,9 +276,9 @@ mr2022-onboarding-secondary-skip-button-label = გამოტოვება
 # In this context, open up is synonymous with "Discover".
 # The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
 # If this translation does not make sense in your language, feel free to use the word "discover."
-mr2022-onboarding-welcome-pin-header = გახსენით საოცარი ინტერნეტსამყაროს კარი
+mr2022-onboarding-welcome-pin-header = შეაღეთ საოცარი ინტერნეტსამყაროს კარი
 # Subtitle is used on onboarding page for new users page when Firefox is not pinned
-mr2022-onboarding-welcome-pin-subtitle = გაუშვით { -brand-short-name } ერთი შეხებით. ყოველ ჯერზე ამის გაკეთებისას, თქვენ ირჩევთ მეტად ღია და დამოუკიდებელ ინტერნეტს.
+mr2022-onboarding-welcome-pin-subtitle = გაუშვით { -brand-short-name } ერთი შეხებით. ყოველ ჯერზე ამის გაკეთებისას თქვენ ირჩევთ მეტად ღია და დამოუკიდებელ ინტერნეტს.
 # Primary button string used on welcome page for when Firefox is not pinned.
 mr2022-onboarding-pin-primary-button-label =
     { PLATFORM() ->
@@ -325,40 +333,40 @@ mr2022-onboarding-import-primary-button-label-no-attribution = გადმო�
 
 mr2022-onboarding-colorway-title = აირჩიეთ შთამაგონებელი ფერები
 mr2022-onboarding-colorway-subtitle = დამოუკიდებელი ხმები ცვლის ღირებულებებს.
-mr2022-onboarding-colorway-primary-button-label = შეფერილობის დაყენება
+mr2022-onboarding-colorway-primary-button-label-continue = დააყენეთ და განაგრძეთ
 mr2022-onboarding-existing-colorway-checkbox-label = გამოიყენეთ { -firefox-home-brand-name } ფერადოვან საწყის გვერდად
 mr2022-onboarding-colorway-label-default = ნაგულისხმევი
-mr2022-onboarding-colorway-tooltip-default =
-    .title = ნაგულისხმევი
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = { -brand-short-name } – ამჟამინდელი ფერი
 mr2022-onboarding-colorway-description-default = <b>დარჩეს { -brand-short-name } ამ ფერებში.</b>
 mr2022-onboarding-colorway-label-playmaker = გამთამაშებელი
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = გამთამაშებელი
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = გამთამაშებელი (წითელი)
 mr2022-onboarding-colorway-description-playmaker = <b>გამთამაშებელი.</b> ქმნით გამარჯვების ახალ შესაძლებლობებს და ირგვლივ მყოფთაც ხელს უწყობთ, რომ უკეთ გამოავლინონ საკუთარი უნარები.
 mr2022-onboarding-colorway-label-expressionist = გამომსახველობითი
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = გამომსახველობითი
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = გამომსახველობითი (ყვითელი)
 mr2022-onboarding-colorway-description-expressionist = <b>გამომსახველობითი.</b> სამყაროს განსხვავებულად აღიქვამთ და თქვენი ნამუშევრები სხვებშიც ძლიერ განცდებს აღძრავს.
 mr2022-onboarding-colorway-label-visionary = შორსმჭვრეტელი
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = შორსმჭვრეტელი
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = შორსმჭვრეტელი (მწვანე)
 mr2022-onboarding-colorway-description-visionary = <b>შორსმჭრეტელი.</b> არ ეგუებით არსებულ მდგომარეობას და სხვებსაც უღვივებთ უკეთესი მომავლის იმედს.
 mr2022-onboarding-colorway-label-activist = მებრძოლი
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = მებრძოლი
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = მებრძოლი (ლურჯი)
 mr2022-onboarding-colorway-description-activist = <b>მებრძოლი.</b> სამყაროს ცვლით უკეთესობისკენ და სხვებსაც არწმუნებით ამის საჭიროებაში.
 mr2022-onboarding-colorway-label-dreamer = მეოცნებე
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = მეოცნებე
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = მეოცნებე (იისფერი)
 mr2022-onboarding-colorway-description-dreamer = <b>მეოცნებე.</b> გჯერათ, რომ უმართლებთ მხოლოდ ძლიერებს და ყველას შთააგონებთ, იყვნენ მეტად გაბედულნი.
 mr2022-onboarding-colorway-label-innovator = განმაახლებელი
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = განმაახლებელი
-mr2022-onboarding-colorway-description-innovator = <b>სიხლის შემომტანი.</b> ყველაფრისადმი თქვენი ახლებური ხედვა უკეთესობისკენ ცვლის გარშემომყოფთა ცხოვრებას.
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = განმაახლებელი (ნარინჯისფერი)
+mr2022-onboarding-colorway-description-innovator = <b>სიახლის შემომტანი.</b> ყველაფრისადმი თქვენი ახლებური ხედვა უკეთესობისკენ ცვლის გარშემომყოფთა ცხოვრებას.
 
 ## MR2022 Multistage Mobile Download screen strings
 
-mr2022-onboarding-mobile-download-title = მოქნილად გადაერთეთ ლეპტოპიდან ტელეფონზე და უკან
+mr2022-onboarding-mobile-download-title = მოქნილად გადაერთეთ ლეპტოპიდან ტელეფონზე ან პირიქით
 mr2022-onboarding-mobile-download-subtitle = წაიყოლეთ ჩანართები სხვა მოწყობილობაზე და განაგრძეთ იქიდან, სადაც გაჩერდით. ამასთანავე, დაასინქრონეთ სანიშნები და პაროლები ყველგან, სადაც { -brand-product-name } გიყენიათ.
 mr2022-onboarding-mobile-download-cta-text = წააკითხეთ QR-კოდი, რომ გადმოწეროთ { -brand-product-name } მობილურზე ან <a data-l10n-name="download-label">გაგზავნეთ ჩამოსატვირთი ბმული.</a>
 mr2022-onboarding-no-mobile-download-cta-text = წააკითხეთ QR-კოდი, რომ გადმოწეროთ { -brand-product-name } მობილურზე.
@@ -384,7 +392,33 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = დაწვრ�
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-title = თქვენ გვეხმარებით უკეთესი ვებსამყაროს შექმნაში.
-mr2022-onboarding-gratitude-subtitle = გმადლობთ, რომ აირჩიეთ { -brand-short-name }, არამომგებიანი Mozilla-ფონდისგან. თქვენი მხარდაჭერით შევძლებთ, რომ ინტერნეტი გავხადოთ მეტად ღია, უკეთესი და საყოველთაოდ ხელმისაწვდომი.
+mr2022-onboarding-gratitude-title = თქვენ გვეხმარებით უკეთესი ვებსამყაროს შექმნაში
+mr2022-onboarding-gratitude-subtitle = გმადლობთ, რომ აირჩიეთ { -brand-short-name } არამომგებიანი Mozilla-ფონდისგან. თქვენი მხარდაჭერით შევძლებთ, რომ ინტერნეტი გავხადოთ მეტად ღია, უკეთესი და საყოველთაოდ ხელმისაწვდომი.
 mr2022-onboarding-gratitude-primary-button-label = გაეცანით სიახლეებს
 mr2022-onboarding-gratitude-secondary-button-label = დაიწყეთ მოგზაურობა ინტერნეტში
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = თავი იგრძენით საკუთარ სახლში
+onboarding-infrequent-import-subtitle = გადმობარგებას აპირებთ თუ დროებით დარჩენას, გახსოვდეთ, რომ მარტივად შეგიძლიათ გადმოიტანოთ თქვენი სანიშნები, პაროლები და სხვ.
+onboarding-infrequent-import-primary-button = გადმოტანა – { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = ლეპტოპით მომუშავე პიროვნება ყვავილებითა და ვარსკვლავებით გარშემორტყმული
+mr2022-onboarding-default-image-alt =
+    .aria-label = პიროვნება ეხუტება { -brand-product-name }-ლოგოს
+mr2022-onboarding-import-image-alt =
+    .aria-label = პიროვნება გორგოლაჭიანი დაფით მისრიალებს პროგრამული ხატულებით სავსე ყუთით ხელში
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = ბაყაყები დახტიან წყლის შროშანის მოტივტივე ფოთლებზე QR-კოდის ირგვლივ, რომლითაც შესაძლებელია ჩამოიტვირთოს { -brand-product-name } ტელეფონისთვის.
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = ჯადოსნური ჯოხი აჩენს { -brand-product-name } პირადი თვალიერების ლოგოს ქუდიდან
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = ღია და მუქი კანის ხელისგულების შემოკვრა
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = მზის ჩასვლის ხედი ფანჯრიდან და რაფაზე მძინარე მელა ოთახის ყვავილთან ერთად.
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = ხელში დაჭერილი შესასხურებლით იხატება ფერადი ნივთების ნაკრები მწვანე თვალით, ნარინჯისფერი ფეხსაცმლით, კალათბურთის წითელი ბურთით, იისფერი ყურსასმენით, ლურჯი გულითა და ოქროსფერი გვირგინით.

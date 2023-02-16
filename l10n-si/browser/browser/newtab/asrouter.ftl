@@ -21,6 +21,10 @@ cfr-doorhanger-extension-manage-settings-button = නිර්දේශිත �
 cfr-doorhanger-extension-never-show-recommendation = මෙම නිර්දේශය යළි නොපෙන්වන්න
     .accesskey = S
 cfr-doorhanger-extension-learn-more-link = තව දැනගන්න
+# This string is used on a new line below the add-on name
+# Variables:
+#   $name (String) - Add-on author name
+cfr-doorhanger-extension-author = කර්තෘ: { $name }
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = නිර්දේශය
@@ -56,6 +60,7 @@ cfr-doorhanger-extension-total-users =
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = පොත්යොමු ඕනෑම තැනකට සමමුහූර්ත කරන්න.
+cfr-doorhanger-bookmark-fxa-body = කදිම සොයා ගැනීමක්! ඔබගේ ජංගම උපාංගවල මෙම පොත්යොමුව රහිතව නොසිටින්න. { -fxaccount-brand-name } සමඟ පටන් ගන්න.
 cfr-doorhanger-bookmark-fxa-link-text = පොත්යොමු දැන් සමමුහූර්ත කරන්න…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = බොත්තම වසන්න
@@ -79,6 +84,13 @@ cfr-whatsnew-release-notes-link-text = නිකුතු සටහන් කි
 
 ## Enhanced Tracking Protection Milestones
 
+# Variables:
+#   $blockedCount (Number) - The total count of blocked trackers. This number will always be greater than 1.
+#   $date (Datetime) - The date we began recording the count of blocked trackers
+cfr-doorhanger-milestone-heading2 =
+    { $blockedCount ->
+       *[other] { DATETIME($date, month: "long", year: "numeric") } සිට { -brand-short-name } මගින් ලුහුබැඳීම් <b>{ $blockedCount }</b> කට වඩා අවහිර කර ඇත!
+    }
 cfr-doorhanger-milestone-ok-button = සියල්ල බලන්න
     .accesskey = S
 cfr-doorhanger-milestone-close-button = වසන්න
@@ -130,7 +142,7 @@ spotlight-public-wifi-vpn-link = දැන් නොවේ
 
 ## Total Cookie Protection Rollout
 
-spotlight-total-cookie-protection-body = පූර්ණ දත්තකඩ ආරක්‍ෂණය මගින් වියමන පුරා දත්තකඩ භාවිතයෙන් ඔබ පසුපස එන ලුහුබඳින්නන් නවත්වයි.
+spotlight-total-cookie-protection-body = පූර්ණ දත්තකඩ රැකවරණය මගින් වියමන පුරා දත්තකඩ භාවිතයෙන් ඔබ පසුපස එන ලුහුබඳින්නන් නවත්වයි.
 spotlight-total-cookie-protection-primary-button = පූර්ණ දත්තකඩ රැකවරණය සක්‍රිය කරන්න
 spotlight-total-cookie-protection-secondary-button = දැන් නොවේ
 cfr-total-cookie-protection-header = ඔබට ස්තුති වන්නට, { -brand-short-name } අන් කවරදාටත් වඩා පෞද්ගලිකයි සහ ආරක්‍ෂිතයි
@@ -143,3 +155,49 @@ spotlight-pin-primary-button =
        *[other] කාර්ය තීරුවට අමුණන්න
     }
 spotlight-pin-secondary-button = දැන් නොවේ
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = දැන් { -brand-shorter-name } අරින්න
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = පසුව මතක් කරන්න
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = බලන්න
+    .accesskey = T
+firefoxview-cfr-secondarybutton = දැන් නොවේ
+    .accesskey = N
+firefoxview-cfr-header = { -firefoxview-brand-name } සමඟ මෑත දී වසා දැමූ පටිති ආපසු ගන්න
+firefoxview-cfr-body = තවද උපාංග අතර බාධාවකින් තොරව පනින්න හා අතිරික්සුවෙහි වර්ණ කලතන්න.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = { -firefoxview-brand-name } අත්විඳින්න
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = දුරකථනයෙහි විවෘත පටිත්ත වුවමනාද? එය ඇහිඳින්න. ඔබ දැන් ගොඩවැදුණු අඩවිය වුවමනාද? ඔන්න, එය { -firefoxview-brand-name } සමඟ ලැබෙණු ඇත.
+firefoxview-spotlight-promo-primarybutton = එය වැඩ කරන අයුරු බලන්න
+firefoxview-spotlight-promo-secondarybutton = මඟහරින්න
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = වර්ණ පරාසය තෝරන්න
+    .accesskey = C

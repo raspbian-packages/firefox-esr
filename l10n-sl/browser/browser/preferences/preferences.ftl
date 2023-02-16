@@ -600,6 +600,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Prikaži predloge iskanja v rezultatih naslovne vrstice
     .accesskey = P
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Na strani z zadetki privzetega iskalnika prikaži iskalno poizvedbo namesto spletnega naslova
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -655,7 +660,7 @@ containers-remove-button =
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Ponesite svoj splet s seboj
-sync-signedout-description2 = Sinhronizirajte zaznamke, zgodovino, zavihke, gesla, dodatke in nastavitve vseh vaših naprav.
+sync-signedout-description2 = Sinhronizirajte zaznamke, zgodovino, zavihke, gesla, dodatke in nastavitve vseh svojih naprav.
 sync-signedout-account-signin3 =
     .label = Prijava v sinhronizacijo …
     .accesskey = P
@@ -697,7 +702,7 @@ prefs-syncing-off = Sinhronizacija: ONEMOGOČENO
 prefs-sync-turn-on-syncing =
     .label = Vklopi sinhronizacijo …
     .accesskey = s
-prefs-sync-offer-setup-label2 = Sinhronizirajte zaznamke, zgodovino, zavihke, gesla, dodatke in nastavitve vseh vaših naprav.
+prefs-sync-offer-setup-label2 = Sinhronizirajte zaznamke, zgodovino, zavihke, gesla, dodatke in nastavitve vseh svojih naprav.
 prefs-sync-now =
     .labelnotsyncing = Sinhroniziraj zdaj
     .accesskeynotsyncing = z
@@ -723,6 +728,13 @@ sync-change-options =
 sync-choose-what-to-sync-dialog =
     .title = Izberite, kaj želite sinhronizirati
     .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Shrani spremembe
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Odklopi …
+    .buttonaccesskeyextra2 = d
+sync-choose-what-to-sync-dialog3 =
+    .title = Izberite, kaj želite sinhronizirati
+    .style = min-width: 36em;
     .buttonlabelaccept = Shrani spremembe
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Odklopi …
@@ -795,6 +807,9 @@ forms-breach-alerts =
     .label = Prikaži opozorila o geslih za ogrožene spletne strani
     .accesskey = P
 forms-breach-alerts-learn-more-link = Več o tem
+relay-integration =
+    .label = Omogočite { -relay-brand-name } v { -brand-short-name }ovem upravitelju gesel
+relay-integration-learn-more-link = Več o tem
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Samodejno izpolni prijave in gesla
@@ -911,6 +926,8 @@ sitedata-option-block-unvisited =
     .label = Piškotke neobiskanih spletnih strani
 sitedata-option-block-all-third-party =
     .label = Vse piškotke tretjih strani (lahko povzroči nedelovanje spletnih strani)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Vse medspletne piškotke (lahko povzroči nedelovanje spletnih strani)
 sitedata-option-block-all =
     .label = Vse piškotke (povzroči nedelovanje spletnih strani)
 sitedata-clear =
@@ -987,9 +1004,10 @@ content-blocking-all-cross-site-cookies-private-windows = Medspletne piškotke v
 content-blocking-cross-site-tracking-cookies-plus-isolate = Piškotke za sledenje med spletnimi mesti in izoliraj preostale piškotke
 content-blocking-social-media-trackers = Sledilce družbenih omrežij
 content-blocking-all-cookies = Vse piškotke
-content-blocking-unvisited-cookies = Piškotke neobiskanih spletnih strani
+content-blocking-unvisited-cookies = Piškotke neobiskanih spletnih mest
 content-blocking-all-windows-tracking-content = Sledilno vsebino v vseh oknih
 content-blocking-all-third-party-cookies = Vse piškotke tretjih strani
+content-blocking-all-cross-site-cookies = Vse medspletne piškotke
 content-blocking-cryptominers = Kriptorudarje
 content-blocking-fingerprinters = Sledilce prstnih odtisov
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -997,6 +1015,9 @@ content-blocking-fingerprinters = Sledilce prstnih odtisov
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Bodite med prvimi, ki boste preizkusili novo zmogljivost na področju zasebnosti
     .accesskey = t
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Popolna zaščita pred piškotki zadrži piškotke na spletnem mestu, na katerem se nahajate, tako da jih sledilci ne morejo uporabiti za sledenje med različnimi spletnimi mesti.
 content-blocking-etp-standard-tcp-rollout-learn-more = Več o tem
@@ -1048,7 +1069,7 @@ permissions-location-settings =
     .accesskey = t
 permissions-xr = Navidezna resničnost
 permissions-xr-settings =
-    .label = Nastavitve
+    .label = Nastavitve …
     .accesskey = t
 permissions-camera = Kamera
 permissions-camera-settings =

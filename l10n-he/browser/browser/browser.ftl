@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = ‏{ -brand-short-name } במצב גלישה פרטית
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = ‏{ -brand-shortcut-name } במצב גלישה פרטית
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = קבלת עזרה
 urlbar-search-tips-confirm = בסדר, הבנתי
+urlbar-search-tips-confirm-short = הבנתי
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = עצה:
+urlbar-result-menu-button =
+    .title = פתיחת תפריט
+urlbar-result-menu-remove-from-history =
+    .label = הסרה מההיסטוריה
+    .accesskey = ה
+urlbar-result-menu-tip-get-help =
+    .label = קבלת עזרה
+    .accesskey = ע
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = מהיום מקלידים פחות ומוצאים יותר: אפשר לחפש עם { $engineName } ישירות משורת הכתובת שלך.
 urlbar-search-tips-redirect-2 = ניתן להתחיל לחפש בשורת הכתובת כדי לצפות בהצעות מ־{ $engineName } ובהיסטוריית הגלישה שלך.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = החיפוש נעשה פשוט יותר. נסו להפוך את החיפוש שלכם לספציפי יותר כאן בשורת הכתובת. כדי להציג את כתובת האתר במקום, ניתן להיכנס בהגדרות לקטגוריה ״חיפוש״.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = ניתן לבחור בקיצור הדרך הזה כדי למצוא את מה שמחפשים מהר יותר.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = פעולות ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = הצגת תוספות
-quickactions-cmd-addons = תוספות, תוספים, הרחבות, ערכות נושא
-quickactions-cmd-addons2 = תוספות
+quickactions-cmd-addons2 = הרחבות, תוספות, תוספים
 # Opens the bookmarks library window
-quickactions-bookmarks = הצגת סימניות
+quickactions-bookmarks2 = ניהול סימניות
 quickactions-cmd-bookmarks = סימניות, מועדפים
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = מחיקת היסטוריה
 quickactions-cmd-clearhistory = מחיקת היסטוריה, ניקוי היסטוריה, מחק היסטוריה, נקה היסטוריה, למחוק היסטוריה, לנקות היסטוריה
 # Opens about:downloads page
-quickactions-downloads = פתיחת הורדות
+quickactions-downloads2 = הצגת הורדות
 quickactions-cmd-downloads = הורדות
 # Opens about:addons page in the extensions section
 quickactions-extensions = ניהול הרחבות
-quickactions-cmd-extensions = הרחבות
+quickactions-cmd-extensions = הרחבות, תוספות, תוספים
 # Opens the devtools web inspector
-quickactions-inspector = פתיחת המפקח
+quickactions-inspector2 = פתיחת כלי פיתוח
 quickactions-cmd-inspector = מפקח, inspector, כלי פיתוח, כלי מפתח, devtools
 # Opens about:logins
-quickactions-logins = הצגת כניסות
+quickactions-logins2 = ניהול ססמאות
 quickactions-cmd-logins = כניסות, פרטי התחברות, פרטי גישה, פרטי כניסה, ססמאות, סיסמאות
 # Opens about:addons page in the plugins section
 quickactions-plugins = ניהול תוספים חיצוניים
 quickactions-cmd-plugins = תוספים חיצוניים
 # Opens the print dialog
-quickactions-print = הדפסה
+quickactions-print2 = הדפסת הדף
 quickactions-cmd-print = הדפסה, הדפס, להדפיס
 # Opens a new private browsing window
-quickactions-private = פתיחת חלון במצב גלישה פרטית
+quickactions-private2 = פתיחת חלון פרטי
 quickactions-cmd-private = גלישה פרטית, גלישה אנונימית
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = רענון { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = רענון, רענן, לרענן
 quickactions-restart = הפעלת { -brand-short-name } מחדש
 quickactions-cmd-restart = הפעלה מחדש, הפעל מחדש, להפעיל מחדש
 # Opens the screenshot tool
-quickactions-screenshot2 = צילום מסך
+quickactions-screenshot3 = צילום מסך
 quickactions-cmd-screenshot = צילום מסך, צלם מסך, לצלם מסך, לצלם את המסך, לקחת צילום מסך
 # Opens about:preferences
-quickactions-settings = פתיחת הגדרות
+quickactions-settings2 = ניהול הגדרות
 quickactions-cmd-settings = הגדרות, העדפות, אפשרויות
 # Opens about:addons page in the themes section
 quickactions-themes = ניהול ערכות נושא
@@ -323,8 +332,11 @@ quickactions-cmd-themes = ערכות נושא
 quickactions-update = עדכון { -brand-short-name }
 quickactions-cmd-update = עדכון, עדכן, לעדכן
 # Opens the view-source UI with current pages source
-quickactions-viewsource = הצגת המקור
+quickactions-viewsource2 = הצגת מקור הדף
 quickactions-cmd-viewsource = הצגת קוד מקור, הצג קוד מקור, להציג קוד מקור, קוד מקור, מקור
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = מידע נוסף על פעולות מהירות
 
 ## Bookmark Panel
 
@@ -386,6 +398,7 @@ identity-https-only-info-turn-on2 = יש להפעיל את מצב HTTPS בלבד
 identity-https-only-info-turn-off2 = אם נראה שהדף שבור, באפשרותך לכבות את מצב ה־HTTPS בלבד עבור אתר זה כדי לטעון מחדש באמצעות HTTP לא מאובטח.
 identity-https-only-info-no-upgrade = לא ניתן לשדרג את החיבור מ־HTTP.
 identity-permissions-storage-access-header = עוגיות חוצות אתרים
+identity-permissions-storage-access-hint = צדדים אלה יכולים להשתמש בעוגיות חוצות אתרים ובנתוני אתרים בזמן שנמצאים באתר זה.
 identity-permissions-storage-access-learn-more = מידע נוסף
 identity-permissions-reload-hint = יתכן שיהיה עליך לרענן את העמוד כדי שהשינויים ייכנסו לתוקף.
 identity-clear-site-data =
@@ -481,6 +494,9 @@ popup-select-microphone-icon =
     .tooltiptext = מיקרופון
 popup-select-speaker-icon =
     .tooltiptext = רמקולים
+popup-select-window-or-screen =
+    .label = חלון או מסך:
+    .accesskey = ח
 popup-all-windows-shared = ישותפו כל החלונות הגלויים על המסך.
 popup-screen-sharing-block =
     .label = לחסום
@@ -501,6 +517,7 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
+enable-devtools-popup-description2 = כדי להשתמש בקיצור הדרך F12, יש קודם לפתוח את כלי הפיתוח דרך התפריט כלי דפדפן.
 
 ## URL Bar
 
@@ -632,6 +649,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = פעולות מהירות
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = כניסה לתצוגת קריאה
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = סגירת תצוגת הקריאה
 
 ## Full Screen and Pointer Lock UI
 
@@ -909,3 +935,29 @@ private-browsing-indicator-label = גלישה פרטית
 unified-extensions-button =
     .label = הרחבות
     .tooltiptext = הרחבות
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = הרחבות
+    .tooltiptext =
+        הרחבות
+        נדרשות הרשאות
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = ‏{ -brand-short-name } מנע מעמוד זה לטעון את עצמו מחדש באופן אוטומטי.
+refresh-blocked-redirect-label = ‏{ -brand-short-name } מנע מעמוד זה להפנות לעמוד אחר באופן אוטומטי.
+refresh-blocked-allow =
+    .label = לאפשר
+    .accesskey = א
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = ‏{ -relay-brand-name } מסווה את כתובת הדוא״ל האמיתית שלך כדי לעזור להגן עליך מפני דליפות נתונים ודואר זבל.
+firefox-relay-offer-how-we-integrate = על־ידי המשך בתהליך, יהיה באפשרותך לייצר מסיכות דוא״ל חדשות של { -relay-brand-short-name } היישר ממנהל הססמאות של ה־{ -brand-shorter-name } שלך.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = אנחנו נעביר את כל הודעות הדוא״ל מ־<strong>{ $sitename }</strong> אל <strong>{ $useremail }</strong>.

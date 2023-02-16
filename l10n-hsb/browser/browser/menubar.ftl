@@ -183,6 +183,17 @@ menu-view-full-screen =
     .label = Połna wobrazowka
     .accesskey = P
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Do čitanskeho napohlada zastupić
+    .accesskey = t
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Čitanski napohlad začinić
+    .accesskey = z
+
 ##
 
 menu-view-show-all-tabs =

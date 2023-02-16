@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Falamhaich an dàta
     .style = width: 45em
 
+clear-site-data-window2 =
+    .title = Falamhaich an dàta
+    .style = min-width: 45em
+
 clear-site-data-description = Ma dh’fhalamhaicheas tu na briosgaidean is dàta nan làraichean a tha { -brand-short-name } a’ stòradh, dh’fhaoidte gun dèid do chlàradh a-mach à làraichean-lìn agus gum falbh susbaint-lìn far loidhne. Ma dh’fhalamhaicheas tu an tasgadan, cha bhi buaidh air na clàraidhean a-steach.
 
 clear-site-data-close-key =

@@ -178,10 +178,6 @@ files-and-applications-title = Lêers en Toepassings
 
 download-header = Aflaaie
 
-download-save-to =
-    .label = Stoor lêers na
-    .accesskey = o
-
 download-save-where = Stoor lêers na
     .accesskey = o
 
@@ -724,8 +720,3 @@ certs-enable-ocsp =
 desktop-folder-name = Werkskerm
 downloads-folder-name = Aflaaie
 choose-download-folder-title = Kies aflaaivouer:
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Stoor lêers in { $service-name }

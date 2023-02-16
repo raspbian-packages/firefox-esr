@@ -6,12 +6,22 @@ create-profile-window =
     .title = Майстер створення профілю
     .style = width: 50em; height: 35em;
 
+create-profile-window2 =
+    .title = Майстер створення профілю
+    .style = min-width: 50em; min-height: 35em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Початок
        *[other] Ласкаво просимо в { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Початок
+       *[other] Ласкаво просимо в { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } зберігає інформацію про ваші налаштування та вподобання у вашому особистому профілі.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Завершення
        *[other] Завершення роботи { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Завершення
+       *[other] Завершення роботи { create-profile-window2.title }
     }
 
 profile-creation-intro = При створенні декількох профілів, ви зможете розрізняти їх за назвою. Ви можете скористатися пропонованою назвою, або ж придумати власну.

@@ -6,6 +6,10 @@ containers-window-new =
     .title = Pievienot jaunu konteineru
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Pievienot jaunu konteineru
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

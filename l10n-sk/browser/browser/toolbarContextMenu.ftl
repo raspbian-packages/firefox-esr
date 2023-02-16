@@ -40,7 +40,7 @@ toolbar-context-menu-remove-extension =
 # related to that extension. "Report" is a verb.
 toolbar-context-menu-report-extension =
     .label = Nahlásiť rozšírenie
-    .accesskey = r
+    .accesskey = N
 # Can appear on the same context menu as toolbar-context-menu-menu-bar-cmd
 # ("Menu Bar") and personalbarCmd ("Bookmarks Toolbar"), so they should
 # have different access keys.
@@ -62,6 +62,11 @@ toolbar-context-menu-view-customize-toolbar =
 toolbar-context-menu-view-customize-toolbar-2 =
     .label = Upraviť panel nástrojov…
     .accesskey = U
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = Pripnúť na panel nástrojov
+    .accesskey = P
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = Vždy zobrazovať
     .accesskey = V

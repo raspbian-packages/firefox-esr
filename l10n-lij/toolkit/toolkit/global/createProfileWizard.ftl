@@ -6,12 +6,22 @@ create-profile-window =
     .title = Proçedua goidâ pe creâ o profî
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Proçedua goidâ pe creâ o profî
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Introduçion
        *[other] Benvegnuo into { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Introduçion
+       *[other] Benvegnuo into { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = O { -brand-short-name } o sarva informançioin de teu preferense e inpostançioin into teu profî.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Fin
        *[other] Finiscio o { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Fin
+       *[other] Finiscio o { create-profile-window2.title }
     }
 
 profile-creation-intro = Se ti ti crei tanti profî ti peu dagghe un nomme pe deuviali. Ti peu uzâ sto nomme o ti peu crealo ti.

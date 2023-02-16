@@ -6,6 +6,10 @@ add-engine-window =
     .title = Legg til søkemotor
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Legg til søkemotor
+    .style = min-width: 32em;
+
 add-engine-button = Legg til egendefinert søkemotor
 
 add-engine-name = Søkemotornavn

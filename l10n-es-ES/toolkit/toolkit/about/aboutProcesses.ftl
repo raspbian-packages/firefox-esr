@@ -52,7 +52,6 @@ about-processes-socket-process = Red ({ $pid })
 about-processes-remote-sandbox-broker-process = Remote Sandbox Broker ({ $pid })
 about-processes-fork-server-process = Fork Server ({ $pid })
 about-processes-preallocated-process = Preasignado ({ $pid })
-
 about-processes-utility-process = Utilidad ({ $pid })
 
 # Unknown process names
@@ -126,9 +125,15 @@ about-processes-frame-name-one = Submarco: { $url }
 #   $shortUrl (String) The shared prefix for the subframes in the group.
 about-processes-frame-name-many = Submarcos ({ $number }): { $shortUrl }
 
-# Utility process actor names
+## Utility process actor names
+
 about-processes-utility-actor-unknown = Actor desconocido
 about-processes-utility-actor-audio-decoder = Decodificador de audio
+
+about-processes-utility-actor-audio-decoder-generic = Decodificador de audio genérico
+about-processes-utility-actor-audio-decoder-applemedia = Decodificador de audio de Apple Media
+about-processes-utility-actor-audio-decoder-wmf = Decodificador de audio de Windows Media Framework
+about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
 
 ## Displaying CPU (percentage and total)
 ## Variables:

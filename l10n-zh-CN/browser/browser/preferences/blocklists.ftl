@@ -6,6 +6,10 @@ blocklist-window =
     .title = 拦截列表
     .style = width: 50em
 
+blocklist-window2 =
+    .title = 拦截列表
+    .style = min-width: 50em
+
 blocklist-description = 选择 { -brand-short-name } 用于拦截在线跟踪器的列表。列表由 <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a> 提供。
 blocklist-close-key =
     .key = w

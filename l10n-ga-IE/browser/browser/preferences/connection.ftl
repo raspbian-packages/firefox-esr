@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 54em
         }
 
+connection-window2 =
+    .title = Socruithe Ceangail
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 48em
+           *[other] min-width: 54em
+        }
+
 connection-close-key =
     .key = w
 

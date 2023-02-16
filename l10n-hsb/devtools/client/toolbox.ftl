@@ -42,3 +42,7 @@ toolbox-mode-parent-process-label = Jenož nadrjadowany proces
 toolbox-mode-parent-process-sub-label = (Spěšny)
 toolbox-mode-parent-process-container =
     .title = Jenož fokus na resursy z nadrjadowaneho procesa.
+toolbox-always-on-top-enabled2 = Horjeka přeco znjemóžnić
+    .title = To budźe wuwiwarske nastroje znowa startować
+toolbox-always-on-top-disabled2 = Horjeka přeco zmóžnić
+    .title = To budźe wuwiwarske nastroje znowa startować

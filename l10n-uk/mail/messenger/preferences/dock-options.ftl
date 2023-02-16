@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Опції піктограми програми
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Опції піктограми застосунку
+
 dock-options-show-badge =
     .label = Показати піктограму значка
     .accesskey = о

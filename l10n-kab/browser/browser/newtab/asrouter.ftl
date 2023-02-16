@@ -57,6 +57,17 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } iseqdacen
     }
 
+## Cookie Banner Handling Onboarding
+
+cfr-cookie-banner-reject-button = Mačči tura
+    .accesskey = M
+cfr-cookie-banner-reject-button-variant-1 = Ala tanemmirt
+    .accesskey = t
+cfr-cookie-banner-accept-button-variant-2 = Sireg
+    .accesskey = S
+cfr-cookie-banner-reject-button-variant-2 = Mačči tura
+    .accesskey = M
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Mtawi ticraḍ n yisebter ar wanida tebɣiḍ.
@@ -156,10 +167,6 @@ spotlight-total-cookie-protection-body = Ammesten asemday mgal y inagan n tuqqna
 spotlight-total-cookie-protection-expanded = { -brand-short-name } itegg zzeṛb i yinagan n tuqqna, it eǧǧ-asen talast deg usmel ideg telliḍ i wakken ur ten-sseqdacen ara ineḍfaren. S unekcum zik, ad ak•akem-iɛawen deg usesfer n tmahilt-a, akka ad nessiweḍ ad nebnu web igerrzen i yal yiwen.
 spotlight-total-cookie-protection-primary-button = Rmed ammesten asemday mgal inagan n tuqqna
 spotlight-total-cookie-protection-secondary-button = Mačči tura
-cfr-total-cookie-protection-header = Tanemmirt, { -brand-short-name } d uslig, d aɣellsan ugar ɣef wayen iɛeddan
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Ammesten asemday mgal inagan n tuqqna d aswir n ummesten afellay i nettmuddu i tudert-ik·im tabaḍnit akka ar tura – tura yuɣal d aɣewwar s wudem amezwer i yiseqdacen n { -brand-short-name } deg meṛṛa amaḍal. Ur nezmir ara ad nessiweḍ ɣer waya lukan ulac imttekkiyen ɣef zik lḥal akka am kečč·kemm. Tanemmirt ɣef tallalt-ik·im i usnulfu n Internet igerrzen, uslig ugar.
 
 ## Emotive Continuous Onboarding
 
@@ -173,3 +180,64 @@ spotlight-pin-primary-button =
        *[other] Senteḍ ɣer ufaggag n twuriwin
     }
 spotlight-pin-secondary-button = Mačči tura
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = { -brand-short-name } amaynut. D uslig ugar. Drus maḍi n yineḍfaren. War takerḍa.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Ldi { -brand-shorter-name } tura
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Mekti-y-id ticki
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Ɛreḍ-it
+    .accesskey = Ɛ
+firefoxview-cfr-secondarybutton = Mačči tura
+    .accesskey = M
+firefoxview-cfr-header-v2 = Kemmel zzerb seg anida telliḍ
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Ini azul i { -firefoxview-brand-name }
+firefoxview-spotlight-promo-primarybutton = Wali amek i itteddu
+firefoxview-spotlight-promo-secondarybutton = Suref
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Fren afran n yiniten
+    .accesskey = F
+
+## Cookie Banner Handling CFR
+
+cfr-cookiebanner-reject-button = Mačči tura
+    .accesskey = M
+cfr-cookiebanner-reject-button-variant-1 = Ala, tanemmirt
+    .accesskey = L
+cfr-cookiebanner-header-variant-2 = Asenqes n yiɣarracen n yinagan n tuqqna
+cfr-cookiebanner-accept-button-variant-2 = Sireg
+    .accesskey = S
+cfr-cookiebanner-reject-button-variant-2 = Mačči tura
+    .accesskey = M
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Ad neḍmen ammesten-ik·im
+july-jam-set-default-primary = Ldi iseɣwan-iw s { -brand-short-name }

@@ -181,6 +181,17 @@ menu-view-full-screen =
     .label = Plenekrane
     .accesskey = P
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Eniri legilan vidon
+    .accesskey = E
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Fermi legilan vidon
+    .accesskey = F
+
 ##
 
 menu-view-show-all-tabs =

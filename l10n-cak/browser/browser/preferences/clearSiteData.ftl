@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Tijosq'ïx Tzij
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Tijosq'ïx Tzij
+    .style = min-width: 35em
+
 clear-site-data-description = Toq yejosq'ïx ri taq kaxlanwey chuqa' rutzij k'amaya'l yakon ruma { -brand-short-name } nitikïr yerutz'apij molojri'ïl pa taq ruxaq ajk'amaya'l chuqa' yeruyüj taq kipan ruxaq ajk'amaya'l toq man atokinäq ta. Toq niyuj rutzij jumejyak man xkerutz'ila' ta taq molojri'ïl.
 
 clear-site-data-close-key =

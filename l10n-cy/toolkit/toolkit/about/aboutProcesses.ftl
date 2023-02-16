@@ -56,7 +56,6 @@ about-processes-socket-process = Rhwydwaith ({ $pid })
 about-processes-remote-sandbox-broker-process = Brocer Blwch Tywod Pell ({ $pid })
 about-processes-fork-server-process = Gweinydd Fforc ({ $pid })
 about-processes-preallocated-process = Wedi'i rhagddyrannu ({ $pid })
-
 about-processes-utility-process = Gwasanaeth ({ $pid })
 
 # Unknown process names
@@ -138,9 +137,15 @@ about-processes-frame-name-one = Is-ffrâm: { $url }
 #   $shortUrl (String) The shared prefix for the subframes in the group.
 about-processes-frame-name-many = Is-fframiau ({ $number }): { $shortUrl }
 
-# Utility process actor names
+## Utility process actor names
+
 about-processes-utility-actor-unknown = Actor anhysbys
 about-processes-utility-actor-audio-decoder = Datgodiwr Sain
+
+about-processes-utility-actor-audio-decoder-generic = Datgodiwr Sain Generig
+about-processes-utility-actor-audio-decoder-applemedia = Datgodiwr Sain Apple Media
+about-processes-utility-actor-audio-decoder-wmf = Datgodiwr Sain Fframwaith Windows Media
+about-processes-utility-actor-mf-media-engine = CDM Media Engine Windows Media Foundation
 
 ## Displaying CPU (percentage and total)
 ## Variables:

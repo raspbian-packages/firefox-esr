@@ -192,10 +192,6 @@ files-and-applications-title = Schedai e aplicaçioin
 
 download-header = Descaregamenti
 
-download-save-to =
-    .label = Sarva schedai in
-    .accesskey = v
-
 download-save-where = Sarva schedai in
     .accesskey = v
 
@@ -959,8 +955,3 @@ certs-devices =
 desktop-folder-name = Desktop
 downloads-folder-name = Descaregamenti
 choose-download-folder-title = Çerni a cartella de descaregamento:
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Sarva i schedai in { $service-name }

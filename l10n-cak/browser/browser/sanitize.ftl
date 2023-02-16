@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Taq ajowab'äl richin nijosq'ïx ri natab'äl
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Taq ajowab'äl richin nijosq'ïx ri natab'äl
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

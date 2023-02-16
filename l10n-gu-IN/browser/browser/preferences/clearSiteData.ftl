@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = માહિતી સાફ કરો
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = માહિતી સાફ કરો
+    .style = min-width: 35em
+
 clear-site-data-description = { -brand-short-name } દ્વારા સંગ્રહિત બધી કૂકીઝ અને સાઇટ ડેટાને સાફ કરી રહ્યું છે તે વેબસાઇટ્સથી તમને સાઇન આઉટ કરી શકે છે અને ઑફલાઇન વેબ સામગ્રીને દૂર કરી શકે છે. કેશ ડેટા નિકાળવા તમારા લૉગિનને અસર કરશે નહીં.
 
 clear-site-data-close-key =

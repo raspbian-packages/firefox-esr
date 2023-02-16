@@ -6,6 +6,10 @@ add-engine-window =
     .title = Magdagdag ng Search Engine
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Magdagdag ng Search Engine
+    .style = min-width: 32em;
+
 add-engine-button = Magdagdag ng Custom Engine
 
 add-engine-name = Maghanap ng engine name

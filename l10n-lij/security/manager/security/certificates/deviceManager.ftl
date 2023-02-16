@@ -9,6 +9,10 @@ devmgr =
     .title = Gestô di aparati
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Gestô di aparati
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Mòdoli e aparati de seguessa
 

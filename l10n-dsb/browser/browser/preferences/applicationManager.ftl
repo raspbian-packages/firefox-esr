@@ -6,6 +6,10 @@ app-manager-window =
     .title = Drobnostki nałoženja
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Drobnostki nałoženja
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Wótpóraś
     .accesskey = W

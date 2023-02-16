@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Ngay lập tức trên màn hình
     .accesskey = o
 
+view-attachments-inline =
+    .label = Xem tập tin đính kèm nội tuyến
+    .accesskey = V
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Chủ đề này không hợp lệ hoặc hiện không
 chat-variant-label =
     .value = Biến thể:
     .accesskey = V
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

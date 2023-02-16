@@ -25,6 +25,12 @@ return-to-amo-addon-title = Ko’ág̃a roguerekóta <img data-l10n-name="icon"/
 return-to-amo-add-extension-label = Embojuaju jepysokue
 return-to-amo-add-theme-label = Embojuaju Téma
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Emomaitei { -brand-short-name }-pe
+mr1-return-to-amo-addon-title = Ereko kundahára ipya’e ha hekoñemíva nde poitépe. Ikatukuaa embojuaju <b>{ $addon-name }</b> ha ejapove { -brand-short-name } ndive.
+mr1-return-to-amo-add-extension-label = Embojuaju { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Jeku’e: jeguata { $current } { $total } rehegua
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Jeku’e: jeguata { $current } { $total } rehegua
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -224,6 +232,7 @@ mr2-onboarding-start-browsing-button-label = Eñepyrũ eikundaha
 
 onboarding-live-language-header = Eiporavo ne ñe’ẽte
 mr2022-onboarding-live-language-text = { -brand-short-name } omboayvu ne ñe’ẽ
+mr2022-language-mismatch-subtitle = Ore rekoha rupive, { -brand-short-name } oñemoñe’ẽasa hetave 90 ñe’ẽmegui. Hi’ã chéve nde apopyvusu oipuru { $systemLanguage } ha { -brand-short-name } oipuruhína { $appLanguage }.
 onboarding-live-language-button-label-downloading = Amohendahína ñe’ẽ rysýi { $negotiatedLanguage } peg̃uarã…
 onboarding-live-language-waiting-button = Egueru ñe’ẽ eipurukuaáva…
 onboarding-live-language-installing = Amohendahína ñe’ẽ rysýi { $negotiatedLanguage } peg̃uarã…
@@ -266,6 +275,8 @@ mr2022-onboarding-secondary-skip-button-label = Ehejánte kóva
 # The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
 # If this translation does not make sense in your language, feel free to use the word "discover."
 mr2022-onboarding-welcome-pin-header = Embojuruja ñanduti oikoitéva
+# Subtitle is used on onboarding page for new users page when Firefox is not pinned
+mr2022-onboarding-welcome-pin-subtitle = Eipuru { -brand-short-name } eimehaite guive peteĩ jekutúpe. Ejapo vove péicha, eiporavohína peteĩ ñanduti ijuruja ha hekosãsóva.
 # Primary button string used on welcome page for when Firefox is not pinned.
 mr2022-onboarding-pin-primary-button-label =
     { PLATFORM() ->
@@ -282,6 +293,11 @@ mr2022-onboarding-set-default-only-subtitle = Eipuru peteĩ kundahára atyguasu 
 
 # Title used on multistage onboarding page for existing users when Firefox is not pinned
 mr2022-onboarding-existing-pin-header = Aguyje ehayhúre { -brand-product-name }
+# Subtitle is used on onboarding page for existing users when Firefox is not pinned
+mr2022-onboarding-existing-pin-subtitle = Eipuru ñanduti hesãivéva eimehaite guive peteĩ jekutúpe. Ore ñembohekopyahu henyhẽ mba’e pyahúgui roikuaáva katuete rehayhutaha.
+# Subtitle will be used on the welcome screen for existing users
+# when they already have Firefox pinned but not set as default
+mr2022-onboarding-existing-set-default-only-subtitle = Eipuru kundahára omomba’éva nde rekoñemi eikundaha aja ñandutípe. Ore ñembohekopyahu henyhẽ mba’e pyahúgui roikuaáva rehayhutaha.
 mr2022-onboarding-existing-pin-checkbox-label = Embojuaju kundaha ñemigua { -brand-short-name } mba’éva
 
 ## MR2022 New User Set Default screen strings
@@ -297,6 +313,9 @@ mr2022-onboarding-set-default-subtitle = Eipuru peteĩ kundahára atyguasu viru�
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-get-started-primary-subtitle = Ore rembiapo ipyahuvéva rojapo ndéve g̃uarã, eikundaha hag̃ua apañuãi’ỹre. Oreko heta tembiapoite ro’éva ehayhutaha.
 mr2022-onboarding-get-started-primary-button-label = Emboheko sapy’aitépe
 
 ## MR2022 Import Settings screen strings
@@ -312,40 +331,42 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Emba’egueru kun
 
 mr2022-onboarding-colorway-title = Eiporavo pe sa’y nemokyre’ỹva
 mr2022-onboarding-colorway-subtitle = Ayvu okaygua omoambuekuaáva arandupy.
-mr2022-onboarding-colorway-primary-button-label = Emopyenda sa’y ojueheguáva
+mr2022-onboarding-colorway-primary-button-label-continue = Emopyenda ha eku’ejey
 mr2022-onboarding-existing-colorway-checkbox-label = Ejapo { -firefox-home-brand-name }-gui jeike isa’yetáva
 mr2022-onboarding-colorway-label-default = Ijypykue
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Ijypykue
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Sa’y ag̃agua { -brand-short-name } mba’e
 mr2022-onboarding-colorway-description-default = <b>Eipuru sa’y ag̃agua { -brand-short-name } mba’éva.</b>
 mr2022-onboarding-colorway-label-playmaker = Ñembosarái moheñoiha
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Ñembosarái moheñoiha
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Ñembosarái moheñoiha (pytã)
 mr2022-onboarding-colorway-description-playmaker = <b>Ha’e ñembosarái moheñóiha.</b> Omoheñói pa’ũ egana ha eipytyvõ hag̃ua opavave nde jereguápe ñembosarái porãve rekávo.
 mr2022-onboarding-colorway-label-expressionist = Temiandugua
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Temiandugua
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Sa’ychaukaha (sa’yju)
 mr2022-onboarding-colorway-description-expressionist = <b>Nde ha’e peteĩ expresionista.</b> Ehecha ko arapy ambueháicha ha ne moheñoimbyre omombáyta vy’aita.
 mr2022-onboarding-colorway-label-visionary = Ohecha mombyrýva
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Ohecha mombyrýva
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Techapuku (hovyũ)
 mr2022-onboarding-colorway-description-visionary = <b>Ha’e ohechapukúva.</b> Emomýi pe mba’e rekotee ha emongu’e ambuépe tenonderã porãve rekávo.
 mr2022-onboarding-colorway-label-activist = Hekoku’éva
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Hekoku’éva
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Oku’évta (hovy)
 mr2022-onboarding-colorway-description-activist = <b>Ha’e hekoku’ememe.</b> Eheja arapy iporãve ejuhuhaguégui ha kóva egueroviauka peichaha ambuekuépe.
 mr2022-onboarding-colorway-label-dreamer = Kerayvotyhára
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Kerayvotyhára
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Ikerayvotýva (pytãũ)
 mr2022-onboarding-colorway-description-dreamer = <b>Ikerayvoty heta.</b> Eroviápa po’a ouporãha ipy’aguasúvape ha nemoakãraku nde py’aguasu hag̃ua.
 mr2022-onboarding-colorway-label-innovator = Mbopyahuhára
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Mbopyahuhára
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Mbopyahuhára (narã)
 mr2022-onboarding-colorway-description-innovator = <b>Ombopyahu tapiáva.</b> Ohecha pa’ũ opaite hendápe ha heko omombarete opavave tekove ijereguápe.
 
 ## MR2022 Multistage Mobile Download screen strings
 
 mr2022-onboarding-mobile-download-title = Emoambue mohendahágui pumbyrýpe ha jevýpe
+mr2022-onboarding-mobile-download-subtitle = Erujey umi tendayke mba’e’okágui ha eku’ejey ehejahaguégui. Avei, embojuehe ne ñe’ẽñemi ha techaukaha tenda eipurusehápe { -brand-product-name }.
+mr2022-onboarding-mobile-download-cta-text = Emoha’ãnga QR ayvu ereko hag̃ua { -brand-product-name } pumbyrýpe g̃uarã térã <a data-l10n-name="download-label">erahauka mboguejyrã juajuha.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Emoha’ãnga QR ayvu ereko hag̃ua { -brand-product-name } ne pumbyrýpe.
 
 ## MR2022 Upgrade Dialog screens
@@ -362,11 +383,40 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 ## MR2022 Privacy Segmentation screen strings
 
 mr2022-onboarding-privacy-segmentation-title = Opa ára romomba’e nde rekoñemi
+mr2022-onboarding-privacy-segmentation-subtitle = Ñemoñe’ẽ ha’evéva guive jehekakuaa porã peve, romba’apo tapiaite romoheñói hag̃ua { -brand-product-name } iporã ha nemba’erãitéva.
+mr2022-onboarding-privacy-segmentation-text-cta = ¿Mba’e ehechase rome’ẽta vove tembiapoite pyahu oipurúva mba’ekuaarã oiko porãve hag̃ua ñeikundaha?
 mr2022-onboarding-privacy-segmentation-button-primary-label = Eipuru he’iháicha { -brand-product-name }
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Ehechauka marandu oĩháicha
 
 ## MR2022 Multistage Gratitude screen strings
 
 mr2022-onboarding-gratitude-title = Nereipytyvõi oiko hag̃ua ñanduti iporãvéva.
+mr2022-onboarding-gratitude-subtitle = Aguyje eipuru haguére { -brand-short-name }, oykekóva Fundación Mozilla. Nepytyvõ rupive, romba’apo ñanduti ijuruja hag̃ua, ojepurukuaáva ha iporãvéva opavavépe g̃uarã.
 mr2022-onboarding-gratitude-primary-button-label = Ehecha mba’epyahu
 mr2022-onboarding-gratitude-secondary-button-label = Eñepyrũ eikundaha
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Nderogapeguáicha
+onboarding-infrequent-import-subtitle = Ndoroikuaaséi ehasakuévo térã epytáta ko’ápe, nemandu’áke eguerukuaaha nde rechaukaha, ñe’ẽñemi ha hetave.
+onboarding-infrequent-import-primary-button = Emba’egueru { -brand-short-name }-pe
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Tapicha omba’apóva mohendaha’ípe mbyja ha yvoty pa’ũme.
+mr2022-onboarding-default-image-alt =
+    .aria-label = Tapicha oñañuãvo { -brand-product-name } ra’ãnga’i
+mr2022-onboarding-import-image-alt =
+    .aria-label = Tapicha skate ári software ra’ãnga’i ryru ndive
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Ju’i opóvo aguape ári QR ayvu ndive omboguejy hag̃ua { -brand-product-name } pumbyrýpe g̃uarã
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Peteĩ varita mágica rupi { -brand-product-name } kundahára ñemi ra’ãnga’i ojehecha akãópe
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Po morotĩ ha po hũ oñembota ojuehe
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Ehechahápe kuarahy reike ovetã guive aguara ha ka’avokuéra ndive
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Mbochiviviha ombosa’y ta’ãnga’aty tesa rovyũ, sapatu narã, pelóta pytã baloncesto-gua, ñehendu’atãha pytãũ, korasõ hovy ha koróna sa’yjúva

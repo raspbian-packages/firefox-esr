@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = Təsdiq sənədinin etibarlılıq parametrlərini redaktə edin
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Təsdiq sənədinin etibarlılıq parametrlərini redaktə edin
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Etibarlılıq parametrlərini redaktə edin:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Təsdiq sənədini sil
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Təsdiq sənədini sil
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Təsdiq sənədinin adı
@@ -173,9 +181,8 @@ delete-email-cert-impact = Əgər bir şəxsin poçt təsdiq sənədini silsəni
 cert-with-serial =
     .value = Seriya nömrəli sertifikat: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

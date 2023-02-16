@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Ang iyong nailunsad ay dati pang bersyon ng { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Ang iyong nailunsad ay dati pang bersyon ng { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Gumawa ng bagong Profile
 

@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Opzioni icona applicazione
     .style = width: 48em;
 
+dock-options-window-dialog2 =
+    .title = Opzioni icona applicazione
+
 dock-options-show-badge =
     .label = Mostra contrassegno dell’icona
     .accesskey = M

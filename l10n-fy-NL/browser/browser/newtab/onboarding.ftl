@@ -25,6 +25,12 @@ return-to-amo-addon-title = Litte wy no<img data-l10n-name="icon"/><b>{ $addon-n
 return-to-amo-add-extension-label = De útwreiding tafoegje
 return-to-amo-add-theme-label = It tema tafoegje
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Hertlik wolkom by { -brand-short-name }
+mr1-return-to-amo-addon-title = Jo hawwe in rappe, priveebrowser binnen hânberik. Jo kinne no <b>{ $addon-name }</b> tafoegje en noch mear dwaan mei { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = { $addon-name } tafoegje
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Fuortgong: stap { $current } fan { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Fuortgong: stap { $current } fan { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -284,7 +292,7 @@ mr2022-onboarding-set-default-only-subtitle = Start mei in browser stipe troch i
 ## MR2022 Existing User Pin Firefox Screen Strings
 
 # Title used on multistage onboarding page for existing users when Firefox is not pinned
-mr2022-onboarding-existing-pin-header = Tank foar jo leafde foar { -brand-product-name }
+mr2022-onboarding-existing-pin-header = Tank foar jo kar foar { -brand-product-name }
 # Subtitle is used on onboarding page for existing users when Firefox is not pinned
 mr2022-onboarding-existing-pin-subtitle = Start in sûner ynternet fan oeral wei mei ien klik. Us lêste fernijing is fol mei nije saken wêrfan wy tinke dat jo se wurdearje sille.
 # Subtitle will be used on the welcome screen for existing users
@@ -323,35 +331,35 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Ymportearje út f
 
 mr2022-onboarding-colorway-title = Kies de kleur dy’t jo ynspirearret
 mr2022-onboarding-colorway-subtitle = Unôfhinklike stimmen kinne kultuer feroarje.
-mr2022-onboarding-colorway-primary-button-label = Kleurstelling ynstelle
+mr2022-onboarding-colorway-primary-button-label-continue = Ynstelle en trochgean
 mr2022-onboarding-existing-colorway-checkbox-label = Meitsje fan { -firefox-home-brand-name } jo kleurrike startside
 mr2022-onboarding-colorway-label-default = Standert
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Standert
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Aktuele { -brand-short-name }-kleuren
 mr2022-onboarding-colorway-description-default = <b>Myn aktuele { -brand-short-name }-kleuren brûke.</b>
 mr2022-onboarding-colorway-label-playmaker = Spulmakker
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Spulmakker
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Spulmakker (read)
 mr2022-onboarding-colorway-description-playmaker = <b>Jo binne in spulmakker.</b> Jo meitsje kânsen om te winnen en helpe elkenien om jo hinne har spultsje te ferbetterjen.
 mr2022-onboarding-colorway-label-expressionist = Ekspresjonist
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Ekspresjonist
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Ekspresjonist (giel)
 mr2022-onboarding-colorway-description-expressionist = <b>Jo binne in ekspresjonist.</b> Jo sjogge de wrâld oars en jo kreaasjes reitsje de emoasjes fan oaren.
 mr2022-onboarding-colorway-label-visionary = Fisjonêr
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Fisjonêr
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Fisjonêr (grien)
 mr2022-onboarding-colorway-description-visionary = <b>Jo binne in fisjonêr.</b> Jo twivelje oan de status-quo en stimulearje oaren om harren in bettere takomst foar te stellen.
 mr2022-onboarding-colorway-label-activist = Aktivist
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aktivist
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktivist (blau)
 mr2022-onboarding-colorway-description-activist = <b>Jo binne in aktivist.</b> Jo litte de wrâld moaier efter dan jo it fûn ha en lit oaren leauwe.
 mr2022-onboarding-colorway-label-dreamer = Dreamer
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Dreamer
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Dreamer (pears)
 mr2022-onboarding-colorway-description-dreamer = <b>Jo binne in dreamer.</b> Jo leauwe dat gelok de dappere favoryt is en oaren ynspirearret om dapper te wêzen.
 mr2022-onboarding-colorway-label-innovator = Ynnovator
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Ynnovator
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Ynnovator (oranje)
 mr2022-onboarding-colorway-description-innovator = <b>Jo binne in ynnovator.</b> Jo sjogge oeral kânsen en hawwe ynfloed op it libben fan elkenien om jo hinne.
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -382,7 +390,33 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Detailynformaasj
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-title = Jo helpe ús in better web te bouwen.
+mr2022-onboarding-gratitude-title = Jo helpe ús in better web te bouwen
 mr2022-onboarding-gratitude-subtitle = Tank foar it brûken fan { -brand-short-name }, stipe troch de Mozilla Foundation. Mei jo stipe wurkje wy om it ynternet iepener, tagonkliker en better te meitsjen foar elkenien.
 mr2022-onboarding-gratitude-primary-button-label = Besjoch wat nij is
 mr2022-onboarding-gratitude-secondary-button-label = Start mei browsen
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Doch as oft jo thús binne
+onboarding-infrequent-import-subtitle = Oft jo no bliuwe of gewoan delkomme, ûnthâld dat jo jo blêdwizers, wachtwurden en mear ymportearje kinne.
+onboarding-infrequent-import-primary-button = Ymportearje yn { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Persoan dy't wurket op in laptop omjûn troch stjerren en blommen
+mr2022-onboarding-default-image-alt =
+    .aria-label = Persoan dy’t it { -brand-product-name }-logo oankrûpt
+mr2022-onboarding-import-image-alt =
+    .aria-label = Persoan dy’t op in skateboard rydt mei in doaze mei softwarepiktogrammen
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Kikkerts dy’t oer pompeblêden springe mei in QR-koade om { -brand-product-name } te downloaden foar mobyl yn it midden
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Toverstêf lit it { -brand-product-name }-priveenavigaasjelogo út in ferskine
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Lichte en donkere hannen dogge in high five
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Utsicht op in sinneûndergong troch in finster mei in foks en in keamerplant op in finsterbank
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = In hân spuitet in kleurige kollaazje fan in grien each, oranje skuon, reade basketbal, pearze koptelefoan, blau hert en giele kroan

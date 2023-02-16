@@ -6,6 +6,10 @@ blocklist-window =
     .title = தடை பட்டியல்
     .style = width: 55em
 
+blocklist-window2 =
+    .title = தடை பட்டியல்
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

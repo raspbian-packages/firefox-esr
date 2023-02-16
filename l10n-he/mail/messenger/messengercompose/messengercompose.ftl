@@ -5,7 +5,8 @@
 
 ## Send Format
 
-# Addressing widget
+
+## Addressing widget
 
 #   $type (String) - the type of the addressing row
 remove-address-row-button =
@@ -35,7 +36,16 @@ pill-action-edit =
     .label = עריכת כתובת
     .accesskey = ע
 
-# Attachment widget
+#   $type (String) - the type of the addressing row, e.g. Cc, Bcc, etc.
+pill-action-select-all-sibling-pills =
+    .label = בחירת כל הכתובות ב־{ $type }
+    .accesskey = כ
+
+pill-action-select-all-pills =
+    .label = בחירת כל הכתובות
+    .accesskey = ב
+
+## Attachment widget
 
 toolbar-button-add-attachment =
     .label = צירוף
@@ -62,13 +72,13 @@ drop-file-label-attachment =
        *[other] הוספה כקבצים מצורפים
     }
 
-# Reorder Attachment Panel
+## Reorder Attachment Panel
 
 
-# Encryption
+## Encryption
 
 
-# Addressing Area
+## Addressing Area
 
 
 many-public-recipients-prompt-cancel = ביטול השליחה
@@ -87,13 +97,18 @@ compose-tool-button-remove-text-styling =
 
 ## Filelink
 
+
 # Placeholder file
+
 
 # Template
 
+
 # Messages
 
+
 ## Link Preview
+
 
 ## Dictionary selection popup
 

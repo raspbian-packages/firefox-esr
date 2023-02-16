@@ -180,6 +180,17 @@ menu-view-full-screen =
     .label = מסך מלא
     .accesskey = ס
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = כניסה לתצוגת קריאה
+    .accesskey = ק
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = סגירת תצוגת הקריאה
+    .accesskey = ק
+
 ##
 
 menu-view-show-all-tabs =

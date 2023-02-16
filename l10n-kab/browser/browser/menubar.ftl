@@ -181,6 +181,17 @@ menu-view-full-screen =
     .label = Agdil Ačaran
     .accesskey = A
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Uɣal ɣeṛ tmeẓri n tɣuṛi
+    .accesskey = R
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Mdel timeẓri n tɣuṛi
+    .accesskey = R
+
 ##
 
 menu-view-show-all-tabs =

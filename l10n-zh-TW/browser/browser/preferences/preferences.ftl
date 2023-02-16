@@ -576,6 +576,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = 在網址列結果中顯示搜尋建議
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = 在預設搜尋引擎的搜尋結果頁面中，顯示搜尋關鍵字而不顯示網址
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -703,6 +708,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = 中斷連線…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = 選擇要同步哪些資料
+    .style = min-width: 36em;
+    .buttonlabelaccept = 儲存變更
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = 中斷連線…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = 書籤
     .accesskey = m
@@ -771,6 +783,9 @@ forms-breach-alerts =
     .label = 針對發生過資料外洩的網站顯示密碼警告
     .accesskey = b
 forms-breach-alerts-learn-more-link = 了解更多
+relay-integration =
+    .label = 在您的 { -brand-short-name } 密碼管理員啟用 { -relay-brand-name }
+relay-integration-learn-more-link = 了解更多
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = 自動填寫登入資訊與密碼
@@ -887,6 +902,8 @@ sitedata-option-block-unvisited =
     .label = 來自未造訪過網站的 Cookie
 sitedata-option-block-all-third-party =
     .label = 所有第三方 Cookie（可能造成某些網站不正常）
+sitedata-option-block-all-cross-site-cookies =
+    .label = 所有跨網站 Cookie（可能會造成網站運作不正常）
 sitedata-option-block-all =
     .label = 所有 Cookie（會造成網站不正常）
 sitedata-clear =
@@ -966,6 +983,7 @@ content-blocking-all-cookies = 所有 Cookie
 content-blocking-unvisited-cookies = 來自未造訪過網站的 Cookie
 content-blocking-all-windows-tracking-content = 所有視窗中的追蹤內容
 content-blocking-all-third-party-cookies = 所有第三方 Cookie
+content-blocking-all-cross-site-cookies = 所有跨網站 Cookie
 content-blocking-cryptominers = 加密貨幣採礦程式
 content-blocking-fingerprinters = 數位指紋追蹤程式
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -973,6 +991,9 @@ content-blocking-fingerprinters = 數位指紋追蹤程式
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = 試用我們有史以來最強大的隱私保護功能
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = 全方位 Cookie 保護功能會將 Cookie 限制於您所在的網站當中，這樣追蹤器就無法透過 Cookie 在不同網站間追蹤您。
 content-blocking-etp-standard-tcp-rollout-learn-more = 了解更多

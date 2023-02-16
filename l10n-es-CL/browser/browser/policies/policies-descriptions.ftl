@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Impedir que el usuario se salte ciertas advertenc
 policy-DisableSetAsDesktopBackground = Deshabilitar el comando de menú "Colocar como fondo de escritorio" para las imágenes.
 policy-DisableSystemAddonUpdate = Evitar que el navegador instale y actualice los complementos del sistema.
 policy-DisableTelemetry = Desactivar la telemetría.
+policy-DisableThirdPartyModuleBlocking = Evita que el usuario bloquee módulos de terceros que se inyectan en el proceso de { -brand-short-name }.
 policy-DisplayBookmarksToolbar = Mostrar la barra de herramientas de marcadores por defecto.
 policy-DisplayMenuBar = Mostrar la barra de menú por defecto.
 policy-DNSOverHTTPS = Configurar DNS sobre HTTPS.

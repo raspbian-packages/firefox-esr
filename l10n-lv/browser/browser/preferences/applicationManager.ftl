@@ -6,6 +6,10 @@ app-manager-window =
     .title = Programmatūras iestatījumi
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Programmatūras iestatījumi
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Aizvākt
     .accesskey = A

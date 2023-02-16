@@ -141,6 +141,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Tenda ñemoneĩ
 addon-category-sitepermission-title =
     .title = Tenda ñemoneĩ
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Tenda ñemoneĩ { $host } peg̃uarã
 
 ## These are global warnings
 
@@ -286,10 +290,6 @@ theme-monochromatic-heading = Sa’y ojueheguáva
 theme-monochromatic-subheading = Sa’y ojuehegua overáva pyahu { -brand-product-name }. Eipurukuaáva sapy’ami.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Eipuru Colorways
-colorway-collection-independent-voices-subheading = Ejapo { -brand-short-name } oñeñandumieve hag̃ua ndéicha.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Hekopaháta { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Emoambue sa’y ojueheguáva
 # Variables:

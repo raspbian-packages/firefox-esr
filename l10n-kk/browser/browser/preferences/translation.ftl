@@ -6,6 +6,10 @@ translation-window =
     .title = Ережеден тыс - Аударма
     .style = width: 36em
 
+translation-window2 =
+    .title = Ережеден тыс - Аударма
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

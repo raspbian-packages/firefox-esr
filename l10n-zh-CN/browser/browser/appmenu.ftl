@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = 分析器正在捕捉性能分析记录
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = 展示更多信息
 profiler-popup-description-title =
@@ -166,25 +167,25 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/popup/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
-profiler-popup-presets-web-developer-description = 推荐在调试大部分 Web 应用程序时使用，开销较少。
+profiler-popup-presets-web-developer-description = 适合调试大部分 Web 应用程序，开销较低。
 profiler-popup-presets-web-developer-label =
     .label = Web 开发者
-profiler-popup-presets-firefox-description = 推荐在分析 { -brand-shorter-name } 性能时使用。
+profiler-popup-presets-firefox-description = 适合用来分析 { -brand-shorter-name } 的性能。
 profiler-popup-presets-firefox-label =
     .label = { -brand-shorter-name }
-profiler-popup-presets-graphics-description = 推荐在排查 { -brand-shorter-name } 图形 Bug 时使用。
+profiler-popup-presets-graphics-description = 排查 { -brand-shorter-name } 图形（显卡、显示）Bug 时使用。
 profiler-popup-presets-graphics-label =
     .label = 图形
-profiler-popup-presets-media-description2 = 推荐在排查 { -brand-shorter-name } 音视频 Bug 时使用。
+profiler-popup-presets-media-description2 = 排查 { -brand-shorter-name } 音视频 Bug 时使用。
 profiler-popup-presets-media-label =
     .label = 媒体
-profiler-popup-presets-networking-description = 推荐在排查 { -brand-shorter-name } 联网 Bug 时使用。
+profiler-popup-presets-networking-description = 排查 { -brand-shorter-name } 网络 Bug 时使用。
 profiler-popup-presets-networking-label =
-    .label = 联网
-profiler-popup-presets-power-description = 推荐在排查 { -brand-shorter-name } 耗电 Bug 时使用，开销较少。
+    .label = 网络
+profiler-popup-presets-power-description = 排查 { -brand-shorter-name } 功耗 Bug 时使用，开销较低。
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
-    .label = 功率
+    .label = 功耗
 profiler-popup-presets-custom-label =
     .label = 自定义
 

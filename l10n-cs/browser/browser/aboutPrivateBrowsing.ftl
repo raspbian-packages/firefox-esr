@@ -59,8 +59,10 @@ about-private-browsing-promo-close-button =
 
 ## Strings used in a “pin promotion” message, which prompts users to pin a private window
 
+about-private-browsing-pin-promo-header = Svoboda soukromého prohlížení na jedno klepnutí
 about-private-browsing-pin-promo-link-text =
     { PLATFORM() ->
         [macos] Připnout do docku
        *[other] Připnout na lištu
     }
+about-private-browsing-pin-promo-title = Žádné uložené cookies ani historie, přímo z vaší plochy. Prohlížejte, jako když se nikdo nedívá.

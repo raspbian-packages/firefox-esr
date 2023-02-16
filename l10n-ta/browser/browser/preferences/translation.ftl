@@ -6,6 +6,10 @@ translation-window =
     .title = விதிவிலக்குகள் - மொழிபெயர்ப்பு
     .style = width: 36em
 
+translation-window2 =
+    .title = விதிவிலக்குகள் - மொழிபெயர்ப்பு
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

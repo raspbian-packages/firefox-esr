@@ -15,6 +15,10 @@ certmgr-edit-ca-cert =
     .title = Hlela Imimiselo yentembeko yesatifikethi se-CA
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Hlela Imimiselo yentembeko yesatifikethi se-CA
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Hlela imimiselo yentembeko:
 
 certmgr-edit-cert-trust-email =
@@ -23,6 +27,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Cima Isatifikethi
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Cima Isatifikethi
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Igama Lesatifikethi
@@ -111,9 +119,8 @@ delete-email-cert-title =
 delete-email-cert-confirm = Uqinisekile ufuna ukucima izatifikethi zemeyile zaba bantu?
 delete-email-cert-impact = Ukuba ucima isatifikethi semeyile, akusayi kuphinda ukwazi ukuthumela imeyile yoguqulelo oluntsonkothileyo kwabo bantu.
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

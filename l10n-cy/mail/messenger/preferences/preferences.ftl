@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Dangos yn syth
     .accesskey = s
 
+view-attachments-inline =
+    .label = Gweld atodiadau mewn llinell
+    .accesskey = G
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Nid yw'r thema yma'n ddilys nac ar gael ar hyn o bryd (
 chat-variant-label =
     .value = Amrywiad:
     .accesskey = A
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

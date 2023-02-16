@@ -178,3 +178,59 @@ spotlight-pin-primary-button =
        *[other] Przypnij do paska zadań
     }
 spotlight-pin-secondary-button = Nie teraz
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Nowy { -brand-short-name }. Bardziej prywatny. Mniej śledzenia. Bez wyjątków.
+mr2022-background-update-toast-text = Już teraz wypróbuj najnowszą przeglądarkę { -brand-short-name }, zaktualizowaną o naszą najsilniejszą ochronę przed śledzeniem w historii.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Uruchom { -brand-shorter-name(case: "acc") }
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Przypomnij później
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Wypróbuj
+    .accesskey = W
+firefoxview-cfr-secondarybutton = Nie teraz
+    .accesskey = N
+firefoxview-cfr-header = Odzyskaj ostatnio zamknięte karty za pomocą { -firefoxview-brand-name(case: "gen", capitalization: "lower") }
+firefoxview-cfr-body = Płynnie przechodź z urządzenia na urządzenie i dodaj odrobinę koloru do swojej przeglądarki.
+firefoxview-cfr-header-v2 = Szybko kontynuuj od tego samego miejsca
+firefoxview-cfr-body-v2 = Odzyskaj ostatnio zamknięte karty i płynnie przechodź z urządzenia na urządzenie za pomocą { -firefoxview-brand-name(case: "gen", capitalization: "lower") }
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Poznaj { -firefoxview-brand-name(case: "acc", capitalization: "lower") }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Potrzebujesz karty otwartej na telefonie? Otwórz ją tutaj. Chcesz wrócić do zamkniętej przed chwilą strony? { -firefoxview-brand-name } już ją ma.
+firefoxview-spotlight-promo-primarybutton = Zobacz, jak to działa
+firefoxview-spotlight-promo-secondarybutton = Pomiń
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Wybierz kolorystykę
+    .accesskey = W
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Pokoloruj swoją przeglądarkę odcieniami zainspirowanymi głosami, które zmieniły kulturę. Wyłącznie w { -brand-short-name(case: "loc") }.
+colorways-cfr-header-28days = Kolorystyki „Niezależne głosy” wygasają 16 stycznia
+colorways-cfr-header-14days = Kolorystyki „Niezależne głosy” wygasają za dwa tygodnie
+colorways-cfr-header-7days = Kolorystyki „Niezależne głosy” wygasają w tym tygodniu
+colorways-cfr-header-today = Kolorystyki „Niezależne głosy” wygasają dzisiaj

@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Сіз ескірген { -brand-product-name } нұсқасын жөнелттіңіз
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Сіз ескірген { -brand-product-name } нұсқасын жөнелттіңіз
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Жаңа профильді жасау
 

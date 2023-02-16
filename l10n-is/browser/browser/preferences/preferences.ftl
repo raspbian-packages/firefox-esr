@@ -48,7 +48,7 @@ pane-experimental-reset =
     .label = Endurheimta sjálfgefin gildi
     .accesskey = r
 help-button-label = { -brand-short-name }-aðstoð
-addons-button-label = Viðbætur & þemu
+addons-button-label = Forritsaukar & þemu
 focus-search =
     .key = f
 close-button =
@@ -212,7 +212,7 @@ preferences-web-appearance-choice-input-dark =
 preferences-web-appearance-override-warning = Litaval þitt yfirtekur útlit vefsvæðisins. <a data-l10n-name="colors-link">Sýsla með liti</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
-preferences-web-appearance-footer = Sýslaðu með { -brand-short-name } þemu í <a data-l10n-name="themes-link">Viðbætur og þemu</a>
+preferences-web-appearance-footer = Sýslaðu með { -brand-short-name } þemu í <a data-l10n-name="themes-link">Forritsaukar og þemu</a>
 preferences-colors-header = Litir
 preferences-colors-description = Taka yfir sjálfgefna liti { -brand-short-name } fyrir texta, bakgrunn vefsíðna og tengla.
 preferences-colors-manage-button =
@@ -463,8 +463,8 @@ browsing-media-control =
     .accesskey = v
 browsing-media-control-learn-more = Fræðast meira
 browsing-cfr-recommendations =
-    .label = Viðbætur sem mælt er með til að vafra
-    .accesskey = R
+    .label = Mæltu með forritsaukum um leið og þú vafrar
+    .accesskey = r
 browsing-cfr-features =
     .label = Stinga uppá virkni er þú vafrar
     .accesskey = S
@@ -498,7 +498,7 @@ home-mode-choice-default =
 home-mode-choice-default-fx =
     .label = { -firefox-home-brand-name } (sjálfgefið)
 home-mode-choice-custom =
-    .label = Sérsniðin URL…
+    .label = Sérsniðin vefslóð…
 home-mode-choice-blank =
     .label = Tóm síða
 home-homepage-custom-url =
@@ -523,7 +523,7 @@ choose-bookmark =
 home-prefs-content-header = Efni á upphafssíðu Firefox
 home-prefs-content-description = Veldu hvaða efni þú vilt sjá á upphafssíðu Firefox.
 home-prefs-content-header2 = { -firefox-home-brand-name } efni
-home-prefs-content-description2 = Veldu hvaða efni þú vilt á { -firefox-home-brand-name } skjánum þínum.
+home-prefs-content-description2 = Veldu hvaða efni þú vilt á '{ -firefox-home-brand-name }'-skjánum þínum.
 home-prefs-search-header =
     .label = Vefleit
 home-prefs-shortcuts-header =
@@ -573,11 +573,11 @@ home-prefs-sections-rows-option =
 
 ## Search Section
 
-search-bar-header = Leitarslá
+search-bar-header = Leitarstika
 search-bar-hidden =
     .label = Nota veffangastikuna fyrir leit og flakk
 search-bar-shown =
-    .label = Bæta við leitarslá í verkfæraslá
+    .label = Bæta leitarstiku í verkfærastikuna
 search-engine-default-header = Sjálfgefin leitarvél
 search-engine-default-desc-2 = Þetta er sjálfgefna leitarvélin þín í veffangastikunni og leitarstikunni. Þú getur skipt um þetta hvenær sem er.
 search-engine-default-private-desc-2 = Velja aðra sjálfgefna leitarvél eingöngu fyrir huliðsglugga
@@ -587,22 +587,27 @@ search-separate-default-engine =
 search-suggestions-header = Leitartillögur
 search-suggestions-desc = Veldu hvernig tillögur frá leitarvélum birtast.
 search-suggestions-option =
-    .label = Birta uppástungur fyrir leit
-    .accesskey = s
+    .label = Birta tillögur í leit
+    .accesskey = B
 search-show-suggestions-url-bar-option =
     .label = Sýna leitartillögur í niðurstöðum veffangastikunnar
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Sýna leitarorð í stað vefslóðar á niðurstöðusíðu sjálfgefnu leitarvélarinnar
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
 # "ahead" refers to location (appearing most proximate to), not time
 # (appearing before).
 search-show-suggestions-above-history-option =
-    .label = Sýna leitartillögur á undan vafraferli í niðurstöðum veffangastikunnar
+    .label = Sýna leitartillögur á undan vafurferli í niðurstöðum veffangastikunnar
 search-show-suggestions-private-windows =
     .label = Sýna leitartillögur í huliðsgluggum
 suggestions-addressbar-settings-generic2 = Breyta stillingum fyrir aðrar tillögur í veffangastiku
-search-suggestions-cant-show = Leitarábendingar verða ekki sýndar í staðsetningarslá þar sem þú hefur stillt { -brand-short-name } þannig að hann muni ekki neina leitarsögu.
+search-suggestions-cant-show = Leitartillögur verða ekki sýndar í staðsetningarslá þar sem þú hefur stillt { -brand-short-name } þannig að hann muni ekki neinn leitarferil.
 search-one-click-header2 = Flýtileiðir við leit
 search-one-click-desc = Veldu aðrar leitarvélar sem munu birtast fyrir neðan veffangastikuna og leitarstikuna þegar þú byrjar að slá inn leitarorð.
 search-choose-engine-column =
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Aftengjast…
     .buttonaccesskeyextra2 = A
+sync-choose-what-to-sync-dialog3 =
+    .title = Veldu hvað á að samstilla
+    .style = min-width: 36em;
+    .buttonlabelaccept = Vista breytingar
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Aftengjast…
+    .buttonaccesskeyextra2 = A
 sync-engine-bookmarks =
     .label = Bókamerki
     .accesskey = m
@@ -743,8 +755,8 @@ sync-engine-creditcards =
     .accesskey = G
 sync-engine-addons =
     .label = Viðbætur
-    .tooltiptext = Viðbætur og þema fyrir Firefox á borðtölvu
-    .accesskey = æ
+    .tooltiptext = Forritsaukar og þemu fyrir Firefox á borðtölvu
+    .accesskey = b
 sync-engine-settings =
     .label = Stillingar
     .tooltiptext = Almennar, Friðhelgi og Öryggisstillingar sem þú hefur breytt
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = Birta tilkynningar um lykilorð fyrir vefsvæði sem hafa orðið fyrir gagnaránum
     .accesskey = B
 forms-breach-alerts-learn-more-link = Frekari upplýsingar
+relay-integration =
+    .label = Virkjaðu { -relay-brand-name } í { -brand-short-name } lykilorðastjóranum þínum
+relay-integration-learn-more-link = Kanna nánar
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Sjálfvirk útfylling fyrir innskráningar og lykilorð
@@ -850,9 +865,9 @@ history-remember-option-never =
 history-remember-option-custom =
     .label = Nota sérsniðnar stillingar fyrir feril
 history-remember-description = { -brand-short-name } mun muna vafurferil, niðurhöl, innfyllingar- og leitarferil.
-history-dontremember-description = { -brand-short-name } mun nota sömu stillingar og í huliðsstillingu, og geyma ekki vafraferil.
+history-dontremember-description = { -brand-short-name } mun nota sömu stillingar og í huliðsvafri, og geyma ekki vafraferil.
 history-private-browsing-permanent =
-    .label = Nota alltaf huliðsvafur
+    .label = Nota alltaf huliðsvafursham
     .accesskey = k
 history-remember-browser-option =
     .label = Muna vafra- og niðurhalsferil
@@ -903,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Vefkökur frá óheimsóttum vefsvæðum
 sitedata-option-block-all-third-party =
     .label = Allar vefkökur frá þriðja aðila (getur valdið því að vefsvæði hrynji)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Allar milli-vefja vefkökur (geta valdið því að vefsíður hrynji)
 sitedata-option-block-all =
     .label = Allar vefkökur (mun valda því að vefsvæði hrynji)
 sitedata-clear =
@@ -920,7 +937,7 @@ sitedata-cookies-exceptions =
 addressbar-header = Veffangastika
 addressbar-suggest = Þegar veffangastikuna er notuð skal stinga upp á
 addressbar-locbar-history-option =
-    .label = Vafraferill
+    .label = Vafurferill
     .accesskey = f
 addressbar-locbar-bookmarks-option =
     .label = Bókamerki
@@ -982,6 +999,7 @@ content-blocking-all-cookies = Allar vefkökur
 content-blocking-unvisited-cookies = Vefkökur frá óheimsóttum vefsíðum
 content-blocking-all-windows-tracking-content = Rakningu efnis í öllum gluggum
 content-blocking-all-third-party-cookies = Allar vefkökur þriðja aðila
+content-blocking-all-cross-site-cookies = Allar milli-vefja vefkökur
 content-blocking-cryptominers = Rafmynt grafarar
 content-blocking-fingerprinters = Fingraför
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -989,6 +1007,9 @@ content-blocking-fingerprinters = Fingraför
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Prófaðu öflugasta persónuverndareiginleikann okkar frá upphafi
     .accesskey = P
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Allsherjar-vefkökuvörn inniheldur vefkökur á vefsvæðið sem þú ert á, þannig að rekjarar geta ekki notað þær til að fylgja þér á milli vefsvæða.
 content-blocking-etp-standard-tcp-rollout-learn-more = Frekari upplýsingar
@@ -1080,7 +1101,7 @@ permissions-addon-exceptions =
 
 ## Privacy Section - Data Collection
 
-collection-header = Gagnasöfnun { -brand-short-name } og notkun
+collection-header = Söfnun og notkun gagna í { -brand-short-name }
 collection-description = Við reynum alltaf að bjóða upp á valkosti og söfnum aðeins þeim upplýsingum sem við þurfum til að endurbæta { -brand-short-name } fyrir alla. Við spyrjum alltaf um leyfi áður en við söfnum persónulegum upplýsingum.
 collection-privacy-notice = Meðferð persónuupplýsinga
 collection-health-report-telemetry-disabled = Þú leyfir { -vendor-short-name } ekki lengur að safna tækni- og samskiptagögnum. Öllum fyrri gögnum verður eytt innan 30 daga.

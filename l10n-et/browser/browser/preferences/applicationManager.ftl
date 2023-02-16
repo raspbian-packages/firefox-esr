@@ -6,6 +6,10 @@ app-manager-window =
     .title = Rakenduse üksikasjad
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Rakenduse üksikasjad
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Eemalda
     .accesskey = E

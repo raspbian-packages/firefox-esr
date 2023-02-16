@@ -6,6 +6,10 @@ permissions-window =
     .title = ករណី​លើកលែង
     .style = width: 45em
 
+permissions-window2 =
+    .title = ករណី​លើកលែង
+    .style = min-width: 45em
+
 permissions-close-key =
     .key = w
 
@@ -62,20 +66,30 @@ permissions-invalid-uri-label = សូម​បញ្ចូល​ឈ្មោះ
 
 ## Exceptions - Tracking Protection
 
+
 ## Exceptions - Cookies
 
 permissions-exceptions-cookie-window =
     .title = ករណី​លើកលែង - ខូឃី និង​ទិន្នន័យ​គេហទំព័រ
     .style = { permissions-window.style }
+
+permissions-exceptions-cookie-window2 =
+    .title = ករណី​លើកលែង - ខូឃី និង​ទិន្នន័យ​គេហទំព័រ
+    .style = { permissions-window2.style }
 permissions-exceptions-cookie-desc = អ្នក​អាច​បញ្ជាក់​តំបន់បណ្ដាញ​ណាមួយ​ដែល​តែងតែ ឬ​មិន​ដែល​អនុញ្ញាត​ឲ្យ​ប្រើ​ខូគី​និងទិន្នន័យសាយទាំងនេះ ។  វាយ​អាសយដ្ឋាន​ជាក់លាក់​របស់​តំបន់បណ្ដាញ​ដែល​អ្នក​ចង់​គ្រប់គ្រង បន្ទាប់មក​ចុច​ទប់ស្កាត់ អនុញ្ញាត​សម្រាប់​សម័យ ឬ​អនុញ្ញាត ។
 
 ## Exceptions - HTTPS-Only Mode
+
 
 ## Exceptions - Pop-ups
 
 permissions-exceptions-popup-window =
     .title = វេបសាយដែលអនុញ្ញាត - ការលេចឡើង
     .style = { permissions-window.style }
+
+permissions-exceptions-popup-window2 =
+    .title = វេបសាយដែលអនុញ្ញាត - ការលេចឡើង
+    .style = { permissions-window2.style }
 permissions-exceptions-popup-desc = អ្នក​អាច​បញ្ជាក់​តំបន់បណ្ដាញ​ណាមួយ​ដែល​អនុញ្ញាត​ឲ្យ​បើក​បង្អួច​លេចឡើង ។ វាយ​អាសយដ្ឋាន​ជាក់លាក់​របស់​តំបន់បណ្ដាញ​ដែល​អ្នក​ចង់​អនុញ្ញាត បន្ទាប់មក ចុច​អនុញ្ញាត ។
 
 ## Exceptions - Saved Logins
@@ -83,6 +97,10 @@ permissions-exceptions-popup-desc = អ្នក​អាច​បញ្ជា�
 permissions-exceptions-saved-logins-window =
     .title = ការ​លើកលែង - ការ​ចូល​បាន​រក្សាទុក
     .style = { permissions-window.style }
+
+permissions-exceptions-saved-logins-window2 =
+    .title = ការ​លើកលែង - ការ​ចូល​បាន​រក្សាទុក
+    .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = ការចូលសម្រាប់គេហទំព័រខាងក្រោមនឹងមិនត្រូវបានរក្សាទុកទេ
 
 ## Exceptions - Add-ons
@@ -90,9 +108,11 @@ permissions-exceptions-saved-logins-desc = ការចូលសម្រាប�
 permissions-exceptions-addons-window =
     .title = តំបន់បណ្ដាញដែលបានអនុញ្ញាត - ការដំឡើងកម្មវិធីបន្ថែម
     .style = { permissions-window.style }
-permissions-exceptions-addons-desc = អ្នក​អាច​បញ្ជាក់​តំបន់បណ្ដាញ​ណាមួយ​ដែល​អនុញ្ញាត​ឲ្យ​ដំឡើង​កម្មវិធី​បន្ថែម ។ វាយ​អាសយដ្ឋាន​ជាក់លាក់​របស់​តំបន់បណ្ដាញ​ដែល​អ្នក​ចង់​អនុញ្ញាត បន្ទាប់មក ចុច​អនុញ្ញាត ។
 
-## Exceptions - Autoplay Media
+permissions-exceptions-addons-window2 =
+    .title = តំបន់បណ្ដាញដែលបានអនុញ្ញាត - ការដំឡើងកម្មវិធីបន្ថែម
+    .style = { permissions-window2.style }
+permissions-exceptions-addons-desc = អ្នក​អាច​បញ្ជាក់​តំបន់បណ្ដាញ​ណាមួយ​ដែល​អនុញ្ញាត​ឲ្យ​ដំឡើង​កម្មវិធី​បន្ថែម ។ វាយ​អាសយដ្ឋាន​ជាក់លាក់​របស់​តំបន់បណ្ដាញ​ដែល​អ្នក​ចង់​អនុញ្ញាត បន្ទាប់មក ចុច​អនុញ្ញាត ។
 
 ## Site Permissions - Autoplay
 
@@ -102,6 +122,10 @@ permissions-exceptions-addons-desc = អ្នក​អាច​បញ្ជា�
 permissions-site-notification-window =
     .title = ការកំណត់ - ការអនុញ្ញាតការជូនដំណឹង
     .style = { permissions-window.style }
+
+permissions-site-notification-window2 =
+    .title = ការកំណត់ - ការអនុញ្ញាតការជូនដំណឹង
+    .style = { permissions-window2.style }
 permissions-site-notification-desc = តំបន់បណ្ដាញខាងក្រោមនេះបានស្នើសុំផ្ញើការជូនដំណឹងដល់អ្នក ។ អ្នកអាចបញ្ជាក់តំបន់បណ្ដាញណាដែលត្រូវបានអនុញ្ញាតឲ្យផ្ញើការជូនដំណឹងដល់អ្នក ។ អ្នកក៏អាចរារាំងសំណើថ្មីដែលស្នើសុំអនុញ្ញាតការជូនដំណឹង ។
 permissions-site-notification-disable-label =
     .label = ទប់ស្កាត់សំណើថ្មីដែលស្នើសុំឲ្យអនុញ្ញាតការជូនដំណឹង
@@ -112,6 +136,10 @@ permissions-site-notification-disable-desc = វា​នឹងរារាំ�
 permissions-site-location-window =
     .title = ការកំណត់ - ការអនុញ្ញាតទីតាំង
     .style = { permissions-window.style }
+
+permissions-site-location-window2 =
+    .title = ការកំណត់ - ការអនុញ្ញាតទីតាំង
+    .style = { permissions-window2.style }
 permissions-site-location-desc = គេហទំព័រ​ខាងក្រោមនេះបានស្នើសុំដើម្បីចូលប្រើទីតាំងរបស់អ្នក។ អ្នកអាចបញ្ជាក់​គេហទំព័រ​ណាដែលត្រូវបានអនុញ្ញាតឲ្យចូលប្រើទីតាំងរបស់អ្នក។ អ្នកក៏អាចរារាំងសំណើថ្មីដែលស្នើសុំដើម្បីចូលប្រើទីតាំងរបស់អ្នក។
 permissions-site-location-disable-label =
     .label = ទប់ស្កាត់សំណើថ្មីដែលស្នើសុំឲ្យចូលប្រើទីតាំងរបស់អ្នក
@@ -125,6 +153,10 @@ permissions-site-location-disable-desc = វា​នឹងរារាំងគ
 permissions-site-camera-window =
     .title = ការកំណត់ - ការអនុញ្ញាតកាមេរ៉ា
     .style = { permissions-window.style }
+
+permissions-site-camera-window2 =
+    .title = ការកំណត់ - ការអនុញ្ញាតកាមេរ៉ា
+    .style = { permissions-window2.style }
 permissions-site-camera-desc = គេហទំព័រ​ខាងក្រោមនេះបានស្នើសុំដើម្បីចូលប្រើកាមេរ៉ារបស់អ្នក។ អ្នកអាចបញ្ជាក់​​គេហទំព័រណាដែលត្រូវបានអនុញ្ញាតឲ្យចូលប្រើកាមេរ៉ារបស់អ្នក។ អ្នកក៏អាចរារាំងសំណើថ្មីដែលស្នើសុំដើម្បីចូលប្រើកាមេរ៉ារបស់អ្នក​បាន​ផង​ដែរ។
 permissions-site-camera-disable-label =
     .label = ទប់ស្កាត់សំណើថ្មីដែលស្នើសុំឲ្យចូលប្រើកាមេរ៉ារបស់អ្នក
@@ -135,6 +167,10 @@ permissions-site-camera-disable-desc = វា​នឹងរារាំងគ�
 permissions-site-microphone-window =
     .title = ការកំណត់ - ការអនុញ្ញាតមីក្រូហ្វូន
     .style = { permissions-window.style }
+
+permissions-site-microphone-window2 =
+    .title = ការកំណត់ - ការអនុញ្ញាតមីក្រូហ្វូន
+    .style = { permissions-window2.style }
 permissions-site-microphone-desc = គេហទំព័រ​ខាងក្រោមនេះបានស្នើសុំដើម្បីចូលប្រើមីក្រូហ្វូនរបស់អ្នក។ អ្នកអាចបញ្ជាក់​គេហទំព័រ​ណាដែលត្រូវបានអនុញ្ញាតឲ្យចូលប្រើមីក្រូហ្វូនរបស់អ្នក។ អ្នកក៏អាចរារាំងសំណើថ្មីដែលស្នើសុំដើម្បីចូលប្រើមីក្រូហ្វូនរបស់អ្នក។
 permissions-site-microphone-disable-label =
     .label = ទប់ស្កាត់សំណើថ្មីដែលស្នើសុំឲ្យចូលប្រើមីក្រូហ្វូនរបស់អ្នក

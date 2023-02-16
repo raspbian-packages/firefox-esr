@@ -38,11 +38,9 @@ menu-quit =
             [windows] Q
            *[other] Q
         }
-
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Sortir de { -brand-shorter-name }
-
 menu-about =
     .label = A prepaus de { -brand-shorter-name }
     .accesskey = A
@@ -174,14 +172,25 @@ menu-view-repair-text-encoding =
 ## use on macOS.
 
 menu-view-enter-full-screen =
-    .label = Passar en mòde ecran complet
+    .label = Passar en mòde ecran complèt
     .accesskey = c
 menu-view-exit-full-screen =
-    .label = Quitar lo mòde Ecran complet
+    .label = Quitar lo mòde Ecran complèt
     .accesskey = p
 menu-view-full-screen =
-    .label = Ecran complet
+    .label = Ecran complèt
     .accesskey = p
+
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Entrar dins la vista de lectura
+    .accesskey = l
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Tampar la vista de lectura
+    .accesskey = l
 
 ##
 
@@ -225,6 +234,10 @@ menu-bookmark-current-tab =
     .label = Marcar l’onglet actual
 menu-bookmark-edit =
     .label = Modificar aqueste marcapagina
+menu-bookmark-tab =
+    .label = Marcar l’onglet actual…
+menu-edit-bookmark =
+    .label = Modificar aqueste marcapagina…
 menu-bookmarks-all-tabs =
     .label = Marcar totes los onglets…
 menu-bookmarks-toolbar =

@@ -16,9 +16,9 @@
 #  $content-title (String): the title of the web content.
 browser-main-window =
     .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (Privát böngészés)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Privát böngészés)
+    .data-title-private = { -brand-full-name } (privát böngészés)
+    .data-content-title-default = { $content-title } – { -brand-full-name }
+    .data-content-title-private = { $content-title } – { -brand-full-name } (privát böngészés)
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
@@ -35,9 +35,9 @@ browser-main-window =
 #  $content-title (String): the title of the web content.
 browser-main-window-mac =
     .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Privát böngészés)
+    .data-title-private = { -brand-full-name } – (Privát böngészés)
     .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Privát böngészés)
+    .data-content-title-private = { $content-title } – (Privát böngészés)
 # These are the default window titles everywhere except macOS. The first two
 # attributes are used when the web content opened has no title:
 #
@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } privát böngészés
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } privát böngészés
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Segítség kérése
 urlbar-search-tips-confirm = Rendben, értettem
+urlbar-search-tips-confirm-short = Megértettem!
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Tipp:
+urlbar-result-menu-button =
+    .title = Menü megnyitása
+urlbar-result-menu-remove-from-history =
+    .label = Törlés az előzményekből
+    .accesskey = T
+urlbar-result-menu-tip-get-help =
+    .label = Segítség kérése
+    .accesskey = S
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Gépeljen kevesebbet, találjon többet: { $engineName } keresés közvetlenül a címsorból.
 urlbar-search-tips-redirect-2 = Kezdjen keresni a címsorban, és lássa a { $engineName } javaslatait, valamint a böngészési előzményeit.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Egyszerűbb lett a keresés. Próbálja meg pontosítani a keresést itt, a címsávban. Ha inkább a webcímet szeretné megjeleníteni, nyissa meg a Keresést a beállításokban.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Válassza ezt a rövidítést, hogy gyorsabban megtalálja, amire szüksége van.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Műveletek ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Kiegészítők megjelenítése
-quickactions-cmd-addons = kiegészítők, bővítmények, témák
 quickactions-cmd-addons2 = kiegészítők
 # Opens the bookmarks library window
-quickactions-bookmarks = Könyvjelzők megtekintése
+quickactions-bookmarks2 = Könyvjelzők kezelése
 quickactions-cmd-bookmarks = könyvjelzők
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Előzmények törlése
 quickactions-cmd-clearhistory = előzmények törlése
 # Opens about:downloads page
-quickactions-downloads = Letöltések megnyitása
+quickactions-downloads2 = Letöltések megtekintése
 quickactions-cmd-downloads = letöltések
 # Opens about:addons page in the extensions section
 quickactions-extensions = Kiegészítők kezelése
 quickactions-cmd-extensions = kiegészítők
 # Opens the devtools web inspector
-quickactions-inspector = Vizsgáló megnyitása
+quickactions-inspector2 = Fejlesztői eszközök megnyitása
 quickactions-cmd-inspector = vizsgáló, fejlesztői eszközök
 # Opens about:logins
-quickactions-logins = Bejelentkezések megtekintése
+quickactions-logins2 = Jelszavak kezelése
 quickactions-cmd-logins = bejelentkezések, jelszavak
 # Opens about:addons page in the plugins section
 quickactions-plugins = Bővítmények kezelése
 quickactions-cmd-plugins = bővítmények
 # Opens the print dialog
-quickactions-print = Nyomtatás
+quickactions-print2 = Oldal nyomtatása
 quickactions-cmd-print = nyomtatás
 # Opens a new private browsing window
-quickactions-private = Privát böngészési ablak megnyitása
+quickactions-private2 = Privát ablak megnyitása
 quickactions-cmd-private = privát böngészés
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = A { -brand-short-name } felfrissítése
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = frissítés
 quickactions-restart = A { -brand-short-name } újraindítása
 quickactions-cmd-restart = újraindítás
 # Opens the screenshot tool
-quickactions-screenshot2 = Képernyőkép készítése
+quickactions-screenshot3 = Képernyőkép készítése
 quickactions-cmd-screenshot = képernyőkép
 # Opens about:preferences
-quickactions-settings = Beállítások megnyitása
+quickactions-settings2 = Beállítások kezelése
 quickactions-cmd-settings = beállítások, lehetőségek, kapcsolók
 # Opens about:addons page in the themes section
 quickactions-themes = Témák kezelése
@@ -323,8 +332,11 @@ quickactions-cmd-themes = témák
 quickactions-update = A { -brand-short-name } frissítése
 quickactions-cmd-update = frissítés
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Forrás megtekintése
+quickactions-viewsource2 = Oldal forrásának megtekintése
 quickactions-cmd-viewsource = forrás megtekintése, forrás, forráskód
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = További információ a gyors műveletekről
 
 ## Bookmark Panel
 
@@ -485,6 +497,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
     .tooltiptext = Hangeszközök
+popup-select-window-or-screen =
+    .label = Ablak vagy képernyő:
+    .accesskey = A
 popup-all-windows-shared = A képernyő minden látható ablaka meg lesz osztva.
 popup-screen-sharing-block =
     .label = Tiltás
@@ -506,6 +521,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Az F12 gyorsbillentyű használatához először nyissa meg fejlesztői eszközöket a Webfejlesztő menüben.
+enable-devtools-popup-description2 = Az F12 gyorsbillentyű használatához először nyissa meg fejlesztői eszközöket a Böngészőeszközök menüből.
 
 ## URL Bar
 
@@ -637,6 +653,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Gyors műveletek
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Belépés olvasó nézetbe
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Olvasó nézet bezárása
 
 ## Full Screen and Pointer Lock UI
 
@@ -914,3 +939,29 @@ private-browsing-indicator-label = Privát böngészés
 unified-extensions-button =
     .label = Kiegészítők
     .tooltiptext = Kiegészítők
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Kiegészítők
+    .tooltiptext =
+        Kiegészítők
+        Jogosultságok szükségesek
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = A { -brand-short-name } megakadályozta, hogy az oldal automatikusan újratöltődjön.
+refresh-blocked-redirect-label = A { -brand-short-name } megakadályozta, hogy az oldal automatikusan átirányítson egy másik oldalra.
+refresh-blocked-allow =
+    .label = Engedélyezés
+    .accesskey = E
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = A { -relay-brand-name } elfedi valódi e-mail-címét, hogy megvédje Önt az adatvédelmi incidensektől és a levélszeméttől.
+firefox-relay-offer-how-we-integrate = Ha folytatja, új { -relay-brand-short-name } e-mail-maszkokat hozhat létre közvetlenül a { -brand-shorter-name } jelszókezelőből.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Minden e-mailt továbbítunk a(z) <strong>{ $sitename }</strong> címről a(z) <strong>{ $useremail }</strong> címre.

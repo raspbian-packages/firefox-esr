@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = הגדרות חיבור
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = שרת מתווך HTTP‏
     .accesskey = H
 connection-proxy-http-port = שער
     .accesskey = ש
-
 connection-proxy-https-sharing =
     .label = שימוש בשרת מתווך זה גם עבור HTTPS
     .accesskey = ש

@@ -97,7 +97,7 @@ appmenu-fxa-header2 = { -fxaccount-brand-name(capitalization: "sentence") }
 # 3 hours ago, etc.)
 appmenu-fxa-last-sync = Síðast samstillt { $time }
     .label = Síðast samstillt { $time }
-appmenu-fxa-sync-and-save-data2 = Samstilltu og vistaðu gögn
+appmenu-fxa-sync-and-save-data2 = Samstilla og vista gögn
 appmenu-fxa-signed-in-label = Innskráning
 appmenu-fxa-setup-sync =
     .label = Kveikja á samstillingu…
@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = Afkastavaktin er að lesa afkastasnið
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Birta meiri upplýsingar
 profiler-popup-description-title =
@@ -246,7 +247,7 @@ appmenu-help-not-deceptive =
 ## More Tools
 
 appmenu-customizetoolbar =
-    .label = Sérsníða verkfæraslá…
+    .label = Sérsníða verkfærastiku…
 appmenu-developer-tools-subheader = Vafraverkfæri
 appmenu-developer-tools-extensions =
     .label = Viðbætur fyrir forritara

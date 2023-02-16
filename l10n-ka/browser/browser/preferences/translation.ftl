@@ -6,6 +6,10 @@ translation-window =
     .title = თარგმნა – გამონაკლისები
     .style = width: 36em
 
+translation-window2 =
+    .title = თარგმნა – გამონაკლისები
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

@@ -55,6 +55,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } 사용자
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = 쿠키 배너가 사라졌습니다!
+cfr-cookie-banner-handling-body = 가능한 경우 { -brand-short-name }가 모든 쿠키 배너 요청을 자동으로 거부하도록 허용합니다. 그렇지 않으면 더 많은 배너를 닫기 위해 모든 쿠키를 수락합니다.
+cfr-cookie-banner-accept-button = 요청 닫기
+    .accesskey = D
+cfr-cookie-banner-reject-button = 나중에
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-1 = 쿠키 팝업 덜 보기
+cfr-cookie-banner-handling-body-variant-1 = { -brand-short-name }가 쿠키 팝업에 자동으로 응답하도록 하여 방해받지 않고 탐색할 수 있습니다. { -brand-short-name }는 가능한 경우 모든 요청을 거부하고 그렇지 않은 경우 모두 수락합니다.
+cfr-cookie-banner-accept-button-variant-1 = 팝업 닫기
+    .accesskey = D
+cfr-cookie-banner-reject-button-variant-1 = 아니요
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = 쿠키 배너 감소
+cfr-cookie-banner-handling-body-variant-2 = 가능한 경우 { -brand-short-name }가 사이트의 쿠키 동의 요청을 거부하거나 가능하지 않은 경우 쿠키 액세스를 수락하도록 허용하시겠습니까?
+cfr-cookie-banner-accept-button-variant-2 = 허용
+    .accesskey = A
+cfr-cookie-banner-reject-button-variant-2 = 나중에
+    .accesskey = N
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = 어디서나 북마크 동기화
@@ -153,10 +176,6 @@ spotlight-total-cookie-protection-body = 전체 쿠키 보호는 추적기가 �
 spotlight-total-cookie-protection-expanded = { -brand-short-name }는 쿠키 주위에 울타리를 치고 사용자가 있는 사이트로 제한하므로 추적기가 사용자를 팔로우하는 데 쿠키를 사용할 수 없습니다. 먼저 이용해 보시면 이 기능을 최적화하는데 도움이 되므로 저희가 모든 사용자를 위한 더 나은 웹을 계속 구축할 수 있습니다.
 spotlight-total-cookie-protection-primary-button = 전체 쿠키 보호 켜기
 spotlight-total-cookie-protection-secondary-button = 나중에
-cfr-total-cookie-protection-header = 덕분에 { -brand-short-name }는 그 어느 때보다 사적이고 안전합니다
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = 전체 쿠키 보호는 가장 강력한 개인 정보 보호 기능이며 이제 { -brand-short-name } 사용자를 위한 기본 설정입니다. 여러분과 같은 조기 참가자가 없었다면 불가능했을 것입니다. 더 나은 사적인 인터넷을 만들 수 있도록 도와주셔서 감사합니다.
 
 ## Emotive Continuous Onboarding
 
@@ -170,3 +189,85 @@ spotlight-pin-primary-button =
        *[other] 작업 표시줄에 고정
     }
 spotlight-pin-secondary-button = 나중에
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = 새로운 { -brand-short-name }. 사생활을 더 보호합니다. 추적기가 더 적습니다. 타협이 없습니다.
+mr2022-background-update-toast-text = 가장 강력한 추적 방지 보호 기능으로 업그레이드된 최신 { -brand-short-name }를 지금 사용해 보세요.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = 지금 { -brand-shorter-name } 열기
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = 나중에 알림
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = 사용해 보기
+    .accesskey = T
+firefoxview-cfr-secondarybutton = 나중에
+    .accesskey = N
+firefoxview-cfr-header-v2 = 중단한 부분부터 빠르게 다시 시작하세요
+firefoxview-cfr-body-v2 = { -firefoxview-brand-name }를 사용하여 최근에 닫은 탭을 다시 가져오고, 기기 간에 원활하게 전환하세요.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = { -firefoxview-brand-name }를 만나보세요
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = 휴대폰에서 열린 탭을 보고 싶으세요? 가져오세요. 방금 방문했던 사이트가 필요하세요? { -firefoxview-brand-name }로 다시 여세요.
+firefoxview-spotlight-promo-primarybutton = 작동 방식 보기
+firefoxview-spotlight-promo-secondarybutton = 건너뛰기
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = 컬러웨이 선택
+    .accesskey = C
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = 문화를 바꾼 목소리에서 영감을 받은 { -brand-short-name } 독점 색상으로 브라우저를 색칠하세요.
+colorways-cfr-header-28days = 독립적인 목소리 컬러웨이 1월 16일 만료됨
+colorways-cfr-header-14days = 독립적인 목소리 컬러웨이 2주 후 만료됨
+colorways-cfr-header-7days = 독립적인 목소리 컬러웨이 이번 주 만료됨
+colorways-cfr-header-today = 독립적인 목소리 컬러웨이 오늘 만료됨
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = 쿠키 배너가 사라졌습니다!
+cfr-cookiebanner-body = 가능한 경우 { -brand-short-name }가 모든 쿠키 배너 요청을 자동으로 거부하도록 허용합니다.
+cfr-cookiebanner-accept-button = 배너 닫기
+    .accesskey = D
+cfr-cookiebanner-reject-button = 나중에
+    .accesskey = N
+cfr-cookiebanner-header-variant-1 = 쿠키 팝업 덜 보기
+cfr-cookiebanner-body-variant-1 = { -brand-short-name }가 쿠키 팝업에 자동으로 응답하도록 하여 방해받지 않고 탐색할 수 있습니다. { -brand-short-name }는 가능한 경우 모든 요청을 거부합니다.
+cfr-cookiebanner-accept-button-variant-1 = 팝업 닫기
+    .accesskey = D
+cfr-cookiebanner-reject-button-variant-1 = 아니요
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = 쿠키 배너 줄이기
+cfr-cookiebanner-body-variant-2 = 가능한 경우 { -brand-short-name }가 웹 사이트의 쿠키 동의 요청을 거부하도록 허용하여 표시되는 쿠키 배너의 양을 줄입니다.
+cfr-cookiebanner-accept-button-variant-2 = 허용
+    .accesskey = A
+cfr-cookiebanner-reject-button-variant-2 = 나중에
+    .accesskey = N
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = 저희가 사용자를 보호합니다
+july-jam-body = 매달 { -brand-short-name }는 사용자당 평균 3,000개 이상의 추적기를 차단하여 좋은 인터넷에 안전하고 빠르게 액세스할 수 있도록 합니다.
+july-jam-set-default-primary = { -brand-short-name }로 내 링크 열기

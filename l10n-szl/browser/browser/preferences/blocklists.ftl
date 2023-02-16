@@ -6,6 +6,10 @@ blocklist-window =
     .title = Wykoz zaszperowanych
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Wykoz zaszperowanych
+    .style = min-width: 55em
+
 blocklist-description = Ôbier wykoz, kerego { -brand-short-name } użyje do szperowanio elymyntōw, co cie śledzōm w necu. Wykazy wystowio <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

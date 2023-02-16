@@ -247,6 +247,10 @@ main-context-menu-image-reload =
     .label = బొమ్మని మళ్ళీ లోడుచేయి
     .accesskey = R
 
+main-context-menu-image-view-new-tab =
+    .label = బొమ్మను కొత్త ట్యాబులో తెరువు
+    .accesskey = I
+
 main-context-menu-image-copy =
     .label = బొమ్మని కాపీచేయి
     .accesskey = y

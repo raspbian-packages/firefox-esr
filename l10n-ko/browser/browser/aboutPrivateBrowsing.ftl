@@ -18,7 +18,7 @@ about-private-browsing-handoff-no-engine =
 #  $engine (String): the name of the user's default search engine
 about-private-browsing-handoff-text = { $engine } 검색 또는 주소 입력
 about-private-browsing-handoff-text-no-engine = 검색어 또는 주소 입력
-about-private-browsing-not-private = 현재 사생활 보호 창에 있지 않습니다.
+about-private-browsing-not-private = 사용자가 현재 사생활 보호 창에 있지 않습니다.
 about-private-browsing-info-description-private-window = 사생활 보호 창: { -brand-short-name }는 모든 사생활 보호 창을 닫을 때 검색 및 방문 기록을 지웁니다. 이것이 사용자를 익명으로 만들지는 않습니다.
 about-private-browsing-info-description-simplified = { -brand-short-name }는 모든 사생활 보호 창을 닫을 때 검색 및 방문 기록을 지우지만 사용자를 익명으로 만들지는 않습니다.
 about-private-browsing-learn-more-link = 더 알아보기

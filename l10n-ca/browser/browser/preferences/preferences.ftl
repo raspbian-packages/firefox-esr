@@ -184,6 +184,7 @@ preferences-web-appearance-header = Aparença dels llocs web
 preferences-web-appearance-description = Alguns llocs web adapten l'esquema de colors d'acord amb les vostres preferències. Trieu quin esquema de colors voleu per aquests llocs.
 preferences-web-appearance-choice-browser = Tema del { -brand-short-name }
 preferences-web-appearance-choice-system = Tema del sistema
+preferences-web-appearance-choice-auto = Automàtic
 preferences-web-appearance-choice-light = Clar
 preferences-web-appearance-choice-dark = Fosc
 preferences-web-appearance-choice-tooltip-browser =
@@ -198,6 +199,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -263,9 +266,6 @@ check-user-spelling =
 
 files-and-applications-title = Fitxers i aplicacions
 download-header = Baixades
-download-save-to =
-    .label = Desa els fitxers a
-    .accesskey = s
 download-save-where = Desa els fitxers a
     .accesskey = s
 download-choose-folder =
@@ -493,6 +493,8 @@ home-restore-defaults =
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
     .label = Inici del Firefox (per defecte)
+home-mode-choice-default-fx =
+    .label = { -firefox-home-brand-name } (Per defecte)
 home-mode-choice-custom =
     .label = URL personalitzats…
 home-mode-choice-blank =
@@ -518,6 +520,8 @@ choose-bookmark =
 
 home-prefs-content-header = Contingut d'inici del Firefox
 home-prefs-content-description = Trieu el contingut que voleu a la pantalla d'inici del Firefox.
+home-prefs-content-header2 = Contingut de l'{ -firefox-home-brand-name }
+home-prefs-content-description2 = Trieu el contingut que voleu en la pantalla d'{ -firefox-home-brand-name }.
 home-prefs-search-header =
     .label = Cerca web
 home-prefs-shortcuts-header =
@@ -538,6 +542,8 @@ home-prefs-recommended-by-description-new = Contingut excepcional seleccionat pe
 home-prefs-recommended-by-learn-more = Com funciona
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Articles patrocinats
+home-prefs-recommended-by-option-recent-saves =
+    .label = Mostra els elements desats recentment
 home-prefs-highlights-option-visited-pages =
     .label = Pàgines visitades
 home-prefs-highlights-options-bookmarks =
@@ -711,6 +717,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = c
     .buttonlabelextra2 = Desconnecta…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Trieu què voleu sincronitzar
+    .style = min-width: 36em;
+    .buttonlabelaccept = Desa els canvis
+    .buttonaccesskeyaccept = c
+    .buttonlabelextra2 = Desconnecta…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Adreces d'interès
     .accesskey = d
@@ -779,6 +792,7 @@ forms-breach-alerts =
     .label = Mostra alertes sobre contrasenyes per als llocs web relacionats amb filtracions de dades
     .accesskey = b
 forms-breach-alerts-learn-more-link = Més informació
+relay-integration-learn-more-link = Més informació
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Emplena automàticament inicis de sessió i contrasenyes
@@ -930,7 +944,11 @@ addressbar-locbar-topsites-option =
 addressbar-locbar-engines-option =
     .label = Motors de cerca
     .accesskey = M
+addressbar-locbar-quickactions-option =
+    .label = Accions ràpides
+    .accesskey = r
 addressbar-suggestions-settings = Canvia les preferències dels suggeriments de motors de cerca
+addressbar-quickactions-learn-more = Més informació
 
 ## Privacy Section - Content Blocking
 
@@ -961,6 +979,7 @@ content-blocking-etp-custom-desc = Trieu quins elements de seguiment i scripts c
 content-blocking-etp-blocking-desc = El { -brand-short-name } bloca el següent:
 content-blocking-private-windows = Contingut que fa seguiment en finestres privades
 content-blocking-cross-site-cookies-in-all-windows = Galetes entre llocs en totes les finestres (inclou galetes de seguiment)
+content-blocking-cross-site-cookies-in-all-windows2 = Galetes entre llocs en totes les finestres
 content-blocking-cross-site-tracking-cookies = Galetes de seguiment entre llocs
 content-blocking-all-cross-site-cookies-private-windows = Galetes entre llocs en finestres privades
 content-blocking-cross-site-tracking-cookies-plus-isolate = Galetes de seguiment entre llocs, i aïlla les galetes restants
@@ -976,8 +995,11 @@ content-blocking-fingerprinters = Generadors d'empremtes digitals
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Sigueu dels primers de provar les funcions de privadesa més potents que existeixen
     .accesskey = S
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
-content-blocking-etp-standard-tcp-rollout-description = La protecció total de galetes aïlla les galetes del lloc on us trobeu, de manera que els elements de seguiment no les poden utilitzar per a seguir-vos d'un lloc a l'altre,
+content-blocking-etp-standard-tcp-rollout-description = La protecció total de galetes aïlla les galetes del lloc on us trobeu, de manera que els elements de seguiment no les poden utilitzar per a seguir-vos d'un lloc a l'altre.
 content-blocking-etp-standard-tcp-rollout-learn-more = Més informació
 content-blocking-warning-title = Atenció!
 content-blocking-and-isolating-etp-warning-description-2 = Aquest paràmetre pot fer que alguns llocs web no mostrin part del contingut o que no funcionin correctament. Si sembla que un lloc no funciona bé, podeu provar de desactivar la protecció contra el seguiment perquè aquest lloc carregui tot el contingut.
@@ -1086,6 +1108,8 @@ addon-recommendations-link = Més informació
 collection-health-report-disabled = L'informe de dades està desactivat en la configuració d'aquesta versió
 collection-backlogged-crash-reports-with-link = Permet que el { -brand-short-name } enviï els informes de fallada pendents automàticament <a data-l10n-name="crash-reports-link">Més informació</a>
     .accesskey = f
+privacy-segmentation-radio-on =
+    .label = Mostra informació detallada
 
 ## Privacy Section - Security
 ##
@@ -1140,7 +1164,3 @@ httpsonly-radio-disabled =
 desktop-folder-name = Escriptori
 downloads-folder-name = Baixades
 choose-download-folder-title = Tria la carpeta de baixades:
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Desa els fitxers al { $service-name }

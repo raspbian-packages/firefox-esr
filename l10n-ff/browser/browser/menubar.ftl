@@ -155,6 +155,17 @@ menu-view-full-screen =
     .label = Njaajeendi Yaynirde
     .accesskey = N
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Naat Jiytol Taro
+    .accesskey = J
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Yaltu Jiytol Taro
+    .accesskey = J
+
 ##
 
 menu-view-show-all-tabs =

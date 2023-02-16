@@ -26,6 +26,10 @@ reset-password-button-label =
 download-cert-window =
     .title = Преземање на сертификат
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Преземање на сертификат
+    .style = min-width: 46em
 download-cert-message = Од вас е побарано да му верувате на нов авторитет за сертификати (CA).
 download-cert-trust-ssl =
     .label = Верувај му на овој CA во идентифукувањето на мрежни места.

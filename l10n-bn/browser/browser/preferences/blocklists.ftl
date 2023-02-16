@@ -6,6 +6,10 @@ blocklist-window =
     .title = ব্লক তালিকা
     .style = width: 55em
 
+blocklist-window2 =
+    .title = ব্লক তালিকা
+    .style = min-width: 55em
+
 blocklist-description = সেই তালিকা নির্বাচন করুন যা { -brand-short-name } অনলাইন ট্র্যাকার ব্লক করতে ব্যবহার করবে। তালিকা সরবরাহ করেছে <a data-l10n-name="disconnect-link" title="Disconnect">বিচ্ছন্ন</a>।
 blocklist-close-key =
     .key = w

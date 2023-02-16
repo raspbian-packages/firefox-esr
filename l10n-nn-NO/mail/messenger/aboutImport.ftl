@@ -10,6 +10,8 @@ export-page-title = Eksporter
 import-from-app = Importer frå applikasjon
 import-file = Importer frå ei fil
 import-file-title = Vel ei fil for[ importere innhaldet.
+import-address-book-title = Importer adressebokfil
+import-calendar-title = Importer kalenderfil
 export-profile = Eksporter
 
 ## Buttons
@@ -26,12 +28,27 @@ app-name-seamonkey = SeaMonkey
 app-name-outlook = Outlook
 app-name-becky = Becky! Internet Mail
 app-name-apple-mail = Apple Mail
+source-thunderbird = Importer frå ein annan { app-name-thunderbird }-installasjon
+source-thunderbird-description = Importer innstillingar, filter, meldingar og andre data från ein { app-name-thunderbird }-profil.
+source-seamonkey = Importer frå ein { app-name-seamonkey }-installasjon
+source-seamonkey-description = Importer innstillingar, filter, meldingar og andre data frå ein { app-name-seamonkey }-profil.
+source-outlook = Importer frå { app-name-outlook }
+source-becky = Importer frå { app-name-becky }
 
 ## Import from file selections
 
+file-calendar = Importer kalendrar
+file-addressbook = Importer adressebøker
 
 ## Import from app profile steps
 
+from-app-outlook = Importer frå { app-name-outlook }
+from-app-becky = Importer frå { app-name-becky }
+from-app-apple-mail = Importer frå { app-name-apple-mail }
+profiles-pane-title-outlook = Importer data frå { app-name-outlook }.
+profiles-pane-title-becky = Importer data frå { app-name-becky }.
+profiles-pane-title-apple-mail = Importer meldingar frå { app-name-apple-mail }.
+profile-source = Importer frå profil
 profile-file-picker-directory = Vel ei profilmappe
 items-pane-profile-name = Profilnamn:
 items-pane-checkbox-accounts = Konto og innstillingar

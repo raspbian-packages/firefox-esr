@@ -6,6 +6,10 @@ translation-window =
     .title = Exceptiones - Traduction
     .style = width: 36em
 
+translation-window2 =
+    .title = Exceptiones - Traduction
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

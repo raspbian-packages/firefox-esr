@@ -37,7 +37,7 @@ detail-last-updated =
     .label = Última atualização
 addon-detail-description-expand = Mostrar mais
 addon-detail-description-collapse = Mostrar menos
-detail-contributions-description = O autor solicita o seu apoio no desenvolvimento através de uma pequena contribuição.
+detail-contributions-description = O autor solicita seu apoio no desenvolvimento através de uma pequena contribuição.
 detail-contributions-button = Contribua
     .title = Contribua com o desenvolvimento desta extensão
     .accesskey = C
@@ -142,6 +142,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Permissões de sites
 addon-category-sitepermission-title =
     .title = Permissões de sites
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Permissões de sites de { $host }
 
 ## These are global warnings
 
@@ -294,10 +298,6 @@ theme-monochromatic-heading = Esquemas de cores
 theme-monochromatic-subheading = Novos esquemas vibrantes de cores do { -brand-product-name }. Disponíveis por tempo limitado.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Experimentar esquemas de cores
-colorway-collection-independent-voices-subheading = Faça o { -brand-short-name } ficar um pouco mais como você.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Expira em { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Mudar esquema de cores
 # Variables:

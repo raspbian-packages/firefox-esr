@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Runuk'ulem okem pa k'amaya'l
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = HTTP Proxi
     .accesskey = x
 connection-proxy-http-port = B'ey
     .accesskey = B
-
 connection-proxy-https-sharing =
     .label = Tawokisaj re proxi re' richin HTTPS
     .accesskey = s

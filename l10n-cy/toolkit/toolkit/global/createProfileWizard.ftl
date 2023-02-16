@@ -6,12 +6,22 @@ create-profile-window =
     .title = Creu Proffil Dewin
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Creu Proffil Dewin
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Cyflwyniad
        *[other] Croeso i { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Cyflwyniad
+       *[other] Croeso i { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = Mae { -brand-short-name } yn storio gwybodaeth am eich gosodiadau a'ch dewisiadau yn eich proffil personol.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Diweddglo
        *[other] Cwblhau { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Diweddglo
+       *[other] Cwblhau { create-profile-window2.title }
     }
 
 profile-creation-intro = Os ydych yn creu nifer o broffiliau mae modd eu gwahaniaethu wrth enw'r proffil. Mae modd defnyddio'r enw sy'n cael ei ddarparu yma neu enw eich hun.

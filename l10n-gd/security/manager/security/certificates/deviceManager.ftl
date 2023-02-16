@@ -9,6 +9,10 @@ devmgr =
     .title = Manaidsear nan uidheaman
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Manaidsear nan uidheaman
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Mòidealan is uidheaman tèarainteachd
 

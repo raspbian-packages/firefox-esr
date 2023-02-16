@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Settins for Dichtin Historie
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Settins for Dichtin Historie
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

@@ -18,3 +18,28 @@ callout-firefox-view-recently-closed-subtitle = Al jo sletten ljepblêden sille 
 callout-firefox-view-colorways-title = Foegje wat kleur ta
 # "Shade" refer to different color options in each colorway.
 callout-firefox-view-colorways-subtitle = Kies it kleur dy’t jo oansprekt mei kleurstellingen. Allinnich yn { -brand-product-name }.
+callout-firefox-view-colorways-reminder-title = Untdek ús nijste kleurstellingen
+# “Shades” refers to the different color options in each colorways
+callout-firefox-view-colorways-reminder-subtitle = Kleur jo browser mei dizze ikoanyske tinten, ynspirearre troch ûnôfhinklike stimmen. Allinnich yn { -brand-product-name }.
+
+## Continuous Onboarding - Firefox View: Tab pick up
+
+# “Boost your browsing” refers to the added benefit the user receives from having
+# access to the same browsing experience when moving from one browser to another.
+# Alternative: ”Improve your browsing experience with tab pickup”
+continuous-onboarding-firefox-view-tab-pickup-title = Jou jo navigaasje in boost mei it opheljen fan ljepblêden
+continuous-onboarding-firefox-view-tab-pickup-subtitle = Tagong ta jo iepene ljepblêden fan elk apparaat ôf. En syngronisearje jo blêdwizers, wachtwurden en mear.
+continuous-onboarding-firefox-view-tab-pickup-primary-button-label = Begjinne
+
+## PDF.js Feature Tour Strings
+
+callout-pdfjs-edit-title = Bewurkje PDF’s mei ús nije teksthelpmiddel
+callout-pdfjs-edit-body-a = Folje formulieren yn, foegje opmerkingen ta of meitsje oantekeningen streekrjocht yn { -brand-short-name }.
+callout-pdfjs-edit-body-b = Sykje net mear nei fergese online tekstbewurkers. Folje formulieren yn, foegje opmerkingen ta of meitsje streekrjocht oantekeningen yn { -brand-short-name }.
+callout-pdfjs-edit-button = Folgjende
+callout-pdfjs-draw-title = Undertekenje dokuminten mei ús nije tekenhelpmiddel
+# “Mark up” refers to the process of “annotating” or adding free hand text or diagramming to the document.
+callout-pdfjs-draw-body-a = Annotearje PDF’s en bewarje jo wizigingen.
+# “Mark up” refers to the process of “annotating” or adding free hand text or diagramming to the document.
+callout-pdfjs-draw-body-b = Nea mear printe en scanne. Annotearje PDF’s en bewarje jo wizigingen.
+callout-pdfjs-draw-button = Begrepen!

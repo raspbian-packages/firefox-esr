@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = { -brand-short-name } 語言設定
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = { -brand-short-name } 語言設定
+
 messenger-languages-description = { -brand-short-name } 將會以第一種語言作為您的預設語言，並根據所選的順序在需要時顯示其他語言。
 
 messenger-languages-search = 搜尋更多語言…

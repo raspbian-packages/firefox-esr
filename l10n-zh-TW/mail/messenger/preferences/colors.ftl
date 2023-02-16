@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 38em !important
         }
 
+colors-dialog-window2 =
+    .title = 色彩
+
 colors-dialog-legend = 文字與背景
 
 text-color-label =

@@ -103,6 +103,9 @@ places-delete-bookmark =
            *[other] სანიშნების წაშლა
         }
     .accesskey = წ
+places-untag-bookmark =
+    .label = ჭდის მოცილება
+    .accesskey = ც
 places-manage-bookmarks =
     .label = სანიშნების მართვა
     .accesskey = მ
@@ -110,10 +113,18 @@ places-forget-about-this-site-confirmation-title = ამ საიტის დ
 # Variables:
 # $hostOrBaseDomain (string) - The base domain (or host in case there is no base domain) for which data is being removed
 places-forget-about-this-site-confirmation-message = შედეგად ამოიშლება ყველა მონაცემი, რომელთაც იყენებდა { $hostOrBaseDomain }, მათ შორის ისტორია, პაროლები, ფუნთუშები, მომარაგებული ფაილები და შიგთავსის პარამეტრები. ნამდვილად გსურთ, განაგრძოთ?
+# Variables:
+# $hostOrBaseDomain (string) - The base domain (or host in case there is no base domain) for which data is being removed
+places-forget-about-this-site-confirmation-msg = შედეგად ამოიშლება ყველა მონაცემი, რომელთაც იყენებდა { $hostOrBaseDomain }, მათ შორის ისტორია, პაროლები, ფუნთუშები, მომარაგებული ფაილები და შიგთავსის პარამეტრები. მასთან დაკავშირებული სანიშნები და პაროლები შენარჩუნდება. ნამდვილად გსურთ, განაგრძოთ?
 places-forget-about-this-site-forget = დავიწყება
 places-library =
     .title = ბიბლიოთეკა
     .style = width:700px; height:500px;
+places-library2 =
+    .title = ბიბლიოთეკა
+    .style = min-width:700px; min-height:500px;
+places-library3 =
+    .title = ბიბლიოთეკა
 places-organize-button =
     .label = გამართვა
     .tooltiptext = დაალაგეთ თქვენი სანიშნები

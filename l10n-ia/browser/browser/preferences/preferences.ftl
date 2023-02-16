@@ -81,7 +81,7 @@ extension-controlling-password-saving = Le <img data-l10n-name="icon"/> <strong>
 extension-controlling-web-notifications = Le <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla iste parametros.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlling-privacy-containers = Le <img data-l10n-name="icon"/> <strong>{ $name }</strong> require le Schedas recipente.
+extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> require schedas contentor.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
 extension-controlling-websites-content-blocking-all-trackers = Le <img data-l10n-name="icon"/> <strong>{ $name }</strong> controla iste parametros.
@@ -515,7 +515,7 @@ use-current-pages =
         }
     .accesskey = C
 choose-bookmark =
-    .label = Usar un marcapaginas…
+    .label = Usar marcapagina…
     .accesskey = m
 
 ## Home Section - Firefox Home Content Customization
@@ -592,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Monstrar le suggestiones de recerca in le resultatos del barra de adresse
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Monstrar le terminos de recerca in vice que le URL sur le pagina de resultatos del motor de recerca predefinite
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -625,7 +630,7 @@ search-keyword-warning-title = Parola clave duplicate
 # Variables:
 #   $name (String) - Name of a search engine.
 search-keyword-warning-engine = Tu ha eligite un parola clave que es actualmente usate per “{ $name }”. Per favor selige un altere.
-search-keyword-warning-bookmark = Tu ha eligite un parola clave que es actualmente in uso per un marcapaginas. Per favor selige un altere.
+search-keyword-warning-bookmark = Tu ha eligite un parola clave que es actualmente usate per un marcapagina. Per favor selige un altere.
 
 ## Containers Section
 
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Disconnecter…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Eliger lo que synchronisar
+    .style = min-width: 37em;
+    .buttonlabelaccept = Salvar cambios
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Disconnecter…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Marcapaginas
     .accesskey = m
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = Monstrar avisos pro contrasignos de sitos web violate
     .accesskey = v
 forms-breach-alerts-learn-more-link = Saper plus
+relay-integration =
+    .label = Activar { -relay-brand-name } in le gestor de contrasignos de { -brand-short-name }
+relay-integration-learn-more-link = Pro saper plus
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Auto-completar nomines de usator e contrasignos
@@ -903,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies de sitos web non visitate
 sitedata-option-block-all-third-party =
     .label = Tote le cookies de tertios (pote impedir alcun sitos web de functionar)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Tote le cookies inter-sitos (pote causar que le sitos web collabe)
 sitedata-option-block-all =
     .label = Tote le cookies (impedira alcun sitos web de functionar)
 sitedata-clear =
@@ -982,6 +999,7 @@ content-blocking-all-cookies = Tote le cookies
 content-blocking-unvisited-cookies = Cookie de sitos web non visitate
 content-blocking-all-windows-tracking-content = Contento de traciamento in tote le fenestras
 content-blocking-all-third-party-cookies = Tote le cookies de tertios
+content-blocking-all-cross-site-cookies = Tote le cookies inter sitos
 content-blocking-cryptominers = Cryptominatores
 content-blocking-fingerprinters = Dactylogrammatores
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -989,6 +1007,9 @@ content-blocking-fingerprinters = Dactylogrammatores
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Prova primo nostre potentissime function de confidentialitate
     .accesskey = P
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Le protection total contra le cookies contine le cookies del sito ubi tu es, assi le traciatores non pote sequer te inter le sitos.
 content-blocking-etp-standard-tcp-rollout-learn-more = Pro saper plus
@@ -1100,8 +1121,8 @@ addon-recommendations-link = Saper plus
 collection-health-report-disabled = Le reporto de datos es inactive pro iste configuration de compilation
 collection-backlogged-crash-reports-with-link = Permitter que { -brand-short-name } invia in tu nomine le reportos accumulate de crash <a data-l10n-name="crash-reports-link">saper plus</a>
     .accesskey = P
-privacy-segmentation-section-header = Nove functionalitates que meliora tu navigation
-privacy-segmentation-section-description = Quando nos offere functionalitates que usa tu datos pro dar te un experientia tu proprie:
+privacy-segmentation-section-header = Nove functiones que meliora tu navigation
+privacy-segmentation-section-description = Quando nos offere functiones que usa tu datos pro dar te un experientia plus personal:
 privacy-segmentation-radio-off =
     .label = Usar recommendationes de { -brand-product-name }
 privacy-segmentation-radio-on =

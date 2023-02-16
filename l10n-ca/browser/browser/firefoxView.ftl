@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Ara mateix
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Recull de pestanyes
 firefoxview-tabpickup-description = Accediu a les pàgines obertes des d'altres dispositius.
-firefoxview-tabpickup-recenttabs-description = Aquí es mostra la llista de pestanyes recents
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% completat
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Torna-ho a provar
 firefoxview-tabpickup-sync-disconnected-header = Activeu la sincronització per continuar
 firefoxview-tabpickup-sync-disconnected-description = Per recuperar les vostres pestanyes, heu de permetre la sincronització en el { -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Activa la sincronització en els paràmetres
+firefoxview-tabpickup-password-locked-header = Introduïu la contrasenya principal per a veure les pestanyes
+firefoxview-tabpickup-password-locked-description = Per a recuperar les vostres pestanyes, heu d'introduir la contrasenya principal del { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Més informació
+firefoxview-tabpickup-password-locked-primarybutton = Introduïu la contrasenya principal
+firefoxview-tabpickup-signed-out-header = Inicieu la sessió per tornar a connectar
+firefoxview-tabpickup-signed-out-description = Per a tornar a connectar i recuperar les vostres pestanyes, inicieu la sessió en el { -fxaccount-brand-name }.
+firefoxview-tabpickup-signed-out-primarybutton = Inicia la sessió
 firefoxview-tabpickup-syncing = Espereu mentre se sincronitzen les pestanyes. Només serà un moment.
 firefoxview-mobile-promo-header = Recupereu les pestanyes del telèfon o tauleta
 firefoxview-mobile-promo-description = Per veure les últimes pestanyes que heu obert en el dispositiu mòbil, inicieu la sessió al { -brand-product-name } per a l'iOS o l'Android.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Instal·la el { -brand-product-name } p
 firefoxview-mobile-confirmation-header = 🎉 Tot llest!
 firefoxview-mobile-confirmation-description = Ara podeu recuperar les pestanyes del { -brand-product-name } des del vostre telèfon o tauleta.
 firefoxview-closed-tabs-title = Tancades recentment
-firefoxview-closed-tabs-description = Torneu a obrir les pàgines que heu tancat en aquest dispositiu.
-firefoxview-closed-tabs-placeholder = <strong>No hi ha cap pàgina tancada recentment</strong><br/>No patiu més per perdre una pestanya tancada. Sempre la podeu recuperar des d'aquí.
+firefoxview-closed-tabs-description2 = Torneu a obrir les pàgines que heu tancat en aquesta finestra.
+firefoxview-closed-tabs-placeholder-header = No hi ha cap pestanya tancada recentment
+firefoxview-closed-tabs-placeholder-body = Quan tanqueu una pestanya en aquesta finestra, podeu recuperar-la aquí.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Descarta { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Darrera activa
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Canvia la combinació de colors
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Encara no hi ha res per veure</strong><br/>La pròxima vegada que obriu una pàgina en el { -brand-product-name } en un altre dispositiu, podreu recuperar-la des d'aquí com per art de màgia.
+firefoxview-synced-tabs-placeholder-header = Encara no hi ha res a veure
+firefoxview-synced-tabs-placeholder-body = La pròxima vegada que obriu una pàgina en el { -brand-product-name } d'un altre dispositiu, la trobareu aquí com per art de màgia.
 firefoxview-collapse-button-show =
     .title = Mostra la llista
 firefoxview-collapse-button-hide =

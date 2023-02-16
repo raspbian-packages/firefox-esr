@@ -230,7 +230,7 @@ choose-button =
     .accesskey = C
 choose-browser-language-description = Chọn ngôn ngữ được sử dụng để hiển thị bảng chọn, tin nhắn và thông báo từ { -brand-short-name }.
 manage-browser-languages-button =
-    .label = Đặt giải pháp thay thế…
+    .label = Đặt ngôn ngữ thay thế…
     .accesskey = I
 confirm-browser-language-change-description = Khởi động lại { -brand-short-name } để áp dụng các thay đổi này
 confirm-browser-language-change-button = Áp dụng và Khởi động lại
@@ -576,6 +576,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Hiển thị gợi ý tìm kiếm trong kết quả thanh địa chỉ
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Hiển thị các cụm từ tìm kiếm thay vì URL trên trang kết quả của công cụ tìm kiếm mặc định
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -703,6 +708,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Ngắt kết nối…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Chọn những gì để đồng bộ hóa
+    .style = min-width: 36em;
+    .buttonlabelaccept = Lưu thay đổi
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Ngắt kết nối…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Dấu trang
     .accesskey = m
@@ -771,6 +783,9 @@ forms-breach-alerts =
     .label = Hiển thị cảnh báo về mật khẩu cho các trang web bị rò rỉ
     .accesskey = b
 forms-breach-alerts-learn-more-link = Tìm hiểu thêm
+relay-integration =
+    .label = Bật { -relay-brand-name } trong trình quản lý mật khẩu { -brand-short-name } của bạn
+relay-integration-learn-more-link = Tìm hiểu thêm
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Tự động điền đăng nhập và mật khẩu
@@ -887,16 +902,18 @@ sitedata-option-block-unvisited =
     .label = Cookie từ các trang web không mong muốn
 sitedata-option-block-all-third-party =
     .label = Tất cả cookie của bên thứ ba (có thể khiến các trang web bị hỏng)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Tất cả cookie trên nhiều trang web (có thể khiến trang web bị hỏng)
 sitedata-option-block-all =
     .label = Tất cả các cookie (có thể khiến các trang web bị hỏng)
 sitedata-clear =
     .label = Xóa dữ liệu...
     .accesskey = l
 sitedata-settings =
-    .label = Quản lí dữ liệu...
+    .label = Quản lý dữ liệu...
     .accesskey = M
 sitedata-cookies-exceptions =
-    .label = Quản lý các ngoại lệ…
+    .label = Quản lý ngoại lệ…
     .accesskey = x
 
 ## Privacy Section - Address Bar
@@ -966,6 +983,7 @@ content-blocking-all-cookies = Tất cả cookie
 content-blocking-unvisited-cookies = Cookie từ các trang không mong muốn
 content-blocking-all-windows-tracking-content = Trình theo dõi nội dung trong tất cả cửa sổ
 content-blocking-all-third-party-cookies = Toàn bộ cookie từ bên thứ ba
+content-blocking-all-cross-site-cookies = Tất cả cookie trên nhiều trang web
 content-blocking-cryptominers = Tiền điện tử
 content-blocking-fingerprinters = Dấu vết (Fingerprintng)
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -973,6 +991,9 @@ content-blocking-fingerprinters = Dấu vết (Fingerprintng)
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Thử tính năng bảo mật mạnh mẽ nhất của chúng tôi từ trước đến nay
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Trình chống cookie chung chứa các cookie cho trang web bạn đang truy cập, vì vậy, trình theo dõi không thể sử dụng chúng để theo dõi bạn giữa các trang web.
 content-blocking-etp-standard-tcp-rollout-learn-more = Tìm hiểu thêm
@@ -1012,7 +1033,7 @@ content-blocking-fingerprinters-label =
 ## Privacy Section - Tracking
 
 tracking-manage-exceptions =
-    .label = Quản lý các ngoại lệ…
+    .label = Quản lý ngoại lệ…
     .accesskey = x
 
 ## Privacy Section - Permissions

@@ -66,7 +66,6 @@ experimental-features-js-warp-description = Povolí projekt Warp, který má zle
 experimental-features-ime-search =
     .label = Adresní řádek: zobrazovat výsledky při použití IME
 experimental-features-ime-search-description = IME (Input Method Editor) je nástroj pro zadávání komplexních symbolů, jako jsou znaky východoasijských nebo indických jazyků, pomocí běžné klávesnice. Po zapnutí tohoto experimentu bude panel adresního řádku zobrazovat výsledky vyhledávání a návrhy našeptávače i při použití IME pro zadávání textu. Protože IME může zakrýt výsledky adresního řádku, doporučujeme tuto předvolbu použít jen s IME, který toto nedělá.
-# Text recognition for images
-experimental-features-text-recognition =
-    .label = Rozpoznávání textu
-experimental-features-text-recognition-description = Povolí funkce pro rozpoznávání textu v obrázcích.
+experimental-features-accessibility-cache =
+    .label = Mezipaměť přístupnosti
+experimental-features-accessibility-cache-description = Ukládá všechny informace o přístupnosti ze všech dokumentů v hlavním procesu aplikace { -brand-short-name }. To zlepšuje výkon pro čtečky obrazovky a další aplikace, které používají API pro přístupnost.

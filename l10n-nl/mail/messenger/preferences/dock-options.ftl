@@ -10,6 +10,9 @@ dock-options-window-dialog =
         }
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Programmasymboolopties
+
 dock-options-show-badge =
     .label = Taakbalkitemmarkering tonen
     .accesskey = T

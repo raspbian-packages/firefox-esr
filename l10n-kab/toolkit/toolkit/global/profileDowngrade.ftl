@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Tessenkkreḍ lqem aqbuṛ n { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Tessenkkreḍ lqem aqbuṛ n { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Rnu amaɣnu amaynut
 

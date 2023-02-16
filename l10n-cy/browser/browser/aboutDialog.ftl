@@ -19,10 +19,12 @@ update-failed = Methodd y diweddaru. <label data-l10n-name="failed-link">Llwythw
 update-failed-main = Methodd y diweddaru. <a data-l10n-name="failed-link-main">Llwythwch y fersiwn diweddaraf i lawr</a>
 update-adminDisabled = Mae'r diweddariad wedi ei analluogi gan eich gweinyddwr
 update-noUpdatesFound = Mae { -brand-short-name } yn gyfredol
+aboutdialog-update-checking-failed = Wedi methu â gwirio am ddiweddariadau.
 update-otherInstanceHandlingUpdates = Mae { -brand-short-name } yn cael ei ddiweddaru gan enghraifft arall
 update-manual = Mae diweddariadau ar gael yn <label data-l10n-name="manual-link"/>
 update-unsupported = Nid oes modd i chi ddiweddaru'r system hon ymhellach. <label data-l10n-name="unsupported-link">Dysgu rhagor</label>
 update-restarting = Ailgychwyn…
+update-internal-error = Methu gwirio am ddiweddariadau oherwydd gwall mewnol. Mae diweddariadau ar gael yn <label data-l10n-name="manual-link"/>
 channel-description = Rydych ar sianel diweddaru <label data-l10n-name="current-channel"></label>.
 warningDesc-version = Mae { -brand-short-name } yn arbrofol a gall fod yn ansad.
 aboutdialog-help-user = Cymorth { -brand-product-name }

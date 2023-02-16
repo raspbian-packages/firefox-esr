@@ -150,6 +150,9 @@ message-header-hide-label-column =
 message-header-large-subject =
     .label = Büyük konu
     .accesskey = o
+message-header-all-headers =
+    .label = Tüm üst bilgileri göster
+    .accesskey = ü
 
 ## Action Button Context Menu
 

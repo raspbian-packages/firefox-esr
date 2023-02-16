@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = डेटा खालीगर्नुहोस्
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = डेटा खालीगर्नुहोस्
+    .style = min-width: 35em
+
 clear-site-data-description = { -brand-short-name }ले भण्डारण गरेको कुकीहरु र साइट डाटा हटाउनाले, तपाईँ वेबसाइटहरूबाट बाहिरिन सक्नु हुनेछ र अफलाइन वेब सामग्रीहरु पनि हट्न सक्नेछन् । क्यास डाटा खाली गर्नाले तपाईंका लगिनहरूलाई असर पार्दैन ।
 
 clear-site-data-close-key =

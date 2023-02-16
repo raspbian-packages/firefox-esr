@@ -21,12 +21,15 @@ close-window = කවුළුව වසන්න
 open-sidebar = පැති තීරු
 # This string describes shortcuts for search.
 search-popover = කෙටිමං සොයන්න
+# Describes searches limited to a specific scope
+# (e.g. searching only in history).
+search-search-in = මෙහි සොයන්න:
 
 ## Various categories of shortcuts for search.
 
 search-bookmarks = පොත්යොමු
 search-history = ඉතිහාසය
-search-opentabs = පටිති අරින්න
+search-opentabs = විවෘත පටිති
 search-tags = අනන්‍යන
 search-titles = සිරැසිය
 

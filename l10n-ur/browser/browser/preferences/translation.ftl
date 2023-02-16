@@ -6,6 +6,10 @@ translation-window =
     .title = مستثنیات - ترجمہ
     .style = width: 36em
 
+translation-window2 =
+    .title = مستثنیات - ترجمہ
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

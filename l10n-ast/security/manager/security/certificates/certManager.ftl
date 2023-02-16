@@ -29,6 +29,10 @@ certmgr-edit-ca-cert =
     .title = Edición de los axustes d'enfotu d'una CA de certificaos
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Edición de los axustes d'enfotu d'una CA de certificaos
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Edita los axustes d'enfotu:
 
 certmgr-edit-cert-trust-ssl =

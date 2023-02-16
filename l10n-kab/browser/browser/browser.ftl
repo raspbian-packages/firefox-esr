@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } tunigin tusligt
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } tunigin tusligt
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Awi tallelt
 urlbar-search-tips-confirm = Ih, awi-t-id
+urlbar-search-tips-confirm-short = Awi-t
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Taxbalut:
+urlbar-result-menu-button =
+    .title = Ldi umuɣ
+urlbar-result-menu-remove-from-history =
+    .label = Kkes seg uzray
+    .accesskey = K
+urlbar-result-menu-tip-get-help =
+    .label = Awi tallalt
+    .accesskey = l
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -267,42 +278,38 @@ search-one-offs-actions =
     .tooltiptext = Tigawin ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Sken izegrar
-quickactions-cmd-addons = izegrar, isiɣqzaf, isental
 quickactions-cmd-addons2 = Izegrar
 # Opens the bookmarks library window
-quickactions-bookmarks = Sken ticraḍ n usebter
+quickactions-bookmarks2 = Sefrek ticraḍ n yisebtar
 quickactions-cmd-bookmarks = ticraḍ n isebtar
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Sfeḍ azray
 quickactions-cmd-clearhistory = Sfeḍ azray
 # Opens about:downloads page
-quickactions-downloads = Ldi isadaren
+quickactions-downloads2 = Sken isadaren
 quickactions-cmd-downloads = isadaren
 # Opens about:addons page in the extensions section
 quickactions-extensions = Sefrek isiɣzaf
 quickactions-cmd-extensions = Isiɣzaf
 # Opens the devtools web inspector
-quickactions-inspector = Ldi amaswaḍ
+quickactions-inspector2 = Ldi ifecka n tneflit
 quickactions-cmd-inspector = amaswaḍ, devtools
 # Opens about:logins
-quickactions-logins = Sken-d tuqniwin
+quickactions-logins2 = Sefrek awalen uffiren
 quickactions-cmd-logins = inekcam, awalen uffiren
 # Opens about:addons page in the plugins section
 quickactions-plugins = Sefrek izegrar
 quickactions-cmd-plugins = Izegrar
 # Opens the print dialog
-quickactions-print = Siggez
+quickactions-print2 = Siggez asebter
 quickactions-cmd-print = siggez
 # Opens a new private browsing window
-quickactions-private = Ldi asfaylu n tunigin tusligt
+quickactions-private2 = Ldi asfaylu uslig
 quickactions-cmd-private = tunigin tusligt
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Smiren { -brand-short-name }
@@ -311,10 +318,10 @@ quickactions-cmd-refresh = smiren
 quickactions-restart = Ales asenker n { -brand-short-name }
 quickactions-cmd-restart = Ales asenker
 # Opens the screenshot tool
-quickactions-screenshot2 = Eg tuṭṭfa n ugdil
+quickactions-screenshot3 = Eg tuṭṭfa n ugdil
 quickactions-cmd-screenshot = tuṭṭfa n ugdil
 # Opens about:preferences
-quickactions-settings = Ldi iɣewwaren
+quickactions-settings2 = Sefrek iɣewwaren
 quickactions-cmd-settings = iɣewwaren, ismenyifen, tixtiṛiyin
 # Opens about:addons page in the themes section
 quickactions-themes = Sefrek isental
@@ -323,8 +330,11 @@ quickactions-cmd-themes = Isental
 quickactions-update = Leqqem { -brand-short-name }
 quickactions-cmd-update = Leqqem
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Sken aɣbalu
+quickactions-viewsource2 = Tangalt taɣbalut n usebter
 quickactions-cmd-viewsource = sken aɣbalu, aɣbalu
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Issin ugar ɣef tigawin tirurad
 
 ## Bookmark Panel
 
@@ -485,6 +495,9 @@ popup-select-microphone-icon =
     .tooltiptext = Asawaḍ
 popup-select-speaker-icon =
     .tooltiptext = Wid yettmeslayen
+popup-select-window-or-screen =
+    .label = Asfaylu neɣ agdil:
+    .accesskey = W
 popup-all-windows-shared = Akk isfuyla ibanen deg ugdil-ik ad ttwabḍun.
 popup-screen-sharing-block =
     .label = Sewḥel
@@ -506,6 +519,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Akken ad tesqedceḍ anegzum F12, ldi qbel DevTools s wumuɣ web n uneflay.
+enable-devtools-popup-description2 = I useqdec n unezgum F12, ldi qbel DevTools seg wumuɣ n yifecka n yiminig.
 
 ## URL Bar
 
@@ -637,6 +651,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Tigawin tiruradin
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Uɣal ɣeṛ tmeẓri n tɣuṛi
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Mdel timeẓri n tɣuṛi
 
 ## Full Screen and Pointer Lock UI
 
@@ -914,3 +937,25 @@ private-browsing-indicator-label = Tunigin tusligt
 unified-extensions-button =
     .label = Isiɣzaf
     .tooltiptext = Isiɣzaf
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Isiɣzaf
+    .tooltiptext = Isiɣzaf
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } issewḥel asebter-a seg usmiren awurman.
+refresh-blocked-redirect-label = { -brand-short-name } issewḥel awehhi awurman ɣer usebter-nniḍen.
+refresh-blocked-allow =
+    .label = Sireg
+    .accesskey = A
+
+## Firefox Relay integration
+
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Ad nwelleh meṛṛa imaylen seg <strong>{ $sitename }</strong> ɣer <strong>{ $useremail }</strong>.

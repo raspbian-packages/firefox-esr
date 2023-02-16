@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Kayandiyaney taariki koonandiyan se
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Kayandiyaney taariki koonandiyan se
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

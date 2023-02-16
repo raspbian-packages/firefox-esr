@@ -6,6 +6,10 @@ blocklist-window =
     .title = ‌‍ನಿಬಂಧಿಸಿದ ಪಟ್ಟಿಗಳು
     .style = width: 55em
 
+blocklist-window2 =
+    .title = ‌‍ನಿಬಂಧಿಸಿದ ಪಟ್ಟಿಗಳು
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

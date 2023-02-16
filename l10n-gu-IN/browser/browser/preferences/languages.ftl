@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = વેબપૃષ્ઠ ભાષા સેટિંગ્સ
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = વેબપૃષ્ઠ ભાષા સેટિંગ્સ
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } ભાષા સેટિંગ્સ
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } ભાષા સેટિંગ્સ
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } તમારી મૂળભૂત તરીકે પ્રથમ ભાષાને પ્રદર્શિત કરશે અને આવશ્યક ક્રમમાં તેઓ દેખાતા વૈકલ્પિક ભાષાઓ પ્રદર્શિત કરશે.
 

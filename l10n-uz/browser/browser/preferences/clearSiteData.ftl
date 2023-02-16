@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Maʼlumotlarni tozalash
     .style = width: 40em
 
+clear-site-data-window2 =
+    .title = Maʼlumotlarni tozalash
+    .style = min-width: 40em
+
 clear-site-data-description = { -brand-short-name } joylagan sayt ma’lumot va kukilarini tozalasangiz, isobingizdan vaqtincha chiqarilishingiz hamda oflayn ma’lumotlar tozalab tashlanishi mumkin. Keshni tozalash login ma’lumotlariga ta’sir qilmaydi.
 
 clear-site-data-close-key =

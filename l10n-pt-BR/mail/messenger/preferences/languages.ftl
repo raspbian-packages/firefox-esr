@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = Configurações de idioma do { -brand-short-name }
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = Configurações de idioma do { -brand-short-name }
+
 messenger-languages-description = O { -brand-short-name } exibe o primeiro idioma como padrão e mostra idiomas alternativos, se necessário, na ordem em que aparecem.
 
 messenger-languages-search = Procurar mais idiomas…

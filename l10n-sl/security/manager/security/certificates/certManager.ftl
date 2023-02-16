@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Urejanje nastavitev zaupanja overiteljem
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Urejanje nastavitev zaupanja overiteljem
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Spremeni nastavitve zaupanja:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Izbriši digitalno potrdilo
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Izbriši digitalno potrdilo
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Gostitelj
@@ -185,8 +193,6 @@ delete-email-cert-impact = Če zbrišete e-poštno digitalno potrdilo osebe, ne 
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Digitalno potrdilo s serijsko številko: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Ne pošiljaj klientovega digitalnega potrdila

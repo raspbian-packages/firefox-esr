@@ -6,6 +6,10 @@ add-engine-window =
     .title = Med Ingin me Yeny
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Med Ingin me Yeny
+    .style = min-width: 32em;
+
 add-engine-name = Nying ingin me yeny
 
 add-engine-alias = Nying pen

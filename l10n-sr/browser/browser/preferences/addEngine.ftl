@@ -6,6 +6,10 @@ add-engine-window =
     .title = Додај претраживач
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Додај претраживач
+    .style = min-width: 32em;
+
 add-engine-button = Додај прилагођени претраживач
 
 add-engine-name = Назив претраживача

@@ -6,6 +6,10 @@ containers-window-new =
     .title = បន្ថែម​ប្រអប់​ផ្ទុក​ថ្មី
     .style = width: 45em
 
+containers-window-new2 =
+    .title = បន្ថែម​ប្រអប់​ផ្ទុក​ថ្មី
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

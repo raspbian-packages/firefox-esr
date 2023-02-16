@@ -191,10 +191,6 @@ files-and-applications-title = Pwail ki Purugram
 
 download-header = Gam
 
-download-save-to =
-    .label = Gwok pwail bot
-    .accesskey = w
-
 download-save-where = Gwok pwail bot
     .accesskey = w
 
@@ -942,8 +938,3 @@ httpsonly-learn-more = Nong ngec mapol
 desktop-folder-name = Wang kompiuta
 downloads-folder-name = Gam
 choose-download-folder-title = Yer boc me gam:
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Gwok pwail i { $service-name }

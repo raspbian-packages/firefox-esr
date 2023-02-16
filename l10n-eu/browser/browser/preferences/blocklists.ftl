@@ -6,6 +6,10 @@ blocklist-window =
     .title = Blokeo-zerrendak
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Blokeo-zerrendak
+    .style = min-width: 55em
+
 blocklist-description = Aukeratu { -brand-short-name }(e)k jarraipen-elementuak blokeatzeko erabiliko duen zerrenda. Zerrenda <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>-ek hornitzen du.
 blocklist-close-key =
     .key = w

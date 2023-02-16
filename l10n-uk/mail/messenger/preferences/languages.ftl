@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = Налаштування мови { -brand-short-name }
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = Налаштування мови { -brand-short-name }
+
 messenger-languages-description = { -brand-short-name } типово показуватиме сторінки першою мовою зі списку, а інші мови у вказаному порядку за необхідності.
 
 messenger-languages-search = Пошук інших мов…

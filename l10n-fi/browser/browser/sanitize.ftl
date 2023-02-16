@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Historiatietojen poistamisen asetukset
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Historiatietojen poistamisen asetukset
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

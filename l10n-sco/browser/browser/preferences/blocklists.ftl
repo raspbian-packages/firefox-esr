@@ -6,6 +6,10 @@ blocklist-window =
     .title = Block Lists
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Block Lists
+    .style = min-width: 55em
+
 blocklist-description = Wale the list { -brand-short-name } yaises tae block online trackers. Lists providit by <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

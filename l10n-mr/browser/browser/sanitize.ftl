@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = इतिहास पूसण्याकरीता संयोजना
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = इतिहास पूसण्याकरीता संयोजना
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

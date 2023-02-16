@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Gosodiadau Clirio Hanes
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Gosodiadau Clirio Hanes
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

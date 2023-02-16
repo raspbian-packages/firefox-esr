@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Možnosti ikon programov
     .style = width: 45em;
 
+dock-options-window-dialog2 =
+    .title = Možnosti ikon programov
+
 dock-options-show-badge =
     .label = Pokaži ikono značke
     .accesskey = i

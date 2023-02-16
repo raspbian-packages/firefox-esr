@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Wabpage Leid Settins
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Wabpage Leid Settins
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Leid Settins
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Leid Settins
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } will kythe the first leid as yer staunart and will kythe ither leids if necessar in the order they shaw up.
 

@@ -6,6 +6,10 @@ blocklist-window =
     .title = Списки блокування
     .style = width: 58em
 
+blocklist-window2 =
+    .title = Списки блокування
+    .style = min-width: 58em
+
 blocklist-description = Оберіть список, який { -brand-short-name } використовуватиме для блокування стеження. Списки надаються <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

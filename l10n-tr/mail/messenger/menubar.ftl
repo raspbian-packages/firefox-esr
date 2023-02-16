@@ -35,9 +35,9 @@ menu-help-get-involved =
 menu-help-donation =
     .label = Bağış yapın
     .accesskey = B
-menu-help-feedback =
-    .label = Görüş ve fikir gönderin
-    .accesskey = G
+menu-help-share-feedback =
+    .label = Fikir ve görüş paylaş
+    .accesskey = F
 menu-help-enter-troubleshoot-mode =
     .label = Sorun giderme modu…
     .accesskey = o
@@ -53,6 +53,23 @@ menu-help-troubleshooting-info =
 menu-help-about-product =
     .label = { -brand-short-name } hakkında
     .accesskey = a
+# These menu-quit strings are only used on Windows and Linux.
+menu-quit =
+    .label =
+        { PLATFORM() ->
+            [windows] Çık
+           *[other] Çık
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] x
+           *[other] Q
+        }
+# This menu-quit-mac string is only used on macOS.
+menu-quit-mac =
+    .label = { -brand-shorter-name } uygulamasından çık
+quit-app-shortcut =
+    .key = k
 
 ## Mail Toolbar
 
@@ -101,6 +118,12 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Dokunmatik
     .accesskey = D
+mail-uidensity-default =
+    .label = Varsayılan
+    .accesskey = V
+mail-uidensity-relaxed =
+    .label = Rahat
+    .accesskey = R
 menu-spaces-toolbar-button =
     .label = Sekme araç çubuğu
     .accesskey = S

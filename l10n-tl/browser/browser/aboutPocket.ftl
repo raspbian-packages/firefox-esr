@@ -18,6 +18,7 @@ pocket-panel-saved-error-not-saved = Pahina ay hindi na I-save
 pocket-panel-saved-error-no-internet = Kailangang konektado ka sa internet upang ito ay masave sa { -pocket-brand-name }. Pakitingnan ang iyong koneksyon at subukan uli.
 pocket-panel-saved-page-removed = Inalis ang Pahina
 pocket-panel-saved-page-saved = I-save sa { -pocket-brand-name }
+pocket-panel-saved-page-saved-b = Na-save sa { -pocket-brand-name }!
 pocket-panel-saved-processing-remove = Inaalis ang Pahina…
 pocket-panel-saved-removed = Naaslis ang Pahina sa aking list
 pocket-panel-saved-processing-tags = Dinadagdagan ang tanda...

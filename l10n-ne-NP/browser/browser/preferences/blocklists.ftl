@@ -6,6 +6,10 @@ blocklist-window =
     .title = रोक सूचीहरू
     .style = width: 50em
 
+blocklist-window2 =
+    .title = रोक सूचीहरू
+    .style = min-width: 50em
+
 blocklist-close-key =
     .key = w
 

@@ -25,6 +25,12 @@ return-to-amo-addon-title = Nú skulum við ná í handa þér <img data-l10n-na
 return-to-amo-add-extension-label = Bæta inn viðbótinni
 return-to-amo-add-theme-label = Bæta við þemanu
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Heilsaðu upp á { -brand-short-name }
+mr1-return-to-amo-addon-title = Þú ert með hraðvirkan persónulegan vafra innan seilingar. Nú geturðu bætt <b>{ $addon-name }</b> við og gert enn meira með { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = Bæta við { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Framvinda: skref { $current } af { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Framvinda: skref { $current } af { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -292,7 +300,7 @@ mr2022-onboarding-existing-pin-subtitle = Opnaðu internetið á heilbrigðari m
 # Subtitle will be used on the welcome screen for existing users
 # when they already have Firefox pinned but not set as default
 mr2022-onboarding-existing-set-default-only-subtitle = Notaðu vafra sem verndar friðhelgi þína á meðan þú vafrar um vefinn. Nýjasta uppfærslan okkar er stútfull af hlutum sem þú munt dýrka.
-mr2022-onboarding-existing-pin-checkbox-label = Bættu líka við { -brand-short-name } einkavafri
+mr2022-onboarding-existing-pin-checkbox-label = Bættu líka við { -brand-short-name } huliðsvafri
 
 ## MR2022 New User Set Default screen strings
 
@@ -325,35 +333,35 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Flytja inn úr fy
 
 mr2022-onboarding-colorway-title = Veldu litinn sem veitir þér innblástur
 mr2022-onboarding-colorway-subtitle = Óháðar raddir geta breytt menningunni.
-mr2022-onboarding-colorway-primary-button-label = Stilla litasett
+mr2022-onboarding-colorway-primary-button-label-continue = Stilla og halda áfram
 mr2022-onboarding-existing-colorway-checkbox-label = Gerðu { -firefox-home-brand-name } að litríku upphafssíðunni þinni
 mr2022-onboarding-colorway-label-default = Sjálfgefið
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Sjálfgefið
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Núverandi litir { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>Nota núverandi { -brand-short-name } litina mína.</b>
 mr2022-onboarding-colorway-label-playmaker = Leikstjórnandi
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Leikstjórnandi
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Leikstjórnandi (rautt)
 mr2022-onboarding-colorway-description-playmaker = <b>Þú ert leikstjórnandi.</b> Þú skapar tækifæri til árangurs og hjálpar öllum í kringum þig að verða betri.
 mr2022-onboarding-colorway-label-expressionist = Expressjónisti
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Expressjónisti
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Expressjónisti (gult)
 mr2022-onboarding-colorway-description-expressionist = <b>Þú ert expressjónisti.</b> Þú sérð heiminn öðruvísi og sköpun þín vekur tilfinningar annarra.
 mr2022-onboarding-colorway-label-visionary = Framsýni
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Framsýni
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Framsýni (grænt)
 mr2022-onboarding-colorway-description-visionary = <b>Þú ert framsýn hugsjónamanneskja.</b> Þú efast um óbreytt ástand og færð aðra til að ímynda sér betri framtíð.
 mr2022-onboarding-colorway-label-activist = Aðgerðarsinni
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aðgerðarsinni
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aðgerðasinni (blátt)
 mr2022-onboarding-colorway-description-activist = <b>Þú ert aðgerðarsinni.</b> Þú skilur heiminn eftir sem betri stað en þú fannst hann og færð aðra til að trúa á málstaðinn.
 mr2022-onboarding-colorway-label-dreamer = Dreymandi
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Dreymandi
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Dreymandi (fjólublátt)
 mr2022-onboarding-colorway-description-dreamer = <b>Þú ert draumóramaður.</b> Þú trúir því að örlögin séu hagstæð þeim djörfu og hvetur aðra til að vera hugrakkir.
 mr2022-onboarding-colorway-label-innovator = Frumkvöðull
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Frumkvöðull
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Frumkvöðull (appelsínugult)
 mr2022-onboarding-colorway-description-innovator = <b>Þú ert frumkvöðull.</b> Þú sérð tækifæri alls staðar og hefur áhrif á líf allra í kringum þig.
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -370,8 +378,8 @@ mr2022-upgrade-onboarding-pin-private-window-header = Fáðu persónulegt frelsi
 mr2022-upgrade-onboarding-pin-private-window-subtitle = Engar vistaðar vefkökur eða ferilskráning, beint af skjáborðinu þínu. Vafraðu eins og enginn sé að horfa.
 mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
     { PLATFORM() ->
-        [macos] Haltu { -brand-short-name } einkavafra í dokkunni
-       *[other] Festu { -brand-short-name } einkavafra við verkefnastikuna
+        [macos] Haltu { -brand-short-name } huliðsvafri í dokkunni
+       *[other] Festu { -brand-short-name } huliðsvafri við verkefnastikuna
     }
 
 ## MR2022 Privacy Segmentation screen strings
@@ -388,3 +396,29 @@ mr2022-onboarding-gratitude-title = Þú hjálpar okkur að við byggja upp betr
 mr2022-onboarding-gratitude-subtitle = Takk fyrir að nota { -brand-short-name }, sem stutt er af Mozilla Foundation. Með stuðningi þínum erum við að vinna að því að gera internetið opnara, aðgengilegra og betra fyrir alla.
 mr2022-onboarding-gratitude-primary-button-label = Sjáðu hvað er nýtt á seyði
 mr2022-onboarding-gratitude-secondary-button-label = Byrjaðu að vafra
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Láttu eins og heima hjá þér
+onboarding-infrequent-import-subtitle = Hvort sem þú ert að koma þér fyrir eða bara staldra við, skaltu muna að þú getur flutt inn bókamerkin þín, lykilorð og fleira.
+onboarding-infrequent-import-primary-button = Flytja inn í { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Einstaklingur sem vinnur á fartölvu umkringdur stjörnum og blómum
+mr2022-onboarding-default-image-alt =
+    .aria-label = Aðili sem knúsar { -brand-product-name } táknmerkið
+mr2022-onboarding-import-image-alt =
+    .aria-label = Einstaklingur á hjólabretti með kassa fullan af hugbúnaðartáknum
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Froskar hoppa yfir liljublöð með QR kóða í miðjunni til að sækja { -brand-product-name } fyrir farsíma
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Töfrasproti lætur merki { -brand-product-name } huliðsvafurs birtast upp úr hatti
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Ljósar og dökkar hendur gefa fimmu
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Útsýni á sólarlag í gegnum glugga með rebba og plöntu í gluggakistu
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Hönd spreyjar litríka mynd með grænu auga, appelsínugulum skó, rauðum körfubolta, fjólubláum heyrnartólum, bláu hjarta og gulri kórónu.

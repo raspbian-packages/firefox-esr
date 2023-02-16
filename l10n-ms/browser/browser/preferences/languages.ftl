@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Tetapan Bahasa Halaman Web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Tetapan Bahasa Halaman Web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Tetapan Bahasa { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Tetapan Bahasa { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } akan memaparkan bahasa yang pertama sebagai piawai dan akan memaparkan bahasa alternatif jika ada, mengikut susunan paparan.
 

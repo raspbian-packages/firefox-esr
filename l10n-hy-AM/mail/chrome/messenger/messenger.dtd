@@ -316,7 +316,6 @@
 <!ENTITY goBackCmd.commandKey "[">
 <!ENTITY goChatCmd.label "Զրույց">
 <!ENTITY goChatCmd.accesskey "Զ">
-<!ENTITY goChatCmd2.key "H">
 <!ENTITY prevStarredMsgCmd.label "Աստղով նամակ">
 <!ENTITY prevStarredMsgCmd.accesskey "Ա">
 <!ENTITY folderMenu.label "Թղթապանակ">
@@ -487,6 +486,7 @@
 <!ENTITY importCmd.label "Ներմուծել…">
 <!ENTITY importCmd.accesskey "m">
 <!ENTITY exportCmd.label "Արտահանել...">
+<!ENTITY exportCmd.accesskey "x">
 <!ENTITY clearRecentHistory.label "Ջնջել Վերջին Պատմությունը...">
 <!ENTITY clearRecentHistory.accesskey "H">
 <!ENTITY accountManagerCmd2.label "Փոստարկղի կարգավորումներ">

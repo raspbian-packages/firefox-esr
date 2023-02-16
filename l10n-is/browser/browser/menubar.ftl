@@ -126,10 +126,10 @@ menu-view =
     .label = Skoða
     .accesskey = k
 menu-view-toolbars-menu =
-    .label = Verkfæraslár
+    .label = Verkfærastikur
     .accesskey = V
 menu-view-customize-toolbar2 =
-    .label = Sérsníða verkfæraslá…
+    .label = Sérsníða verkfærastiku…
     .accesskey = v
 menu-view-sidebar =
     .label = Hliðarspjald
@@ -181,6 +181,17 @@ menu-view-full-screen =
     .label = Fylla skjá
     .accesskey = y
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Fara í lesham
+    .accesskey = r
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Loka lesham
+    .accesskey = L
+
 ##
 
 menu-view-show-all-tabs =
@@ -230,7 +241,7 @@ menu-edit-bookmark =
 menu-bookmarks-all-tabs =
     .label = Setja alla flipa í bókamerki…
 menu-bookmarks-toolbar =
-    .label = Bókamerkjaslá
+    .label = Bókamerkjastika
 menu-bookmarks-other =
     .label = Önnur bókamerki
 menu-bookmarks-mobile =

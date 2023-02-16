@@ -45,6 +45,7 @@ videocontrols-picture-in-picture-toggle-label2 = Ponnahduta ulos tämä video
 # button. When using this variation, this string appears below the toggle when the
 # mouse hovers the toggle.
 videocontrols-picture-in-picture-explainer2 = Useampi näyttö on aina hauskempaa. Toista tämä video kuva kuvassa -tilassa samalla kun selaat.
+videocontrols-picture-in-picture-explainer3 = Useampi näyttö tekee kaikesta hauskempaa. Toista tämä video, kun teet muita asioita samanaikaisesti.
 videocontrols-error-aborted = Videon lataaminen pysähtynyt.
 videocontrols-error-network = Videon toisto keskeytynyt verkkovirheen vuoksi.
 videocontrols-error-decode = Videota ei voida toistaa, koska tiedosto on vioittunut.

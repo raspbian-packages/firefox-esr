@@ -24,9 +24,9 @@ list-empty-button =
 help-button = Podpora pre doplnky
 sidebar-help-button-title =
     .title = Podpora pre doplnky
-addons-settings-button = Nastavenia { -brand-short-name }u
+addons-settings-button = Nastavenia { -brand-short-name(case: "gen") }
 sidebar-settings-button-title =
-    .title = Nastavenia { -brand-short-name }u
+    .title = Nastavenia { -brand-short-name(case: "gen") }
 show-unsigned-extensions-button =
     .label = Niektoré rozšírenia nemohli byť overené
 show-all-extensions-button =
@@ -142,6 +142,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Oprávnenia stránok
 addon-category-sitepermission-title =
     .title = Oprávnenia stránok
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Povolenia stránky pre { $host }
 
 ## These are global warnings
 
@@ -237,12 +241,12 @@ header-back-button =
 discopane-intro =
     Rozšírenia a témy vzhľadu sú ako aplikácie pre váš prehliadač. S nimi môžete
     chrániť svoje heslá, sťahovať videá, hľadať výhodné ponuky, blokovať reklamy,
-    meniť vzhľad prehliadača a omnoho viac. Tieto malé programy väčšinou vyrába
-    niekto iný ako my. Tu je výber <a data-l10n-name="learn-more-trigger">odporúčaných</a>
-    rozšírení pre { -brand-product-name }, ktoré majú jedinečnú bezpečnosť a funkcie.
+    meniť vzhľad prehliadača a omnoho viac. Tieto malé programy väčšinou vytvára
+    niekto iný ako my. Tu je výber <a data-l10n-name="learn-more-trigger">odporúčaných rozšírení</a>
+    pre { -brand-product-name }, ktoré majú jedinečnú bezpečnosť a funkcie.
 # Notice to make user aware that the recommendations are personalized.
 discopane-notice-recommendations =
-    Niektoré z týchto odporúčaní sú vám prispôsobené. Sú založené na rozšíreniach, ktoré už
+    Niektoré z týchto odporúčaní sú prispôsobené. Sú založené na iných rozšíreniach, ktoré už
     máte nainštalované, nastaveniach profilu a štatistikách používania.
 discopane-notice-learn-more = Ďalšie informácie
 privacy-policy = Zásady ochrany súkromia
@@ -254,7 +258,7 @@ created-by-author = Autor: <a data-l10n-name="author">{ $author }</a>
 # Variables:
 #   $dailyUsers (number) - The number of daily users.
 user-count = Počet používateľov: { $dailyUsers }
-install-extension-button = Pridať do { -brand-product-name }u
+install-extension-button = Pridať do { -brand-product-name(case: "gen") }
 install-theme-button = Nainštalovať tému vzhľadu
 # The label of the button that appears after installing an add-on. Upon click,
 # the detailed add-on view is opened, from where the add-on can be managed.
@@ -295,10 +299,6 @@ theme-monochromatic-heading = Farebné témy
 theme-monochromatic-subheading = Nové živé farebné témy { -brand-product-name(case: "gen") }. K dispozícii na obmedzený čas.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Vyskúšajte farebné témy
-colorway-collection-independent-voices-subheading = Umožnite { -brand-short-name(case: "dat") } podobať sa na vás.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Dostupná do { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Zmeniť farebnú tému
 # Variables:

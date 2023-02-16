@@ -154,6 +154,16 @@ downloading-file-opens-in-minutes = Ga fhosgladh ann an { $minutes }m…
 downloading-file-opens-in-minutes-and-seconds = Ga fhosgladh ann an { $minutes }m { $seconds }d…
 downloading-file-opens-in-seconds = Ga fhosgladh ann an { $seconds }s…
 downloading-file-opens-in-some-time = A’ dol ga fhosgladh nuair a bhios e deiseil…
+downloading-file-opens-in-hours-and-minutes-2 =
+    .value = Ga fhosgladh ann an { $hours }u { $minutes }m…
+downloading-file-opens-in-minutes-2 =
+    .value = Ga fhosgladh ann an { $minutes }m…
+downloading-file-opens-in-minutes-and-seconds-2 =
+    .value = Ga fhosgladh ann an { $minutes }m { $seconds }d…
+downloading-file-opens-in-seconds-2 =
+    .value = Ga fhosgladh ann an { $seconds }s…
+downloading-file-opens-in-some-time-2 =
+    .value = A’ dol ga fhosgladh nuair a bhios e deiseil…
 downloading-file-click-to-open =
     .value = Fosgail e nuair a bhios e deiseil…
 
@@ -216,3 +226,17 @@ downloads-more-downloading =
         [few] Tha { $count } faidhlichean eile gan luchdadh a-nuas
        *[other] Tha { $count } faidhle eile gan luchdadh a-nuas
     }
+
+## Download errors
+
+downloads-error-alert-title = Mearachd leis an luchdadh a-nuas
+# Variables:
+#   $extension (String): the name of the blocking extension.
+downloads-error-blocked-by = Cha ghabh an luchdadh a-nuas a shàbhaladh on a tha { $extension } ’ga bhacadh.
+# Used when the name of the blocking extension is unavailable.
+downloads-error-extension = Cha ghabh an luchdadh a-nuas a shàbhaladh on a tha leudachan ’ga bhacadh.
+# Line breaks in this message are meaningful, and should be maintained.
+downloads-error-generic =
+    Cha ghabh an luchdadh a-nuas a shàbhaladh a chionn 's gun do thachair mearachd neo-aithniche.
+    
+    Feuch ris a-rithist.

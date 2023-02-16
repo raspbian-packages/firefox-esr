@@ -15,7 +15,6 @@ firefoxview-close-button =
 # Used instead of the localized relative time when a timestamp is within a minute or so of now
 firefoxview-just-now-timestamp = ממש עכשיו
 firefoxview-tabpickup-description = פתיחת דפים ממכשירים אחרים.
-firefoxview-tabpickup-recenttabs-description = רשימת הלשוניות האחרונות תופיע כאן
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% הושלמו
@@ -41,14 +40,22 @@ firefoxview-tabpickup-sync-error-primarybutton = ניסיון חוזר
 firefoxview-tabpickup-sync-disconnected-header = יש להפעיל סנכרון כדי להמשיך
 firefoxview-tabpickup-sync-disconnected-description = כדי לקבל את הלשוניות שלך, יהיה עליך לאפשר סנכרון ב־{ -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = הפעלת סנכרון בהגדרות
+firefoxview-tabpickup-password-locked-header = יש להכניס את הססמה הראשית שלך כדי להציג את הלשוניות
+firefoxview-tabpickup-password-locked-description = כדי לקבל את הלשוניות שלך, יהיה עליך להכניס את הססמה הראשית עבור { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = מידע נוסף
+firefoxview-tabpickup-password-locked-primarybutton = נא להכניס את הססמה הראשית
+firefoxview-tabpickup-signed-out-header = יש להיכנס כדי להתחבר מחדש
+firefoxview-tabpickup-signed-out-primarybutton = כניסה
 firefoxview-tabpickup-syncing = נא להמתין בזמן שהלשוניות שלך מסתנכרנות. זה יקח ממש רגע.
 firefoxview-mobile-promo-header = קבלת לשוניות מהטלפון או למחשב הלוח שלך
 firefoxview-mobile-promo-description = כדי לצפות בלשוניות האחרונות שלך מהנייד, יש להתחבר ל־{ -brand-product-name } ב־iOS או ב־Android.
 firefoxview-mobile-promo-primarybutton = קבלת { -brand-product-name } לנייד
+firefoxview-mobile-confirmation-header = 🎉 אפשר להתקדם!
 firefoxview-mobile-confirmation-description = כעת באפשרותך לקבל את הלשוניות שלך ב־{ -brand-product-name } ממחשב הלוח או הטלפון שלך.
 firefoxview-closed-tabs-title = לשוניות שנסגרו לאחרונה
-firefoxview-closed-tabs-description = פתיחה מחדש דפים שנסגרו במכשיר זה.
-firefoxview-closed-tabs-placeholder = <strong>אין דפים שנסגרו לאחרונה</strong><br/>לא צריך יותר לפחד לאבד לשונית שנסגרה. תמיד יהיה ניתן לקבל אותה כאן.
+firefoxview-closed-tabs-description2 = פתיחה מחדש דפים שנסגרו בחלון זה.
+firefoxview-closed-tabs-placeholder-header = אין לשוניות שנסגרו לאחרונה
+firefoxview-closed-tabs-placeholder-body = כשסוגרים לשונית בחלון זה, ניתן לקבל אותה בחזרה כאן.
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = הלשונית הפעילה האחרונה
 # Variables:
@@ -56,13 +63,13 @@ firefoxview-pickup-tabs-badge = הלשונית הפעילה האחרונה
 firefoxview-tabs-list-tab-button =
     .title = פתיחת { $targetURI } בלשונית חדשה
 firefoxview-try-colorways-button = לנסות ערכות צבעים
-firefoxview-no-current-colorway-collection = ערכות צבעים חדשות בדרך אליך
 firefoxview-change-colorway-button = שינוי ערכת צבעים
 # Variables:
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>אין עדיין מה לראות</strong><br/>בפעם הבאה שדף ייפתח ב־{ -brand-product-name } במכשיר אחר, ניתן יהיה לקבל אותו כאן כמו קסם.
+firefoxview-synced-tabs-placeholder-header = אין מה לראות עדיין
+firefoxview-synced-tabs-placeholder-body = בפעם הבאה שייפתח דף ב־{ -brand-product-name } במכשיר אחר, הוא יופיע כאן כמו קסם.
 firefoxview-collapse-button-show =
     .title = הצגת רשימה
 firefoxview-collapse-button-hide =

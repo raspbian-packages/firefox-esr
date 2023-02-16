@@ -63,6 +63,11 @@ toolbar-context-menu-view-customize-toolbar =
 toolbar-context-menu-view-customize-toolbar-2 =
     .label = Symbolowu lajstu přiměrić…
     .accesskey = S
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = K symbolowej lajsće připjeć
+    .accesskey = b
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = Přeco pokazać
     .accesskey = P

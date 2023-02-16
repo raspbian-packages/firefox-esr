@@ -177,10 +177,6 @@ files-and-applications-title = Fajlovi i aplikacije
 
 download-header = Preuzimanja
 
-download-save-to =
-    .label = Spasi fajlove u
-    .accesskey = v
-
 download-save-where = Spasi fajlove u
     .accesskey = v
 
@@ -858,4 +854,3 @@ certs-devices =
 desktop-folder-name = Desktop
 downloads-folder-name = Preuzimanja
 choose-download-folder-title = Izaberite direktorij za preuzimanja:
-

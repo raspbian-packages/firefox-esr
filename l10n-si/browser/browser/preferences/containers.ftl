@@ -2,8 +2,27 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+containers-window-new =
+    .title = නව අඩංගුවක් යොදන්න
+    .style = width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings =
+    .title = { $name } අඩංගුවේ සැකසුම්
+    .style = width: 45em
+
+containers-window-new2 =
+    .title = නව අඩංගුවක් යොදන්න
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = { $name } අඩංගුවේ සැකසුම්
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
+
 # This is a term to store style to be applied
 # on the three labels in the containers add/edit dialog:
 #   - name
@@ -14,18 +33,26 @@ containers-window-close =
 # of the three messages ensures that all three labels
 # will be aligned correctly.
 -containers-labels-style = min-width: 4rem
+
 containers-name-label = නම
     .accesskey = N
     .style = { -containers-labels-style }
+
+containers-name-text =
+    .placeholder = අඩංගුවට නමක් යොදන්න
+
 containers-icon-label = නිරූපකය
     .accesskey = I
     .style = { -containers-labels-style }
+
 containers-color-label = වර්ණය
     .accesskey = o
     .style = { -containers-labels-style }
+
 containers-dialog =
     .buttonlabelaccept = අහවරයි
     .buttonaccesskeyaccept = D
+
 containers-color-blue =
     .label = නිල්
 containers-color-turquoise =
@@ -42,6 +69,11 @@ containers-color-pink =
     .label = රෝස
 containers-color-purple =
     .label = දම්
+containers-color-toolbar =
+    .label = මෙව. තීරුවට ගළපන්න
+
+containers-icon-fence =
+    .label = වැට
 containers-icon-fingerprint =
     .label = ඇඟිලි සලකුණ
 containers-icon-briefcase =

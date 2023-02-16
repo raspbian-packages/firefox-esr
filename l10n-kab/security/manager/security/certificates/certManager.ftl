@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Ẓreg iɣewwaṛen n teflest n udabu n uselken
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Ẓreg iɣewwaṛen n teflest n udabu n uselken
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Ẓreg iɣewwaṛen n teflest:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Kkes aselkin
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Kkes aselkin
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Asenneftaɣ
@@ -185,8 +193,6 @@ delete-email-cert-impact = Ma tekkseḍ aselkin n yimayl n umdan, ur tettizmire�
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Aselkin s wuṭṭun n umazrar: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Ur ttazen ula d yiwen n uselkin n umsaɣ

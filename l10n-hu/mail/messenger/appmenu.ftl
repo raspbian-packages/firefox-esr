@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Sync
+appmenu-signin-panel =
+    .label = Jelentkezzen be a Syncbe
+    .accesskey = J
+appmenu-sync-sync =
+    .value = Fiók szinkronizálása
+    .accesskey = F
+appmenu-sync-manage =
+    .value = Fiók kezelése
+    .accesskey = k
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = Szinkronizálás most
+    .accesskey = m
+appmenu-sync-settings =
+    .label = Sync beállítások
+    .accesskey = S
+appmenu-sync-sign-out =
+    .label = Kijelentkezés…
+    .accesskey = K
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +93,11 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = Megnyitás
+appmenu-open-file-panel =
+    .label = Megnyitás fájlból
     .accesskey = M
-appmenu-open-panel-title =
-    .title = Megnyitás
+appmenu-open-file-panel-title =
+    .title = Megnyitás fájlból
 appmenu-open-message =
     .label = Üzenet…
     .accesskey = z
@@ -168,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = A { -brand-short-name } névjegye
     .accesskey = n
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = { -brand-shorter-name }-frissítés letöltése
+appmenuitem-banner-update-available =
+    .label = Frissítés érhető el – letöltés most
+appmenuitem-banner-update-manual =
+    .label = Frissítés érhető el – letöltés most
+appmenuitem-banner-update-unsupported =
+    .label = Nem lehet frissíteni – a rendszer nem kompatibilis
+appmenuitem-banner-update-restart =
+    .label = Frissítés érhető el – újraindítás most

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = ਡੇਟਾ ਸਾਫ਼ ਕਰੋ
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = ਡੇਟਾ ਸਾਫ਼ ਕਰੋ
+    .style = min-width: 35em
+
 clear-site-data-description = { -brand-short-name } ਵਲੋਂ ਸੰਭਾਲੇ ਗਏ ਸਾਰੇ ਕੂਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਸਾਫ਼ ਕੀਤਾ ਜਾਵੇਗਾ, ਜਿਸ ਨਾਲ ਤੁਸੀਂ ਵੈੱਬਸਾਈਟਾਂ ਤੋਂ ਸਾਈਨ ਆਉਟ ਹੋ ਜਾਉਂਗੇ ਅਤੇ ਆਫ਼ਲਾਈਨ ਵੈੱਬ ਸਮੱਗਰੀ ਹਟਾਈ ਜਾਵੇਗੀ। ਕੈਸ਼ ਡਾਟੇ ਨੂੰ ਸਾਫ਼ ਕਰਨ ਨਾਲ ਤੁਹਾਡੇ ਲਾਗਇਨ ਉੱਤੇ ਕੋਈ ਫ਼ਰਕ ਨਹੀਂ ਪਵੇਗਾ।
 
 clear-site-data-close-key =

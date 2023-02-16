@@ -6,6 +6,10 @@ app-manager-window =
     .title = Upplýsingar um forrit
     .style = width: 32em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Upplýsingar um forrit
+    .style = min-width: 32em; min-height: 20em;
+
 app-manager-remove =
     .label = Fjarlægja
     .accesskey = r

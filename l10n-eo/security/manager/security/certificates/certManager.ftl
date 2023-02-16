@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Modifi agordojn de CA atestila fido
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Modifi agordojn de CA atestila fido
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Modifi fidajn agordojn:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Forigi atestilon
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Forigi atestilon
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Servilo
@@ -185,8 +193,6 @@ delete-email-cert-impact = Se vi forviŝas personan retpoŝtan atestilon vi ne p
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Atestilo kun seria numero: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Ne sendi klientan atestilon

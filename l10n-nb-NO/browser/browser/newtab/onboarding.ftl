@@ -25,6 +25,12 @@ return-to-amo-addon-title = La oss nå hente <img data-l10n-name="icon"/><b>{ $a
 return-to-amo-add-extension-label = Legg til utvidelsen
 return-to-amo-add-theme-label = Legg til temaet
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Si hei til { -brand-short-name }
+mr1-return-to-amo-addon-title = Du har en rask nettleser, privat nettleser for hånden. Nå kan du legge til <b>{ $addon-name }</b> og gjøre enda mer med { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = Legg til { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Fremdrift: trinn { $current } av { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Fremdrift: trinn { $current } av { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -261,6 +269,13 @@ mr2022-onboarding-secondary-skip-button-label = Hopp over dette trinnet
 
 ## MR2022 New User Pin Firefox screen strings
 
+# Title used on about:welcome for new users when Firefox is not pinned.
+# In this context, open up is synonymous with "Discover".
+# The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
+# If this translation does not make sense in your language, feel free to use the word "discover."
+mr2022-onboarding-welcome-pin-header = Åpne opp for et fantastisk internett
+# Subtitle is used on onboarding page for new users page when Firefox is not pinned
+mr2022-onboarding-welcome-pin-subtitle = Start { -brand-short-name } fra hvor som helst med ett enkelt klikk. Hver gang du gjør det, velger du en mer åpen og uavhengig internett.
 # Primary button string used on welcome page for when Firefox is not pinned.
 mr2022-onboarding-pin-primary-button-label =
     { PLATFORM() ->
@@ -277,62 +292,87 @@ mr2022-onboarding-set-default-only-subtitle = Start med en nettleser støttet av
 
 # Title used on multistage onboarding page for existing users when Firefox is not pinned
 mr2022-onboarding-existing-pin-header = Takk for at du liker { -brand-product-name }
+# Subtitle is used on onboarding page for existing users when Firefox is not pinned
+mr2022-onboarding-existing-pin-subtitle = Start et sunnere internett fra hvor som helst med et enkelt klikk. Den siste oppdateringen vår er fullpakket med nye ting vi tror du vil elske.
+# Subtitle will be used on the welcome screen for existing users
+# when they already have Firefox pinned but not set as default
+mr2022-onboarding-existing-set-default-only-subtitle = Bruk en nettleser som beskytter personvernet ditt mens du beveger deg rundt på nettet. Den siste oppdateringen vår er fullpakket med ting du elsker.
+mr2022-onboarding-existing-pin-checkbox-label = Legg også til { -brand-short-name } privat nettlesing
 
 ## MR2022 New User Set Default screen strings
 
+# This string is the title used when the user already has pinned the browser, but has not set default.
+mr2022-onboarding-set-default-title = Gjøre { -brand-short-name } til din standardnettleser?
+mr2022-onboarding-set-default-primary-button-label = Gjør { -brand-short-name } til standardnettleser
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-set-default-subtitle = Bruk en nettleser støttet av en ideell organisasjon. Vi forsvarer personvernet ditt mens du surfer rundt på nettet.
 
 ## MR2022 Get Started screen strings.
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-get-started-primary-subtitle = Vår nyeste versjon er laget for å møte dine behov og gjøre det enklere å navigere på nettet. Den er fullpakket med funksjoner vi tror du vil elske.
+mr2022-onboarding-get-started-primary-button-label = Hurtig konfigurering
 
 ## MR2022 Import Settings screen strings
 
+mr2022-onboarding-import-header = Lynrask konfigurering
+mr2022-onboarding-import-subtitle = Konfiguer { -brand-short-name } slik du liker det. Legg til bokmerker, passord og mer fra den gamle nettleseren din.
+mr2022-onboarding-import-primary-button-label-no-attribution = Importer fra tidligere nettleser
 
 ## If your language uses grammatical genders, in the description for the
 ## colorway feel free to switch from "You are a X. You…" (e.g. "You are a
 ## Playmaker. You create…") to "X: you…" ("Playmaker: You create…"). This might
 ## help creating a more inclusive translation.
 
-mr2022-onboarding-colorway-primary-button-label = Velg fargesammensetting
+mr2022-onboarding-colorway-title = Velg fargen som inspirerer deg
+mr2022-onboarding-colorway-subtitle = Uavhengige stemmer kan endre kultur.
+mr2022-onboarding-colorway-primary-button-label-continue = Still inn og fortsett
 mr2022-onboarding-existing-colorway-checkbox-label = Gjør { -firefox-home-brand-name } til din fargerike startside
 mr2022-onboarding-colorway-label-default = Standard
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Standard
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Gjeldende { -brand-short-name }-farger
 mr2022-onboarding-colorway-description-default = <b>Bruk mine nåværende { -brand-short-name }-farger.</b>
 mr2022-onboarding-colorway-label-playmaker = Spiller
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Spiller
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Spiller (rød)
 mr2022-onboarding-colorway-description-playmaker = <b>Du er en spiller.</b> Du skaper muligheter til å vinne og hjelper alle rundt deg med å heve spillet sitt.
 mr2022-onboarding-colorway-label-expressionist = Ekspresjonistisk
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Ekspresjonistisk
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Ekspresjonistisk (gul)
 mr2022-onboarding-colorway-description-expressionist = <b>Du er en ekspresjonist.</b> Du ser verden annerledes og kreasjonene dine vekker andres følelser.
 mr2022-onboarding-colorway-label-visionary = Visjonær
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Visjonær
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Visjonær (grønn)
 mr2022-onboarding-colorway-description-visionary = <b>Du er en visjonær.</b> Du stiller spørsmål ved status quo og får andre til å forestille seg en bedre fremtid.
 mr2022-onboarding-colorway-label-activist = Aktivist
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aktivist
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktivist (blå)
 mr2022-onboarding-colorway-description-activist = <b>Du er en aktivist.</b> Du engasjerer deg for å gjøre verden bedre, og du får andre med deg.
 mr2022-onboarding-colorway-label-dreamer = Drømmer
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Drømmer
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Drømmer (lilla)
 mr2022-onboarding-colorway-description-dreamer = <b>Du er en drømmer.</b> Du tror at formue favoriserer de dristige og inspirerer andre til å være modige.
 mr2022-onboarding-colorway-label-innovator = Innovatør
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Innovatør
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Innovatør (oransje)
 mr2022-onboarding-colorway-description-innovator = <b>Du er en innovatør.</b> Du ser muligheter overalt og påvirker livene til alle rundt deg.
 
 ## MR2022 Multistage Mobile Download screen strings
 
+mr2022-onboarding-mobile-download-title = Bytt fra bærbar PC til telefon og tilbake igjen
+mr2022-onboarding-mobile-download-subtitle = Hent faner fra én enhet og fortsett der du slapp på en annen. Synkroniser også bokmerkene og passordene dine overalt hvor du bruker { -brand-product-name }.
 mr2022-onboarding-mobile-download-cta-text = Skann QR-koden for å få { -brand-product-name } for mobil eller <a data-l10n-name="download-label">send deg selv en nedlastingslenke.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Skann QR-koden for å få { -brand-product-name } for mobil
 
 ## MR2022 Upgrade Dialog screens
 ## Pin private window screen shown only for users who don't have Firefox private pinned
 
+mr2022-upgrade-onboarding-pin-private-window-header = Få privat nettlesingsfrihet med ett klikk
+mr2022-upgrade-onboarding-pin-private-window-subtitle = Ingen lagrede infokapsler eller historikk, rett fra skrivebordet. Surf som om ingen ser på.
 mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
     { PLATFORM() ->
         [macos] Behold { -brand-short-name } privat nettlesing i Dock
@@ -341,12 +381,41 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 
 ## MR2022 Privacy Segmentation screen strings
 
+mr2022-onboarding-privacy-segmentation-title = Vi respekterer alltid ditt personvern
+mr2022-onboarding-privacy-segmentation-subtitle = Fra intelligente forslag til smartere søk. Vi jobber alltid med å gjøre { -brand-product-name } bedre og mer personlig.
+mr2022-onboarding-privacy-segmentation-text-cta = Hva vil du se når vi lager nye funksjoner som bruker dine data til å forbedre nettleseropplevelsen din?
 mr2022-onboarding-privacy-segmentation-button-primary-label = Bruk { -brand-product-name }-anbefalinger
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Vis detaljert informasjon
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-title = Du hjelper oss med å bygge et bedre internett.
+mr2022-onboarding-gratitude-title = Du hjelper oss med å bygge et bedre internett
 mr2022-onboarding-gratitude-subtitle = Takk for at du bruker { -brand-short-name }, støttet av Mozilla Foundation. Med din støtte jobber vi for å gjøre internett mer åpent, tilgjengelig og bedre for alle.
 mr2022-onboarding-gratitude-primary-button-label = Se hva som er nytt
 mr2022-onboarding-gratitude-secondary-button-label = Begynn å surfe
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Føl deg hjemme
+onboarding-infrequent-import-subtitle = Enten du slår deg til rette eller bare er innom, husk at du kan importere bokmerker, passord og mer.
+onboarding-infrequent-import-primary-button = Importer til { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Person som jobber på en bærbar PC omgitt av stjerner og blomster
+mr2022-onboarding-default-image-alt =
+    .aria-label = Person som klemmer { -brand-product-name }-logoen
+mr2022-onboarding-import-image-alt =
+    .aria-label = Person som kjører på et skateboard med en boks med programvareikoner
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Frosker som hopper over liljeblokker med en QR-kode i midten for å laste ned { -brand-product-name } for mobil
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = En tryllestav får logoen for { -brand-product-name } privat nettlesing til å komme ut av en hatt
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Lyshudede og mørkhudede hender gir hverandre en high five
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Utsikt over en solnedgang gjennom et vindu med en rev og en stueplante i en vinduskarm
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = En hånd spraymaler en fargerik collage av et grønt øye, oransje sko, rød basketball, lilla hodetelefoner, blått hjerte og gul krone

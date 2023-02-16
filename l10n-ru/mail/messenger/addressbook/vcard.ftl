@@ -36,6 +36,10 @@ vcard-n-suffix = Суффикс
 vcard-n-add-suffix =
     .title = Добавить суффикс
 
+# Nickname
+
+vcard-nickname = Псевдоним
+
 # Email vCard field
 
 vcard-email-header = Адреса электронной почты
@@ -54,6 +58,10 @@ vcard-url-label = Веб-сайт
 vcard-tel-header = Номера телефонов
 vcard-tel-add = Добавить номер телефона
 vcard-tel-label = Номер телефона
+# Or "Mobile"
+vcard-entry-type-cell = Мобильный телефон
+vcard-entry-type-fax = Факс
+vcard-entry-type-pager = Пейджер
 
 # TZ vCard field
 
@@ -62,9 +70,13 @@ vcard-tz-add = Добавить часовой пояс
 
 # IMPP vCard field
 
-vcard-impp-header = Учётные записи чата
+vcard-impp2-header = Мгновенные сообщения
 vcard-impp-add = Добавить учётную запись чата
 vcard-impp-label = Учётная запись чата
+vcard-impp-select = Протокол
+vcard-impp-option-other = Другое
+vcard-impp-input-label = URI
+vcard-impp-input-title = URI для обмена мгновенными сообщениями
 
 # BDAY and ANNIVERSARY vCard field
 
@@ -82,8 +94,6 @@ vcard-adr-header = Адреса
 vcard-adr-add = Добавить адрес
 vcard-adr-label = Адрес
 vcard-adr-delivery-label = Метка для доставки
-vcard-adr-pobox = Почтовый ящик
-vcard-adr-ext = Расширенный адрес
 vcard-adr-street = Улица
 # Or "Locality"
 vcard-adr-locality = Город
@@ -103,10 +113,26 @@ vcard-note-add = Добавить заметку
 vcard-org-header = Организация
 vcard-org-add = Добавить организацию
 vcard-org-title = Должность
+vcard-org-title-input =
+    .title = Должность или позиция
+    .placeholder = Должность
 vcard-org-role = Роль
+vcard-org-role-input =
+    .title = Функция или роль, выполняемая в конкретной ситуации
+    .placeholder = Роль в проекте
 vcard-org-org = Организация
+vcard-org-org-input =
+    .title = Наименование организации
+    .placeholder = Наименование компании
+vcard-org-org-unit = Департамент
+vcard-org-org-unit-input =
+    .title = Наименование подразделения организации
+    .placeholder = Департамент
 
 # Custom properties
 
 vcard-custom-header = Пользовательские свойства
 vcard-custom-add = Добавить пользовательские свойства
+vcard-remove-button-title =
+    .title = Удалить
+vcard-remove-button = Удалить

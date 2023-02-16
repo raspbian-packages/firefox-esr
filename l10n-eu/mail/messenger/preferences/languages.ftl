@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = { -brand-short-name } hizkuntza ezarpenak
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = { -brand-short-name } hizkuntza-ezarpenak
+
 messenger-languages-description = { -brand-short-name } lehen hizkuntza erakutsiko dizu lehenetsita eta ordezkoak zerrendako ordenan erakutsiko dizkizu behar izanez gero.
 
 messenger-languages-search = Bilatu hizkuntza gehiago...

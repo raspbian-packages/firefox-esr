@@ -108,6 +108,14 @@ graphics-window-protocol = פרוטוקול חלון
 # Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
 graphics-desktop-environment = סביבת שולחן עבודה
 place-database-title = מסד נתוני מיקום
+place-database-stats = נתונים סטטיסטיים
+place-database-stats-show = הצגת נתונים סטטיסטיים
+place-database-stats-hide = הסתרת נתונים סטטיסטיים
+place-database-stats-count = כמות
+place-database-stats-size-kib = גודל (KiB)
+place-database-stats-size-perc = גודל (%)
+place-database-stats-efficiency-perc = יעילות (%)
+place-database-stats-sequentiality-perc = רצף (%)
 place-database-integrity = תקינות
 place-database-verify-integrity = וידוא תקינות
 a11y-title = נגישות

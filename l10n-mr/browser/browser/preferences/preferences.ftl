@@ -192,10 +192,6 @@ files-and-applications-title = फाईल आणि ॲप्लिकेश�
 
 download-header = डाउनलोड्ज
 
-download-save-to =
-    .label = फाइल्स येथे साठवा
-    .accesskey = v
-
 download-save-where = फाइल्स येथे साठवा
     .accesskey = v
 
@@ -1011,8 +1007,3 @@ certs-devices =
 desktop-folder-name = डेस्कटॉप
 downloads-folder-name = डाउनलोड
 choose-download-folder-title = डाउनलोड संचयिका(फोल्डर) निवडा:
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = फाईल { $service-name } इथे साठवा

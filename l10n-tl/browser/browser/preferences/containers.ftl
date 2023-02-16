@@ -11,6 +11,15 @@ containers-window-update-settings =
     .title = Mga Setting ng Container { $name }
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Magdagdag ng Bagong Container
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Mga Setting ng Container { $name }
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

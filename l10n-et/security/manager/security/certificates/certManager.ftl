@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = SK sertifikaadi usaldusväärsuse sätete redigeerimine
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = SK sertifikaadi usaldusväärsuse sätete redigeerimine
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Usaldusväärsuse sätete redigeerimine:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Sertifikaadi kustutamine
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Sertifikaadi kustutamine
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Host

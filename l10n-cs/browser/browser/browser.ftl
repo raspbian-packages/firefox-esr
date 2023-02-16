@@ -38,6 +38,20 @@ browser-main-window-mac =
     .data-title-private = { -brand-full-name } - (Anonymní prohlížení)
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } - (Anonymní prohlížení)
+# These are the default window titles everywhere except macOS. The first two
+# attributes are used when the web content opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# The last two are for use when there *is* a content title.
+# Variables:
+#  $content-title (String): the title of the web content.
+browser-main-window-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — anonymní prohlížení
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } — anonymní prohlížení
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
@@ -62,6 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } — anonymní prohlížení
 
 ##
 
@@ -119,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Získat pomoc
 urlbar-search-tips-confirm = Ok, rozumím
+urlbar-search-tips-confirm-short = Rozumím
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Tip:
+urlbar-result-menu-button =
+    .title = Otevře nabídku
+urlbar-result-menu-remove-from-history =
+    .label = Smazat z historie
+    .accesskey = r
+urlbar-result-menu-tip-get-help =
+    .label = Získat pomoc
+    .accesskey = Z
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -132,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Méně psaní, více výsledků: používejte { $engineName } přímo z adresního řádku.
 urlbar-search-tips-redirect-2 = Zadejte do adresního řádku vyhledávaný text a uvidíte návrhy z vyhledávače { $engineName } a vaší historie prohlížení.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Vyhledávání je nyní jednodušší. Zkuste své vyhledávání upřesnit zde v adresním řádku. Chcete-li místo toho zobrazit adresu URL, přejděte v nastavení do Vyhledávání.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Klepněte na tuto zkratku, abyste rychleji našli, co potřebujete.
@@ -252,35 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Akce ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
-# Opens the about:addons page
+# Opens the about:addons page in the home / recommendations section
 quickactions-addons = Zobrazit doplňky
-quickactions-cmd-addons = doplňky, rozšíření, vzhledy
+quickactions-cmd-addons2 = doplňky
 # Opens the bookmarks library window
-quickactions-bookmarks = Zobrazit záložky
+quickactions-bookmarks2 = Správa záložek
 quickactions-cmd-bookmarks = záložky
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Vymazat historii
 quickactions-cmd-clearhistory = vymazat historii
 # Opens about:downloads page
-quickactions-downloads = Otevřít seznam stahování
+quickactions-downloads2 = Zobrazit stahování
 quickactions-cmd-downloads = stahování
+# Opens about:addons page in the extensions section
+quickactions-extensions = Správa rozšíření
+quickactions-cmd-extensions = rozšíření
 # Opens the devtools web inspector
-quickactions-inspector = Otevřít průzkumník
+quickactions-inspector2 = Otevřít nástroje pro vývojáře
 quickactions-cmd-inspector = průzkumník, nástroje pro vývojáře, devtools
 # Opens about:logins
-quickactions-logins = Zobrazit přihlašovací údaje
+quickactions-logins2 = Správa přihlašovacích údajů
 quickactions-cmd-logins = přihlašovací údaje, hesla
+# Opens about:addons page in the plugins section
+quickactions-plugins = Správa zásuvných modulů
+quickactions-cmd-plugins = zásuvné moduly
 # Opens the print dialog
-quickactions-print = Tisk
+quickactions-print2 = Vytisknout stránku
 quickactions-cmd-print = tisk
 # Opens a new private browsing window
-quickactions-private = Otevřít nové anonymní okno
+quickactions-private2 = Otevřít anonymní okno
 quickactions-cmd-private = anonymní prohlížení
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh =
@@ -301,11 +332,14 @@ quickactions-restart =
     }
 quickactions-cmd-restart = restart, restartovat
 # Opens the screenshot tool
-quickactions-screenshot2 = Pořídit snímek stránky
+quickactions-screenshot3 = Pořídit snímek stránky
 quickactions-cmd-screenshot = snímek obrazovky, stránky
 # Opens about:preferences
-quickactions-settings = Otevřít nastavení
+quickactions-settings2 = Nastavení
 quickactions-cmd-settings = nastavení, předvolby, možnosti
+# Opens about:addons page in the themes section
+quickactions-themes = Nastavení vzhledu
+quickactions-cmd-themes = motivy vzhledu
 # Opens a SUMO article explaining how to update the browser
 quickactions-update =
     { -brand-short-name.gender ->
@@ -316,8 +350,11 @@ quickactions-update =
     }
 quickactions-cmd-update = aktualizace, aktualizovat
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Zobrazit zdrojový kód
+quickactions-viewsource2 = Zobrazit zdrojový kód stránky
 quickactions-cmd-viewsource = zdrojový kód
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Zjistit více o rychlých akcích
 
 ## Bookmark Panel
 
@@ -512,6 +549,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
     .tooltiptext = Zvukový výstup
+popup-select-window-or-screen =
+    .label = Okno nebo obrazovka:
+    .accesskey = O
 popup-all-windows-shared = Budou sdílena všechna viditelná okna na vaší obrazovce.
 popup-screen-sharing-block =
     .label = Blokovat
@@ -533,6 +573,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Pokud chcete používat zkratku F12, otevřete nejprve DevTools z nabídky Nástroje pro vývojáře.
+enable-devtools-popup-description2 = Pokud chcete používat zkratku F12, otevřete nejprve DevTools z nabídky Nástroje prohlížeče.
 
 ## URL Bar
 
@@ -664,6 +705,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Rychlé akce
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Zapnout zobrazení čtečky
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Zavřít zobrazení čtečky
 
 ## Full Screen and Pointer Lock UI
 
@@ -983,3 +1033,47 @@ private-browsing-indicator-label = Anonymní prohlížení
 unified-extensions-button =
     .label = Rozšíření
     .tooltiptext = Rozšíření
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Rozšíření
+    .tooltiptext =
+        Rozšíření
+        Vyžadována oprávnění
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } zabránil této stránce v automatickém opětovném načtení.
+        [feminine] { -brand-short-name } zabránila této stránce v automatickém opětovném načtení.
+        [neuter] { -brand-short-name } zabránilo této stránce v automatickém opětovném načtení.
+       *[other] Aplikace { -brand-short-name } zabránila této stránce v automatickém opětovném načtení.
+    }
+refresh-blocked-redirect-label =
+    { -brand-short-name.gender ->
+        [masculine] { -brand-short-name } zabránil této stránce v automatickém přesměrování na jinou stránku.
+        [feminine] { -brand-short-name } zabránila této stránce v automatickém přesměrování na jinou stránku.
+        [neuter] { -brand-short-name } zabránilo této stránce v automatickém přesměrování na jinou stránku.
+       *[other] Aplikace { -brand-short-name } zabránila této stránce v automatickém přesměrování na jinou stránku.
+    }
+refresh-blocked-allow =
+    .label = Povolit
+    .accesskey = P
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = Služba { -relay-brand-name } skryje vaši skutečnou e-mailovou adresu, aby vás ochránila před úniky dat a nevyžádanou poštou.
+firefox-relay-offer-how-we-integrate =
+    { -brand-shorter-name.gender ->
+        [masculine] Budete-li pokračovat, budete moci generovat nové e-mailové masky služby { -relay-brand-short-name } přímo ze správce přihlašovacích údajů ve { -brand-shorter-name(case: "loc") }.
+        [feminine] Budete-li pokračovat, budete moci generovat nové e-mailové masky služby { -relay-brand-short-name } přímo ze správce přihlašovacích údajů v { -brand-shorter-name(case: "loc") }.
+        [neuter] Budete-li pokračovat, budete moci generovat nové e-mailové masky služby { -relay-brand-short-name } přímo ze správce přihlašovacích údajů v { -brand-shorter-name(case: "loc") }.
+       *[other] Budete-li pokračovat, budete moci generovat nové e-mailové masky služby { -relay-brand-short-name } přímo ze správce přihlašovacích údajů v aplikaci { -brand-shorter-name }.
+    }
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Všechny e-maily z <strong>{ $sitename }</strong> přepošleme na <strong>{ $useremail }</strong>.

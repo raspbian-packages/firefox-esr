@@ -73,7 +73,7 @@ abuse-report-spam-example = Enghraifft: Mewnosod hysbysebion ar dudalennau gwe
 abuse-report-settings-reason-v2 = Newidiodd fy mheiriant chwilio, hafan, neu dab newydd heb roi gwybod na gofyn imi
 abuse-report-settings-suggestions = Cyn adrodd ar yr estyniad, gallwch roi cynnig ar newid eich gosodiadau:
 abuse-report-settings-suggestions-search = Newid eich gosodiadau chwilio rhagosodedig
-abuse-report-settings-suggestions-homepage = Newidiwch eich tudalen gartref a'ch tab newydd
+abuse-report-settings-suggestions-homepage = Newidiwch eich tudalen cartref a'ch tab newydd
 
 abuse-report-deceptive-reason-v2 = Mae'n honni ei fod yn rhywbeth nad ydyw
 abuse-report-deceptive-example = Enghraifft: Disgrifiad neu ddelweddau camarweiniol

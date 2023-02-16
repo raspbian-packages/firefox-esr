@@ -11,12 +11,16 @@ toolbar-context-menu-menu-bar =
 menu-tools-settings =
     .label = Innstillingar
     .accesskey = I
+
 menu-addons-and-themes =
     .label = Tillegg og tema
     .accesskey = T
 
 ## Help Menu
 
+menu-help-share-feedback =
+    .label = Del idear og tilbakemeldingar
+    .accesskey = D
 
 ## Mail Toolbar
 

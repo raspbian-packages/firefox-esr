@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = La rulanalizilo kaptas profilon
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Montri pli da informo
 profiler-popup-description-title =

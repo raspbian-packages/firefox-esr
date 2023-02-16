@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Rěcne nastajenja webboka
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Rěcne nastajenja webboka
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Rěcne nastajenja { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Rěcne nastajenja { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } pokažo prědnu rěc ako waš standard a dalšne rěcy, jolic trjeba, w pórěźe, w kótaremž se zjewijo.
 

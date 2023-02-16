@@ -16,10 +16,8 @@ openpgp-one-recipient-status-open-details =
     .label = Hapni hollësitë dhe përpunoni pranimin…
 openpgp-one-recipient-status-discover =
     .label = Zbulo kyç të ri ose të përditësuar
-
 openpgp-one-recipient-status-instruction1 = Që t’i dërgohet një marrësi një mesazh i fshehtëzuar skaj-më-skaj, lypset të merrni kyçin e tij publik OpenPGP dhe t’i vini shenjë si të pranuar.
 openpgp-one-recipient-status-instruction2 = Që të merrni kyçin e tij publik, importojeni prej email-it që ju kanë dërguar dhe që e përmban atë. Ndryshe, mund të provoni të zbulohet kyçi i tij publik në një drejtori.
-
 openpgp-key-own = I pranuar (kyç personal)
 openpgp-key-secret-not-personal = Jo i përdorshëm
 openpgp-key-verified = I pranuar (i verifikuar)
@@ -27,6 +25,19 @@ openpgp-key-unverified = I pranuar (i paverifikuar)
 openpgp-key-undecided = I papranuar (i lëkundur)
 openpgp-key-rejected = I papranuar (i hedhur poshtë)
 openpgp-key-expired = I skaduar
-
 openpgp-intro = Kyçe publikë të passhëm për { $key }
-
+openpgp-pubkey-import-id = ID: { $kid }
+openpgp-pubkey-import-fpr = Shenja gishti: { $fpr }
+openpgp-pubkey-import-intro =
+    { $num ->
+        [one] Kartela përmban një kyç publik, siç tregohet më poshtë:
+       *[other] Kartela përmban { $num } kyçe publik, siç tregohen më poshtë:
+    }
+openpgp-pubkey-import-accept =
+    { $num ->
+        [one] E pranoni këtë kyç për verifikim nënshkrimesh dixhitale dhe për fshehtëzim mesazhesh, për krejt adresat e treguara email?
+       *[other] I pranoni këta kyçe për verifikim nënshkrimesh dixhitale dhe për fshehtëzim mesazhesh, për krejt adresat e treguara email?
+    }
+pubkey-import-button =
+    .buttonlabelaccept = Importo
+    .buttonaccesskeyaccept = I

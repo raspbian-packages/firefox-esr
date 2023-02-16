@@ -9,6 +9,10 @@ devmgr =
     .title = Kinuk'samajel taq okisaxel
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Kinuk'samajel taq okisaxel
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Taq rujuperaj jikomal chuqa' taq okisaxel
 

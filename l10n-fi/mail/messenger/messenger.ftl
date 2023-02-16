@@ -136,6 +136,9 @@ message-header-show-sender-full-address-description = Sähköpostiosoite näytet
 message-header-show-recipient-avatar =
     .label = Näytä lähettäjän profiilikuva
     .accesskey = p
+message-header-all-headers =
+    .label = Näytä kaikki otsakkeet
+    .accesskey = a
 
 ## Action Button Context Menu
 

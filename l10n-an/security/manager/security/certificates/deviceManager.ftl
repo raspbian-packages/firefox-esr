@@ -9,6 +9,10 @@ devmgr =
     .title = Chestor de dispositivos
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Chestor de dispositivos
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Modulos y dispositivos de seguranza
 

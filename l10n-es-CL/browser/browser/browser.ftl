@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Navegación privada con { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Navegación privada con { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Obtener ayuda
 urlbar-search-tips-confirm = Ok, ¡ya caché!
+urlbar-search-tips-confirm-short = Entendido
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Consejo:
+urlbar-result-menu-button =
+    .title = Abrir menú
+urlbar-result-menu-remove-from-history =
+    .label = Eliminar del historial
+    .accesskey = R
+urlbar-result-menu-tip-get-help =
+    .label = Obtener ayuda
+    .accesskey = h
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Escribe menos, encuentra más: Busca con { $engineName } directo desde tu barra de direcciones.
 urlbar-search-tips-redirect-2 = Empieza tu búsqueda en la barra de direcciones para ver sugerencias sacadas de { $engineName } y de tu historial de navegación.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = La búsqueda es ahora más simple. Intenta hacer tu búsqueda más específica aquí en la barra de direcciones. Si prefieres mostrar la URL, visita Buscar, en los ajustes.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Selecciona este acceso directo para encontrar lo que necesitas más rápido.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Acciones ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Ver complementos
-quickactions-cmd-addons = complementos, extensiones, temas
 quickactions-cmd-addons2 = complementos
 # Opens the bookmarks library window
-quickactions-bookmarks = Ver marcadores
+quickactions-bookmarks2 = Gestionar marcadores
 quickactions-cmd-bookmarks = marcadores
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Limpiar historial
 quickactions-cmd-clearhistory = limpiar historial
 # Opens about:downloads page
-quickactions-downloads = Abrir descargas
+quickactions-downloads2 = Ver descargas
 quickactions-cmd-downloads = descargas
 # Opens about:addons page in the extensions section
 quickactions-extensions = Gestionar extensiones
 quickactions-cmd-extensions = extensiones
 # Opens the devtools web inspector
-quickactions-inspector = Abrir inspector
+quickactions-inspector2 = Abrir herramientas de desarrollador
 quickactions-cmd-inspector = inspector, herramientas de desarrollo
 # Opens about:logins
-quickactions-logins = Ver credenciales
+quickactions-logins2 = Gestionar contraseñas
 quickactions-cmd-logins = Credenciales, contraseñas
 # Opens about:addons page in the plugins section
 quickactions-plugins = Gestionar complementos…
 quickactions-cmd-plugins = complementos
 # Opens the print dialog
-quickactions-print = Imprimir
+quickactions-print2 = Imprimir página
 quickactions-cmd-print = imprimir
 # Opens a new private browsing window
-quickactions-private = Abrir ventana de navegación privada
+quickactions-private2 = Abrir ventana privada
 quickactions-cmd-private = navegación privada
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Refrescar { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = refrescar
 quickactions-restart = Reiniciar { -brand-short-name }
 quickactions-cmd-restart = reiniciar
 # Opens the screenshot tool
-quickactions-screenshot2 = Tomar una captura de pantalla
+quickactions-screenshot3 = Tomar una captura de pantalla
 quickactions-cmd-screenshot = captura de pantalla
 # Opens about:preferences
-quickactions-settings = Abrir Ajustes
+quickactions-settings2 = Administrar ajustes
 quickactions-cmd-settings = ajustes, preferencias, opciones
 # Opens about:addons page in the themes section
 quickactions-themes = Gestionar temas
@@ -323,8 +332,11 @@ quickactions-cmd-themes = temas
 quickactions-update = Actualizar { -brand-short-name }
 quickactions-cmd-update = actualización
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Ver fuente
+quickactions-viewsource2 = Ver código fuente de la página
 quickactions-cmd-viewsource = ver fuente, fuente
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Aprender más sobre las acciones rápidas
 
 ## Bookmark Panel
 
@@ -485,6 +497,9 @@ popup-select-microphone-icon =
     .tooltiptext = Micrófono
 popup-select-speaker-icon =
     .tooltiptext = Salida de audio
+popup-select-window-or-screen =
+    .label = Ventana o pantalla:
+    .accesskey = V
 popup-all-windows-shared = Todas las ventanas visibles en tu pantalla serán compartidas.
 popup-screen-sharing-block =
     .label = Bloquear
@@ -506,6 +521,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Para usar el acceso directo F12, primero abre las herramientas de desarrollo a través del menú Desarrollador web.
+enable-devtools-popup-description2 = Para usar el atajo F12, primero abre las Herramientas de desarrollador a través del menú de herramientas del navegador.
 
 ## URL Bar
 
@@ -637,6 +653,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Acciones rápidas
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Ingresar a la vista del lector
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Cerrar la vista del lector
 
 ## Full Screen and Pointer Lock UI
 
@@ -914,3 +939,29 @@ private-browsing-indicator-label = Navegación privada
 unified-extensions-button =
     .label = Extensiones
     .tooltiptext = Extensiones
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Extensiones
+    .tooltiptext =
+        Extensiones
+        Permisos requeridos
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } ha evitado que esta página se recargue automáticamente.
+refresh-blocked-redirect-label = { -brand-short-name } ha evitado que esta página redireccionara automáticamente hacia otra.
+refresh-blocked-allow =
+    .label = Permitir
+    .accesskey = P
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } enmascara tu verdadera dirección de correo electrónico para ayudar a protegerte de filtraciones de datos y spam.
+firefox-relay-offer-how-we-integrate = Al continuar, podrás generar nuevas máscaras de correo electrónico de { -relay-brand-short-name } directamente desde tu administrador de contraseñas de { -brand-shorter-name }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Reenviaremos todos los correos electrónicos de <strong>{ $sitename }</strong> a <strong>{ $useremail }</strong>.

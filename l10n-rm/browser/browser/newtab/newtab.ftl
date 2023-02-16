@@ -252,6 +252,10 @@ newtab-pocket-last-card-desc = Returna pli tard per scuvrir dapli.
 newtab-pocket-last-card-image =
     .alt = Ussa sas ti tut
 
+# A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-save = Memorisar
+newtab-pocket-saved = Memorisà
+
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
 
@@ -271,6 +275,7 @@ newtab-custom-sponsored-sites = Scursanidas sponsuradas
 newtab-custom-pocket-title = Recumandà da { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Cuntegn excepziunal, tschernì da { -pocket-brand-name }, in product da { -brand-product-name }
 newtab-custom-pocket-sponsored = Artitgels sponsurads
+newtab-custom-pocket-show-recent-saves = Mussar ils elements memorisads dacurt
 newtab-custom-recent-title = Activitad recenta
 newtab-custom-recent-subtitle = Ina selecziun da websites e cuntegn visità dacurt
 newtab-custom-close-button = Serrar

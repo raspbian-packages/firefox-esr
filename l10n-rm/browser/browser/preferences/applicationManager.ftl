@@ -6,6 +6,10 @@ app-manager-window =
     .title = Detagls davart l'applicaziun
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Detagls davart l'applicaziun
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Allontanar
     .accesskey = A

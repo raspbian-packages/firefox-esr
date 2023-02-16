@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = CA сертификатына сену баптауларын түзету
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA сертификатына сену баптауларын түзету
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Сену баптауларын түзету:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Сертификатты өшіру
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Сертификатты өшіру
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Хост
@@ -185,8 +193,6 @@ delete-email-cert-impact = Егер сіз электронды пошта па�
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Сериялық нөмірі бар сертификат: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Клиент сертификатын жібермеу

@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Roghainnean cànan na duilleige-lìn
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Roghainnean cànan na duilleige-lìn
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Roghainnean cànan { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Roghainnean cànan { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = Nochdaidh { -brand-short-name } a’ chiad chànan a ghnàth agus an corr dhiubh ma bhios feum orra, san òrdugh sa bheil iad ann.
 

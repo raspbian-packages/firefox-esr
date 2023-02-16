@@ -9,6 +9,10 @@ devmgr =
     .title = Toestelbestuurder
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Toestelbestuurder
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Sekuriteitsmodules en -toestelle
 

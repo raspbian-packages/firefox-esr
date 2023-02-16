@@ -57,6 +57,25 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } utilizadores
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Desapareçam faixas de cookies!
+cfr-cookie-banner-handling-body = Permitir que o { -brand-short-name } rejeite automaticamente todos os pedidos de banner de cookies, quando possível. Caso contrário, todos os cookies serão aceites para rejeitar ainda mais banners.
+cfr-cookie-banner-accept-button = Rejeitar Pedidos
+    .accesskey = R
+cfr-cookie-banner-reject-button = Agora não
+    .accesskey = A
+cfr-cookie-banner-handling-header-variant-1 = Ver menos pop-ups de cookies
+cfr-cookie-banner-reject-button-variant-1 = Não, obrigado
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Redução de Faixas de Cookies
+cfr-cookie-banner-accept-button-variant-2 = Permitir
+    .accesskey = P
+cfr-cookie-banner-reject-button-variant-2 = Agora não
+    .accesskey = n
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sincronize os seus marcadores em todo o lado.
@@ -156,10 +175,6 @@ spotlight-total-cookie-protection-body = A Proteção total de cookies impede qu
 spotlight-total-cookie-protection-expanded = O { -brand-short-name } isola as cookies, limitando o acesso aos mesmos ao site em que está, de modo a que os rastreadores não os possam utilizar para o monitorizar. Com este acesso antecipado, estará a ajudar a otimizar esta funcionalidade para que possamos continuar a construir uma Internet melhor para todos.
 spotlight-total-cookie-protection-primary-button = Ativar a Proteção total de cookies
 spotlight-total-cookie-protection-secondary-button = Agora não
-cfr-total-cookie-protection-header = Graças a si, { -brand-short-name } está mais privado e seguro do que nunca
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = A Proteção Total de Cookies é a nossa proteção de privacidade mais forte até ao momento – e agora é uma predefinição para o { -brand-short-name } em todo o lado. Não teríamos conseguido fazer isto sem os participantes na versão de acesso antecipado, como você. Muito obrigado por nos ajudar a criar uma Internet melhor e mais privada.
 
 ## Emotive Continuous Onboarding
 
@@ -173,3 +188,70 @@ spotlight-pin-primary-button =
        *[other] Fixar na barra de tarefas
     }
 spotlight-pin-secondary-button = Agora não
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Novo { -brand-short-name }. Mais privado. Menos rastreadores. Sem restrições.
+mr2022-background-update-toast-text = Experimente o mais novo { -brand-short-name } agora, atualizado com a nossa mais forte proteção anti-rastreamento, até o momento.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Abra o { -brand-shorter-name } agora
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Lembrar mais tarde
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Experimentar
+    .accesskey = E
+firefoxview-cfr-secondarybutton = Agora não
+    .accesskey = n
+firefoxview-cfr-header-v2 = Retome rapidamente onde ficou
+firefoxview-cfr-body-v2 = Recupere os separadores fechados recentemente, além de alternar facilmente entre os dispositivos com { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Diga olá ao { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Quer aquele separador aberto no seu telemóvel? Obtenha-o. Precisa daquele site que acabou de visitar? Poof, ele está de volta com o { -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = Ver como funciona
+firefoxview-spotlight-promo-secondarybutton = Ignorar
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Escolher estilo de cor
+    .accesskey = E
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Dê cor ao seu navegador com tons exclusivos do { -brand-short-name } inspirados nas vozes que mudaram a cultura.
+colorways-cfr-header-28days = Os estilos de cor de Vozes Independentes expiram a 16 de janeiro
+colorways-cfr-header-14days = Os estilos de cor de Vozes Independentes expiram em duas semanas
+colorways-cfr-header-7days = Os estilos de cor de Vozes Independentes expiram esta semana
+colorways-cfr-header-today = Os estilos de cor de Independent Voices expiram hoje
+
+## Cookie Banner Handling CFR
+
+cfr-cookiebanner-reject-button = Agora não
+    .accesskey = n
+cfr-cookiebanner-header-variant-1 = Ver menos pop-ups de cookies
+cfr-cookiebanner-reject-button-variant-1 = Não, obrigado
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = Redução de Faixas de Cookies
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Estamos consigo

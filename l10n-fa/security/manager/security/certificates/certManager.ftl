@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = ویرایش تنظیمات اعتماد به مرجع صدور گواهی
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = ویرایش تنظیمات اعتماد به مرجع صدور گواهی
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = ویرایش تنظیمات اعتماد:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = حذف گواهی
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = حذف گواهی
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = نام گواهی
@@ -173,9 +181,8 @@ delete-email-cert-impact = اگر گواهی پست الکترونیکی شخص�
 cert-with-serial =
     .value = گواهینامه با شماره سریال: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

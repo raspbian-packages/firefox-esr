@@ -209,9 +209,6 @@ search-one-offs-history =
     .tooltiptext = इतिहास ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
@@ -407,6 +404,15 @@ urlbar-result-action-search-tabs = खोज टैब
 # urlbar results.
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = रीडर दृश्य दर्ज करे
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = रीडर दृश्य बंद करे|
 
 ## Full Screen and Pointer Lock UI
 
@@ -613,3 +619,11 @@ data-reporting-notification-button =
 
 ## Unified extensions (toolbar) button
 
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } ने इस पृष्ठ को स्वतः लोड होने से रोका है.
+refresh-blocked-redirect-label = { -brand-short-name } ने इस पृष्ठ को दूसरे पृष्ठ में स्वतः पुनर्निर्देशित होने से रोका है.
+refresh-blocked-allow =
+    .label = अनुमति दें
+    .accesskey = A

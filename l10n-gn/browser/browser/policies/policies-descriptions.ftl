@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Ani eheja puruhárape ohejareívo tekorosã reheg
 policy-DisableSetAsDesktopBackground = Eipe’a pe poravorã mbohekopyréva mba’erechaha ruguarã ta’angápe g̃uarãva.
 policy-DisableSystemAddonUpdate = Ani eheja kundahárape omohenda ha ombohekopyahu apopyvusu moĩmbaha.
 policy-DisableTelemetry = Eipe’aite Telemetría.
+policy-DisableThirdPartyModuleBlocking = Emboyke puruháragui ani ojoko ta’ãha mbohapyháva oikekuaáva { -brand-short-name } mba’eapópe.
 policy-DisplayBookmarksToolbar = Ehechauka Techaukaha rembipuru renda ijypykue rupi.
 policy-DisplayMenuBar = Ehechauka Poravorã renda ijypykue rupi.
 policy-DNSOverHTTPS = Emboheko DNS pe HTTPS ári.

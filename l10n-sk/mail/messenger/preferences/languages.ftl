@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = Jazyk aplikácie { -brand-short-name }
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = Jazyk aplikácie { -brand-short-name }
+
 messenger-languages-description = { -brand-short-name } zobrazí používateľské rozhranie v prvom vybranom jazyku. Ostatné použije podľa potreby a to vo vybranom poradí.
 
 messenger-languages-search = Hľadať ďalšie jazyky…

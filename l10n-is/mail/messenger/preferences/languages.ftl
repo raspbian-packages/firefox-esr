@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = Tungumálastillingar { -brand-short-name }
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = Tungumálastillingar { -brand-short-name }
+
 messenger-languages-description = { -brand-short-name } sýnir fyrsta tungumálið sem þitt sjálfgefna val og sýnir önnur tungumál ef nauðsynlegt er í þeirri röð sem þau birtast.
 
 messenger-languages-search = Leita að fleiri tungumálum...

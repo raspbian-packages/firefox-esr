@@ -57,6 +57,28 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } kullanıcı
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Çerez bildirimlerine son!
+cfr-cookie-banner-handling-body = { -brand-short-name } tarayıcınızın mümkün olduğunda tüm çerez bildirimi isteklerini otomatik reddetmesine izin verin. Bu mümkün olmadığında bildirimleri kapatmak için tüm çerezler kabul edilecektir.
+cfr-cookie-banner-accept-button = İstekleri reddet
+    .accesskey = R
+cfr-cookie-banner-reject-button = Daha sonra
+    .accesskey = D
+cfr-cookie-banner-handling-header-variant-1 = Daha az çerez bildirimi görün
+cfr-cookie-banner-accept-button-variant-1 = Bildirimleri kapat
+    .accesskey = D
+cfr-cookie-banner-reject-button-variant-1 = Gerek yok
+    .accesskey = G
+cfr-cookie-banner-handling-header-variant-2 = Çerez bildirimlerini azaltın
+cfr-cookie-banner-handling-body-variant-2 = { -brand-short-name } mümkün olduğunda sitelerin çerez onayı taleplerini reddetsin, mümkün olmadığında çerezlere izin versin mi?
+cfr-cookie-banner-accept-button-variant-2 = İzin ver
+    .accesskey = z
+cfr-cookie-banner-reject-button-variant-2 = Daha sonra
+    .accesskey = D
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Yer imlerinize her yerden ulaşın.
@@ -156,10 +178,6 @@ spotlight-total-cookie-protection-body = Komple çerez koruması, takip kodları
 spotlight-total-cookie-protection-expanded = { -brand-short-name }, çerezlerin etrafına bir duvar örerek bulunduğunuz sitedeki çerezleri sadece o sitenin kullanmasına izin verir. Böylece takip kodları sizi izlemek için çerezleri kullanamaz. Erken erişim aşamasında bu özelliği deneyerek herkes için daha iyi bir web yaratmamıza yardımcı olabilirsiniz.
 spotlight-total-cookie-protection-primary-button = Komple çerez korumasını aç
 spotlight-total-cookie-protection-secondary-button = Daha sonra
-cfr-total-cookie-protection-header = Sizin sayenizde { -brand-short-name } her zamankinden daha gizli ve güvenli
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Şimdiye kadarki en güçlü gizlilik korumamız olan komple çerez koruması, artık tüm { -brand-short-name } kullanıcıları için varsayılan ayar haline geldi. Sizin gibi erken erişim katılımcıları olmadan bunu başaramazdık. Daha iyi ve daha gizli bir internet yaratmamıza yardım ettiğiniz için teşekkür ederiz.
 
 ## Emotive Continuous Onboarding
 
@@ -173,3 +191,74 @@ spotlight-pin-primary-button =
        *[other] Görev çubuğuna sabitle
     }
 spotlight-pin-secondary-button = Daha sonra
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Yeni { -brand-short-name }. Daha çok gizlilik. Daha az izleyici.
+mr2022-background-update-toast-text = Bugüne kadarki en güçlü izlenme korumamızla güncellenen en yeni { -brand-short-name }’u şimdi deneyin.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = { -brand-shorter-name }’u açın
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Daha sonra hatırlat
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Deneyin
+    .accesskey = D
+firefoxview-cfr-secondarybutton = Daha sonra
+    .accesskey = s
+firefoxview-cfr-header-v2 = Kaldığınız yerden hızlıca devam edin
+firefoxview-cfr-body-v2 = { -firefoxview-brand-name } ile yakın zamanda kapattığınız sekmeleri geri getirebilir ve cihazlarınız arasında kolayca şekilde geçiş yapabilirsiniz.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = { -firefoxview-brand-name }’a merhaba deyin
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Telefonunuzdan baktığınız sayfayı görmek mi istiyorsunuz? Az önce ziyaret ettiğiniz siteye geri dönmeniz mi gerekiyor? { -firefoxview-brand-name } ile hepsi yanınızda.
+firefoxview-spotlight-promo-primarybutton = Nasıl çalıştığını görün
+firefoxview-spotlight-promo-secondarybutton = Geç
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Renk kuşağını seç
+    .accesskey = R
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Kültürü değiştiren seslerden ilham alan { -brand-short-name } renkleriyle tarayıcınızı renklendirin.
+colorways-cfr-header-28days = Bağımsız Sesler renk kuşakları 16 Ocak’ta kullanımdan kalkıyor
+colorways-cfr-header-14days = Bağımsız Sesler renk kuşakları iki hafta sonra kullanımdan kalkıyor
+colorways-cfr-header-7days = Bağımsız Sesler renk kuşakları bu hafta kullanımdan kalkıyor
+colorways-cfr-header-today = Bağımsız Sesler renk kuşakları bugün kullanımdan kalkıyor
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Çerez bildirimlerine son!
+cfr-cookiebanner-accept-button = Bildirimleri kapat
+    .accesskey = B
+cfr-cookiebanner-reject-button = Daha sonra
+    .accesskey = D
+cfr-cookiebanner-header-variant-1 = Daha az çerez bildirimi görün
+cfr-cookiebanner-accept-button-variant-2 = İzin ver
+    .accesskey = z
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Sizi koruyoruz
+july-jam-set-default-primary = Bağlantılarımı { -brand-short-name } ile aç

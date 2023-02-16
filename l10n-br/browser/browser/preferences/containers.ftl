@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Ouzhpennañ un endalc'her nevez
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Arventennoù an endalc'her { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Ouzhpennañ un endalc'her nevez
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Arventennoù an endalc'her { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

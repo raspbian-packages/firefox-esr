@@ -123,8 +123,6 @@ other-action-redirect-msg =
 message-header-msg-flagged =
     .title = ვარსკვლავიანი
     .aria-label = ვარსკვლავიანი
-message-header-msg-not-flagged =
-    .title = უვარსკვლავო წერილი
 # Variables:
 # $address (String) - The email address of the recipient this picture belongs to.
 message-header-recipient-avatar =
@@ -173,7 +171,7 @@ addon-removal-title = მოცილდეს { $name }?
 addon-removal-confirmation-button = მოცილება
 addon-removal-confirmation-message = მოცილდეს { $name } და გასუფთავდეს { -brand-short-name } მისი პარამეტრებისგან?
 caret-browsing-prompt-title = მაჩვენებლით გადაადგილება
-caret-browsing-prompt-text = F7 ღილაკით ირთვება ტექსტში მაჩვენებლის გამოყენების შესაძლებლობა. შედეგად, სხვადასხვა ტექსტში გამოჩნდება გადასაადგილებელი მაჩვენებელი, კლავიატურით მონიშვნისთვის. გსურთ, ტექსტებში მაჩვენებლის გამოყენება?
+caret-browsing-prompt-text = F7 ღილაკით ჩაირთვება ტექსტში მაჩვენებლის გამოყენების შესაძლებლობა. შედეგად, სხვადასხვა ტექსტში გამოჩნდება მოციმციმე მაჩვენებელი, რომ შეიძლებოდეს კლავიატურით მონიშვნა. გსურთ, ტექსტებში მაჩვენებლის გამოყენება?
 caret-browsing-prompt-check-text = შეკითხვის გარეშე.
 repair-text-encoding-button =
     .label = ტექსტის კოდირების გასწორება
@@ -232,18 +230,6 @@ settings-context-open-addons-item2 =
 
 spaces-toolbar-pinned-tab-button =
     .tooltiptext = არეების მენიუს გახსნა
-spaces-pinned-button-menuitem-mail =
-    .label = { spaces-toolbar-button-mail.title }
-spaces-pinned-button-menuitem-address-book =
-    .label = { spaces-toolbar-button-address-book.title }
-spaces-pinned-button-menuitem-calendar =
-    .label = { spaces-toolbar-button-calendar.title }
-spaces-pinned-button-menuitem-tasks =
-    .label = { spaces-toolbar-button-tasks.title }
-spaces-pinned-button-menuitem-chat =
-    .label = { spaces-toolbar-button-chat.title }
-spaces-pinned-button-menuitem-settings =
-    .label = { spaces-toolbar-button-settings2.title }
 spaces-pinned-button-menuitem-show =
     .label = { spaces-toolbar-button-show.title }
 # Variables:

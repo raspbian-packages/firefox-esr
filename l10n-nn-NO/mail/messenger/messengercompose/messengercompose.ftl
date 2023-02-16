@@ -126,6 +126,7 @@ cloud-file-template-link = Lenke
 
 ## Link Preview
 
+link-preview-yes-replace = Ja
 
 ## Dictionary selection popup
 

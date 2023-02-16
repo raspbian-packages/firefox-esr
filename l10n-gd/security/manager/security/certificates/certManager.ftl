@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Deasaich roghainnean earbsa de theisteanasan nan ùghdarrasan teisteanachaidh
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Deasaich roghainnean earbsa de theisteanasan nan ùghdarrasan teisteanachaidh
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Deasaich na roghainnean earbsa:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Sguab às teisteanas
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Sguab às teisteanas
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Òstair
@@ -185,8 +193,6 @@ delete-email-cert-impact = Ma sguabas tu às teisteanas post-dealain duine, chan
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Teisteanas leis an àireamh shreathach: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Na cuir teisteanas cliant

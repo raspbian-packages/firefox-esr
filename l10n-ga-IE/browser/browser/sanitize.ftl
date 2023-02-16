@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Socruithe maidir le glanadh na staire
     .style = width: 46em
 
+sanitize-prefs2 =
+    .title = Socruithe maidir le glanadh na staire
+    .style = min-width: 46em
+
 sanitize-prefs-style =
     .style = width: 19em
 

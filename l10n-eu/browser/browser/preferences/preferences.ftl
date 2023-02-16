@@ -184,12 +184,15 @@ preferences-web-appearance-header = Webgunearen itxura
 preferences-web-appearance-description = Zenbait webgunek beraiek kolore-eskema zure hobespenetara moldatzen dute. Aukeratu gune horietarako zein kolore-eskema erabili nahi duzun.
 preferences-web-appearance-choice-browser = { -brand-short-name } itxura
 preferences-web-appearance-choice-system = Sistemaren itxura
+preferences-web-appearance-choice-auto = Automatikoa
 preferences-web-appearance-choice-light = Argia
 preferences-web-appearance-choice-dark = Iluna
 preferences-web-appearance-choice-tooltip-browser =
     .title = Errespetatu { -brand-short-name }(e)n itxuraren ezarpenak webguneen atzeko plano eta edukiarentzat.
 preferences-web-appearance-choice-tooltip-system =
     .title = Errespetatu zure sistemaren ezarpenak webguneen atzeko plano eta edukiarentzat.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Aldatu automatikoki webguneen atzeko planoak eta edukia zure sistemaren ezarpenetan eta { -brand-short-name }(r)en itxuran oinarrituta.
 preferences-web-appearance-choice-tooltip-light =
     .title = Erabili itxura argia webguneen atzeko plano eta edukiarentzat.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Erakutsi bilaketa-iradokizunak helbide-barrako emaitzetan
     .accesskey = h
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Erakutsi bilaketa-terminoak URLaren ordez bilaketa-motor lehenetsiaren emaitzen orrian
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = G
     .buttonlabelextra2 = Deskonektatu…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Aukeratu zer sinkronizatu
+    .style = min-width: 36em;
+    .buttonlabelaccept = Gorde aldaketak
+    .buttonaccesskeyaccept = G
+    .buttonlabelextra2 = Deskonektatu…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Laster-markak
     .accesskey = m
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Erakutsi datu-urratzeak izan dituzten webguneetako pasahitzei buruzko abisuak
     .accesskey = E
 forms-breach-alerts-learn-more-link = Argibide gehiago
+relay-integration =
+    .label = Gaitu { -relay-brand-name } zure { -brand-short-name } pasahitz-kudeatzailean
+relay-integration-learn-more-link = Argibide gehiago
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Automatikoki bete erabiltzaile-izen eta pasahitzak
@@ -984,6 +1004,9 @@ content-blocking-fingerprinters = Hatz-marka bidezko jarraipena egiten duten ele
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Hartu parte gure orainoko proba pilotu boteretsuenean
     .accesskey = H
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Cookien erabateko babesak zauden guneko cookieak ditu soilik, hortaz jarraipen-elementuek ezin dituzte erabili guneen arteko zure jarraipena egiteko.
 content-blocking-etp-standard-tcp-rollout-learn-more = Argibide gehiago

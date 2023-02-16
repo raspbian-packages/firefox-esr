@@ -6,12 +6,22 @@ create-profile-window =
     .title = Sos Ɗoworde Heftinirde
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Sos Ɗoworde Heftinirde
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Naatirka
        *[other] A jaɓɓaama e { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Naatirka
+       *[other] A jaɓɓaama e { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } mooftat humpito baɗte teelte maa e cuɓoraaɗe maa e nder heftinirde maa heeriinnde.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Tonngirka
        *[other] Nana jokkita { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Tonngirka
+       *[other] Nana jokkita { create-profile-window2.title }
     }
 
 profile-creation-intro = So a sosii keftinirɗe keewɗe aɗa waawi seerndirɗe-ɗe innde. Aɗa waawi huutoraade innde hokkaande ndee walla kuutoro-ɗaa innde nde cuɓi-ɗaa.

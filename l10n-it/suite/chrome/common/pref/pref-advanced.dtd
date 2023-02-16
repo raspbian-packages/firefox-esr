@@ -8,6 +8,20 @@
 <!ENTITY prefCheckDefault.caption         "Integrazione con il sistema">
 <!ENTITY prefCheckDefaultClient.label     "Controlla le impostazioni predefinite dell'applicazione all'avvio">
 <!ENTITY prefCheckDefaultClient.accesskey "C">
+<!ENTITY defaultClientFor.description     "Rendi &brandShortName; l'applicazione predefinita per:">
+<!ENTITY setDefaultBrowser.label          "Browser">
+<!ENTITY setDefaultBrowser.accesskey      "B">
+<!ENTITY setDefaultMail.label             "Posta">
+<!ENTITY setDefaultMail.accesskey         "P">
+<!ENTITY setDefaultNews.label             "Gruppi di discussione">
+<!ENTITY setDefaultNews.accesskey         "G">
+<!ENTITY setDefaultFeed.label             "Feed">
+<!ENTITY setDefaultFeed.accesskey         "F">
+<!ENTITY useInternalSettings.description  "Utilizza &brandShortName; Posta e gruppi di discussione quando si apre un link nel browser per:">
+<!ENTITY useInternalMail.label            "Posta (mailto:)">
+<!ENTITY useInternalMail.accesskey        "a">
+<!ENTITY useInternalNews.label            "Notizie (news:, snews:, nntp:)">
+<!ENTITY useInternalNews.accesskey        "s">
 
 <!ENTITY printing.label                   "Stampa">
 <!ENTITY useNativePrintDialog.label       "Usa finestra di stampa del sistema operativo (se supportato)">
@@ -20,9 +34,9 @@
 <!ENTITY submitCrashes.accesskey          "n">
 
 <!ENTITY devTools.caption                 "Strumenti di sviluppo">
-<!ENTITY allowDebugger.label              "Permetti a un debugger di connettersi a &brandShortName;">
+<!ENTITY allowDebugger.label              "Consenti a un debugger di connettersi a &brandShortName;">
 <!ENTITY allowDebugger.accesskey          "P">
-<!ENTITY allowRemoteConnections.label     "Permetti connessioni da altri computer">
+<!ENTITY allowRemoteConnections.label     "Consenti connessioni da altri computer">
 <!ENTITY allowRemoteConnections.accesskey "e">
 <!ENTITY connectionPrompt.label           "Chiedi conferma per connessioni in entrata">
 <!ENTITY connectionPrompt.accesskey       "C">

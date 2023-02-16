@@ -498,11 +498,11 @@ home-mode-choice-default =
 home-mode-choice-default-fx =
     .label = { -firefox-home-brand-name } (Predeterminado)
 home-mode-choice-custom =
-    .label = URLs personalizadas...
+    .label = URLs personalizadas…
 home-mode-choice-blank =
     .label = Página en blanco
 home-homepage-custom-url =
-    .placeholder = Pegar URL...
+    .placeholder = Pegar URL…
 # This string has a special case for '1' and [other] (default). If necessary for
 # your language, you can add {$tabCount} to your translations and use the
 # standard CLDR forms, or only use the form for [other] if both strings should
@@ -592,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mostrar sugerencias de búsqueda en los resultados de la barra de direcciones
     .accesskey = M
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Mostrar términos de búsqueda en lugar de URL en la página de resultados del motor de búsqueda predeterminado
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Cerrar sesión…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Elegir lo que quiere sincronizar
+    .style = min-width: 36em;
+    .buttonlabelaccept = Guardar cambios
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Cerrar sesión…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Marcadores
     .accesskey = M
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = Mostrar alertas sobre contraseñas para sitios web violados
     .accesskey = b
 forms-breach-alerts-learn-more-link = Conocer más
+relay-integration =
+    .label = Habilite { -relay-brand-name } en el administrador de contraseñas de { -brand-short-name }
+relay-integration-learn-more-link = Conocer más
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Autocompletar inicios de sesión y contraseñas
@@ -903,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies de sitios web no visitados
 sitedata-option-block-all-third-party =
     .label = Todas las cookies de terceros (puede causar fallas en los sitios web)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Todas las cookies de sitios cruzados (puede causar errores en los sitios web)
 sitedata-option-block-all =
     .label = Todas las cookies (hará que fallen los sitios web)
 sitedata-clear =
@@ -982,6 +999,7 @@ content-blocking-all-cookies = Todas las cookies
 content-blocking-unvisited-cookies = Cookies de sitios no visitados
 content-blocking-all-windows-tracking-content = Rastreo de contenido en todas las ventanas
 content-blocking-all-third-party-cookies = Todas las cookies de terceros
+content-blocking-all-cross-site-cookies = Todas las cookies de sitios cruzados
 content-blocking-cryptominers = Criptomineros
 content-blocking-fingerprinters = Detectores de huellas digitales
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -991,6 +1009,9 @@ content-blocking-etp-standard-tcp-rollout-checkbox =
         Probá nuestra experiencia de
         privacidad más poderosa de la historia
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = La protección total de cookies contiene cookies para el sitio en el que estás, así que los rastreadores no pueden usarlas para seguirte entre sitios.
 content-blocking-etp-standard-tcp-rollout-learn-more = Conocer más

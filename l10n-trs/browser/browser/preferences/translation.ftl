@@ -6,6 +6,10 @@ translation-window =
     .title = Sa nachrun'
     .style = width: 36em
 
+translation-window2 =
+    .title = Sa nachrun'
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

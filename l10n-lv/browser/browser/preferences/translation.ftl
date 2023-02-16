@@ -6,6 +6,10 @@ translation-window =
     .title = Tulkošanas izņēmumi
     .style = width: 36em
 
+translation-window2 =
+    .title = Tulkošanas izņēmumi
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

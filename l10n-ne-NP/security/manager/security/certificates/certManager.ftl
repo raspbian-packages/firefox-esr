@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = CA प्रमाणपत्र विश्वास सेटिङहरू सम्पादन गर्नुहोस्
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA प्रमाणपत्र विश्वास सेटिङहरू सम्पादन गर्नुहोस्
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = विश्वासयोग्य सेटिङहरू सम्पादन गर्नुहोस्:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = प्रमाणपत्र मेटाउनुहोस्
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = प्रमाणपत्र मेटाउनुहोस्
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = प्रमाणपत्र नाम
@@ -170,9 +178,8 @@ delete-email-cert-confirm = के तपाईँ यी व्यक्ति�
 cert-with-serial =
     .value = { $serialNumber } क्रम सङ्ख्या भएको प्रमाणपत्र
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

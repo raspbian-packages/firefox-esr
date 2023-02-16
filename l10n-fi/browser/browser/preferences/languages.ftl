@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Verkkosivujen kieliasetukset
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Verkkosivujen kieliasetukset
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name }in kieliasetukset
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name }in kieliasetukset
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } käyttää ensimmäistä kieltä oletuksena ja muita kieliä tarvittaessa, alla olevassa järjestyksessä.
 

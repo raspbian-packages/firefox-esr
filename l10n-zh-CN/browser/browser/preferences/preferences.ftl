@@ -584,6 +584,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = 在地址栏结果中显示搜索建议
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = 默认搜索引擎下，搜索结果页的地址栏中显示搜索词而非网址
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -679,7 +684,7 @@ sync-sign-in =
 prefs-syncing-on = 同步：开启
 prefs-syncing-off = 同步：关闭
 prefs-sync-turn-on-syncing =
-    .label = 正在开启同步...
+    .label = 开启同步...
     .accesskey = s
 prefs-sync-offer-setup-label2 = 在您的各种设备间同步您的书签、历史记录、标签页、密码、附加组件与设置。
 prefs-sync-now =
@@ -707,6 +712,13 @@ sync-change-options =
 sync-choose-what-to-sync-dialog =
     .title = 选择要同步的项目
     .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = 保存更改
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = 断开连接…
+    .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = 选择要同步的项目
+    .style = min-width: 36em;
     .buttonlabelaccept = 保存更改
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = 断开连接…
@@ -779,6 +791,9 @@ forms-breach-alerts =
     .label = 显示有关网站密码外泄的提醒
     .accesskey = b
 forms-breach-alerts-learn-more-link = 详细了解
+relay-integration =
+    .label = 启用 { -brand-short-name } 密码管理器的 { -relay-brand-name } 服务
+relay-integration-learn-more-link = 详细了解
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = 自动填写登录名和密码
@@ -895,6 +910,8 @@ sitedata-option-block-unvisited =
     .label = 未访问网站的 Cookie
 sitedata-option-block-all-third-party =
     .label = 所有第三方 Cookie（可能导致网站异常）
+sitedata-option-block-all-cross-site-cookies =
+    .label = 所有跨站 Cookie（可能导致网站异常）
 sitedata-option-block-all =
     .label = 所有 Cookie（将会导致网站异常）
 sitedata-clear =
@@ -974,6 +991,7 @@ content-blocking-all-cookies = 所有 Cookie
 content-blocking-unvisited-cookies = 未访问网站的 Cookie
 content-blocking-all-windows-tracking-content = 所有窗口中的跟踪性内容
 content-blocking-all-third-party-cookies = 所有第三方 Cookie
+content-blocking-all-cross-site-cookies = 所有跨站 Cookie
 content-blocking-cryptominers = 加密货币挖矿程序
 content-blocking-fingerprinters = 数字指纹跟踪程序
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -981,6 +999,9 @@ content-blocking-fingerprinters = 数字指纹跟踪程序
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = 体验有史以来最强大的隐私保护
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = “全方位 Cookie 保护”能够完全隔离每个网站的 Cookie，阻止跟踪器借其跨站跟踪您。
 content-blocking-etp-standard-tcp-rollout-learn-more = 详细了解
@@ -1114,7 +1135,7 @@ security-block-downloads =
     .label = 拦截危险的下载项
     .accesskey = D
 security-block-uncommon-software =
-    .label = 发现流氓软件或罕见软件时发出警告
+    .label = 发现流氓软件或不寻常的软件时发出警告
     .accesskey = C
 
 ## Privacy Section - Certificates

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Vymazat data
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Vymazat data
+    .style = min-width: 35em
+
 clear-site-data-description =
     Po vymazání všech cookies a dat stránek uložených { -brand-short-name.gender ->
         [masculine] ve { -brand-short-name(case: "loc") }

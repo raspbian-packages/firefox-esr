@@ -6,6 +6,10 @@ translation-window =
     .title = Izinxaxhi - Inguqulelo
     .style = width: 36em
 
+translation-window2 =
+    .title = Izinxaxhi - Inguqulelo
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

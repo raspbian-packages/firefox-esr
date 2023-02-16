@@ -6,6 +6,10 @@ translation-window =
     .title = Mga Pagbubukod - Pagsasalin
     .style = width: 36em
 
+translation-window2 =
+    .title = Mga Pagbubukod - Pagsasalin
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

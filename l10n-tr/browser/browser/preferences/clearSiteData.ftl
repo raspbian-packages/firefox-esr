@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Verileri Temizle
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Verileri Temizle
+    .style = min-width: 35em
+
 clear-site-data-description = { -brand-short-name } tarafından saklanan çerezleri ve site verilerini temizlemeniz web sitelerindeki oturumlarınızın kapanmasına ve çevrimdışı web içeriklerinin silinmesine yol açabilir. Önbelleği temizlemeniz oturumlarınızı etkilemez.
 
 clear-site-data-close-key =

@@ -35,8 +35,8 @@ menu-quit =
         }
     .accesskey =
         { PLATFORM() ->
-            [windows] k
-           *[other] k
+            [windows] U
+           *[other] U
         }
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
@@ -152,7 +152,7 @@ menu-view-full-zoom-reduce =
     .accesskey = V
 menu-view-full-zoom-actual-size =
     .label = Skutočná veľkosť
-    .accesskey = v
+    .accesskey = S
 menu-view-full-zoom-toggle =
     .label = Meniť iba veľkosť textu
     .accesskey = M
@@ -181,6 +181,17 @@ menu-view-exit-full-screen =
 menu-view-full-screen =
     .label = Na celú obrazovku
     .accesskey = c
+
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Zapnúť zobrazenie Čítačka
+    .accesskey = Z
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Zavrieť zobrazenie Čítačka
+    .accesskey = Z
 
 ##
 

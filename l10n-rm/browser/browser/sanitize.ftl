@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Parameters per stizzar la cronologia
     .style = width: 38em
 
+sanitize-prefs2 =
+    .title = Parameters per stizzar la cronologia
+    .style = min-width: 38em
+
 sanitize-prefs-style =
     .style = width: 19em
 

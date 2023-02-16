@@ -6,6 +6,10 @@ containers-window-new =
     .title = Azonzi neuvo contegnitô
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Azonzi neuvo contegnitô
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

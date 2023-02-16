@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Annak a megakadályozása, hogy a felhasználó �
 policy-DisableSetAsDesktopBackground = A Beállítás háttérképként menüparancs letiltása a képeknél.
 policy-DisableSystemAddonUpdate = Annak a megakadályozása, hogy a böngésző rendszer-kiegészítőket telepítsen és frissítsen.
 policy-DisableTelemetry = Telemetria kikapcsolása.
+policy-DisableThirdPartyModuleBlocking = A felhasználó megakadályozása abban, hogy blokkolja a harmadik féltől származó modulok betöltését a { -brand-short-name } folyamatba.
 policy-DisplayBookmarksToolbar = A Könyvjelző eszköztár megjelenítése alapértelmezetten.
 policy-DisplayMenuBar = A Menüsáv megjelenítése alapértelmezetten.
 policy-DNSOverHTTPS = HTTPS-en keresztüli DNS beállítása.

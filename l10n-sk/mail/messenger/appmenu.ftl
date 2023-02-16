@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Synchronizácia
+appmenu-signin-panel =
+    .label = Prihlásiť sa a synchronizovať
+    .accesskey = P
+appmenu-sync-sync =
+    .value = Synchronizácia účtu
+    .accesskey = S
+appmenu-sync-manage =
+    .value = Spravovať účet
+    .accesskey = r
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = Synchronizovať
+    .accesskey = S
+appmenu-sync-settings =
+    .label = Nastavenia synchronizácie
+    .accesskey = N
+appmenu-sync-sign-out =
+    .label = Odhlásiť sa…
+    .accesskey = O
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +93,11 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = Otvoriť
+appmenu-open-file-panel =
+    .label = Otvoriť zo súboru
     .accesskey = O
-appmenu-open-panel-title =
-    .title = Otvoriť
+appmenu-open-file-panel-title =
+    .title = Otvoriť zo súboru
 appmenu-open-message =
     .label = Správa…
     .accesskey = S
@@ -90,11 +115,11 @@ appmenu-view-panel =
 appmenu-font-size-value = Veľkosť písma
 appmenu-mail-uidensity-value = Hustota
 appmenu-uidensity-compact =
-    .tooltiptext = Kompaktná
+    .tooltiptext = Kompaktné rozloženie
 appmenu-uidensity-default =
-    .tooltiptext = Predvolená
+    .tooltiptext = Predvolené rozloženie
 appmenu-uidensity-relaxed =
-    .tooltiptext = Uvoľnená
+    .tooltiptext = Voľnejšie rozloženie
 appmenuitem-font-size-enlarge =
     .tooltiptext = Zväčšiť veľkosť písma
 appmenuitem-font-size-reduce =
@@ -168,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = O aplikácii { -brand-short-name }
     .accesskey = O
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Sťahuje sa aktualizácia { -brand-shorter-name(case: "gen") }
+appmenuitem-banner-update-available =
+    .label = Je dostupná aktualizácia — stiahnuť
+appmenuitem-banner-update-manual =
+    .label = Je dostupná aktualizácia — stiahnuť
+appmenuitem-banner-update-unsupported =
+    .label = Nebolo možné aktualizovať — nekompatibilný systém
+appmenuitem-banner-update-restart =
+    .label = Je dostupná aktualizácia — reštartovať

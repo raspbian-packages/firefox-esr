@@ -3,6 +3,28 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Sync
+appmenu-signin-panel =
+    .label = Se connecter à Sync
+    .accesskey = e
+appmenu-sync-manage =
+    .value = Gestion du compte
+    .accesskey = M
+appmenu-sync-account =
+    .value = exemple@example.com
+appmenu-sync-now =
+    .label = Synchroniser maintenant
+    .accesskey = N
+appmenu-sync-settings =
+    .label = Paramètres de synchronisation
+    .accesskey = P
+appmenu-sync-sign-out =
+    .label = Se déconnecter…
+    .accesskey = d
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +90,6 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = Ouvrir
-    .accesskey = O
-appmenu-open-panel-title =
-    .title = Ouvrir
 appmenu-open-message =
     .label = Message…
     .accesskey = M
@@ -168,3 +185,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = À propos de { -brand-short-name }
     .accesskey = o
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Téléchargement de la mise à jour de { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Mise à jour disponible — télécharger maintenant
+appmenuitem-banner-update-manual =
+    .label = Mise à jour disponible — télécharger maintenant
+appmenuitem-banner-update-unsupported =
+    .label = Mise à jour impossible — système incompatible
+appmenuitem-banner-update-restart =
+    .label = Mise à jour disponible — redémarrer maintenant

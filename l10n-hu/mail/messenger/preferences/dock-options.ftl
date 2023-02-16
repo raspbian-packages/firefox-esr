@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Alkalmazásikon beállításai
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Alkalmazásikon beállításai
+
 dock-options-show-badge =
     .label = Jelvény ikon megjelenítése
     .accesskey = J

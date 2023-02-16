@@ -34,6 +34,10 @@ text-action-paste =
     .label = Pegañ
     .accesskey = P
 
+text-action-paste-no-formatting =
+    .label = Pegañ hep furmaozañ
+    .accesskey = P
+
 text-action-paste-shortcut =
     .key = V
 
@@ -50,6 +54,26 @@ text-action-select-all-shortcut =
 
 text-action-spell-no-suggestions =
     .label = Kinnig reizhskrivañ ebet
+
+text-action-spell-add-to-dictionary =
+    .label = Ouzhpennañ d'ar geriadur
+    .accesskey = O
+
+text-action-spell-undo-add-to-dictionary =
+    .label = Nullañ an ouzhpennañ d'ar geriadur
+    .accesskey = N
+
+text-action-spell-check-toggle =
+    .label = Gwiriañ ar reizhskrivañ
+    .accesskey = G
+
+text-action-spell-add-dictionaries =
+    .label = Ouzhpennañ geriadurioù…
+    .accesskey = g
+
+text-action-spell-dictionaries =
+    .label = Yezhoù
+    .accesskey = Y
 
 text-action-search-text-box-clear =
     .title = Clear

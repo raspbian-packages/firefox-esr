@@ -25,6 +25,12 @@ return-to-amo-addon-title = Most pedig szerezze be a(z) <img data-l10n-name="ico
 return-to-amo-add-extension-label = Kiegészítő hozzáadása
 return-to-amo-add-theme-label = Téma hozzáadása
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Köszönjön a { -brand-short-name }nak
+mr1-return-to-amo-addon-title = Egy gyors, privát böngészőt kap a keze ügyében. Most hozzáadhatja a(z) <b>{ $addon-name }</b> kiegészítőt, és még többet tehet a { -brand-short-name } segítségével.
+mr1-return-to-amo-add-extension-label = { $addon-name } hozzáadása
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Haladás: { $current }. / { $total } lépés
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Haladás: { $current }. / { $total } lépés
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -322,35 +330,35 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Importálás az e
 
 mr2022-onboarding-colorway-title = Válassza ki azt a színt, amelyik inspirálja
 mr2022-onboarding-colorway-subtitle = A független hangok megváltoztathatják a kultúrát.
-mr2022-onboarding-colorway-primary-button-label = Színvilág beállítása
+mr2022-onboarding-colorway-primary-button-label-continue = Beállítás és folytatás
 mr2022-onboarding-existing-colorway-checkbox-label = Legyen a { -firefox-home-brand-name } a színes kezdőlapja
 mr2022-onboarding-colorway-label-default = Alapértelmezett
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Alapértelmezett
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = A { -brand-short-name } jelenlegi színei
 mr2022-onboarding-colorway-description-default = <b>A { -brand-short-name } jelenlegi színeinek használata.</b>
 mr2022-onboarding-colorway-label-playmaker = Játékmester
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Játékmester
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Játékmester (piros)
 mr2022-onboarding-colorway-description-playmaker = <b>Ön a játékmester.</b> Lehetőségeket teremt a győzelemre, és segít feldobni a többiek játékát.
 mr2022-onboarding-colorway-label-expressionist = Expresszionista
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Expresszionista
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Expresszionista (sárga)
 mr2022-onboarding-colorway-description-expressionist = <b>Ön egy expresszionista.</b> Másképp látja a világot, és alkotásai felkavarják mások érzelmeit.
 mr2022-onboarding-colorway-label-visionary = Látnok
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Látnok
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Látnok (zöld)
 mr2022-onboarding-colorway-description-visionary = <b>Ön egy látnok.</b> Megkérdőjelezi a status quót, és arra késztet másokat, hogy képzeljenek el egy jobb jövőt.
 mr2022-onboarding-colorway-label-activist = Aktivista
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aktivista
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktivista (kék)
 mr2022-onboarding-colorway-description-activist = <b>Ön egy aktivista.</b> Jobb állapotban hagyja a világot, mint ahogyan találta, és arra vezet másokat is, hogy higgyenek.
 mr2022-onboarding-colorway-label-dreamer = Álmodozó
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Álmodozó
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Álmodozó (lila)
 mr2022-onboarding-colorway-description-dreamer = <b>Ön egy álmodozó.</b> Úgy hiszi, hogy bátraké a szerencse, és másokat is bátorságra ösztönöz.
 mr2022-onboarding-colorway-label-innovator = Újító
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Újító
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Innovátor (narancs)
 mr2022-onboarding-colorway-description-innovator = <b>Ön egy újító.</b> Mindenhol a lehetőségeket látja, és hatással van a körülötte élők életére.
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -381,7 +389,33 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Részletes infor
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-title = Segít nekünk egy jobb világháló felépítésében.
+mr2022-onboarding-gratitude-title = Segít nekünk egy jobb világháló felépítésében
 mr2022-onboarding-gratitude-subtitle = Köszönjük, hogy a { -brand-short-name(case: "accusative") } használja, amelyet a Mozilla Alapítvány támogat. Az Ön támogatásával azon dolgozunk, hogy az internetet mindenki számára nyitottabbá, hozzáférhetőbbé és jobbá tegyük.
 mr2022-onboarding-gratitude-primary-button-label = Nézze meg az újdonságokat
 mr2022-onboarding-gratitude-secondary-button-label = Böngészés megkezdése
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Érezze magát otthon
+onboarding-infrequent-import-subtitle = Akár beköltözik, akár csak betér, ne feledje, hogy importálhatja a könyvjelzőket, jelszavakat és egyebeket.
+onboarding-infrequent-import-primary-button = Importálás a { -brand-short-name }ba
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Egy laptopon dolgozó személy csillagokkal és virágokkal körülvéve
+mr2022-onboarding-default-image-alt =
+    .aria-label = A { -brand-product-name } logót ölelő személy
+mr2022-onboarding-import-image-alt =
+    .aria-label = Egy gördeszkás egy doboznyi szoftverikonnal
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Liliompárnák között ugráló békák, középen pedig a { -brand-product-name } mobilos letöltésére szolgáló QR-kóddal
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Varázspálca, amely előhúzza a { -brand-product-name } privát böngészés logóját egy kalapból
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Világos bőrű és sötét bőrű kezek pacsiznak
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Kilátás a naplementére egy ablakon keresztül, ahol egy róka és egy szobanövény van az ablakpárkányon
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Egy kézi festékszóró egy zöld szemből, narancssárga cipőből, piros kosárlabdából, lila fejhallgatóból, kék szívből és sárga koronából álló színes kollázst fest.

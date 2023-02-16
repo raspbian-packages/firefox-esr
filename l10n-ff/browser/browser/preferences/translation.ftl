@@ -6,6 +6,10 @@ translation-window =
     .title = Paltooje - Firo
     .style = width: 36em
 
+translation-window2 =
+    .title = Paltooje - Firo
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

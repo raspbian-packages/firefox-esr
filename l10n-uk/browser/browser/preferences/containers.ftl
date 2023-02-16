@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Додати новий контейнер
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Налаштування контейнера { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Додати новий контейнер
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Налаштування контейнера { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

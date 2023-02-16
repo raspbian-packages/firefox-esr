@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Runuk'ulem Ruch'ab'äl Ajk'amaya'l Ruxaq
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Runuk'ulem Ruch'ab'äl Ajk'amaya'l Ruxaq
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Runuk'ulem Ch'ab'äl
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Runuk'ulem Ch'ab'äl
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } xtuk'üt ri nab'ey ch'ab'äl achi'el ri k'o wi chuqa' xkeruk'üt pe ch'aqa' chik ch'ab'äl we k'atzinel pa ri rucholajem e k'o.
 

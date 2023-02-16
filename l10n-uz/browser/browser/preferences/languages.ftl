@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Sahifa til sozlamalari
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Sahifa til sozlamalari
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } til sozlamalari
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } til sozlamalari
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } standart til sifatida birinchi tanlagan tilingizda ko‘rsatadi. Kerak bo‘lganda muqobil tildan ham foydalanadi.
 

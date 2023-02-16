@@ -6,6 +6,9 @@ cookies-window-dialog =
     .title = Vefkökur
     .style = width: 36em;
 
+cookies-window-dialog2 =
+    .title = Vefkökur
+
 window-close-key =
     .key = w
 

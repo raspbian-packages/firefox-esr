@@ -12,33 +12,25 @@ cfr-doorhanger-feature-heading = Veçori e Këshilluar
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Pse më del kjo?
-
 cfr-doorhanger-extension-cancel-button = Jo Tani
     .accesskey = J
-
 cfr-doorhanger-extension-ok-button = Shtoje Tani
     .accesskey = S
-
 cfr-doorhanger-extension-manage-settings-button = Administroni Rregullimet Mbi Rekomandimet
     .accesskey = A
-
 cfr-doorhanger-extension-never-show-recommendation = Mos Ma Shfaq Këtë Rekomandim
     .accesskey = o
-
 cfr-doorhanger-extension-learn-more-link = Mësoni më tepër
-
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = nga { $name }
-
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Rekomandim
 cfr-doorhanger-extension-notification2 = Rekomandim
     .tooltiptext = Rekomandim zgjerimi
     .a11y-announcement = Ka gati një rekomandim zgjerimi
-
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Rekomandim
@@ -65,6 +57,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } përdorues
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Lamtumirë banderola cookie-sh!
+cfr-cookie-banner-handling-body = Lejojeni { -brand-short-name }-in të hedhë poshtë vetvetiu krejt kërkesat nga banderola cookiesh, kur është e mundur. Përndryshe, krejt cookie-t do të pranohen, për të hedhur tej edhe më tepër banderola.
+cfr-cookie-banner-accept-button = Hidhe Poshtë Kërkesën
+    .accesskey = H
+cfr-cookie-banner-reject-button = Jo Tani
+    .accesskey = J
+cfr-cookie-banner-handling-header-variant-1 = Shihni më pak flluska cookie-sh
+cfr-cookie-banner-handling-body-variant-1 = Lejojeni { -brand-short-name }-i t’u përgjigjet vetvetiu për ju flluskave për cookie, që të mund t’i ktheheni shfletimit pa shpërqendrim. { -brand-short-name }-i do të hedhë poshtë krejt kërkesat, kur është e mundur, ose pranojë të tëra, nëse s’është e mundur.
+cfr-cookie-banner-accept-button-variant-1 = Hidh tej Flluska
+    .accesskey = t
+cfr-cookie-banner-reject-button-variant-1 = Jo, faleminderit
+    .accesskey = J
+cfr-cookie-banner-handling-header-variant-2 = Reduktim Banderolash Për Cookie-t
+cfr-cookie-banner-handling-body-variant-2 = Të lejohet { -brand-short-name } të hedhë poshtë kërkesa pranimi cookie-sh nga një sajt, nëse është e mundur, apo të pranohen cookies kur s’është e mundur?
+cfr-cookie-banner-accept-button-variant-2 = Lejoje
+    .accesskey = L
+cfr-cookie-banner-reject-button-variant-2 = Jo tani
+    .accesskey = J
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Njëkohësoni faqerojtësit tuaj kudo.
@@ -85,11 +100,9 @@ cfr-protections-panel-link-text = Mësoni më tepër
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Veçori e re:
-
 cfr-whatsnew-button =
     .label = Ç’ka të Re
     .tooltiptext = Ç’ka të Re
-
 cfr-whatsnew-release-notes-link-text = Lexoni shënimet mbi hedhjen në qarkullim
 
 ## Enhanced Tracking Protection Milestones
@@ -178,3 +191,85 @@ spotlight-pin-primary-button =
        *[other] Fiksoje te paneli
     }
 spotlight-pin-secondary-button = Jo tani
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = { -brand-short-name } i ri. Më privat. Më pak gjurmues. Pa kompromise.
+mr2022-background-update-toast-text = Provojeni { -brand-short-name }-in më të ri që tani, të përditësuar me mbrojtjen tonë më të fuqishme se ndonjëherë kundër gjurmimit.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Hapeni { -brand-shorter-name }-in Që Tani
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Kujtoma Më Vonë
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Provojeni
+    .accesskey = P
+firefoxview-cfr-secondarybutton = Jo tani
+    .accesskey = J
+firefoxview-cfr-header-v2 = Vazhdoni pa humbur kohë atje ku e latë
+firefoxview-cfr-body-v2 = Rikthehuni te skeda të mbyllura së fundi, plus hidhuni rrjedhshëm sa në një pajisje në një tjetër, me { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = I thoni tungjatjeta { -firefoxview-brand-name }-it
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = E doni atë skedë të hapur në telefonin tuaj? Përlajeni. Ju duhet ai sajt që sapo vizituat? Paf, ja ku erdhi me { -firefoxview-brand-name }-in.
+firefoxview-spotlight-promo-primarybutton = Shihni se si funksionon
+firefoxview-spotlight-promo-secondarybutton = Anashkaloje
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Zgjidhnii ngjyrim
+    .accesskey = Z
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Ngjyroseni shfletuesin tuaj me nuancat ekskluzive të { -brand-short-name }-it të frymëzuara nga zëra që ndryshuan kulturë.
+colorways-cfr-header-28days = Ngjyrimi “Zëra të Pavarur”  skadon më 16 janar
+colorways-cfr-header-14days = Ngjyrimi “Zëra të Pavarur”  skadon pas dy javësh
+colorways-cfr-header-7days = Ngjyrimi “Zëra të Pavarur”  skadon pas këtë javë
+colorways-cfr-header-today = Ngjyrimi “Zëra të Pavarur”  skadon sot
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Lamtumirë banderola cookie-sh!
+cfr-cookiebanner-body = Lejojeni { -brand-short-name }-in të hedhë poshtë automatikisht krejt kërkesat për banderola cookie-sh, kur është e mundur.
+cfr-cookiebanner-accept-button = Hidh Tej Banderola
+    .accesskey = H
+cfr-cookiebanner-reject-button = Jo Tani
+    .accesskey = J
+cfr-cookiebanner-header-variant-1 = Shihni më pak flluska cookie-sh
+cfr-cookiebanner-body-variant-1 = Lejojeni { -brand-short-name }-i t’u përgjigjet vetvetiu për ju flluskave për cookie, që të mund t’i ktheheni shfletimit pa shpërqendrim. { -brand-short-name }-i do të hedhë poshtë krejt kërkesat, kur është e mundur.
+cfr-cookiebanner-accept-button-variant-1 = Hidh tej Flluska
+    .accesskey = H
+cfr-cookiebanner-reject-button-variant-1 = Jo, Faleminderit
+    .accesskey = J
+cfr-cookiebanner-header-variant-2 = Reduktim Banderolash Për Cookie-t
+cfr-cookiebanner-body-variant-2 = Reduktoni sasinë e banderolave që shihni për “cookies”, duke e lejuar { -brand-short-name }-in të hedhë poshtë një kërkesë pranimi cookie-sh nga një sajt, nëse është e mundur.
+cfr-cookiebanner-accept-button-variant-2 = Lejoje
+    .accesskey = L
+cfr-cookiebanner-reject-button-variant-2 = Jo Tani
+    .accesskey = J
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Mendojmë ne për ju
+july-jam-body = Çdo muaj { -brand-short-name }-i bllokon mesatarisht mbi 3 mijë gjurmues për përdorues, duke ju dhënë përdorim të parrezik, të shpejtë të internetit të mbarë.
+july-jam-set-default-primary = Hapi lidhjet e mia me { -brand-short-name }

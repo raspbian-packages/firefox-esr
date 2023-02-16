@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Приватний перегляд { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Приватний перегляд { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Отримати допомогу
 urlbar-search-tips-confirm = Гаразд, зрозуміло
+urlbar-search-tips-confirm-short = Зрозуміло
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Порада:
+urlbar-result-menu-button =
+    .title = Відкрити меню
+urlbar-result-menu-remove-from-history =
+    .label = Вилучити з історії
+    .accesskey = ч
+urlbar-result-menu-tip-get-help =
+    .label = Отримати допомогу
+    .accesskey = г
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Вводьте менше, знаходьте більше: Шукайте за допомогою { $engineName } прямо з панелі адреси.
 urlbar-search-tips-redirect-2 = Розпочніть пошук з адресного рядка, щоб побачити пропозиції від { $engineName } та історії перегляду.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Пошук в інтернеті став простішим. Спробуйте вказати більш конкретний пошуковий запит у панелі пошуку. Щоб натомість показати URL-адресу, перейдіть до розділу Пошук у налаштуваннях.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Оберіть цей ярлик, щоб швидше знайти те, що вам потрібно.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Дії ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Переглянути додатки
-quickactions-cmd-addons = додатки, розширення, теми
 quickactions-cmd-addons2 = додатки
 # Opens the bookmarks library window
-quickactions-bookmarks = Переглянути закладки
+quickactions-bookmarks2 = Керувати закладками
 quickactions-cmd-bookmarks = закладки
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Стерти історію
 quickactions-cmd-clearhistory = стерти історію
 # Opens about:downloads page
-quickactions-downloads = Відкрити завантаження
+quickactions-downloads2 = Переглянути завантаження
 quickactions-cmd-downloads = завантаження
 # Opens about:addons page in the extensions section
 quickactions-extensions = Керувати розширеннями
 quickactions-cmd-extensions = розширення
 # Opens the devtools web inspector
-quickactions-inspector = Відкрити інспектор
+quickactions-inspector2 = Відкрити інструменти розробника
 quickactions-cmd-inspector = інспектор, інструменти розробника
 # Opens about:logins
-quickactions-logins = Переглянути паролі
+quickactions-logins2 = Керувати паролями
 quickactions-cmd-logins = входи, паролі
 # Opens about:addons page in the plugins section
 quickactions-plugins = Керувати плагінами
 quickactions-cmd-plugins = плагіни
 # Opens the print dialog
-quickactions-print = Друкувати
+quickactions-print2 = Друкувати сторінку
 quickactions-cmd-print = друк
 # Opens a new private browsing window
-quickactions-private = Відкрити вікно приватного перегляду
+quickactions-private2 = Відкрити приватне вікно
 quickactions-cmd-private = приватний перегляд
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Оновити { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = оновити
 quickactions-restart = Перезапустити { -brand-short-name }
 quickactions-cmd-restart = перезапустити
 # Opens the screenshot tool
-quickactions-screenshot2 = Зробити знімок екрана
+quickactions-screenshot3 = Зробити знімок екрана
 quickactions-cmd-screenshot = знімок екрана
 # Opens about:preferences
-quickactions-settings = Відкрити налаштування
+quickactions-settings2 = Керувати налаштуваннями
 quickactions-cmd-settings = налаштування, уподобання, параметри
 # Opens about:addons page in the themes section
 quickactions-themes = Керувати темами
@@ -323,8 +332,11 @@ quickactions-cmd-themes = теми
 quickactions-update = Оновити { -brand-short-name }
 quickactions-cmd-update = оновити
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Переглянути джерело
+quickactions-viewsource2 = Програмний код сторінки
 quickactions-cmd-viewsource = переглянути джерело, джерело
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Докладніше про швидкі дії
 
 ## Bookmark Panel
 
@@ -486,6 +498,9 @@ popup-select-microphone-icon =
     .tooltiptext = Мікрофон
 popup-select-speaker-icon =
     .tooltiptext = Динаміки
+popup-select-window-or-screen =
+    .label = Вікно або екран:
+    .accesskey = В
 popup-all-windows-shared = Надасться доступ до всіх видимих вікон на вашому екрані.
 popup-screen-sharing-block =
     .label = Блокувати
@@ -507,6 +522,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Щоб використовувати F12, спочатку відкрийте DevTools через меню Веб розробка.
+enable-devtools-popup-description2 = Для використання клавіші швидкого доступу F12 спершу відкрийте інструменти веброзробника через меню браузера.
 
 ## URL Bar
 
@@ -638,6 +654,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Швидкі дії
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Перейти в режим читача
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Закрити режим читача
 
 ## Full Screen and Pointer Lock UI
 
@@ -805,7 +830,7 @@ eme-notifications-drm-content-playing-dismiss-accesskey = х
 
 ## Password save/update panel
 
-panel-save-update-username = Ім’я користувача
+panel-save-update-username = Ім'я користувача
 panel-save-update-password = Пароль
 
 ## Add-on removal warning
@@ -915,3 +940,29 @@ private-browsing-indicator-label = Приватний перегляд
 unified-extensions-button =
     .label = Розширення
     .tooltiptext = Розширення
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Розширення
+    .tooltiptext =
+        Розширення
+        Потрібні дозволи
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } втримав цю сторінку від автоматичного перезавантаження.
+refresh-blocked-redirect-label = { -brand-short-name } втримав цю сторінку від автоматичної переадресації на іншу.
+refresh-blocked-allow =
+    .label = Дозволити
+    .accesskey = Д
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } маскує вашу справжню електронну адресу, щоб захистити вас від витоку даних і спаму.
+firefox-relay-offer-how-we-integrate = Продовживши, ви зможете створювати нові маски електронної пошти { -relay-brand-short-name } безпосередньо з вашого менеджера паролів { -brand-shorter-name }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Ми пересилатимемо всі електронні листи з <strong>{ $sitename }</strong> на <strong>{ $useremail }</strong>.

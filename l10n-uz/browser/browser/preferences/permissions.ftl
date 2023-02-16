@@ -6,6 +6,10 @@ permissions-window =
     .title = Istisnolar
     .style = width: 45em
 
+permissions-window2 =
+    .title = Istisnolar
+    .style = min-width: 45em
+
 permissions-close-key =
     .key = w
 
@@ -60,10 +64,12 @@ permissions-invalid-uri-label = Iltimos, toʻgʻri host nomini kiriting
 
 ## Exceptions - Tracking Protection
 
+
 ## Exceptions - Cookies
 
 
 ## Exceptions - HTTPS-Only Mode
+
 
 ## Exceptions - Pop-ups
 
@@ -75,14 +81,16 @@ permissions-exceptions-saved-logins-window =
     .title = Istisnolar - saqlangan taxalluslar
     .style = { permissions-window.style }
 
+permissions-exceptions-saved-logins-window2 =
+    .title = Istisnolar - saqlangan taxalluslar
+    .style = { permissions-window2.style }
+
 ## Exceptions - Add-ons
 
 permissions-exceptions-addons-desc = Siz xohlagan vebsaytingizga qoʻshimcha dasturlarni oʻrnatishga ruxsat berishingiz mumkin. Ruxsat bermoqchi boʻlgan saytingiz nomini yozing va "Ruxsat berish"ni bosing.
 
-## Exceptions - Autoplay Media
-
-
 ## Site Permissions - Autoplay
+
 
 ## Site Permissions - Notifications
 
@@ -91,6 +99,7 @@ permissions-exceptions-addons-desc = Siz xohlagan vebsaytingizga qoʻshimcha das
 
 
 ## Site Permissions - Virtual Reality
+
 
 ## Site Permissions - Camera
 

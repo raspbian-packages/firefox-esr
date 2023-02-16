@@ -19,7 +19,6 @@ browser-main-window =
     .data-title-private = { -brand-full-name } (Yeny i mung)
     .data-content-title-default = { $content-title } - { -brand-full-name }
     .data-content-title-private = { $content-title } - { -brand-full-name } (Yeny i mung)
-
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
@@ -39,7 +38,6 @@ browser-main-window-mac =
     .data-title-private = { -brand-full-name } - (Yeny i mung)
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } - (Yeny i mung)
-
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
@@ -88,6 +86,7 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Nong kony
 urlbar-search-tips-confirm = Aya, Aniang
+urlbar-search-tips-confirm-short = Aniang!
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
@@ -101,7 +100,6 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Coo manok, nong mapol: Yeny { $engineName } atir ki ii lanyut me kanonge mamegi.
 urlbar-search-tips-redirect-2 = Cak yeny mamegi ki i lanyut me kanonge me neno tam amia ki bot { $engineName } ki yeny mamegi mukato.
-
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Yer yoo macek man me nongo ngo ma imito oyot.
@@ -128,12 +126,10 @@ urlbar-midi-blocked =
     .tooltiptext = I gengo woko nongo MIDI pi kakube man.
 urlbar-install-blocked =
     .tooltiptext = Igengo woko keto med-ikome pi kakube man.
-
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
 urlbar-star-edit-bookmark =
     .tooltiptext = Yub alama buk man ({ $shortcut })
-
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 urlbar-star-add-bookmark =
@@ -158,10 +154,8 @@ full-screen-exit =
 # This string prompts the user to use the list of search shortcuts in
 # the Urlbar and searchbar.
 search-one-offs-with-title = Iwangi, yeny ki:
-
 search-one-offs-change-settings-compact-button =
     .tooltiptext = Lok ter me yeny
-
 search-one-offs-context-open-new-tab =
     .label = Yeny i dirica matidi manyen
     .accesskey = d
@@ -171,7 +165,20 @@ search-one-offs-context-set-as-default =
 search-one-offs-context-set-as-default-private =
     .label = Ter calo Injin Yeny Makwongo pi Dirica me Mung
     .accesskey = D
-
+# Search engine one-off buttons with an @alias shortcut/keyword.
+# Variables:
+#  $engineName (String): The name of the engine.
+#  $alias (String): The @alias shortcut/keyword.
+search-one-offs-engine-with-alias =
+    .tooltiptext = { $engineName } ({ $alias })
+# Shown when adding new engines from the address bar shortcut buttons or context
+# menu, or from the search bar shortcut buttons.
+# Variables:
+#  $engineName (String): The name of the engine.
+search-one-offs-add-engine =
+    .label = Med “{ $engineName }”
+    .tooltiptext = Med ingin yeny “{ $engineName }”
+    .aria-label = Med ingin yeny “{ $engineName }”
 # When more than 5 engines are offered by a web page, they are grouped in a
 # submenu using this as its label.
 search-one-offs-add-engine-menu =
@@ -184,6 +191,17 @@ search-one-offs-add-engine-menu =
 ##    restrict their searches to certain sources (e.g., "*" to search only
 ##    bookmarks).
 
+
+## QuickActions are shown in the urlbar as the user types a matching string
+## The -cmd- strings are comma separated list of keywords that will match
+## the action.
+
+# Opens a SUMO article explaining how to clear history
+quickactions-clearhistory = Jwa gin mukato
+quickactions-cmd-clearhistory = jwa gin mukato
+# Restarts the browser
+quickactions-restart = Nwo cako { -brand-short-name }
+quickactions-cmd-restart = nwo cako
 
 ## Bookmark Panel
 
@@ -199,7 +217,6 @@ bookmark-panel-remove =
            *[other] Kwany alama buk { $count }
         }
     .accesskey = K
-
 # Width of the bookmark panel.
 # Should be large enough to fully display the Done and
 # Cancel/Remove Bookmark buttons.
@@ -226,7 +243,6 @@ identity-passive-loaded = But potbuk man pe tye ki ber bedo (calo cal).
 identity-active-loaded = I juko gwokke woko ki i potbuk man.
 identity-weak-encryption = Potbuk man tiyo ki loko ngec i kod ma goro.
 identity-insecure-login-forms = Donyo iyie ma kiketo gi i potbuk man twero bedo ki goro.
-
 identity-permissions-reload-hint = Twero mite ni myero i nwo cano potbuk wek alokaloka otime.
 identity-clear-site-data =
     .label = Jwa Angija ki Data me kakube…
@@ -294,21 +310,17 @@ sharing-warning-proceed-to-tab =
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Yeny onyo ket kanonge
-
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
     .placeholder = Yeny ki { $name } onyo ket kanonge
-
 urlbar-permissions-granted =
     .tooltiptext = Imiyo ki kakube man twero mukene.
 urlbar-switch-to-tab =
     .value = Lokke bot dirica matidi:
-
 # Used to indicate that a selected autocomplete entry is provided by an extension.
 urlbar-extension =
     .value = Lamed:
-
 urlbar-go-button =
     .tooltiptext = Cit i kanonge ma i lanyut me gintic kabedo
 urlbar-page-action-button =
@@ -344,6 +356,11 @@ urlbar-result-action-before-tabtosearch-web = Dii Dirica matidi me yenyo ki { $e
 #  $engine (String): the name of a search engine that searches a specific site
 #  (e.g. Amazon).
 urlbar-result-action-before-tabtosearch-other = Dii Dirica matidi me yenyo { $engine }
+# Shows the result of a formula expression being calculated, the last = sign will be shown
+# as part of the result (e.g. "= 2").
+# Variables
+#  $result (String): the string representation for a formula result
+urlbar-result-action-calculator-result = = { $result }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -355,6 +372,19 @@ urlbar-result-action-search-tabs = Yeny Dirica matino
 
 ## Labels shown above groups of urlbar results
 
+# A label shown above the "Firefox Suggest" (bookmarks/history) group in the
+# urlbar results.
+urlbar-group-firefox-suggest =
+    .label = { -firefox-suggest-brand-name }
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Dony i Neno me Kwan
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Lor Neno me Kwan
 
 ## Full Screen and Pointer Lock UI
 
@@ -363,12 +393,9 @@ urlbar-result-action-search-tabs = Yeny Dirica matino
 #  $domain (String): the domain that is full screen, e.g. "mozilla.org"
 fullscreen-warning-domain = <span data-l10n-name="domain">{ $domain }</span> dong opongo wang kio weng
 fullscreen-warning-no-domain = Gin acoya man dong opongo wang kio
-
-
 fullscreen-exit-button = Kat woko ki i wang kio ma opong (Esc)
 # "esc" is lowercase on mac keyboards, but uppercase elsewhere.
 fullscreen-exit-mac-button = Kat woko ki i wang kio ma opong (esc)
-
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
 # Variables
 #  $domain (String): the domain that is using pointer-lock, e.g. "mozilla.org"
@@ -377,6 +404,16 @@ pointerlock-warning-no-domain = Jami eni Tye ki twero i kom lacim ma megi. Dii E
 
 ## Subframe crash notification
 
+crashed-subframe-message = <strong>But potbuk man opoto woko.</strong> Me weko { -brand-product-name } onge pi peko man dok wek oyub woko pi oyotoyot, tim ber i cwal ripot.
+# The string for crashed-subframe-title.title should match crashed-subframe-message,
+# but without any markup.
+crashed-subframe-title =
+    .title = But potbuk man opoto woko. Me weko { -brand-product-name } onge pi peko man dok wek oyub woko pi oyotoyot, tim ber i cwal ripot.
+crashed-subframe-learnmore-link =
+    .value = Nong ngec mapol
+crashed-subframe-submit =
+    .label = Cwal ripot
+    .accesskey = C
 
 ## Bookmarks panels, menus and toolbar
 
@@ -414,7 +451,6 @@ bookmarks-tools =
     .label = Gtic me keto alamabuk
 bookmarks-bookmark-edit-panel =
     .label = Yub alama buk man
-
 # The aria-label is a spoken label that should not include the word "toolbar" or
 # such, because screen readers already know that this container is a toolbar.
 # This avoids double-speaking.
@@ -445,33 +481,25 @@ save-to-pocket-button =
 
 ## Customize Toolbar Buttons
 
-
-## More items
-
 toolbar-overflow-customize-button =
     .label = Yub gitic…
     .accesskey = Y
-
 toolbar-button-email-link =
     .label = Kakube me email
     .tooltiptext = Cwal email me kakube bot pot buk man
-
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
     .label = Gwok pot buk
     .tooltiptext = Gwok pot buk man ({ $shortcut })
-
 # Variables:
 #  $shortcut (String): keyboard shortcut to open a local file
 toolbar-button-open-file =
     .label = Yab Pwail
     .tooltiptext = Yab pwail ({ $shortcut })
-
 toolbar-button-synced-tabs =
     .label = Dirica matino ma kiribo
     .tooltiptext = Nyut dirica matino ma i nyonyo mukene
-
 # Variables
 # $shortcut (string) - Keyboard shortcut to open a new private browsing window
 toolbar-button-new-private-window =
@@ -488,9 +516,6 @@ eme-notifications-drm-content-playing = Dwon ki vidio mogo i kakube man tiyo ki 
 ## Add-on removal warning
 
 
-## Remote / Synced tabs
-
-
 ##
 
 ui-tour-info-panel-close =
@@ -502,7 +527,6 @@ ui-tour-info-panel-close =
 popups-infobar-allow =
     .label = Ye pye-malo pi { $uriHost }
     .accesskey = p
-
 popups-infobar-block =
     .label = Geng pye-malo pi { $uriHost }
     .accesskey = p
@@ -524,45 +548,37 @@ popups-infobar-dont-show-message =
 
 navbar-downloads =
     .label = Gam
-
 navbar-overflow =
     .tooltiptext = Jami tic mukene…
-
 # Variables:
 #   $shortcut (String): keyboard shortcut to print the page
 navbar-print =
     .label = Go
     .tooltiptext = Go pot buk man… ({ $shortcut })
-
 navbar-home =
     .label = Gang
     .tooltiptext = { -brand-short-name } Acakki
-
 navbar-library =
     .label = Ot gwoko buk
     .tooltiptext = Nen mukato, alamabuk ma kigwoko, ki mapol
-
 navbar-search =
     .title = Yeny
-
 navbar-accessibility-indicator =
     .tooltiptext = Kicako jami me nong
-
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
 tabs-toolbar =
     .aria-label = Dirica matino me layeny
-
 tabs-toolbar-new-tab =
     .label = Drica matidi manyen
-
 tabs-toolbar-list-all-tabs =
     .label = Rwe dirica matino weng
     .tooltiptext = Rwe dirica matino weng
 
 ## Infobar shown at startup to suggest session-restore
 
+restore-session-startup-suggestion-button = Nyuta nining
 
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
@@ -570,3 +586,25 @@ data-reporting-notification-message = { -brand-short-name } cwalo pire kene tic 
 data-reporting-notification-button =
     .label = Yer ngo ma anywako
     .accesskey = Y
+
+## Unified extensions (toolbar) button
+
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } ogengo pot buk man me cane odoco pire kene.
+refresh-blocked-redirect-label = { -brand-short-name } ogengo pot buk man me wire pire kene i pot buk mukene.
+refresh-blocked-allow =
+    .label = Ye
+    .accesskey = A
+
+## Firefox Relay integration
+
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Wabi cwalo email weng ma aa ki bot <strong>{ $sitename }</strong> bot <strong>{ $useremail }</strong>.

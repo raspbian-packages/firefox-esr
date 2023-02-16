@@ -592,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Keresési javaslatok megjelenítése a címsáv találataiban
     .accesskey = K
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = A keresési kifejezések megjelenítése a webcím helyett az alapértelmezett keresőszolgáltatás találati oldalán
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = m
     .buttonlabelextra2 = Kapcsolat bontása…
     .buttonaccesskeyextra2 = b
+sync-choose-what-to-sync-dialog3 =
+    .title = Válassza ki, mit szeretne szinkronizálni
+    .style = min-width: 36em;
+    .buttonlabelaccept = Módosítások mentése
+    .buttonaccesskeyaccept = m
+    .buttonlabelextra2 = Kapcsolat bontása…
+    .buttonaccesskeyextra2 = b
 sync-engine-bookmarks =
     .label = Könyvjelzők
     .accesskey = K
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = Figyelmeztetések megjelenítése a feltört webhelyek jelszavaival kapcsolatban
     .accesskey = f
 forms-breach-alerts-learn-more-link = További tudnivalók
+relay-integration =
+    .label = A { -relay-brand-name } engedélyezése a { -brand-short-name } jelszókezelőben
+relay-integration-learn-more-link = További tudnivalók
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Bejelentkezések és jelszavak automatikus kitöltése
@@ -903,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Nem látogatott webhelyekről származó sütik
 sitedata-option-block-all-third-party =
     .label = Minden harmadik féltől származó süti (egyes weboldalak működésképtelenné válhatnak)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Összes webhelyek közötti süti (egyes weboldalak működésképtelenné fognak válni)
 sitedata-option-block-all =
     .label = Minden süti (egyes weboldalak működésképtelenné fognak válni)
 sitedata-clear =
@@ -982,6 +999,7 @@ content-blocking-all-cookies = Minden süti
 content-blocking-unvisited-cookies = Sütik a nem látogatott oldalakról
 content-blocking-all-windows-tracking-content = Tartalomkövetés az összes ablakban
 content-blocking-all-third-party-cookies = Összes harmadik féltől származó süti
+content-blocking-all-cross-site-cookies = Összes webhelyek közötti süti
 content-blocking-cryptominers = Kriptobányászok
 content-blocking-fingerprinters = Ujjlenyomat-készítők
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -989,6 +1007,9 @@ content-blocking-fingerprinters = Ujjlenyomat-készítők
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Tesztelje az eddigi leghatékonyabb adatvédelmi funkciónkat
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = A Teljes sütivédelem ahhoz a webhelyhez köti a sütiket, amelyiken épp tartózkodik, így a követők nem használhatják azokat oldalak közti követésre.
 content-blocking-etp-standard-tcp-rollout-learn-more = További tudnivalók

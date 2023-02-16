@@ -4,13 +4,11 @@
 
 migration-wizard =
     .title = İçe aktarma sihirbazı
-
 import-from =
     { PLATFORM() ->
         [windows] Seçenekleri, yer imlerini, gezinti geçmişini, parolaları ve diğer verileri şu tarayıcıdan aktar:
        *[other] Tercihleri, yer imlerini, gezinti geçmişini, parolaları ve diğer verileri şu tarayıcıdan aktar:
     }
-
 import-from-bookmarks = Yer imlerini buradan içe aktar:
 import-from-ie =
     .label = Microsoft Internet Explorer
@@ -30,6 +28,12 @@ import-from-nothing =
 import-from-safari =
     .label = Safari
     .accesskey = S
+import-from-opera =
+    .label = Opera
+    .accesskey = O
+import-from-vivaldi =
+    .label = Vivaldi
+    .accesskey = V
 import-from-brave =
     .label = Brave
     .accesskey = r
@@ -54,37 +58,26 @@ import-from-firefox =
 import-from-360se =
     .label = 360 Secure Browser
     .accesskey = 3
-
+import-from-opera-gx =
+    .label = Opera GX
+    .accesskey = O
 no-migration-sources = Yer imlerinin, geçmişin veya parola verilerinin kayıtlı olduğu hiçbir program bulunamadı.
-
 import-source-page-title = Ayarları ve verileri içe aktarma
 import-items-page-title = İçe aktarılacak öğeler
-
 import-items-description = İçe aktarılacak öğeleri seçin:
-
 import-permissions-page-title = Lütfen { -brand-short-name } izinlerini verin
-
 # Do not translate "Bookmarks.plist"; the file name is the same everywhere.
 import-permissions-description = macOS, { -brand-short-name } tarayıcınızın Safari yer işaretlerine erişmesine izin vermenizi istiyor. “Devam et”e tıkladıktan sonra açılan Dosya Aç panelinden “Bookmarks.plist” dosyasını seçin.
-
 import-migrating-page-title = İçe aktarılıyor…
-
 import-migrating-description = Aşağıdaki öğeler şu anda içe aktarılıyor…
-
 import-select-profile-page-title = Profil seçin
-
 import-select-profile-description = Aşağıdaki profiller buradan içe aktarılabilir:
-
 import-done-page-title = İçe aktarma tamamlandı
-
 import-done-description = Aşağıdaki öğeler başarıyla içe aktarıldı:
-
 import-close-source-browser = Devam etmeden önce lütfen seçtiğiniz tarayıcının kapalı olduğundan emin olun.
-
 source-name-ie = Internet Explorer
 source-name-edge = Microsoft Edge
 source-name-chrome = Google Chrome
-
 imported-safari-reading-list = Okuma Listesi (Safari’den)
 imported-edge-reading-list = Okuma Listesi (Edge’den)
 
@@ -106,7 +99,6 @@ browser-data-cookies-checkbox =
     .label = Çerezler
 browser-data-cookies-label =
     .value = Çerezler
-
 browser-data-history-checkbox =
     .label =
         { $browser ->
@@ -119,12 +111,10 @@ browser-data-history-label =
             [firefox] Gezinti geçmişi ve yer imleri
            *[other] Gezinti geçmişi
         }
-
 browser-data-formdata-checkbox =
     .label = Kayıtlı form geçmişi
 browser-data-formdata-label =
     .value = Kayıtlı form geçmişi
-
 # This string should use the same phrase for "logins and passwords" as the
 # label in the main hamburger menu that opens about:logins.
 browser-data-passwords-checkbox =
@@ -133,7 +123,6 @@ browser-data-passwords-checkbox =
 # label in the main hamburger menu that opens about:logins.
 browser-data-passwords-label =
     .value = Kayıtlı hesaplar ve parolalar
-
 browser-data-bookmarks-checkbox =
     .label =
         { $browser ->
@@ -148,12 +137,10 @@ browser-data-bookmarks-label =
             [edge] Sık kullanılanlar
            *[other] Yer imleri
         }
-
 browser-data-otherdata-checkbox =
     .label = Diğer veriler
 browser-data-otherdata-label =
     .label = Diğer veriler
-
 browser-data-session-checkbox =
     .label = Pencereler ve sekmeler
 browser-data-session-label =

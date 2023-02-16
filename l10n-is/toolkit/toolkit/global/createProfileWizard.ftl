@@ -6,12 +6,22 @@ create-profile-window =
     .title = Leiðarvísir við að búa til notanda
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Leiðarvísir við að búa til notanda
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Inngangur
        *[other] Vertu velkomin í { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Inngangur
+       *[other] Vertu velkomin í { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } geymir stillingar þínar í persónulegum notandastillingum þínum.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Niðurstaða
        *[other] Ljúka við { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Niðurstaða
+       *[other] Ljúka við { create-profile-window2.title }
     }
 
 profile-creation-intro = Ef þú býrð til marga notendur geturðu þekkt þá í sundur á nafninu. Þú getur notað nafnið sem er hér fyrir eða sett inn þitt eigið.

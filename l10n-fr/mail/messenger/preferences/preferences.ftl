@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Dès l’affichage
     .accesskey = D
 
+view-attachments-inline =
+    .label = Afficher les pièces jointes en ligne
+    .accesskey = f
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Ce thème n’est plus valide ou est indisponible (modu
 chat-variant-label =
     .value = Variante :
     .accesskey = V
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

@@ -119,6 +119,7 @@ whatsnew-panel-footer-checkbox =
 
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = තව තොරතුරු පෙන්වන්න
 profiler-popup-description-title =

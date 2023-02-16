@@ -6,12 +6,22 @@ create-profile-window =
     .title = אשף יצירת פרופיל
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = אשף יצירת פרופיל
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] הקדמה
        *[other] ברוכים הבאים אל { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] הקדמה
+       *[other] ברוכים הבאים אל { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } מאחסן מידע על ההגדרות וההעדפות שלך בפרופיל האישי שלך.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] סוף
        *[other] משלים את { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] סוף
+       *[other] משלים את { create-profile-window2.title }
     }
 
 profile-creation-intro = אם תיצור מספר פרופילים תוכל להבדיל ביניהם לפי שמם. תוכל להשתמש בשם המסופק כאן או להשתמש בשם משלך.

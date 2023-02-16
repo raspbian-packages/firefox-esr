@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Zagnali ste starejšo različico { -brand-product-name(sklon: "rodilnik") }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Zagnali ste starejšo različico { -brand-product-name(sklon: "rodilnik") }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Ustvari nov profil
 

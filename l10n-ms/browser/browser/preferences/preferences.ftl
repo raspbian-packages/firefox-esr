@@ -175,10 +175,6 @@ files-and-applications-title = Fail dan Aplikasi
 
 download-header = Muat turun
 
-download-save-to =
-    .label = Simpan fail ke
-    .accesskey = n
-
 download-save-where = Simpan fail ke
     .accesskey = n
 
@@ -893,8 +889,3 @@ certs-devices =
 desktop-folder-name = Desktop
 downloads-folder-name = Muat turun
 choose-download-folder-title = Pilih Folder Muat turun:
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Simpan fail ke { $service-name }

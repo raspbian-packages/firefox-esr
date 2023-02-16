@@ -6,6 +6,10 @@ blocklist-window =
     .title = Blok ro‘yxatlari
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Blok ro‘yxatlari
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

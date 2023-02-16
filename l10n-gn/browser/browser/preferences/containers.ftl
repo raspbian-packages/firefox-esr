@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Embojuaju guerekoha pyahu
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = { $name } Ñemboheko guerekoha
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Embojuaju guerekoha pyahu
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = { $name } Ñemboheko guerekoha
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

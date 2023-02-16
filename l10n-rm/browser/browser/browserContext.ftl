@@ -134,6 +134,44 @@ main-context-menu-bookmark-change-with-shortcut =
     .accesskey = t
     .tooltiptext = Modifitgar quest segnapagina ({ $shortcut })
 
+main-context-menu-bookmark-page =
+    .aria-label = Agiuntar in segnapagina per la pagina…
+    .accesskey = n
+    .tooltiptext = Agiuntar in segnapagina per la pagina
+
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-edit-bookmark-mac,
+# so should probably have the same access key if possible.
+main-context-menu-bookmark-page-mac =
+    .label = Agiuntar in segnapagina per la pagina…
+    .accesskey = A
+
+# This menuitem is only visible on macOS
+# Cannot be shown at the same time as main-context-menu-bookmark-page-mac,
+# so should probably have the same access key if possible.
+main-context-menu-edit-bookmark-mac =
+    .label = Modifitgar il segnapagina…
+    .accesskey = M
+
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
+main-context-menu-bookmark-page-with-shortcut =
+    .aria-label = Agiuntar in segnapagina per la pagina…
+    .accesskey = n
+    .tooltiptext = Agiuntar in segnapagina per la pagina ({ $shortcut })
+
+main-context-menu-edit-bookmark =
+    .aria-label = Modifitgar il segnapagina…
+    .accesskey = n
+    .tooltiptext = Modifitgar il segnapagina
+
+# Variables
+#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
+main-context-menu-edit-bookmark-with-shortcut =
+    .aria-label = Modifitgar il segnapagina…
+    .accesskey = m
+    .tooltiptext = Modifitgar il segnapagina ({ $shortcut })
+
 main-context-menu-open-link =
     .label = Avrir la colliaziun
     .accesskey = A
@@ -156,6 +194,10 @@ main-context-menu-open-link-new-private-window =
 
 main-context-menu-bookmark-link =
     .label = Agiuntar in segnapagina per la colliaziun
+    .accesskey = A
+
+main-context-menu-bookmark-link-2 =
+    .label = Agiuntar in segnapagina per la colliaziun…
     .accesskey = A
 
 main-context-menu-save-link =
@@ -296,6 +338,10 @@ main-context-menu-image-set-image-as-background =
     .label = Definir il maletg sco culissa dal desktop…
     .accesskey = s
 
+main-context-menu-image-copy-text =
+    .label = Copiar il text dal maletg
+    .accesskey = x
+
 main-context-menu-image-info =
     .label = Mussar infurmaziuns davart la grafica
     .accesskey = g
@@ -394,6 +440,10 @@ main-context-menu-frame-bookmark =
     .label = Agiuntar in segnapagina per il frame
     .accesskey = A
 
+main-context-menu-frame-add-bookmark =
+    .label = Agiuntar in segnapagina per il frame…
+    .accesskey = n
+
 main-context-menu-frame-save-as =
     .label = Memorisar il frame sut…
     .accesskey = u
@@ -412,6 +462,10 @@ main-context-menu-frame-view-info =
 
 main-context-menu-print-selection =
     .label = Stampar la selecziun
+    .accesskey = r
+
+main-context-menu-print-selection-2 =
+    .label = Stampar la selecziun…
     .accesskey = r
 
 main-context-menu-view-selection-source =

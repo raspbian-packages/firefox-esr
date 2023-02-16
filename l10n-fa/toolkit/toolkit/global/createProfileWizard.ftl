@@ -6,12 +6,22 @@ create-profile-window =
     .title = راهنمای گام‌به‌گام ایجاد مجموعه تنظیمات
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = راهنمای گام‌به‌گام ایجاد مجموعه تنظیمات
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] مقدمه
        *[other] به { create-profile-window.title } خوش آمدید
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] مقدمه
+       *[other] به { create-profile-window2.title } خوش آمدید
     }
 
 profile-creation-explanation-1 = { -brand-short-name } اطلاعات مربوط به تنظبمات و ترجیحات شما را در یک مجوعه تنظیمات نگه‌داری می‌کند.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] نتیجه
        *[other] در حال تکمیل { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] نتیجه
+       *[other] در حال تکمیل { create-profile-window2.title }
     }
 
 profile-creation-intro = اگر چندین مجموعه تنظیمات ایجاد کنید، می‌توانید آن‌ها را توسط نام از یکدیگر تشخیص دهید. می‌توانید از اسم موجود در اینجا و یا اسم دلخواه خود استفاده کنید.

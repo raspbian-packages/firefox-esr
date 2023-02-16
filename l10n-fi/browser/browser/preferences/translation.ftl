@@ -6,6 +6,10 @@ translation-window =
     .title = Poikkeukset - Käännökset
     .style = width: 36em
 
+translation-window2 =
+    .title = Poikkeukset - Käännökset
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

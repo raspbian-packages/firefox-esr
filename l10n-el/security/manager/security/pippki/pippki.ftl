@@ -31,6 +31,10 @@ pippki-pw-change2empty-in-fips-mode = Βρίσκεστε σε λειτουργί
 reset-primary-password-window =
     .title = Επαναφορά κύριου κωδικού πρόσβασης
     .style = width: 40em
+
+reset-primary-password-window2 =
+    .title = Επαναφορά κύριου κωδικού πρόσβασης
+    .style = min-width: 40em
 reset-password-button-label =
     .label = Επαναφορά
 reset-primary-password-text = Εάν επαναφέρετε τον κύριο κωδικό πρόσβασής σας, θα διαγραφούν από την μνήμη όλοι οι αποθηκευμένοι κωδικοί πρόσβασης ιστοτόπων και email, προσωπικών πιστοποιητικών και ιδιωτικών κλειδιών. Θέλετε σίγουρα να επαναφέρετε τον κύριο κωδικό πρόσβασης;
@@ -43,6 +47,10 @@ pippki-reset-password-confirmation-message = Έγινε επαναφορά το�
 download-cert-window =
     .title = Λήψη πιστοποιητικού
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Λήψη πιστοποιητικού
+    .style = min-width: 46em
 download-cert-message = Σας ζητήθηκε να εμπιστευθείτε μια νέα Αρχή Πιστοποίησης (CA).
 download-cert-trust-ssl =
     .label = Να θεωρείται αξιόπιστη αυτή η ΑΠ για την αναγνώριση ιστοτόπων.

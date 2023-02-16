@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Az önce
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Sekme taşıma
 firefoxview-tabpickup-description = Diğer cihazlarınızdaki sayfaları açın.
-firefoxview-tabpickup-recenttabs-description = Son sekmelerin listesi buraya gelecek
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = %{ $percentValue } tamamlandı
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Yeniden dene
 firefoxview-tabpickup-sync-disconnected-header = Devam etmek için eşitlemeyi açın
 firefoxview-tabpickup-sync-disconnected-description = Sekmelerinizi almak için { -brand-short-name } tarayıcısında eşitlemeye izin vermeniz gerekir.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Ayarlardan eşitlemeyi açın
+firefoxview-tabpickup-password-locked-header = Sekmeleri görmek için ana parolanızı girin
+firefoxview-tabpickup-password-locked-description = Sekmelerinizi almak için { -brand-short-name } ana parolanızı girmeniz gerekir.
+firefoxview-tabpickup-password-locked-link = Daha fazla bilgi al
+firefoxview-tabpickup-password-locked-primarybutton = Ana parolayı girin
+firefoxview-tabpickup-signed-out-header = Yeniden bağlanmak için giriş yapın
+firefoxview-tabpickup-signed-out-description = Yeniden bağlanıp sekmelerinize ulaşmak için { -fxaccount-brand-name }nıza giriş yapın.
+firefoxview-tabpickup-signed-out-primarybutton = Giriş yap
 firefoxview-tabpickup-syncing = Sekmeleriniz eşitleniyor. Birkaç saniye bekleyin.
 firefoxview-mobile-promo-header = Telefon veya tabletinizdeki sekmelerinize erişin
 firefoxview-mobile-promo-description = Mobil sekmelerinizi görmek için iOS veya Android’de { -brand-product-name } tarayıcısına giriş yapın.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Mobil cihazlar için { -brand-product-n
 firefoxview-mobile-confirmation-header = 🎉 Her şey hazır!
 firefoxview-mobile-confirmation-description = Artık { -brand-product-name } sekmelerinize tabletinizden ve telefonunuzdan ulaşabilirsiniz.
 firefoxview-closed-tabs-title = Son kapatılanlar
-firefoxview-closed-tabs-description = Bu cihazda kapattığınız sayfaları yeniden açın.
-firefoxview-closed-tabs-placeholder = <strong>Yakın zamanda kapatılan sayfa yok</strong><br/>Kapattığınız sekmeleri kaybetmekten korkmayın. Kapattığınız sekmeleri istediğiniz zaman buradan tekrar açabilirsiniz.
+firefoxview-closed-tabs-description2 = Kapattığınız sayfaları bu pencereden geri açabilirsiniz.
+firefoxview-closed-tabs-placeholder-header = Yakın zamanda kapatılmış sekme yok
+firefoxview-closed-tabs-placeholder-body = Bu pencerede bir sekmeyi kapattıktan sonra buradan getirebilirsiniz.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = { $tabTitle } sekmesini kapat
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Son bakılan
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Renk kuşağını değiştir
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Henüz burada bir şey yok</strong><br/>Başka bir cihazdaki { -brand-product-name } tarayıcınızda bir sayfa açtığınızda burada görünecek.
+firefoxview-synced-tabs-placeholder-header = Henüz görülecek bir şey yok
+firefoxview-synced-tabs-placeholder-body = Başka bir cihazdaki { -brand-product-name } tarayıcınızda bir sayfa açtığınızda o sayfayı burada görebilirsiniz.
 firefoxview-collapse-button-show =
     .title = Listeyi göster
 firefoxview-collapse-button-hide =

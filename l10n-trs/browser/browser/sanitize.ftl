@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Daj dure' riña gaché nu'
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Daj dure' riña gaché nu'
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 
