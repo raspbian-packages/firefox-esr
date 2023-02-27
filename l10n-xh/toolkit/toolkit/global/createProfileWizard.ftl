@@ -6,12 +6,22 @@ create-profile-window =
     .title = Yenza igcisa leprofayile
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Yenza igcisa leprofayile
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Intshayelelo
        *[other] Wamkelekile kwi-{ create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Intshayelelo
+       *[other] Wamkelekile kwi-{ create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = I-{ -brand-short-name } igcina inkcazelo engeesethingi zakho neepriferensi kwiprofayile yakho.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Isiphelo
        *[other] Kugqitywa i-{ create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Isiphelo
+       *[other] Kugqitywa i-{ create-profile-window2.title }
     }
 
 profile-creation-intro = Ukuba wenza iiprofayile ezininzi ungazixelela ngokwahlukeneyo ngamagama eeprofayile. Ungasebenzisa igama elikhoyo apha okanye usebenzise elakho.

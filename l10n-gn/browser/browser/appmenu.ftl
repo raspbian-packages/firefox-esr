@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = Mbohapeha ojapyhy mba’ete
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Eguenohẽve marandu
 profiler-popup-description-title =

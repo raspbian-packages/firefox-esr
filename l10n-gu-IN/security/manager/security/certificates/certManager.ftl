@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = CA વિશ્વાસ પ્રમાણપત્રની સુયોજનાઓ ફેરફાર કરો
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA વિશ્વાસ પ્રમાણપત્રની સુયોજનાઓ ફેરફાર કરો
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = વિશ્વાસ ગોઠવણીમાં ફેરફાર કરો:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = પ્રમાણપત્ર દૂર કરો
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = પ્રમાણપત્ર દૂર કરો
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = પ્રમાણપત્રનુ નામ
@@ -173,9 +181,8 @@ delete-email-cert-impact = જો તમે વ્યક્તિનું ઈ-�
 cert-with-serial =
     .value = અનુક્રમ નંબર સાથે પ્રમાણપત્ર: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

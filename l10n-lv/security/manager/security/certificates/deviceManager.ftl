@@ -9,6 +9,10 @@ devmgr =
     .title = Ierīču pārvaldnieks
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Ierīču pārvaldnieks
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Drošības moduļi un ierīces
 

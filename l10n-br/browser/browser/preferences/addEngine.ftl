@@ -6,6 +6,10 @@ add-engine-window =
     .title = Ouzhpennañ ul lusker enklask
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Ouzhpennañ ul lusker enklask
+    .style = min-width: 32em;
+
 add-engine-button = Ouzhpennañ ul lusker personelaet
 
 add-engine-name = Anv ar c'heflusker enklask

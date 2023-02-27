@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Embojuruja peteĩ { -brand-product-name } rembiapokue itujámava
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Embojuruja peteĩ { -brand-product-name } rembiapokue itujámava
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Emoheñói mba’ete pyahu
 

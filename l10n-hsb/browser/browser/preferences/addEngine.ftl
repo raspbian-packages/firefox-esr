@@ -6,6 +6,10 @@ add-engine-window =
     .title = Pytawu přidać
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Pytawu přidać
+    .style = min-width: 32em;
+
 add-engine-button = Swójsku pytawu přidać
 
 add-engine-name = Mjeno pytawy

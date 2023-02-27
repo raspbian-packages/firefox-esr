@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Sincronização
+appmenu-signin-panel =
+    .label = Entre na conta para sincronizar
+    .accesskey = E
+appmenu-sync-sync =
+    .value = Sincronização de conta
+    .accesskey = S
+appmenu-sync-manage =
+    .value = Gerenciar conta
+    .accesskey = G
+appmenu-sync-account =
+    .value = examplo@example.com
+appmenu-sync-now =
+    .label = Sincronizar agora
+    .accesskey = n
+appmenu-sync-settings =
+    .label = Configurações de sincronização
+    .accesskey = s
+appmenu-sync-sign-out =
+    .label = Sair da conta…
+    .accesskey = c
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -66,10 +91,35 @@ appmenu-create-contact =
     .label = Contato
     .accesskey = C
 
+## Open
+
+appmenu-open-file-panel =
+    .label = Abrir de arquivo
+    .accesskey = A
+appmenu-open-file-panel-title =
+    .title = Abrir de arquivo
+appmenu-open-message =
+    .label = Mensagem…
+    .accesskey = M
+appmenu-open-calendar =
+    .label = Agenda…
+    .accesskey = A
+
 ## View / Layout
 
+appmenu-view-panel-title =
+    .title = Exibir
+appmenu-view-panel =
+    .label = Exibir
+    .accesskey = E
 appmenu-font-size-value = Tamanho da fonte
 appmenu-mail-uidensity-value = Densidade
+appmenu-uidensity-compact =
+    .tooltiptext = Compacto
+appmenu-uidensity-default =
+    .tooltiptext = Padrão
+appmenu-uidensity-relaxed =
+    .tooltiptext = Descontraído
 appmenuitem-font-size-enlarge =
     .tooltiptext = Aumentar tamanho da fonte
 appmenuitem-font-size-reduce =
@@ -143,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = Sobre o { -brand-short-name }
     .accesskey = S
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Baixando atualização do { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Atualização disponível, baixar agora
+appmenuitem-banner-update-manual =
+    .label = Atualização disponível, baixar agora
+appmenuitem-banner-update-unsupported =
+    .label = Não foi possível atualizar, sistema incompatível
+appmenuitem-banner-update-restart =
+    .label = Atualização disponível, reiniciar agora

@@ -153,6 +153,9 @@ message-header-hide-label-column =
 message-header-large-subject =
     .label = Tema grande
     .accesskey = T
+message-header-all-headers =
+    .label = Mostrar todos los encabezados
+    .accesskey = t
 
 ## Action Button Context Menu
 

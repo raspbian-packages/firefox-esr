@@ -26,6 +26,9 @@ connection-dialog-window =
            *[other] width: 49em !important
         }
 
+connection-dialog-window2 =
+    .title = Opciones de conexión
+
 disable-extension-button = Deshabilitar el complemento
 
 # Variables:

@@ -449,8 +449,8 @@ browsing-gtk-use-non-overlay-scrollbars =
     .label = Завжди показувати смуги прокручування
     .accesskey = о
 browsing-use-onscreen-keyboard =
-    .label = Показувати сенсорну клавіатуру при необхідності
-    .accesskey = у
+    .label = Показувати сенсорну клавіатуру за потреби
+    .accesskey = с
 browsing-use-cursor-navigation =
     .label = Завжди використовувати клавіші курсора для навігації по сторінках
     .accesskey = х
@@ -596,6 +596,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Показувати пошукові пропозиції в результатах панелі адреси
     .accesskey = ш
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Показувати пошуковий запит замість URL-адреси на сторінці результатів типового засобу пошуку
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -723,6 +728,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = З
     .buttonlabelextra2 = Від'єднатися…
     .buttonaccesskeyextra2 = є
+sync-choose-what-to-sync-dialog3 =
+    .title = Виберіть що синхронізувати
+    .style = min-width: 36em;
+    .buttonlabelaccept = Зберегти зміни
+    .buttonaccesskeyaccept = З
+    .buttonlabelextra2 = Від'єднатися…
+    .buttonaccesskeyextra2 = є
 sync-engine-bookmarks =
     .label = Закладки
     .accesskey = З
@@ -791,6 +803,9 @@ forms-breach-alerts =
     .label = Показувати сповіщення про паролі для зламаних вебсайтів
     .accesskey = з
 forms-breach-alerts-learn-more-link = Докладніше
+relay-integration =
+    .label = Увімкнути { -relay-brand-name } у менеджері паролів { -brand-short-name }
+relay-integration-learn-more-link = Докладніше
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Автозаповнення паролів
@@ -848,21 +863,21 @@ history-header = Історія відвідувань
 history-remember-label = Поведінка { -brand-short-name }
     .accesskey = П
 history-remember-option-all =
-    .label = Пам’ятати історію
+    .label = Пам'ятати історію
 history-remember-option-never =
-    .label = Ніколи не пам’ятати історії
+    .label = Ніколи не пам'ятати історії
 history-remember-option-custom =
     .label = Використовувати власні налаштування історії
 history-remember-description = { -brand-short-name } зберігатиме історію переглядів, завантажень, заповнених форм і пошукових запитів.
-history-dontremember-description = { -brand-short-name } використовуватиме такі самі налаштування, що й у приватному режимі, та не буде пам’ятати історію перегляду.
+history-dontremember-description = { -brand-short-name } використовуватиме такі самі налаштування, що й у приватному режимі, та не буде пам'ятати історію перегляду.
 history-private-browsing-permanent =
     .label = Завжди використовувати режим приватного перегляду
     .accesskey = п
 history-remember-browser-option =
-    .label = Пам’ятати історію переглядів та завантажень
+    .label = Пам'ятати історію переглядів та завантажень
     .accesskey = П
 history-remember-search-option =
-    .label = Пам’ятати історію пошуків та форм
+    .label = Пам'ятати історію пошуків та форм
     .accesskey = м
 history-clear-on-close-option =
     .label = Стирати історію при закритті { -brand-short-name }
@@ -907,6 +922,8 @@ sitedata-option-block-unvisited =
     .label = Куки з невідвіданих вебсайтів
 sitedata-option-block-all-third-party =
     .label = Усі сторонні куки (може пошкодити вебсайти)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Усі міжсайтові куки (може пошкодити вебсайти)
 sitedata-option-block-all =
     .label = Усі куки (порушить роботу вебсайтів)
 sitedata-clear =
@@ -986,6 +1003,7 @@ content-blocking-all-cookies = Усі куки
 content-blocking-unvisited-cookies = Куки з невідвіданих сайтів
 content-blocking-all-windows-tracking-content = Стеження у всіх вікнах
 content-blocking-all-third-party-cookies = Усі сторонні куки
+content-blocking-all-cross-site-cookies = Усі міжсайтові куки
 content-blocking-cryptominers = Криптомайнери
 content-blocking-fingerprinters = Зчитування цифрового відбитка
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -993,6 +1011,9 @@ content-blocking-fingerprinters = Зчитування цифрового від
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Випробуйте першими нашу найпотужнішу функцію приватності
     .accesskey = й
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Повний захист кук ізолює файли кук для відвідуваного сайту, тому елементи стеження не можуть використовувати їх для переслідування вас між сайтами.
 content-blocking-etp-standard-tcp-rollout-learn-more = Докладніше

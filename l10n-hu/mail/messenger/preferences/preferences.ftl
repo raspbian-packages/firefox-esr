@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Megjelenítéskor azonnal
     .accesskey = M
 
+view-attachments-inline =
+    .label = Mellékletek soron belüli megtekintése
+    .accesskey = M
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Ez a téma nem érvényes, vagy jelenleg nem érhető e
 chat-variant-label =
     .value = Változat:
     .accesskey = V
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

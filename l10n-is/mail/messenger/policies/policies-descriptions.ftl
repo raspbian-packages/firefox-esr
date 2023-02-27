@@ -50,8 +50,8 @@ policy-EncryptedMediaExtensions = Virkja eða slökkva á dulrituðum margmiðlu
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
-policy-Extensions = Setja upp, fjarlægja eða læsa viðbótum. Uppsetningarvalkosturinn tekur við vefslóðum og skráaslóðum sem breytum. Valkostir til að fjarlægja eða læsa viðbót krefjast auðkennis viðbótarinnar.
-policy-ExtensionSettings = Stjórna öllum uppsetningarþáttum viðbóta.
+policy-Extensions = Setja upp, fjarlægja eða læsa forritsaukum. Uppsetningarvalkosturinn samþykkir vefslóðir og leiðir sem breytur. Valkostir um að fjarlægja viðauka eða læstir valkostir krefjast auðkennis viðaukans.
+policy-ExtensionSettings = Stjórnaðu öllum uppsetningarþáttum forritsauka.
 policy-ExtensionUpdate = Virkja eða slökkva á sjálfvirkri uppfærslu á viðbótum.
 policy-Handlers = Stilla meðhöndlun með sjálfgefnum forritum.
 policy-HardwareAcceleration = Ef ósatt, skal slökkva á vélbúnaðarhröðun.

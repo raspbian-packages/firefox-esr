@@ -55,6 +55,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } пайдаланушы
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Cookie баннерлері жоғалсын!
+cfr-cookie-banner-handling-body = Мүмкіндігінше { -brand-short-name } барлық cookie баннер сұрауларын автоматты түрде қабылдамау мүмкіндігін беріңіз. Әйтпесе, барлық cookie файлдары одан да көп баннерлерді жабу үшін қабылданады.
+cfr-cookie-banner-accept-button = Сұрауларды қабылдамау
+    .accesskey = д
+cfr-cookie-banner-reject-button = Қазір емес
+    .accesskey = м
+cfr-cookie-banner-handling-header-variant-1 = Азырақ cookie қалқымалы терезелерін көру
+cfr-cookie-banner-handling-body-variant-1 = Мазасыз шолуға қайта оралу үшін { -brand-short-name } cookie файлдарының қалқымалы терезелеріне автоматты түрде жауап беруге мүмкіндік беріңіз. { -brand-short-name } мүмкіндігінше барлық сұрауларды қабылдамайды, ал болмаса, барлығын қабылдайды.
+cfr-cookie-banner-accept-button-variant-1 = Қалқымалы терезелерді тайдыру
+    .accesskey = д
+cfr-cookie-banner-reject-button-variant-1 = Жоқ, рахмет
+    .accesskey = р
+cfr-cookie-banner-handling-header-variant-2 = Cookie баннерлерін азайту
+cfr-cookie-banner-handling-body-variant-2 = { -brand-short-name } үшін сайттың cookie файлына рұқсат сұрауын тайдыру, немесе мүмкін болмаса, cookie файлдарына рұқсатын беру керек пе?
+cfr-cookie-banner-accept-button-variant-2 = Рұқсат ету
+    .accesskey = а
+cfr-cookie-banner-reject-button-variant-2 = Қазір емес
+    .accesskey = м
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Бетбелгілерді барлық жерде синхрондаңыз.
@@ -153,10 +176,6 @@ spotlight-total-cookie-protection-body = Cookie файлдарынан Толы�
 spotlight-total-cookie-protection-expanded = { -brand-short-name } cookie файлдарының айналасын қоршап, оларды сіз кіретін сайтпен шектейді, сондықтан трекерлер оларды сізді бақылау үшін пайдалана алмайды. Ертерек қолжетімділік арқылы сіз бұл мүмкіндікті оңтайландыруға көмектесесіз, осылайша біз барлығы үшін жақсырақ Интернетті жасауды жалғастыра аламыз.
 spotlight-total-cookie-protection-primary-button = Cookie файлдарынан Толық қорғанысты іске қосу
 spotlight-total-cookie-protection-secondary-button = Қазір емес
-cfr-total-cookie-protection-header = Сізге арқаңызда, { -brand-short-name } бұрынғыдан да жекелік және қауіпсіз
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Cookie файлдарынан Толық қорғаныс – біздің жекелікті қорғаудың ең күшті нұсқасы – және ол енді { -brand-short-name } пайдаланушылары үшін әдепкі параметр болып табылады. Сіз сияқты ерте сынаушы қатысушыларсыз мұны жасай алмас едік. Жақсырақ, жеке интернетті құруға көмектескеніңіз үшін рахмет.
 
 ## Emotive Continuous Onboarding
 
@@ -170,3 +189,85 @@ spotlight-pin-primary-button =
        *[other] Тапсырмалар панеліне бекіту
     }
 spotlight-pin-secondary-button = Қазір емес
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Жаңа{ -brand-short-name }. Неғұрлым жеке. Азырақ трекерлер. Компромисстері жоқ.
+mr2022-background-update-toast-text = Ең жаңа { -brand-short-name } нұсқасын қазір қолданып көріңіз, ол біздің бақылауға қарсы ең күшті қорғаныспен жаңартылды.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = { -brand-shorter-name } қазір ашу
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Кейінірек еске салу
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Қолданып көріңіз
+    .accesskey = н
+firefoxview-cfr-secondarybutton = Қазір емес
+    .accesskey = е
+firefoxview-cfr-header-v2 = Тоқтаған жерден жылдам жалғастырыңыз
+firefoxview-cfr-body-v2 = Жақында жабылған беттерді қайтарып алыңыз, сонымен қатар { -firefoxview-brand-name } көмегімен құрылғылар арасында кедергісіз өтіңіз.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = { -firefoxview-brand-name } өнімін қарсы алыңыз
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Телефоныңыздағы ашық бетті қалайсыз ба? Оны алыңыз. Сізге жаңа ғана кірген сайт керек пе? Ол { -firefoxview-brand-name } арқылы қайта оралды.
+firefoxview-spotlight-promo-primarybutton = Бұл қалай жұмыс жасайтынын қарау
+firefoxview-spotlight-promo-secondarybutton = Аттап кету
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Түстер схемасын таңдау
+    .accesskey = т
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Браузеріңізді мәдениетті өзгерткен дауыстардан шабыттандырылған { -brand-short-name } эксклюзивті реңктермен бояңыз.
+colorways-cfr-header-28days = Тәуелсіз дауыстар түстер схемаларының мерзімі 16 қаңтарда аяқталады
+colorways-cfr-header-14days = Тәуелсіз дауыстар түстер схемаларының мерзімі екі аптадан кейін аяқталады
+colorways-cfr-header-7days = Тәуелсіз дауыстар түстер схемаларының мерзімі осы аптада аяқталады
+colorways-cfr-header-today = Тәуелсіз дауыстар түстер схемаларының мерзімі бүгін аяқталады
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Cookie баннерлері жоғалсын!
+cfr-cookiebanner-body = { -brand-short-name } үшін барлық cookie баннер сұрауларын мүмкіндігінше автоматты түрде қабылдамау рұқсатын беру.
+cfr-cookiebanner-accept-button = Баннерлерді қабылдамау
+    .accesskey = д
+cfr-cookiebanner-reject-button = Қазір емес
+    .accesskey = м
+cfr-cookiebanner-header-variant-1 = Азырақ cookie қалқымалы терезелерін көру
+cfr-cookiebanner-body-variant-1 = Мазасыз шолуға қайта оралу үшін { -brand-short-name } cookie файлдарының қалқымалы терезелеріне автоматты түрде жауап беруге рұқсат беріңіз. { -brand-short-name } мүмкіндігінше барлық сұрауларды қабылдамайды.
+cfr-cookiebanner-accept-button-variant-1 = Қалқымалы терезелерді елемеу
+    .accesskey = м
+cfr-cookiebanner-reject-button-variant-1 = Жоқ, рахмет
+    .accesskey = о
+cfr-cookiebanner-header-variant-2 = Cookie баннерлерін азайту
+cfr-cookiebanner-body-variant-2 = Мүмкін болса, { -brand-short-name } веб-сайтының cookie файлына рұқсат сұрауын қабылдамауға рұқсат беру арқылы көретін cookie баннерлерінің санын азайту.
+cfr-cookiebanner-accept-button-variant-2 = Рұқсат ету
+    .accesskey = а
+cfr-cookiebanner-reject-button-variant-2 = Қазір емес
+    .accesskey = м
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Сіз үшін қамқорлықпен
+july-jam-body = Ай сайын { -brand-short-name } бір пайдаланушыға орташа есеппен 3000+ трекерді блоктайды, бұл сізге жақсы интернетке қауіпсіз және жылдам қол жеткізуге мүмкіндік береді.
+july-jam-set-default-primary = Менің сілтемелерімді { -brand-short-name } арқылы ашу

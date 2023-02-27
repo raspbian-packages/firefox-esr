@@ -6,6 +6,10 @@ translation-window =
     .title = Eceçioin - Traduçion
     .style = width: 38em
 
+translation-window2 =
+    .title = Eceçioin - Traduçion
+    .style = min-width: 38em
+
 translation-close-key =
     .key = w
 

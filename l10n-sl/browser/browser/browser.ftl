@@ -17,8 +17,8 @@
 browser-main-window =
     .data-title-default = { -brand-full-name }
     .data-title-private = { -brand-full-name } (Zasebno brskanje)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Zasebno brskanje)
+    .data-content-title-default = { $content-title } – { -brand-full-name }
+    .data-content-title-private = { $content-title } – { -brand-full-name } (Zasebno brskanje)
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
@@ -35,9 +35,9 @@ browser-main-window =
 #  $content-title (String): the title of the web content.
 browser-main-window-mac =
     .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Zasebno brskanje)
+    .data-title-private = { -brand-full-name } – (Zasebno brskanje)
     .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Zasebno brskanje)
+    .data-content-title-private = { $content-title } – (Zasebno brskanje)
 # These are the default window titles everywhere except macOS. The first two
 # attributes are used when the web content opened has no title:
 #
@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } – Zasebno brskanje
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } – Zasebno brskanje
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Pomoč
 urlbar-search-tips-confirm = Razumem
+urlbar-search-tips-confirm-short = Razumem
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Namig:
+urlbar-result-menu-button =
+    .title = Odpri meni
+urlbar-result-menu-remove-from-history =
+    .label = Odstrani iz zgodovine
+    .accesskey = O
+urlbar-result-menu-tip-get-help =
+    .label = Pomoč
+    .accesskey = P
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Tipkajte manj, najdite več: Iščite z iskalnikom { $engineName } iz vrstice z naslovom.
 urlbar-search-tips-redirect-2 = Začnite z iskanjem v naslovni vrstici ter spremljajte predloge iskalnika { $engineName } in zgodovine vašega brskanja.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Iskanje je pravkar postalo preprostejše. Poskusite z natančnejšim iskanjem tukaj v naslovni vrstici. Za prikaz spletnega naslova si oglejte Iskanje v nastavitvah.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Izberite to bližnjico in hitreje najdite, kar potrebujete.
@@ -161,29 +174,29 @@ urlbar-search-mode-actions = Dejanja
 ##
 
 urlbar-geolocation-blocked =
-    .tooltiptext = Za to stran ste zavrnili uporabo podatkov o lokaciji.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali uporabo podatkov o lokaciji.
 urlbar-xr-blocked =
-    .tooltiptext = Za to stran ste zavrnili dostop do naprav navidezne resničnosti.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali dostop do naprav navidezne resničnosti.
 urlbar-web-notifications-blocked =
-    .tooltiptext = Za to stran ste zavrnili prikaz obvestil.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali prikazovanje obvestil.
 urlbar-camera-blocked =
-    .tooltiptext = Za to stran ste zavrnili uporabo kamere.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali uporabo kamere.
 urlbar-microphone-blocked =
-    .tooltiptext = Za to stran ste zavrnili uporabo mikrofona.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali uporabo mikrofona.
 urlbar-screen-blocked =
-    .tooltiptext = Za to stran ste zavrnili deljenje zaslona.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali deljenje zaslona.
 urlbar-persistent-storage-blocked =
-    .tooltiptext = Za to spletno stran ste zavrnili trajno shrambo.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali uporabo trajne shrambe.
 urlbar-popup-blocked =
-    .tooltiptext = Za to stran ste zavrnili pojavna okna.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali odpiranje pojavnih oken.
 urlbar-autoplay-media-blocked =
-    .tooltiptext = Za to stran ste zavrnili samodejno predvajanje večpredstavnosti z zvokom.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali samodejno predvajanje večpredstavnosti z zvokom.
 urlbar-canvas-blocked =
-    .tooltiptext = Za to stran ste zavrnili izločanje podatkov platna.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali izločanje podatkov platna.
 urlbar-midi-blocked =
-    .tooltiptext = Za to stran ste zavrnili uporabo MIDI.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali dostop do MIDI.
 urlbar-install-blocked =
-    .tooltiptext = Za to stran ste zavrnili namestitev dodatkov.
+    .tooltiptext = Temu spletnemu mestu ste prepovedali nameščanje dodatkov.
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
 urlbar-star-edit-bookmark =
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Dejanja ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Prikaži dodatke
-quickactions-cmd-addons = dodatki, razširitve, teme
 quickactions-cmd-addons2 = dodatki
 # Opens the bookmarks library window
-quickactions-bookmarks = Prikaži zaznamke
+quickactions-bookmarks2 = Upravljanje zaznamkov
 quickactions-cmd-bookmarks = zaznamki
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Počisti zgodovino
 quickactions-cmd-clearhistory = počisti zgodovino
 # Opens about:downloads page
-quickactions-downloads = Odpri prenose
+quickactions-downloads2 = Prikaži prenose
 quickactions-cmd-downloads = prenosi
 # Opens about:addons page in the extensions section
 quickactions-extensions = Upravljanje razširitev
 quickactions-cmd-extensions = razširitve
 # Opens the devtools web inspector
-quickactions-inspector = Odpri pregledovalnik
+quickactions-inspector2 = Odpri razvojna orodja
 quickactions-cmd-inspector = pregledovalnik, razvojna orodja
 # Opens about:logins
-quickactions-logins = Ogled prijav
+quickactions-logins2 = Upravljaj gesla
 quickactions-cmd-logins = prijave, gesla
 # Opens about:addons page in the plugins section
 quickactions-plugins = Upravljanje vtičnikov
 quickactions-cmd-plugins = vtičniki
 # Opens the print dialog
-quickactions-print = Natisni
+quickactions-print2 = Natisni stran
 quickactions-cmd-print = natisni, tiskanje, print
 # Opens a new private browsing window
-quickactions-private = Odpri okno zasebnega brskanja
+quickactions-private2 = Odpri zasebno okno
 quickactions-cmd-private = zasebno brskanje
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Osveži { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = osveži
 quickactions-restart = Ponovno zaženi { -brand-short-name }
 quickactions-cmd-restart = ponovno zaženi, znova zaženi, zaženi znova
 # Opens the screenshot tool
-quickactions-screenshot2 = Zajemi posnetek zaslona
+quickactions-screenshot3 = Zajemi posnetek zaslona
 quickactions-cmd-screenshot = posnetek zaslona
 # Opens about:preferences
-quickactions-settings = Odpri nastavitve
+quickactions-settings2 = Upravljaj nastavitve
 quickactions-cmd-settings = nastavitve, možnosti
 # Opens about:addons page in the themes section
 quickactions-themes = Upravljanje tem
@@ -323,8 +332,11 @@ quickactions-cmd-themes = teme
 quickactions-update = Posodobi { -brand-short-name }
 quickactions-cmd-update = posodobi
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Pokaži vir
+quickactions-viewsource2 = Pokaži izvorno kodo strani
 quickactions-cmd-viewsource = pokaži vir, vir
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Več o hitrih dejanjih
 
 ## Bookmark Panel
 
@@ -359,7 +371,7 @@ bookmark-panel =
 
 # Variables
 #  $host (String): the hostname of the site that is being displayed.
-identity-site-information = Podatki o strani za { $host }
+identity-site-information = Podatki o spletnem mestu { $host }
 # Variables
 #  $host (String): the hostname of the site that is being displayed.
 identity-header-security-with-host =
@@ -392,7 +404,7 @@ identity-permissions-storage-access-hint = Te stranke lahko uporabljajo piškotk
 identity-permissions-storage-access-learn-more = Več o tem
 identity-permissions-reload-hint = Za uveljavitev sprememb boste morda morali ponovno naložiti stran.
 identity-clear-site-data =
-    .label = Počisti piškotke in podatke te strani …
+    .label = Počisti piškotke in podatke spletnega mesta …
 identity-connection-not-secure-security-view = Niste varno povezani na to stran.
 identity-connection-verified = Varno ste povezani na to stran.
 identity-ev-owner-label = Potrdilo izdano:
@@ -402,8 +414,8 @@ identity-remove-cert-exception =
     .accesskey = d
 identity-description-insecure = Vaša povezava na to stran ni zasebna. Podatke, ki jih pošiljate (npr. gesla, sporočila in kreditne kartice), si lahko ogledajo tudi druge osebe.
 identity-description-insecure-login-forms = Podatki, ki jih vnesete ob prijavi na to stran, niso varni in so lahko ogroženi.
-identity-description-weak-cipher-intro = Vaša povezava na to stran uporablja šibko šifriranje in ni zasebna.
-identity-description-weak-cipher-risk = Druge osebe lahko vidijo vaše podatke ali spreminjajo obnašanje spletne strani.
+identity-description-weak-cipher-intro = Vaša povezava s tem spletnim mestom uporablja šibko šifriranje in ni zasebna.
+identity-description-weak-cipher-risk = Druge osebe lahko vidijo vaše podatke ali spreminjajo obnašanje spletnega mesta.
 identity-description-active-blocked = { -brand-short-name } je zavrnil dele strani, ki niso varni. <label data-l10n-name="link">Več o tem</label>
 identity-description-passive-loaded = Vaša povezava ni zasebna, zato lahko podatke, ki jih delite s stranjo, vidijo tudi druge osebe.
 identity-description-passive-loaded-insecure = Spletna stran vsebuje elemente, ki niso varni (npr. slike). <label data-l10n-name="link">Več o tem</label>
@@ -493,6 +505,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
     .tooltiptext = Zvočniki
+popup-select-window-or-screen =
+    .label = Okno ali zaslon:
+    .accesskey = k
 popup-all-windows-shared = Vsa vidna okna na vašem zaslonu bodo v skupni rabi.
 popup-screen-sharing-block =
     .label = Zavrni
@@ -514,6 +529,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Za uporabo bližnjice F12 prvič odprite razvojna orodja iz menija Spletni razvoj.
+enable-devtools-popup-description2 = Za uporabo bližnjice F12 prvič odprite razvojna orodja iz menija Orodja brskalnika.
 
 ## URL Bar
 
@@ -563,7 +579,7 @@ urlbar-placeholder-with-name =
 urlbar-remote-control-notification-anchor2 =
     .tooltiptext = Brskalnik je pod oddaljenim upravljanjem (razlog: { $component })
 urlbar-permissions-granted =
-    .tooltiptext = Tej strani ste dodelili dodatna dovoljenja.
+    .tooltiptext = Temu spletnemu mestu ste dodelili dodatna dovoljenja.
 urlbar-switch-to-tab =
     .value = Preklopi na zavihek:
 # Used to indicate that a selected autocomplete entry is provided by an extension.
@@ -645,6 +661,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Hitra dejanja
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Odpri bralni pogled
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Zapri bralni pogled
 
 ## Full Screen and Pointer Lock UI
 
@@ -922,3 +947,29 @@ private-browsing-indicator-label = Zasebno brskanje
 unified-extensions-button =
     .label = Razširitve
     .tooltiptext = Razširitve
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Razširitve
+    .tooltiptext =
+        Razširitve
+        Potrebna so dovoljenja
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } je preprečil samodejno ponovno nalaganje te strani.
+refresh-blocked-redirect-label = { -brand-short-name } je preprečil samodejno preusmerjanje te strani na drugo stran.
+refresh-blocked-allow =
+    .label = Dovoli
+    .accesskey = O
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } prikrije vaš pravi e-poštni naslov in vas tako pomaga ščititi pred krajami podatkov in neželeno pošto.
+firefox-relay-offer-how-we-integrate = V naslednjem koraku boste lahko ustvarili nove e-poštne maske s { -relay-brand-short-name(sklon: "orodnik") } neposredno v upravitelju gesel v { -brand-shorter-name(sklon: "mestnik") }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Vsa sporočila spletnega mesta <strong>{ $sitename }</strong> bomo posredovali na <strong>{ $useremail }</strong>.

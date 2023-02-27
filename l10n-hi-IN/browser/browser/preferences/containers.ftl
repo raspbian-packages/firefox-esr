@@ -6,6 +6,10 @@ containers-window-new =
     .title = नया पात्र जोड़े
     .style = width: 45em
 
+containers-window-new2 =
+    .title = नया पात्र जोड़े
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

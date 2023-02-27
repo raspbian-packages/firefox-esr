@@ -6,6 +6,10 @@ app-manager-window =
     .title = অ্যাপ্লিকেশনের বিবরণ
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = অ্যাপ্লিকেশনের বিবরণ
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = অপসারণ করুন
     .accesskey = R

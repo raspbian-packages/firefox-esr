@@ -16,8 +16,6 @@ change-password-old = حالیہ پاس ورڈ:
 change-password-new = نیا پاس ورڈ:
 change-password-reenter = نیا پاس ورڈ (دوبارہ):
 
-## Reset Password dialog
-
 pippki-failed-pw-change = پاس ورڈ تبدیل کرنے سے قاصر ہے
 pippki-pw-change-ok = پاسوڑد کامیابی سے تبدیل ہو گیا ہے.
 
@@ -34,6 +32,10 @@ pippki-reset-password-confirmation-message = آپ کا بنیادی پاس ور�
 download-cert-window =
     .title = تصدیق نامہ ڈاؤن لوڈ کر رہا ہے
     .style = width: 46em
+
+download-cert-window2 =
+    .title = تصدیق نامہ ڈاؤن لوڈ کر رہا ہے
+    .style = min-width: 46em
 download-cert-message = آپ کو نئی مقتدرہ تصدیق نامہ (سی اے) پر بھروسے کے لیے کہا گیا ہے۔
 download-cert-trust-ssl =
     .label = ویب سائٹیں شناخت کرنے کے لیے اس CA پر بھروسا کریں۔

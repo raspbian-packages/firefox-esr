@@ -176,10 +176,6 @@ files-and-applications-title = ဖိုင်များနှင့် အက
 
 download-header = ဆွဲယူထားသည့် ဖိုင်များ
 
-download-save-to =
-    .label = ဖိုင်များကို ထိုနေရာတွင် သိမ်းရန်
-    .accesskey = v
-
 download-save-where = ဖိုင်များကို ထိုနေရာတွင် သိမ်းရန်
     .accesskey = v
 
@@ -422,6 +418,7 @@ choose-bookmark =
     .accesskey = B
 
 ## Home Section - Firefox Home Content Customization
+
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -903,8 +900,3 @@ certs-devices =
 desktop-folder-name = ဒက်စ်တော့
 downloads-folder-name = ဆွဲယူထားသော ဖိုင်များ
 choose-download-folder-title = ဆွဲယူထားသည့် ဖိုင်များထားရာနေရာကို ရွေးပါ
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = { $service-name } သို့ ဖိုင်မှတ်သားပါ

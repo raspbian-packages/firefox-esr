@@ -6,12 +6,22 @@ create-profile-window =
     .title = Sa rugûñun’ūnj da’ girī’ ‘ngō perfil
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Sa rugûñun’ūnj da’ girī’ ‘ngō perfil
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Nuguan' tàj ñaan
        *[other] Guruhuât gunumânt riña { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Nuguan' tàj ñaan
+       *[other] Guruhuât gunumânt riña { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } nachra sà’ nuguan’ huā dàj nagi’iát riña perfil arâj sunt.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Nuguan' nahuij
        *[other] Hìaj dusìj man { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Nuguan' nahuij
+       *[other] Hìaj dusìj man { create-profile-window2.title }
     }
 
 profile-creation-intro = Sisī ruhuât girīt ga’ì perfil nī, ga’ue nani’înt nej man ngà si yugui da’ go’ngō man. Ga’ue gārasunt si yugui nùn hiuj nan asi girīt a’ngoj.

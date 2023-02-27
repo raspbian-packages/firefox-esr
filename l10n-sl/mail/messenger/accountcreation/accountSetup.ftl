@@ -16,6 +16,8 @@ account-setup-success-title = Račun uspešno ustvarjen
 
 account-setup-success-description = Zdaj lahko uporabljate ta račun s { -brand-short-name(sklon: "orodnik") }.
 
+account-setup-success-secondary-description = Uporabniško izkušnjo si lahko še izboljšate s priključitvijo povezanih storitev in z nastavitvijo naprednih nastavitev računa.
+
 ## Form fields
 
 account-setup-name-label = Vaše polno ime
@@ -66,6 +68,10 @@ account-setup-exchange-label = Vaša prijava
 #   YOURDOMAIN refers to the Windows domain in ActiveDirectory. yourusername refers to the user's account name in Windows.
 account-setup-exchange-input =
     .placeholder = VAŠADOMENA\vašeuporabniškoime
+
+#   Domain refers to the Windows domain in ActiveDirectory. We mean the user's login in Windows at the local corporate network.
+account-setup-exchange-info-icon =
+    .title = Domenska prijava
 
 ## Action buttons
 
@@ -212,7 +218,7 @@ account-setup-credentials-wrong = Overitev ni uspela. Preverite uporabniško ime
 
 account-setup-find-settings-failed = { -brand-short-name } ni uspel najti nastavitev za vaš e-poštni račun
 
-account-setup-exchange-config-unverifiable = Nastavitve ni bilo mogoče preveriti. Če sta uporabniško ime in geslo pravilni, je verjetno, da je skrbnik strežnika onemogočil izbrano nastavitev za vaš račun. Poskusite izbrati drug protokol.
+account-setup-exchange-config-unverifiable = Nastavitve ni bilo mogoče preveriti. Če sta uporabniško ime in geslo pravilna, je skrbnik strežnika verjetno onemogočil izbrano nastavitev za vaš račun. Poskusite izbrati drug protokol.
 
 account-setup-provisioner-error = Pri nastavljanju vašega novega računa v { -brand-short-name(sklon: "mestnik") } je prišlo do napake. Poskusite ga nastaviti ročno s svojimi poverilnicami.
 
@@ -320,7 +326,7 @@ account-setup-confirm-advanced-description = To pogovorno okno se bo zaprlo in u
 
 account-setup-addon-install-title = Namesti
 
-account-setup-addon-install-intro = Dodatek tretjega ponudnika vam lahko omogoči dostop do vašega e-poštnega računa na tem strežniku:
+account-setup-addon-install-intro = Dostop do e-poštnega računa na tem strežniku si lahko omogočite z dodatkom tretjega ponudnika:
 
 account-setup-addon-no-protocol = Ta e-poštni strežnik žal ne podpira odprtih protokolov. { account-setup-addon-install-intro }
 
@@ -343,6 +349,8 @@ account-setup-calendar-button = Poveži z oddaljenim koledarjem
 account-setup-linked-services-title = Povežite povezane storitve
 
 account-setup-linked-services-description = { -brand-short-name } je zaznal druge storitve, povezane z vašim e-poštnim računom.
+
+account-setup-no-linked-description = Nastavite ostale storitve, da kar najbolje izkoristite { -brand-short-name }.
 
 # Variables:
 # $count (Number) - The number of address books found during autoconfig.

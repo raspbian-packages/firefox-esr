@@ -60,6 +60,11 @@ toolbar-context-menu-view-customize-toolbar =
 toolbar-context-menu-view-customize-toolbar-2 =
     .label = 定制工具栏…
     .accesskey = C
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = 固定到工具栏
+    .accesskey = P
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = 始终显示
     .accesskey = A

@@ -154,6 +154,16 @@ downloading-file-opens-in-minutes = වි. { $minutes } කින් විව�
 downloading-file-opens-in-minutes-and-seconds = තත්. { $minutes } වි. { $seconds } කින් විවෘත වේ…
 downloading-file-opens-in-seconds = තත්. { $seconds } කින් විවෘත වේ...
 downloading-file-opens-in-some-time = සම්පූර්ණ වූ විට විවෘත වේ...
+downloading-file-opens-in-hours-and-minutes-2 =
+    .value = පැය { $hours } වි. { $minutes } කින් විවෘත වේ…
+downloading-file-opens-in-minutes-2 =
+    .value = වි. { $minutes } කින් විවෘත වේ…
+downloading-file-opens-in-minutes-and-seconds-2 =
+    .value = තත්. { $minutes } වි. { $seconds } කින් විවෘත වේ…
+downloading-file-opens-in-seconds-2 =
+    .value = තත්. { $seconds } කින් විවෘත වේ...
+downloading-file-opens-in-some-time-2 =
+    .value = සම්පූර්ණ වූ විට විවෘත වේ...
 downloading-file-click-to-open =
     .value = සම්පූර්ණ වූ විට අරින්න
 
@@ -212,3 +222,12 @@ downloads-more-downloading =
         [one] තවත් ගොනු { $count } ක් බාගැනෙමින්
        *[other] තවත් ගොනු { $count } ක් බාගැනෙමින්
     }
+
+## Download errors
+
+downloads-error-alert-title = බාගැනීමේ දෝෂයකි
+# Line breaks in this message are meaningful, and should be maintained.
+downloads-error-generic =
+    නොදන්නා දෝෂයක් සිදු වීම නිසා මෙම බාගැනීම සුරැකීමට නොහැකිය
+    
+    යළි උත්සාහ කරන්න.

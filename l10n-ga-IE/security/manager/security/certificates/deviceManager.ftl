@@ -9,6 +9,10 @@ devmgr =
     .title = Bainisteoir na nGléasanna
     .style = width: 74em; height: 35em;
 
+devmgr-window =
+    .title = Bainisteoir na nGléasanna
+    .style = min-width: 74em; min-height: 35em;
+
 devmgr-devlist =
     .label = Modúil agus Gléasanna Slándála
 

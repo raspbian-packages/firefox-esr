@@ -6,6 +6,10 @@ containers-window-new =
     .title = Med lamak jami manyen
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Med lamak jami manyen
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

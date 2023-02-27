@@ -139,6 +139,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Caniatâd Gwefan
 addon-category-sitepermission-title =
     .title = Caniatâd Gwefan
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Caniatâd Gwefan { $host }
 
 ## These are global warnings
 
@@ -290,16 +294,12 @@ extension-disabled-heading = Analluogwyd
 theme-enabled-heading = Galluogwyd
 theme-disabled-heading = Analluogwyd
 theme-disabled-heading2 = Themâu wedi'u Cadw
-theme-monochromatic-heading = Llwybrau lliw
-theme-monochromatic-subheading = Llwybrau lliw newydd bywiog gan { -brand-product-name }. Ar gael am gyfnod cyfyngedig.
+theme-monochromatic-heading = Cyfuniadau lliw
+theme-monochromatic-subheading = Cyfuniadau lliw newydd bywiog gan { -brand-product-name }. Ar gael am gyfnod cyfyngedig.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = Rhowch gynnig ar Colorways
-colorway-collection-independent-voices-subheading = Gwnewch i { -brand-short-name } deimlo ychydig yn fwy perthyn i chi.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Yn dod i ben{ DATETIME($expiryDate, month: "long", day: "numeric") }
+theme-colorways-button = Rhowch gynnig ar Gyfuniadau Lliw
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = Newid y Llwybr Lliw
+theme-colorways-button-colorway-enabled = Newid Cyfuniad Lliw
 # Variables:
 #   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
 colorway-collection-expiry-label = Yn dod i ben{ DATETIME($expiryDate, month: "long", day: "numeric") }

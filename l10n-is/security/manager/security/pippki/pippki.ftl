@@ -31,6 +31,10 @@ pippki-pw-change2empty-in-fips-mode = Þú ert núna í FIPS-ham. FIPS má ekki 
 reset-primary-password-window =
     .title = Endurstilla aðallykilorð
     .style = width: 40em
+
+reset-primary-password-window2 =
+    .title = Endurstilla aðallykilorð
+    .style = min-width: 40em
 reset-password-button-label =
     .label = Endursetja
 reset-primary-password-text = Ef þú endurstillir aðallykilorðið, þá muntu missa öll geymd vef- og póstlykilorð, öll skilríki, og alla einkalykla. Ertu viss um að þú viljir endurstilla aðallykilorðið þitt?
@@ -43,6 +47,10 @@ pippki-reset-password-confirmation-message = Aðallykilorðið þitt hefur veri�
 download-cert-window =
     .title = Hleð niður skilríki
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Hleð niður skilríki
+    .style = min-width: 46em
 download-cert-message = Þú ert beðinn um að treysta nýrri vottunarstöð (CA).
 download-cert-trust-ssl =
     .label = Treysta þessum CA-vottunaraðila til að auðkenna vefsvæði.

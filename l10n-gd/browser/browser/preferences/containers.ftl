@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Cuir soitheach ùr ris
     .style = width: 50em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Roghainnean soithich { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Cuir soitheach ùr ris
+    .style = min-width: 50em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Roghainnean soithich { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

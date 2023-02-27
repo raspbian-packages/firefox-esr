@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Innstillinger for sletting av historikk
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Innstillinger for sletting av historikk
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

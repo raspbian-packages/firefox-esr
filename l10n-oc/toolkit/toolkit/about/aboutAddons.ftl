@@ -113,7 +113,7 @@ private-browsing-description2 =
     { -brand-short-name } modifica lo foncionament de las extensions dins la navegacion privada. Cap de las novèlas extensions qu'apondètz a
     { -brand-short-name } serà pas executada per defaut dins una fenèstra privada. Levat se l'autorisatz dins los paramètres,
     l'extension foncionarà pas pendent la navegacion privada e aurà pas accès a vòstras activitats en linha
-    Avèm aportat aquesta modificacion per gardar vòstra navigacion privada privada.
+    Avèm aportat aquesta modificacion per gardar vòstra navegacion privada privada.
     <label data-l10n-name="private-browsing-learn-more">Aprenètz a gerir los paramètres d'extension</label>
 addon-category-discover = Recomandacions
 addon-category-discover-title =
@@ -142,6 +142,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Autorizacions de site
 addon-category-sitepermission-title =
     .title = Autorizacions de site
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Autorizacions de site per { $host }
 
 ## These are global warnings
 
@@ -296,12 +300,11 @@ theme-monochromatic-heading = Colorit
 theme-monochromatic-subheading = Combinasons de colors vibrantas de { -brand-product-name }. Disponiblas durant un temps limitat.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Ensajatz Colorways
-colorway-collection-independent-voices-subheading = Fasètz que { -brand-short-name } siá encara mai lo vòstre.
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Cambiar de colorit
 # Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Expira lo { DATETIME($expiryDate, month: "long", day: "numeric") }
+#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
+colorway-collection-expiry-label = Expira lo { DATETIME($expiryDate, month: "long", day: "numeric") }
 plugin-enabled-heading = Activats
 plugin-disabled-heading = Desactivats
 dictionary-enabled-heading = Activats

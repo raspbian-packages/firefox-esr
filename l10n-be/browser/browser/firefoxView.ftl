@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Толькі што
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Выбар картак
 firefoxview-tabpickup-description = Адкрыць старонкі з іншых прылад.
-firefoxview-tabpickup-recenttabs-description = Тут будзе спіс нядаўніх картак
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% завершана
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Паспрабаваць зно
 firefoxview-tabpickup-sync-disconnected-header = Каб працягнуць, уключыце сінхранізацыю
 firefoxview-tabpickup-sync-disconnected-description = Каб забраць свае карткі, вам трэба дазволіць сінхранізацыю ў { -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Уключыць сінхранізацыю ў наладах
+firefoxview-tabpickup-password-locked-header = Увядзіце свой галоўны пароль для прагляду картак
+firefoxview-tabpickup-password-locked-description = Каб забраць свае карткі, вам трэба будзе ўвесці галоўны пароль у { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Падрабязней
+firefoxview-tabpickup-password-locked-primarybutton = Увядзіце галоўны пароль
+firefoxview-tabpickup-signed-out-header = Увайдзіце, каб злучыцца зноў
+firefoxview-tabpickup-signed-out-description = Каб аднавіць падключэнне і атрымаць карткі, увайдзіце ў свой { -fxaccount-brand-name }.
+firefoxview-tabpickup-signed-out-primarybutton = Увайсці
 firefoxview-tabpickup-syncing = Пачакайце, пакуль вашы карткі сінхранізуюцца. Гэта толькі на імгненне.
 firefoxview-mobile-promo-header = Атрымайце карткі з тэлефона або планшэта
 firefoxview-mobile-promo-description = Каб паглядзець свае апошнія мабільныя карткі, увайдзіце ў { -brand-product-name } на iOS або Android.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Атрымаць { -brand-product-name 
 firefoxview-mobile-confirmation-header = 🎉 Усё гатова!
 firefoxview-mobile-confirmation-description = Цяпер вы можаце атрымаць свае карткі { -brand-product-name } са свайго планшэта або тэлефона.
 firefoxview-closed-tabs-title = Нядаўна закрытыя
-firefoxview-closed-tabs-description = Паўторна адкрыць старонкі, якія вы закрылі на гэтай прыладзе.
-firefoxview-closed-tabs-placeholder = <strong>Няма нядаўна закрытых старонак</strong><br/>Больш ніколі не бойцеся згубіць закрытую картку. Вы заўсёды можаце ўзнавіць яе тут.
+firefoxview-closed-tabs-description2 = Паўторна адкрыць старонкі, якія вы закрылі ў гэтым акне.
+firefoxview-closed-tabs-placeholder-header = Няма нядаўна закрытых картак
+firefoxview-closed-tabs-placeholder-body = Калі вы закрыеце картку ў гэтым акне, яе можна атрымаць тут.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Закрыць { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Апошняя актыўная
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Змяніць расфарбоўку
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Пакуль няма нічога</strong><br/>Калі ў наступны раз вы адкрыеце старонку ў { -brand-product-name } на іншай прыладзе, яна з'явіцца тут.
+firefoxview-synced-tabs-placeholder-header = Пакуль тут нічога няма
+firefoxview-synced-tabs-placeholder-body = У наступны раз, калі вы адкрыеце старонку ў { -brand-product-name } на іншай прыладзе, яна з'явіцца тут.
 firefoxview-collapse-button-show =
     .title = Паказаць спіс
 firefoxview-collapse-button-hide =

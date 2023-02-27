@@ -6,6 +6,10 @@ blocklist-window =
     .title = Engelleme Listeleri
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Engelleme Listeleri
+    .style = min-width: 55em
+
 blocklist-description = { -brand-short-name } tarayıcınızın çevrimiçi takipçileri engellemek için kullanacağı listeyi seçin. Listeler <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a> tarafından sağlanmaktadır.
 blocklist-close-key =
     .key = w

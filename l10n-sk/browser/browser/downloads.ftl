@@ -154,6 +154,16 @@ downloading-file-opens-in-minutes = Otvorí sa o { $minutes } m…
 downloading-file-opens-in-minutes-and-seconds = Otvorí sa o { $minutes } m { $seconds } s…
 downloading-file-opens-in-seconds = Otvorí sa o { $seconds } s…
 downloading-file-opens-in-some-time = Otvorí sa po dokončení sťahovania…
+downloading-file-opens-in-hours-and-minutes-2 =
+    .value = Otvorí sa o { $hours } h { $minutes } m…
+downloading-file-opens-in-minutes-2 =
+    .value = Otvorí sa o { $minutes } m…
+downloading-file-opens-in-minutes-and-seconds-2 =
+    .value = Otvorí sa o { $minutes } m { $seconds } s…
+downloading-file-opens-in-seconds-2 =
+    .value = Otvorí sa o { $seconds } s…
+downloading-file-opens-in-some-time-2 =
+    .value = Otvorí sa po dokončení sťahovania…
 downloading-file-click-to-open =
     .value = Otvoriť po dokončení sťahovania
 
@@ -214,3 +224,17 @@ downloads-more-downloading =
         [few] Sťahujú sa { $count } ďalšie súbory
        *[other] Sťahuje sa { $count } ďalších súborov
     }
+
+## Download errors
+
+downloads-error-alert-title = Chyba pri sťahovaní
+# Variables:
+#   $extension (String): the name of the blocking extension.
+downloads-error-blocked-by = Súbor nemohol byť uložený, pretože je blokovaný rozšírením { $extension }.
+# Used when the name of the blocking extension is unavailable.
+downloads-error-extension = Súbor nemohol byť uložený, pretože je blokovaný rozšírením.
+# Line breaks in this message are meaningful, and should be maintained.
+downloads-error-generic =
+    Súbor nemohol byť uložený, pretože sa objavila neznáma chyba.
+    
+    Prosím, skúste to znova.

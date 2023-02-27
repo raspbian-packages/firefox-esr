@@ -12,11 +12,11 @@ toolbar-context-menu-reload-selected-tabs =
     .label = Recargar le schedas seligite
     .accesskey = R
 toolbar-context-menu-bookmark-selected-tab =
-    .label = Marcar le scheda seligite…
-    .accesskey = M
+    .label = Adder le scheda seligite al marcapaginas…
+    .accesskey = s
 toolbar-context-menu-bookmark-selected-tabs =
-    .label = Marcar le schedas seligite…
-    .accesskey = M
+    .label = Adder le schedas seligite al marcapaginas…
+    .accesskey = s
 toolbar-context-menu-select-all-tabs =
     .label = Seliger tote le schedas
     .accesskey = S
@@ -61,6 +61,11 @@ toolbar-context-menu-view-customize-toolbar =
 toolbar-context-menu-view-customize-toolbar-2 =
     .label = Personalisar le barra de instrumentos…
     .accesskey = P
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = Appunctar al barra de instrumentos
+    .accesskey = A
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = Sempre monstrar
     .accesskey = S

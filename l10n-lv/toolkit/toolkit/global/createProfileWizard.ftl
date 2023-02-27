@@ -6,12 +6,22 @@ create-profile-window =
     .title = Profila veidošanas vednis
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Profila veidošanas vednis
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Ievads
        *[other] Laipni lūdzam { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Ievads
+       *[other] Laipni lūdzam { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } saglabā jūsu iestatījumus un izvēles jūsu personīgajā profilā.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Noslēgums
        *[other] Pabeidz { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Noslēgums
+       *[other] Pabeidz { create-profile-window2.title }
     }
 
 profile-creation-intro = Izveidojot vairākus profilus, tos var atšķirt pēc nosaukumiem. Profila nosaukumu varat izvēlēties vai izmantot piedāvāto.

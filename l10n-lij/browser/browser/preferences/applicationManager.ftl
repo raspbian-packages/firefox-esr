@@ -6,6 +6,10 @@ app-manager-window =
     .title = Detalli da aplicaçion
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Detalli da aplicaçion
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Scancella
     .accesskey = S

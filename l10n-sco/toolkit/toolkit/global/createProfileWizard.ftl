@@ -6,12 +6,22 @@ create-profile-window =
     .title = Mak Profile Helpender
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Mak Profile Helpender
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Introduction
        *[other] Walcome tae the { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Introduction
+       *[other] Walcome tae the { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } stores information aboot yer settins and preferences in yer personal profile.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Feenish
        *[other] Feenishin the { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Feenish
+       *[other] Feenishin the { create-profile-window2.title }
     }
 
 profile-creation-intro = If ye mak a wheen o profiles ye can tell them apairt by the profile nemmes. Ye micht yaise the nemme providit here or yaise ane o yer ain.

@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Ynstellingen foar it wiskjen fan skiednis
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Ynstellingen foar it wiskjen fan skiednis
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

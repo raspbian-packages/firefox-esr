@@ -5,77 +5,65 @@
 permissions-window =
     .title = Выключэнні
     .style = width: 38em
-
+permissions-window2 =
+    .title = Выключэнні
+    .style = min-width: 38em
 permissions-close-key =
     .key = w
-
-permissions-address = Адрас вэб-сайта
+permissions-address = Адрас сайта
     .accesskey = д
-
 permissions-block =
     .label = Блакаваць
     .accesskey = Б
-
+permissions-disable-etp =
+    .label = Дадаць выключэнне
+    .accesskey = Д
 permissions-session =
-    .label = Дазволіць на час сесіі
+    .label = Дазволіць на сеанс
     .accesskey = с
-
 permissions-allow =
     .label = Дазволіць
     .accesskey = Д
-
 permissions-button-off =
     .label = Выключыць
     .accesskey = В
-
 permissions-button-off-temporarily =
     .label = Часова выключыць
     .accesskey = Ч
-
 permissions-site-name =
     .label = Вэб-сайт
-
 permissions-status =
     .label = Статус
-
 permissions-remove =
     .label = Выдаліць вэб-сайт
     .accesskey = В
-
 permissions-remove-all =
     .label = Выдаліць усе вэб-сайты
     .accesskey = ы
-
 permission-dialog =
     .buttonlabelaccept = Захаваць змены
     .buttonaccesskeyaccept = Ы
-
 permissions-autoplay-menu = Прадвызначана для ўсіх сайтаў:
-
 permissions-searchbox =
     .placeholder = Пошук сярод вэб-сайтаў
-
 permissions-capabilities-autoplay-allow =
     .label = Дазваляць гук і відэа
 permissions-capabilities-autoplay-block =
     .label = Блакаваць гук
 permissions-capabilities-autoplay-blockall =
     .label = Блакаваць гук і відэа
-
 permissions-capabilities-allow =
     .label = Дазволіць
 permissions-capabilities-block =
     .label = Блакаваць
 permissions-capabilities-prompt =
     .label = Заўсёды пытаць
-
 permissions-capabilities-listitem-allow =
     .value = Дазволіць
 permissions-capabilities-listitem-block =
     .value = Блакаваць
 permissions-capabilities-listitem-allow-session =
-    .value = Дазволіць на час сэсіі
-
+    .value = Дазволіць на сеанс
 permissions-capabilities-listitem-off =
     .value = Выкл.
 permissions-capabilities-listitem-off-temporarily =
@@ -92,12 +80,19 @@ permissions-exceptions-etp-window =
     .title = Выключэнні для ўзмоцненай аховы ад сачэння
     .style = { permissions-window.style }
 permissions-exceptions-etp-desc = Вы адключылі ахову на гэтых сайтах.
+permissions-exceptions-etp-window2 =
+    .title = Выключэнні для ўзмоцненай аховы ад сачэння
+    .style = { permissions-window2.style }
+permissions-exceptions-manage-etp-desc = Вы можаце вызначыць, на якіх вэб-сайтах узмоцненая ахова ад сачэння будзе выключана. Набярыце дакладны адрас сайта, а затым націсніце «Дадаць выключэнне».
 
 ## Exceptions - Cookies
 
 permissions-exceptions-cookie-window =
     .title = Выключэнні - Кукі і дадзеныя сайтаў
     .style = { permissions-window.style }
+permissions-exceptions-cookie-window2 =
+    .title = Выключэнні - Кукі і дадзеныя сайтаў
+    .style = { permissions-window2.style }
 permissions-exceptions-cookie-desc = Вы можаце ўказаць, якім вэб-сайтам заўжды дазволена або забаронена выкарыстоўваць кукі і дадзеныя сайтаў.  Упішыце дакладны адрас сайта, якім вы хочаце распарадзіцца, і націсніце Блакаваць, Дазволіць на сеанс, або Дазволіць.
 
 ## Exceptions - HTTPS-Only Mode
@@ -105,6 +100,9 @@ permissions-exceptions-cookie-desc = Вы можаце ўказаць, якім 
 permissions-exceptions-https-only-window =
     .title = Выключэнні - Рэжым толькі HTTPS
     .style = { permissions-window.style }
+permissions-exceptions-https-only-window2 =
+    .title = Выключэнні - Рэжым толькі HTTPS
+    .style = { permissions-window2.style }
 permissions-exceptions-https-only-desc = Вы можаце выключыць рэжым толькі HTTPS для пэўных вэб-сайтаў. { -brand-short-name } не будзе спрабаваць пераключыць злучэнне на бяспечны HTTPS для гэтых сайтаў. Выключэнні не распаўсюджваюцца на прыватныя вокны.
 
 ## Exceptions - Pop-ups
@@ -112,6 +110,9 @@ permissions-exceptions-https-only-desc = Вы можаце выключыць р
 permissions-exceptions-popup-window =
     .title = Дазволеныя вэб-сайты - Выплыўныя вокны
     .style = { permissions-window.style }
+permissions-exceptions-popup-window2 =
+    .title = Дазволеныя вэб-сайты - Выплыўныя вокны
+    .style = { permissions-window2.style }
 permissions-exceptions-popup-desc = Вы можаце вызначыць, якім вэб-сайтам дазволена адкрываць выплыўныя вокны. Набярыце дакладны адрас сайта, якому вы хочаце дазволіць гэта, і пстрыкніце Дазволіць.
 
 ## Exceptions - Saved Logins
@@ -119,6 +120,9 @@ permissions-exceptions-popup-desc = Вы можаце вызначыць, які
 permissions-exceptions-saved-logins-window =
     .title = Выключэнні - Запісаныя лагіны
     .style = { permissions-window.style }
+permissions-exceptions-saved-logins-window2 =
+    .title = Выключэнні - Запісаныя лагіны
+    .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = Лагіны для наступных вэб-сайтаў не будуць захаваны
 
 ## Exceptions - Add-ons
@@ -126,13 +130,19 @@ permissions-exceptions-saved-logins-desc = Лагіны для наступны�
 permissions-exceptions-addons-window =
     .title = Дазволеныя вэб-сайты - Усталяванне дадаткаў
     .style = { permissions-window.style }
-permissions-exceptions-addons-desc = Вы можаце вызначыць, якім вэб-сайтам дазволена ўсталёўваць дадаткі. Набярыце дакладны адрас сайта, якому вы хочаце гэта дазволіць, і пстрыкніце Дазволіць.
+permissions-exceptions-addons-window2 =
+    .title = Дазволеныя вэб-сайты - Усталяванне дадаткаў
+    .style = { permissions-window2.style }
+permissions-exceptions-addons-desc = Вы можаце вызначыць, якім вэб-сайтам дазволена ўсталёўваць дадаткі. Набярыце дакладны адрас сайта, якому вы хочаце гэта дазволіць, і націсніце Дазволіць.
 
 ## Site Permissions - Autoplay
 
 permissions-site-autoplay-window =
     .title = Налады - Аўтапрайграванне
     .style = { permissions-window.style }
+permissions-site-autoplay-window2 =
+    .title = Налады - Аўтапрайграванне
+    .style = { permissions-window2.style }
 permissions-site-autoplay-desc = Тут вы можаце кіраваць сайтамі, якія не выкарыстоўваюць тыповыя  налады аўтаматычнага прайгравання.
 
 ## Site Permissions - Notifications
@@ -140,6 +150,9 @@ permissions-site-autoplay-desc = Тут вы можаце кіраваць са�
 permissions-site-notification-window =
     .title = Налады - Дазволы абвесткі
     .style = { permissions-window.style }
+permissions-site-notification-window2 =
+    .title = Налады - Дазволы абвесткі
+    .style = { permissions-window2.style }
 permissions-site-notification-desc = Наступныя вэб-сайты запыталі дазвол дасылаць вам абвесткі. Вы можаце азначыць, якім вэб-сайтам дазволена дасылаць абвесткі. Вы таксама можаце забараніць новыя запыты на дасыланне абвестак.
 permissions-site-notification-disable-label =
     .label = Блакаваць новыя запыты на дасыланне абвестак
@@ -150,6 +163,9 @@ permissions-site-notification-disable-desc = Гэта не дазволіць в
 permissions-site-location-window =
     .title = Налады - Дазволы месцазнаходжання
     .style = { permissions-window.style }
+permissions-site-location-window2 =
+    .title = Налады - Дазволы месцазнаходжання
+    .style = { permissions-window2.style }
 permissions-site-location-desc = Наступныя вэб-сайты запыталі дазвол на доступ да вашага месцазнаходжання. Вы можаце азначыць, якім вэб-сайтам дазволены доступ да вашага месцазнаходжання. Вы таксама можаце забараніць новыя запыты на доступ да вашага месцазнаходжання.
 permissions-site-location-disable-label =
     .label = Блакаваць новыя запыты на доступ да вашага месцазнаходжання
@@ -160,6 +176,9 @@ permissions-site-location-disable-desc = Гэта не дазволіць вэб
 permissions-site-xr-window =
     .title = Налады - Дазволы віртуальнай рэальнасці
     .style = { permissions-window.style }
+permissions-site-xr-window2 =
+    .title = Налады - Дазволы віртуальнай рэальнасці
+    .style = { permissions-window2.style }
 permissions-site-xr-desc = Наступныя вэб-сайты запыталі дазвол на доступ да вашых прылад віртуальнай рэальнасці. Вы можаце азначыць, якім вэб-сайтам дазволены доступ да вашых прылад віртуальнай рэальнасці. Вы таксама можаце забараніць новыя запыты на доступ да вашых прылад віртуальнай рэальнасці.
 permissions-site-xr-disable-label =
     .label = Блакаваць новыя запыты на доступ да вашых прылад віртуальнай рэальнасці
@@ -170,6 +189,9 @@ permissions-site-xr-disable-desc = Гэта не дазволіць вэб-са�
 permissions-site-camera-window =
     .title = Налады - Дазволы камеры
     .style = { permissions-window.style }
+permissions-site-camera-window2 =
+    .title = Налады - Дазволы камеры
+    .style = { permissions-window2.style }
 permissions-site-camera-desc = Наступныя вэб-сайты запыталі дазвол на доступ да вашай камеры. Вы можаце азначыць, якім вэб-сайтам дазволены доступ да вашай камеры. Вы таксама можаце забараніць новыя запыты на доступ да вашай камеры.
 permissions-site-camera-disable-label =
     .label = Блакаваць новыя запыты на доступ да вашай камеры
@@ -180,6 +202,9 @@ permissions-site-camera-disable-desc = Гэта не дазволіць вэб-�
 permissions-site-microphone-window =
     .title = Налады - Дазволы мікрафона
     .style = { permissions-window.style }
+permissions-site-microphone-window2 =
+    .title = Налады - Дазволы мікрафона
+    .style = { permissions-window2.style }
 permissions-site-microphone-desc = Наступныя вэб-сайты запыталі дазвол на доступ да вашага мікрафона. Вы можаце азначыць, якім вэб-сайтам дазволены доступ да вашага мікрафона. Вы таксама можаце забараніць новыя запыты на доступ да вашага мікрафона.
 permissions-site-microphone-disable-label =
     .label = Блакаваць новыя запыты на доступ да вашага мікрафона

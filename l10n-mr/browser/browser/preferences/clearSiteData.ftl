@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = माहिती पुसा
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = माहिती पुसा
+    .style = min-width: 35em
+
 clear-site-data-description = सर्व कुकीज आणि { -brand-short-name } द्वारे संचयित केलेली साइट डेटा पुसल्याने आपण संकेतस्थळातून साइन आउट होऊ शकता आणि वेब वरील मजकूर काढला जाऊ शकतो . कॅशे पुसल्याने आपल्या लॉगिन वर काहीही परिणाम होणार नाही.
 
 clear-site-data-close-key =

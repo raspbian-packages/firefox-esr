@@ -26,6 +26,9 @@ connection-dialog-window =
            *[other] width: 49em !important
         }
 
+connection-dialog-window2 =
+    .title = Anslutningsinställningar
+
 disable-extension-button = Inaktivera tillägg
 
 # Variables:

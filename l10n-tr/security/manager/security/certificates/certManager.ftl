@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = CA sertifikası güven ayarlarını düzenle
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA sertifikası güven ayarlarını düzenle
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Güven ayarlarını düzenle:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Sertifikayı sil
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Sertifikayı sil
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Ana makine
@@ -185,8 +193,6 @@ delete-email-cert-impact = Bir şahsın e-posta sertifikasını silerseniz, art�
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Sertifika seri numarası: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = İstemci sertifikası gönderme

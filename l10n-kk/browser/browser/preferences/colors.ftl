@@ -10,6 +10,14 @@ colors-window =
            *[other] width: 38em
         }
 
+colors-dialog =
+    .title = Түстер
+    .style = width: 41em;
+
+colors-dialog2 =
+    .title = Түстер
+    .style = min-width: 41em;
+
 colors-close-key =
     .key = w
 

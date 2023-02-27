@@ -21,9 +21,9 @@ videocontrols-mute-button =
 videocontrols-unmute-button =
     .aria-label = Sonòr
 videocontrols-enterfullscreen-button =
-    .aria-label = Ecran complet
+    .aria-label = Ecran complèt
 videocontrols-exitfullscreen-button =
-    .aria-label = Sortida del mòde ecran complet
+    .aria-label = Sortida del mòde ecran complèt
 videocontrols-casting-button-label =
     .aria-label = Difusar sus l'ecran
 videocontrols-closed-caption-off =
@@ -41,6 +41,10 @@ videocontrols-picture-in-picture-explainer = Agachatz de vidèos en primièr pla
 # This string is used as the label for a variation of the Picture-in-Picture video
 # toggle button when the mouse is hovering over the video.
 videocontrols-picture-in-picture-toggle-label2 = Traire aquesta vidèo de la pagina
+# This string is used as part of a variation of the Picture-in-Picture video toggle
+# button. When using this variation, this string appears below the toggle when the
+# mouse hovers the toggle.
+videocontrols-picture-in-picture-explainer3 = Plaser duplicat amb mai d’ecrans. Legissètz aquesta vidèo mentre que fasètz quicòm mai.
 videocontrols-error-aborted = Cargament de la vidèo arrestat.
 videocontrols-error-network = La lectura de la vidèo es estada arrestada a causa d'una error de ret.
 videocontrols-error-decode = La vidèo pòt pas èsser visionada perque lo fichièr es corromput.

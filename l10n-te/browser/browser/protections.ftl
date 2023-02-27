@@ -37,8 +37,10 @@ cryptominer-tab-title = క్రిప్టోమైనర్లు
 protections-close-button2 =
     .aria-label = మూసివేయి
     .title = మూసివేయి
-  
+
 lockwise-title = ఇంకెప్పుడూ సంకేతపదాలను మర్చిపోకండి
+protection-report-passwords-save-passwords-button = సంతేతపదాలను భద్రపరుచు
+    .title = సంతేతపదాలను భద్రపరుచు
 
 
 # While English doesn't use the number in the plural form, you can add $count to your language

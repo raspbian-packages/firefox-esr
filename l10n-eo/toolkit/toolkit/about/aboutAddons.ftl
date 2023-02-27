@@ -137,6 +137,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Permesoj por retejo
 addon-category-sitepermission-title =
     .title = Permesoj por retejo
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Retejaj permesoj por { $host }
 
 ## These are global warnings
 
@@ -282,10 +286,6 @@ theme-monochromatic-heading = Koloraroj
 theme-monochromatic-subheading = Vibraj, novaj koloraroj de { -brand-product-name }. Disponeblaj dum limigita tempo.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Provu koloraron
-colorway-collection-independent-voices-subheading = Igu { -brand-short-name } simili iom pli al vi.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Senvalidiĝo je { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Ŝanĝi koloraron
 # Variables:

@@ -6,6 +6,10 @@ add-engine-window =
     .title = Amiestu d'un motor de busca
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Amiestu d'un motor de busca
+    .style = min-width: 32em;
+
 add-engine-button = Amestar un motor personalizáu
 
 add-engine-name = Nome del motor de busca

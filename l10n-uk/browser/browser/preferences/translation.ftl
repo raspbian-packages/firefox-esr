@@ -6,6 +6,10 @@ translation-window =
     .title = Винятки - Переклад
     .style = width: 36em
 
+translation-window2 =
+    .title = Винятки - Переклад
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

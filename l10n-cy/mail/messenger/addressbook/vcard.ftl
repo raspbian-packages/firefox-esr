@@ -36,6 +36,10 @@ vcard-n-suffix = Ôl-ddodiad
 vcard-n-add-suffix =
     .title = Ychwanegu ôl-ddodiad
 
+# Nickname
+
+vcard-nickname = Llysenw
+
 # Email vCard field
 
 vcard-email-header = Cyfeiriadau E-bost
@@ -54,6 +58,10 @@ vcard-url-label = Gwefan
 vcard-tel-header = Rhifau Ffôn
 vcard-tel-add = Ychwanegu rhif ffôn
 vcard-tel-label = Rhif ffôn
+# Or "Mobile"
+vcard-entry-type-cell = Cell
+vcard-entry-type-fax = Ffacs
+vcard-entry-type-pager = Swnyn
 
 # TZ vCard field
 
@@ -62,9 +70,13 @@ vcard-tz-add = Ychwanegu cylch amser
 
 # IMPP vCard field
 
-vcard-impp-header = Cyfrifon Sgwrsio
+vcard-impp2-header = Negesu Chwim
 vcard-impp-add = Ychwanegu cyfrif sgwrsio
 vcard-impp-label = Cyfrif sgwrsio
+vcard-impp-select = Protocol
+vcard-impp-option-other = Arall
+vcard-impp-input-label = URI
+vcard-impp-input-title = URI ar gyfer negeseuon chwim
 
 # BDAY and ANNIVERSARY vCard field
 
@@ -82,8 +94,6 @@ vcard-adr-header = Cyfeiriadau
 vcard-adr-add = Ychwanegu cyfeiriad
 vcard-adr-label = Cyfeiriadau
 vcard-adr-delivery-label = Label dosbarthu
-vcard-adr-pobox = Blwch swyddfa'r post
-vcard-adr-ext = Cyfeiriad estynedig
 vcard-adr-street = Cyfeiriad stryd
 # Or "Locality"
 vcard-adr-locality = Tref/Dinas
@@ -103,10 +113,26 @@ vcard-note-add = Ychwanegu nodyn
 vcard-org-header = Adeiladau Sefydliadol
 vcard-org-add = Ychwanegu adeiladau sefydliadol
 vcard-org-title = Teitl
+vcard-org-title-input =
+    .title = Safle neu swydd
+    .placeholder = Tetl swydd
 vcard-org-role = Rôl
+vcard-org-role-input =
+    .title = Swyddogaeth neu ran yn cael ei chwarae mewn sefyllfa benodol
+    .placeholder = Rôl mewn project
 vcard-org-org = Corff
+vcard-org-org-input =
+    .title = Enw corfforaethol
+    .placeholder = Enw cwmni
+vcard-org-org-unit = Adran
+vcard-org-org-unit-input =
+    .title = Enw uned corfforaethol
+    .placeholder = Adran
 
 # Custom properties
 
 vcard-custom-header = Priodweddau Cyfaddas
 vcard-custom-add = Ychwanegu priodweddau cyfaddas
+vcard-remove-button-title =
+    .title = Tynnu
+vcard-remove-button = Tynnu

@@ -191,6 +191,8 @@ preferences-web-appearance-choice-tooltip-browser =
     .title = Fasètz correspondre los paramètres de tèma de { -brand-short-name } pels rèireplans e lo contengut dels sites web.
 preferences-web-appearance-choice-tooltip-system =
     .title = Fasètz correspondre los paramètres sistèma pels rèireplans e lo contengut dels sites web.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Cambiament automatic dels rèireplans e dels contenguts dels sites Web segon los paramètres sistèma e del tèma de { -brand-short-name }.
 preferences-web-appearance-choice-tooltip-light =
     .title = Utilizar una aparéncia clara pels rèireplans e lo contengut dels sites web.
 preferences-web-appearance-choice-tooltip-dark =
@@ -199,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -399,7 +403,7 @@ update-setting-write-failure-title2 = Error en enregistrant los paramètres de m
 # The newlines between the main text and the line containing the path is
 # intentional so the path is easier to identify.
 update-setting-write-failure-message2 =
-    { -brand-short-name } a rencontrat una error e a pas enregistrat aquesta modificacion. Notatz que definir aqueste paramètre de mesa a jorn requerís la permission d’escriure sul fichièr çai-jos. Vosautres o un administrator sistèma podètz benlèu corregir aquò en donant al grop Users l’accès complet a aqueste fichièr.
+    { -brand-short-name } a rencontrat una error e a pas enregistrat aquesta modificacion. Notatz que definir aqueste paramètre de mesa a jorn requerís la permission d’escriure sul fichièr çai-jos. Vosautres o un administrator sistèma podètz benlèu corregir aquò en donant al grop Users l’accès complèt a aqueste fichièr.
     
     Escritura impossibla sul fichièr : { $path }
 update-in-progress-title = Actualizacion en cors
@@ -420,7 +424,7 @@ performance-settings-learn-more = Ne saber mai
 performance-allow-hw-accel =
     .label = Utilisar l'acceleracion grafica materiala se disponibla
     .accesskey = n
-performance-limit-content-process-option = Limita del procediment del contengut
+performance-limit-content-process-option = Limit del procediment del contengut
     .accesskey = L
 performance-limit-content-process-enabled-desc = De procediments de contengut suplementaris pòdon melhorar las performanças en utilizant d'onglets multiples, pasmens aquò utiliza mai de memòria.
 performance-limit-content-process-blocked-desc = Modificar lo nombre de procediments de contenguts es possible sonque amb la version multiprocediment de { -brand-short-name }. <a data-l10n-name="learn-more">Aprendre a verificar se de multiprocediments son activats</a>
@@ -433,13 +437,13 @@ performance-default-content-process-count =
 
 browsing-title = Navegacion
 browsing-use-autoscroll =
-    .label = Utilizar lo desfilament automatic
+    .label = Utilizar lo defilament automatic
     .accesskey = a
 browsing-use-smooth-scrolling =
-    .label = Utilizar lo desfilament doç
+    .label = Utilizar lo defilament doç
     .accesskey = d
 browsing-gtk-use-non-overlay-scrollbars =
-    .label = Totjorn afichar las barras de desfilaments
+    .label = Totjorn afichar las barras de defilaments
     .accesskey = o
 browsing-use-onscreen-keyboard =
     .label = Mostrar un clavièr tactil quand es necessari
@@ -491,6 +495,8 @@ home-restore-defaults =
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
     .label = Pagina d'acuèlh de Firefox (Per defaut)
+home-mode-choice-default-fx =
+    .label = { -firefox-home-brand-name } (per defaut)
 home-mode-choice-custom =
     .label = Adreças personalizadas…
 home-mode-choice-blank =
@@ -516,6 +522,8 @@ choose-bookmark =
 
 home-prefs-content-header = Contengut de la pagina d’acuèlh de Firefox
 home-prefs-content-description = Causissètz lo contengut que volètz a la pagina d’acuèlh de Fireofx.
+home-prefs-content-header2 = Contengut de la { -firefox-home-brand-name }
+home-prefs-content-description2 = Causissètz lo contengut que volètz per l’ecran { -firefox-home-brand-name }.
 home-prefs-search-header =
     .label = Recèrca web
 home-prefs-shortcuts-header =
@@ -536,6 +544,8 @@ home-prefs-recommended-by-description-new = Contengut excepcional seleccionat pe
 home-prefs-recommended-by-learn-more = Cossí fonciona
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Articles pairinejats
+home-prefs-recommended-by-option-recent-saves =
+    .label = Afichar los enregistraments recents
 home-prefs-highlights-option-visited-pages =
     .label = Paginas visitadas
 home-prefs-highlights-options-bookmarks =
@@ -582,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mostrar las suggestions dins los resultats de la barra d'adreça
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Mostrar los tèrmes de recèrca a la plaça de l’adreça web sus la pagina de resultats del motor de recèrca per defaut
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -709,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = E
     .buttonlabelextra2 = Desconnectar…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Causir qué sincronizar
+    .style = min-width: 36em;
+    .buttonlabelaccept = Enregistrar
+    .buttonaccesskeyaccept = E
+    .buttonlabelextra2 = Desconnectar…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Marcapaginas
     .accesskey = M
@@ -777,6 +799,9 @@ forms-breach-alerts =
     .label = Afichar las alèrtas pels senhals dels sites concernits per de pèrdas de donadas
     .accesskey = A
 forms-breach-alerts-learn-more-link = Ne saber mai
+relay-integration =
+    .label = Activatz { -relay-brand-name } al gestionari de senhals de { -brand-short-name }.
+relay-integration-learn-more-link = Ne saber mai
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Emplenar automaticament los identificants e senhals
@@ -893,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies de sites pas visitats
 sitedata-option-block-all-third-party =
     .label = Totes los cookies tèrces (pòt arribar qu’unes sites quitan de foncionar)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Totes los cookies intersites (unes sites pòdon quitar de foncionar)
 sitedata-option-block-all =
     .label = Totes los cookies (pòt arribar qu’unes sites quitan de foncionar)
 sitedata-clear =
@@ -963,6 +990,7 @@ content-blocking-etp-custom-desc = Causissètz quins traçadors e scripts cal bl
 content-blocking-etp-blocking-desc = { -brand-short-name } blocat los seguents :
 content-blocking-private-windows = Contengut utilizat per pistar dins las fenèstras de navegacion privada
 content-blocking-cross-site-cookies-in-all-windows = Cookies entresites dins totas las fenèstras (los cookies de seguiment tanben)
+content-blocking-cross-site-cookies-in-all-windows2 = Cookies intersites dins totas las fenèstras
 content-blocking-cross-site-tracking-cookies = Cookies de seguiment entre sites
 content-blocking-all-cross-site-cookies-private-windows = Cookies intersites en fenèstras privadas
 content-blocking-cross-site-tracking-cookies-plus-isolate = Los traçadors intersites, e isolar los cookies restants
@@ -971,6 +999,7 @@ content-blocking-all-cookies = Totes los cookies
 content-blocking-unvisited-cookies = Cookies dels sites pas visitats
 content-blocking-all-windows-tracking-content = Contengut utilizat per pistar totas las fenèstras
 content-blocking-all-third-party-cookies = Totes los cookies tèrces
+content-blocking-all-cross-site-cookies = Totes los cookies intersites
 content-blocking-cryptominers = Minaires de criptomonedas
 content-blocking-fingerprinters = Generadors d’emprentas numericas
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -978,9 +1007,13 @@ content-blocking-fingerprinters = Generadors d’emprentas numericas
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Ensajatz abans lo monde la melhora foncionalitat de confidencialitat jamai concebuda
     .accesskey = E
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = La proteccion totala contra los cookies los reten al site ont vos trobatz, doncas los traçadors los pòdon pas utilizar per vos pistar de site en site.
 content-blocking-etp-standard-tcp-rollout-learn-more = Ne saber mai
+content-blocking-etp-standard-tcp-title = Inclutz la proteccion totala contra los cookies, nòstra foncionalitat de la vida privada mai potenta
 content-blocking-warning-title = Atencion !
 content-blocking-and-isolating-etp-warning-description-2 = Aqueste paramètre pòt menar unes sites web a s’afichar mal o a quitar de s’afichar corrèctament. Se un site sembla copat, ensajatz d’aturar la proteccion contra lo seguiment per aquel site per que cargue tot lo contengut.
 content-blocking-warning-learn-how = M’ensenhar cossí far
@@ -1088,6 +1121,8 @@ addon-recommendations-link = Ne saber mai
 collection-health-report-disabled = Lo rapòrt de donadas es desactivat per aquela configuracion de compilacion
 collection-backlogged-crash-reports-with-link = Autorizar { -brand-short-name } a enviar de rapòrt de plantatge en espèra a vòstre nom <a data-l10n-name="crash-reports-link">Ne saber mai</a>
     .accesskey = A
+privacy-segmentation-section-header = Foncionalitats novèlas per melhorar vòstra navegacion
+privacy-segmentation-section-description = Quand propausam foncionalitats qu’utilizan vòstras donadas per vos provesir una experiéncia mai personala :
 privacy-segmentation-radio-off =
     .label = Utilizar las recomandacions { -brand-product-name }
 privacy-segmentation-radio-on =

@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = ការកំណត់ភាសាទំព័រវិប
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = ការកំណត់ភាសាទំព័រវិប
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = ការកំណត់ភាសា { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = ការកំណត់ភាសា { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-search = ស្វែងរក​ភាសា​ច្រើន​ទៀត...
 

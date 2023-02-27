@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = App icon valkostir
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Valkostir forritstákns
+
 dock-options-show-badge =
     .label = Sýna táknmynd merkis
     .accesskey = m

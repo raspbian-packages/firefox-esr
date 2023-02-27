@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Mencegah pengguna melewati peringatan keamanan te
 policy-DisableSetAsDesktopBackground = Nonaktifkan perintah menu Jadikan sebagai Latar Belakang Desktop untuk gambar.
 policy-DisableSystemAddonUpdate = Mencegah peramban memasang dan memperbarui pengaya sistem.
 policy-DisableTelemetry = Nonaktifkan Telemetry.
+policy-DisableThirdPartyModuleBlocking = Cegah pengguna memblokir modul pihak ketiga yang disuntikkan ke proses { -brand-short-name }.
 policy-DisplayBookmarksToolbar = Tampilkan Bilah Markah secara baku.
 policy-DisplayMenuBar = Tampilkan Bilah Menu secara otomatis.
 policy-DNSOverHTTPS = Konfigurasikan DNS lewat HTTPS.

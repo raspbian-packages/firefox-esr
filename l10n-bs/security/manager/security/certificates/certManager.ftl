@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = Uredi postavke povjerenja certifikata
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Uredi postavke povjerenja certifikata
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Uredi postavke povjerenja:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Obriši certifikat
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Obriši certifikat
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Naziv certifikata
@@ -173,9 +181,8 @@ delete-email-cert-impact = Ukoliko obrišete nečiji e-mail certifikat, više ne
 cert-with-serial =
     .value = Certifikat sa serijskim brojem: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

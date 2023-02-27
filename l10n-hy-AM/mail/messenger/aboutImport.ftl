@@ -7,6 +7,7 @@ export-page-title = Արտահանել
 
 ## Header
 
+import-start = Ներմուծման գործիք
 export-profile = Արտահանել
 
 ## Buttons

@@ -181,6 +181,17 @@ menu-view-full-screen =
     .label = Folslein skerm
     .accesskey = F
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Lêzerwerjefte iepenje
+    .accesskey = L
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Lêzerwerjefte slute
+    .accesskey = L
+
 ##
 
 menu-view-show-all-tabs =

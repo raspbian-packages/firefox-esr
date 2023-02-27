@@ -36,6 +36,10 @@ vcard-n-suffix = Jälkiliite
 vcard-n-add-suffix =
     .title = Lisää jälkiliite
 
+# Nickname
+
+vcard-nickname = Kutsumanimi
+
 # Email vCard field
 
 vcard-email-header = Sähköpostiosoitteet
@@ -62,9 +66,10 @@ vcard-tz-add = Lisää aikavyöhyke
 
 # IMPP vCard field
 
-vcard-impp-header = Pikaviestitilit
+vcard-impp2-header = Pikaviestintä
 vcard-impp-add = Lisää pikaviestitili
 vcard-impp-label = Pikaviestitili
+vcard-impp-option-other = Muu
 
 # BDAY and ANNIVERSARY vCard field
 
@@ -81,7 +86,6 @@ vcard-date-year = Vuosi
 vcard-adr-header = Osoitteet
 vcard-adr-add = Lisää osoite
 vcard-adr-label = Osoite
-vcard-adr-ext = Laajennettu osoite
 vcard-adr-street = Katuosoite
 # Or "Locality"
 vcard-adr-locality = Kaupunki
@@ -97,5 +101,13 @@ vcard-note-header = Huomautuksia
 
 # TITLE, ROLE and ORGANIZATION vCard fields
 
+vcard-org-header = Organisaation ominaisuudet
+vcard-org-add = Lisää organisaation ominaisuuksia
 vcard-org-role = Rooli
 vcard-org-org = Organisaatio
+
+# Custom properties
+
+vcard-remove-button-title =
+    .title = Poista
+vcard-remove-button = Poista

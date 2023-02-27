@@ -25,10 +25,11 @@ about-processes-column-cpu-total = CPU
 
 about-processes-browser-process = { -brand-short-name } ({ $pid })
 about-processes-file-process = Skrár ({ $pid })
-about-processes-extension-process = Viðbætur ({ $pid })
+about-processes-extension-process = Forritsaukar ({ $pid })
 about-processes-plugin-process = Tengiforrit ({ $pid })
 about-processes-gmp-plugin-process = Gecko Media tengiforrit ({ $pid })
 about-processes-gpu-process = GPU ({ $pid })
+about-processes-socket-process = Netkerfi ({ $pid })
 # Unknown process names
 # Variables:
 #    $pid (String) The process id of this process, assigned by the OS.
@@ -48,6 +49,9 @@ about-processes-web-isolated-process = { $origin } ({ $pid })
 # Variables:
 #   $name (String) The name of the tab (typically the title of the page, might be the url while the page is loading).
 about-processes-tab-name = Flipi: { $name }
+
+## Utility process actor names
+
 about-processes-utility-actor-audio-decoder = Hljóðafkóðari
 
 ## Displaying CPU (percentage and total)

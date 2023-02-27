@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Navegacion privada de { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Navegacion privada de { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Obténer d’ajuda
 urlbar-search-tips-confirm = Òc, plan comprés
+urlbar-search-tips-confirm-short = Comprés !
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Astúcia :
+urlbar-result-menu-button =
+    .title = Dobrir lo menú
+urlbar-result-menu-remove-from-history =
+    .label = Tirar de l’istoric
+    .accesskey = T
+urlbar-result-menu-tip-get-help =
+    .label = Obténer d’ajuda
+    .accesskey = a
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Escrivètz mens, trobatz mai : cercatz amb { $engineName } dirèctament de la barra d’adreça.
 urlbar-search-tips-redirect-2 = Començatz vòstra recèrca dins la barra d’adreça per mostrar las suggestions de { $engineName } e de vòstre istoric de navegacion.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Cercar ven mai simple. Ensajatz de far venir vòstra recèrca mai precisa, aicí dins la barra d’adreça. Per mostrar puslèu l’adreça web, anatz a la seccion « Recèrca » als paramètres.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Causir aqueste acorchi per trobar mai rapidament çò que vos fa besonh.
@@ -175,7 +188,7 @@ urlbar-screen-blocked =
 urlbar-persistent-storage-blocked =
     .tooltiptext = Avètz empachat aquel site de gardar de biais persistent de donadas.
 urlbar-popup-blocked =
-    .tooltiptext = Avètz blocat las fenèstras surgentas per aqueste site.
+    .tooltiptext = Avètz blocat las fenèstras sorgissentas per aqueste site.
 urlbar-autoplay-media-blocked =
     .tooltiptext = Avètz blocat la lectura automatica dels mèdias amb son per aqueste site.
 urlbar-canvas-blocked =
@@ -212,7 +225,7 @@ full-screen-autohide =
     .label = Amagar las barras d'aisinas
     .accesskey = A
 full-screen-exit =
-    .label = Quitar lo mòde ecran complet
+    .label = Quitar lo mòde ecran complèt
     .accesskey = Q
 
 ## Search Engine selection buttons (one-offs)
@@ -267,32 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Accions ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Veire los moduls
-quickactions-cmd-addons = moduls, extensions, tèmas
+quickactions-cmd-addons2 = Moduls complementaris
 # Opens the bookmarks library window
-quickactions-bookmarks = Veire los marcapaginas
+quickactions-bookmarks2 = Gerir los marcapaginas
 quickactions-cmd-bookmarks = marcapaginas
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Escafar l'istoric
 quickactions-cmd-clearhistory = escafar l'istoric
 # Opens about:downloads page
-quickactions-downloads = Dobrir los telecargaments
+quickactions-downloads2 = Mostrar los telecargaments
 quickactions-cmd-downloads = telecargaments
 # Opens about:addons page in the extensions section
 quickactions-extensions = Gerir las extensions
 quickactions-cmd-extensions = extensions
 # Opens the devtools web inspector
-quickactions-inspector = dobrir l’inspector
+quickactions-inspector2 = Dobrir las aisinas de desvolopament
+quickactions-cmd-inspector = inspector, inspectar, examinar, devtools, aisinas, espleches, otisses, desvelopament, desvolopaires
+# Opens about:logins
+quickactions-logins2 = Gerir los senhals
+quickactions-cmd-logins = identificants, identificacion, senhals, mot de passa, clau de santa, mot de gach
+# Opens about:addons page in the plugins section
+quickactions-plugins = Gerir los plugins
+quickactions-cmd-plugins = plugins
 # Opens the print dialog
-quickactions-print = Imprimir
+quickactions-print2 = Imprimir la pagina
 quickactions-cmd-print = imprimir
+# Opens a new private browsing window
+quickactions-private2 = Dobrir una fenèstra privada
 quickactions-cmd-private = navegacion privada
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Reïnicializar { -brand-short-name }
@@ -301,18 +320,23 @@ quickactions-cmd-refresh = actualizar
 quickactions-restart = Reaviar { -brand-short-name }
 quickactions-cmd-restart = reaviar
 # Opens the screenshot tool
-quickactions-screenshot2 = Prendre una captura d’ecran
+quickactions-screenshot3 = Prendre una captura d’ecran
 quickactions-cmd-screenshot = captura d’ecran
 # Opens about:preferences
-quickactions-settings = Dobrir los paramètres
+quickactions-settings2 = Gerir los paramètres
 quickactions-cmd-settings = paramètres, preferéncias, opcions
+# Opens about:addons page in the themes section
+quickactions-themes = Gerir los tèmas
 quickactions-cmd-themes = tèmas
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Metre a jorn { -brand-short-name }
 quickactions-cmd-update = mesa a jorn
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Afichar la font
+quickactions-viewsource2 = Veire lo còdi de la pagina
 quickactions-cmd-viewsource = veire la font, font, sorga, còdi
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Ne saber mai sus las accions rapidas
 
 ## Bookmark Panel
 
@@ -473,6 +497,9 @@ popup-select-microphone-icon =
     .tooltiptext = Microfòn
 popup-select-speaker-icon =
     .tooltiptext = Naut-parlaires
+popup-select-window-or-screen =
+    .label = Fenèstra o ecran :
+    .accesskey = F
 popup-all-windows-shared = L'ensemble de las fenèstras visiblas sus vòstre ecran seràn partejadas.
 popup-screen-sharing-block =
     .label = Blocar
@@ -494,6 +521,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Per utilizar l’acorchi F12, dobrissètz d’en primièr lo panèl d’aisinas de desvolopament via lo menú Desvolopaire Web.
+enable-devtools-popup-description2 = Per utilizar l’acorchi F12, dobrissètz d’en primièr lo panèl d’aisinas de desvolopament via lo menú Aisinas del navegador.
 
 ## URL Bar
 
@@ -541,7 +569,7 @@ urlbar-placeholder-with-name =
 #  $component (String): the name of the component which forces remote control.
 #    Example: "DevTools", "Marionette", "RemoteAgent".
 urlbar-remote-control-notification-anchor2 =
-    .tooltiptext = Lo navigador es contrarotlat a distància (rason : { $component })
+    .tooltiptext = Lo navegador es contrarotlat a distància (rason : { $component })
 urlbar-permissions-granted =
     .tooltiptext = Avètz donat de permissions suplementàrias a aquel site.
 urlbar-switch-to-tab =
@@ -608,6 +636,7 @@ urlbar-result-action-calculator-result = = { $result }
 urlbar-result-action-search-bookmarks = Cercar dins los marcapaginas
 urlbar-result-action-search-history = Cercar dins l’istoric
 urlbar-result-action-search-tabs = Cercar pels onglets
+urlbar-result-action-search-actions = Accions de recèrca
 
 ## Labels shown above groups of urlbar results
 
@@ -625,16 +654,25 @@ urlbar-group-search-suggestions =
 urlbar-group-quickactions =
     .label = Accions rapidas
 
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Entrar dins la vista de lectura
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Tampar la vista de lectura
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
 # Variables
 #  $domain (String): the domain that is full screen, e.g. "mozilla.org"
-fullscreen-warning-domain = <span data-l10n-name="domain">{ $domain }</span> es en ecran complet
-fullscreen-warning-no-domain = Ara, aqueste document es en ecran complet
-fullscreen-exit-button = Sortir del mòde ecran complet (Esc)
+fullscreen-warning-domain = <span data-l10n-name="domain">{ $domain }</span> es en ecran complèt
+fullscreen-warning-no-domain = Ara, aqueste document es en ecran complèt
+fullscreen-exit-button = Sortir del mòde ecran complèt (Esc)
 # "esc" is lowercase on mac keyboards, but uppercase elsewhere.
-fullscreen-exit-mac-button = Sortir del mòde ecran complet (Esc)
+fullscreen-exit-mac-button = Sortir del mòde ecran complèt (Esc)
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
 # Variables
 #  $domain (String): the domain that is using pointer-lock, e.g. "mozilla.org"
@@ -699,6 +737,8 @@ bookmarks-tools =
     .label = Aisinas dels marcapaginas
 bookmarks-bookmark-edit-panel =
     .label = Modificar aqueste marcapagina
+bookmarks-subview-edit-bookmark =
+    .label = Modificar aqueste marcapagina…
 # The aria-label is a spoken label that should not include the word "toolbar" or
 # such, because screen readers already know that this container is a toolbar.
 # This avoids double-speaking.
@@ -715,6 +755,9 @@ bookmarks-toolbar-placeholder-button =
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-current-tab =
     .label = Onglet marcapagina actual
+# "Bookmark" is a verb, as in "Add current tab to bookmarks".
+bookmarks-subview-bookmark-tab =
+    .label = Marcar l’onglet actual…
 
 ## Library Panel items
 
@@ -820,7 +863,7 @@ popups-infobar-dont-show-message =
     .label = Afichar pas aqueste messatge quand se blòcan de fenèstras sorgissentas
     .accesskey = p
 edit-popup-settings =
-    .label = Gerir los paramètres de las popups…
+    .label = Gerir los paramètres de las fenèstras sorgissentas…
     .accesskey = G
 picture-in-picture-hide-toggle =
     .label = Amagar lo boton Imatge incrustada
@@ -896,3 +939,29 @@ private-browsing-indicator-label = Navegacion privada
 unified-extensions-button =
     .label = Extensions
     .tooltiptext = Extensions
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Extensions
+    .tooltiptext =
+        Extensions
+        Autorizacion requerida
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } a empachat lo recargament automatic d'aquesta pagina.
+refresh-blocked-redirect-label = { -brand-short-name } a empachat la redireccion automatica cap a una autra pagina.
+refresh-blocked-allow =
+    .label = Autorizar
+    .accesskey = A
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } agama vòstra adreça electronica vertadièra per ajudar a vos protegir contra las divulgacions de donadas e los messatges indesirables.
+firefox-relay-offer-how-we-integrate = En contunhant, poiretz generar un alias de messatjariá { -relay-brand-short-name } novèl dirèctament a partir del gestionari de senhals de { -brand-shorter-name }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Transferirem totes los messatges de <strong>{ $sitename }</strong> a <strong>{ $useremail }</strong>.

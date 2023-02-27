@@ -6,6 +6,10 @@ app-manager-window =
     .title = Lok matut ikom purugram
     .style = width: 40em; min-height: 30em;
 
+app-manager-window2 =
+    .title = Lok matut ikom purugram
+    .style = min-width: 40em; min-height: 30em;
+
 app-manager-remove =
     .label = Kwany
     .accesskey = K

@@ -6,6 +6,10 @@ blocklist-window =
     .title = Seznami za zavračanje
     .style = width: 50em
 
+blocklist-window2 =
+    .title = Seznami za zavračanje
+    .style = min-width: 50em
+
 blocklist-description = Izberite, kateri seznam naj { -brand-short-name } uporablja za zavračanje spletnih sledilcev. Sezname omogoča <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

@@ -6,12 +6,22 @@ create-profile-window =
     .title = Pōmager rychtowanio profilu
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Pōmager rychtowanio profilu
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Wstymp
        *[other] { create-profile-window.title } - witej
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Wstymp
+       *[other] { create-profile-window2.title } - witej
     }
 
 profile-creation-explanation-1 = { -brand-short-name } schranio informacyje ô twojich sztalōnkach i preferyncyjach we twojim prywatnym profilu.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Na ôstatek
        *[other] { create-profile-window.title } - dokōńczynie
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Na ôstatek
+       *[other] { create-profile-window2.title } - dokōńczynie
     }
 
 profile-creation-intro = Jak zrychtujesz pora profilōw, kożdy musi mieć inksze miano. Możesz użyć prziszykowanego sam miana, abo wkludzić włosne.

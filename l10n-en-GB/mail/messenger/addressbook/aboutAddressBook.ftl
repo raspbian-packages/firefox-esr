@@ -21,9 +21,20 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = All Address Books
 all-address-books = All Address Books
+# Variables:
+# $name (String) - The name of the selected book/list.
+# $count (Number) - The number of contacts in the selected book/list.
+about-addressbook-card-count = Total contacts in { $name }: { $count }
+# Variables:
+# $count (Number) - The number of contacts in all address books.
+about-addressbook-card-count-all = Total contacts in all address books: { $count }
 about-addressbook-books-context-properties =
     .label = Properties
+about-addressbook-books-context-edit-list =
+    .label = Edit list
 about-addressbook-books-context-synchronize =
     .label = Synchronise
 about-addressbook-books-context-edit =
@@ -75,6 +86,8 @@ about-addressbook-horizontal-layout =
     .label = Switch to horizontal layout
 about-addressbook-vertical-layout =
     .label = Switch to vertical layout
+about-addressbook-table-layout =
+    .label = Table layout
 
 ## Card column headers
 ## Each string is listed here twice, and the values should match.
@@ -85,6 +98,9 @@ about-addressbook-column-label-generatedname =
 about-addressbook-column-header-emailaddresses = Email Addresses
 about-addressbook-column-label-emailaddresses =
     .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-nickname = Nickname
+about-addressbook-column-label-nickname =
+    .label = { about-addressbook-column-header-nickname }
 about-addressbook-column-header-phonenumbers = Phone Numbers
 about-addressbook-column-label-phonenumbers =
     .label = { about-addressbook-column-header-phonenumbers }
@@ -167,10 +183,23 @@ about-addressbook-placeholder-no-search-results = No contacts found
 
 ## Details
 
+# Variables:
+# $count (Number) - The number of selected items (will never be fewer than two)
+about-addressbook-selection-mixed-header = { $count } selected contacts and lists
+# Variables:
+# $count (Number) - The number of selected contacts
+about-addressbook-selection-contacts-header = { $count } selected contacts
+# Variables:
+# $count (Number) - The number of selected lists
+about-addressbook-selection-lists-header = { $count } selected lists
+about-addressbook-details-edit-photo =
+    .title = Edit contact photo
+about-addressbook-new-contact-header = New Contact
 about-addressbook-prefer-display-name = Prefer display name over message header
 about-addressbook-write-action-button = Write
 about-addressbook-event-action-button = Event
 about-addressbook-search-action-button = Search
+about-addressbook-new-list-action-button = New List
 about-addressbook-begin-edit-contact-button = Edit
 about-addressbook-delete-edit-contact-button = Delete
 about-addressbook-cancel-edit-contact-button = Cancel
@@ -180,10 +209,13 @@ about-addressbook-details-email-addresses-header = Email Addresses
 about-addressbook-details-phone-numbers-header = Phone Numbers
 about-addressbook-details-addresses-header = Addresses
 about-addressbook-details-notes-header = Notes
+about-addressbook-details-impp-header = Instant Messaging
+about-addressbook-details-websites-header = Web Sites
 about-addressbook-details-other-info-header = Other Information
 about-addressbook-entry-type-work = Work
 about-addressbook-entry-type-home = Home
 about-addressbook-entry-type-fax = Fax
+# Or "Mobile"
 about-addressbook-entry-type-cell = Mobile
 about-addressbook-entry-type-pager = Pager
 about-addressbook-entry-name-birthday = Birthday
@@ -193,6 +225,10 @@ about-addressbook-entry-name-role = Role
 about-addressbook-entry-name-organization = Organisation
 about-addressbook-entry-name-website = Web site
 about-addressbook-entry-name-time-zone = Time Zone
+about-addressbook-entry-name-custom1 = Custom 1
+about-addressbook-entry-name-custom2 = Custom 2
+about-addressbook-entry-name-custom3 = Custom 3
+about-addressbook-entry-name-custom4 = Custom 4
 about-addressbook-unsaved-changes-prompt-title = Unsaved Changes
 about-addressbook-unsaved-changes-prompt = Do you want to save your changes before leaving the edit view?
 
@@ -205,3 +241,7 @@ about-addressbook-photo-filepicker-title = Select an image file
 about-addressbook-photo-discard = Discard existing photo
 about-addressbook-photo-cancel = Cancel
 about-addressbook-photo-save = Save
+
+# Keyboard shortcuts
+
+about-addressbook-new-contact-key = N

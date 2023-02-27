@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 38em !important
         }
 
+colors-dialog-window2 =
+    .title = Renkler
+
 colors-dialog-legend = Metin ve Arka Plan
 
 text-color-label =

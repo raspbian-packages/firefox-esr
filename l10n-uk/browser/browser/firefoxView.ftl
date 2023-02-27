@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Щойно
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Синхронізовані вкладки
 firefoxview-tabpickup-description = Відкрити сторінки з інших пристроїв.
-firefoxview-tabpickup-recenttabs-description = Тут з'явиться список недавніх вкладок
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% завершено
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Спробувати знову
 firefoxview-tabpickup-sync-disconnected-header = Увімкніть синхронізацію для продовження
 firefoxview-tabpickup-sync-disconnected-description = Для отримання своїх вкладок необхідно дозволити синхронізацію в { -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Увімкніть синхронізацію в налаштуваннях
+firefoxview-tabpickup-password-locked-header = Щоб переглянути вкладки, введіть свій головний пароль
+firefoxview-tabpickup-password-locked-description = Щоб отримати доступ до своїх вкладок, необхідно ввести головний пароль для { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Докладніше
+firefoxview-tabpickup-password-locked-primarybutton = Введіть головний пароль
+firefoxview-tabpickup-signed-out-header = Увійдіть, щоб відновити з'єднання
+firefoxview-tabpickup-signed-out-description = Щоб відновити з'єднання та отримати вкладки, увійдіть у свій { -fxaccount-brand-name }.
+firefoxview-tabpickup-signed-out-primarybutton = Увійти
 firefoxview-tabpickup-syncing = Заждіть, доки синхронізуються вкладки. Це триватиме лише мить.
 firefoxview-mobile-promo-header = Отримайте вкладки зі свого телефона чи планшета
 firefoxview-mobile-promo-description = Щоб переглянути свої останні вкладки з мобільного, увійдіть у { -brand-product-name } на iOS чи Android.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Отримати { -brand-product-name 
 firefoxview-mobile-confirmation-header = 🎉 Усе готово!
 firefoxview-mobile-confirmation-description = Тепер ви можете отримати доступ до вкладок { -brand-product-name } зі свого планшета чи телефона.
 firefoxview-closed-tabs-title = Недавно закриті
-firefoxview-closed-tabs-description = Повторно відкрити сторінки, які ви закрили на цьому пристрої.
-firefoxview-closed-tabs-placeholder = <strong>Немає недавно закритих сторінок</strong><br/>Не бійтеся знову втратити закриту вкладку. Ви завжди можете відновити її тут.
+firefoxview-closed-tabs-description2 = Повторно відкрити сторінки, які ви закрили в цьому вікні.
+firefoxview-closed-tabs-placeholder-header = Немає недавно закритих вкладок
+firefoxview-closed-tabs-placeholder-body = Якщо ви закриєте вкладку в цьому вікні, її можна отримати тут.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Відхилити { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Остання активна
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Змінити забарвлення
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Ще нічого немає</strong><br/>Наступного разу, коли ви відкриєте сторінку в { -brand-product-name } на іншому пристрої, вона з'явиться тут.
+firefoxview-synced-tabs-placeholder-header = Наразі тут нічого немає
+firefoxview-synced-tabs-placeholder-body = Наступного разу, коли ви відкриєте сторінку в { -brand-product-name } на іншому пристрої, вона з'явиться тут.
 firefoxview-collapse-button-show =
     .title = Показати список
 firefoxview-collapse-button-hide =

@@ -42,14 +42,15 @@ policy-DisableFormHistory = Ekki muna leitar- og innfyllingarferil.
 policy-DisablePrimaryPasswordCreation = Ef satt, er ekki hægt að búa til aðallykilorð.
 policy-DisablePasswordReveal = Ekki leyfa birtingu lykilorða í vistuðum innskráningum.
 policy-DisablePocket = Slökkva á valkostinum til að geyma vefsíður í Pocket.
-policy-DisablePrivateBrowsing = Afvirkja huliðsstillingu
+policy-DisablePrivateBrowsing = Gera huliðsvafur óvirkt.
 policy-DisableProfileImport = Slökkva á valmyndinni til að flytja inn gögn úr öðrum vafra.
 policy-DisableProfileRefresh = Slökkva á Endurhlaða { -brand-short-name } takkanum á about:support siðunni.
 policy-DisableSafeMode = Slökkva á endurræsa í Safe Mode. Athugið að aðeins er hægt að slökkva á Shift takkanum til að fara í Safe Mode á Windows með því að nota hópstefnu.
 policy-DisableSecurityBypass = Forða notanda frá tilteknum öryggisviðvörunum.
 policy-DisableSetAsDesktopBackground = Slökkva á valmyndarskipuninni "Velja forsíðubakgrunn" fyrir myndir.
 policy-DisableSystemAddonUpdate = Forða því að vafrinn setji upp og uppfæri kerfisviðbætur.
-policy-DisableTelemetry = Slökkva á gagnasöfnun til að bæta Firefox (telemetry)
+policy-DisableTelemetry = Slökkva á gagnasöfnun (telemetry).
+policy-DisableThirdPartyModuleBlocking = Koma í veg fyrir að notandinn loki á einingar frá utanaðkomandi aðilum sem dælt er inn í { -brand-short-name }-ferlið.
 policy-DisplayBookmarksToolbar = Sýna bókamerkjastikuna sjálfgefið.
 policy-DisplayMenuBar = Birta valmyndarstikuna sjálfgefið.
 policy-DNSOverHTTPS = Stilla DNS yfir HTTPS.
@@ -58,13 +59,13 @@ policy-DownloadDirectory = Stilltu og læstu möppu fyrir niðurhal.
 # “lock” means that the user won’t be able to change this setting
 policy-EnableTrackingProtection = Virkja eða slökkva á efnisútilokun (Content Blocking) og mögulega læsa henni.
 # “lock” means that the user won’t be able to change this setting
-policy-EncryptedMediaExtensions = Virkja eða slökkva á dulrituðum margmiðlunarviðbótum (Encrypted Media Extensions) og mögulega læsa þeim.
+policy-EncryptedMediaExtensions = Virkja eða slökkva á dulrituðum margmiðlunarviðaukum (Encrypted Media Extensions) og mögulega læsa þeim.
 policy-ExemptDomainFileTypePairsFromFileTypeDownloadWarnings = Slökkva á aðvörunum byggðum á skráarendingum fyrir tilteknar skráargerðir á lénum.
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
-policy-Extensions = Setja upp, fjarlægja eða læsa fyrir viðbætur. Uppsetningarvalkosturinn samþykkir vefslóðir og leiðir sem breytur. Valkostir um að fjarlægja viðbót eða læstir valkostir krefjast auðkennis viðbótarinnar.
-policy-ExtensionSettings = Stjórna öllum uppsetningarþáttum viðbóta.
+policy-Extensions = Setja upp, fjarlægja eða læsa forritsaukum. Uppsetningarvalkosturinn samþykkir vefslóðir og leiðir sem breytur. Valkostir um að fjarlægja viðauka eða læstir valkostir krefjast auðkennis viðaukans.
+policy-ExtensionSettings = Stjórnaðu öllum uppsetningarþáttum forritsauka.
 policy-ExtensionUpdate = Virkja eða slökkva á sjálfvirkri uppfærslu á viðbótum.
 policy-FirefoxHome = Stilla upphafssíðu Firefox.
 policy-FirefoxHome2 = Stilla { -firefox-home-brand-name }.
@@ -109,10 +110,10 @@ policy-RequestedLocales = Stilla lista yfir tungumál sem óskað er eftir af fo
 policy-SanitizeOnShutdown2 = Hreinsa ferilsgögn við lokun.
 policy-SearchBar = Stilla sjálfgefna staðsetningu leitarstiku. Notanda er enn leyft að sérsníða hana.
 policy-SearchEngines = Stilla leitarvélar. Þessi stefna er aðeins í boði í útgáfu ESR (Extended Support Release).
-policy-SearchSuggestEnabled = Virkja eða slökkva á leitarábendingar.
+policy-SearchSuggestEnabled = Virkja eða slökkva á leitartillögum.
 # For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
 policy-SecurityDevices = Setja inn PKCS #11 forritseiningar.
-policy-ShowHomeButton = Sýna upphafshnappinn á verkfæraslánni.
+policy-ShowHomeButton = Birta upphafshnappinn á verkfærastikunni.
 policy-SSLVersionMax = Stilltu hámarks SSL útgáfu.
 policy-SSLVersionMin = Stilltu lágmarks SSL útgáfuna.
 policy-StartDownloadsInTempDirectory = Þvinga niðurhal til að hefjast á staðbundinni, bráðabirgðastaðsetningu frekar en sjálfgefnu niðurhalsmöppunni.

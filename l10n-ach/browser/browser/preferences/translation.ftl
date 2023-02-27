@@ -6,6 +6,10 @@ translation-window =
     .title = Ma kiweko woko - Kobo
     .style = width: 36em
 
+translation-window2 =
+    .title = Ma kiweko woko - Kobo
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

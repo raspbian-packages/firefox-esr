@@ -65,6 +65,9 @@ media-dimension =
     .value = Dimensioj:
 media-long-desc =
     .value = Longa priskribo:
+media-select-all =
+    .label = Elekti ĉion
+    .accesskey = E
 media-save-as =
     .label = Konservi kiel…
     .accesskey = n
@@ -251,7 +254,7 @@ media-block-image =
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:
-#   $website (string) - The url of the website pageInfo is getting info for
+#   $website (string) — The url of the website pageInfo is getting info for
 page-info-page =
     .title = Informo pri paĝo - { $website }
 page-info-frame =

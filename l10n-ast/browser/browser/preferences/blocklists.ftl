@@ -6,6 +6,10 @@ blocklist-window =
     .title = Llistes de bloqueos
     .style = width: 50em
 
+blocklist-window2 =
+    .title = Llistes de bloqueos
+    .style = min-width: 50em
+
 blocklist-description = Escueyi la llista que { -brand-short-name } usa pa bloquiar los rastrexadores en llinia. Les llistes fórneles <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

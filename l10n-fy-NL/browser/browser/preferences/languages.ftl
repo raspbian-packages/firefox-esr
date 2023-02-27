@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Taalynstellingen website
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Taalynstellingen website
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name }-taalynstellingen
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name }-taalynstellingen
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } sil de earste taal as jo standerttaal werjaan en sa nedich alternative talen werjaan yn de folchoarder wêryn se fershine.
 

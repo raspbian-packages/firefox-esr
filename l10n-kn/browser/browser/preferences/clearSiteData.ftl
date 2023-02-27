@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = ದತ್ತಾಂಶ ಬರಿದುಮಾಡು
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = ದತ್ತಾಂಶ ಬರಿದುಮಾಡು
+    .style = min-width: 35em
+
 clear-site-data-close-key =
     .key = w
 

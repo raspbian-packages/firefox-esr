@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 38em !important
         }
 
+colors-dialog-window2 =
+    .title = Barve
+
 colors-dialog-legend = Besedilo in ozadje
 
 text-color-label =

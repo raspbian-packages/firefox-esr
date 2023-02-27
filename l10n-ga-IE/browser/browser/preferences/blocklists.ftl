@@ -6,6 +6,10 @@ blocklist-window =
     .title = Liostaí Coiscthe
     .style = width: 60em
 
+blocklist-window2 =
+    .title = Liostaí Coiscthe
+    .style = min-width: 60em
+
 blocklist-close-key =
     .key = w
 

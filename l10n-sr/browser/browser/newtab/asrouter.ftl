@@ -59,6 +59,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } корисника
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Доле банери колачића!
+cfr-cookie-banner-handling-body = Дозволите да { -brand-short-name } аутоматски одбије све захтеве за банере за колачиће, ако је могуће. У супротном, сви колачићи ће бити прихваћени како би се игнорисало више банера.
+cfr-cookie-banner-accept-button = Одбиј захтеве
+    .accesskey = О
+cfr-cookie-banner-reject-button = Не сада
+    .accesskey = Н
+cfr-cookie-banner-handling-header-variant-1 = Да видите мање искачућих прозора за колачиће
+cfr-cookie-banner-handling-body-variant-1 = Дозволите да { -brand-short-name } аутоматски одговара на искачуће прозоре за колачиће, тако да се можете посветити прегледању без ометања. { -brand-short-name } ће одбити све захтеве ако је то могуће, или их прихватити ако није.
+cfr-cookie-banner-accept-button-variant-1 = Одбиј искачуће прозоре
+    .accesskey = О
+cfr-cookie-banner-reject-button-variant-1 = Не, хвала
+    .accesskey = Н
+cfr-cookie-banner-handling-header-variant-2 = Смањење банера колачића
+cfr-cookie-banner-handling-body-variant-2 = Дозволити да { -brand-short-name } одбије упите о колачићима са сајтова када је то могуће или да их прихвати када није?
+cfr-cookie-banner-accept-button-variant-2 = Дозволи
+    .accesskey = Д
+cfr-cookie-banner-reject-button-variant-2 = Не сада
+    .accesskey = Н
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Приступите обележивачима свуда.
@@ -159,7 +182,104 @@ spotlight-public-wifi-vpn-link = Не сада
 spotlight-total-cookie-protection-header =
     Први испробајте наше најмоћније
     искуство приватности до сада
-spotlight-total-cookie-protection-body = Свеобухватна заштита од колачића спречава механизме за праћење да вас прате широм мреже.
+spotlight-total-cookie-protection-body = Свеобухватна заштита од колачића спречава елементе за праћење да вас прате широм мреже.
+# "Early access" for this feature rollout means it's a "feature preview" or
+# "soft launch" as not everybody will get it yet.
+spotlight-total-cookie-protection-expanded = { -brand-short-name } ограђује колачиће, ограничавајући их тако да елементи за праћење не могу да их користе како би вас пратили. Рани приступ нам помаже да оптимизујемо ову функцију како би наставили да правимо бољи веб за све.
+spotlight-total-cookie-protection-primary-button = Укључите свеобухватну заштиту од колачића
+spotlight-total-cookie-protection-secondary-button = Не сада
 
 ## Emotive Continuous Onboarding
 
+spotlight-better-internet-header = Бољи интернет почиње са вама
+spotlight-better-internet-body = Када користите { -brand-short-name }, подржавате отворен, приступачан и бољи интернет за све.
+spotlight-peace-mind-header = Ту смо за вас
+spotlight-peace-mind-body = Сваког месеца, { -brand-short-name } блокира у просеку 3,000 елемената за праћење по кориснику. Јер ништа, а поготово не овакви уништавачи приватности, не треба да стоји између вас и доброг интернета.
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Остави у доку
+       *[other] Закачи на траку
+    }
+spotlight-pin-secondary-button = Не сада
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Нови { -brand-short-name }. Приватнији. Са мање праћења. Без компромиса.
+mr2022-background-update-toast-text = Испробајте нови { -brand-short-name }, надограђен нашом најјачом заштитом од праћења до сада.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Отвори { -brand-shorter-name }
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Подсети ме касније
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Испробај
+    .accesskey = И
+firefoxview-cfr-secondarybutton = Не сада
+    .accesskey = Н
+firefoxview-cfr-header-v2 = Брзо наставите тамо где сте стали
+firefoxview-cfr-body-v2 = Вратите недавно затворене картице и лако прелазите између уређаја уз { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Упознајте { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Желите ту отворену картицу на свом телефону? Треба вам сајт који сте управо посетили? Уз { -firefoxview-brand-name } све може!
+firefoxview-spotlight-promo-primarybutton = Сазнајте како ради
+firefoxview-spotlight-promo-secondarybutton = Прескочи
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Одаберите комбинацију боја
+    .accesskey = О
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Обојите свој прегледач ексклузивним { -brand-short-name } нијансама инспирисаним гласовима који су утицали на културу.
+colorways-cfr-header-28days = Комбинације боја „Независни гласови” истичу 16. јануара
+colorways-cfr-header-14days = Комбинације боја „Независни гласови” истичу за две седмице
+colorways-cfr-header-7days = Комбинације боја „Независни гласови” истичу ове седмице
+colorways-cfr-header-today = Комбинације боја „Независни гласови” истичу данас
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Доле банери колачића!
+cfr-cookiebanner-body = Дозволите да { -brand-short-name } аутоматски одбаци све захтеве за банере колачића када је то могуће.
+cfr-cookiebanner-accept-button = Одбаци банере
+    .accesskey = О
+cfr-cookiebanner-reject-button = Не сада
+    .accesskey = Н
+cfr-cookiebanner-header-variant-1 = Да видите мање искачућих прозора за колачиће
+cfr-cookiebanner-body-variant-1 = Дозволите да { -brand-short-name } аутоматски одговара на искачуће прозоре за колачиће, тако да се можете посветити прегледању без ометања. { -brand-short-name } ће одбити све захтеве ако је то могуће.
+cfr-cookiebanner-accept-button-variant-1 = Одбаци искачуће прозоре
+    .accesskey = О
+cfr-cookiebanner-reject-button-variant-1 = Не, хвала
+    .accesskey = Н
+cfr-cookiebanner-header-variant-2 = Смањење банера колачића
+cfr-cookiebanner-body-variant-2 = Смањите број банера колачића које видите тако што ћете дозволити да { -brand-short-name } одбије захтев сајта да прихвати колачиће кад је то могуће.
+cfr-cookiebanner-accept-button-variant-2 = Дозволи
+    .accesskey = Д
+cfr-cookiebanner-reject-button-variant-2 = Не сада
+    .accesskey = Н
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Ту смо за вас
+july-jam-body = У просеку, { -brand-short-name } месечно блокира преко 3,000 елемената за праћење и пружа вам безбедан и брз приступ интернету.
+july-jam-set-default-primary = Отвори моје везе са { -brand-short-name }-ом

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Обриши податке
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Обриши податке
+    .style = min-width: 35em
+
 clear-site-data-description = Чишћење свих колачића и података сајтова које { -brand-short-name } складишти вас може одјавити са веб сајтова и може уклонити ванмрежни веб садржај. Чишћење кешираних података неће утицати на ваше пријаве.
 
 clear-site-data-close-key =

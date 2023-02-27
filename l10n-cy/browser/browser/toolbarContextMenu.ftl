@@ -23,13 +23,13 @@ toolbar-context-menu-select-all-tabs =
 toolbar-context-menu-reopen-closed-tabs =
     .label =
         { $tabCount ->
-            [1] Ail agor Tabiau wedi'u Cau
-            [zero] Ail agor Tabiau wedi'u Cau
-            [one] Ail agor Tab wedi'i Gau
-            [two] Ail agor Tabiau wedi'u Cau
-            [few] Ail agor Tabiau wedi'u Cau
-            [many] Ail agor Tabiau wedi'u Cau
-           *[other] Ail agor Tabiau wedi'u Cau
+            [1] Ailagor Tabiau wedi'u Cau
+            [zero] Ailagor Tabiau wedi'u Cau
+            [one] Ailagor Tab wedi'i Gau
+            [two] Ailagor Tabiau wedi'u Cau
+            [few] Ailagor Tabiau wedi'u Cau
+            [many] Ailagor Tabiau wedi'u Cau
+           *[other] Ailagor Tabiau wedi'u Cau
         }
     .accesskey = o
 toolbar-context-menu-manage-extension =
@@ -65,6 +65,11 @@ toolbar-context-menu-view-customize-toolbar =
 toolbar-context-menu-view-customize-toolbar-2 =
     .label = Cyfaddasu'r Bar Offer…
     .accesskey = O
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = Pinio i'r Bar Offer
+    .accesskey = P
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = Dangos Bob Tro
     .accesskey = D

@@ -130,15 +130,19 @@ addon-category-dictionary-title =
 addon-category-locale = Jeziki
 addon-category-locale-title =
     .title = Jeziki
-addon-category-available-updates = Nove posodobitve
+addon-category-available-updates = Razpoložljive posodobitve
 addon-category-available-updates-title =
-    .title = Nove posodobitve
+    .title = Razpoložljive posodobitve
 addon-category-recent-updates = Nedavne posodobitve
 addon-category-recent-updates-title =
     .title = Nedavne posodobitve
 addon-category-sitepermission = Dovoljenja strani
 addon-category-sitepermission-title =
     .title = Dovoljenja strani
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Dovoljenja za spletno mesto { $host }
 
 ## These are global warnings
 
@@ -187,7 +191,7 @@ addon-install-from-file = Namesti dodatek iz datoteke …
     .accesskey = I
 addon-install-from-file-dialog-title = Izberite dodatek za namestitev
 addon-install-from-file-filter-name = Dodatki
-addon-open-about-debugging = Dodatki za razhroščevanje
+addon-open-about-debugging = Razhroščevanje dodatkov
     .accesskey = D
 
 ## Extension shortcut management

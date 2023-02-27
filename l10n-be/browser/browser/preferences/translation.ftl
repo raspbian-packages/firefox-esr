@@ -6,6 +6,10 @@ translation-window =
     .title = Выключэнні - Пераклад
     .style = width: 36em
 
+translation-window2 =
+    .title = Выключэнні - Пераклад
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

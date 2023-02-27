@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Настройки на свързване
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Посредник за HTTP
     .accesskey = р
 connection-proxy-http-port = Порт
     .accesskey = П
-
 connection-proxy-https-sharing =
     .label = Същия посредник и за HTTPS
     .accesskey = С

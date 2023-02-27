@@ -6,6 +6,10 @@ containers-window-new =
     .title = نئے حامل کا اضافہ کریں
     .style = width: 45em
 
+containers-window-new2 =
+    .title = نئے حامل کا اضافہ کریں
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

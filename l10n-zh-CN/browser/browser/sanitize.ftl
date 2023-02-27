@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = 清除历史记录设置
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = 清除历史记录设置
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

@@ -5,6 +5,8 @@
 # Variables:
 #   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
 colorway-collection-expiry-label = Yn dod i ben { DATETIME($expiryDate, month: "long", day: "numeric") }
+# Document title, not shown in the UI but exposed through accessibility APIs
+colorways-modal-title = Dewiswch Eich Cyfuniad Lliw
 colorway-intensity-selector-label = Dwysedd
 colorway-intensity-soft = Meddal
 colorway-intensity-balanced = Cytbwys
@@ -12,7 +14,7 @@ colorway-intensity-balanced = Cytbwys
 # emphasized text.
 colorway-intensity-bold = Trwm
 # Label for the button to keep using the selected colorway in the browser
-colorway-closet-set-colorway-button = Gosod llwybr lliw
+colorway-closet-set-colorway-button = Gosod cyfuniad lliw
 colorway-closet-cancel-button = Diddymu
 colorway-homepage-reset-prompt = Gwnewch { -firefox-home-brand-name } yn gartref lliwgar i chi
 colorway-homepage-reset-success-message = { -firefox-home-brand-name } yw eich cartref nawr

@@ -36,6 +36,10 @@ vcard-n-suffix = Sufiks
 vcard-n-add-suffix =
     .title = Sufiks přidać
 
+# Nickname
+
+vcard-nickname = Přimjeno
+
 # Email vCard field
 
 vcard-email-header = E-mejlowe adresy
@@ -54,6 +58,10 @@ vcard-url-label = Websydło
 vcard-tel-header = Telefonowe čisła
 vcard-tel-add = Telefonowe čisło přidać
 vcard-tel-label = Telefonowe čisło
+# Or "Mobile"
+vcard-entry-type-cell = Mobilny telefon
+vcard-entry-type-fax = Faks
+vcard-entry-type-pager = Pager
 
 # TZ vCard field
 
@@ -62,7 +70,6 @@ vcard-tz-add = Časowe pasmo přidać
 
 # IMPP vCard field
 
-vcard-impp-header = Chatowe konta
 vcard-impp2-header = Hnydomne posrědkowanje powěsćow
 vcard-impp-add = Chatowe konto přidać
 vcard-impp-label = Chatowe konto
@@ -106,10 +113,26 @@ vcard-note-add = Přispomnjenku přidać
 vcard-org-header = Organizaciske kajkosće
 vcard-org-add = Organizaciske kajkosće přidać
 vcard-org-title = Titul
+vcard-org-title-input =
+    .title = Pozicija abo job
+    .placeholder = Titul joba
 vcard-org-role = Róla
+vcard-org-role-input =
+    .title = Funkcija abo róla, kotraž so we wěstej situaciji hraje
+    .placeholder = Róla w projekće
 vcard-org-org = Organizacija
+vcard-org-org-input =
+    .title = Mjeno organizacije
+    .placeholder = Mjeno předewzaća
+vcard-org-org-unit = Wotrjad
+vcard-org-org-unit-input =
+    .title = Mjeno organizaciskeje jednotki
+    .placeholder = Wotrjad
 
 # Custom properties
 
 vcard-custom-header = Swójske kajkosće
 vcard-custom-add = Swójske kajkosće přidać
+vcard-remove-button-title =
+    .title = Wotstronić
+vcard-remove-button = Wotstronić

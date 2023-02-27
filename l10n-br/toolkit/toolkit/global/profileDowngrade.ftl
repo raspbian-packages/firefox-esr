@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Lañset ho peus un handelv kozh eus { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Lañset ho peus un handelv kozh eus { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Krouiñ un aelad nevez
 

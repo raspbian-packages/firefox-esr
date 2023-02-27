@@ -21,9 +21,20 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = Alla adressböcker
 all-address-books = Alla adressböcker
+# Variables:
+# $name (String) - The name of the selected book/list.
+# $count (Number) - The number of contacts in the selected book/list.
+about-addressbook-card-count = Totalt antal kontakter i { $name }: { $count }
+# Variables:
+# $count (Number) - The number of contacts in all address books.
+about-addressbook-card-count-all = Totalt antal kontakter i alla adressböcker: { $count }
 about-addressbook-books-context-properties =
     .label = Egenskaper
+about-addressbook-books-context-edit-list =
+    .label = Redigera lista
 about-addressbook-books-context-synchronize =
     .label = Synkronisera
 about-addressbook-books-context-edit =
@@ -75,6 +86,8 @@ about-addressbook-horizontal-layout =
     .label = Växla till horisontell layout
 about-addressbook-vertical-layout =
     .label = Växla till vertikal layout
+about-addressbook-table-layout =
+    .label = Tabellayout
 
 ## Card column headers
 ## Each string is listed here twice, and the values should match.
@@ -85,6 +98,9 @@ about-addressbook-column-label-generatedname =
 about-addressbook-column-header-emailaddresses = E-postadresser
 about-addressbook-column-label-emailaddresses =
     .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-nickname = Smeknamn
+about-addressbook-column-label-nickname =
+    .label = { about-addressbook-column-header-nickname }
 about-addressbook-column-header-phonenumbers = Telefonnummer
 about-addressbook-column-label-phonenumbers =
     .label = { about-addressbook-column-header-phonenumbers }
@@ -167,10 +183,23 @@ about-addressbook-placeholder-no-search-results = Inga kontakter hittades
 
 ## Details
 
+# Variables:
+# $count (Number) - The number of selected items (will never be fewer than two)
+about-addressbook-selection-mixed-header = { $count } valda kontakter och listor
+# Variables:
+# $count (Number) - The number of selected contacts
+about-addressbook-selection-contacts-header = { $count } valda kontakter
+# Variables:
+# $count (Number) - The number of selected lists
+about-addressbook-selection-lists-header = { $count } valda listor
+about-addressbook-details-edit-photo =
+    .title = Redigera kontaktfoto
+about-addressbook-new-contact-header = Ny kontakt
 about-addressbook-prefer-display-name = Föredra visningsnamn framför meddelandehuvud
 about-addressbook-write-action-button = Skriv
 about-addressbook-event-action-button = Händelse
 about-addressbook-search-action-button = Sök
+about-addressbook-new-list-action-button = Ny lista
 about-addressbook-begin-edit-contact-button = Redigera
 about-addressbook-delete-edit-contact-button = Ta bort
 about-addressbook-cancel-edit-contact-button = Avbryt
@@ -180,10 +209,13 @@ about-addressbook-details-email-addresses-header = E-postadresser
 about-addressbook-details-phone-numbers-header = Telefonnummer
 about-addressbook-details-addresses-header = Adresser
 about-addressbook-details-notes-header = Anteckningar
+about-addressbook-details-impp-header = Snabbmeddelande
+about-addressbook-details-websites-header = Webbplatser
 about-addressbook-details-other-info-header = Annan information
 about-addressbook-entry-type-work = Arbete
 about-addressbook-entry-type-home = Hem
 about-addressbook-entry-type-fax = Fax
+# Or "Mobile"
 about-addressbook-entry-type-cell = Mobiltelefon
 about-addressbook-entry-type-pager = Personsökare
 about-addressbook-entry-name-birthday = Födelsedag
@@ -193,6 +225,10 @@ about-addressbook-entry-name-role = Roll
 about-addressbook-entry-name-organization = Organisation
 about-addressbook-entry-name-website = Webbplats
 about-addressbook-entry-name-time-zone = Tidszon
+about-addressbook-entry-name-custom1 = Anpassad 1
+about-addressbook-entry-name-custom2 = Anpassad 2
+about-addressbook-entry-name-custom3 = Anpassad 3
+about-addressbook-entry-name-custom4 = Anpassad 4
 about-addressbook-unsaved-changes-prompt-title = Osparade ändringar
 about-addressbook-unsaved-changes-prompt = Vill du spara dina ändringar innan du lämnar redigeringsvyn?
 
@@ -205,3 +241,7 @@ about-addressbook-photo-filepicker-title = Välj en bildfil
 about-addressbook-photo-discard = Ignorera befintligt foto
 about-addressbook-photo-cancel = Avbryt
 about-addressbook-photo-save = Spara
+
+# Keyboard shortcuts
+
+about-addressbook-new-contact-key = N

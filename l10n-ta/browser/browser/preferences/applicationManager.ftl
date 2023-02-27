@@ -6,6 +6,10 @@ app-manager-window =
     .title = பயன்பாட்டு விவரங்கள்
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = பயன்பாட்டு விவரங்கள்
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = நீக்கு
     .accesskey = ந

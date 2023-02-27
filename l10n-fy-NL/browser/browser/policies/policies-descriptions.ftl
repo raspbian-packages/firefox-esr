@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Foarkomme dat de brûker bepaalde befeiligingsyns
 policy-DisableSetAsDesktopBackground = De menuopdracht As buroblêdachtergrûn ynstelle foar ôfbyldingen útskeakelje.
 policy-DisableSystemAddonUpdate = Foarkomme dat de browser systeemadd-ons ynstallearret en bywurket.
 policy-DisableTelemetry = Telemetry útskeakelje.
+policy-DisableThirdPartyModuleBlocking = Foarkomme dat de brûker modulen fan tredden dy’t yn it { -brand-short-name }-proses ynjektearre wurde blokkearret
 policy-DisplayBookmarksToolbar = Standert de Blêdwizerarkbalke werjaan.
 policy-DisplayMenuBar = Standert de Menubalke werjaan.
 policy-DNSOverHTTPS = DNS oer HTTPS konfigurearje.

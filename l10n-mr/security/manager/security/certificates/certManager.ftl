@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = CA प्रमाणपत्र विश्वासर्ह सेटींग्स संपादित करा
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA प्रमाणपत्र विश्वासर्ह सेटींग्स संपादित करा
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = विश्वासर्ह सेटींग्स संपादित करा:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = प्रमाणपत्र नष्ट करा
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = प्रमाणपत्र नष्ट करा
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = प्रमाणपत्राचे नाव
@@ -173,9 +181,8 @@ delete-email-cert-impact = ईमेल प्रमाणपत्र काढ
 cert-with-serial =
     .value = प्रमाणपत्राचा सिरीयल क्रमांक: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

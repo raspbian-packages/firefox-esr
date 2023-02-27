@@ -197,6 +197,8 @@ preferences-web-appearance-choice-tooltip-browser =
     .title = Pśiměŕśo swóje drastwowe nastajenja { -brand-short-name } za slězyny a wopśimjeśe websedłow.
 preferences-web-appearance-choice-tooltip-system =
     .title = Pśiměŕśo swóje systemowe nastajenja za slězyny a wopśimjeśe websedłow.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Změńśo awtomatiski slězyny websedła a wopśimjeśe na zakłaźe swójich systemowych nastajenjow a drastwy { -brand-short-name }.
 preferences-web-appearance-choice-tooltip-light =
     .title = Swětły naglěd za slězyny websedłow a wopśimjeśe wužywaś.
 preferences-web-appearance-choice-tooltip-dark =
@@ -725,6 +727,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = s
     .buttonlabelextra2 = Źěliś
     .buttonaccesskeyextra2 = l
+sync-choose-what-to-sync-dialog3 =
+    .title = Wubjeŕśo, což ma se synchronizěrowaś
+    .style = min-width: 36em;
+    .buttonlabelaccept = Změny składowaś
+    .buttonaccesskeyaccept = s
+    .buttonlabelextra2 = Źěliś
+    .buttonaccesskeyextra2 = l
 sync-engine-bookmarks =
     .label = Cytańske znamjenja
     .accesskey = C
@@ -793,6 +802,7 @@ forms-breach-alerts =
     .label = Warnowanja za gronidła zranjonych websedłow
     .accesskey = z
 forms-breach-alerts-learn-more-link = Dalšne informacije
+relay-integration-learn-more-link = Dalšne informacije
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Pśizjawjenja a gronidła awtomatiski zapisaś
@@ -995,6 +1005,9 @@ content-blocking-fingerprinters = Palcowe wótśišće
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Testujśo našu nejmócnjejšu funkciju priwatnosći wšych casow
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Dopołny cookiejowy šćit cookieje k sedłoju, na kótaremž sćo, aby pśeslědowaki njemógli je wužywaś, aby was na rozdźělnych sedłach slědowali.
 content-blocking-etp-standard-tcp-rollout-learn-more = Dalšne informacije
@@ -1107,6 +1120,7 @@ collection-health-report-disabled = Datowe rozpšawjenje jo znjemóžnjone za to
 collection-backlogged-crash-reports-with-link = { -brand-short-name } dowóliś, aby se njepósłane wowaleńske rozpšawy we wašom mjenju pósłali <a data-l10n-name="crash-reports-link">Dalšne informacije</a>
     .accesskey = d
 privacy-segmentation-section-header = Nowe funkcije, kótarež wašo pśeglědowanje pólěpšaju
+privacy-segmentation-section-description = Gaž funkcije póbitujomy, kótarež waše daty wužywaju, aby my wam wěcej wósobinske dožywjenje bitowali:
 privacy-segmentation-radio-off =
     .label = Dopórucenja { -brand-product-name } wužywaś
 privacy-segmentation-radio-on =

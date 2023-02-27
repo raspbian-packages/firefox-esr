@@ -6,15 +6,15 @@
 ## App Menu
 
 appmenuitem-banner-update-downloading =
-    .label = Sťahuje sa aktualizácia pre { -brand-shorter-name }
+    .label = Sťahuje sa aktualizácia { -brand-shorter-name(case: "gen") }
 appmenuitem-banner-update-available =
-    .label = Je dostupná aktualizácia — stiahnuť
+    .label = K dispozícii je aktualizácia — stiahnuť
 appmenuitem-banner-update-manual =
-    .label = Je dostupná aktualizácia — stiahnuť
+    .label = K dispozícii je aktualizácia — stiahnuť
 appmenuitem-banner-update-unsupported =
     .label = Nebolo možné aktualizovať — nekompatibilný systém
 appmenuitem-banner-update-restart =
-    .label = Je dostupná aktualizácia — reštartovať
+    .label = K dispozícii je aktualizácia — reštartovať
 appmenuitem-new-tab =
     .label = Nová karta
 appmenuitem-new-window =
@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = Nástroj na profilovanie zaznamenáva profil
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Zobraziť ďalšie informácie
 profiler-popup-description-title =

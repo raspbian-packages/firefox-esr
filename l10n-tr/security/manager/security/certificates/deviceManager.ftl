@@ -9,6 +9,10 @@ devmgr =
     .title = Aygıt yöneticisi
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Aygıt yöneticisi
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Güvenlik Modülleri ve Aygıtları
 

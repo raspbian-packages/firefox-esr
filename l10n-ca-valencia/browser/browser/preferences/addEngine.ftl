@@ -6,6 +6,10 @@ add-engine-window =
     .title = Afig un motor de cerca
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Afig un motor de cerca
+    .style = min-width: 32em;
+
 add-engine-button = Afig un motor personalitzat
 
 add-engine-name = Nom del motor de cerca

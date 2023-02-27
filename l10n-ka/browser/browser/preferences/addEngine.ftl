@@ -6,6 +6,10 @@ add-engine-window =
     .title = საძიებო სისტემის დამატება
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = საძიებო სისტემის დამატება
+    .style = min-width: 32em;
+
 add-engine-button = მორგებული საძიებოს დამატება
 
 add-engine-name = საძიებო სისტემის სახელი

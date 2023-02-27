@@ -15,6 +15,7 @@ vcard-entry-type-label = Type
 vcard-entry-type-home = Heim
 vcard-entry-type-work = Arbeid
 vcard-entry-type-none = Ingen
+vcard-entry-type-custom = Tilpassa
 
 # N vCard field
 
@@ -34,6 +35,10 @@ vcard-n-add-lastname =
 vcard-n-suffix = Suffiks
 vcard-n-add-suffix =
     .title = Legg til suffiks
+
+# Nickname
+
+vcard-nickname = Kallenamn
 
 # Email vCard field
 
@@ -61,9 +66,10 @@ vcard-tz-add = Legg til tidssone
 
 # IMPP vCard field
 
-vcard-impp-header = Nettpratkontoar
 vcard-impp-add = Legg til nettpratkonto
 vcard-impp-label = Nettpratkonto
+vcard-impp-option-other = Anna
+vcard-impp-input-label = URI
 
 # BDAY and ANNIVERSARY vCard field
 

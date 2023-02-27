@@ -6,6 +6,10 @@ translation-window =
     .title = Taq man relik ta - Tzalq'omanïk
     .style = width: 36em
 
+translation-window2 =
+    .title = Taq man relik ta - Tzalq'omanïk
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

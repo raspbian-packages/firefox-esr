@@ -334,7 +334,7 @@ main-context-menu-use-saved-password =
 ##
 
 main-context-menu-suggest-strong-password =
-    .label = Sugerir contraseña segura ...
+    .label = Sugerir contraseña segura…
     .accesskey = S
 main-context-menu-manage-logins2 =
     .label = Administrar ingresos

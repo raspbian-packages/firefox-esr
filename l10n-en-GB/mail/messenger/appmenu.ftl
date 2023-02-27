@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Synchronise
+appmenu-signin-panel =
+    .label = Sign in to Sync
+    .accesskey = i
+appmenu-sync-sync =
+    .value = Account Sync
+    .accesskey = A
+appmenu-sync-manage =
+    .value = Manage Account
+    .accesskey = M
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = Synchronise Now
+    .accesskey = N
+appmenu-sync-settings =
+    .label = Sync Settings
+    .accesskey = S
+appmenu-sync-sign-out =
+    .label = Sign Out…
+    .accesskey = O
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -66,10 +91,35 @@ appmenu-create-contact =
     .label = Contact
     .accesskey = C
 
+## Open
+
+appmenu-open-file-panel =
+    .label = Open from File
+    .accesskey = O
+appmenu-open-file-panel-title =
+    .title = Open from File
+appmenu-open-message =
+    .label = Message…
+    .accesskey = M
+appmenu-open-calendar =
+    .label = Calendar…
+    .accesskey = C
+
 ## View / Layout
 
+appmenu-view-panel-title =
+    .title = View
+appmenu-view-panel =
+    .label = View
+    .accesskey = V
 appmenu-font-size-value = Font Size
 appmenu-mail-uidensity-value = Density
+appmenu-uidensity-compact =
+    .tooltiptext = Compact
+appmenu-uidensity-default =
+    .tooltiptext = Default
+appmenu-uidensity-relaxed =
+    .tooltiptext = Relaxed
 appmenuitem-font-size-enlarge =
     .tooltiptext = Increase Font Size
 appmenuitem-font-size-reduce =
@@ -143,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = About { -brand-short-name }
     .accesskey = A
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Downloading { -brand-shorter-name } update
+appmenuitem-banner-update-available =
+    .label = Update available — download now
+appmenuitem-banner-update-manual =
+    .label = Update available — download now
+appmenuitem-banner-update-unsupported =
+    .label = Unable to update — system incompatible
+appmenuitem-banner-update-restart =
+    .label = Update available — restart now

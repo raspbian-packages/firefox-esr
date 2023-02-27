@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Akkurat nå
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Synkroniserte faner
 firefoxview-tabpickup-description = Åpne sider fra andre enheter.
-firefoxview-tabpickup-recenttabs-description = Listen over siste faner vil vises her
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue } % fullført
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Prøv igjen
 firefoxview-tabpickup-sync-disconnected-header = Slå på synkronisering for å fortsette
 firefoxview-tabpickup-sync-disconnected-description = For å få tilgang til fanene dine må du aktivere synkronisering i { -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Slå på synkronisering i innstillingene
+firefoxview-tabpickup-password-locked-header = Skriv inn hovedpassordet ditt for å vise faner
+firefoxview-tabpickup-password-locked-description = For å få tilgang til fanene dine må du skrive inn hovedpassordet for { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Les mer
+firefoxview-tabpickup-password-locked-primarybutton = Skriv inn hovedpassordet
+firefoxview-tabpickup-signed-out-header = Logg inn for å koble til på nytt
+firefoxview-tabpickup-signed-out-description = For å koble til igjen og få tak i fanene dine, logg in på din { -fxaccount-brand-name }.
+firefoxview-tabpickup-signed-out-primarybutton = Logg inn
 firefoxview-tabpickup-syncing = Vi synkroniserer fanene dine, det tar bare et øyeblikk.
 firefoxview-mobile-promo-header = Åpne faner fra telefonen eller nettbrettet
 firefoxview-mobile-promo-description = For å se de siste mobilfanene dine, logg på { -brand-product-name } på iOS eller Android.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Få { -brand-product-name } for mobil
 firefoxview-mobile-confirmation-header = 🎉 Alt klart!
 firefoxview-mobile-confirmation-description = Nå kan du hente { -brand-product-name }-fanene fra nettbrettet eller telefonen.
 firefoxview-closed-tabs-title = Nylig lukket
-firefoxview-closed-tabs-description = Åpne sider du har lukket på denne enheten på nytt.
-firefoxview-closed-tabs-placeholder = <strong>Ingen nylig lukkede sider</strong><br/>Frykt ikke å miste en lukket fane igjen. Du kan alltid hente den her.
+firefoxview-closed-tabs-description2 = Åpne på nytt sider du har lukket i dette vinduet.
+firefoxview-closed-tabs-placeholder-header = Ingen nylig lukkede faner
+firefoxview-closed-tabs-placeholder-body = Når du lukker en fane i dette vinduet, kan du hente den herfra.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Avvis { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Sist aktiv
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Endre fargesammensetting
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Ingenting å se ennå</strong><br/>Neste gang du åpner en side i { -brand-product-name } på en annen enhet, får du på magisk vis tilgang til den her.
+firefoxview-synced-tabs-placeholder-header = Ingenting å se ennå
+firefoxview-synced-tabs-placeholder-body = Neste gang du åpner en side i { -brand-product-name } på en annen enhet, kan du hente den her.
 firefoxview-collapse-button-show =
     .title = Vis liste
 firefoxview-collapse-button-hide =

@@ -6,12 +6,22 @@ create-profile-window =
     .title = Profiili loomise nõustaja
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Profiili loomise nõustaja
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Sissejuhatus
        *[other] { create-profile-window.title } tervitab
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Sissejuhatus
+       *[other] { create-profile-window2.title } tervitab
     }
 
 profile-creation-explanation-1 = { -brand-short-name } säilitab teavet sinu kasutajasätete ja eelistuste kohta isikliku profiili kujul.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Kokkuvõte
        *[other] { create-profile-window.title } lõpetas
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Kokkuvõte
+       *[other] { create-profile-window2.title } lõpetas
     }
 
 profile-creation-intro = Profiile on võimalik eristada nime järgi. Võid kasutada siin pakutavat nime või kirjutada uue nime.

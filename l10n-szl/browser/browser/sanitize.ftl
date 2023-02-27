@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Sztalōnki pucowanio historyje
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Sztalōnki pucowanio historyje
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

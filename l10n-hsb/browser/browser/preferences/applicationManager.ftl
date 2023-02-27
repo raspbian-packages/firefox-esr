@@ -6,6 +6,10 @@ app-manager-window =
     .title = Podrobnosće nałoženja
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Podrobnosće nałoženja
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Wotstronić
     .accesskey = W

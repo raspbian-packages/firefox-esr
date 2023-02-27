@@ -6,6 +6,10 @@ app-manager-window =
     .title = Detalii privind aplicația
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Detalii privind aplicația
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Elimină
     .accesskey = R

@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } Nabigatze pribatua
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } nabigatze pribatua
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Lortu laguntza
 urlbar-search-tips-confirm = Ados, ulertuta
+urlbar-search-tips-confirm-short = Ulertuta
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Aholkua:
+urlbar-result-menu-button =
+    .title = Ireki menua
+urlbar-result-menu-remove-from-history =
+    .label = Kendu historiatik
+    .accesskey = K
+urlbar-result-menu-tip-get-help =
+    .label = Lortu laguntza
+    .accesskey = L
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Gutxiago idatzi, gehiago aurkitu: bilatu { $engineName } erabiliz helbide-barratik zuzenean.
 urlbar-search-tips-redirect-2 = Hasi zure bilaketa helbide-barran { $engineName } bilatzailearen eta zure nabigazio-historialeko proposamenak ikusteko
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Bilaketak egitea sinpleagoa da orain. Saiatu zure bilaketa zehatzagoa egiten helbide-barran. Honen ordez URLa erakusteko, zoaz ezarpenetako 'Bilaketa' atalera.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Hautatu lasterbide hau behar duzuna azkarrago bilatzeko.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Ekintzak ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Ikusi gehigarriak
-quickactions-cmd-addons = gehigarriak, hedapenak, itxurak
 quickactions-cmd-addons2 = gehigarriak
 # Opens the bookmarks library window
-quickactions-bookmarks = Ikusi laster-markak
+quickactions-bookmarks2 = Kudeatu laster-markak
 quickactions-cmd-bookmarks = laster-markak
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Garbitu historia
 quickactions-cmd-clearhistory = garbitu historia
 # Opens about:downloads page
-quickactions-downloads = Ireki deskargak
+quickactions-downloads2 = Ikusi deskargak
 quickactions-cmd-downloads = deskargak
 # Opens about:addons page in the extensions section
 quickactions-extensions = Kudeatu hedapenak
 quickactions-cmd-extensions = hedapenak
 # Opens the devtools web inspector
-quickactions-inspector = Ireki ikustailea
+quickactions-inspector2 = Ireki garatzaile-tresnak
 quickactions-cmd-inspector = ikuskatzailea, garatzaile-tresnak
 # Opens about:logins
-quickactions-logins = Ikusi saio-hasierak
+quickactions-logins2 = Kudeatu pasahitzak
 quickactions-cmd-logins = saio-hasierak, pasahitzak
 # Opens about:addons page in the plugins section
 quickactions-plugins = Kudeatu pluginak
 quickactions-cmd-plugins = pluginak
 # Opens the print dialog
-quickactions-print = Inprimatu
+quickactions-print2 = Inprimatu orria
 quickactions-cmd-print = inprimatu
 # Opens a new private browsing window
-quickactions-private = Ireki nabigatze pribatuko leihoa
+quickactions-private2 = Ireki leiho pribatua
 quickactions-cmd-private = nabigatze pribatua
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Biziberritu { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = berritu
 quickactions-restart = Berrabiarazi { -brand-short-name }
 quickactions-cmd-restart = berrabiarazi
 # Opens the screenshot tool
-quickactions-screenshot2 = Hartu pantaila-argazkia
+quickactions-screenshot3 = Hartu pantaila-argazkia
 quickactions-cmd-screenshot = pantaila-argazkia
 # Opens about:preferences
-quickactions-settings = Ireki ezarpenak
+quickactions-settings2 = Kudeatu ezarpenak
 quickactions-cmd-settings = ezarpenak, hobespenak, aukerak
 # Opens about:addons page in the themes section
 quickactions-themes = Kudeatu itxurak
@@ -323,8 +332,11 @@ quickactions-cmd-themes = itxurak
 quickactions-update = Eguneratu { -brand-short-name }
 quickactions-cmd-update = eguneratu
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Ikusi iturburua
+quickactions-viewsource2 = Ikusi orriaren iturburua
 quickactions-cmd-viewsource = ikusi iturburua, iturburua
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Ekintza bizkorrei buruzko argibide gehiago
 
 ## Bookmark Panel
 
@@ -482,6 +494,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofonoa
 popup-select-speaker-icon =
     .tooltiptext = Bozgorailuak
+popup-select-window-or-screen =
+    .label = Leiho edo pantaila:
+    .accesskey = L
 popup-all-windows-shared = Zure pantailan ikusgai dauden leiho guztiak partekatuko dira.
 popup-screen-sharing-block =
     .label = Blokeatu
@@ -503,6 +518,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = F12 lasterbidea erabiltzeko, ireki lehenik garatzaile-tresnak 'Web garapena' menutik.
+enable-devtools-popup-description2 = F12 lasterbidea erabiltzeko, ireki lehenik garatzaile-tresnak 'Nabigatzailearen tresnak' menutik.
 
 ## URL Bar
 
@@ -634,6 +650,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Ekintza bizkorrak
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Sartu irakurtzeko ikuspegian
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Irten irakurtzeko ikuspegitik
 
 ## Full Screen and Pointer Lock UI
 
@@ -911,3 +936,29 @@ private-browsing-indicator-label = Nabigatze pribatua
 unified-extensions-button =
     .label = Hedapenak
     .tooltiptext = Hedapenak
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Hedapenak
+    .tooltiptext =
+        Hedapenak
+        Baimenak behar dira
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name }(e)k orri hau blokeatu du automatikoki ez berritzeko.
+refresh-blocked-redirect-label = { -brand-short-name }(e)k orri hau blokeatu du automatikoki beste orri batetara ez joateko.
+refresh-blocked-allow =
+    .label = Baimendu
+    .accesskey = B
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name }(e)k zure benetako helbide elektronikoa maskaratzen du, datuen inguruko urratze eta spametik babesten laguntzeko.
+firefox-relay-offer-how-we-integrate = Jarraitzearekin bat, { -relay-brand-short-name } helbide elektroniko maskara berriak sortu ahal izango dituzu zure { -brand-shorter-name } pasahitz-kudeatzailetik.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = <strong>{ $sitename }</strong> guneko mezu elektroniko guztiak birbidaliko ditugu <strong>{ $useremail }</strong> helbidera.

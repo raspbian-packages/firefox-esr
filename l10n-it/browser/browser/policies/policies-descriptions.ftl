@@ -111,6 +111,7 @@ policy-ExtensionSettings = Gestisci tutti gli aspetti connessi all’installazio
 policy-ExtensionUpdate = Attiva o disattiva l’aggiornamento automatico delle estensioni.
 
 policy-FirefoxHome = Configura Firefox Home.
+
 policy-FirefoxHome2 = Configura { -firefox-home-brand-name }.
 
 policy-FlashPlugin = Consenti o nega l’utilizzo del plugin Flash.
@@ -194,6 +195,8 @@ policy-SSLVersionMax = Imposta la versione massima di SSL.
 policy-SSLVersionMin = Imposta la versione minima di SSL.
 
 policy-StartDownloadsInTempDirectory = Forza l’avvio dei download in una cartella temporanea locale invece della cartella predefinita per i download.
+
+policy-DisableThirdPartyModuleBlocking = Impedisci all’utente di bloccare moduli di terze parti che vengono inseriti nel processo di { -brand-short-name }.
 
 policy-SupportMenu = Aggiungi una voce di menu personalizzata nel menu Aiuto.
 

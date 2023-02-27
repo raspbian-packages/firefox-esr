@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = வலைப்பக்க மொழி அமைவுகள்
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = வலைப்பக்க மொழி அமைவுகள்
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } மொழி அமைவுகள்
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } மொழி அமைவுகள்
+    .style = min-width: 40em
 
 browser-languages-search = மேலும் மொழிகளைத் தேடுக ...
 

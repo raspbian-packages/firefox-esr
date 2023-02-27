@@ -47,7 +47,7 @@ app-basics-update-channel = Канал за ажурирање
 # as in "Folder for updates". "Update" is a noun, not a verb.
 app-basics-update-dir = Фасцикла за ажурирања
 app-basics-update-history = Историја ажурирања
-app-basics-show-update-history = Прикажи историјат ажурирања
+app-basics-show-update-history = Прикажи историју ажурирања
 # Represents the path to the binary used to start the application.
 app-basics-binary = Бинарна датотека програма
 app-basics-profile-dir = Фасцикла профила
@@ -108,6 +108,14 @@ graphics-window-protocol = Протокол прозора
 # Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
 graphics-desktop-environment = Радно окружење
 place-database-title = База података локација
+place-database-stats = Статистика
+place-database-stats-show = Прикажи статистику
+place-database-stats-hide = Сакриј статистику
+place-database-stats-count = Укупно
+place-database-stats-size-kib = Величина (KiB)
+place-database-stats-size-perc = Величина (%)
+place-database-stats-efficiency-perc = Ефикасност (%)
+place-database-stats-sequentiality-perc = Секвенцијалност (%)
 place-database-integrity = Интегритет
 place-database-verify-integrity = Потврди интегритет
 a11y-title = Приступачност

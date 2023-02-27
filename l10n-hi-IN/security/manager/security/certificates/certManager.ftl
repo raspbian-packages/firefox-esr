@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = CA प्रमाणपत्र ट्रस्ट जमावट को संपादित करें
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA प्रमाणपत्र ट्रस्ट जमावट को संपादित करें
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = ट्रस्ट जमावट संपादित करें:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = प्रमाणपत्र मिटायें
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = प्रमाणपत्र मिटायें
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = होस्ट

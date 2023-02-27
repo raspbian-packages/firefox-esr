@@ -6,6 +6,10 @@ add-engine-window =
     .title = Lisää hakukone
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Lisää hakukone
+    .style = min-width: 32em;
+
 add-engine-button = Lisää mukautettu hakukone
 
 add-engine-name = Hakukoneen nimi

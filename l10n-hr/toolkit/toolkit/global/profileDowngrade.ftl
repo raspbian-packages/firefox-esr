@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Pokrenuta je starija verzija { -brand-product-name(case: "gen") }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Pokrenuta je starija verzija { -brand-product-name(case: "gen") }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Stvori novi profil
 

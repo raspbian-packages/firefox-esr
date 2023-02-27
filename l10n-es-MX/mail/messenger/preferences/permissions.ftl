@@ -5,6 +5,8 @@
 permissions-reminder-window =
     .title = Excepciones
     .style = width: 45em;
+permissions-reminder-window2 =
+    .title = Excepciones
 permission-preferences-close-window =
     .key = w
 website-address-label =

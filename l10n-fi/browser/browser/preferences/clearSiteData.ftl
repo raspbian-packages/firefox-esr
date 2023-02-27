@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Tyhjennä tiedot
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Tyhjennä tiedot
+    .style = min-width: 35em
+
 clear-site-data-description = Jos poistat kaikki evästeet ja sivuston { -brand-short-name }iin tallentamat tiedot, sinut saatetaan kirjata ulos sivustoilta ja yhteydetöntä tilaa varten tallennettu sisältö saatetaan poistaa. Välimuistissa olevan sisällön poistaminen ei kirjaa sinua ulos sivustoilta.
 
 clear-site-data-close-key =

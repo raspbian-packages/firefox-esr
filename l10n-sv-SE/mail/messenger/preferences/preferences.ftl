@@ -463,6 +463,10 @@ mark-read-no-delay =
     .label = Omedelbart vid visning
     .accesskey = O
 
+view-attachments-inline =
+    .label = Visa bilagor inline
+    .accesskey = V
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -897,8 +901,6 @@ no-preview-description = Det här temat är inte giltigt eller är för närvara
 chat-variant-label =
     .value = Variant:
     .accesskey = V
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

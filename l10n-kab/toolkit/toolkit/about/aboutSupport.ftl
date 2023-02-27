@@ -107,11 +107,18 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Aɣmis n ugemmen
 graphics-crash-guards-title = Timhalin ur nermid ara n uɛessas n uɣelluy
 graphics-workarounds-title = Tifrat n usellek
+graphics-device-pixel-ratios = Ifmiḍiyen n yipiksilen n yibenk n yisfuyla
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Aneggaf n usfaylu
 # Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
 graphics-desktop-environment = Tawennaḍt n tnarit
 place-database-title = Taffa n isefka n idigen
+place-database-stats = Tidaddanin
+place-database-stats-show = Sken tiddadanin
+place-database-stats-hide = Ffer tidaddanin
+place-database-stats-count = Amḍan
+place-database-stats-size-kib = Teɣzi (KiB)
+place-database-stats-size-perc = Teɣzi (%)
 place-database-integrity = Timmad
 place-database-verify-integrity = Senqed timmad
 a11y-title = Tuffart
@@ -304,6 +311,7 @@ can-sandbox-media = Amsersu i yizegrar aget-allalen n telɣut
 content-sandbox-level = Aswir n usersu n ukala n ugbur
 effective-content-sandbox-level = Aswir n usersu n ukala n ugbur
 content-win32k-lockdown-state = Addad n usekkeṛ Win32k i ukala n ugbur
+support-sandbox-gpu-level = Aswir n usersu n ukala n GPU
 sandbox-proc-type-content = agbur
 sandbox-proc-type-file = agbur n ufaylu
 sandbox-proc-type-media-plugin = asiɣzef n wallen n teywalt
@@ -371,7 +379,7 @@ support-printing-prefs-value = Azal
 support-remote-experiments-title = Tirmitin tinmeggagin
 support-remote-experiments-name = Isem
 support-remote-experiments-branch = Anfal armitan
-support-remote-experiments-see-about-studies = Wali <a data-l10n-name="support-about-studies-link">about:studies</a> i wugar n telɣut, akked ɣef wamek </a>ad tsenseḍ ikayaden udmawanen neɣ amek ad tsenseḍ { -brand-short-name } seg uselkem n wanaw-a n tirmit sya ɣer sadt.
+support-remote-experiments-see-about-studies = Wali <a data-l10n-name="support-about-studies-link">about:studies</a> i wugar n telɣut, akked ɣef wamek ad tsenseḍ ikayaden udmawanen neɣ amek ad tsenseḍ { -brand-short-name } seg uselkem n wanaw-a n tirmit sya ɣer sadt.
 support-remote-features-title = Timahilin tinmeggayin
 support-remote-features-name = Isem
 support-remote-features-status = Addad

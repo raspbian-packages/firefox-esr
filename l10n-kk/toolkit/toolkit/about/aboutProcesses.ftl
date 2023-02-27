@@ -51,7 +51,6 @@ about-processes-socket-process = Желі ({ $pid })
 about-processes-remote-sandbox-broker-process = Құмсалғыштың қашықтағы брокері ({ $pid })
 about-processes-fork-server-process = Форк-сервері ({ $pid })
 about-processes-preallocated-process = Алдын-ала бөлінген ({ $pid })
-
 about-processes-utility-process = Утилита ({ $pid })
 
 # Unknown process names
@@ -124,9 +123,15 @@ about-processes-frame-name-one = Ішкі фрейм: { $url }
 #   $shortUrl (String) The shared prefix for the subframes in the group.
 about-processes-frame-name-many = Ішкі фреймдер ({ $number }): { $shortUrl }
 
-# Utility process actor names
+## Utility process actor names
+
 about-processes-utility-actor-unknown = Белгісіз қатысушы
 about-processes-utility-actor-audio-decoder = Аудио декодер
+
+about-processes-utility-actor-audio-decoder-generic = Әмбебап аудиодекодері
+about-processes-utility-actor-audio-decoder-applemedia = Apple Media аудиодекодері
+about-processes-utility-actor-audio-decoder-wmf = Windows Media Framework аудио декодері
+about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
 
 ## Displaying CPU (percentage and total)
 ## Variables:

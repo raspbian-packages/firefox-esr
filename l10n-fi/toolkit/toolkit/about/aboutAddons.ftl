@@ -139,6 +139,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Sivuston käyttöoikeudet
 addon-category-sitepermission-title =
     .title = Sivuston käyttöoikeudet
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Sivuston { $host } oikeudet
 
 ## These are global warnings
 

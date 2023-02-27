@@ -154,6 +154,16 @@ downloading-file-opens-in-minutes = Avataan { $minutes } min kuluttua…
 downloading-file-opens-in-minutes-and-seconds = Avataan { $minutes } min { $seconds } s kuluttua…
 downloading-file-opens-in-seconds = Avataan { $seconds } s kuluttua…
 downloading-file-opens-in-some-time = Avataan latauksen valmistuttua…
+downloading-file-opens-in-hours-and-minutes-2 =
+    .value = Avataan { $hours } t { $minutes } min kuluttua…
+downloading-file-opens-in-minutes-2 =
+    .value = Avataan { $minutes } min kuluttua…
+downloading-file-opens-in-minutes-and-seconds-2 =
+    .value = Avataan { $minutes } min { $seconds } s kuluttua…
+downloading-file-opens-in-seconds-2 =
+    .value = Avataan { $seconds } s kuluttua…
+downloading-file-opens-in-some-time-2 =
+    .value = Avataan latauksen valmistuttua…
 downloading-file-click-to-open =
     .value = Avaa kun valmistuu
 
@@ -212,3 +222,17 @@ downloads-more-downloading =
         [one] { $count } tiedosto lisää latautumassa
        *[other] { $count } tiedostoa lisää latautumassa
     }
+
+## Download errors
+
+downloads-error-alert-title = Latausvirhe
+# Variables:
+#   $extension (String): the name of the blocking extension.
+downloads-error-blocked-by = Tätä latausta ei voi tallentaa, koska laajennus { $extension } estää sen.
+# Used when the name of the blocking extension is unavailable.
+downloads-error-extension = Tätä latausta ei voi tallentaa, koska laajennus estää sen.
+# Line breaks in this message are meaningful, and should be maintained.
+downloads-error-generic =
+    Latauksen tallennus ei onnistunut tuntemattomasta syystä.
+    
+    Yritä uudestaan.

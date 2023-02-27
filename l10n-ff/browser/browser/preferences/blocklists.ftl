@@ -6,6 +6,10 @@ blocklist-window =
     .title = Doggi Daaƴol
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Doggi Daaƴol
+    .style = min-width: 55em
+
 blocklist-description = Suɓo doggol { -brand-short-name } ina walla e daaƴde ñukkinde ceŋiiɗe. Totti doggi ɗi ko <a data-l10n-name="disconnect-link" title="Disconnect"> Seŋto</a>
 blocklist-close-key =
     .key = w

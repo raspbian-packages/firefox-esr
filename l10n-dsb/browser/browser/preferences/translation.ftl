@@ -6,6 +6,10 @@ translation-window =
     .title = Wuwześa - Pśełožowanje
     .style = width: 36em
 
+translation-window2 =
+    .title = Wuwześa - Pśełožowanje
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

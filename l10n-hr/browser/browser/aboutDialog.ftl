@@ -19,10 +19,12 @@ update-failed = Aktualiziranje nije uspjelo. <label data-l10n-name="failed-link"
 update-failed-main = Aktualiziranje nije uspjelo. <a data-l10n-name="failed-link-main">Preuzmi najnoviju verziju</a>
 update-adminDisabled = Dopune je deaktivirao tvoj administrator sustava
 update-noUpdatesFound = Koristiš najnoviji { -brand-short-name }
+aboutdialog-update-checking-failed = Neuspjelo traženje novih verzija.
 update-otherInstanceHandlingUpdates = { -brand-short-name } nadograđuje jedna druga instanca
 update-manual = Nove verzije su dostupne na <label data-l10n-name="manual-link"/>
 update-unsupported = Na ovom sustavu više ne možeš nadograđivati. <label data-l10n-name="unsupported-link">Saznaj više</label>
 update-restarting = Ponovno pokretanje…
+update-internal-error = Neuspjelo traženje novih verzija zbog interne greške. Nove verzije su dostupne na <label data-l10n-name="manual-link"/>
 channel-description = Trenutačno se nalaziš na <label data-l10n-name="current-channel"></label> kanalu za aktualiziranje.
 warningDesc-version = { -brand-short-name } je eksperimentalna verzija i može biti nestabilna.
 aboutdialog-help-user = Pomoć za { -brand-product-name }

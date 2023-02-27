@@ -141,6 +141,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Sedłowe pšawa
 addon-category-sitepermission-title =
     .title = Sedłowe pšawa
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Sedłowe pšawa za { $host }
 
 ## These are global warnings
 
@@ -288,10 +292,6 @@ theme-monochromatic-heading = Barwowe kombinacije
 theme-monochromatic-subheading = Žywe nowe barwowe kombinacije z { -brand-product-name }. Za wobgranicowany cas k dispoziciji.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Barwowe kombinacije wopytowaś
-colorway-collection-independent-voices-subheading = Dajśo { -brand-short-name } se wěcej ako wy cuś.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Płaśiwy do { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Barwowu kombinaciju změniś
 # Variables:

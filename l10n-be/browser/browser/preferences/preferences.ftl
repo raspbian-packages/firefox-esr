@@ -48,7 +48,7 @@ pane-experimental-reset =
     .label = Аднавіць прадвызначаныя
     .accesskey = А
 help-button-label = Падтрымка { -brand-short-name }
-addons-button-label = Пашырэнні & Тэмы
+addons-button-label = Пашырэнні і тэмы
 focus-search =
     .key = f
 close-button =
@@ -99,7 +99,7 @@ extension-controlled-enable = Каб уключыць пашырэнне, зай
 
 search-results-header = Вынікі пошуку
 # `<span data-l10n-name="query"></span>` will be replaced by the search term.
-search-results-empty-message2 = Выбачайце! У перавагах няма вынікаў для “<span data-l10n-name="query"></span>”.
+search-results-empty-message2 = Выбачайце! У наладах няма вынікаў для “<span data-l10n-name="query"></span>”.
 search-results-help-link = Патрэбна дапамога? Наведайце <a data-l10n-name="url">Падтрымка { -brand-short-name }</a>
 
 ## General Section
@@ -142,7 +142,7 @@ warn-on-open-many-tabs =
     .label = Папярэджваць, калі адкрыццё некалькіх картак можа запаволіць { -brand-short-name }
     .accesskey = в
 switch-to-new-tabs =
-    .label = Пры адкрыцці спасылкі, выявы ці медыя ў новай картцы адразу пераключацца на яе
+    .label = Па адкрыцці спасылкі, выявы ці медыя ў новай картцы адразу пераключацца на яе
     .accesskey = р
 show-tabs-in-taskbar =
     .label = Паказваць мініяцюры картак у панэлі заданняў Windows
@@ -443,10 +443,10 @@ browsing-use-autoscroll =
     .label = Выкарыстоўваць аўтаматычную пракрутку
     .accesskey = с
 browsing-use-smooth-scrolling =
-    .label = Выкарыстоўваць плаўнае пракручванне
-    .accesskey = л
+    .label = Выкарыстоўваць плаўную пракрутку
+    .accesskey = ь
 browsing-gtk-use-non-overlay-scrollbars =
-    .label = Заўсёды паказваць палосы прагорткі
+    .label = Заўсёды паказваць стужкі пракруткі
     .accesskey = ў
 browsing-use-onscreen-keyboard =
     .label = Паказваць экранную клавіятуру, калі неабходна
@@ -462,14 +462,14 @@ browsing-picture-in-picture-toggle-enabled =
     .accesskey = У
 browsing-picture-in-picture-learn-more = Падрабязней
 browsing-media-control =
-    .label = Кіраваць медыя з клавіятуры, гарнітуры або віртуальнага інтэрфейсу
+    .label = Кіраваць прайграваннем з клавіятуры, гарнітуры або віртуальнага інтэрфейсу
     .accesskey = м
 browsing-media-control-learn-more = Падрабязней
 browsing-cfr-recommendations =
-    .label = Рэкамендаваць пашырэнні цягам аглядання
+    .label = Рэкамендаваць пашырэнні ў часе аглядання
     .accesskey = Р
 browsing-cfr-features =
-    .label = Рэкамендаваць функцыі цягам аглядання
+    .label = Рэкамендаваць функцыі ў часе аглядання
     .accesskey = а
 browsing-cfr-recommendations-learn-more = Падрабязней
 
@@ -596,6 +596,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Паказваць пошукавыя прапановы пры выкарыстанні адраснага радка
     .accesskey = п
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Паказваць пошукавы запыт замест URL-адраса на старонцы вынікаў прадвызначанага пашукавіка
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -663,7 +668,7 @@ sync-signedout-account-signin3 =
 #
 # They can be moved within the sentence as needed to adapt
 # to your language, but should not be changed or translated.
-sync-mobile-promo = Сцягнуць Firefox для <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> або <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a> каб сінхранізавацца са сваёй мабільнай прыладай.
+sync-mobile-promo = Сцягніце Firefox для <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> або <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a>, каб сінхранізавацца са сваёй мабільнай прыладай.
 
 ## Firefox Account - Signed in
 
@@ -723,6 +728,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = ы
     .buttonlabelextra2 = Адлучыць…
     .buttonaccesskeyextra2 = А
+sync-choose-what-to-sync-dialog3 =
+    .title = Выберыце, што сінхранізаваць
+    .style = min-width: 36em;
+    .buttonlabelaccept = Захаваць змены
+    .buttonaccesskeyaccept = ы
+    .buttonlabelextra2 = Адлучыць…
+    .buttonaccesskeyextra2 = А
 sync-engine-bookmarks =
     .label = Закладкі
     .accesskey = З
@@ -775,7 +787,7 @@ privacy-header = Прыватнасць браўзера
 ## Privacy Section - Logins and Passwords
 
 # The search keyword isn't shown to users but is used to find relevant settings in about:preferences.
-pane-privacy-logins-and-passwords-header = Лагіны & Паролі
+pane-privacy-logins-and-passwords-header = Лагіны і паролі
     .searchkeywords = { -lockwise-brand-short-name }
 # Checkbox to control whether UI is shown to users to save or fill logins/passwords.
 forms-ask-to-save-logins =
@@ -791,6 +803,9 @@ forms-breach-alerts =
     .label = Паказваць апавяшчэнні аб паролях для сайтаў, у якіх уцеклі дадзеныя
     .accesskey = і
 forms-breach-alerts-learn-more-link = Падрабязней
+relay-integration =
+    .label = Уключыце { -relay-brand-name } у сваім менеджары пароляў { -brand-short-name }
+relay-integration-learn-more-link = Падрабязней
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Аўтаматычна запаўняць лагіны і паролі
@@ -904,9 +919,11 @@ sitedata-option-block-cross-site-tracking-cookies =
 sitedata-option-block-cross-site-cookies =
     .label = Кукі сачэння між сайтамі, ізаляваць іншыя міжсайтавыя кукі
 sitedata-option-block-unvisited =
-    .label = Кукі з ненаведаных вэб-сайтаў
+    .label = Кукі з ненаведаных сайтаў
 sitedata-option-block-all-third-party =
     .label = Усе кукі трэцяга боку (можа парушыць працу сайтаў)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Усе міжсайтавыя кукі (можа парушыць працу сайтаў)
 sitedata-option-block-all =
     .label = Усе кукі (будзе перашкаджаць працы сайтаў)
 sitedata-clear =
@@ -924,7 +941,7 @@ sitedata-cookies-exceptions =
 addressbar-header = Адрасны радок
 addressbar-suggest = Пры выкарыстанні адраснага радка, прапаноўваць
 addressbar-locbar-history-option =
-    .label = Гісторыя аглядання
+    .label = Гісторыю аглядання
     .accesskey = Г
 addressbar-locbar-bookmarks-option =
     .label = Закладкі
@@ -986,13 +1003,17 @@ content-blocking-all-cookies = Усе кукі
 content-blocking-unvisited-cookies = Кукі з ненаведаных сайтаў
 content-blocking-all-windows-tracking-content = Элементы сачэння ва ўсіх вокнах
 content-blocking-all-third-party-cookies = Усе кукі трэцяга боку
+content-blocking-all-cross-site-cookies = Усе міжсайтавыя кукі
 content-blocking-cryptominers = Майнеры крыптавалют
-content-blocking-fingerprinters = Збіральнікі адбіткаў пальцаў
+content-blocking-fingerprinters = Збіральнікі лічбавых адбіткаў
 # "Test pilot" is used as a verb. Possible alternatives:
 # "Be the first to try", "Join an early experiment".
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Выпрабаваць нашу самую магутную за ўвесь час функцыю аховы прыватнасці
     .accesskey = е
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Поўная ахова кукаў абмяжоўвае кукі сайтам, на якім вы знаходзіцеся, таму трэкеры не могуць скарыстаць іх для сачэння за вамі ад сайта к сайту.
 content-blocking-etp-standard-tcp-rollout-learn-more = Падрабязней
@@ -1026,7 +1047,7 @@ content-blocking-cryptominers-label =
 # Browser fingerprinting is a method of tracking users by the configuration and settings information (their "digital fingerprint")
 # that is visible to websites they browse, rather than traditional tracking methods such as IP addresses and unique cookies.
 content-blocking-fingerprinters-label =
-    .label = Збіральнікі адбіткаў пальцаў
+    .label = Збіральнікі лічбавых адбіткаў
     .accesskey = а
 
 ## Privacy Section - Tracking

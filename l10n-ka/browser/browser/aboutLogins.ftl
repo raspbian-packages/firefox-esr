@@ -7,6 +7,8 @@ about-logins-page-title = ანგარიშები და პაროლ�
 login-filter =
     .placeholder = ანგარიშების ძიება
 create-login-button = ანგარიშის ახალი მონაცემები
+create-new-login-button =
+    .title = ახალი ანგარიშის მონაცემები
 fxaccounts-sign-in-text = გადმოიტანეთ პაროლები სხვა მოწყობილობებიდან
 fxaccounts-sign-in-sync-button = სინქრონიზაციაში შესვლა
 fxaccounts-avatar-button =
@@ -99,6 +101,15 @@ login-item-cancel-button = გაუქმება
 login-item-time-changed = ბოლო ცვლილება: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
 login-item-time-created = შექმნილი: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
 login-item-time-used = ბოლო გამოყენება: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = შექმნილი
+login-item-timeline-action-updated = განახლებული
+login-item-timeline-action-used = გამოყენებული
 
 ## OS Authentication dialog
 

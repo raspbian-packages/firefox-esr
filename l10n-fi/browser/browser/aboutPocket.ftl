@@ -22,6 +22,7 @@ pocket-panel-saved-page-saved = Tallennettiin { -pocket-brand-name }-palveluun
 pocket-panel-saved-page-saved-b = Tallennettu { -pocket-brand-name }iin!
 pocket-panel-saved-processing-remove = Poistetaan sivu…
 pocket-panel-saved-removed = Sivu poistettu omasta listasta
+pocket-panel-saved-removed-updated = Sivu poistettu tallennuksista
 pocket-panel-saved-processing-tags = Lisätään tunnisteet…
 pocket-panel-saved-remove-page = Poista sivu
 pocket-panel-saved-save-tags = Tallenna
@@ -45,8 +46,10 @@ pocket-panel-signup-tagline-story-one = Napsauta { -pocket-brand-name }-painiket
 pocket-panel-signup-tagline-story-two = Katsele { -pocket-brand-name }-palvelussa millä tahansa laitteella, koska tahansa.
 pocket-panel-signup-cta-a-fix = Tallennuspainikkeesi Internetiin.
 pocket-panel-signup-cta-b = Napsauta { -pocket-brand-name }-painiketta tallentaaksesi artikkeleita, videoita ja linkkejä. Tarkastele luetteloasi millä tahansa laitteella milloin tahansa.
+pocket-panel-signup-cta-b-updated = Napsauta { -pocket-brand-name }-painiketta tallentaaksesi artikkeleita, videoita ja linkkejä. Tarkastele tallennukset millä tahansa laitteella milloin tahansa.
 pocket-panel-signup-cta-b-short = Napsauta { -pocket-brand-name }-painiketta tallentaaksesi artikkeleita, videoita ja linkkejä.
 pocket-panel-signup-cta-c = Tarkastele listaasi miltä tahansa laitteelta milloin tahansa.
+pocket-panel-signup-cta-c-updated = Tarkastele tallenteitasi millä tahansa laitteella, milloin tahansa.
 
 ## about:pocket-home panel
 
@@ -64,6 +67,7 @@ pocket-panel-home-new-user-message = Katso viimeisimmät tallennuksesi tästä.
 ## Pocket panel header component
 
 pocket-panel-header-my-list = Näytä oma lista
+pocket-panel-header-my-saves = Näytä omat tallennukset
 pocket-panel-header-sign-in = Kirjaudu sisään
 
 ## Pocket panel buttons

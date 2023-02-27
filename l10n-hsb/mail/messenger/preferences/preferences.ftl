@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Hnydom při zwobraznjenju
     .accesskey = H
 
+view-attachments-inline =
+    .label = Přiwěški inline pokazać
+    .accesskey = P
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Tuta drasta płaćiwa njeje abo njeje tuchwilu k dispoz
 chat-variant-label =
     .value = Warianta:
     .accesskey = W
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

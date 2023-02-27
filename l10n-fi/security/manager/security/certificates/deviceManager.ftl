@@ -9,6 +9,10 @@ devmgr =
     .title = Turvalaitteiden hallinta
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Turvalaitteiden hallinta
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Turvallisuusmoduulit ja -laitteet
 

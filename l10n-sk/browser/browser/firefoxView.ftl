@@ -17,10 +17,9 @@ firefoxview-just-now-timestamp = práve teraz
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Vyzdvihnutie karty
 firefoxview-tabpickup-description = Otvorte si stránky z iných zariadení.
-firefoxview-tabpickup-recenttabs-description = Tu by bol zoznam nedávnych kariet
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
-firefoxview-tabpickup-progress-label = Hotovo na { $percentValue } %
+firefoxview-tabpickup-progress-label = Dokončené na { $percentValue } %
 firefoxview-tabpickup-step-signin-header = Plynule prepínajte medzi zariadeniami
 firefoxview-tabpickup-step-signin-description = Ak chcete získať karty z telefónu, najprv sa prihláste alebo si vytvorte účet.
 firefoxview-tabpickup-step-signin-primarybutton = Pokračovať
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Skúsiť znova
 firefoxview-tabpickup-sync-disconnected-header = Ak chcete pokračovať, zapnite synchronizáciu
 firefoxview-tabpickup-sync-disconnected-description = Ak chcete získať svoje karty, musíte povoliť synchronizáciu v nastaveniach { -brand-short-name(case: "gen") }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Zapnite synchronizáciu v nastaveniach
+firefoxview-tabpickup-password-locked-header = Ak chcete zobraziť karty, zadajte svoje hlavné heslo
+firefoxview-tabpickup-password-locked-description = Ak chcete získať svoje karty, budete musieť zadať vaše hlavné heslo pre { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Ďalšie informácie
+firefoxview-tabpickup-password-locked-primarybutton = Zadajte hlavné heslo
+firefoxview-tabpickup-signed-out-header = Pre opätovné pripojenie sa prihláste
+firefoxview-tabpickup-signed-out-description = Ak sa chcete znova pripojiť a prevziať svoje karty, prihláste sa do svojho { -fxaccount-brand-name(case: "gen", capitalization: "lower") }.
+firefoxview-tabpickup-signed-out-primarybutton = Prihlásiť sa
 firefoxview-tabpickup-syncing = Posaďte sa, kým sa vaše karty synchronizujú. Bude to len chvíľa.
 firefoxview-mobile-promo-header = Získajte karty z telefónu alebo tabletu
 firefoxview-mobile-promo-description = Ak chcete zobraziť svoje najnovšie karty z mobilného zariadenia, prihláste sa do { -brand-product-name(case: "gen") } v systéme iOS alebo Android.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Získať { -brand-product-name } pre mo
 firefoxview-mobile-confirmation-header = 🎉 Výborne!
 firefoxview-mobile-confirmation-description = Teraz si môžete vziať karty z { -brand-product-name(case: "gen") } v tablete alebo telefóne.
 firefoxview-closed-tabs-title = Nedávno zatvorené
-firefoxview-closed-tabs-description = Otvorte si znova stránky, ktoré ste na tomto zariadení predtým zatvorili.
-firefoxview-closed-tabs-placeholder = <strong>Žiadne nedávno zatvorené stránky</strong><br/>Už sa nemusíte báť, že stratíte zatvorenú kartu. Vždy ju môžete nájsť na tomto mieste.
+firefoxview-closed-tabs-description2 = V tomto okne znova otvorte stránky, ktoré ste zatvorili.
+firefoxview-closed-tabs-placeholder-header = Žiadne nedávno zatvorené karty
+firefoxview-closed-tabs-placeholder-body = Keď zatvoríte kartu v tomto okne, môžete ju opätovne získať tu.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Odstrániť { $tabTitle } zo zoznamu
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Naposledy prezerané
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Zmeniť farebnú tému
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Zatiaľ tu nie je nič</strong><br/>Keď však nabudúce otvoríte stránku vo { -brand-product-name(case: "loc") } na inom zariadení, akoby zázrakom ju nájdete aj tu.
+firefoxview-synced-tabs-placeholder-header = Zatiaľ tu nič nie je
+firefoxview-synced-tabs-placeholder-body = Keď nabudúce otvoríte stránku vo { -brand-product-name(case: "loc") } na inom zariadení, ako zázrakom ju nájdete aj tu.
 firefoxview-collapse-button-show =
     .title = Zobraziť zoznam
 firefoxview-collapse-button-hide =

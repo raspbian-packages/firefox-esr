@@ -6,6 +6,10 @@ containers-window-new =
     .title = புதிய கலனைச் சேர்
     .style = width: 45em
 
+containers-window-new2 =
+    .title = புதிய கலனைச் சேர்
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Clirio Data
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Clirio Data
+    .style = min-width: 35em
+
 clear-site-data-description = Gall glirio'r oll gwcis a data gwefan wedi eu cadw gan { -brand-short-name } eich allgofnodi o wefannau a thynnu cynnwys all-lein gwe. Ni fydd clirio data storfa dros dro yn effeithio ar eich mewngofnodion.
 
 clear-site-data-close-key =

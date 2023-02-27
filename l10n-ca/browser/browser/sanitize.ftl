@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Paràmetres de neteja de l'historial
     .style = width: 36em
 
+sanitize-prefs2 =
+    .title = Paràmetres de neteja de l'historial
+    .style = min-width: 36em
+
 sanitize-prefs-style =
     .style = width: 17em
 

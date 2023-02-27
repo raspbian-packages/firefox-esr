@@ -6,6 +6,10 @@ translation-window =
     .title = Wuwzaća - Přełožowanje
     .style = width: 36em
 
+translation-window2 =
+    .title = Wuwzaća - Přełožowanje
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

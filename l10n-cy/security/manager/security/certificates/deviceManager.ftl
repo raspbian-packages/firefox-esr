@@ -9,6 +9,10 @@ devmgr =
     .title = Rheolwr Dyfeisiadau
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Rheolwr Dyfeisiadau
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Modiwlau a Dyfeisiadau Diogelwch
 

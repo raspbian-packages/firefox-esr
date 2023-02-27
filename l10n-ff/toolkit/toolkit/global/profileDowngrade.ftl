@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = A hurminii yamre Firefox ɓurnde hiiɗɗude { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = A hurminii yamre Firefox ɓurnde hiiɗɗude { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Sos Heftinirde Hesere
 

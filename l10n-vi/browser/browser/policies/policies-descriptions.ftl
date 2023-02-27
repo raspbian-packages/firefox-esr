@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Ngăn người dùng bỏ qua một số cảnh b
 policy-DisableSetAsDesktopBackground = Vô hiệu hóa lệnh đặt làm hình nền desktop trong menu.
 policy-DisableSystemAddonUpdate = Ngăn trình duyệt cài đặt và cập nhật tiện ích hệ thống.
 policy-DisableTelemetry = Tắt Telemetry.
+policy-DisableThirdPartyModuleBlocking = Ngăn người dùng chặn các module của bên thứ ba đưa vào tiến trình { -brand-short-name }.
 policy-DisplayBookmarksToolbar = Hiển thị thanh công cụ dấu trang theo mặc định.
 policy-DisplayMenuBar = Hiển thị thanh bảng chọn theo mặc định.
 policy-DNSOverHTTPS = Cấu hình DNS over HTTPS.

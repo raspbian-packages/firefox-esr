@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Синхронізація
+appmenu-signin-panel =
+    .label = Увійти до Синхронізації
+    .accesskey = в
+appmenu-sync-sync =
+    .value = Синхронізація облікового запису
+    .accesskey = о
+appmenu-sync-manage =
+    .value = Керувати обліковим записом
+    .accesskey = К
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = Синхронізувати зараз
+    .accesskey = н
+appmenu-sync-settings =
+    .label = Налаштування синхронізації
+    .accesskey = с
+appmenu-sync-sign-out =
+    .label = Вийти…
+    .accesskey = В
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +93,11 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = Відкрити
-    .accesskey = В
-appmenu-open-panel-title =
-    .title = Відкрити
+appmenu-open-file-panel =
+    .label = Відкрити з файлу
+    .accesskey = й
+appmenu-open-file-panel-title =
+    .title = Відкрити з файлу
 appmenu-open-message =
     .label = Повідомлення…
     .accesskey = П
@@ -168,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = Про { -brand-short-name }
     .accesskey = о
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Завантажується оновлення { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Доступне оновлення — завантажити
+appmenuitem-banner-update-manual =
+    .label = Доступне оновлення — завантажити
+appmenuitem-banner-update-unsupported =
+    .label = Не вдалося оновити — несумісна система
+appmenuitem-banner-update-restart =
+    .label = Доступне оновлення — перезапустити

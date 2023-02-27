@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Ti has avià ina versiun pli veglia da { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Ti has avià ina versiun pli veglia da { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Crear in nov profil
 

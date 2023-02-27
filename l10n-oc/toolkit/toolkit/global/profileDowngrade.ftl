@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Avètz lançat una anciana version de { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Avètz lançat una anciana version de { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Crear un perfil novèl
 

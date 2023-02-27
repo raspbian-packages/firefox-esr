@@ -592,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Zoeksuggesties in adresbalkresultaten tonen
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Zoektermen in plaats van URL tonen op de resultaatpagina van de standaardzoekmachine
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = o
     .buttonlabelextra2 = Verbinding verbreken…
     .buttonaccesskeyextra2 = b
+sync-choose-what-to-sync-dialog3 =
+    .title = Kies wat u wilt synchroniseren
+    .style = min-width: 36em;
+    .buttonlabelaccept = Wijzigingen opslaan
+    .buttonaccesskeyaccept = o
+    .buttonlabelextra2 = Verbinding verbreken…
+    .buttonaccesskeyextra2 = b
 sync-engine-bookmarks =
     .label = Bladwijzers
     .accesskey = B
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = Waarschuwingen over wachtwoorden voor getroffen websites tonen
     .accesskey = f
 forms-breach-alerts-learn-more-link = Meer info
+relay-integration =
+    .label = { -relay-brand-name } inschakelen in uw { -brand-short-name }-wachtwoordenbeheerder
+relay-integration-learn-more-link = Meer info
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Aanmeldingen en wachtwoorden automatisch invullen
@@ -903,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies van niet-bezochte websites
 sitedata-option-block-all-third-party =
     .label = Alle cookies van derden (kan ervoor zorgen dat websites niet goed werken)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Alle cross-sitecookies (kan ervoor zorgen dat websites niet goed werken)
 sitedata-option-block-all =
     .label = Alle cookies (zal ervoor zorgen dat websites niet goed werken)
 sitedata-clear =
@@ -982,6 +999,7 @@ content-blocking-all-cookies = Alle cookies
 content-blocking-unvisited-cookies = Cookies van niet-bezochte websites
 content-blocking-all-windows-tracking-content = Volginhoud in alle vensters
 content-blocking-all-third-party-cookies = Alle cookies van derden
+content-blocking-all-cross-site-cookies = Alle cross-sitecookies
 content-blocking-cryptominers = Cryptominers
 content-blocking-fingerprinters = Fingerprinters
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -989,6 +1007,9 @@ content-blocking-fingerprinters = Fingerprinters
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Maak een testrit in onze krachtigste privacyfunctie ooit
     .accesskey = t
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Totale cookiebescherming sluit cookies in op de website die u bezoekt, zodat trackers ze niet kunnen gebruiken om u tussen websites te volgen.
 content-blocking-etp-standard-tcp-rollout-learn-more = Meer info

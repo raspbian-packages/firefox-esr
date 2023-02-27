@@ -6,7 +6,7 @@
 ## Colorway collections
 
 colorway-collection-independent-voices = Lleisiau Annibynnol
-colorway-collection-independent-voices-description = Gall lliw newid diwylliant. Mae'r llwybrau lliw diweddaraf yn dathlu lleisiau sy'n gwneud y byd yn lle gwell.
+colorway-collection-independent-voices-description = Gall lliw newid diwylliant. Mae'r cyfuniadau lliw diweddaraf yn dathlu lleisiau sy'n gwneud y byd yn lle gwell.
 # Used as a subheading for the colorway collection card in about:addons
 colorway-collection-independent-voices-short-description = Lliwiau sy'n newid diwylliant.
 

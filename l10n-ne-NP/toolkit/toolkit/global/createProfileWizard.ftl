@@ -6,12 +6,22 @@ create-profile-window =
     .title = प्रोफाइल विजार्ड सिर्जना गर्नुहोस्
     .style = width: 46em; height: 34em;
 
+create-profile-window2 =
+    .title = प्रोफाइल विजार्ड सिर्जना गर्नुहोस्
+    .style = min-width: 46em; min-height: 34em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] परिचय
        *[other] { create-profile-window.title } मा स्वागत छ
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] परिचय
+       *[other] { create-profile-window2.title } मा स्वागत छ
     }
 
 profile-creation-explanation-1 = { -brand-short-name } मेरो सेटिङ् र प्राथमिकताको बारेमा भएका जानकारीहरू मेरो ब्यक्तिगत खातामा राख्नुहोस्।
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] निष्कर्ष
        *[other] { create-profile-window.title } लाई सम्पन्न गर्दै
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] निष्कर्ष
+       *[other] { create-profile-window2.title } लाई सम्पन्न गर्दै
     }
 
 profile-creation-intro = यदि तपाईँले धेरै प्रोफाइलहरू सिर्जना गर्नुभयो भने तपाईँ तिनीहरूलाई भिन्न प्रोफाइल नामहरूबाट भन्न सक्नुहुन्छ। तपाईँ यहाँ दिइएको नाम वा आफ्नै नाम प्रयोग गर्न सक्नुहुन्छ।

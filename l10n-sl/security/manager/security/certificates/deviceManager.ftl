@@ -9,6 +9,10 @@ devmgr =
     .title = Upravitelj naprav
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Upravitelj naprav
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Varnostni moduli in naprave
 

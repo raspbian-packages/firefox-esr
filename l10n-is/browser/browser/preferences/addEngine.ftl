@@ -6,6 +6,10 @@ add-engine-window =
     .title = Bæta við leitarvél
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Bæta við leitarvél
+    .style = min-width: 32em;
+
 add-engine-button = Bæta við sérsniðinni leitarvél
 
 add-engine-name = Heiti leitarvélar

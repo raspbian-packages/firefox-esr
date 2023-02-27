@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Undanþágur
     .style = width: 45em;
 
+permissions-reminder-window2 =
+    .title = Undantekningar
+
 permission-preferences-close-window =
     .key = w
 

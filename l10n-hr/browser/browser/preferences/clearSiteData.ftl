@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Izbriši podatke
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Izbriši podatke
+    .style = min-width: 35em
+
 clear-site-data-description = Brisanje svih kolačića i podataka stranice koje je { -brand-short-name } spremio, može prouzročiti odjavljivanje s web stranica i brisanje izvanmrežnog web sadržaja. Brisanje sadržaja iz priručne memorije neće utjecati na tvoje prijave.
 
 clear-site-data-close-key =

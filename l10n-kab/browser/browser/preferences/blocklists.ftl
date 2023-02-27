@@ -6,6 +6,10 @@ blocklist-window =
     .title = Tibdarin n usewḥel
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Tibdarin n usewḥel
+    .style = min-width: 55em
+
 blocklist-description = Fren aseqdec n tebdert { -brand-short-name } i usewḥel n yineḍfaren srid. Tibdarin i d-yettwanefken sɣur <a data-l10n-name="disconnect-link" title="Disconnect">Ffeɣ</a>.
 blocklist-close-key =
     .key = w

@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Sćo startował staršu wersiju { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Sćo startował staršu wersiju { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Nowy profil załožyś
 

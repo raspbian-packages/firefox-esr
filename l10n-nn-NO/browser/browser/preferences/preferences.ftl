@@ -191,6 +191,8 @@ preferences-web-appearance-choice-tooltip-browser =
     .title = Samsvar temainnstillingane for { -brand-short-name } for nettsidebakgrunn og innhald på nettstaden.
 preferences-web-appearance-choice-tooltip-system =
     .title = Samsvar systeminnstillingane for nettsidebakgrunn og innhald på nettstaden.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Endre nettsidebakgrunn og innhald automatisk basert på systeminnstillingane og { -brand-short-name }-temaet.
 preferences-web-appearance-choice-tooltip-light =
     .title = Bruk ein lys utsjånad for nettsidebakgrunn og innhald.
 preferences-web-appearance-choice-tooltip-dark =
@@ -199,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -519,6 +523,7 @@ choose-bookmark =
 home-prefs-content-header = Innhald på: Firefox-startside
 home-prefs-content-description = Vel kva for innhald du vil ha på Firefox-startsida di.
 home-prefs-content-header2 = { -firefox-home-brand-name } Innhald
+home-prefs-content-description2 = Velg kva for innhald som du vil ha på { -firefox-home-brand-name }-skjermen din.
 home-prefs-search-header =
     .label = Nettsøk
 home-prefs-shortcuts-header =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Vis søkjeforslag i adresselinja
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Vis søkjeord i staden for adresse på resultatsida til standardsøkjemotoren
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = L
     .buttonlabelextra2 = Kople frå
     .buttonaccesskeyextra2 = K
+sync-choose-what-to-sync-dialog3 =
+    .title = Vel kva som skal synkroniserast
+    .style = min-width: 36em;
+    .buttonlabelaccept = Lagre endringar
+    .buttonaccesskeyaccept = L
+    .buttonlabelextra2 = Kople frå
+    .buttonaccesskeyextra2 = K
 sync-engine-bookmarks =
     .label = Bokmerke
     .accesskey = B
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Vis varsel om passord for datalekkasjar på nettstadar
     .accesskey = p
 forms-breach-alerts-learn-more-link = Les meir
+relay-integration =
+    .label = Slå på { -relay-brand-name } i passordhandsamaren for { -brand-short-name }
+relay-integration-learn-more-link = Les meir
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Autoutfyll innloggingar og passord
@@ -984,6 +1004,9 @@ content-blocking-fingerprinters = Fingerprinters
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Test ut den kraftigaste personvernfunksjonen vår nokosinne
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Totalt vern mot infokapslar isolerer infokapslar til nettstaden du er på, så sporarar ikkje kan bruke dei til å følgje deg mellom nettstadar.
 content-blocking-etp-standard-tcp-rollout-learn-more = Les meir
@@ -1095,6 +1118,12 @@ addon-recommendations-link = Les meir
 collection-health-report-disabled = Datarapportering er deaktivert for denne byggekonfigurasjonen
 collection-backlogged-crash-reports-with-link = Tillat { -brand-short-name } å sende etterslepne krasjrapportar på dine vegne <a data-l10n-name="crash-reports-link">Les meir</a>
     .accesskey = T
+privacy-segmentation-section-header = Nye funksjonar som forbetrar surfinga di
+privacy-segmentation-section-description = Når vi tilbyr funksjonar som brukar dine data for å gi deg ei meir personleg oppleving:
+privacy-segmentation-radio-off =
+    .label = Bruk { -brand-product-name }-tilrådingar
+privacy-segmentation-radio-on =
+    .label = Vis detaljert informasjon
 
 ## Privacy Section - Security
 ##

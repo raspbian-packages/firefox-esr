@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Tungumálastillingar vefsíðu
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Tungumálastillingar vefsíðu
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Stillingar { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Stillingar { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } sýnir fyrsta tungumálið sem þitt sjálfgefna val og sýnir önnur tungumál ef nauðsynlegt er í þeirri röð sem þau birtast.
 

@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Agordoj de konektado
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Peranto por HTTP
     .accesskey = H
 connection-proxy-http-port = Pordo
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = Uzi tiun ĉi retperanton ankaŭ por HTTPS.
     .accesskey = U

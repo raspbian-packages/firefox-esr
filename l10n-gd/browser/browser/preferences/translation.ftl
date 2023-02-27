@@ -6,6 +6,10 @@ translation-window =
     .title = Eisgeachdan - Eadar-theangachadh
     .style = width: 42em
 
+translation-window2 =
+    .title = Eisgeachdan - Eadar-theangachadh
+    .style = min-width: 42em
+
 translation-close-key =
     .key = w
 

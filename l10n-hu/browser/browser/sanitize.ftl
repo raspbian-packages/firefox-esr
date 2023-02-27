@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Előzmények törlésének beállításai
     .style = width: 40em
 
+sanitize-prefs2 =
+    .title = Előzmények törlésének beállításai
+    .style = min-width: 40em
+
 sanitize-prefs-style =
     .style = width: 20em
 

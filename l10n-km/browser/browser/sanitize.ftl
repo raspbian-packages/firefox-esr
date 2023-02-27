@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = ការ​កំណត់​សម្រាប់​ជម្រះ​ប្រវត្តិ
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = ការ​កំណត់​សម្រាប់​ជម្រះ​ប្រវត្តិ
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Huliðsvafur { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Huliðsvafur { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Fá hjálp
 urlbar-search-tips-confirm = Allt í lagi, ég skil
+urlbar-search-tips-confirm-short = Náði því
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Ábending:
+urlbar-result-menu-button =
+    .title = Opna valmynd
+urlbar-result-menu-remove-from-history =
+    .label = Eyða úr vafurferli
+    .accesskey = r
+urlbar-result-menu-tip-get-help =
+    .label = Fá aðstoð
+    .accesskey = a
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Minni innsláttur, finna meira: Leitaðu með { $engineName } beint úr veffangastikunni.
 urlbar-search-tips-redirect-2 = Byrjaðu að leita í veffangastikunni til að sjá tillögur frá { $engineName } og úr leitarferli þínum.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Leitin varð bara einfaldari. Prófaðu að gera leitina nákvæmari hér í veffangastikunni. Til að sýna frekar vefslóðina skaltu fara á 'Leita' í stillingunum.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Veldu þessa flýtileið til að finna það sem þú þarft hraðar.
@@ -209,7 +222,7 @@ page-action-remove-extension2 =
 ## Auto-hide Context Menu
 
 full-screen-autohide =
-    .label = Fela tækjaslár
+    .label = Fela verkfærastikur
     .accesskey = F
 full-screen-exit =
     .label = Ekki fylla skjá
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Aðgerðir ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Skoða viðbætur
-quickactions-cmd-addons = viðbætur, forritsaukar, þemu
 quickactions-cmd-addons2 = viðbætur
 # Opens the bookmarks library window
-quickactions-bookmarks = Skoða bókamerki
+quickactions-bookmarks2 = Sýsla með bókamerki
 quickactions-cmd-bookmarks = bókamerki
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Hreinsa feril
 quickactions-cmd-clearhistory = hreinsa feril
 # Opens about:downloads page
-quickactions-downloads = Opna sóttar skrár
+quickactions-downloads2 = Skoða sóttar skrár
 quickactions-cmd-downloads = sóttar skrár
 # Opens about:addons page in the extensions section
 quickactions-extensions = Sýsla með forritsauka
-quickactions-cmd-extensions = forritsviðaukar
+quickactions-cmd-extensions = forritsaukar
 # Opens the devtools web inspector
-quickactions-inspector = Opna Inspector
+quickactions-inspector2 = Opna forritunarverkfæri
 quickactions-cmd-inspector = inspector, devtools
 # Opens about:logins
-quickactions-logins = Skoða innskráningar
+quickactions-logins2 = Sýsla með lykilorð
 quickactions-cmd-logins = innskráningar, lykilorð
 # Opens about:addons page in the plugins section
 quickactions-plugins = Sýsla með tengiforrit
 quickactions-cmd-plugins = tengiforrit
 # Opens the print dialog
-quickactions-print = Prenta
+quickactions-print2 = Prenta síðu
 quickactions-cmd-print = prenta
 # Opens a new private browsing window
-quickactions-private = Opna huliðsglugga
+quickactions-private2 = Opna huliðsglugga
 quickactions-cmd-private = huliðsvafur
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Endurlesa { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = endurlesa
 quickactions-restart = Endurræsa { -brand-short-name }
 quickactions-cmd-restart = endurræsa
 # Opens the screenshot tool
-quickactions-screenshot2 = Taka skjámynd
+quickactions-screenshot3 = Taka skjámynd
 quickactions-cmd-screenshot = skjámynd
 # Opens about:preferences
-quickactions-settings = Opna stillingar
+quickactions-settings2 = Sýsla með stillingar
 quickactions-cmd-settings = stillingar, kjörstillingar, valkostir
 # Opens about:addons page in the themes section
 quickactions-themes = Sýsla með þemu
@@ -323,8 +332,11 @@ quickactions-cmd-themes = þemu
 quickactions-update = Uppfæra { -brand-short-name }
 quickactions-cmd-update = uppfærsla
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Skoða frumkóða
+quickactions-viewsource2 = Skoða frumkóða síðu
 quickactions-cmd-viewsource = skoða frumkóða, frumkóði
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Fræðast meira um flýtiaðgerðir
 
 ## Bookmark Panel
 
@@ -485,6 +497,9 @@ popup-select-microphone-icon =
     .tooltiptext = Hljóðnemi
 popup-select-speaker-icon =
     .tooltiptext = Hátalarar
+popup-select-window-or-screen =
+    .label = Gluggi eða skjár:
+    .accesskey = W
 popup-all-windows-shared = Öllum sýnilegum gluggum á skjánum verður deilt.
 popup-screen-sharing-block =
     .label = Loka á
@@ -506,6 +521,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Til að nota F12 flýtileiðina skaltu fyrst opna DevTools í gegnum valmyndina fyrir vefhönnuði.
+enable-devtools-popup-description2 = Til að nota F12 flýtileiðina skaltu fyrst opna DevTools í gegnum valmyndina fyrir vafraverkfærin.
 
 ## URL Bar
 
@@ -638,6 +654,15 @@ urlbar-group-search-suggestions =
 urlbar-group-quickactions =
     .label = Flýtiaðgerðir
 
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Fara í lesham
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Loka lesham
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -691,20 +716,20 @@ bookmarks-tools-sidebar-visibility =
 bookmarks-tools-toolbar-visibility-menuitem =
     .label =
         { $isVisible ->
-            [true] Fela bókamerkjaslá
-           *[other] Skoða bókamerkjaslá
+            [true] Fela bókamerkjastiku
+           *[other] Skoða bókamerkjastiku
         }
 bookmarks-tools-toolbar-visibility-panel =
     .label =
         { $isVisible ->
-            [true] Fela bókamerkjaslá
-           *[other] Sýna bókamerkjaslá
+            [true] Fela bókamerkjastiku
+           *[other] Sýna bókamerkjastiku
         }
 bookmarks-tools-menu-button-visibility =
     .label =
         { $isVisible ->
-            [true] Fjarlægja bókamerkjavalmynd úr verkfæraslá
-           *[other] Bæta bókamerkjavalmynd við verkfæraslá
+            [true] Fjarlægja bókamerkjavalmynd úr verkfærastiku
+           *[other] Bæta bókamerkjavalmynd við verkfærastiku
         }
 bookmarks-search =
     .label = Leita í bókamerkjum
@@ -718,15 +743,15 @@ bookmarks-subview-edit-bookmark =
 # such, because screen readers already know that this container is a toolbar.
 # This avoids double-speaking.
 bookmarks-toolbar =
-    .toolbarname = Bókamerkjaslá
+    .toolbarname = Bókamerkjastika
     .accesskey = B
     .aria-label = Bókamerki
 bookmarks-toolbar-menu =
-    .label = Bókamerkjaslá
+    .label = Bókamerkjastika
 bookmarks-toolbar-placeholder =
-    .title = Hlutir í bókamerkjaslá
+    .title = Atriði í bókamerkjastiku
 bookmarks-toolbar-placeholder-button =
-    .label = Hlutir í bókamerkjaslá
+    .label = Atriði í bókamerkjastiku
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-current-tab =
     .label = Bókamerkja núverandi flipa
@@ -770,7 +795,7 @@ toolbar-settings-button =
            *[other] Opna stillingar
         }
 toolbar-overflow-customize-button =
-    .label = Sérsníða verkfæraslá…
+    .label = Sérsníða verkfærastiku…
     .accesskey = S
 toolbar-button-email-link =
     .label = Senda tengil
@@ -914,3 +939,29 @@ private-browsing-indicator-label = Huliðsvafur
 unified-extensions-button =
     .label = Forritsaukar
     .tooltiptext = Forritsaukar
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Forritsaukar
+    .tooltiptext =
+        Forritsaukar
+        Heimildir nauðsynlegar
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } kom í veg fyrir að síðan myndi endurnýjast sjálfkrafa.
+refresh-blocked-redirect-label = { -brand-short-name } kom í veg fyrir að síðan sendi þig áfram á aðra síðu.
+refresh-blocked-allow =
+    .label = Leyfa
+    .accesskey = a
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } felur raunverulegt tölvupóstfang þitt til að vernda þig gegn gagnastuldi og ruslpósti.
+firefox-relay-offer-how-we-integrate = Með því að halda áfram muntu geta búið til nýjar { -relay-brand-short-name } tölvupóstgrímur beint úr { -brand-shorter-name } lykilorðastjóranum þínum.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Við munum áframsenda allan tölvupóst frá <strong>{ $sitename }</strong> til <strong>{ $useremail }</strong>.

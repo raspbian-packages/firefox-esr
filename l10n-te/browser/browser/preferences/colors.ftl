@@ -10,6 +10,14 @@ colors-window =
            *[other] width: 38em
         }
 
+colors-dialog =
+    .title = రంగులు
+    .style = width: 42em;
+
+colors-dialog2 =
+    .title = రంగులు
+    .style = min-width: 42em;
+
 colors-close-key =
     .key = w
 

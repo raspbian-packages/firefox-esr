@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = Rediģēt CA sertifikātu uzticamības iestatījumus
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Rediģēt CA sertifikātu uzticamības iestatījumus
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Rediģēt uzticamības iestatījumus:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Dzēst sertifikātu
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Dzēst sertifikātu
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Sertifikāta nosaukums
@@ -173,9 +181,8 @@ delete-email-cert-impact = Ja izdzēsīsiet personas e-pasta sertifikātu, jūs 
 cert-with-serial =
     .value = Sertifikāts ar sērijas numurs: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

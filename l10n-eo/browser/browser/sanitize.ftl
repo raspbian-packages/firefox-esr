@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Agordoj por forviŝado de historio
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Agordoj por forviŝado de historio
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

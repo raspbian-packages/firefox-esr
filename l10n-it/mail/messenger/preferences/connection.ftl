@@ -26,6 +26,9 @@ connection-dialog-window =
            *[other] width: 49em !important
         }
 
+connection-dialog-window2 =
+    .title = Impostazioni di connessione
+
 disable-extension-button = Disattiva estensione
 
 # Variables:

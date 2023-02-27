@@ -4,13 +4,11 @@
 
 migration-wizard =
     .title = Importvegvisar
-
 import-from =
     { PLATFORM() ->
         [windows] Importer innstillingar, bokmerke, historikk, passord og annan informasjon frå:
        *[other] Importer innstillingar, bokmerke, historikk, passord og annan informasjon frå:
     }
-
 import-from-bookmarks = Importer bokmerke frå:
 import-from-ie =
     .label = Microsoft Internet Explorer
@@ -30,6 +28,12 @@ import-from-nothing =
 import-from-safari =
     .label = Safari
     .accesskey = S
+import-from-opera =
+    .label = Opera
+    .accesskey = O
+import-from-vivaldi =
+    .label = Vivaldi
+    .accesskey = V
 import-from-brave =
     .label = Brave
     .accesskey = r
@@ -54,37 +58,26 @@ import-from-firefox =
 import-from-360se =
     .label = 360 sikker nettlesar
     .accesskey = 3
-
+import-from-opera-gx =
+    .label = Opera GX
+    .accesskey = G
 no-migration-sources = Klarte ikkje å finne program som inneheld bokmerke, historikk eller passordinformasjon.
-
 import-source-page-title = Importer innstillingar og data
 import-items-page-title = Element som skal importerast
-
 import-items-description = Vel kva for element som skal importerast:
-
 import-permissions-page-title = Gi { -brand-short-name } løyve
-
 # Do not translate "Bookmarks.plist"; the file name is the same everywhere.
 import-permissions-description = macOS krev at du eksplisitt gir { -brand-short-name } tilgang til Safaris bokmerke. Klikk på «Fortset» og vel «Bookmarks.plist»-fila i Opne fil-panelet som vert vist.
-
 import-migrating-page-title = Importerer…
-
 import-migrating-description = Følgjande element vert no importerte…
-
 import-select-profile-page-title = Vel profil
-
 import-select-profile-description = Du kan importere frå følgjande profilar:
-
 import-done-page-title = Import fullført
-
 import-done-description = Følgjande element er importerte:
-
 import-close-source-browser = Kontroller at den valde nettlesaren er attlaten før du held fram.
-
 source-name-ie = Internet Explorer
 source-name-edge = Microsoft Edge
 source-name-chrome = Google Chrome
-
 imported-safari-reading-list = Leseliste (frå Safari)
 imported-edge-reading-list = Leseliste (frå Edge)
 
@@ -106,7 +99,6 @@ browser-data-cookies-checkbox =
     .label = Infokapslar
 browser-data-cookies-label =
     .value = Infokapslar
-
 browser-data-history-checkbox =
     .label =
         { $browser ->
@@ -119,12 +111,10 @@ browser-data-history-label =
             [firefox] Nettlesarhistorikk og bokmerke
            *[other] Nettlesarhistorikk
         }
-
 browser-data-formdata-checkbox =
     .label = Lagra skjemahistorikk
 browser-data-formdata-label =
     .value = Lagra skjemahistorikk
-
 # This string should use the same phrase for "logins and passwords" as the
 # label in the main hamburger menu that opens about:logins.
 browser-data-passwords-checkbox =
@@ -133,7 +123,6 @@ browser-data-passwords-checkbox =
 # label in the main hamburger menu that opens about:logins.
 browser-data-passwords-label =
     .value = Lagra innloggingar og passord
-
 browser-data-bookmarks-checkbox =
     .label =
         { $browser ->
@@ -148,12 +137,10 @@ browser-data-bookmarks-label =
             [edge] Favorittar
            *[other] Bokmerke
         }
-
 browser-data-otherdata-checkbox =
     .label = Andre data
 browser-data-otherdata-label =
     .label = Andre data
-
 browser-data-session-checkbox =
     .label = Vindauge og faner
 browser-data-session-label =

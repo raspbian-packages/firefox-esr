@@ -57,6 +57,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } utilizaires
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Fòra las bandièras de cookies !
+cfr-cookie-banner-handling-body = Permetre a { -brand-short-name } de regetar automaticament las demandas de cookies, quand es possible. Autrament, totes los cookies seràn acceptats per suprimir las bandièras de cookies.
+cfr-cookie-banner-accept-button = Regetar las demandas
+    .accesskey = R
+cfr-cookie-banner-reject-button = Pas ara
+    .accesskey = P
+cfr-cookie-banner-handling-header-variant-1 = Veire mens de fenèstras sorgissentas de cookies
+cfr-cookie-banner-handling-body-variant-1 = Permetre a { -brand-short-name } de gerir automaticament las fenèstras sorgissentas de cookies per vos que trapetz una navegacion sens distraccion. { -brand-short-name } regetarà totas las demandas se possible, autrament las acceptarà totas.
+cfr-cookie-banner-accept-button-variant-1 = Regetar las fenèstras sorgissentas
+    .accesskey = R
+cfr-cookie-banner-reject-button-variant-1 = Non mercés
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Reduccion de las bandièras de cookies
+cfr-cookie-banner-handling-body-variant-2 = Permetre a { -brand-short-name } de refusar la demanda de consentiment als cookies d’un site se possible o acceptar l’accès als cookies quand es pas possible ?
+cfr-cookie-banner-accept-button-variant-2 = Autorizar
+    .accesskey = A
+cfr-cookie-banner-reject-button-variant-2 = Pas ara
+    .accesskey = P
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sincronizatz vòstres marcapaginas pertot.
@@ -156,7 +179,6 @@ spotlight-total-cookie-protection-body = La proteccion totala contra los cookies
 spotlight-total-cookie-protection-expanded = { -brand-short-name } crèa una barrièra a l’entorn dels cookies, per los limitar al site ont vos trobatz per dire que los traçadors pòscan pas vos pistar. En participant d’un biais anticipat, contribuissètz a optimizar aquesta foncionalitat per que poscam téner de bastir un melhor Web per tot lo monde.
 spotlight-total-cookie-protection-primary-button = Activar la proteccion totala contra los cookies
 spotlight-total-cookie-protection-secondary-button = Pas ara
-cfr-total-cookie-protection-header = Gràcia a vos, { -brand-short-name } es mai privat e segur que jamai
 
 ## Emotive Continuous Onboarding
 
@@ -170,3 +192,85 @@ spotlight-pin-primary-button =
        *[other] Penjar a la barra de prètzfaches
     }
 spotlight-pin-secondary-button = Pas ara
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = { -brand-short-name } novèl. Mai privat. Mens de traçadors. Cap de compromés.
+mr2022-background-update-toast-text = Ensajatz lo novèl { -brand-short-name } ara, mes a nivèl amb una proteccion fòrta contra lo seguiment.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Lançar { -brand-shorter-name } ara
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Lo me remembrar mai tard
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Ensajar
+    .accesskey = E
+firefoxview-cfr-secondarybutton = Pas ara
+    .accesskey = P
+firefoxview-cfr-header-v2 = Tornatz ont èretz
+firefoxview-cfr-body-v2 = Tornatz trapar los onglets onglets tampats fa pas res, e basculatz d’un aparelh a l’autre amb { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Digatz bonjorn a { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Avètz enveja de trapar un onglet dobèrt sus vòstre mobil ? Recuperatz-lo. Vos fa mestièr aquel site ? Shtac, es dins { -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = Veire coma fonciona
+firefoxview-spotlight-promo-secondarybutton = Passar
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Causir un colorit
+    .accesskey = C
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Botatz de color a vòstre navegador amb las tintas exclusivas de { -brand-short-name } inspiradas de voses qu’influencièron nòstra cultura.
+colorways-cfr-header-28days = Los colorits « Voses independentas » expiran lo 16 de de genièr
+colorways-cfr-header-14days = Los colorits « Voses independentas » expiran d’aquí doas setmanas
+colorways-cfr-header-7days = Los colorits « Voses independentas » expiran aquesta setmana
+colorways-cfr-header-today = Los colorits « Voses independentas » expiran uèi
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Fòra las bandièras de cookies !
+cfr-cookiebanner-body = Permetre a { -brand-short-name } de regetar automaticament las demandas de cookies quand es possible.
+cfr-cookiebanner-accept-button = Tampar las bandièras
+    .accesskey = T
+cfr-cookiebanner-reject-button = Pas ara
+    .accesskey = P
+cfr-cookiebanner-header-variant-1 = Veire mens de fenèstras sorgissentas de cookies
+cfr-cookiebanner-body-variant-1 = Permetre a { -brand-short-name } de gerir automaticament las fenèstras sorgissentas de cookies per vos que trapetz una navegacion sens distraccion. { -brand-short-name } regetarà totas las demandas se possible.
+cfr-cookiebanner-accept-button-variant-1 = Regetar las fenèstras sorgissentas
+    .accesskey = R
+cfr-cookiebanner-reject-button-variant-1 = Non, mercé
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = Reduccion de las bandièras de cookies
+cfr-cookiebanner-body-variant-2 = Redusissètz lo nombre de banièras de cookies que vesètz en autorizant { -brand-short-name } a refusar la demanda de consentiment dels cookies d’un site web se possible.
+cfr-cookiebanner-accept-button-variant-2 = Autorizar
+    .accesskey = A
+cfr-cookiebanner-reject-button-variant-2 = Pas ara
+    .accesskey = P
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Asseguram vòstra proteccion
+july-jam-body = Cada mes, { -brand-short-name } bloca una mejana de 3 000 traçadors per utilizaire, per tal qu’ajatz accès a un Internet segur e rapid.
+july-jam-set-default-primary = Dobrir mos ligams dins { -brand-short-name }

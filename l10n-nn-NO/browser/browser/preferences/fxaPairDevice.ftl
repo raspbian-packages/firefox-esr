@@ -11,7 +11,12 @@ fxa-qrcode-heading-step3 = 3. Opne <b>menyen</b> (<img data-l10n-name="ios-menu-
 fxa-qrcode-heading-step4 = 4. Skann denne koden:
 fxa-pair-device-dialog-sync =
     .style = width: 32em;
+fxa-pair-device-dialog-sync2 =
+    .style = min-width: 32em;
 fxa-qrcode-pair-title = Synkroniser { -brand-product-name } på telefonen eller nettbrettet ditt
 fxa-qrcode-pair-step1 = 1. Opne { -brand-product-name } på den mobile eininga di.
+fxa-qrcode-pair-step2 = 2. Opne <strong>menyen</strong> (<img data-l10n-name="ios-menu-icon"/> på iOS eller <img data-l10n-name="android-menu-icon"/> på Android) og trykk på <strong>Logg inn for å synkronisere</strong>
+fxa-qrcode-pair-step2-signin = 2. Gå til menyen (<img data-l10n-name="ios-menu-icon"/> på iOS eller <img data-l10n-name="android-menu-icon"/> på Android) og trykk på <strong>Synkroniser og lagre data</strong>
+fxa-qrcode-pair-step3 = 3. Trykk på <strong>Klar til å skanne</strong> og hald telefonen over denne koden
 fxa-qrcode-error-title = Mislykka paring.
 fxa-qrcode-error-body = Prøv ein gong til.

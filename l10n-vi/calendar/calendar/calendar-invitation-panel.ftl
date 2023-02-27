@@ -6,9 +6,19 @@
 # $organizer (String) - The participant that created the original invitation.
 calendar-invitation-panel-intro = { $organizer } đã mời bạn đến:
 # Variables:
+# $organizer (String) - The participant that updated the original invitation.
+calendar-invitation-panel-intro-update = { $organizer } đã cập nhật:
+# Variables:
+# $organizer (String) - The participant that cancelled the invitation.
+calendar-invitation-panel-intro-cancel = { $organizer } đã hủy:
+# Variables:
 # $summary (String) - A short summary or title of the event.
 calendar-invitation-panel-title = { $summary }
 calendar-invitation-panel-action-button = Lưu
+calendar-invitation-panel-save-button = Lưu
+calendar-invitation-panel-view-button = Xem
+calendar-invitation-panel-update-button = Cập nhật
+calendar-invitation-panel-delete-button = Xóa
 calendar-invitation-panel-accept-button = Có
 calendar-invitation-panel-decline-button = Không
 calendar-invitation-panel-tentative-button = Phân vân
@@ -23,6 +33,49 @@ calendar-invitation-datetime-date = { $dayOfWeek }, { $date }
 # $time (String) - The time part of a datetime using the "short" timeStyle.
 # $timezone (String) - The timezone info for the datetime.
 calendar-invitation-datetime-time = { $time } ({ $timezone })
+# Example: Friday, September 16, 2022
+# Variables:
+# $startDate (String) - The date (without time) the event starts on.
+calendar-invitation-interval-all-day = { $startDate }
+# Example: September 16, 2022 – September 16, 2023
+# $startMonth (String) - The month the interval starts.
+# $startDay   (String) - The day of the month the interval starts.
+# $startYear  (String) - The year the interval starts.
+# $endMonth   (String) - The month the interval ends.
+# $endDay     (String) - The day of the month the interval ends.
+# $endYear    (String) - The year the interval ends.
+calendar-invitation-interval-all-day-between-years = { $startDay } { $startMonth } { $startYear } – { $endDay } { $endMonth } { $endYear }
+# Example: September 16 – 20, 2022
+# $month      (String) - The month the interval is in.
+# $startDay   (String) - The day of the month the interval starts.
+# $endDay     (String) - The day of the month the interval ends.
+# $year       (String) - The year the interval is in.
+calendar-invitation-interval-all-day-in-month = { $startDay } – { $endDay } { $month } { $year }
+# Example: September 16 – October 20, 2022
+# $startMonth (String) - The month the interval starts.
+# $startDay   (String) - The day of the month the interval starts.
+# $endDay     (String) - The day of the month the interval ends.
+# $year       (String) - The year the interval is in.
+calendar-invitation-interval-all-day-between-months = { $startDay } { $startMonth } – { $endDay } { $endMonth } { $year }
+# Example: Friday, September 16, 2022 15:00 America/Port of Spain
+# $startDate (String) - The date the interval starts.
+# $startTime (String) - The time the interval starts.
+# $timezone  (String) - The timezone the interval is in.
+calendar-invitation-interval-same-date-time = <b>{ $startTime }</b> { $startDate } { $timezone }
+# Example: Friday, September 16, 2022 14:00 – 16:00 America/Port of Spain
+# $startDate (String) - The date the interval starts.
+# $startTime (String) - The time the interval starts.
+# $endTime   (String) - The time the interval ends.
+# $timezone  (String) - The timezone the interval is in.
+calendar-invitation-interval-same-day = <b>{ $startTime }</b> – <b>{ $endTime }</b> { $startDate } { $timezone }
+# Example: Friday, September 16, 2022 14:00 – Tuesday, September 20, 2022 16:00 America/Port of Spain
+# $startDate (String) - The date the interval starts.
+# $startTime (String) - The time the interval starts.
+# $startDate (String) - The date the interval ends.
+# $endTime   (String) - The time the interval ends.
+# $timezone  (String) - The timezone the interval is in.
+calendar-invitation-interval-several-days = <b>{ $startTime }</b> { $startDate } – <b>{ $endTime }</b> { $endDate } { $timezone }
+calendar-invitation-panel-prop-title-recurrence = Lặp lại:
 calendar-invitation-panel-prop-title-attendees = Người tham dự:
 calendar-invitation-panel-prop-title-description = Mô tả:
 # Variables:
@@ -40,3 +93,4 @@ calendar-invitation-panel-partstat-needs-action = { $count } đang chờ xử l�
 # Variables:
 # $count (Number) - The total number of attendees.
 calendar-invitation-panel-partstat-total = { $count } người tham dự
+calendar-invitation-panel-prop-title-attachments = Đính kèm:

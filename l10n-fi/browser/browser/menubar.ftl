@@ -180,6 +180,17 @@ menu-view-full-screen =
     .label = Koko näytön tila
     .accesskey = K
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Avaa lukunäkymä
+    .accesskey = A
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Sulje lukunäkymä
+    .accesskey = S
+
 ##
 
 menu-view-show-all-tabs =

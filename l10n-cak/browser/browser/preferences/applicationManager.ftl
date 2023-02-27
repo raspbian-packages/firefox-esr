@@ -6,6 +6,10 @@ app-manager-window =
     .title = Taq kib'anikil chokoy
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Taq kib'anikil chokoy
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Tiyuj
     .accesskey = y

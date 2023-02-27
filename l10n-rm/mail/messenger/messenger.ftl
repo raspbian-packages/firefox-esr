@@ -153,6 +153,9 @@ message-header-hide-label-column =
 message-header-large-subject =
     .label = Object grond
     .accesskey = g
+message-header-all-headers =
+    .label = Mussar tut ils chaus-pagina
+    .accesskey = a
 
 ## Action Button Context Menu
 

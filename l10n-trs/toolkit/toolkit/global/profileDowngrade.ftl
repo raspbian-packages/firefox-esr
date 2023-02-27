@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = 'Ngo versiûn hua rukù 'iaj { -brand-product-name } 'iaj sun ngàt
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = 'Ngo versiûn hua rukù 'iaj { -brand-product-name } 'iaj sun ngàt
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Giri 'ngo Perfîl nakàa
 

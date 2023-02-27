@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 38em !important
         }
 
+colors-dialog-window2 =
+    .title = Koloreak
+
 colors-dialog-legend = Testua eta atzeko planoa
 
 text-color-label =

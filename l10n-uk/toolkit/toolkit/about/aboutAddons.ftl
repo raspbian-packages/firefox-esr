@@ -101,7 +101,7 @@ addon-restart-now =
     .label = Перезапустити зараз
 disabled-unsigned-heading =
     .value = Деякі додатки були вимкнені
-disabled-unsigned-description = Наступні додатки не були перевірені для використання в { -brand-short-name }. Ви можете <label data-l10n-name="find-addons">знайти їм заміну</label> або запитати розрабника провести їх перевірку.
+disabled-unsigned-description = Вказані додатки не були перевірені для використання в { -brand-short-name }. Ви можете <label data-l10n-name="find-addons">знайти їм заміну</label> або попросити розробника виконати їх перевірку.
 disabled-unsigned-learn-more = Дізнайтесь більше про наші зусилля в забезпеченні збереження вашої безпеки в Інтернеті.
 disabled-unsigned-devinfo = Розробники, зацікавлені в перевірці своїх додатків, можуть продовжити, прочитавши нашу <label data-l10n-name="learn-more">інструкцію</label>.
 plugin-deprecation-description = Чогось не вистачає? Деякі плагіни більше не підтримуються в { -brand-short-name }. <label data-l10n-name="learn-more">Докладніше.</label>
@@ -142,6 +142,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Дозволи сайтів
 addon-category-sitepermission-title =
     .title = Дозволи сайтів
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Дозволи сайту для { $host }
 
 ## These are global warnings
 
@@ -293,10 +297,6 @@ theme-monochromatic-heading = Забарвлення
 theme-monochromatic-subheading = Сповнені життя нові барви від { -brand-product-name }. Доступні впродовж обмеженого часу.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Спробувати забарвлення
-colorway-collection-independent-voices-subheading = Зробіть так, щоб { -brand-short-name } був ближчим до вас.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Термін дії завершується { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Змінити Colorway
 # Variables:

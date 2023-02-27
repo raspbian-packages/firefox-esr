@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = வரலாற்றை அழிப்பதற்கான அமைப்புகள்
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = வரலாற்றை அழிப்பதற்கான அமைப்புகள்
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

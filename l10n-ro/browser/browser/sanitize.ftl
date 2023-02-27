@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Setări pentru ștergerea istoricului
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Setări pentru ștergerea istoricului
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

@@ -182,6 +182,17 @@ menu-view-full-screen =
     .label = Celoten zaslon
     .accesskey = C
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Odpri bralni pogled
+    .accesskey = B
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Zapri bralni pogled
+    .accesskey = B
+
 ##
 
 menu-view-show-all-tabs =

@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Nastavenia ikony aplikácie
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Nastavenia ikony aplikácie
+
 dock-options-show-badge =
     .label = Zobraziť notifikácie na ikone aplikácie
     .accesskey = f

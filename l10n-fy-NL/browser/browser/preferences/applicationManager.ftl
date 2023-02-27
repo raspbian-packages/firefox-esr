@@ -6,6 +6,10 @@ app-manager-window =
     .title = Applikaasjedetails
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Applikaasjedetails
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Fuortsmite
     .accesskey = F

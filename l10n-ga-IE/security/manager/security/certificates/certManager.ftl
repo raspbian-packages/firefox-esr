@@ -21,6 +21,10 @@ certmgr-edit-ca-cert =
     .title = Cuir socruithe muiníne do theastais na nÚdarás Deimhniúcháin in eagar
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Cuir socruithe muiníne do theastais na nÚdarás Deimhniúcháin in eagar
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Cuir socruithe muiníne in eagar:
 
 certmgr-edit-cert-trust-ssl =
@@ -32,6 +36,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Scrios Teastas
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Scrios Teastas
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Ainm an Teastais
@@ -169,9 +177,8 @@ delete-email-cert-impact = Má scriosann tú teastas ríomhphoist duine, ní bhe
 cert-with-serial =
     .value = Teastas le sraithuimhir: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

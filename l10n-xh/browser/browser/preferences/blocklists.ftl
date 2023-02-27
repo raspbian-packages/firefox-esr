@@ -6,6 +6,10 @@ blocklist-window =
     .title = Uluhlu Lokubhloka
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Uluhlu Lokubhloka
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

@@ -29,3 +29,9 @@ more-from-moz-qr-code-firefox-mobile-img =
     .alt = QR-koodi { -brand-product-name }in mobiiliversion lataamiseksi
 more-from-moz-button-mozilla-vpn-2 = Hanki VPN
 more-from-moz-learn-more-link = Lue lisää
+
+## These strings are for the Firefox Relay card in about:preferences moreFromMozilla page
+
+more-from-moz-firefox-relay-title = { -relay-brand-name }
+more-from-moz-firefox-relay-description = Suojaa postilaatikkosi ja henkilöytesi ilmaisella sähköpostimaskilla.
+more-from-moz-firefox-relay-button = Hanki { -relay-brand-short-name }

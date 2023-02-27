@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Тарихты тазартуды баптау
     .style = width: 40em
 
+sanitize-prefs2 =
+    .title = Тарихты тазартуды баптау
+    .style = min-width: 40em
+
 sanitize-prefs-style =
     .style = width: 17em
 

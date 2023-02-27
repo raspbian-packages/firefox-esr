@@ -6,6 +6,10 @@ blocklist-window =
     .title = Zoznamy blokovania
     .style = width: 50em
 
+blocklist-window2 =
+    .title = Zoznamy blokovania
+    .style = min-width: 50em
+
 blocklist-description = Vyberte zoznam, ktorý { -brand-short-name } použije na blokovanie sledovacích prvkov. Zoznamy poskytuje organizácia <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

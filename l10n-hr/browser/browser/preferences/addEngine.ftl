@@ -6,6 +6,10 @@ add-engine-window =
     .title = Dodaj tražilicu
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Dodaj tražilicu
+    .style = min-width: 32em;
+
 add-engine-button = Dodaj drugu tražilicu
 
 add-engine-name = Naziv tražilice

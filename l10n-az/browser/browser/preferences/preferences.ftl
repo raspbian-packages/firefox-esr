@@ -187,10 +187,6 @@ files-and-applications-title = Fayllar və Tətbiqlər
 
 download-header = Endirilənlər
 
-download-save-to =
-    .label = Faylların saxlandığı yer
-    .accesskey = y
-
 download-save-where = Faylların saxlandığı yer
     .accesskey = y
 
@@ -928,8 +924,3 @@ certs-devices =
 desktop-folder-name = İşçi masası
 downloads-folder-name = Endirmələr
 choose-download-folder-title = Endirmə qovluğunu seçin:
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Faylları { $service-name } xidmətində saxla

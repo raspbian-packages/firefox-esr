@@ -6,6 +6,10 @@ add-engine-window =
     .title = Дадаць пашукавік
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Дадаць пашукавік
+    .style = min-width: 32em;
+
 add-engine-button = Дадаць уласны пашукавік
 
 add-engine-name = Назва пашукавіка

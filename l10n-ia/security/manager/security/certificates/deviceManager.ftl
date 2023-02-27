@@ -9,6 +9,10 @@ devmgr =
     .title = Gestor de dispositivos
     .style = width: 67em; height: 34em;
 
+devmgr-window =
+    .title = Gestor de dispositivos
+    .style = min-width: 67em; min-height: 34em;
+
 devmgr-devlist =
     .label = Modulos e dispositivos de securitate
 

@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = ਪਰੋਫਾਈਲਰ ਪਰੋਫਾਈਲ ਇਕੱਤਰ ਕਰਦਾ ਹੈ
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = ਹੋਰ ਜਾਣਕਾਰੀ ਲਵੋ
 profiler-popup-description-title =
@@ -139,7 +140,7 @@ profiler-popup-settings =
     .value = ਸੈਟਿੰਗਾਂ
 # This link takes the user to about:profiling, and is only visible with the Custom preset.
 profiler-popup-edit-settings-button =
-    .label = …ਸੈਟਿਗਾਂ ਸੋਧੋ
+    .label = …ਸੈਟਿੰਗਾਂ ਸੋਧੋ
 profiler-popup-recording-screen = ਰਿਕਾਰਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…
 profiler-popup-start-recording-button =
     .label = ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਕਰੋ

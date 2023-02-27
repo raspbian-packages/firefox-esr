@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = CA-sertifikaat-fertrouwensynstellingen bewurkje
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA-sertifikaat-fertrouwensynstellingen bewurkje
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Fertrouwensynstellingen bewurkje:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Sertifikaat fuortsmite
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Sertifikaat fuortsmite
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Host

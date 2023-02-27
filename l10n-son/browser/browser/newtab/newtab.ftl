@@ -42,7 +42,6 @@
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
-
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
 ## Pocket Content Section.

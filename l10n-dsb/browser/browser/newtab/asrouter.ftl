@@ -61,6 +61,22 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } wužywarjow
     }
 
+## Cookie Banner Handling Onboarding
+
+cfr-cookie-banner-accept-button = Napšašowanja zachyśiś
+    .accesskey = N
+cfr-cookie-banner-reject-button = Nic něnto
+    .accesskey = N
+cfr-cookie-banner-accept-button-variant-1 = Wuskokujuce wokna zachyśiś
+    .accesskey = u
+cfr-cookie-banner-reject-button-variant-1 = Ně, źěkujom se
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Reducěrowanje cookiejowych chórgojow
+cfr-cookie-banner-accept-button-variant-2 = Dowóliś
+    .accesskey = D
+cfr-cookie-banner-reject-button-variant-2 = Nic něnto
+    .accesskey = N
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Synchronizěrujśo swóje cytańske znamjenja wšuźi.
@@ -162,10 +178,6 @@ spotlight-total-cookie-protection-body = Dopołny cookiejowy šćit pśeslědowa
 spotlight-total-cookie-protection-expanded = { -brand-short-name } płot wokoło cookiejow twari, kótaryž je na sedło wobgranicujo, na kótaremž sćo, aby je pśeslědowaki njemógli wužywaś, aby was pśeslědowali. Z lažkim pśistupom pomagaśo toś tu funkciju optiměrowaś, aby my mógli dalej lěpšy web za kuždego natwariś.
 spotlight-total-cookie-protection-primary-button = Dopołny šćit pśed cookiejami zmóžniś
 spotlight-total-cookie-protection-secondary-button = Nic něnto
-cfr-total-cookie-protection-header = Z wašeju pomocu jo { -brand-short-name } priwatnjejšy a wěsćejšy ako do togo
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Dopołny šćit pśeśiwo cookiejam jo dotychměst naš nejmócnjejšy šćit priwatnosći – a jo něnto standardne nastajenje za wužywarje { -brand-short-name } wšuźi. My njeby napórali jen bźez jěsnych wobźělnikow ako wy. Wjeliki źěk pótakem, až sćo nam pomogł, lěpšy, priwatnjejši internet napóraś.
 
 ## Emotive Continuous Onboarding
 
@@ -179,3 +191,55 @@ spotlight-pin-primary-button =
        *[other] K nadawkowej rědce pśipěś
     }
 spotlight-pin-secondary-button = Nic něnto
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Nowy { -brand-short-name }. Priwatnjejšy. Mjenjej pśeslědowakow. Žedne kompromisy.
+mr2022-background-update-toast-text = Wopytajśo něnto nejnowšy { -brand-short-name }, něnto z našym doychměst nejmócnjejšym šćitom pśeśiwo slědowanjeju.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = { -brand-shorter-name } něnto wócyniś
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Pózdźej dopomnjeś
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Wopytajśo jen
+    .accesskey = o
+firefoxview-cfr-secondarybutton = Nic něnto
+    .accesskey = N
+firefoxview-cfr-header-v2 = Cyńśo tam malsnje dalej, źož sćo pśestał
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Witajśo k { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Cośo ten wócynjony rejtark na swójom telefonje měś? Wobstarajśo se jen. Trjebaśo sedło, ku kótaremuž sćo rowno woglědał? Simsalabim, jo z { -firefoxview-brand-name } slědk.
+firefoxview-spotlight-promo-primarybutton = Glědajśo, kak to funkcioněrujo
+firefoxview-spotlight-promo-secondarybutton = Pśeskócyś
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Barwowu kombinaciju wubraś
+    .accesskey = B
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Smy was zapśimjeli
+july-jam-set-default-primary = Móje wótkaze z { -brand-short-name } wócyniś

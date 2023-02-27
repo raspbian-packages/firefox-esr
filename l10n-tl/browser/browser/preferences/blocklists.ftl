@@ -6,6 +6,10 @@ blocklist-window =
     .title = Listahan ng mga na-block
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Listahan ng mga na-block
+    .style = min-width: 55em
+
 blocklist-description = Piliin ang listahan ng { -brand-short-name } na ginagamit sa pagharang ng mga online tracker. Ang mga listahan ay hatid ng <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

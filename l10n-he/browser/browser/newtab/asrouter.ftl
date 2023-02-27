@@ -161,9 +161,60 @@ cfr-total-cookie-protection-body = הגנת עוגיות מלאה היא הגנ�
 
 spotlight-better-internet-header = אינטרנט טוב יותר מתחיל בך
 spotlight-better-internet-body = הבחירה להשתמש ב־{ -brand-short-name } משמעה הצבעה עבור אינטרנט פתוח ונגיש שטוב יותר לכולם.
+spotlight-peace-mind-body = בכל חודש, { -brand-short-name } חוסם בממוצע למעלה מ־3,000 רכיבי מעקב למשתמש. כי שום דבר, במיוחד מטרדי פרטיות כמו רכיבי מעקב, לא צריך לעמוד בינך לבין האינטרנט הטוב.
 spotlight-pin-primary-button =
     { PLATFORM() ->
         [macos] שמירה ב־Dock
        *[other] הצמדה לשורת המשימות
     }
 spotlight-pin-secondary-button = לא כעת
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = ‏{ -brand-short-name } חדש. יותר פרטיות. פחות רכיבי מעקב. ללא פשרות.
+mr2022-background-update-toast-text = נסו את { -brand-short-name } החדש ביותר כעת, משודרג עם ההגנה החזקה ביותר שלנו עד כה נגד מעקב.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = פתיחת { -brand-shorter-name } כעת
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = להזכיר לי מאוחר יותר
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = בואו ננסה
+    .accesskey = נ
+firefoxview-cfr-secondarybutton = לא כעת
+    .accesskey = ל
+firefoxview-cfr-header = לקבל בחזרה לשוניות שנסגרו לאחרונה עם { -firefoxview-brand-name }
+firefoxview-cfr-header-v2 = להמשיך בזריזות מאיפה שהפסקת
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = תגידו שלום ל־{ -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = רוצה את הלשונית הפתוחה הזאת שבטלפון שלך? קיבלת. יש לך צורך באתר שבדיוק עכשיו ביקרת? פוף, הנה הוא כאן ב־{ -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = כיצד זה עובד
+firefoxview-spotlight-promo-secondarybutton = דילוג
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = בחירת ערכת צבעים
+    .accesskey = ב
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = צבעו את הדפדפן שלכם בגוונים בלעדיים של { -brand-short-name } בהשראת קולות שמשנים תרבות.

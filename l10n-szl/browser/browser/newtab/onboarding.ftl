@@ -25,6 +25,9 @@ return-to-amo-addon-title = Teroz pobier <img data-l10n-name="icon"/><b>{ $addon
 return-to-amo-add-extension-label = Przidej rozszyrzynie
 return-to-amo-add-theme-label = Przidej motyw
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +44,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Postymp: krok { $current } ze { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Postymp: krok { $current } ze { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -296,4 +301,11 @@ mr2022-onboarding-welcome-pin-header = Poznej niyzwyczajny internet
 
 
 ## MR2022 Multistage Gratitude screen strings
+
+
+## Onboarding spotlight for infrequent users
+
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
 

@@ -22,6 +22,7 @@ pocket-panel-saved-page-saved = S'ha desat al { -pocket-brand-name }
 pocket-panel-saved-page-saved-b = S'ha desat al { -pocket-brand-name }.
 pocket-panel-saved-processing-remove = S'està eliminant la pàgina…
 pocket-panel-saved-removed = S'ha eliminat la pàgina de La meva llista
+pocket-panel-saved-removed-updated = S'ha eliminat la pàgina dels elements desats
 pocket-panel-saved-processing-tags = S'estan afegint les etiquetes…
 pocket-panel-saved-remove-page = Elimina la pàgina
 pocket-panel-saved-save-tags = Desa
@@ -45,8 +46,10 @@ pocket-panel-signup-tagline-story-one = Feu clic al botó del { -pocket-brand-na
 pocket-panel-signup-tagline-story-two = Vegeu-lo al { -pocket-brand-name } en qualsevol dispositiu, a qualsevol hora.
 pocket-panel-signup-cta-a-fix = El vostre botó de «desa» d'Internet.
 pocket-panel-signup-cta-b = Feu clic al botó del { -pocket-brand-name } per a desar articles, vídeos i enllaços. Podeu veure la vostra llista en qualsevol dispositiu, a qualsevol hora.
+pocket-panel-signup-cta-b-updated = Feu clic al botó del { -pocket-brand-name } per a desar articles, vídeos i enllaços. Podeu veure els elements desats en qualsevol dispositiu, a qualsevol hora.
 pocket-panel-signup-cta-b-short = Feu clic al botó del { -pocket-brand-name } per a desar articles, vídeos i enllaços.
 pocket-panel-signup-cta-c = Podeu veure la vostra llista en qualsevol dispositiu, a qualsevol hora.
+pocket-panel-signup-cta-c-updated = Podeu veure els elements desats en qualsevol dispositiu, a qualsevol hora.
 
 ## about:pocket-home panel
 
@@ -64,6 +67,7 @@ pocket-panel-home-new-user-message = Vegeu el contingut que heu desat recentment
 ## Pocket panel header component
 
 pocket-panel-header-my-list = Mostra la meva llista
+pocket-panel-header-my-saves = Mostra els meus elements desats
 pocket-panel-header-sign-in = Inicia la sessió
 
 ## Pocket panel buttons

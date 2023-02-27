@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Aldoni novan ingon
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Ingaj agordoj de { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Aldoni novan ingon
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Ingaj agordoj de { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

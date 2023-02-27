@@ -120,6 +120,7 @@ profiler-popup-button-idle =
     .tooltiptext = Înregistrează un profil de performanță
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Dezvăluie mai multe informații
 profiler-popup-learn-more-button =

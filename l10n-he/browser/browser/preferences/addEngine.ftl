@@ -6,6 +6,10 @@ add-engine-window =
     .title = הוספת מנוע חיפוש
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = הוספת מנוע חיפוש
+    .style = min-width: 32em;
+
 add-engine-button = הוספת מנוע מותאם אישית
 
 add-engine-name = שם מנוע החיפוש

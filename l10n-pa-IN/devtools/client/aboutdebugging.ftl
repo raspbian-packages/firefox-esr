@@ -43,6 +43,9 @@ about-debugging-sidebar-item-connect-button = ਕਨੈਕਟ ਕਰੋ
 about-debugging-sidebar-item-connect-button-connecting = …ਕਨੈਕਟ ਕੀਤਾ ਰਿਹਾ ਹੈ
 # Text displayed in buttons found in sidebar items when the connection failed.
 about-debugging-sidebar-item-connect-button-connection-failed = ਕਨੈਕਸ਼ਨ ਅਸਫ਼ਲ ਹੈ
+# Text displayed in connection warning on sidebar item of the runtime when connecting to
+# the runtime is taking too much time.
+about-debugging-sidebar-item-connect-button-connection-not-responding = ਕਨੈਕਸ਼ਨ ਹਾਲੇ ਵੀ ਬਕਾਇਆ ਹੈ, ਟਾਗਰੇਟ ਬਰਾਊਜ਼ਰ ਉੱਤੇ ਸੁਨੇਹਿਆਂ ਦੀ ਜਾਂਚ ਕਰੋ।
 # Text displayed as connection error in sidebar item when the connection has timed out.
 about-debugging-sidebar-item-connect-button-connection-timeout = ਕਨੈਕਸ਼ਨ ਲਈ ਸਮਾਂ ਸਮਾਪਤ
 # Text displayed in sidebar items for remote devices where a compatible browser (eg
@@ -119,6 +122,10 @@ about-debugging-network-locations-host-input-label = ਹੋਸਟ
 # Text of a button displayed next to existing network locations in the Connect page.
 # Clicking on it removes the network location from the list.
 about-debugging-network-locations-remove-button = ਹਟਾਓ
+# Text used as error message if the input value was already registered in the network locations form of the Setup page.
+# Variables:
+#   $host-value (string) - The input value submitted by the user in the network locations form
+about-debugging-network-location-form-duplicate = “{ $host-value }” ਹੋਸਟ ਪਹਿਲਾਂ ਹੀ ਰਜਿਸਟਰ ਹੈ
 
 # Runtime Page strings
 
@@ -225,6 +232,9 @@ about-debugging-extension-backgroundscript =
 about-debugging-extension-backgroundscript-status-running = ਚੱਲ-ਰਹੇ
 # Displayed for extension using a non-persistent background page when is currently stopped.
 about-debugging-extension-backgroundscript-status-stopped = ਰੁਕੇ
+# This string is displayed as a label of the button that starts a service worker.
+about-debugging-worker-action-start2 = ਸ਼ੁਰੂ ਕਰੋ
+    .disabledTitle = ਇਸ ਵੇਲੇ { -brand-shorter-name } ਦੀਆਂ ਬਹੁਤੀਆਂ ਕਾਰਵਾਈਆਂ ਲਈ ਸੇਵਾਵਾਂ ਵਾਲੇ ਕਾਮੇ ਦੀ ਸ਼ੁਰੂਆਤ ਕਰਨ ਨੂੰ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ
 # This string is displayed as a label of the button that unregisters a service worker.
 about-debugging-worker-action-unregister = ਅਣ-ਰਜਿਸਟਰ ਕਰੋ
 # Displayed for service workers in runtime pages that listen to Fetch events.

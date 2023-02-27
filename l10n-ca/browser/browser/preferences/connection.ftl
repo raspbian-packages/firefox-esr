@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Paràmetres de connexió
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Servidor intermediari d'HTTP
     .accesskey = H
 connection-proxy-http-port = Port
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = Utilitza també aquest servidor intermediari per a HTTPS
     .accesskey = U

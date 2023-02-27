@@ -117,7 +117,7 @@ startup-restore-windows-and-tabs =
     .label = Hapni dritare dhe skeda të mëparshme
     .accesskey = H
 startup-restore-warn-on-quit =
-    .label = T’ju sinjalizojë kur dilni e mbyllni shfletuesin
+    .label = T’ju sinjalizojë, kur dilni e mbyllni shfletuesin
 disable-extension =
     .label = Çaktivizoje Zgjerimin
 tabs-group-header = Skeda
@@ -184,12 +184,15 @@ preferences-web-appearance-header = Dukje sajti
 preferences-web-appearance-description = Disa sajte e përshtatin skemën e ngjyrave të tyre bazuar në parapëlqimet tuaja. Zgjidhni cilën skemë ngjyre do të donit të përdoret për këto sajte.
 preferences-web-appearance-choice-browser = Temë { -brand-short-name }-i
 preferences-web-appearance-choice-system = Temë sistemi
+preferences-web-appearance-choice-auto = Vetvetiu
 preferences-web-appearance-choice-light = E çelët
 preferences-web-appearance-choice-dark = E errët
 preferences-web-appearance-choice-tooltip-browser =
     .title = Përputhini rregullimet tuaja të temës së { -brand-short-name }-it për sfonde dhe lëndë sajtesh.
 preferences-web-appearance-choice-tooltip-system =
     .title = Përputhini rregullimet tuaja të sistemit për sfonde dhe lëndë sajtesh.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Bëni të ndryshojnë vetvetiu sfonde dhe lëndë sajti, bazuar në rregullimet e sistemit tuaj dhe temën e { -brand-short-name }-it.
 preferences-web-appearance-choice-tooltip-light =
     .title = Përdorni një pamje të çelët për sfonde dhe lëndë sajtesh.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -222,7 +227,7 @@ advanced-fonts =
     .label = Të mëtejshme…
     .accesskey = t
 # Zoom is a noun, and the message is used as header for a group of options
-preferences-zoom-header = Zoom
+preferences-zoom-header = Zmadhim/Zvogëlim
 preferences-default-zoom = Zoom parazgjedhje
     .accesskey = Z
 preferences-default-zoom-value =
@@ -235,7 +240,7 @@ choose-language-description = Zgjidhni gjuhën tuaj të parapëlqyer për shfaqj
 choose-button =
     .label = Zgjidhni…
     .accesskey = z
-choose-browser-language-description = Zgjidhni gjuhët e përdorura për shfaqje menush, mesazhesh, dhe njoftimesh nga { -brand-short-name }-i.
+choose-browser-language-description = Zgjidhni gjuhët e përdorura për shfaqje menush, mesazhesh dhe njoftimesh nga { -brand-short-name }-i.
 manage-browser-languages-button =
     .label = Caktoni Alternativa…
     .accesskey = C
@@ -354,6 +359,13 @@ applications-use-os-default-label =
 
 ##
 
+applications-handle-new-file-types-description = Ç'duhet të bëjë { -brand-short-name }-i me kartelat e tjera?
+applications-save-for-new-types =
+    .label = Ruaji kartelat
+    .accesskey = R
+applications-ask-before-handling =
+    .label = Pyet në të hapen apo të ruhen kartelat
+    .accesskey = P
 drm-content-header = Lëndë nën Digital Rights Management (DRM)
 play-drm-content =
     .label = Luaj lëndë të kontrolluar nga DRM
@@ -414,7 +426,7 @@ performance-allow-hw-accel =
     .accesskey = u
 performance-limit-content-process-option = Kufi procesesh lënde
     .accesskey = P
-performance-limit-content-process-enabled-desc = Proceset shtesë për lëndën mund të përmirësojnë punimin kur përdoren shumë skeda njëherësh, por kështu do të përdoret më tepër kujtesë.
+performance-limit-content-process-enabled-desc = Proceset shtesë për lëndën mund të përmirësojnë punimin, kur përdoren shumë skeda njëherësh, por kështu do të përdoret më tepër kujtesë.
 performance-limit-content-process-blocked-desc = Ndryshimi i numrit të proceseve të lëndës është i mundur vetëm me { -brand-short-name }-in shumëprocesësh. <a data-l10n-name="learn-more">Mësoni se si të kontrolloni nëse mënyra shumëprocesëshe është e aktivizuar</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
@@ -440,7 +452,7 @@ browsing-use-cursor-navigation =
     .label = Përdor përherë taste kursori për lëvizje brenda faqesh
     .accesskey = u
 browsing-search-on-start-typing =
-    .label = Kërko për tekst kur niset të shtypet
+    .label = Kërko për tekst, kur niset të shtypet
     .accesskey = t
 browsing-picture-in-picture-toggle-enabled =
     .label = Aktivizoni kontrolle video për foto-në-foto
@@ -456,13 +468,13 @@ browsing-cfr-recommendations =
 browsing-cfr-features =
     .label = Rekomandim veçorish teksa shfletoni
     .accesskey = R
-browsing-cfr-recommendations-learn-more = Mësoni Më Tepër
+browsing-cfr-recommendations-learn-more = Mësoni më tepër
 
 ## General Section - Proxy
 
 network-settings-title = Rregullime Rrjeti
 network-proxy-connection-description = Formësoni se si lidhet në internet { -brand-short-name }-i.
-network-proxy-connection-learn-more = Mësoni Më Tepër
+network-proxy-connection-learn-more = Mësoni më tepër
 network-proxy-connection-settings =
     .label = Rregullime…
     .accesskey = R
@@ -470,7 +482,7 @@ network-proxy-connection-settings =
 ## Home Section
 
 home-new-windows-tabs-header = Dritare dhe Skeda të Reja
-home-new-windows-tabs-description2 = Zgjidhni çfarë shihni kur hapni faqen tuaj hyrëse, dritare të reja dhe skeda të reja.
+home-new-windows-tabs-description2 = Zgjidhni çfarë shihni, kur hapni faqen tuaj hyrëse, dritare të reja dhe skeda të reja.
 
 ## Home Section - Home Page Customization
 
@@ -483,6 +495,8 @@ home-restore-defaults =
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
     .label = Kreu i Firefox-it (Parazgjedhje)
+home-mode-choice-default-fx =
+    .label = { -firefox-home-brand-name } (Parazgjedhje)
 home-mode-choice-custom =
     .label = URL Vetjake…
 home-mode-choice-blank =
@@ -508,6 +522,8 @@ choose-bookmark =
 
 home-prefs-content-header = Lëndë Firefox Home
 home-prefs-content-description = Zgjidhni ç’lëndë doni në skenën tuaj Firefox.
+home-prefs-content-header2 = Lëndë { -firefox-home-brand-name }
+home-prefs-content-description2 = Zgjidhni ç’lëndë doni në skenën tuaj { -firefox-home-brand-name }.
 home-prefs-search-header =
     .label = Kërkim Web
 home-prefs-shortcuts-header =
@@ -528,6 +544,8 @@ home-prefs-recommended-by-description-new = Lëndë e jashtëzakonshme, në kujd
 home-prefs-recommended-by-learn-more = Si funksionon
 home-prefs-recommended-by-option-sponsored-stories =
     .label = Histori të Sponsorizuara
+home-prefs-recommended-by-option-recent-saves =
+    .label = Shfaq të Ruajturat Së Fundi
 home-prefs-highlights-option-visited-pages =
     .label = Faqe të Vizituara
 home-prefs-highlights-options-bookmarks =
@@ -557,7 +575,7 @@ home-prefs-sections-rows-option =
 
 search-bar-header = Shtyllë Kërkimesh
 search-bar-hidden =
-    .label = Përdoreni shtyllën e adresave për kërkime dhe lëvizje
+    .label = Përdorni shtyllën e adresave për kërkime dhe lëvizje
 search-bar-shown =
     .label = Shtoni te paneli shtyllë kërkimesh
 search-engine-default-header = Motor Parazgjedhje Kërkimesh
@@ -574,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Shfaq sugjerime kërkimi te përfundimet në shtyllë adresash
     .accesskey = q
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Shfaq terma kërkimi, në vend se URL, te faqe përfundimesh nga motori parazgjedhje i kërkimeve
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -701,11 +724,18 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = R
     .buttonlabelextra2 = Shkëputni…
     .buttonaccesskeyextra2 = u
+sync-choose-what-to-sync-dialog3 =
+    .title = Zgjidhni Ç’të Njëkohësohet
+    .style = min-width: 36em;
+    .buttonlabelaccept = Ruaji Ndryshimet
+    .buttonaccesskeyaccept = R
+    .buttonlabelextra2 = Shkëputni…
+    .buttonaccesskeyextra2 = u
 sync-engine-bookmarks =
-    .label = Faqerojtësit e Mi
+    .label = Faqerojtës
     .accesskey = F
 sync-engine-history =
-    .label = Historikun Tim
+    .label = Historik
     .accesskey = H
 sync-engine-tabs =
     .label = Skeda të hapura
@@ -724,12 +754,12 @@ sync-engine-creditcards =
     .tooltiptext = Emra, numra dhe data skadimi (vetëm për desktop)
     .accesskey = K
 sync-engine-addons =
-    .label = Shtesat e Mia
+    .label = Shtesa
     .tooltiptext = Zgjerime dhe tema për Firefox Desktop
     .accesskey = t
 sync-engine-settings =
     .label = Rregullime
-    .tooltiptext = Rregullime të Përgjithshme, Privatësie, dhe Sigurie që keni ndryshuar
+    .tooltiptext = Rregullime të Përgjithshme, Privatësie dhe Sigurie që keni ndryshuar
     .accesskey = R
 
 ## The device name controls.
@@ -769,6 +799,9 @@ forms-breach-alerts =
     .label = Shfaq sinjalizime rreth fjalëkalimesh për sajte të cenuar
     .accesskey = f
 forms-breach-alerts-learn-more-link = Mësoni më tepër
+relay-integration =
+    .label = Aktivizoni { -relay-brand-name } në përgjegjësin tuaj të fjalëkalimeve { -brand-short-name }
+relay-integration-learn-more-link = Mësoni më tepër
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Vetëplotëso kredenciale hyrjeje dhe fjalëkalime
@@ -828,11 +861,11 @@ history-remember-label = { -brand-short-name }-i
 history-remember-option-all =
     .label = Do ta mbajë mend historikun
 history-remember-option-never =
-    .label = Nuk do ta mbajë mend historikun
+    .label = S’do ta mbajë mend historikun
 history-remember-option-custom =
     .label = Do të përdorë rregullime vetjake për historikun
 history-remember-description = { -brand-short-name }-i do të mbajë mend historikun tuaj të shfletimeve, shkarkimeve, formularëve dhe kërkimeve.
-history-dontremember-description = { -brand-short-name }-i do të përdorë të njëjtat rregullime si të shfletimit privat, dhe nuk do të mbajë mend ndonjë historik, teksa shfletoni në Web.
+history-dontremember-description = { -brand-short-name }-i do të përdorë të njëjtat rregullime si të shfletimit privat dhe s’do të mbajë mend ndonjë historik, teksa shfletoni në Web.
 history-private-browsing-permanent =
     .label = Përdor përherë mënyrën shfletim privat
     .accesskey = v
@@ -918,7 +951,11 @@ addressbar-locbar-topsites-option =
 addressbar-locbar-engines-option =
     .label = Motorë kërkimesh
     .accesskey = k
+addressbar-locbar-quickactions-option =
+    .label = Veprime të shpejta
+    .accesskey = V
 addressbar-suggestions-settings = Ndryshoni parapëlqimet mbi sugjerime nga motorë kërkimi
+addressbar-quickactions-learn-more = Mësoni më tepër
 
 ## Privacy Section - Content Blocking
 
@@ -951,7 +988,7 @@ content-blocking-private-windows = Lëndë gjurmimi në Dritare Private
 content-blocking-cross-site-cookies-in-all-windows = “Cross-site cookies” në krejt dritaret (përfshin cookies gjurmimi)
 content-blocking-cross-site-tracking-cookies = Cookies gjurmimi nga sajte në sajte
 content-blocking-all-cross-site-cookies-private-windows = “Cross-site cookies” në Dritare Private
-content-blocking-cross-site-tracking-cookies-plus-isolate = Cookie-t për gjurmim nga sajti në sajt, dhe izolo cookie-t e mbetura
+content-blocking-cross-site-tracking-cookies-plus-isolate = Cookie-t për gjurmim nga sajti në sajt dhe izolo cookie-t e mbetura
 content-blocking-social-media-trackers = Gjurmues prej mediash shoqërore
 content-blocking-all-cookies = Krejt cookie-t
 content-blocking-unvisited-cookies = Cookies nga sajte të pavizituar
@@ -964,9 +1001,13 @@ content-blocking-fingerprinters = Krijues shenjash gishtash
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Provoni funksionimin tonë në privatësi, më të fuqishëm se kurrë
     .accesskey = P
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Mbrojtja Tërësore Nga Cookie-t i mban “cookies” te sajti ku gjendeni, që gjurmuesit të mos i përdorin dot për t’ju ndjekur nga një saj te tjetri.
 content-blocking-etp-standard-tcp-rollout-learn-more = Mësoni më tepër
+content-blocking-etp-standard-tcp-title = Përfshin Mbrojtje Tërësore Nga Cookie-t, veçoria jonë më e fuqishme ndonjëherë për mbrojtje
 content-blocking-warning-title = Kini mendjen!
 content-blocking-and-isolating-etp-warning-description-2 = Ky rregullim mund të sjellë mosshfaqje të lëndës ose funksionim jo të saktë në disa sajte. Nëse një sajt duket i dëmtuar, mund të doni të çaktivizoni mbrojtjen nga gjurmimet për atë saj, që të ngarkohet krejt lënda.
 content-blocking-warning-learn-how = Mësoni se si
@@ -988,7 +1029,7 @@ content-blocking-cookies-label =
     .label = Cookies
     .accesskey = C
 content-blocking-expand-section =
-    .tooltiptext = Më tepër të dhëna
+    .tooltiptext = Më tepër hollësi
 # Cryptomining refers to using scripts on websites that can use a computer’s resources to mine cryptocurrency without a user’s knowledge.
 content-blocking-cryptominers-label =
     .label = Nxjerrës kriptomonedhash
@@ -1046,7 +1087,7 @@ permissions-block-popups-exceptions-button =
     .accesskey = P
     .searchkeywords = flluska
 permissions-addon-install-warning =
-    .label = Njofto kur sajte përpiqen të instalojnë shtesa
+    .label = Njofto, kur sajte përpiqen të instalojnë shtesa
     .accesskey = T
 permissions-addon-exceptions =
     .label = Përjashtime…
@@ -1074,6 +1115,12 @@ addon-recommendations-link = Mësoni më tepër
 collection-health-report-disabled = Raportimi i të dhënave është i çaktivizuar për këtë formësim montimi
 collection-backlogged-crash-reports-with-link = Lejojeni { -brand-short-name }-in të dërgojë raporte vithisjesh të mëparshme në emrin tuaj <a data-l10n-name="crash-reports-link">Mësoni më tepër</a>
     .accesskey = c
+privacy-segmentation-section-header = Veçori të reja që thellojnë shfletimin tuaj
+privacy-segmentation-section-description = Kur ofrojmë veçori që përdorin të dhënat tuaja për t’ju dhënë ju një punim më personal:
+privacy-segmentation-radio-off =
+    .label = Përdorni rekomandime { -brand-product-name }-i
+privacy-segmentation-radio-on =
+    .label = Shfaq të dhëna të hollësishme
 
 ## Privacy Section - Security
 ##
@@ -1114,7 +1161,7 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name }-it po i mbarohet 
 ## Privacy Section - HTTPS-Only
 
 httpsonly-header = Mënyra Vetëm-HTTPS
-httpsonly-description = HTTPS-ja furnizon një lidhje të sigurt, të fshehtëzuar, mes { -brand-short-name }-it dhe sajtit që vizitoni. Shumica e sajteve e mbulojnë përdorimin e HTTPS-së, dhe nëse është aktivizuar mënyrë Vetëm-HTTPS, atëherë { -brand-short-name }-i do t’i kalojë krejt lidhjet nën mënyrën HTTPS.
+httpsonly-description = HTTPS-ja furnizon një lidhje të sigurt, të fshehtëzuar, mes { -brand-short-name }-it dhe sajtit që vizitoni. Shumica e sajteve e mbulojnë përdorimin e HTTPS-së dhe, nëse është aktivizuar mënyrë Vetëm-HTTPS, atëherë { -brand-short-name }-i do t’i kalojë krejt lidhjet nën mënyrën HTTPS.
 httpsonly-learn-more = Mësoni më tepër
 httpsonly-radio-enabled =
     .label = Aktivizoje Mënyrën Vetëm-HTTPS në krejt dritaret

@@ -6,6 +6,10 @@ add-engine-window =
     .title = Добавяне на търсеща машина
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Добавяне на търсеща машина
+    .style = min-width: 32em;
+
 add-engine-button = Добавяне на търсеща машина от потребител
 
 add-engine-name = Име на търсеща машина

@@ -22,7 +22,7 @@ experimental-features-media-jxl-description = Attiva in { -brand-short-name } il
 # by various online articles and is technical in nature.
 experimental-features-css-constructable-stylesheets =
     .label = CSS: Constructable Stylesheets
-experimental-features-css-constructable-stylesheets-description = L’aggiunta di un costruttore all’interfaccia <a data-l10n-name="mdn-cssstylesheet">CSSStyleSheet</a>, insieme ad altre modifiche correlate, rende possibile la creazione di nuovi fogli di stile senza bisogno di aggiungerli all’HTML. Questo rende molte più facile la creazione di fogli di stile riutilizzabili con <a data-l10n-name="mdn-shadowdom">Shadow DOM</a>. Consultare <a data-l10n-name="bugzilla">bug 1520690</a> per ulteriori dettagli.
+experimental-features-css-constructable-stylesheets-description = L’aggiunta di un costruttore all’interfaccia <a data-l10n-name="mdn-cssstylesheet">CSSStyleSheet</a>, insieme ad altre modifiche correlate, rende possibile la creazione di nuovi fogli di stile senza bisogno di aggiungerli all’HTML. Questo rende molto più facile la creazione di fogli di stile riutilizzabili con <a data-l10n-name="mdn-shadowdom">Shadow DOM</a>. Consultare <a data-l10n-name="bugzilla">bug 1520690</a> per ulteriori dettagli.
 
 experimental-features-devtools-compatibility-panel =
     .label = Strumenti di sviluppo: pannello compatibilità
@@ -72,11 +72,6 @@ experimental-features-js-warp-description = Attiva Warp, un progetto per miglior
 experimental-features-ime-search =
     .label = Barra degli indirizzi: mostra risultati quando si usa la composizione IME
 experimental-features-ime-search-description = Un IME (Input Method Editor) è uno strumento che permette di inserire simboli complessi, come quelli utilizzati da lingue asiatiche o indiane, utilizzando una tastiera tradizionale. Attivando questo esperimento il pannello della barra degli indirizzi rimarrà aperto, mostrando risultati di ricerca e suggerimenti, anche quando si utilizza IME per inserire il testo. Alcuni IME utilizzano un pannello che potrebbe coprire i risultati della barra degli indirizzi, per cui si consiglia di attivare questa opzione solo per IME che non usano questo approccio.
-
-# Text recognition for images
-experimental-features-text-recognition =
-    .label = Riconoscimento del testo
-experimental-features-text-recognition-description = Attiva il riconoscimento del testo nelle immagini.
 
 experimental-features-accessibility-cache =
     .label = Cache per accessibilità

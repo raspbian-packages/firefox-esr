@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Amiestu d'un contenedor nuevu
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Axustes del contenedor «{ $name }»
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Amiestu d'un contenedor nuevu
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Axustes del contenedor «{ $name }»
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

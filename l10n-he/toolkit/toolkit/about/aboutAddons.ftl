@@ -139,6 +139,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = הרשאות אתר
 addon-category-sitepermission-title =
     .title = הרשאות אתר
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = הרשאות אתר עבור { $host }
 
 ## These are global warnings
 
@@ -280,10 +284,6 @@ theme-monochromatic-heading = ערכות צבעים
 theme-monochromatic-subheading = ערכות צבעים חדשים ותוססים מ־{ -brand-product-name }. זמינים לזמן מוגבל.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = לנסות ערכות צבעים
-colorway-collection-independent-voices-subheading = להפוך את { -brand-short-name } לקצת אישי יותר
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = יפוג ב־{ DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = שינוי ערכת צבעים
 # Variables:

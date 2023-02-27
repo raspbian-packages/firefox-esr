@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Privata retumo de { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Privata retumo de { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,17 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Helpo
 urlbar-search-tips-confirm = En ordo, mi komprenis
+urlbar-search-tips-confirm-short = Mi komprenis
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Konsileto:
+urlbar-result-menu-button =
+    .title = Malfermi menuon
+urlbar-result-menu-remove-from-history =
+    .label = Forigi el historio
+    .accesskey = F
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +155,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Tajpu malpli, trovi pli: serĉi per { $engineName } rekte el via adresa strio.
 urlbar-search-tips-redirect-2 = Komencu vian serĉon en la adresa strio por vidi sugestojn el { $engineName } kaj el via retuma historio.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Iĝis pli simple serĉi. Klopodu igi vian serĉon pli specifa ĉi tie, en la adresa strio. Por anstataŭe montri retadresojn, iru al agordoj kaj poste al Serĉo.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Elektu tiun ĉi ŝparvojon por pli rapide trovi kion vi bezonas.
@@ -267,35 +277,50 @@ search-one-offs-actions =
     .tooltiptext = Agoj ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
-# Opens the about:addons page
+# Opens the about:addons page in the home / recommendations section
 quickactions-addons = Vidi aldonaĵojn
-quickactions-cmd-addons = aldonaĵoj, etendaĵoj, etosoj
+quickactions-cmd-addons2 = aldonaĵoj
 # Opens the bookmarks library window
 quickactions-bookmarks = Vidi legosignojn
+# Opens the bookmarks library window
+quickactions-bookmarks2 = Administri legosignojn
 quickactions-cmd-bookmarks = legosignojn
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Viŝi historion
 quickactions-cmd-clearhistory = viŝi historion
 # Opens about:downloads page
 quickactions-downloads = Malfermi elŝutojn
+# Opens about:downloads page
+quickactions-downloads2 = Montri elŝutojn
 quickactions-cmd-downloads = elŝutojn
+# Opens about:addons page in the extensions section
+quickactions-extensions = Administri etendaĵojn
+quickactions-cmd-extensions = etendaĵoj
 # Opens the devtools web inspector
 quickactions-inspector = Malfermi la inspektilon
+# Opens the devtools web inspector
+quickactions-inspector2 = Malfermi la ilojn por programistoj
 quickactions-cmd-inspector = inspektilo, iloj por programistoj
 # Opens about:logins
 quickactions-logins = Vidi legitimilojn
+# Opens about:logins
+quickactions-logins2 = Administri pasvortojn
 quickactions-cmd-logins = legitimiloj, pasvortoj
+# Opens about:addons page in the plugins section
+quickactions-plugins = Administri kromprogramojn
+quickactions-cmd-plugins = kromprogramoj
 # Opens the print dialog
 quickactions-print = Presi
+# Opens the print dialog
+quickactions-print2 = Presi paĝon
 quickactions-cmd-print = presi
 # Opens a new private browsing window
 quickactions-private = Malfermi fenestron de privata retumo
+# Opens a new private browsing window
+quickactions-private2 = Malfermi privatan fenestron
 quickactions-cmd-private = privata retumo
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Refreŝigi { -brand-short-name }
@@ -305,16 +330,28 @@ quickactions-restart = Restartigi { -brand-short-name }
 quickactions-cmd-restart = restartigi
 # Opens the screenshot tool
 quickactions-screenshot2 = Fari ekrankopion
+# Opens the screenshot tool
+quickactions-screenshot3 = Fari ekrankopion
 quickactions-cmd-screenshot = ekrankopio
 # Opens about:preferences
 quickactions-settings = Malfermi agordojn
+# Opens about:preferences
+quickactions-settings2 = Administri agordojn
 quickactions-cmd-settings = agordoj, preferoj, elektebloj
+# Opens about:addons page in the themes section
+quickactions-themes = Administri etosojn
+quickactions-cmd-themes = etosojn
 # Opens a SUMO article explaining how to update the browser
 quickactions-update = Ĝisdatigi { -brand-short-name }
 quickactions-cmd-update = ĝisdatigi
 # Opens the view-source UI with current pages source
 quickactions-viewsource = Montri fonton
+# Opens the view-source UI with current pages source
+quickactions-viewsource2 = Vidi fonton de paĝo
 quickactions-cmd-viewsource = vidi fonton, fonton
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Pli da informo pri rapidaj agoj
 
 ## Bookmark Panel
 
@@ -472,6 +509,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofono
 popup-select-speaker-icon =
     .tooltiptext = Laŭtparoliloj
+popup-select-window-or-screen =
+    .label = Fenestro aŭ ekrano:
+    .accesskey = F
 popup-all-windows-shared = Ĉiuj videblaj fenestroj en via ekrano estos dividitaj.
 popup-screen-sharing-block =
     .label = Bloki
@@ -493,6 +533,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Por uzi la ŝparvojon F12, unue malfermu la ilojn por programistoj el la menuo Teksaĵa programisto.
+enable-devtools-popup-description2 = Por uzi la ŝparvojon F12, unue malfermu la ilojn por programistoj el la menuo Teksaĵa programisto.
 
 ## URL Bar
 
@@ -624,6 +665,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Rapidaj agoj
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Eniri legilan vidon
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Fermi legilan vidon
 
 ## Full Screen and Pointer Lock UI
 
@@ -901,3 +951,29 @@ private-browsing-indicator-label = Privata retumo
 unified-extensions-button =
     .label = Etendaĵoj
     .tooltiptext = Etendaĵoj
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Etendaĵoj
+    .tooltiptext =
+        Etendaĵoj
+        Bezonataj permesoj
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } evitis ke tiu ĉi paĝo aŭtomate reŝargiĝu.
+refresh-blocked-redirect-label = { -brand-short-name } evitis ke tiu ĉi paĝo aŭtomate redirektiĝis al alia paĝo.
+refresh-blocked-allow =
+    .label = Permesi
+    .accesskey = P
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } maskas vian veran retpoŝtan adreson por helpi vin esti protektita kontraŭ datumfuĝoj kaj trudmesaĝoj.
+firefox-relay-offer-how-we-integrate = Se vi daŭrigas, vi povos krei novajn retpoŝtajn maskojn de { -relay-brand-short-name } rekte el la pasvorta administrilo de { -brand-shorter-name }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Ni plusendos ĉiujn retpoŝtajn mesaĝojn el <strong>{ $sitename }</strong> al <strong>{ $useremail }</strong>.

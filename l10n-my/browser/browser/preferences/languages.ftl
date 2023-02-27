@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = ဝဘ်စာမျက်နှာ ဘာသာစကား အပြင်အဆင်များ
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = ဝဘ်စာမျက်နှာ ဘာသာစကား အပြင်အဆင်များ
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } ဘာသာစကား အပြင်အဆင်များ
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } ဘာသာစကား အပြင်အဆင်များ
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } သည် ပထမဦးစွာ ရွေးချယ်ထားသော ဘာသာစကားဖြင့် မူသေအနေနှင့် ပြသပါမည်။ ထိုဘာသာဖြင့် မပြသနိုင်ပါက နောက်ရွေးချယ်ထားသော ဘာသာစကားဖြင့် ပြသပါမည်။
 

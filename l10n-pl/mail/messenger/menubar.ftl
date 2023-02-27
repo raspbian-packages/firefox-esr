@@ -53,6 +53,23 @@ menu-help-troubleshooting-info =
 menu-help-about-product =
     .label = O programie { -brand-short-name }
     .accesskey = O
+# These menu-quit strings are only used on Windows and Linux.
+menu-quit =
+    .label =
+        { PLATFORM() ->
+            [windows] Zakończ
+           *[other] Zakończ
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] k
+           *[other] k
+        }
+# This menu-quit-mac string is only used on macOS.
+menu-quit-mac =
+    .label = Zakończ program { -brand-shorter-name }
+quit-app-shortcut =
+    .key = Q
 
 ## Mail Toolbar
 

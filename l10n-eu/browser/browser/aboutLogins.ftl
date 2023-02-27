@@ -7,6 +7,8 @@ about-logins-page-title = Saio-hasierak eta pasahitzak
 login-filter =
     .placeholder = Bilatu saio-hasierak
 create-login-button = Sortu saio-hasiera berria
+create-new-login-button =
+    .title = Sortu saio-hasiera berria
 fxaccounts-sign-in-text = Eskuratu zure pasahitzak zure beste gailuetan
 fxaccounts-sign-in-sync-button = Hasi saioa sinkronizatzeko
 fxaccounts-avatar-button =
@@ -99,6 +101,15 @@ login-item-cancel-button = Utzi
 login-item-time-changed = Azken aldaketa: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
 login-item-time-created = Sortuta: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
 login-item-time-used = Azken erabilera: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Sortuta
+login-item-timeline-action-updated = Eguneratua
+login-item-timeline-action-used = Erabilita
 
 ## OS Authentication dialog
 

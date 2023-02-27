@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Immediatemente sur le schermo
     .accesskey = I
 
+view-attachments-inline =
+    .label = Vider attachamentos inline
+    .accesskey = V
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Iste thema non es valide o es actualmente indisponibile
 chat-variant-label =
     .value = Variante:
     .accesskey = V
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

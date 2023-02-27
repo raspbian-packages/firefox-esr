@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Teelte ɗemngal hello geese ngoo
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Teelte ɗemngal hello geese ngoo
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Teelte ɗemngal
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Teelte ɗemngal
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } ɗisata ko ɗemngal gadanal gardangal, ɗisa ɗemɗe goɗɗe so ina sokli fawaade e deggondiral no ɗe peeñirta.
 

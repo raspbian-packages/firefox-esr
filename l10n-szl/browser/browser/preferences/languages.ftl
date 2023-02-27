@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Nasztalowania godki na strōnach
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Nasztalowania godki na strōnach
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Nasztalowania godki aplikacyje { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Nasztalowania godki aplikacyje { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } bydzie bazowo pokazowoł piyrszo godka, a inksze jak bydzie trza - podug tego, w jakij stojōm raji.
 

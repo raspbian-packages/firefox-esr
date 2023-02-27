@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Iɣewwaṛen n tuqqna
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Apṛuksi HTTP
     .accesskey = q
 connection-proxy-http-port = Tabburt
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = Seqdec daɣen apṛuksi-a i HTTPS
     .accesskey = S

@@ -6,6 +6,10 @@ blocklist-window =
     .title = Senarai Sekatan
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Senarai Sekatan
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

@@ -14,6 +14,8 @@ policy-3rdparty = Definir directivas a las qualas WebExtensions pon acceder via 
 
 policy-AppAutoUpdate = Activar u deactivar l'actualisaziun automatica da l'applicaziun.
 
+policy-AppUpdatePin = Impedir che { -brand-short-name } vegnia actualisà ad ina versiun pli nova che quella inditgada.
+
 policy-AppUpdateURL = Definir in URL persunalisà per actualisar l'applicaziun.
 
 policy-Authentication = Configurar l'autentificaziun integrada per las websites che la sustegnan.

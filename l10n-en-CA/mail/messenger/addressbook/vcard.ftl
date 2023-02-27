@@ -36,6 +36,10 @@ vcard-n-suffix = Suffix
 vcard-n-add-suffix =
     .title = Add suffix
 
+# Nickname
+
+vcard-nickname = Nickname
+
 # Email vCard field
 
 vcard-email-header = Email Addresses
@@ -54,6 +58,10 @@ vcard-url-label = Website
 vcard-tel-header = Phone Numbers
 vcard-tel-add = Add phone number
 vcard-tel-label = Phone number
+# Or "Mobile"
+vcard-entry-type-cell = Cell
+vcard-entry-type-fax = Fax
+vcard-entry-type-pager = Pager
 
 # TZ vCard field
 
@@ -62,9 +70,13 @@ vcard-tz-add = Add time zone
 
 # IMPP vCard field
 
-vcard-impp-header = Chat Accounts
+vcard-impp2-header = Instant Messaging
 vcard-impp-add = Add chat account
 vcard-impp-label = Chat account
+vcard-impp-select = Protocol
+vcard-impp-option-other = Other
+vcard-impp-input-label = URI
+vcard-impp-input-title = URI for instant messaging
 
 # BDAY and ANNIVERSARY vCard field
 
@@ -101,10 +113,26 @@ vcard-note-add = Add note
 vcard-org-header = Organizational Properties
 vcard-org-add = Add organizational properties
 vcard-org-title = Title
+vcard-org-title-input =
+    .title = Position or job
+    .placeholder = Job title
 vcard-org-role = Role
+vcard-org-role-input =
+    .title = Function or part played in a particular situation
+    .placeholder = Role in a project
 vcard-org-org = Organization
+vcard-org-org-input =
+    .title = Organizational name
+    .placeholder = Company name
+vcard-org-org-unit = Department
+vcard-org-org-unit-input =
+    .title = Organizational unit name
+    .placeholder = Department
 
 # Custom properties
 
 vcard-custom-header = Custom Properties
 vcard-custom-add = Add custom properties
+vcard-remove-button-title =
+    .title = Remove
+vcard-remove-button = Remove

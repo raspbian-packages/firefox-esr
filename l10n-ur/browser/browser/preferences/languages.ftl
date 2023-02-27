@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = ویب صفحہ زبان سیٹنگز
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = ویب صفحہ زبان سیٹنگز
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } زبان سیٹنگز
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } زبان سیٹنگز
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } آپ کی پہلی زبان طے شدہ طور پر ظاہر کرے گا اور اگر ضروری ہو تو وہ ظاہر سیٹنگ میں متبادل زبانوں کو ظاہر کرے گا۔
 

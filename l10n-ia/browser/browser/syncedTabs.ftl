@@ -32,13 +32,13 @@ synced-tabs-context-open-in-new-private-window =
     .label = Aperir in un nove fenestra private
     .accesskey = P
 synced-tabs-context-bookmark-single-tab =
-    .label = Adder un marcapaginas sur iste scheda…
-    .accesskey = m
+    .label = Adder iste scheda al marcapaginas…
+    .accesskey = A
 synced-tabs-context-open-in-tab =
     .label = Aperir in un nove scheda
     .accesskey = v
 synced-tabs-context-open-in-container-tab =
-    .label = Aperir in un nove scheda recipiente
+    .label = Aperir in un nove scheda contentor
     .accesskey = i
 synced-tabs-context-open-in-window =
     .label = Aperir in un nove fenestra
@@ -53,17 +53,9 @@ synced-tabs-context-open-in-private-window =
 # and/or devices in the list. This string is for a menuitem equivalent to one in
 # the tab context menu (activated by right-clicking a tab in the tabstrip). That
 # string is located in tabContextMenu.ftl. So, this string should be translated
-# consistently with the "Bookmark Tab" string there.
-synced-tabs-context-bookmark-tab =
-    .label = Marcar le scheda
-    .accesskey = M
-# Displayed in the Synced Tabs sidebar's context menu when right-clicking tabs
-# and/or devices in the list. This string is for a menuitem equivalent to one in
-# the tab context menu (activated by right-clicking a tab in the tabstrip). That
-# string is located in tabContextMenu.ftl. So, this string should be translated
 # consistently with the "Bookmark Tab…" string there.
 synced-tabs-context-bookmark =
-    .label = Adder scheda al marcapaginas
+    .label = Adder scheda al marcapaginas…
     .accesskey = A
 synced-tabs-context-copy =
     .label = Copiar

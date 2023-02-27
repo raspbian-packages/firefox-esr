@@ -6,6 +6,9 @@ cookies-window-dialog =
     .title = Çerezler
     .style = width: 36em;
 
+cookies-window-dialog2 =
+    .title = Çerezler
+
 window-close-key =
     .key = w
 

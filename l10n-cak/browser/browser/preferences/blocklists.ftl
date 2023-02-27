@@ -6,6 +6,10 @@ blocklist-window =
     .title = Kicholajem taq q'atoj
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Kicholajem taq q'atoj
+    .style = min-width: 55em
+
 blocklist-description = Tacha' ri rucholb'al { -brand-short-name } richin ye'aq'ät ri ojqanela' pa k'amab'ey. Cholb'äl eya'on ruma  <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

@@ -6,6 +6,10 @@ translation-window =
     .title = ခြွင်းချက်များ - ဘာသာပြန်ခြင်း
     .style = width: 36em
 
+translation-window2 =
+    .title = ခြွင်းချက်များ - ဘာသာပြန်ခြင်း
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

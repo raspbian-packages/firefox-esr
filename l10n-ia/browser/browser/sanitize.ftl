@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Parametros pro vacuar le chronologia
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Parametros pro vacuar le chronologia
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

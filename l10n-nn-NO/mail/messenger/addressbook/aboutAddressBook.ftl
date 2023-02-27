@@ -167,10 +167,12 @@ about-addressbook-placeholder-no-search-results = Ingen kontaktar funne
 
 ## Details
 
+about-addressbook-new-contact-header = Ny kontakt
 about-addressbook-prefer-display-name = Føretrekk visingsnamn i staden for namnet i meldingshovudet
 about-addressbook-write-action-button = Skriv til
 about-addressbook-event-action-button = Hending
 about-addressbook-search-action-button = Søk
+about-addressbook-new-list-action-button = Ny liste
 about-addressbook-begin-edit-contact-button = Rediger
 about-addressbook-delete-edit-contact-button = Slett
 about-addressbook-cancel-edit-contact-button = Avbryt
@@ -180,6 +182,7 @@ about-addressbook-details-email-addresses-header = E-postadresser
 about-addressbook-details-phone-numbers-header = Telefonnummer
 about-addressbook-details-addresses-header = Adresser
 about-addressbook-details-notes-header = Notat
+about-addressbook-details-websites-header = Nettstadar
 about-addressbook-details-other-info-header = Annan informasjon
 about-addressbook-entry-type-work = Arbeid
 about-addressbook-entry-type-home = Heim
@@ -194,6 +197,10 @@ about-addressbook-entry-name-role = Rolle
 about-addressbook-entry-name-organization = Organisasjon
 about-addressbook-entry-name-website = Nettstad
 about-addressbook-entry-name-time-zone = Tidssone
+about-addressbook-entry-name-custom1 = Eigendefinert 1
+about-addressbook-entry-name-custom2 = Eigendefinert 2
+about-addressbook-entry-name-custom3 = Eigendefinert 3
+about-addressbook-entry-name-custom4 = Eigendefinert 4
 about-addressbook-unsaved-changes-prompt-title = Ulagra endringar
 about-addressbook-unsaved-changes-prompt = Vil du lagre endringane før du forlét redigeringsvisinga?
 
@@ -206,3 +213,6 @@ about-addressbook-photo-filepicker-title = Vel ei bildefil
 about-addressbook-photo-discard = Avvis eksisterande foto
 about-addressbook-photo-cancel = Avbryt
 about-addressbook-photo-save = Lagre
+
+# Keyboard shortcuts
+

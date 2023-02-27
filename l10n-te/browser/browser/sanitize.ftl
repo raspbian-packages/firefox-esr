@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = చరిత్ర తొలగింపుకు అమరికలు
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = చరిత్ర తొలగింపుకు అమరికలు
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 
@@ -77,6 +81,10 @@ item-form-search-history =
     .accesskey = F
 
 data-section-label = దత్తాంశము
+
+item-site-settings =
+    .label = సైటు అమరికలు
+    .accesskey = S
 
 item-offline-apps =
     .label = ఆఫ్‌లైన్ వెబ్‌సైటు డాటా

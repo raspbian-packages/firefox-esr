@@ -6,6 +6,10 @@ blocklist-window =
     .title = Blokěrowańske lisćiny
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Blokěrowańske lisćiny
+    .style = min-width: 55em
+
 blocklist-description = Wubjeŕśo lisćinu { -brand-short-name }, aby pśeslědowaki online blokěrował. Lisćiny se wót <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a> k dispoziciji stajaju.
 blocklist-close-key =
     .key = w

@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Privāto datu dzēšanas iestatījumi
     .style = width: 40em
 
+sanitize-prefs2 =
+    .title = Privāto datu dzēšanas iestatījumi
+    .style = min-width: 40em
+
 sanitize-prefs-style =
     .style = width: 19em
 

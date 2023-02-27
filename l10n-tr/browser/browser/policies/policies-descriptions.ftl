@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Kullanıcının belli güvenlik uyarılarını g�
 policy-DisableSetAsDesktopBackground = Resimler için “Masaüstü arka planı olarak ayarla” menü komutunu devre dışı bırak.
 policy-DisableSystemAddonUpdate = Tarayıcının sistem eklentilerini kurmasını ve güncellemesini engelle.
 policy-DisableTelemetry = Telemetri’yi kapat.
+policy-DisableThirdPartyModuleBlocking = { -brand-short-name } işlemine eklenen üçüncü taraf modüllerini kullanıcının engellemesini önle.
 policy-DisplayBookmarksToolbar = Varsayılan olarak yer imleri araç çubuğunu göster.
 policy-DisplayMenuBar = Varsayılan olarak menü çubuğunu göster.
 policy-DNSOverHTTPS = HTTP üzerinden DNS’i yapılandır.

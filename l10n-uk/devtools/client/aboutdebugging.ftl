@@ -47,7 +47,7 @@ about-debugging-sidebar-item-connect-button-connection-failed = Не вдало�
 # the runtime is taking too much time.
 about-debugging-sidebar-item-connect-button-connection-not-responding = З'єднання все ще очікується. Перевірте повідомлення в цільовому браузері
 # Text displayed as connection error in sidebar item when the connection has timed out.
-about-debugging-sidebar-item-connect-button-connection-timeout = Час очікування з’єднання закінчився
+about-debugging-sidebar-item-connect-button-connection-timeout = Час очікування з'єднання завершився
 # Text displayed in sidebar items for remote devices where a compatible browser (eg
 # Firefox) has not been detected yet. Typically, Android phones connected via USB with
 # USB debugging enabled, but where Firefox is not started.
@@ -306,10 +306,11 @@ about-debugging-main-process-name = Головний процес
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-main-process-description2 = Головний процес для цільового браузера
-# Displayed instead of the Main Process debug target when the preference
-# `devtools.browsertoolbox.fission` is true.
+# Displayed as name for the Main Process debug target in the Processes category. Only for
+# remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-multiprocess-toolbox-name = Панель багатопроцесності
-# Description for the Multiprocess Toolbox target.
+# Displayed as description for the Main Process debug target in the Processes category.
+# Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
 about-debugging-multiprocess-toolbox-description = Основний процес і процеси вмісту цільового браузера
 # Alt text used for the close icon of message component (warnings, errors and notifications).
 about-debugging-message-close-icon =

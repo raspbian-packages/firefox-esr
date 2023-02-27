@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = עריכת הגדרות אמון באישור של רשות אישורים
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = עריכת הגדרות אמון באישור של רשות אישורים
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = עריכת הגדרות אמון:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = מחיקת אישור אבטחה
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = מחיקת אישור אבטחה
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = מארח
@@ -185,8 +193,6 @@ delete-email-cert-impact = אם אישור אבטחת הדוא״ל של אדם �
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = אישור עם מספר סידורי: { $serialNumber }
-
-## Cert Viewer
 
 # Used when no cert is stored for an override
 no-cert-stored-for-override = (לא מאוחסן)

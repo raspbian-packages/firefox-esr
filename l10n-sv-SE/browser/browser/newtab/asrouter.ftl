@@ -57,6 +57,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } användare
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Ta bort kak-banners!
+cfr-cookie-banner-handling-body = Tillåt { -brand-short-name } att automatiskt avvisa alla förfrågningar om kakbanner när det är möjligt. Annars kommer alla kakor att accepteras för att avvisa ännu fler banners.
+cfr-cookie-banner-accept-button = Avvisa förfrågningar
+    .accesskey = A
+cfr-cookie-banner-reject-button = Inte nu
+    .accesskey = n
+cfr-cookie-banner-handling-header-variant-1 = Se färre popup-fönster för kakor
+cfr-cookie-banner-handling-body-variant-1 = Låt { -brand-short-name } automatiskt svara på popup-fönster för kakor så att du kan återgå till att surfa utan distraktion. { -brand-short-name } kommer att avvisa alla förfrågningar om möjligt, eller acceptera alla om inte.
+cfr-cookie-banner-accept-button-variant-1 = Avvisa popup-fönster
+    .accesskey = A
+cfr-cookie-banner-reject-button-variant-1 = Nej tack
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Reducering av kakbanner
+cfr-cookie-banner-handling-body-variant-2 = Tillåta { -brand-short-name } att avslå en webbplats begäran om samtycke till kakor om möjligt eller acceptera åtkomst till kakor när det inte är möjligt?
+cfr-cookie-banner-accept-button-variant-2 = Tillåt
+    .accesskey = T
+cfr-cookie-banner-reject-button-variant-2 = Inte nu
+    .accesskey = n
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Synkronisera dina bokmärken överallt.
@@ -156,10 +179,6 @@ spotlight-total-cookie-protection-body = Totalt skydd mot kakor stoppar spårare
 spotlight-total-cookie-protection-expanded = { -brand-short-name } bygger ett staket runt kakor och begränsar dem till webbplatsen du är på så att spårare inte kan använda dem för att följa dig. Med tidig åtkomst hjälper du till att optimera den här funktionen så att vi kan fortsätta bygga en bättre webb för alla.
 spotlight-total-cookie-protection-primary-button = Aktivera totalt skydd mot kakor
 spotlight-total-cookie-protection-secondary-button = Inte nu
-cfr-total-cookie-protection-header = Tack vare dig är { -brand-short-name } mer privat och säkrare än någonsin
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Totalt skydd mot kakor är vårt starkaste integritetsskydd hittills – och det är nu en standardinställning för { -brand-short-name } användare överallt. Vi hade inte kunnat göra det utan deltagare med tidig tillgång som du. Så tack för att du hjälper oss att skapa ett bättre, mer privat internet.
 
 ## Emotive Continuous Onboarding
 
@@ -173,3 +192,85 @@ spotlight-pin-primary-button =
        *[other] Fäst till aktivitetsfältet
     }
 spotlight-pin-secondary-button = Inte nu
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Nya { -brand-short-name }. Mer privat. Färre spårare. Inga kompromisser.
+mr2022-background-update-toast-text = Prova den senaste { -brand-short-name } nu, uppgraderad med vårt starkaste antispårningsskydd hittills.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Öppna { -brand-shorter-name } nu
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Påminn mig senare
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Prova den
+    .accesskey = P
+firefoxview-cfr-secondarybutton = Inte nu
+    .accesskey = n
+firefoxview-cfr-header-v2 = Fortsätt snabbt där du slutade
+firefoxview-cfr-body-v2 = Få tillbaka nyligen stängda flikar och hoppa smidigt mellan enheter med { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Säg hej till { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Vill du ha den öppna fliken på din telefon? Hämta den i farten. Behöver du en sida du just har besökt? Hitta den i { -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = Se hur det fungerar
+firefoxview-spotlight-promo-secondarybutton = Hoppa över
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Välj colorway
+    .accesskey = V
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Färglägg din webbläsare med { -brand-short-name } exklusiva nyanser inspirerade av röster som förändrade kulturen.
+colorways-cfr-header-28days = Independent Voices colorways upphör den 16 januari
+colorways-cfr-header-14days = Independent Voices colorways upphör om två veckor
+colorways-cfr-header-7days = Independent Voices colorways upphör den här veckan
+colorways-cfr-header-today = Independent Voices colorways upphör idag
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Ta bort kak-banners!
+cfr-cookiebanner-body = Tillåt { -brand-short-name } att automatiskt avvisa alla begärande om kakbanner när det är möjligt.
+cfr-cookiebanner-accept-button = Avvisa banners
+    .accesskey = A
+cfr-cookiebanner-reject-button = Inte nu
+    .accesskey = n
+cfr-cookiebanner-header-variant-1 = Se färre popup-fönster för kakor
+cfr-cookiebanner-body-variant-1 = Låt { -brand-short-name } automatiskt svara på popup-fönster för kakor så att du kan återgå till att surfa utan distraktion. { -brand-short-name } kommer att avvisa alla förfrågningar om möjligt.
+cfr-cookiebanner-accept-button-variant-1 = Avvisa popup-fönster
+    .accesskey = A
+cfr-cookiebanner-reject-button-variant-1 = Nej tack
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = Reducering av kakbanner
+cfr-cookiebanner-body-variant-2 = Minska mängden kakbanners du ser genom att tillåta { -brand-short-name } att avslå en webbplats begäran om samtycke till kakor om möjligt.
+cfr-cookiebanner-accept-button-variant-2 = Tillåt
+    .accesskey = T
+cfr-cookiebanner-reject-button-variant-2 = Inte nu
+    .accesskey = n
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Vi skyddar dig
+july-jam-body = Varje månad blockerar { -brand-short-name } i genomsnitt över 3 000 spårare per användare, vilket ger dig säker och snabb tillgång till ett bra internet.
+july-jam-set-default-primary = Öppna mina länkar med { -brand-short-name }

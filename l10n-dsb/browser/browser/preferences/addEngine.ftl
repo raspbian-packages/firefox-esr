@@ -6,6 +6,10 @@ add-engine-window =
     .title = Pytnicu pśidaś
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Pytnicu pśidaś
+    .style = min-width: 32em;
+
 add-engine-button = Swójsku pytnicu pśidaś
 
 add-engine-name = Mě pytnice

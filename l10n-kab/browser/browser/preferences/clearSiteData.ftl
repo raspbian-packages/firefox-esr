@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Sfeḍ isefka
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Sfeḍ isefka
+    .style = min-width: 35em
+
 clear-site-data-description = Asfaḍn  inagan n tuqna meṛṛa akked isefka isekles { -brand-short-name } izmer ad ak-id-isuffeγ seg ismal web, ad ak-ikkes aqbur n war tuqna. Asfaḍ n isefka n tkatut tuffirt ur igellu ara s inekcam-inek.
 
 clear-site-data-close-key =

@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Pori Preifat { -brand-short-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Pori Preifat { -brand-shortcut-name }
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Derbyn cymorth
 urlbar-search-tips-confirm = Iawn, rwy'n deall
+urlbar-search-tips-confirm-short = Iawn
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Awgrym:
+urlbar-result-menu-button =
+    .title = Agor y ddewislen
+urlbar-result-menu-remove-from-history =
+    .label = Tynnu o'r hanes
+    .accesskey = T
+urlbar-result-menu-tip-get-help =
+    .label = Derbyn cymorth
+    .accesskey = D
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Teipio llai, canfod mwy: Chwiliwch gyda { $engineName } yn syth o'ch bar cyfeiriad.
 urlbar-search-tips-redirect-2 = Cychwynnwch eich chwilio yma i weld awgrymiadau gan { $engineName } a'ch hanes pori.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Daeth chwilio yn lawer symlach. Ceisiwch wneud eich chwilio'n fwy penodol yma yn y bar cyfeiriad. I ddangos yr URL yn lle hynny, ewch i Chwilio, yn y Gosodiadau.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Dewiswch y llwybr byr hwn i ddod o hyd i'r hyn sydd ei angen arnoch yn gynt.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Gweithredoedd ( { $restrict } )
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Gweld Ychwanegion
-quickactions-cmd-addons = ychwanegion, estyniadau, themâu
 quickactions-cmd-addons2 = ychwanegion
 # Opens the bookmarks library window
-quickactions-bookmarks = Gweld Nodau Tudalen
+quickactions-bookmarks2 = Rheoli nodau tudalen
 quickactions-cmd-bookmarks = nodau tudalen
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Clirio Hanes
 quickactions-cmd-clearhistory = clirio hanes
 # Opens about:downloads page
-quickactions-downloads = Agor y Llwythi
+quickactions-downloads2 = Gweld llwythi
 quickactions-cmd-downloads = llwythi
 # Opens about:addons page in the extensions section
 quickactions-extensions = Rheoli estyniadau
 quickactions-cmd-extensions = estyniadau
 # Opens the devtools web inspector
-quickactions-inspector = Agor yr Archwilydd
+quickactions-inspector2 = Agor Offer Datblygwyr
 quickactions-cmd-inspector = arolygydd, devtools
 # Opens about:logins
-quickactions-logins = Gweld Mewngofnodion
+quickactions-logins2 = Rheoli cyfrineiriau
 quickactions-cmd-logins = mewngofnodion, cyfrineiriau
 # Opens about:addons page in the plugins section
 quickactions-plugins = Rheoli ategion
 quickactions-cmd-plugins = ategion
 # Opens the print dialog
-quickactions-print = Argraffu
+quickactions-print2 = Argraffu tudalen
 quickactions-cmd-print = argraffu
 # Opens a new private browsing window
-quickactions-private = Agor Ffenestr Pori Preifat
+quickactions-private2 = Agor ffenestr breifat
 quickactions-cmd-private = pori preifat
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Adnewyddu { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = adnewyddu
 quickactions-restart = Ailgychwyn { -brand-short-name }
 quickactions-cmd-restart = ailgychwyn
 # Opens the screenshot tool
-quickactions-screenshot2 = Cymryd Llun Sgrin
+quickactions-screenshot3 = Cymryd llun sgrin
 quickactions-cmd-screenshot = llun sgrin
 # Opens about:preferences
-quickactions-settings = Agor y Gosodiadau
+quickactions-settings2 = Rheoli gosodiadau
 quickactions-cmd-settings = gosodiadau, dewisiadau, opsiynau
 # Opens about:addons page in the themes section
 quickactions-themes = Rheoli themâu
@@ -323,8 +332,11 @@ quickactions-cmd-themes = themâu
 quickactions-update = Diweddaru { -brand-short-name }
 quickactions-cmd-update = diweddaru
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Gweld y Ffynhonell
+quickactions-viewsource2 = Gweld Ffynhonnell Tudalen
 quickactions-cmd-viewsource = gweld ffynhonnell, ffynhonnell
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Dysgu rhagor am weithredoedd Cyflym
 
 ## Bookmark Panel
 
@@ -501,6 +513,9 @@ popup-select-microphone-icon =
     .tooltiptext = Meicroffon
 popup-select-speaker-icon =
     .tooltiptext = Seinyddion
+popup-select-window-or-screen =
+    .label = Ffenestr neu sgrin:
+    .accesskey = F
 popup-all-windows-shared = Bydd pob ffenestr gweladwy ar eich sgrin yn cael eu rhannu.
 popup-screen-sharing-block =
     .label = Rhwystro
@@ -522,6 +537,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = I ddefnyddio llwybr byr F12 agorwch DevTools yn gyntaf trwy'r ddewislen Datblygwr Gwe.
+enable-devtools-popup-description2 = I ddefnyddio'r llwybr byr F12, agorwch DevTools yn gyntaf trwy'r ddewislen Offer Porwr.
 
 ## URL Bar
 
@@ -653,6 +669,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Gweithredoedd Cyflym
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Mynd i'r Golwg Darllen
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Cau'r Golwg Darllen
 
 ## Full Screen and Pointer Lock UI
 
@@ -930,3 +955,29 @@ private-browsing-indicator-label = Pori preifat
 unified-extensions-button =
     .label = Estyniadau
     .tooltiptext = Estyniadau
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Estyniadau
+    .tooltiptext =
+        Estyniadau
+        Angen caniatâd
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = Rhwystrodd { -brand-short-name } y dudalen hon rhag ailagor yn awtomatig.
+refresh-blocked-redirect-label = Rhwystrodd { -brand-short-name } y dudalen hon rhag ailgyfeirio i dudalen arall.
+refresh-blocked-allow =
+    .label = Caniatáu
+    .accesskey = C
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = Mae { -relay-brand-name } yn cuddio'ch gwir gyfeiriad e-bost er mwyn helpu i'ch diogelu chi rhag tor-data a sbam.
+firefox-relay-offer-how-we-integrate = Trwy barhau, byddwch yn gallu cynhyrchu arallenwau e-bost { -relay-brand-short-name } newydd yn uniongyrchol o'ch rheolwr cyfrineiriau { -brand-shorter-name }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Byddwn yn anfon pob e-bost o <strong>{ $sitename }</strong> ymlaen at <strong>{ $useremail }</strong>.

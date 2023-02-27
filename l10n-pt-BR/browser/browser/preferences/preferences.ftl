@@ -35,7 +35,7 @@ category-search =
 pane-privacy-title = Privacidade e Segurança
 category-privacy =
     .tooltiptext = { pane-privacy-title }
-pane-sync-title3 = Sync
+pane-sync-title3 = Sincronização
 category-sync3 =
     .tooltiptext = { pane-sync-title3 }
 pane-experimental-title = Experimentos do { -brand-short-name }
@@ -184,12 +184,15 @@ preferences-web-appearance-header = Aparência de sites
 preferences-web-appearance-description = Alguns sites adaptam seu esquema de cores com base em suas preferências. Escolha qual esquema de cores você quer usar nesses sites.
 preferences-web-appearance-choice-browser = Tema do { -brand-short-name }
 preferences-web-appearance-choice-system = Tema do sistema
+preferences-web-appearance-choice-auto = Automático
 preferences-web-appearance-choice-light = Claro
 preferences-web-appearance-choice-dark = Escuro
 preferences-web-appearance-choice-tooltip-browser =
     .title = Seguir sua configuração de tema do { -brand-short-name } no fundo e conteúdo de sites.
 preferences-web-appearance-choice-tooltip-system =
     .title = Seguir sua configuração do sistema no fundo e conteúdo de sites.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Mudar automaticamente o fundo e o conteúdo de sites com base nas configurações do sistema e no tema do { -brand-short-name }.
 preferences-web-appearance-choice-tooltip-light =
     .title = Usar uma aparência clara no fundo e conteúdo de sites.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mostrar sugestões de pesquisa nos resultados da barra de endereços
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Mostrar termos de pesquisa em vez de URL na página de resultados do mecanismo de pesquisa padrão
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -644,7 +654,7 @@ containers-remove-button =
 sync-signedout-caption = Leve a web com você
 sync-signedout-description2 = Sincronize seus favoritos, histórico, abas, senhas, extensões e configurações entre todos os seus dispositivos.
 sync-signedout-account-signin3 =
-    .label = Entrar para sincronizar…
+    .label = Entrar na conta para sincronizar…
     .accesskey = E
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
@@ -710,6 +720,13 @@ sync-change-options =
 sync-choose-what-to-sync-dialog =
     .title = Escolha o que sincronizar
     .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Salvar alterações
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Desconectar…
+    .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Escolha o que sincronizar
+    .style = min-width: 36em;
     .buttonlabelaccept = Salvar alterações
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Desconectar…
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Exibir alertas sobre senhas de sites vazados
     .accesskey = v
 forms-breach-alerts-learn-more-link = Saiba mais
+relay-integration =
+    .label = Ative o { -relay-brand-name } no gerenciador de senhas do { -brand-short-name }
+relay-integration-learn-more-link = Saiba mais
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Preencher contas e senhas automaticamente
@@ -898,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies de sites não visitados
 sitedata-option-block-all-third-party =
     .label = Todos os cookies de terceiros (pode atrapalhar alguns sites)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Todos os cookies entre sites (pode atrapalhar alguns sites)
 sitedata-option-block-all =
     .label = Todos os cookies (atrapalha vários sites)
 sitedata-clear =
@@ -977,6 +999,7 @@ content-blocking-all-cookies = Todos os cookies
 content-blocking-unvisited-cookies = Cookies de sites não visitados
 content-blocking-all-windows-tracking-content = Conteúdo com rastreamento em todas as janelas
 content-blocking-all-third-party-cookies = Todos os cookies de terceiros
+content-blocking-all-cross-site-cookies = Todos os cookies entre sites
 content-blocking-cryptominers = Criptomineradores
 content-blocking-fingerprinters = Fingerprinters (rastreadores de identidade digital)
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -984,6 +1007,9 @@ content-blocking-fingerprinters = Fingerprinters (rastreadores de identidade dig
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Ser piloto de teste do mais poderoso recurso de privacidade que já fizemos
     .accesskey = S
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = A proteção total contra cookies isola os cookies do site em que você está, assim os rastreadores não conseguem usá-los para te seguir de um site para outro.
 content-blocking-etp-standard-tcp-rollout-learn-more = Saiba mais

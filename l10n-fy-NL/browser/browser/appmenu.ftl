@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = De profiler nimt in profyl op
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Mear ynformaasje toane
 profiler-popup-description-title =

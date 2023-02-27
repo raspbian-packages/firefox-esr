@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Garbitu datuak
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Garbitu datuak
+    .style = min-width: 35em
+
 clear-site-data-description = { -brand-short-name }(e)k biltegiratutako cookie eta guneen datu guztiak garbitzean, webguneetako saioak amaitzea eragin eta lineaz kanpoko web edukia ken lezake. Cachearen datuak garbitzeak ez du zure saio-hasieretan eraginik izango.
 
 clear-site-data-close-key =

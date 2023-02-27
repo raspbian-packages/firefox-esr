@@ -6,6 +6,10 @@ app-manager-window =
     .title = Մանրամասն տեղեկություն
     .style = width: 35em; min-height: 25em;
 
+app-manager-window2 =
+    .title = Մանրամասն տեղեկություն
+    .style = min-width: 35em; min-height: 25em;
+
 app-manager-remove =
     .label = Հեռացնել
     .accesskey = Հ

@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = { -brand-product-name }en bertsio zahar bat abiarazi duzu
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = { -brand-product-name }en bertsio zahar bat abiarazi duzu
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Sortu profil berria
 

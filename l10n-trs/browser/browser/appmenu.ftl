@@ -80,6 +80,7 @@ profiler-popup-button-idle =
     .tooltiptext = Gi'iaj grabândo 'ngō perfil nikāj rendimiênto
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-learn-more-button =
     .label = Gāhuin chrūn doj
 profiler-popup-settings =

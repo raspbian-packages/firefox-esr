@@ -10,6 +10,10 @@ key-wizard-button =
     .buttonlabelaccept = Tiếp tục
     .buttonlabelhelp = Quay lại
 
+key-wizard-dialog =
+    .buttonlabelaccept = Tiếp tục
+    .buttonlabelextra1 = Quay lại
+
 key-wizard-warning = <b>Nếu bạn có khóa cá nhân hiện tại</b> cho địa chỉ email này, bạn nên nhập khóa đó. Nếu không, bạn sẽ không có quyền truy cập vào kho lưu trữ email được mã hóa của mình, cũng như không thể đọc các email được mã hóa đến từ những người vẫn đang sử dụng khóa hiện có của bạn.
 
 key-wizard-learn-more = Tìm hiểu thêm

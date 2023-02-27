@@ -3,6 +3,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## New Account
+
+appmenu-new-account-panel-title =
+    .title = Novi račun
+appmenu-new-account-panel =
+    .label = Novi račun
+    .accesskey = N
+
+## New Account / Address Book
+
+
+## Create
+
+
+## Open
+
+
 ## View / Layout
 
 appmenu-font-size-value = Veličina fonta
@@ -15,3 +32,9 @@ appmenuitem-font-size-reduce =
 appmenuitem-font-size-reset =
     .label = { $size }px
     .tooltiptext = Vrati veličinu fonta na početno
+
+## Tools
+
+
+## Help
+

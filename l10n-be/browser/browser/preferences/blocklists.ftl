@@ -6,6 +6,10 @@ blocklist-window =
     .title = Спісы блакавання
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Спісы блакавання
+    .style = min-width: 55em
+
 blocklist-description = Выберыце спіс, які { -brand-short-name } будзе выкарыстоўваць для блакавання анлайн-трэкераў. Спісы прадстаўлены <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

@@ -6,6 +6,10 @@ add-engine-window =
     .title = Додати засіб пошуку
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Додати засіб пошуку
+    .style = min-width: 32em;
+
 add-engine-button = Додати власний засіб пошуку
 
 add-engine-name = Назва засобу пошуку

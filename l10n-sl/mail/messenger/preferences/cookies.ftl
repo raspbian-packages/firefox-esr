@@ -6,6 +6,9 @@ cookies-window-dialog =
     .title = Piškotki
     .style = width: 36em;
 
+cookies-window-dialog2 =
+    .title = Piškotki
+
 window-close-key =
     .key = w
 

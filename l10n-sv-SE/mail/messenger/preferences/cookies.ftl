@@ -6,6 +6,9 @@ cookies-window-dialog =
     .title = Kakor
     .style = width: 36em;
 
+cookies-window-dialog2 =
+    .title = Kakor
+
 window-close-key =
     .key = w
 

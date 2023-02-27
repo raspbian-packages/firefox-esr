@@ -119,6 +119,7 @@
         [ins] Firefoxem Focus
     }
     .gender = masculine
+
 # “Suggest” can be localized, “Firefox” must be treated as a brand
 # and kept in English.
 -firefox-suggest-brand-name =
@@ -159,6 +160,7 @@
                 [lower] návrhy od Firefoxu
             }
     }
+
 # ”Home" can be localized, “Firefox” must be treated as a brand
 # and kept in English.
 -firefox-home-brand-name =
@@ -199,6 +201,7 @@
                 [lower] domovskou stránkou Firefoxu
             }
     }
+
 # View" can be localized, “Firefox” must be treated as a brand
 # and kept in English.
 -firefoxview-brand-name =
@@ -239,3 +242,16 @@
                 [lower] přehledem Firefoxu
             }
     }
+
+-relay-brand-name =
+    { $case ->
+       *[nom] Firefox Relay
+        [gen] Firefoxu Relay
+        [dat] Firefoxu Relay
+        [acc] Firefox Relay
+        [voc] Firefoxe Relay
+        [loc] Firefoxu Relay
+        [ins] Firefoxem Relay
+    }
+    .gender = masculine
+-relay-brand-short-name = Relay

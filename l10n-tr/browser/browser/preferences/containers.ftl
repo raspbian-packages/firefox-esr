@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Yeni kapsayıcı ekle
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = { $name } Kapsayıcısı Ayarları
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Yeni kapsayıcı ekle
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = { $name } Kapsayıcısı Ayarları
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

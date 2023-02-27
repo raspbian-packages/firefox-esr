@@ -16,8 +16,6 @@ change-password-old = Trenutačna lozinka:
 change-password-new = Nova lozinka:
 change-password-reenter = Ponovo upiši novu lozinku:
 
-## Reset Password dialog
-
 pippki-failed-pw-change = Nije moguće promijeniti lozinku.
 pippki-incorrect-pw = Nisi upisao/la ispravnu trenutačnu lozinku. Pokušaj ponovo.
 pippki-pw-change-ok = Lozinka uspješno promijenjena.
@@ -33,6 +31,10 @@ pippki-pw-change2empty-in-fips-mode = Trenutačno si u FIPS modusu. FIPS zahtije
 reset-primary-password-window =
     .title = Ponovno postavljanje primarne lozinke
     .style = width: 40em
+
+reset-primary-password-window2 =
+    .title = Ponovno postavljanje primarne lozinke
+    .style = min-width: 40em
 reset-password-button-label =
     .label = Poništi
 
@@ -44,6 +46,10 @@ pippki-reset-password-confirmation-message = Tvoja primarna lozinka ponovno je p
 download-cert-window =
     .title = Preuzimanje certifikata
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Preuzimanje certifikata
+    .style = min-width: 46em
 download-cert-message = Novo certifikacijsko tijelo (CA) traži da mu se vjeruje.
 download-cert-trust-ssl =
     .label = Vjeruj ovom CA-u za identifikaciju web stranica.

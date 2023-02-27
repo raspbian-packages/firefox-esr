@@ -6,6 +6,10 @@ app-manager-window =
     .title = Manylion y rhaglen
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Manylion y rhaglen
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Tynnu
     .accesskey = T

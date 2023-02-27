@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Iisethingi zokususa imbali
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Iisethingi zokususa imbali
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

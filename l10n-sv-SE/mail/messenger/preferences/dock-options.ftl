@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Alternativ för programikon
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Alternativ för programikon
+
 dock-options-show-badge =
     .label = Visa märkesikon
     .accesskey = m

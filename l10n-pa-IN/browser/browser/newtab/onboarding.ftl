@@ -25,6 +25,12 @@ return-to-amo-addon-title = ਆਓ ਫਿਰ ਹੁਣ <img data-l10n-name="icon
 return-to-amo-add-extension-label = ਇਕਸਟੈਨਸ਼ਨ ਜੋੜੋ
 return-to-amo-add-theme-label = ਥੀਮ ਜੋੜੋ
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = { -brand-short-name } ਨੂੰ ਮਿਲੋ
+mr1-return-to-amo-addon-title = ਤੇਜ਼, ਨਿੱਜੀ ਬਰਾਊਜ਼ਰ ਤੁਹਾਡੇ ਹੱਥਾਂ ਵਿੱਚ ਹੈ। ਹੁਣ ਤੁਸੀਂ <b>{ $addon-name }</b> ਜੋੜ ਸਕਦੇ ਹੋ ਅਤੇ { -brand-short-name } ਨਾਲ ਵੱਧ ਕੰਮ ਕਰ ਸਕਦੇ ਹੋ।
+mr1-return-to-amo-add-extension-label = { $addon-name } ਜੋੜੋ
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = ਤਰੱਕੀ: { $total } ਵਿੱਚੋਂ { $current } ਪੜਾਅ
+onboarding-welcome-steps-indicator-label =
+    .aria-label = ਤਰੱਕੀ: { $total } ਵਿੱਚੋਂ { $current } ਪੜਾਅ
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -258,7 +266,7 @@ fx100-upgrade-thanks-header = 100 ਧੰਨਵਾਦ-ਤੁਹਾਡੇ
 fx100-upgrade-thank-you-body = { -brand-short-name } ਦਾ ਇਹ ਸਾਡਾ 100ਵਾਂ ਰੀਲਿਜ਼ ਹੈ। ਬੇਹਤਰ, ਜ਼ਿਆਦਾ ਮਜ਼ਬੂਤ ਇੰਟਰਨੈੱਟ ਬਣਾਉਣ ਲਈ ਸਾਡੀ ਮਦਦ ਕਰਨ ਲਈ <em>ਤੁਹਾਡਾ</em> ਧੰਨਵਾਦ ਹੈ।
 # Message shown with either a pin-to-taskbar or set-default button.
 fx100-upgrade-thanks-keep-body = ਸਾਡਾ 100ਵਾਂ ਰੀਲਿਜ਼ ਹੈ! ਸਾਡੀ ਕਮਿਊਨਟੀ ਦਾ ਹਿੱਸਾ ਬਣਨ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ ਹੈ! ਅਗਲੇ 100 ਲਈ { -brand-short-name } ਨੂੰ ਸਿਰਫ ਇੱਕ ਕਲਿੱਕ ਦੂਰ ਰੱਖੋ।
-mr2022-onboarding-secondary-skip-button-label = ਇਹ ਪਗ਼ ਛੱਡੋ
+mr2022-onboarding-secondary-skip-button-label = ਇਹ ਪੜਾਅ ਛੱਡੋ
 
 ## MR2022 New User Pin Firefox screen strings
 
@@ -284,7 +292,7 @@ mr2022-onboarding-set-default-only-subtitle = ਗ਼ੈਰ-ਫਾਇਦੇ ਵ�
 ## MR2022 Existing User Pin Firefox Screen Strings
 
 # Title used on multistage onboarding page for existing users when Firefox is not pinned
-mr2022-onboarding-existing-pin-header = ਪਿਆਰੇ { -brand-product-name }  ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ
+mr2022-onboarding-existing-pin-header = { -brand-product-name } ਨੂੰ ਪਿਆਰ ਕਰਨ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ
 # Subtitle is used on onboarding page for existing users when Firefox is not pinned
 mr2022-onboarding-existing-pin-subtitle = ਇੱਕ ਕਲਿੱਕ ਨਾਲ ਕਿਸੋ ਵੀ ਮਜ਼ਬੂਤ ਇੰਟਰਨੈੱਟ ਸ਼ੁਰੂ ਕਰੋ। ਸਾਡੇ ਨਵੇਂ ਅੱਪਡੇਟ ਵਿੱਚ ਨਵੀਆਂ ਚੀਜ਼ਾਂ ਪਈਆਂ ਹਨ, ਜਿੰਨ੍ਹਾਂ ਦੇ ਤੁਸੀਂ ਪ੍ਰਸੰਸ਼ਕ ਬਣੋਗੇ।
 # Subtitle will be used on the welcome screen for existing users
@@ -312,7 +320,7 @@ mr2022-onboarding-get-started-primary-button-label = ਸਕਿੰਟਾਂ ਵ�
 
 ## MR2022 Import Settings screen strings
 
-mr2022-onboarding-import-header = ਨ੍ਹੇਰੀ ਵਰਗਾ ਤੇਜ਼ ਸੈਟਅੱਪ
+mr2022-onboarding-import-header = ਹਨ੍ਹੇਰੀ ਵਰਗਾ ਤੇਜ਼ ਸੈਟਅੱਪ
 mr2022-onboarding-import-subtitle = { -brand-short-name } ਨੂੰ ਜਿਵੇਂ ਤੁਸੀਂ ਚਾਹੋ, ਉਵੇਂ ਸੈਟਅੱਪ ਕਰੋ। ਆਪਣੇ ਪੁਰਾਣੇ ਬਰਾਊਜ਼ਰ ਤੋਂ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਕਈ ਕੁਝ ਜੋੜੋ।
 mr2022-onboarding-import-primary-button-label-no-attribution = ਪਿਛਲੇ ਬਰਾਊਜ਼ਰ ਤੋਂ ਦਰਾਮਦ ਕਰੋ
 
@@ -323,35 +331,35 @@ mr2022-onboarding-import-primary-button-label-no-attribution = ਪਿਛਲੇ �
 
 mr2022-onboarding-colorway-title = ਰੰਗ ਚੁਣੋ, ਜੋ ਤੁਹਾਡੇ ਦਿਲ ਨੂੰ ਖਿੱਚ ਪਾਉਣ
 mr2022-onboarding-colorway-subtitle = ਆਜ਼ਾਦ ਆਵਾਜ਼ਾਂ, ਜੋ ਕਿ ਸੱਭਿਆਚਾਰ ਨੂੰ ਬਦਲ ਸਕਦੀਆਂ ਹਨ।
-mr2022-onboarding-colorway-primary-button-label = ਰੰਗ-ਢੰਗ ਲਾਓ
+mr2022-onboarding-colorway-primary-button-label-continue = ਲਾਓ ਤੇ ਜਾਰੀ ਰੱਖੋ
 mr2022-onboarding-existing-colorway-checkbox-label = { -firefox-home-brand-name } ਆਪਣਾ ਰੰਗਦਾਰ ਮੁੱਖ-ਸਫ਼ਾ ਬਣਾਓ
 mr2022-onboarding-colorway-label-default = ਡਿਫਾਲਟ
-mr2022-onboarding-colorway-tooltip-default =
-    .title = ਡਿਫਾਲਟ
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = ਮੌਜੂਦਾ { -brand-short-name } ਰੰਗ
 mr2022-onboarding-colorway-description-default = <b>ਮੇਰੇ ਮੌਜੂਦਾ { -brand-short-name } ਰੰਗਾਂ ਨੂੰ ਵਰਤੋਂ।</b>
 mr2022-onboarding-colorway-label-playmaker = ਪਲੇਅਮੇਕਰ
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = ਪਲੇਅਮੇਕਰ
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = ਪਲੇਅਮੇਕਰ (ਲਾਲ)
 mr2022-onboarding-colorway-description-playmaker = <b>ਤੁਸੀਂ ਪਲੇਅਮੇਕਰ ਹੋ।</b> ਤੁਸੀਂ ਜਿੱਤਣ ਦੇ ਮੌਕੇ ਬਣਾਉਂਦੇ ਹੋ ਅਤੇ ਆਪਣੇ ਆਲੇ-ਦੁਆਲੇ ਦੇ ਲੋਕਾਂ ਨੂੰ ਉਹਨਾਂ ਦੀ ਖੇਡ 'ਚ ਅੱਗੇ ਵਧਣ ਲਈ ਮਦਦ ਕਰਦੇ ਹੋ।
 mr2022-onboarding-colorway-label-expressionist = ਪਰਗਟਾਵਾਦੀ
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = ਪਰਗਟਾਵਾਦੀ
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = ਪਰਗਟਾਵਾਦੀ (ਪੀਲਾ)
 mr2022-onboarding-colorway-description-expressionist = <b>ਤੁਸੀਂ ਪਰਗਟਾਵਾਦੀ ਹੋ। </b> ਤੁਸੀਂ ਸੰਸਾਰ ਨੂੰ ਵੱਖਰੇ ਢੰਗ ਨਾਲ ਵੇਖਦੇ ਹੋ ਅਤੇ ਤੁਹਾਡੀਆਂ ਰਚਨਾਵਾਂ ਹੋਰਾਂ ਦੇ ਜਜ਼ਬਾਤਾਂ ਨੂੰ ਟੁੰਬਦੀਆਂ ਹਨ।
 mr2022-onboarding-colorway-label-visionary = ਭਵਿੱਖਦਰਸ਼ੀ
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = ਭਵਿੱਖਦਰਸ਼ੀ
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = ਭਵਿੱਖਦਰਸ਼ੀ (ਹਰਾ)
 mr2022-onboarding-colorway-description-visionary = <b>ਤੁਸੀਂ ਭਵਿੱਖਦਰਸ਼ੀ ਹੋ।</b> ਤੁਸੀਂ ਮੌਜੂਦਾ ਹਾਲਤਾਂ ਉੱਤੇ ਸਵਾਲ ਕਰਦੇ ਹੋ ਅਤੇ ਹੋਰਾਂ ਨੂੰ ਬੇਹਤਰ ਭਵਿੱਖ ਬਾਰੇ ਸੋਚਣ ਲਈ ਮਜ਼ਬੂਰ ਕਰਦੇ ਹੋ।
 mr2022-onboarding-colorway-label-activist = ਕਾਰਕੁੰਨ
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = ਕਾਰਕੁੰਨ
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = ਕਾਰਕੁੰਨ (ਨੀਲਾ)
 mr2022-onboarding-colorway-description-activist = <b>ਤੁਸੀਂ ਕਾਰਕੁੰਨ ਹੋ।</b> ਤੁਸੀਂ ਸੰਸਾਰ ਨੂੰ ਪਹਿਲਾਂ ਨਾਲੋਂ ਬੇਹਤਰ ਥਾਂ ਬਣਾ ਕੇ ਰੱਖਦੇ ਹੋ ਅਤੇ ਹੋਰਾਂ ਦਾ ਭਰੋਸਾ ਵਧਾਉਂਦੇ ਹੋ।
 mr2022-onboarding-colorway-label-dreamer = ਸੁਪਨਸਾਜ਼
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = ਸੁਪਨਸਾਜ਼
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = ਸੁਪਨਸਾਜ਼ (ਜਾਮਨੀ)
 mr2022-onboarding-colorway-description-dreamer = <b>ਤੁਸੀਂ ਸੁਪਨਸਾਜ਼ ਹੋ।</b> ਤੁਸੀਂ ਭਰੋਸਾ ਰੱਖਦੋ ਹੋ ਕਿ ਖੁਸ਼ਹਾਲੀ ਦੇ ਤਰਫ਼ਦਾਰੀਆਂ ਵੱਡੇ ਅਸਰ ਰੱਖਦੀਆਂ ਹਨ ਤੇ ਹੋਰਾਂ ਨੂੰ ਬਹਾਦਰ ਬਣਨ ਲਈ ਪ੍ਰੇਰਿਤ ਕਰਦੀਆਂ ਹਨ।
 mr2022-onboarding-colorway-label-innovator = ਖੋਜੀ
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = ਖੋਜੀ
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = ਖੋਜੀ (ਸੰਤਰੀ)
 mr2022-onboarding-colorway-description-innovator = <b>ਤੁਸੀਂ ਖੋਜੀ ਹੋ।</b> ਤੁਸੀਂ ਹਰ ਥਾਂ ਉੱਤੇ ਮੌਕੇ ਤਲਾਸ਼ਦੇ ਹੋ ਅਤੇ ਆਪਣੇ ਆਲੇ ਦੁਆਲੇ ਹਰ ਕਿਸੇ ਦੀ ਜ਼ਿੰਦਗੀ ਉੱਤੇ ਅਸਰ ਛੱਡਦੇ ਹੋ।
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -386,3 +394,29 @@ mr2022-onboarding-gratitude-title = ਤੁਸੀਂ ਸਾਨੂੰ ਹੋਰ �
 mr2022-onboarding-gratitude-subtitle = { -brand-short-name }, ਜਿਸ ਨੂੰ Mozilla Foundation ਵਲੋਂ ਸਹਿਯੋਗ ਮਿਲਦਾ ਹੈ, ਵਰਤਣ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ ਹੈ। ਤੁਹਾਡੀ ਮਦਦ ਨਾਲ ਅਸੀਂ ਇੰਟਰਨੈੱਟ ਨੂੰ ਹਰ ਕਿਸੇ ਲਈ ਵੱਧ ਆਜ਼ਾਦ, ਪਹੁੰਚ ਵਿੱਚ ਅਤੇ ਹੋਰ ਵਧੀਆ ਬਣਾਉਣ ਲਈ ਕੰਮ ਕਰ ਰਹੇ ਹਾਂ।
 mr2022-onboarding-gratitude-primary-button-label = ਵੇਖੋ ਕਿ ਨਵਾਂ ਕੀ ਹੈ
 mr2022-onboarding-gratitude-secondary-button-label = ਬਰਾਊਜ਼ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰੋ
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = ਸਹਿਜ ਮਹਿਸੂਸ ਕਰੋ
+onboarding-infrequent-import-subtitle = ਭਾਵੇ ਤੁਸੀਂ ਰਹਿਣਾ ਹੋਵੇ ਜਾਂ ਬੱਸ ਠਹਿਰਨਾ, ਯਾਦ ਰੱਖੋ, ਤੁਸੀਂ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਆਦਿ ਨੂੰ ਇੰਪੋਰਟ ਕਰ ਸਕਦੇ ਹੋ।
+onboarding-infrequent-import-primary-button = { -brand-short-name } ਲਈ ਇੰਪੋਰਟ ਕਰੋ
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = ਲੈਪਟਾਪ ਉੱਤੇ ਕੰਮ ਕਰਨ ਵਾਲਾ ਵਿਅਕਤੀ ਸਿਤਾਰਿਆਂ ਅਤੇ ਫੁੱਲਾਂ ਨਾਲ ਘਿਰਿਆ ਰਹੇ
+mr2022-onboarding-default-image-alt =
+    .aria-label = ਵਿਅਕਤੀ { -brand-product-name } ਲੋਗੋ ਨੂੰ ਸੀਨੇ ਨਾਲ ਲਾਵੇ
+mr2022-onboarding-import-image-alt =
+    .aria-label = ਵਿਅਕਤੀ ਸਾਫਟਵੇਅਰ ਆਈਕਾਨਾਂ ਨਾਲ ਸਕੇਟਬੋਰਡ ਦੀ ਸਵਾਰੀ ਕਰੇ
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = ਡੱਡੂ ਕਮਲ ਦੇ ਪੱਤਿਆਂ ਉੱਤੇ QR ਕੋਡ ਉੱਤੇ ਛਾਲਾਂ ਮਾਰਦੇ ਹਨ, ਜਿਸ ਦੇ ਕੇਂਦਰ ਵਿੱਚ ਮੋਬਾਈਲ ਲਈ { -brand-product-name } ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਹੈ
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = ਜਾਦੂ ਦੀ ਸੋਟੀ { -brand-product-name } ਦੇ ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ ਕਰਨ ਦੇ ਲੋਗੋ ਨੂੰ ਵੱਖ ਦਿਖਾਉਂਦੀ ਹੈ
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = ਹਲਕੇ ਅਤੇ ਗੂੜ੍ਹੇ ਰੰਗ ਰੱਦ ਹੱਥ ਜਿੱਤ ਦਰਸਾਉਂਦੇ ਹਨ
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = ਲੂੰਬੜੀ ਨਾਲ ਅਤੇ ਝਰੋਖੇ ਉੱਤੇ ਬਣੇ ਬੂਟੇ ਰਾਹੀਂ ਡੁੱਬਦੇ ਸੂਰਜ ਨੂੰ ਨਿਹਾਰਨਾ
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = ਹੱਥ ਨਾਲ ਸਪਰੇਅ ਕਰਕੇ ਹਰੇ ਰੰਗ ਦੀ ਅੱਖ, ਸੰਤਰੀ ਰੰਗ ਦੇ ਜੁੱਤੇ, ਲਾਲ ਬਾਸਟਕਬਾਲ, ਜਾਮਨੀ ਹੈੱਡਫੋਨ, ਨੀਲਾ ਦਿਲ ਅਤੇ ਪੀਲਾ ਤਾਜ ਬਣਾਓ

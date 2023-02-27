@@ -6,6 +6,10 @@ translation-window =
     .title = Výnimky - Preklad
     .style = width: 36em
 
+translation-window2 =
+    .title = Výnimky - Preklad
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

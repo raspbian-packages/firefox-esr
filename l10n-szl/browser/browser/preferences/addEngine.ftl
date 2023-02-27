@@ -6,6 +6,10 @@ add-engine-window =
     .title = Przidej wyszukowarka
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Przidej wyszukowarka
+    .style = min-width: 32em;
+
 add-engine-button = Przidej włosno wyszukowarka
 
 add-engine-name = Miano wyszukowarki

@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = تنظیمات زبان صفحه وب
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = تنظیمات زبان صفحه وب
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = تنظیمات زبان { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = تنظیمات زبان { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } زبان اول را به عنوان زبان پیش‌فرض شما نشان می‌دهد و زبان‌های دیگر را در صورت نیاز به ترتیب انتخاب شده نمایش می‌دهد.
 

@@ -36,6 +36,10 @@ vcard-n-suffix = Przyrostek
 vcard-n-add-suffix =
     .title = Dodaj przyrostek
 
+# Nickname
+
+vcard-nickname = Pseudonim
+
 # Email vCard field
 
 vcard-email-header = Adresy e-mail
@@ -54,6 +58,10 @@ vcard-url-label = Strona WWW
 vcard-tel-header = Numery telefonu
 vcard-tel-add = Dodaj numer telefonu
 vcard-tel-label = Numer telefonu
+# Or "Mobile"
+vcard-entry-type-cell = Telefon komórkowy
+vcard-entry-type-fax = Faks
+vcard-entry-type-pager = Pager
 
 # TZ vCard field
 
@@ -62,7 +70,6 @@ vcard-tz-add = Dodaj strefę czasową
 
 # IMPP vCard field
 
-vcard-impp-header = Konta komunikatora
 vcard-impp2-header = Komunikatory
 vcard-impp-add = Dodaj konto komunikatora
 vcard-impp-label = Konto komunikatora
@@ -106,10 +113,26 @@ vcard-note-add = Dodaj notatkę
 vcard-org-header = Właściwości organizacyjne
 vcard-org-add = Dodaj właściwości organizacyjne
 vcard-org-title = Tytuł
+vcard-org-title-input =
+    .title = Stanowisko
+    .placeholder = Stanowisko
 vcard-org-role = Rola
+vcard-org-role-input =
+    .title = Funkcja lub rola odgrywana w konkretnej sytuacji
+    .placeholder = Rola w projekcie
 vcard-org-org = Firma/Organizacja
+vcard-org-org-input =
+    .title = Nazwa organizacyjna
+    .placeholder = Nazwa firmy
+vcard-org-org-unit = Dział
+vcard-org-org-unit-input =
+    .title = Nazwa jednostki organizacyjnej
+    .placeholder = Dział
 
 # Custom properties
 
 vcard-custom-header = Inne właściwości
 vcard-custom-add = Dodaj inne właściwości
+vcard-remove-button-title =
+    .title = Usuń
+vcard-remove-button = Usuń

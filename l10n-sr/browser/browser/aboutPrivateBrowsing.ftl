@@ -19,7 +19,7 @@ about-private-browsing-handoff-no-engine =
 about-private-browsing-handoff-text = Претражите у претраживачу { $engine } или унесите адресу
 about-private-browsing-handoff-text-no-engine = Претражите или унесите адресу
 about-private-browsing-not-private = Тренутно нисте у приватном прозору.
-about-private-browsing-info-description-private-window = Приватни прозор: { -brand-short-name } чисти ваш историјат претраживања и прегледања када затворите све приватне прозоре. Ово вас не чини анонимним.
+about-private-browsing-info-description-private-window = Приватни прозор: { -brand-short-name } чисти вашу историју претраживања и прегледања када затворите све приватне прозоре. Ово вас не чини анонимним.
 about-private-browsing-info-description-simplified = { -brand-short-name } брише вашу историју претраживања и прегледања када затворите све приватне прозоре, али то не значи сте анонимни.
 about-private-browsing-learn-more-link = Сазнајте више
 about-private-browsing-hide-activity = Сакријте вашу активност и локацију где год да прегледате
@@ -52,7 +52,7 @@ about-private-browsing-promo-close-button =
 about-private-browsing-pin-promo-header = Једним кликом до слободе приватног прегледања
 about-private-browsing-pin-promo-link-text =
     { PLATFORM() ->
-        [macos] Остави у Dock-у
+        [macos] Остави у доку
        *[other] Закачи на траку задатака
     }
 about-private-browsing-pin-promo-title = Нема сачуваних колачића или историје, директно са радне површине. Прегледајте као да нико не гледа.

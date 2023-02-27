@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Рэдагаванне наладаў даверу да сертыфіката ЦС
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Рэдагаванне наладаў даверу да сертыфіката ЦС
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Рэдагаваць налады даверу:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Выдаленне сертыфіката
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Выдаленне сертыфіката
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Хост
@@ -185,8 +193,6 @@ delete-email-cert-impact = Калі вы выдаліце эл.паштовы с
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Сертыфікат з серыйным нумарам: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Не адпраўляць сертыфікат кліента

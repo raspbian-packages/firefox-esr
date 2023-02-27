@@ -9,6 +9,10 @@ devmgr =
     .title = Administrilo de aparatoj
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Administrilo de aparatoj
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Sekurecaj programonoj kaj aparatoj
 

@@ -6,6 +6,10 @@ blocklist-window =
     .title = רשימת חסימות
     .style = width: 50em
 
+blocklist-window2 =
+    .title = רשימת חסימות
+    .style = min-width: 50em
+
 blocklist-description = בחירת הרשימה ש־{ -brand-short-name } משתמש כדי לחסום רכיבי מעקב מקוונים. הרשימות מסופקות מאת <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

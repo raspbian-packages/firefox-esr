@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Ngoại trừ
     .style = width: 36em;
 
+permissions-reminder-window2 =
+    .title = Ngoại trừ
+
 permission-preferences-close-window =
     .key = w
 

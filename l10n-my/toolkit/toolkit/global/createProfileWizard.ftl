@@ -6,12 +6,22 @@ create-profile-window =
     .title = ပရိုဖိုင်းလ် ဖန်တီးခြင်း နည်းလမ်း
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = ပရိုဖိုင်းလ် ဖန်တီးခြင်း နည်းလမ်း
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] နိဒါန်း
        *[other] { create-profile-window.title } မှ ကြိုဆိုပါသည်
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] နိဒါန်း
+       *[other] { create-profile-window2.title } မှ ကြိုဆိုပါသည်
     }
 
 profile-creation-explanation-1 = { -brand-short-name } သည် သင်၏ ကိုယ်ပိုင်ပရိုဖိုင်းလ်ရှိ အပြင်ဆင်များနှင့် နှစ်သက်ရာ ရွေးချယ်ချက်များကို သိုလှောင်သိမ်းဆည်းပါသည်။
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] နိဂုံး
        *[other] { create-profile-window.title } ကို ပြီးဆုံးသည်အထိ ဆောင်ရွက်နေသည်
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] နိဂုံး
+       *[other] { create-profile-window2.title } ကို ပြီးဆုံးသည်အထိ ဆောင်ရွက်နေသည်
     }
 
 profile-creation-intro = သင့်တွင် ပရိုင်ဖိုင်များ စွာရှိပါက ယခုသည်သင် နာမည်များအား မတူအောင်ပေးထားနိုင်ပါသည်။ သို့မဟုတ် ဤတွင်ပေးထားသော နာမည်အားသုံးလိုကသုံး မသုံးလိုက သင်ကိုယ်တိုင်ပေးပြီးသုံး။

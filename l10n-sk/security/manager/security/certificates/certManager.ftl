@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Úprava nastavenia dôvery pre certifikát od certifikačnej autority
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Úprava nastavenia dôvery pre certifikát od certifikačnej autority
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Upraviť nastavenie dôvery:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Odstránenie certifikátu
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Odstránenie certifikátu
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Server
@@ -185,8 +193,6 @@ delete-email-cert-impact = Ak odstránite e-mailový certifikát osoby, nebudete
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Certifikát so sériovým číslom: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Neposielať klientsky certifikát

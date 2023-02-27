@@ -17,8 +17,8 @@
 browser-main-window =
     .data-title-default = { -brand-full-name }
     .data-title-private = { -brand-full-name } (Súkromné prehliadanie)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Súkromné prehliadanie)
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } (Súkromné prehliadanie)
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
@@ -35,9 +35,9 @@ browser-main-window =
 #  $content-title (String): the title of the web content.
 browser-main-window-mac =
     .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Súkromné prehliadanie)
+    .data-title-private = { -brand-full-name } — (Súkromné prehliadanie)
     .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Súkromné prehliadanie)
+    .data-content-title-private = { $content-title } — (Súkromné prehliadanie)
 # These are the default window titles everywhere except macOS. The first two
 # attributes are used when the web content opened has no title:
 #
@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Súkromné prehliadanie { -brand-short-name(case: "gen") }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = Súkromné prehliadanie { -brand-shortcut-name(case: "gen") }
 
 ##
 
@@ -86,7 +88,7 @@ urlbar-identity-button =
 ## Tooltips for images appearing in the address bar
 
 urlbar-services-notification-anchor =
-    .tooltiptext = Otvoriť inštalačný panel správ
+    .tooltiptext = Otvoriť panel správ pre inštalácie
 urlbar-web-notification-anchor =
     .tooltiptext = Zmení, či môžete zo stránky prijímať upozornenia
 urlbar-midi-notification-anchor =
@@ -96,29 +98,29 @@ urlbar-eme-notification-anchor =
 urlbar-web-authn-anchor =
     .tooltiptext = Otvorí kartu webovej autentifikácie
 urlbar-canvas-notification-anchor =
-    .tooltiptext = Správa povolení prístupu k informáciám canvasu
+    .tooltiptext = Spravovať povolenia prístupu k informáciám canvasu
 urlbar-web-rtc-share-microphone-notification-anchor =
     .tooltiptext = Spravovať zdieľanie mikrofónu so stránkou
 urlbar-default-notification-anchor =
-    .tooltiptext = Otvorí panel správ
+    .tooltiptext = Otvoriť panel správ
 urlbar-geolocation-notification-anchor =
-    .tooltiptext = Otvorí panel so žiadosťou o polohu
+    .tooltiptext = Otvoriť panel so žiadosťou o polohu
 urlbar-xr-notification-anchor =
-    .tooltiptext = Otvorí panel povolení pre virtuálnu realitu
+    .tooltiptext = Otvoriť panel povolení pre virtuálnu realitu
 urlbar-storage-access-anchor =
     .tooltiptext = Otvorí nastavenia prístupu k informáciám o vašom prehliadaní
 urlbar-translate-notification-anchor =
-    .tooltiptext = Preloží túto stránku
+    .tooltiptext = Preložiť túto stránku
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = Spravovať zdieľanie vašich okien alebo obrazovky so stránkou
 urlbar-indexed-db-notification-anchor =
-    .tooltiptext = Otvorí panel správ offline úložiska
+    .tooltiptext = Otvoriť panel správ pre offline úložisko
 urlbar-password-notification-anchor =
-    .tooltiptext = Otvorí panel správ uloženia hesla
+    .tooltiptext = Otvoriť panel správ pre uloženie hesla
 urlbar-translated-notification-anchor =
     .tooltiptext = Spravovať preklad stránky
 urlbar-plugins-notification-anchor =
-    .tooltiptext = Správa používania zásuvných modulov
+    .tooltiptext = Spravovať používanie zásuvných modulov
 urlbar-web-rtc-share-devices-notification-anchor =
     .tooltiptext = Spravovať zdieľanie webkamery a/alebo mikrofónu so stránkou
 # "Speakers" is used in a general sense that might include headphones or
@@ -126,19 +128,28 @@ urlbar-web-rtc-share-devices-notification-anchor =
 urlbar-web-rtc-share-speaker-notification-anchor =
     .tooltiptext = Spravovať zdieľanie zvukových zariadení so stránkou
 urlbar-autoplay-notification-anchor =
-    .tooltiptext = Otvorí panel automatického prehrávania
+    .tooltiptext = Otvoriť panel automatického prehrávania
 urlbar-persistent-storage-notification-anchor =
-    .tooltiptext = Uloží údaje do trvalého úložiska
+    .tooltiptext = Uložiť údaje do trvalého úložiska
 urlbar-addons-notification-anchor =
-    .tooltiptext = Otvorí panel správ inštalácie doplnkov
+    .tooltiptext = Otvoriť panel správ pre inštalácie doplnkov
 urlbar-tip-help-icon =
     .title = Získať pomoc
 urlbar-search-tips-confirm = Ok, rozumiem
+urlbar-search-tips-confirm-short = Rozumiem
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Tip:
+urlbar-result-menu-button =
+    .title = Otvoriť ponuku
+urlbar-result-menu-remove-from-history =
+    .label = Odstrániť z histórie
+    .accesskey = h
+urlbar-result-menu-tip-get-help =
+    .label = Získať pomoc
+    .accesskey = Z
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Menej písania, viac výsledkov. Používajte { $engineName } priamo z vášho panela s adresou.
 urlbar-search-tips-redirect-2 = Zadajte sem výraz vyhľadávania a uvidíte návrhy z vyhľadávacieho modulu { $engineName } a z vašej histórie prehliadania.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Vyhľadávanie je teraz jednoduchšie. Vyhľadávanie môžete spresniť priamo tu v paneli s adresou. Ak chcete namiesto toho zobraziť webovú stránku, zmeníte to v časti Vyhľadávanie v nastaveniach.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Vyberte túto skratku a nájdite rýchlejšie to, čo hľadáte
@@ -191,7 +204,7 @@ urlbar-star-edit-bookmark =
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 urlbar-star-add-bookmark =
-    .tooltiptext = Pridá stránku medzi záložky ({ $shortcut })
+    .tooltiptext = Pridať stránku medzi záložky ({ $shortcut })
 
 ## Page Action Context Menu
 
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Akcie ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Zobraziť doplnky
-quickactions-cmd-addons = doplnky, rozšírenia, témy vzhľadu
 quickactions-cmd-addons2 = doplnky
 # Opens the bookmarks library window
-quickactions-bookmarks = Zobraziť záložky
+quickactions-bookmarks2 = Spravovať záložky
 quickactions-cmd-bookmarks = záložky
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Vymazať históriu
 quickactions-cmd-clearhistory = vymazať históriu
 # Opens about:downloads page
-quickactions-downloads = Otvoriť Stiahnuté súbory
+quickactions-downloads2 = Zobraziť stiahnuté súbory
 quickactions-cmd-downloads = stiahnuté súbory
 # Opens about:addons page in the extensions section
 quickactions-extensions = Spravovať rozšírenia
 quickactions-cmd-extensions = rozšírenia
 # Opens the devtools web inspector
-quickactions-inspector = Otvoriť Prieskumníka
+quickactions-inspector2 = Otvoriť Nástroje pre vývojárov
 quickactions-cmd-inspector = prieskumník, vývojárske nástroje
 # Opens about:logins
-quickactions-logins = Zobraziť prihlasovacie údaje
+quickactions-logins2 = Spravovať heslá
 quickactions-cmd-logins = prihlasovacie údaje, heslá
 # Opens about:addons page in the plugins section
 quickactions-plugins = Spravovať zásuvné moduly
 quickactions-cmd-plugins = zásuvné moduly
 # Opens the print dialog
-quickactions-print = Tlačiť
+quickactions-print2 = Tlačiť stránku
 quickactions-cmd-print = tlačiť
 # Opens a new private browsing window
-quickactions-private = Otvoriť Súkromné okno
+quickactions-private2 = Otvoriť Súkromné okno
 quickactions-cmd-private = súkromné prehliadanie
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Obnoviť { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = obnoviť
 quickactions-restart = Reštartovať { -brand-short-name }
 quickactions-cmd-restart = reštartovať
 # Opens the screenshot tool
-quickactions-screenshot2 = Urobiť snímku obrazovky
+quickactions-screenshot3 = Urobiť snímku obrazovky
 quickactions-cmd-screenshot = snímka obrazovky
 # Opens about:preferences
-quickactions-settings = Otvoriť nastavenia
+quickactions-settings2 = Spravovať nastavenia
 quickactions-cmd-settings = nastavenia, preferencie, možnosti
 # Opens about:addons page in the themes section
 quickactions-themes = Spravovať témy
@@ -323,8 +332,11 @@ quickactions-cmd-themes = témy vzhľadu
 quickactions-update = Aktualizovať { -brand-short-name }
 quickactions-cmd-update = aktualizovať
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Zobraziť zdrojový kód
+quickactions-viewsource2 = Zobraziť zdrojový kód stránky
 quickactions-cmd-viewsource = zobraziť zdrojový kód, zdrojový kód
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Ďalšie informácie o Rýchlych akciách
 
 ## Bookmark Panel
 
@@ -489,6 +501,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofón
 popup-select-speaker-icon =
     .tooltiptext = Zvukový výstup
+popup-select-window-or-screen =
+    .label = Okno alebo obrazovka:
+    .accesskey = O
 popup-all-windows-shared = Všetky okná viditeľné na vašej obrazovke budú zdieľané.
 popup-screen-sharing-block =
     .label = Zakázať
@@ -510,6 +525,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Ak chcete použiť skratku F12, najprv otvorte DevTools prostredníctvom ponuky Webový vývojár.
+enable-devtools-popup-description2 = Ak chcete použiť skratku F12, najprv otvorte Nástroje pre vývojárov webu cez ponuku Nástroje prehliadača.
 
 ## URL Bar
 
@@ -642,6 +658,15 @@ urlbar-group-search-suggestions =
 urlbar-group-quickactions =
     .label = Rýchle akcie
 
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Zapnúť zobrazenie Čítačka
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Zavrieť zobrazenie Čítačka
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -660,11 +685,11 @@ pointerlock-warning-no-domain = Tento dokument má kontrolu nad vaším kurzorom
 
 ## Subframe crash notification
 
-crashed-subframe-message = <strong>Časť tejto stránky zlyhala.</strong> Ak chcete, aby sa autori aplikácie { -brand-product-name } dozvedeli o tomto probléme a tento mohol byť rýchlejšie vyriešený, prosím, odošlite hlásenie.
+crashed-subframe-message = <strong>Časť tejto stránky zlyhala.</strong> Ak chcete, aby sa tvorcovia prehliadača { -brand-product-name } dozvedeli o tomto probléme a tento mohol byť rýchlejšie vyriešený, prosím, odošlite hlásenie.
 # The string for crashed-subframe-title.title should match crashed-subframe-message,
 # but without any markup.
 crashed-subframe-title =
-    .title = Časť tejto stránky zlyhala. Ak chcete, aby sa autori aplikácie { -brand-product-name } dozvedeli o tomto probléme a tento mohol byť rýchlejšie vyriešený, prosím, odošlite hlásenie.
+    .title = Časť tejto stránky zlyhala. Ak chcete, aby sa tvorcovia prehliadača { -brand-product-name } dozvedeli o tomto probléme a tento mohol byť rýchlejšie vyriešený, prosím, odošlite hlásenie.
 crashed-subframe-learnmore-link =
     .value = Ďalšie informácie
 crashed-subframe-submit =
@@ -918,3 +943,29 @@ private-browsing-indicator-label = Súkromné prehliadanie
 unified-extensions-button =
     .label = Rozšírenia
     .tooltiptext = Rozšírenia
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Rozšírenia
+    .tooltiptext =
+        Rozšírenia
+        Vyžadujú sa oprávnenia
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } neumožnil tejto stránke automatické obnovenie obsahu.
+refresh-blocked-redirect-label = { -brand-short-name } neumožnil tejto stránke automatické presmerovanie na inú stránku.
+refresh-blocked-allow =
+    .label = Povoliť
+    .accesskey = v
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = Služba { -relay-brand-name } maskuje vašu skutočnú e-mailovú adresu, aby vás chránila pred narušením ochrany údajov a nevyžiadanou poštou.
+firefox-relay-offer-how-we-integrate = Ak budete pokračovať, môžete generovať nové e-mailové masky { -relay-brand-short-name } priamo zo Správcu hesiel svojho { -brand-shorter-name(case: "gen") }.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Všetky e-maily od používateľa <strong>{ $sitename }</strong> prepošleme na adresu <strong>{ $useremail }</strong>.

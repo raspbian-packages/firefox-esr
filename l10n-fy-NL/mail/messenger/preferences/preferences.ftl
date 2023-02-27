@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Direkt op it skerm
     .accesskey = O
 
+view-attachments-inline =
+    .label = Bylagen ynline toane
+    .accesskey = t
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Dit tema is net falide of is op dit stuit net beskikber
 chat-variant-label =
     .value = Fariant:
     .accesskey = F
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

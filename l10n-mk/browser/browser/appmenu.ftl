@@ -70,6 +70,7 @@ whatsnew-panel-header = Што е ново
 
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-learn-more-button =
     .label = Дознајте повеќе
 profiler-popup-settings =

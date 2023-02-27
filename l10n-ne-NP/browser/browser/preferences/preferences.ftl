@@ -50,6 +50,7 @@ restart-later = केहि समयपछि पुनःसुरु गर�
 ## Variables:
 ##   $name (String): name of the extension
 
+
 ## Preferences UI Search Results
 
 search-results-header = खोजी परिणामहरू
@@ -171,10 +172,6 @@ check-user-spelling =
 files-and-applications-title = फाइलहरू र अनुप्रयोगहरू
 
 download-header = डाउनलोडहरू
-
-download-save-to =
-    .label = फाइलहरू यहाँ सङ्ग्रह गर्नुहोस्
-    .accesskey = v
 
 download-save-where = फाइलहरू यहाँ सङ्ग्रह गर्नुहोस्
     .accesskey = v
@@ -795,4 +792,3 @@ certs-devices =
 desktop-folder-name = डेस्कटप
 downloads-folder-name = Downloads
 choose-download-folder-title = डाउनलोड फोल्डर रोज्नुहोस्:
-

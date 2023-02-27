@@ -38,12 +38,44 @@ browser-main-window-mac =
     .data-title-private = { -brand-full-name } - (Private Browsing)
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } - (Private Browsing)
+# These are the default window titles everywhere except macOS. The first two
+# attributes are used when the web content opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# The last two are for use when there *is* a content title.
+# Variables:
+#  $content-title (String): the title of the web content.
+browser-main-window-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } Private Browsing
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } Private Browsing
+# These are the default window titles on macOS. The first two are for use when
+# there is no content title:
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# The last two are for use when there *is* a content title.
+# Do not use the brand name in the last two attributes, as we do on non-macOS.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+browser-main-window-mac-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — Private Browsing
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — Private Browsing
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } Private Browsing
 
 ##
 
@@ -219,6 +251,11 @@ search-one-offs-tabs =
     .tooltiptext = Mga Tab ({ $restrict })
 search-one-offs-history =
     .tooltiptext = Kasaysayan ({ $restrict })
+
+## QuickActions are shown in the urlbar as the user types a matching string
+## The -cmd- strings are comma separated list of keywords that will match
+## the action.
+
 
 ## Bookmark Panel
 
@@ -515,6 +552,15 @@ urlbar-result-action-search-tabs = Hanapin sa mga Tab
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
 
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Ipasok ang Reader View
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Isara ang Reader View
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -761,3 +807,21 @@ data-reporting-notification-message = Ang { -brand-short-name } ay kusang nagpap
 data-reporting-notification-button =
     .label = Piliin ang Ibabahagi
     .accesskey = D
+
+## Unified extensions (toolbar) button
+
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = Pinigilan ng { -brand-short-name } ang agarang pagbukas ng pahinang ito.
+refresh-blocked-redirect-label = Pingilan ng { -brand-short-name } ang kusang pagdirekta ng pahinang ito tungo sa ibang pahina.
+refresh-blocked-allow =
+    .label = Payagan
+    .accesskey = A
+
+## Firefox Relay integration
+

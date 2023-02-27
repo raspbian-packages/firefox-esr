@@ -51,7 +51,7 @@ browser-main-window-window-titles =
     .data-title-default = { -brand-full-name }
     .data-title-private = Prywatne Przeglōndanie { -brand-full-name }
     .data-content-title-default = { $content-title } — { -brand-full-name }
-    .data-content-title-private = { $content-title } — Przywatne przeglōndanie { -brand-full-name }
+    .data-content-title-private = { $content-title } — Prywatne przeglōndanie { -brand-full-name }
 # These are the default window titles on macOS. The first two are for use when
 # there is no content title:
 #
@@ -76,7 +76,6 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } Prywatne przeglōndanie
 
 ##
 
@@ -267,15 +266,11 @@ search-one-offs-actions =
     .tooltiptext = Akcyje ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Pokoż rozszyrzynia
-quickactions-cmd-addons = rozszyrzynia, motywy
 quickactions-cmd-addons2 = rozszyrzynia
 # Opens the bookmarks library window
 quickactions-bookmarks = Pokoż zokłodki
@@ -489,6 +484,9 @@ popup-select-microphone-icon =
     .tooltiptext = Mikrofōn
 popup-select-speaker-icon =
     .tooltiptext = Głośniki
+popup-select-window-or-screen =
+    .label = Ôkno abo ekran:
+    .accesskey = O
 popup-all-windows-shared = Wszyske ôkna widziane na ekranie bydōm udostympniōne.
 popup-screen-sharing-block =
     .label = Szperuj
@@ -641,6 +639,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Gibke akcyje
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Wlyź do podglōndu czytanio
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Zawrzij podglōnd czytanio
 
 ## Full Screen and Pointer Lock UI
 
@@ -918,3 +925,11 @@ private-browsing-indicator-label = Prywatne przeglōndanie
 unified-extensions-button =
     .label = Rozszyrzynia
     .tooltiptext = Rozszyrzynia
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } niy doł tyj strōnie sie autōmatycznie przeladować.
+refresh-blocked-redirect-label = { -brand-short-name } niy doł tyj strōnie autōmatycznie przekerować ku inkszyj strōnie.
+refresh-blocked-allow =
+    .label = Przizwōl
+    .accesskey = P

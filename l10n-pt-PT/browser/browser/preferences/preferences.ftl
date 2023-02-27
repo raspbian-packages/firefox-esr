@@ -182,14 +182,17 @@ containers-remove-cancel-button = Não remover este contentor
 language-and-appearance-header = Idioma e aparência
 preferences-web-appearance-header = Aparência do site
 preferences-web-appearance-description = Alguns sites adaptam o seu esquema de cores com base nas suas preferências. Escolha qual o esquema de cores que gostaria de usar para esses sites.
-preferences-web-appearance-choice-browser = tema do { -brand-short-name }
+preferences-web-appearance-choice-browser = Tema do { -brand-short-name }
 preferences-web-appearance-choice-system = Tema do sistema
+preferences-web-appearance-choice-auto = Automático
 preferences-web-appearance-choice-light = Claro
 preferences-web-appearance-choice-dark = Escuro
 preferences-web-appearance-choice-tooltip-browser =
     .title = Corresponda as suas opções de tema do { -brand-short-name } quanto a fundos e conteúdo.
 preferences-web-appearance-choice-tooltip-system =
     .title = Corresponda as suas opções de tema quanto a fundos e conteúdo.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Altere automaticamente os planos de fundo e o conteúdo do site com base nas definições do seu sistema e no tema do { -brand-short-name }.
 preferences-web-appearance-choice-tooltip-light =
     .title = Utilizar um aspeto claro para fundos e conteúdo de websites.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -207,7 +212,7 @@ preferences-web-appearance-choice-input-dark =
 preferences-web-appearance-override-warning = As suas seleções de cores estão a substituir a aparência do website. <a data-l10n-name="colors-link">Gerir cores</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
-preferences-web-appearance-footer = Gerir temas do { -brand-short-name } em<a data-l10n-name="themes-link">Extensões e Temas</a>
+preferences-web-appearance-footer = Gerir temas do { -brand-short-name } em <a data-l10n-name="themes-link">Extensões e Temas</a>
 preferences-colors-header = Cores
 preferences-colors-description = Subsituir as cores padrão do { -brand-short-name } quanto a texto, fundos de websites e ligações.
 preferences-colors-manage-button =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mostrar sugestões de pesquisa nos resultados da barra de endereço
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Mostrar os termos de pesquisa em vez do URL na página de resultados do mecanismo de pesquisa predefinido
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = G
     .buttonlabelextra2 = Desligar...
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Escolher o que sincronizar
+    .style = min-width: 36em;
+    .buttonlabelaccept = Guardar alterações
+    .buttonaccesskeyaccept = G
+    .buttonlabelextra2 = Desligar...
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Marcadores
     .accesskey = M
@@ -782,9 +799,12 @@ forms-breach-alerts =
     .label = Mostrar alertas sobre as palavras-passe para os sites violados
     .accesskey = v
 forms-breach-alerts-learn-more-link = Saber mais
+relay-integration =
+    .label = Ative o { -relay-brand-name } no seu gestor de palavras-passe do { -brand-short-name }
+relay-integration-learn-more-link = Saber mais
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
-    .label = Auto-preencher credenciais e palavras-passe
+    .label = Autopreenchimento de credenciais e palavras-passe
     .accesskey = i
 forms-saved-logins =
     .label = Credenciais guardadas…
@@ -933,7 +953,11 @@ addressbar-locbar-topsites-option =
 addressbar-locbar-engines-option =
     .label = Motores de pesquisa
     .accesskey = a
+addressbar-locbar-quickactions-option =
+    .label = Ações rápidas
+    .accesskey = Q
 addressbar-suggestions-settings = Alterar preferências para as sugestões dos motores de pesquisa
+addressbar-quickactions-learn-more = Saber mais
 
 ## Privacy Section - Content Blocking
 
@@ -982,6 +1006,9 @@ content-blocking-etp-standard-tcp-rollout-checkbox =
         Teste a nossa mais poderosa funcionalidade de privacidade
         experiência de privacidade de sempre
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = A Proteção total de cookies contém cookies para o site em que você estiver, portanto, os rastreadores não podem utilizar as mesmas para o monitorizar enquanto navega entre sites.
 content-blocking-etp-standard-tcp-rollout-learn-more = Saber mais
@@ -1091,8 +1118,14 @@ addon-recommendations-link = Saber mais
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Relato de dados está desativado para a configuração desta compilação
-collection-backlogged-crash-reports-with-link = Permitir que a { -brand-short-name } envie relatórios de falhas acumuladas em seu nome. <a data-l10n-name="crash-reports-link">Saber mais</a>
+collection-backlogged-crash-reports-with-link = Permitir que o { -brand-short-name } envie relatórios de falhas acumuladas em seu nome. <a data-l10n-name="crash-reports-link">Saber mais</a>
     .accesskey = f
+privacy-segmentation-section-header = Novas funcionalidades que melhoram a sua navegação
+privacy-segmentation-section-description = Quando oferecemos funcionalidades que utilizam os seus dados para fornecer uma experiência mais pessoal:
+privacy-segmentation-radio-off =
+    .label = Usar as recomendações do { -brand-product-name }
+privacy-segmentation-radio-on =
+    .label = Mostrar informações detalhadas
 
 ## Privacy Section - Security
 ##

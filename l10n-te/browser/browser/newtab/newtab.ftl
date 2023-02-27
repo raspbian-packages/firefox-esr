@@ -236,6 +236,9 @@ newtab-pocket-last-card-desc = మరిన్నిటి కోసం కా�
 newtab-pocket-last-card-image =
     .alt = అన్నీ చూసేసారు
 
+# A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-save = భద్రపరుచు
+
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
 

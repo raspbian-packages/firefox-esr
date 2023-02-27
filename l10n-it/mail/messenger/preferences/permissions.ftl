@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Eccezioni
     .style = width: 50em;
 
+permissions-reminder-window2 =
+    .title = Eccezioni
+
 permission-preferences-close-window =
     .key = w
 

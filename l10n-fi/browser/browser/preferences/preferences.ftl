@@ -214,7 +214,7 @@ preferences-web-appearance-override-warning = Värivalintasi ohittavat verkkosiv
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Hallinnoi { -brand-short-name }in teemoja <a data-l10n-name="themes-link">Laajennukset ja teemat -osiossa</a>
 preferences-colors-header = Värit
-preferences-colors-description = Ohita { -brand-short-name }n oletusvärit tekstille, verkkosivustojen taustoille ja linkeille.
+preferences-colors-description = Ohita { -brand-short-name }in oletusvärit tekstille, verkkosivustojen taustoille ja linkeille.
 preferences-colors-manage-button =
     .label = Hallitse värejä…
     .accesskey = ä
@@ -522,7 +522,8 @@ choose-bookmark =
 
 home-prefs-content-header = Firefox-aloitussivun sisältö
 home-prefs-content-description = Valitse Firefox-aloitussivulle haluamasi sisältö.
-home-prefs-content-description2 = Valitse mitä sisältöä haluat { -firefox-home-brand-name }in näytölle.
+home-prefs-content-header2 = { -firefox-home-brand-name }n sisältö
+home-prefs-content-description2 = Valitse mitä sisältöä haluat { -firefox-home-brand-name }lle.
 home-prefs-search-header =
     .label = Verkkohaku
 home-prefs-shortcuts-header =
@@ -591,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Näytä hakuehdotukset osoitepalkkihauissa
     .accesskey = o
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Näytä hakuehdot URL-osoitteen sijaan oletushakukoneen tulossivulla
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -718,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = T
     .buttonlabelextra2 = Katkaise yhteys…
     .buttonaccesskeyextra2 = K
+sync-choose-what-to-sync-dialog3 =
+    .title = Valitse, mitä synkronoidaan
+    .style = min-width: 36em;
+    .buttonlabelaccept = Tallenna muutokset
+    .buttonaccesskeyaccept = T
+    .buttonlabelextra2 = Katkaise yhteys…
+    .buttonaccesskeyextra2 = K
 sync-engine-bookmarks =
     .label = Kirjanmerkit
     .accesskey = K
@@ -786,6 +799,9 @@ forms-breach-alerts =
     .label = Näytä hälytykset salasanoista sivustoille, jotka ovat kokeneet tietomurron
     .accesskey = h
 forms-breach-alerts-learn-more-link = Lue lisää
+relay-integration =
+    .label = Ota { -relay-brand-name } käyttöön { -brand-short-name }in salasanojen hallinnassa
+relay-integration-learn-more-link = Lue lisää
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Täytä automaattisesti käyttäjätunnukset ja salasanat
@@ -988,6 +1004,9 @@ content-blocking-fingerprinters = Yksilöijät
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Testaa kaikkien aikojen tehokkainta yksityisyyttä varjelevaa ominaisuuttamme
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Totaalinen evästesuoja eristää evästeet sivustolle, jolla olet, joten seuraimet eivät voi käyttää niitä seurantaan sivustojen välillä.
 content-blocking-etp-standard-tcp-rollout-learn-more = Lue lisää

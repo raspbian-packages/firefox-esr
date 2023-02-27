@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Paràmetres de llengua de les pàgines web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Paràmetres de llengua de les pàgines web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Paràmetres de llengua del { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Paràmetres de llengua del { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = El { -brand-short-name } utilitzarà la primera llengua per defecte i, si cal, utilitzarà les altres llengües en l'ordre en què apareixen.
 

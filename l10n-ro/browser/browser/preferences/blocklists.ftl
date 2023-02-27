@@ -6,6 +6,10 @@ blocklist-window =
     .title = Liste de blocări
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Liste de blocări
+    .style = min-width: 55em
+
 blocklist-description = Alege lista pe care o folosește { -brand-short-name } pentru a bloca elementele de urmărire online. Listele sunt furnizate de <a data-l10n-name="disconnect-link" title="Disconnect">Disconnect</a>.
 blocklist-close-key =
     .key = w

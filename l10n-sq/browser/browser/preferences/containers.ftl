@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Shtoni Kontejner të Ri
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Rregullime Kontejneri { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Shtoni Kontejner të Ri
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Rregullime Kontejneri { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

@@ -6,6 +6,10 @@ containers-window-new =
     .title = Yongeza iKhonteyina eNtsha
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Yongeza iKhonteyina eNtsha
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

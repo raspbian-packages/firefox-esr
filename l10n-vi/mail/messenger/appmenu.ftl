@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Đồng bộ hóa
+appmenu-signin-panel =
+    .label = Đăng nhập để đồng bộ hóa
+    .accesskey = i
+appmenu-sync-sync =
+    .value = Đồng bộ hóa tài khoản
+    .accesskey = A
+appmenu-sync-manage =
+    .value = Quản lý tài khoản
+    .accesskey = M
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = Đồng bộ ngay
+    .accesskey = N
+appmenu-sync-settings =
+    .label = Cài đặt đồng bộ hóa
+    .accesskey = S
+appmenu-sync-sign-out =
+    .label = Đăng xuất…
+    .accesskey = O
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +93,11 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = Mở
+appmenu-open-file-panel =
+    .label = Mở từ tập tin
     .accesskey = O
-appmenu-open-panel-title =
-    .title = Mở
+appmenu-open-file-panel-title =
+    .title = Mở từ tập tin
 appmenu-open-message =
     .label = Thư…
     .accesskey = M
@@ -168,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = Về { -brand-short-name }
     .accesskey = A
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Đang tải xuống bản cập nhật { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Đã có bản cập nhật — tải xuống ngay
+appmenuitem-banner-update-manual =
+    .label = Đã có bản cập nhật — tải xuống ngay
+appmenuitem-banner-update-unsupported =
+    .label = Không thể cập nhật — hệ thống không tương thích
+appmenuitem-banner-update-restart =
+    .label = Đã có bản cập nhật — khởi động lại ngay

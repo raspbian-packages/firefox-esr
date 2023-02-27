@@ -6,6 +6,10 @@ permissions-window =
     .title = Eisgeachdan
     .style = width: 49em
 
+permissions-window2 =
+    .title = Eisgeachdan
+    .style = min-width: 49em
+
 permissions-close-key =
     .key = w
 
@@ -91,6 +95,10 @@ permissions-invalid-uri-label = Cuir a-steach ainm òstair dhligheach
 permissions-exceptions-etp-window =
     .title = Eisgeachdan air an dìon adhartach o thracadh
     .style = { permissions-window.style }
+
+permissions-exceptions-etp-window2 =
+    .title = Eisgeachdan air an dìon adhartach o thracadh
+    .style = { permissions-window2.style }
 permissions-exceptions-etp-desc = Chuir thu dheth an dìon air na làraichean-lìn seo.
 
 ## Exceptions - Cookies
@@ -98,6 +106,10 @@ permissions-exceptions-etp-desc = Chuir thu dheth an dìon air na làraichean-l�
 permissions-exceptions-cookie-window =
     .title = Eisgeachdan - Briosgaidean is dàta làraichean
     .style = { permissions-window.style }
+
+permissions-exceptions-cookie-window2 =
+    .title = Eisgeachdan - Briosgaidean is dàta làraichean
+    .style = { permissions-window2.style }
 permissions-exceptions-cookie-desc = ’S urrainn dhut sònrachadh dè na làraichean-lìn aig am bi no nach bi cead an-còmhnaidh briosgaidean is dàta làraichean a chleachdadh. Cuir a-steach seòlaidh pongail na làraich a tha thu airson stiùireadh agus an uairsin briog air “Bac”, “Ceadaich rè an t-seisein” no “Ceadaich”.
 
 ## Exceptions - HTTPS-Only Mode
@@ -105,6 +117,10 @@ permissions-exceptions-cookie-desc = ’S urrainn dhut sònrachadh dè na làrai
 permissions-exceptions-https-only-window =
     .title = Eisgeachdan – Modh HTTPS a-mhàin
     .style = { permissions-window.style }
+
+permissions-exceptions-https-only-window2 =
+    .title = Eisgeachdan – Modh HTTPS a-mhàin
+    .style = { permissions-window2.style }
 permissions-exceptions-https-only-desc = ’S urrainn dhut am modh HTTPS a-mhàin a chur dheth do làraichean-lìn sònraichte. Chan fheuch { -brand-short-name } ris an ceangal àrdachadh gu HTTPS tèarainte dha na làraichean ud. Cha bhi na h-eisgeachdan an sàs air uinneagan prìobhaideach.
 
 ## Exceptions - Pop-ups
@@ -112,6 +128,10 @@ permissions-exceptions-https-only-desc = ’S urrainn dhut am modh HTTPS a-mhài
 permissions-exceptions-popup-window =
     .title = Làraichean-lìn le cead - Priob-uinneagan
     .style = { permissions-window.style }
+
+permissions-exceptions-popup-window2 =
+    .title = Làraichean-lìn le cead - Priob-uinneagan
+    .style = { permissions-window2.style }
 permissions-exceptions-popup-desc = 'S urrainn dhut sònrachadh dè na làraichean-lìn as urrainn dhaibh priob-uinneagan fhosgladh. Cuir a-steach seòladh cruinn na làraich a tha thu airson cead a thoirt dha is briog air "Ceadaich" an uairsin.
 
 ## Exceptions - Saved Logins
@@ -119,6 +139,10 @@ permissions-exceptions-popup-desc = 'S urrainn dhut sònrachadh dè na làraiche
 permissions-exceptions-saved-logins-window =
     .title = Eisgeachdan – Clàraidhean a-steach sàbhailte
     .style = { permissions-window.style }
+
+permissions-exceptions-saved-logins-window2 =
+    .title = Eisgeachdan – Clàraidhean a-steach sàbhailte
+    .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = Cha dèid clàraidhean a-steach air na làraichean-lìn a leanas a shàbhaladh
 
 ## Exceptions - Add-ons
@@ -126,6 +150,10 @@ permissions-exceptions-saved-logins-desc = Cha dèid clàraidhean a-steach air n
 permissions-exceptions-addons-window =
     .title = Làraichean-lìn le cead - Stàladh thuilleadan
     .style = { permissions-window.style }
+
+permissions-exceptions-addons-window2 =
+    .title = Làraichean-lìn le cead - Stàladh thuilleadan
+    .style = { permissions-window2.style }
 permissions-exceptions-addons-desc = 'S urrainn dhut sònrachadh dè na làraichean-lìn as urrainn dhaibh tuilleadan a stàladh. Cuir a-steach seòladh cruinn na làraich a tha thu airson cead a thoirt dha is briog air "Ceadaich".
 
 ## Site Permissions - Autoplay
@@ -133,6 +161,10 @@ permissions-exceptions-addons-desc = 'S urrainn dhut sònrachadh dè na làraich
 permissions-site-autoplay-window =
     .title = Roghainnean – Fèin-chluich
     .style = { permissions-window.style }
+
+permissions-site-autoplay-window2 =
+    .title = Roghainnean – Fèin-chluich
+    .style = { permissions-window2.style }
 permissions-site-autoplay-desc = ’S urrainn dhut na làraichean nach cleachd na roghainnean fèin-chluich bunaiteach agad a stiùireadh an-seo.
 
 ## Site Permissions - Notifications
@@ -140,6 +172,10 @@ permissions-site-autoplay-desc = ’S urrainn dhut na làraichean nach cleachd n
 permissions-site-notification-window =
     .title = Roghainnean – Cead brathan a chur
     .style = { permissions-window.style }
+
+permissions-site-notification-window2 =
+    .title = Roghainnean – Cead brathan a chur
+    .style = { permissions-window2.style }
 permissions-site-notification-desc = Dh’iarr na làraichean-lìn a leanas cead brathan a chur thugadh. ’S urrainn dhut sònrachadh dè na làraichean-lìn aig a bheil cead brathan a chur thugad. ’S urrainn dhut iarrtasan ùra mu bhrathan mar seo a bhacadh cuideachd.
 permissions-site-notification-disable-label =
     .label = Bac iarrtasan ùra a dh’iarras cead brathan a chur
@@ -150,6 +186,10 @@ permissions-site-notification-disable-desc = Cumaidh seo làrach-lìn sam bith n
 permissions-site-location-window =
     .title = Roghainnean – Cead air d’ ionaid
     .style = { permissions-window.style }
+
+permissions-site-location-window2 =
+    .title = Roghainnean – Cead air d’ ionaid
+    .style = { permissions-window2.style }
 permissions-site-location-desc = Dh’iarr na làraichean-lìn a leanas cead d’ ionad fhiosrachadh. ’S urrainn dhut sònrachadh dè na làraichean-lìn aig a bheil cead air d’ ionad. ’S urrainn dhut iarrtasan ùra air d’ ionad a bhacadh cuideachd.
 permissions-site-location-disable-label =
     .label = Bac iarrtasan ùra a dh’iarras cead air d’ ionad
@@ -160,6 +200,10 @@ permissions-site-location-disable-desc = Cumaidh seo làrach-lìn sam bith nach 
 permissions-site-xr-window =
     .title = Roghainnean – Ceadan na fìorachd bhiortail
     .style = { permissions-window.style }
+
+permissions-site-xr-window2 =
+    .title = Roghainnean – Ceadan na fìorachd bhiortail
+    .style = { permissions-window2.style }
 permissions-site-xr-desc = Dh’iarr na làraichean-lìn a leanas cead airson uidheaman na fìorachd bhiortail agad inntrigeadh. ’S urrainn dhut sònrachadh dè na làraichean-lìn aig a bheil cead air na h-uidheaman fìorachd bhiortail agad. ’S urrainn dhut iarrtasan ùra air na h-uidheaman fìorachd bhiortail agad a bhacadh cuideachd.
 permissions-site-xr-disable-label =
     .label = Bac iarrtasan ùra a dh’iarras cead air na h-uidheaman fìorachd bhiortail agad
@@ -170,6 +214,10 @@ permissions-site-xr-disable-desc = Cumaidh seo làrach-lìn sam bith nach eil ai
 permissions-site-camera-window =
     .title = Roghainnean – Cead air a’ chamara
     .style = { permissions-window.style }
+
+permissions-site-camera-window2 =
+    .title = Roghainnean – Cead air a’ chamara
+    .style = { permissions-window2.style }
 permissions-site-camera-desc = Dh’iarr na làraichean-lìn a leanas cead air a’ chamara agad. ’S urrainn dhut sònrachadh dè na làraichean-lìn aig a bheil cead air a’ chamara agad. ’S urrainn dhut iarrtasan ùra a dh’iarras cead air a’ chamara agad a bhacadh cuideachd.
 permissions-site-camera-disable-label =
     .label = Bac iarrtasan ùra a dh’iarras cead air a’ chamara agad
@@ -180,6 +228,10 @@ permissions-site-camera-disable-desc = Cumaidh seo làrach-lìn sam bith nach ei
 permissions-site-microphone-window =
     .title = Roghainnean – Cead air a’ mhicreofon
     .style = { permissions-window.style }
+
+permissions-site-microphone-window2 =
+    .title = Roghainnean – Cead air a’ mhicreofon
+    .style = { permissions-window2.style }
 permissions-site-microphone-desc = Dh’iarr na làraichean-lìn a leanas cead air a’ mhicreofon agad. ’S urrainn dhut sònrachadh dè na làraichean-lìn aig a bheil cead air a’ mhicreofon agad. ’S urrainn dhut iarrtasan ùra a dh’iarras cead air a’ mhicreofon agad a bhacadh cuideachd.
 permissions-site-microphone-disable-label =
     .label = Bac iarrtasan ùra a dh’iarras cead air a’ mhicreofon agad

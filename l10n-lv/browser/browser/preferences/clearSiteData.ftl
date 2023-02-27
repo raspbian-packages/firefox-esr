@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Notīrīt datus
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Notīrīt datus
+    .style = min-width: 35em
+
 clear-site-data-description = { -brand-short-name } saglabāto sīkdatņu dzēšana var pārtraukt jūsu autorizācijas sesijas lapās un aizvākt bezsaistes datus. Kešatmiņas dzēšana autorizāciju lapās neietekmēs.
 
 clear-site-data-close-key =

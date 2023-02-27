@@ -21,6 +21,10 @@ certmgr-edit-ca-cert =
     .title = កែសម្រួល​ការ​កំណត់​ទំនុកចិត្ត​លើ​វិញ្ញាបនបត្រ CA
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = កែសម្រួល​ការ​កំណត់​ទំនុកចិត្ត​លើ​វិញ្ញាបនបត្រ CA
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = កែសម្រួល​ការ​កំណត់​ទំនុកចិត្ត ៖
 
 certmgr-edit-cert-trust-ssl =
@@ -32,6 +36,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = លុប​វិញ្ញាបនបត្រ
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = លុប​វិញ្ញាបនបត្រ
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = ឈ្មោះ​វិញ្ញាបនបត្រ
@@ -162,9 +170,8 @@ delete-email-cert-title =
 delete-email-cert-confirm = តើ​អ្នក​ពិតជា​ចង់​លុប​វិញ្ញាបនបត្រ​អ៊ីមែល​របស់​មនុស្ស​ទាំងអស់​នេះ​ឬ ?
 delete-email-cert-impact = ប្រសិនបើ អ្នក​លុប​វិញ្ញាបនបត្រ​អ៊ីមែល​របស់​មនុស្ស​ណា​ម្នាក់ អ្នក​ក៏​នឹង​មិន​អាច​ផ្ញើ​អ៊ីមែល​ដែល​បាន​អ៊ិនគ្រីប​ទៅកាន់​មនុស្ស​ម្នាក់​នោះ​បាន​ទៀត​ដែរ ។
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

@@ -51,6 +51,7 @@ openpgp-enc-invalid = Bu ileti size gönderilmeden önce şifrelenmiş, fakat ç
 openpgp-enc-clueless = Bu şifreli iletide bilinmeyen hatalar var.
 
 openpgp-enc-valid-label = İleti şifrelenmiş
+openpgp-enc-valid = Bu ileti size gönderilmeden önce şifrelendi. Şifreleme, iletinin yalnızca istenen alıcılar tarafından okunabilmesini sağlar.
 
 openpgp-unknown-key-id = Bilinmeyen anahtar
 

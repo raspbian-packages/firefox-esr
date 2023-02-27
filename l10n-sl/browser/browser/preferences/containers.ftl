@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Dodaj nov vsebnik
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Nastavitve vsebnika { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Dodaj nov vsebnik
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Nastavitve vsebnika { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

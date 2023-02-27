@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Sync
+appmenu-signin-panel =
+    .label = 登入至 Sync
+    .accesskey = i
+appmenu-sync-sync =
+    .value = 帳號同步
+    .accesskey = A
+appmenu-sync-manage =
+    .value = 管理帳號
+    .accesskey = M
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = 立刻同步
+    .accesskey = N
+appmenu-sync-settings =
+    .label = 同步設定
+    .accesskey = S
+appmenu-sync-sign-out =
+    .label = 登出…
+    .accesskey = O
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +93,11 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = 開啟
+appmenu-open-file-panel =
+    .label = 開啟檔案
     .accesskey = O
-appmenu-open-panel-title =
-    .title = 開啟
+appmenu-open-file-panel-title =
+    .title = 開啟檔案
 appmenu-open-message =
     .label = 訊息…
     .accesskey = M
@@ -168,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = 關於 { -brand-short-name }
     .accesskey = A
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = 正在下載 { -brand-shorter-name } 更新
+appmenuitem-banner-update-available =
+    .label = 已推出更新 — 立即下載
+appmenuitem-banner-update-manual =
+    .label = 已推出更新 — 立即下載
+appmenuitem-banner-update-unsupported =
+    .label = 無法更新 — 系統不相容
+appmenuitem-banner-update-restart =
+    .label = 已推出更新 — 立即重新啟動

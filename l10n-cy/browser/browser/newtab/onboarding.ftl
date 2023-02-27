@@ -25,6 +25,12 @@ return-to-amo-addon-title = Nawr gadewch i ni gael <img data-l10n-name="icon"/> 
 return-to-amo-add-extension-label = Ychwanegwch yr Estyniad
 return-to-amo-add-theme-label = Ychwanegu'r Thema
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Dywedwch helo wrth { -brand-short-name }
+mr1-return-to-amo-addon-title = Mae gennych chi borwr cyflym a phreifat ar flaenau eich bysedd. Nawr gallwch chi ychwanegu <b>{ $addon-name }</b> a gwneud mwy fyth gyda { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = Ychwanegu { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Cynnydd: cam { $current } o { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Cynnydd: cam { $current } o { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -107,8 +115,8 @@ mr1-onboarding-import-primary-button-label-attribution = Mewnforio o { $previous
 mr1-onboarding-import-primary-button-label-no-attribution = Mewnforio o'r porwr blaenorol
 mr1-onboarding-import-secondary-button-label = Nid nawr
 mr2-onboarding-colorway-header = Bywyd mewn lliw
-mr2-onboarding-colorway-subtitle = Llwybrau lliw newydd bywiog. Ar gael am gyfnod cyfyngedig.
-mr2-onboarding-colorway-primary-button-label = Cadw'r llwybr lliw
+mr2-onboarding-colorway-subtitle = Cyfuniadau lliw newydd bywiog. Ar gael am gyfnod cyfyngedig.
+mr2-onboarding-colorway-primary-button-label = Cadw'r cyfuniad lliw
 mr2-onboarding-colorway-secondary-button-label = Nid nawr
 mr2-onboarding-colorway-label-soft = Meddal
 mr2-onboarding-colorway-label-balanced = Cytbwys
@@ -179,20 +187,20 @@ mr1-onboarding-theme-description-alpenglow =
 # Tooltip displayed on hover of non-default colorway theme
 # variations e.g. soft, balanced, bold
 mr2-onboarding-theme-tooltip =
-    .title = Defnyddio'r y llwybr lliw hwn.
+    .title = Defnyddio'r cyfuniad lliw hwn.
 # Selector description for non-default colorway theme
 # variations e.g. soft, balanced, bold
 mr2-onboarding-theme-description =
-    .aria-description = Defnyddio'r y llwybr lliw hwn.
+    .aria-description = Defnyddio'r cyfuniad lliw yma.
 # Tooltip displayed on hover of colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
 mr2-onboarding-colorway-tooltip =
-    .title = Archwilio llwybrau lliw { $colorwayName }
+    .title = Archwilio cyfuniadau lliw { $colorwayName }
 # Selector description for colorway
 # Variables:
 #   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-label = Archwilio llwybrau lliw { $colorwayName }
+mr2-onboarding-colorway-label = Archwilio cyfuniadau lliw { $colorwayName }
 # Tooltip displayed on hover of default themes
 mr2-onboarding-default-theme-tooltip =
     .title = Archwilio themâu rhagosodedig.
@@ -323,35 +331,35 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Mewnforiwch o'ch 
 
 mr2022-onboarding-colorway-title = Dewiswch y lliw sy'n eich ysbrydoli
 mr2022-onboarding-colorway-subtitle = Gall lleisiau annibynnol newid diwylliant.
-mr2022-onboarding-colorway-primary-button-label = Gosodwch lwybr lliw
+mr2022-onboarding-colorway-primary-button-label-continue = Gosod a pharhau
 mr2022-onboarding-existing-colorway-checkbox-label = Gwnewch { -firefox-home-brand-name } yn gartref liwgar i chi
 mr2022-onboarding-colorway-label-default = Rhagosodiad
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Rhagosodiad
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Lliwiau cyfredol { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>Defnyddio fy lliwiau { -brand-short-name } cyfredol.</b>
 mr2022-onboarding-colorway-label-playmaker = Arweinydd
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Arweinydd
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Crëwr (coch)
 mr2022-onboarding-colorway-description-playmaker = <b>Rydych chi'n Arweinydd.</b> Rydych chi'n creu cyfleoedd i ennill a helpu pawb o'ch cwmpas i ddyrchafu eu gêm.
 mr2022-onboarding-colorway-label-expressionist = Mynegiadwr
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Mynegiadwr
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Mynegiadwr (melyn)
 mr2022-onboarding-colorway-description-expressionist = <b>Ydych chi'n Fynegiadwr.</b> Rydych chi'n gweld y byd yn wahanol ac mae eich creadigaethau'n cyffroi emosiynau pobl eraill.
 mr2022-onboarding-colorway-label-visionary = Gweledydd
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Gweledydd
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Gweledydd (gwyrdd)
 mr2022-onboarding-colorway-description-visionary = <b>Rydych chi'n Weledydd.</b> Rydych chi'n cwestiynu'r status quo ac yn symud eraill i ddychmygu dyfodol gwell.
 mr2022-onboarding-colorway-label-activist = Ymgyrchydd
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Ymgyrchydd
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Ymgyrchydd (glas)
 mr2022-onboarding-colorway-description-activist = <b>Rydych chi'n Ymgyrchydd.</b> Rydych yn gadael y byd yn lle gwell nag y daethoch iddo ac yn arwain eraill i gredu.
 mr2022-onboarding-colorway-label-dreamer = Breuddwydiwr
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Breuddwydiwr
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Breuddwydiwr (porffor)
 mr2022-onboarding-colorway-description-dreamer = <b>Rydych chi'n Freuddwydiwr.</b> Rydych chi'n credu bod ffortiwn yn ffafrio'r beiddgar ac yn ysbrydoli eraill i fod yn ddewr.
 mr2022-onboarding-colorway-label-innovator = Arloesydd
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Arloesydd
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Arloesydd (oren)
 mr2022-onboarding-colorway-description-innovator = <b>Rydych chi'n Arloesydd.</b> Rydych chi'n gweld cyfleoedd ym mhobman ac yn cael effaith ar fywydau pawb o'ch cwmpas.
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -386,3 +394,29 @@ mr2022-onboarding-gratitude-title = Rydych chi'n ein helpu ni i adeiladu gwe wel
 mr2022-onboarding-gratitude-subtitle = Diolch am ddefnyddio { -brand-short-name }, gyda chefnogaeth y Mozilla Foundation. Gyda'ch cefnogaeth chi, rydyn ni'n gweithio i wneud y rhyngrwyd yn fwy agored, hygyrch, ac yn well i bawb.
 mr2022-onboarding-gratitude-primary-button-label = Gweld beth sy'n newydd
 mr2022-onboarding-gratitude-secondary-button-label = Cychwyn pori
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Gwnewch eich hun yn gartrefol
+onboarding-infrequent-import-subtitle = P'un ai rydych yn ymgartrefu neu'n galw heibio, cofiwch y gallwch chi fewnforio eich nodau tudalen, cyfrineiriau a mwy.
+onboarding-infrequent-import-primary-button = Mewnforio i { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Person yn gweithio ar liniadur wedi'i amgylchynu gan sêr a blodau
+mr2022-onboarding-default-image-alt =
+    .aria-label = Person yn cofleidio logo { -brand-product-name }
+mr2022-onboarding-import-image-alt =
+    .aria-label = Person yn reidio bwrdd sgrialu gyda blwch o eiconau meddalwedd
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Brogaod yn hercian ar draws padiau lili gyda chod QR er mwyn llwytho { -brand-product-name } ar gyfer ffôn symudol yn y canol
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Mae hudlath yn gwneud i logo pori preifat { -brand-product-name } ymddangos allan o het
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Pawen lawen dwylo â chroen golau a chroen tywyll
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Golygfa o fachlud trwy ffenestr gyda llwynog a phlanhigyn tŷ ar silff ffenestr
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Mae llaw gyda chwistrell yn paentio collage lliwgar o lygad gwyrdd, esgid oren, pêl-fasged goch, clustffonau porffor, calon las a choron felen

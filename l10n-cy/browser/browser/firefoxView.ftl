@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Newydd ddigwydd
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Ail agor tabiau
 firefoxview-tabpickup-description = Agorwch dudalennau o ddyfeisiau eraill.
-firefoxview-tabpickup-recenttabs-description = Byddai rhestr tabiau diweddar yn mynd yma
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% wedi'i gwblhau
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Ceisiwch eto
 firefoxview-tabpickup-sync-disconnected-header = Trowch gydweddu ymlaen i barhau
 firefoxview-tabpickup-sync-disconnected-description = I gipio eich tabiau, bydd angen i chi ganiatáu cydweddu yn { -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Trowch cydweddu ymlaen yn y gosodiadau
+firefoxview-tabpickup-password-locked-header = Rhowch eich Prif Gyfrinair i weld tabiau
+firefoxview-tabpickup-password-locked-description = I gipio'ch tabiau, bydd angen i chi roi eich Prif Gyfrinair ar gyfer { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Dysgu rhagor
+firefoxview-tabpickup-password-locked-primarybutton = Rhowch Gyfrinair Cynradd
+firefoxview-tabpickup-signed-out-header = Mewngofnodi i ailgysylltu
+firefoxview-tabpickup-signed-out-description = I ailgysylltu a chipio eich tabiau, mewngofnodwch i'ch { -fxaccount-brand-name }.
+firefoxview-tabpickup-signed-out-primarybutton = Mewngofnodi
 firefoxview-tabpickup-syncing = Arhoswch tra bod eich tabiau'n cydweddu. Fydd hi ddim yn hir.
 firefoxview-mobile-promo-header = Cydiwch mewn tabiau o'ch ffôn neu dabled
 firefoxview-mobile-promo-description = I weld eich tabiau symudol diweddaraf, mewngofnodwch i { -brand-product-name } ar iOS neu Android.
@@ -50,22 +56,28 @@ firefoxview-mobile-promo-primarybutton = Cael { -brand-product-name } ar gyfer s
 firefoxview-mobile-confirmation-header = Barod i fynd!
 firefoxview-mobile-confirmation-description = Nawr gallwch chi gydio ar eich tabiau { -brand-product-name } o'ch tabled neu ffôn.
 firefoxview-closed-tabs-title = Caewyd yn ddiweddar
-firefoxview-closed-tabs-description = Ail agorwch dudalennau rydych chi wedi'u cau ar y ddyfais hon.
-firefoxview-closed-tabs-placeholder = <strong>Dim tudalennau sydd wedi cau yn ddiweddar</strong><br/>Peidiwch byth ag ofni colli tab wedi ei gau eto. Gallwch chi bob amser ei adfer yma.
+firefoxview-closed-tabs-description2 = Ail-agorwch dudalennau rydych wedi'u cau yn y ffenestr hon.
+firefoxview-closed-tabs-placeholder-header = Dim tabiau sydd wedi'u cau yn ddiweddar
+firefoxview-closed-tabs-placeholder-body = Pan fyddwch yn cau tab yn y ffenestr hon, gallwch chi ei nôl o'r fan hon.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Cau { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Gweithgaredd diwethaf
 # Variables:
 #   $targetURI (string) - URL that will be opened in the new tab
 firefoxview-tabs-list-tab-button =
     .title = Agor { $targetURI } mewn tab newydd
-firefoxview-try-colorways-button = Rhowch gynnig ar lwybrau lliw
-firefoxview-no-current-colorway-collection = Mae llwybrau lliw newydd ar y ffordd
+firefoxview-try-colorways-button = Rhowch gynnig ar gyfuniadau lliw
+firefoxview-no-current-colorway-collection = Mae cyfuniadau lliw newydd ar y ffordd
 firefoxview-change-colorway-button = Newid y llwybr lliw
 # Variables:
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Dim byd yma eto</strong><br/>Y tro nesaf y byddwch yn agor tudalen yn { -brand-product-name } ar ddyfais arall, cydiwch arno'n hudol.
+firefoxview-synced-tabs-placeholder-header = Dim byd i'w weld eto
+firefoxview-synced-tabs-placeholder-body = Y tro nesaf y byddwch yn agor tudalen yn { -brand-product-name } ar ddyfais arall, cydiwch ynddo yma.
 firefoxview-collapse-button-show =
     .title = Dangos rhestr
 firefoxview-collapse-button-hide =

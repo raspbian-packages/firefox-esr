@@ -353,6 +353,9 @@ auto-mark-as-read =
 mark-read-no-delay =
     .label = Odmah pri prikazu
     .accesskey = O
+view-attachments-inline =
+    .label = Prikaži privitke ugrađene
+    .accesskey = v
 
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).

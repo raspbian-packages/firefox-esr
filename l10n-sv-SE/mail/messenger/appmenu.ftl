@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Synkronisera
+appmenu-signin-panel =
+    .label = Logga in för att synkronisera
+    .accesskey = g
+appmenu-sync-sync =
+    .value = Kontosynkronisering
+    .accesskey = n
+appmenu-sync-manage =
+    .value = Hantera konto
+    .accesskey = H
+appmenu-sync-account =
+    .value = example@example.com
+appmenu-sync-now =
+    .label = Synkronisera nu
+    .accesskey = S
+appmenu-sync-settings =
+    .label = Synkroniseringsinställningar
+    .accesskey = S
+appmenu-sync-sign-out =
+    .label = Logga ut…
+    .accesskey = L
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -66,10 +91,35 @@ appmenu-create-contact =
     .label = Kontakt
     .accesskey = K
 
+## Open
+
+appmenu-open-file-panel =
+    .label = Öppna från fil
+    .accesskey = f
+appmenu-open-file-panel-title =
+    .title = Öppna från fil
+appmenu-open-message =
+    .label = Meddelande…
+    .accesskey = M
+appmenu-open-calendar =
+    .label = Kalender…
+    .accesskey = K
+
 ## View / Layout
 
+appmenu-view-panel-title =
+    .title = Visa
+appmenu-view-panel =
+    .label = Visa
+    .accesskey = V
 appmenu-font-size-value = Textstorlek
 appmenu-mail-uidensity-value = Täthet
+appmenu-uidensity-compact =
+    .tooltiptext = Kompakt
+appmenu-uidensity-default =
+    .tooltiptext = Standard
+appmenu-uidensity-relaxed =
+    .tooltiptext = Avslappnad
 appmenuitem-font-size-enlarge =
     .tooltiptext = Öka textstorlek
 appmenuitem-font-size-reduce =
@@ -143,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = Om { -brand-short-name }
     .accesskey = m
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Hämtar { -brand-shorter-name }-uppdatering
+appmenuitem-banner-update-available =
+    .label = Uppdatering tillgänglig — hämta nu
+appmenuitem-banner-update-manual =
+    .label = Uppdatering tillgänglig — hämta nu
+appmenuitem-banner-update-unsupported =
+    .label = Uppdatering misslyckades — systemet är inte kompatibelt
+appmenuitem-banner-update-restart =
+    .label = Uppdatering tillgänglig — starta om nu

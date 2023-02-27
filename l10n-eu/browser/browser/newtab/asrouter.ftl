@@ -57,6 +57,24 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } erabiltzaile
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Cookie iragarki-bandak kanpora!
+cfr-cookie-banner-reject-button = Une honetan ez
+    .accesskey = z
+cfr-cookie-banner-handling-header-variant-1 = Ikusi cookie laster-leiho gutxiago
+cfr-cookie-banner-accept-button-variant-1 = Baztertu laster-leihoak
+    .accesskey = B
+cfr-cookie-banner-reject-button-variant-1 = Ez, eskerrik asko
+    .accesskey = z
+cfr-cookie-banner-handling-header-variant-2 = Cookie iragarki-banden murrizpena
+cfr-cookie-banner-accept-button-variant-2 = Baimendu
+    .accesskey = B
+cfr-cookie-banner-reject-button-variant-2 = Une honetan ez
+    .accesskey = n
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sinkronizatu laster-markak edonon.
@@ -155,10 +173,6 @@ spotlight-total-cookie-protection-body = Cookien erabateko babesarekin jarraipen
 spotlight-total-cookie-protection-expanded = { -brand-short-name }(e)k hesi bat sortzen du cookien inguruan eta zauden gunera mugatzen ditu, hauek zure jarraipena egiteko erabiltzea galarazteko. Sarbide esklusiboarekin, eginbide hau optimizatzen lagunduko duzu, guztiontzat hobea den weba eraikitzen jarraitzeko.
 spotlight-total-cookie-protection-primary-button = Gaitu cookien erabateko babesa
 spotlight-total-cookie-protection-secondary-button = Orain ez
-cfr-total-cookie-protection-header = Zuri eskerrak, { -brand-short-name } inoiz baino pribatu eta seguruagoa da
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Cookien erabateko babesa gure inoizko pribatutasun-babes sendoena da – hemendik aurrera lehenespenez dago ezarrita { -brand-short-name } erabiltzaile ororentzat. Ezin izango genuke burutu sarbide esklusiboko zu bezalako parte-hartzailerik gabe. Eskerrik asko beraz internet hobeago eta pribatuagoa sortzen laguntzeagatik.
 
 ## Emotive Continuous Onboarding
 
@@ -172,3 +186,80 @@ spotlight-pin-primary-button =
        *[other] Ainguratu ataza-barran
     }
 spotlight-pin-secondary-button = Une honetan ez
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = { -brand-short-name } berria. Pribatuagoa. Jarraipen-elementu gutxiago. Konpromisorik ez.
+mr2022-background-update-toast-text = Probatu orain { -brand-short-name } berriena, jarraipen-elementuei aurka egiteko inoizko babesik indartsuenarekin eguneratua.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Ireki { -brand-shorter-name } orain
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Gogora iezadazu geroago
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Probatu
+    .accesskey = t
+firefoxview-cfr-secondarybutton = Une honetan ez
+    .accesskey = z
+firefoxview-cfr-header-v2 = Jarraitu utzi zenuen tokitik
+firefoxview-cfr-body-v2 = Berreskuratu itxitako azken fitxak eta aldatu di-da batean gailuen artean { -firefoxview-brand-name } erabiliz.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Esan kaixo { -firefoxview-brand-name }ri.
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Telefonoan irekita daukazun fitxa hori nahi duzu? Har ezazu. Oraintxe bisitatu duzun gune hori behar duzu? Lasai, bueltan da { -firefoxview-brand-name }rekin.
+firefoxview-spotlight-promo-primarybutton = Ikusi nola dabilen
+firefoxview-spotlight-promo-secondarybutton = Saltatu
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Aukeratu kolore-konbinazioa
+    .accesskey = k
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Eman kolorea zure nabigatzaileari { -brand-short-name } kultura aldatu zuten ahotsek inspiratutako itzaldura esklusiboekin.
+colorways-cfr-header-28days = Ahots independenteen kolore-konbinazioak urtarrilaren 16an iraungiko dira
+colorways-cfr-header-14days = Ahots independenteen kolore-konbinazioak bi aste barru iraungiko dira
+colorways-cfr-header-7days = Ahots independenteen kolore-konbinazioak aste honetan iraungiko dira
+colorways-cfr-header-today = Ahots independenteen kolore-konbinazioak gaur iraungiko dira
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Cookie iragarki-bandak kanpora!
+cfr-cookiebanner-accept-button = Baztertu iragarki-bandak
+    .accesskey = B
+cfr-cookiebanner-reject-button = Une honetan ez
+    .accesskey = n
+cfr-cookiebanner-header-variant-1 = Ikusi cookie laster-leiho gutxiago
+cfr-cookiebanner-accept-button-variant-1 = Baztertu laster-leihoak
+    .accesskey = B
+cfr-cookiebanner-reject-button-variant-1 = Ez, eskerrik asko
+    .accesskey = z
+cfr-cookiebanner-header-variant-2 = Cookie iragarki-banden murrizpena
+cfr-cookiebanner-accept-button-variant-2 = Baimendu
+    .accesskey = B
+cfr-cookiebanner-reject-button-variant-2 = Une honetan ez
+    .accesskey = n
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Babesean zaitugu

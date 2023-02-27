@@ -25,6 +25,12 @@ return-to-amo-addon-title = Ora que nos installa tu <img data-l10n-name="icon"/>
 return-to-amo-add-extension-label = Adder le extension
 return-to-amo-add-theme-label = Adder le thema
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Saluta { -brand-short-name }
+mr1-return-to-amo-addon-title = Tu ha jam recipite un veloce, navigator private a tu punctas de digito. Ora tu pote adder <b>{ $addon-name }</b> e facer ancora plus con { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = Adder { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Progresso: passo { $current } de { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Progresso: passo { $current } de { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -224,7 +232,7 @@ mr2-onboarding-start-browsing-button-label = Comenciar a navigar
 
 onboarding-live-language-header = Elige tu lingua
 mr2022-onboarding-live-language-text = { -brand-short-name } parla tu lingua
-mr2022-language-mismatch-subtitle = Gratias a nostre communitate, { -brand-short-name } es traducite in ultra 90 linguas. Il pare que tu systema usa { $systemLanguage }, e { -brand-short-name } usa { $appLanguage }.
+mr2022-language-mismatch-subtitle = Gratias a nostre communitate, { -brand-short-name } ha essite traducite in plus de 90 linguas. Il pare que tu systema usa { $systemLanguage }, e { -brand-short-name } usa { $appLanguage }.
 onboarding-live-language-button-label-downloading = Discargante le pacchetto de lingua pro { $negotiatedLanguage }…
 onboarding-live-language-waiting-button = Obtenente linguas disponibile…
 onboarding-live-language-installing = Installation del pacchetto de lingua pro { $negotiatedLanguage }…
@@ -257,7 +265,7 @@ fx100-upgrade-thanks-header = 100 gratias
 fx100-upgrade-thank-you-body = Isto es nostre 100me version de { -brand-short-name }. Gratias a <em>tu</em>adjuta nos pote render internet melior e plus salubre.
 # Message shown with either a pin-to-taskbar or set-default button.
 fx100-upgrade-thanks-keep-body = Isto es nostre 100me version! Gratias pro participar a nostre communitate. Mantene { -brand-short-name } a portata de clic pro le proxime 100.
-mr2022-onboarding-secondary-skip-button-label = Salta iste passo
+mr2022-onboarding-secondary-skip-button-label = Saltar iste passo
 
 ## MR2022 New User Pin Firefox screen strings
 
@@ -265,7 +273,7 @@ mr2022-onboarding-secondary-skip-button-label = Salta iste passo
 # In this context, open up is synonymous with "Discover".
 # The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
 # If this translation does not make sense in your language, feel free to use the word "discover."
-mr2022-onboarding-welcome-pin-header = Aperi un internet stupende
+mr2022-onboarding-welcome-pin-header = Discoperi un internet meraviliose
 # Subtitle is used on onboarding page for new users page when Firefox is not pinned
 mr2022-onboarding-welcome-pin-subtitle = Lancea { -brand-short-name } de ubique con un sol clic.  Cata vice tu lo face, tu elige un web plus aperte e independente.
 # Primary button string used on welcome page for when Firefox is not pinned.
@@ -278,7 +286,7 @@ mr2022-onboarding-pin-primary-button-label =
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
-mr2022-onboarding-set-default-only-subtitle = Initia con un navigator supportate per un organisation non-lucrative. Nos defende tu confidentialitate dum tu ambula circum le web.
+mr2022-onboarding-set-default-only-subtitle = Comencia con un navigator sustenite per un organisation sin scopo lucrative. Nos defende tu vita private durante que tu naviga sur le web.
 
 ## MR2022 Existing User Pin Firefox Screen Strings
 
@@ -289,16 +297,16 @@ mr2022-onboarding-existing-pin-subtitle = Lancea un internet plus san de ubique 
 # Subtitle will be used on the welcome screen for existing users
 # when they already have Firefox pinned but not set as default
 mr2022-onboarding-existing-set-default-only-subtitle = Usa un navigator que defende tu confidentialitate dum tu ambula circum le web. Nostre ultime actualisation es plen de cosas que tu adora.
-mr2022-onboarding-existing-pin-checkbox-label = Alsi adde navigation private de { -brand-short-name }
+mr2022-onboarding-existing-pin-checkbox-label = Adde equalmente le navigation private de { -brand-short-name }
 
 ## MR2022 New User Set Default screen strings
 
 # This string is the title used when the user already has pinned the browser, but has not set default.
-mr2022-onboarding-set-default-title = Rende { -brand-short-name } tu navigator de referentia
-mr2022-onboarding-set-default-primary-button-label = Rende { -brand-short-name } tu navigator predefinite
+mr2022-onboarding-set-default-title = Facer de { -brand-short-name } tu navigator favorite
+mr2022-onboarding-set-default-primary-button-label = Facer de { -brand-short-name } tu navigator predefinite
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
-mr2022-onboarding-set-default-subtitle = Usa un navigator supportate per un organisation non-lucrative. Nos defende tu confidentialitate dum tu ambula circum le web.
+mr2022-onboarding-set-default-subtitle = Usa un navigator sustenite per un organisation sin scopo lucrative. Nos defende tu vita private durante que tu naviga sur le web.
 
 ## MR2022 Get Started screen strings.
 ## These strings will be used on the welcome page
@@ -306,13 +314,13 @@ mr2022-onboarding-set-default-subtitle = Usa un navigator supportate per un orga
 
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
-mr2022-onboarding-get-started-primary-subtitle = Nostre ultime version es construite circum te, rendente plus facile que mais ambular circum le web. Tu adorara su functionalitates integrate.
+mr2022-onboarding-get-started-primary-subtitle = Nostre ultime version es construite circa te, rendente le navigation del web plus facile que jammais. Es replete de functiones que nos crede que tu va adorar.
 mr2022-onboarding-get-started-primary-button-label = Configura lo in secundas
 
 ## MR2022 Import Settings screen strings
 
 mr2022-onboarding-import-header = Installation fulminee
-mr2022-onboarding-import-subtitle = Configura { -brand-short-name } como illo te place. Adde tu marcapaginas, contrasignos e altero ancora ex tu vetere navigator.
+mr2022-onboarding-import-subtitle = Configura { -brand-short-name } como te place. Adde le marcapaginas, contrasignos e multo plus de tu navigator ancian.
 mr2022-onboarding-import-primary-button-label-no-attribution = Importar ab previe navigator
 
 ## If your language uses grammatical genders, in the description for the
@@ -322,41 +330,41 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Importar ab previ
 
 mr2022-onboarding-colorway-title = Elige le color que te inspira
 mr2022-onboarding-colorway-subtitle = Le voces independente pote cambiar le cultura.
-mr2022-onboarding-colorway-primary-button-label = Defini combination de colores
+mr2022-onboarding-colorway-primary-button-label-continue = Definir e continuar
 mr2022-onboarding-existing-colorway-checkbox-label = Rende { -firefox-home-brand-name } tu multicolor pagina principal del combination de colores
 mr2022-onboarding-colorway-label-default = Predefinite
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Predefinite
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Colores actual de { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>Usa mi colores actual de { -brand-short-name }.</b>
 mr2022-onboarding-colorway-label-playmaker = Gestor de joco
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Gestor de joco
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Gestor de joco (rubie)
 mr2022-onboarding-colorway-description-playmaker = <b>Tu es un Gestor de joco.</b> Tu crea opportunitates pro vincer e adjutar totes circum te a elevar lor joco.
 mr2022-onboarding-colorway-label-expressionist = Expressionista
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Expressionista
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Expressionista (jalne)
 mr2022-onboarding-colorway-description-expressionist = <b>Tu es un Expressionista.</b> Tu vide le mundo differentemente e tu creationes agita le emotiones de alteres.
-mr2022-onboarding-colorway-label-visionary = Visionari
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Visionari
+mr2022-onboarding-colorway-label-visionary = Visionario
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Visionario (verde)
 mr2022-onboarding-colorway-description-visionary = <b>Tu es un Visionario.</b> Tu mitte in dubita le status quo e move alteres a imaginar un futuro melior.
 mr2022-onboarding-colorway-label-activist = Activista
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Activista
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Activista (blau)
 mr2022-onboarding-colorway-description-activist = <b>Tu es un Activista.</b> Tu lassa le mundo melior de illo que tu trovava, e duce alsi alteres a creder.
 mr2022-onboarding-colorway-label-dreamer = Soniator
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Soniator
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Soniator (purpuree)
 mr2022-onboarding-colorway-description-dreamer = <b>Tu es un Soniator.</b> Tu crede que le fortuna favora les audace e inspira les altere a esser coragiose.
 mr2022-onboarding-colorway-label-innovator = Innovator
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Innovator
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Innovator (orange)
 mr2022-onboarding-colorway-description-innovator = <b>Tu es un Innovator.</b> Tu vide ubique opportunitates de grande impacto super le vitas de totes circum te.
 
 ## MR2022 Multistage Mobile Download screen strings
 
 mr2022-onboarding-mobile-download-title = Passa de portabile a telephono e retro ancora
-mr2022-onboarding-mobile-download-subtitle = Collige schedas de un apparato e reprende de ubi tu los habeva lassate in un altere. Synchronisa tu marcapaginas e contrasignos ubique tu usa { -brand-product-name }.
+mr2022-onboarding-mobile-download-subtitle = Prende le schedas de un apparato e continua ubi tu lassava sur un altere. Synchronisa tu marcapaginas e contrasignos ubicunque tu usa { -brand-product-name }.
 mr2022-onboarding-mobile-download-cta-text = Scande le codice QR pro haber { -brand-product-name } sur tu apparato mobile o <a data-l10n-name="download-label">invia a te mesme un ligamine de discargamento.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Scande le codice QR pro haber { -brand-product-name } sur tu apparato mobile.
 
@@ -385,3 +393,29 @@ mr2022-onboarding-gratitude-title = Tu adjuta nos a construer un web melior.
 mr2022-onboarding-gratitude-subtitle = Gratias pro usar { -brand-short-name }, supportate per Mozilla Foundation. Con tu supporto, nos labora pro render internet plus aperte, accessibile e melior, pro totes.
 mr2022-onboarding-gratitude-primary-button-label = Vide le novas
 mr2022-onboarding-gratitude-secondary-button-label = Comenciar a navigar
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Senti te a casa
+onboarding-infrequent-import-subtitle = Sia que tu permanera o solmente passa per hic, non oblida que tu pote importar tu marcapaginas, contrasignos e multo plus.
+onboarding-infrequent-import-primary-button = Importar ab { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Persona laborante sur un portabile cingite per stellas e flores
+mr2022-onboarding-default-image-alt =
+    .aria-label = Persona imbraciante le logo de { -brand-product-name }
+mr2022-onboarding-import-image-alt =
+    .aria-label = Persona cavalcante un skateboard con un cassa de icones software
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Ranas saltante inter nympheas con un codice QR in le centro, pro discargar { -brand-product-name } pro apparato mobile
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Le virga magic face apparer le logo del navigation private de { -brand-product-name } foras de un cappello
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Manos de pelle clar e de pelle obscur que se da le cinque
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Vision de un sol ponente per un fenestra con un vulpe e un planta de interno sur un appoio del fenestra
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Un mano pinge con pulverisator un collage multicolor de un oculo verde, un scarpa orange, un ballon corbe rubie, bonettos auricular purpuree,corde blau e corona jalne

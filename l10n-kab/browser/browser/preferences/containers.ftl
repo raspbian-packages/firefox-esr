@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Rnu amagbar-nniḍen
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Iɣewwaren n umagbar { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Rnu amagbar-nniḍen
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Iɣewwaren n umagbar { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

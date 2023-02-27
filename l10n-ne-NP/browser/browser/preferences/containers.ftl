@@ -6,6 +6,10 @@ containers-window-new =
     .title = नयाँ कन्टेनर थप्नुहोस्
     .style = width: 45em
 
+containers-window-new2 =
+    .title = नयाँ कन्टेनर थप्नुहोस्
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

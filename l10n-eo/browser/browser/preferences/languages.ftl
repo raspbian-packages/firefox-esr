@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Lingvaj agordoj por retpaĝoj
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Lingvaj agordoj por retpaĝoj
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Lingvaj agordoj de { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Lingvaj agordoj de { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } montros la unuan lingvon kiel vian norman, kaj montros alternativajn lingvojn, se bezonatas, en la ordo en kiu ili aperas.
 

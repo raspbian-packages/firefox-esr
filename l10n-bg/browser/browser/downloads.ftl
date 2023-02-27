@@ -147,6 +147,16 @@ downloading-file-opens-in-minutes = Отваряне след { $minutes } м�
 downloading-file-opens-in-minutes-and-seconds = Отваряне след { $minutes } минути и { $seconds } секунди
 downloading-file-opens-in-seconds = Отваряне след { $seconds } секунди
 downloading-file-opens-in-some-time = Отваряне, когато приключи…
+downloading-file-opens-in-hours-and-minutes-2 =
+    .value = Отваряне след { $hours } часа и { $minutes } минути
+downloading-file-opens-in-minutes-2 =
+    .value = Отваряне след { $minutes } минути
+downloading-file-opens-in-minutes-and-seconds-2 =
+    .value = Отваряне след { $minutes } минути и { $seconds } секунди
+downloading-file-opens-in-seconds-2 =
+    .value = Отваряне след { $seconds } секунди
+downloading-file-opens-in-some-time-2 =
+    .value = Отваряне, когато приключи…
 downloading-file-click-to-open =
     .value = Отваряне, когато приключи
 
@@ -195,3 +205,17 @@ downloads-list-empty =
 # This string is shown when there are no items in the Downloads Panel.
 downloads-panel-empty =
     .value = За момента няма изтеглени файлове.
+
+## Download errors
+
+downloads-error-alert-title = Грешка при изтегляне
+# Variables:
+#   $extension (String): the name of the blocking extension.
+downloads-error-blocked-by = Изтегленият файл не може да бъде запазен, защото е спрян от { $extension }.
+# Used when the name of the blocking extension is unavailable.
+downloads-error-extension = Изтегленият файл не може да бъде запазен, защото е спрян от разширение.
+# Line breaks in this message are meaningful, and should be maintained.
+downloads-error-generic =
+    Изтеглянето не може да бъде запазено поради грешка.
+    
+    Моля, опитайте отново.

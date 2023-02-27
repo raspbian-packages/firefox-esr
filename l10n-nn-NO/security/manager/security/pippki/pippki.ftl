@@ -16,8 +16,6 @@ change-password-old = Gjeldande passord:
 change-password-new = Nytt passord:
 change-password-reenter = Nytt passord (igjen):
 
-## Reset Password dialog
-
 pippki-failed-pw-change = Klarte ikkje å endre passord.
 pippki-incorrect-pw = Du skreiv ikkje inn rett gjeldande passord. Prøv igjen.
 pippki-pw-change-ok = Passordet er endra.
@@ -33,9 +31,12 @@ pippki-pw-change2empty-in-fips-mode = Du er i FIPS-modus. FIPS krev at du brukar
 reset-primary-password-window =
     .title = Tilbakestill hovudpassordet
     .style = width: 40em
+
+reset-primary-password-window2 =
+    .title = Tilbakestill hovudpassordet
+    .style = min-width: 40em
 reset-password-button-label =
     .label = Still tilbake
-
 reset-primary-password-text = Dersom du stiller tilbake hovudpassordet vil alle lagra nettside- og e-postpassord, personlege sertifikat og private nøklar gå tapt. Er du sikker på at du vil tilbakestille hovudpassordet?
 
 pippki-reset-password-confirmation-title = Tilbakestill hovudpassordet
@@ -46,6 +47,10 @@ pippki-reset-password-confirmation-message = Hovudpassordet ditt er tilbakestilt
 download-cert-window =
     .title = Lastar ned sertifikat
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Lastar ned sertifikat
+    .style = min-width: 46em
 download-cert-message = Du har vorte beden om å stola på ei ny sertifikat-fullmakt (CA)
 download-cert-trust-ssl =
     .label = Stol på denne CA-en til å identifisere nettsider.

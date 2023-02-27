@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Επιλογές εικονιδίου εφαρμογής
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Επιλογές εικονιδίου εφαρμογής
+
 dock-options-show-badge =
     .label = Εμφάνιση εικονιδίου σήματος
     .accesskey = μ

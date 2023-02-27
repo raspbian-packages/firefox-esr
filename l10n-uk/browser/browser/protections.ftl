@@ -59,7 +59,7 @@ mobile-app-card-content = Використовуйте мобільний бра
 mobile-app-links = { -brand-product-name } для <a data-l10n-name="android-mobile-inline-link">Android</a> та <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 lockwise-title = Ніколи більше не забувайте пароль
 passwords-title-logged-in = Керувати паролями
-passwords-header-content = { -brand-product-name } безпечно зберігає ваші паролі у вашому браузері.
+passwords-header-content = { -brand-product-name } надійно зберігає ваші паролі.
 lockwise-header-content-logged-in = Безпечно зберігайте й синхронізуйте свої паролі на всіх пристроях.
 protection-report-passwords-save-passwords-button = Зберегти пароль
     .title = Зберегти паролі

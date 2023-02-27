@@ -8,7 +8,7 @@ search-header =
     .searchbuttonlabel = Leita
 search-header-shortcut =
     .key = f
-list-empty-get-extensions-message = Náðu í viðbætur og þemu á <a data-l10n-name="get-extensions">{ $domain }</a>
+list-empty-get-extensions-message = Náðu í forritsauka og þemu á <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-dictionaries-message = Náðu í orðasöfn á <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-language-packs-message = Náðu í tungumálapakka á <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-installed =
@@ -115,15 +115,15 @@ private-browsing-description2 =
     huliðsvafri stendur, nema þú leyfir það í stillingum og mun hún því ekki hafa aðgang að athöfnum þínum á netinu
     þar. Við höfum gert þessa breytingu til að halda huliðsvafri þínu leyndu.
     <label data-l10n-name="private-browsing-learn-more">Sjáðu hvernig á að hafa umsjón með stillingum viðbóta</label>
-addon-category-discover = Meðmæli
+addon-category-discover = Mælt með
 addon-category-discover-title =
-    .title = Meðmæli
-addon-category-extension = Viðbætur
+    .title = Mælt með
+addon-category-extension = Forritsaukar
 addon-category-extension-title =
-    .title = Viðbætur
-addon-category-theme = Þema
+    .title = Forritsaukar
+addon-category-theme = Þemu
 addon-category-theme-title =
-    .title = Þema
+    .title = Þemu
 addon-category-plugin = Tengiforrit
 addon-category-plugin-title =
     .title = Tengiforrit
@@ -142,6 +142,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Heimildir vefsvæðis
 addon-category-sitepermission-title =
     .title = Heimildir vefsvæðis
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Heimildir vefsvæðis fyrir { $host }
 
 ## These are global warnings
 
@@ -196,13 +200,13 @@ addon-open-about-debugging = Villuleita viðbætur
 ## Extension shortcut management
 
 # This is displayed in the page options menu
-addon-manage-extensions-shortcuts = Sýsla með flýtilykla viðbóta
+addon-manage-extensions-shortcuts = Sýsla með flýtilykla forritsauka
     .accesskey = f
 shortcuts-no-addons = Þú ert ekki með neinar virkar viðbætur.
 shortcuts-no-commands = Eftirfarandi viðbætur eru ekki með flýtilykla:
 shortcuts-input =
     .placeholder = Slá inn flýtilykil
-shortcuts-browserAction2 = Virkja hnapp í verkfæraslá
+shortcuts-browserAction2 = Virkja hnapp í verkfærastiku
 shortcuts-pageAction = Virkja síðuaðgerð
 shortcuts-sidebarAction = Víxla hliðarslá
 shortcuts-modifier-mac = Hafa með Ctrl, Alt eða ⌘
@@ -234,7 +238,7 @@ header-back-button =
 # Explanatory introduction to the list of recommended add-ons. The action word
 # ("recommends") in the final sentence is a link to external documentation.
 discopane-intro =
-    Viðbætur og þemu eru eins og forrit fyrir vafrann þinn og þau gera þér
+    Forritsaukar og þemu eru eins og forrit fyrir vafrann þinn og þau gera þér
     kleift vernda lykilorð, hlaða niður myndskeiðum, finna tilboð, loka fyrir 
     pirrandi auglýsingar, breyta útliti vafrans þíns og margt fleira. Þessi litlu 
     hugbúnaðarforrit eru oft þróuð af utanaðkomandi aðilum. Hér er úrval
@@ -295,10 +299,6 @@ theme-monochromatic-heading = Litasett
 theme-monochromatic-subheading = Lífleg ný litasett frá { -brand-product-name }. Í boði í takmarkaðan tíma.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Prófaðu litasettin
-colorway-collection-independent-voices-subheading = Láttu { -brand-short-name } vera aðeins meira eins og þú.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Rennur út { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Breyta litasetti
 # Variables:
@@ -386,7 +386,7 @@ addon-permissions-empty = Þessi viðbót þarf engar heimildir
 addon-permissions-required = Nauðsynlegar heimildir fyrir kjarnavirkni:
 addon-permissions-optional = Valfrjálsar heimildir fyrir aukna virkni:
 addon-permissions-learnmore = Frekari upplýsingar um heimildir
-recommended-extensions-heading = Tillögur að viðbótum
+recommended-extensions-heading = Forritsaukar sem mælt er með
 recommended-themes-heading = Þemu sem mælt er með
 addon-sitepermissions-required = Veitir eftirfarandi eiginleika til <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
@@ -395,10 +395,10 @@ recommended-theme-1 = Finnst þér þú vera skapandi? <a data-l10n-name="link">
 
 ## Page headings
 
-extension-heading = Sýsla með viðbæturnar þínar
-theme-heading = Stjórnborð þema
+extension-heading = Sýsla með forritsaukana þína
+theme-heading = Stjórnborð fyrir þemu
 plugin-heading = Stjórnborð tengiforrita
-dictionary-heading = Stjórnborð orðabóka
+dictionary-heading = Stjórnborð orðasafna
 locale-heading = Stjórnborð tungumála
 updates-heading = Sýsla með uppfærslurnar þínar
 sitepermission-heading = Sýsla með heimildir þínar fyrir vefsvæði

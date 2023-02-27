@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = Cangia e inpostaçioin de fiduccia do certificato CA
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Cangia e inpostaçioin de fiduccia do certificato CA
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Cangia e inpostaçioin de fiduccia:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Scancella certificato
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Scancella certificato
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Nomme do certificato
@@ -173,9 +181,8 @@ delete-email-cert-impact = Se ti ti scancelli un certificato email, ti no saiæ 
 cert-with-serial =
     .value = Cartificato con numero seriale: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

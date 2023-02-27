@@ -91,7 +91,7 @@ printui-margins-custom-right-mm = Правае (мм)
 printui-system-dialog-link = Друк з дапамогай сістэмнага дыялогу…
 printui-primary-button = Друкаваць
 printui-primary-button-save = Захаваць
-printui-cancel-button = Адмена
+printui-cancel-button = Скасаваць
 printui-close-button = Закрыць
 printui-loading = Рыхтуецца папярэдні прагляд
 # Reported by screen readers and other accessibility tools to indicate that

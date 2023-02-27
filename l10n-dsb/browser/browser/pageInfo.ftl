@@ -65,6 +65,9 @@ media-dimension =
     .value = Wótměry:
 media-long-desc =
     .value = Dłujke wopisanje:
+media-select-all =
+    .label = Wšykne wubraś
+    .accesskey = b
 media-save-as =
     .label = Składowaś ako…
     .accesskey = S
@@ -259,7 +262,7 @@ media-block-image =
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 # Variables:
-#   $website (string) - The url of the website pageInfo is getting info for
+#   $website (string) — The url of the website pageInfo is getting info for
 page-info-page =
     .title = Info wó boku - { $website }
 page-info-frame =

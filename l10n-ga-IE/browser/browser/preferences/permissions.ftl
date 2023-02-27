@@ -6,6 +6,10 @@ permissions-window =
     .title = Eisceachtaí
     .style = width: 49em
 
+permissions-window2 =
+    .title = Eisceachtaí
+    .style = min-width: 49em
+
 permissions-close-key =
     .key = w
 
@@ -71,6 +75,10 @@ permissions-exceptions-saved-logins-window =
     .title = Eisceachtaí - Focail Fhaire a Sábháladh
     .style = { permissions-window.style }
 
+permissions-exceptions-saved-logins-window2 =
+    .title = Eisceachtaí - Focail Fhaire a Sábháladh
+    .style = { permissions-window2.style }
+
 ## Exceptions - Add-ons
 
 permissions-exceptions-addons-desc = Is féidir na suímh a bhfuil cead acu breiseáin a shuiteáil a shonrú. Clóscríobh seoladh cruinn an tsuímh a theastaíonn uait a cheadú agus ansin cliceáil Ceadaigh.
@@ -80,6 +88,10 @@ permissions-exceptions-addons-desc = Is féidir na suímh a bhfuil cead acu brei
 permissions-site-autoplay-window =
     .title = Socruithe - Uathsheinm
     .style = { permissions-window.style }
+
+permissions-site-autoplay-window2 =
+    .title = Socruithe - Uathsheinm
+    .style = { permissions-window2.style }
 
 ## Site Permissions - Notifications
 

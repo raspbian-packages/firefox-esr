@@ -10,7 +10,7 @@
 perftools-intro-title = Налады прафайлера
 perftools-intro-description =
     Запісы запускаюць profiler.firefox.com у новай картцы. Усе дадзеныя захоўваюцца
-    лакальна, але вы можаце зацягнуць iх для сумеснага выкарыстання.
+    лакальна, але вы можаце зацягнуць іх для сумеснага выкарыстання.
 
 ## All of the headings for the various sections.
 
@@ -28,7 +28,7 @@ perftools-heading-local-build = Лакальная зборка
 
 perftools-description-intro =
     Запісы запускаюць <a>profiler.firefox.com</a> у новай картцы. Усе дадзеныя захоўваюцца
-    лакальна, але вы можаце зацягнуць iх для сумеснага выкарыстання.
+    лакальна, але вы можаце зацягнуць іх для сумеснага выкарыстання.
 perftools-description-local-build =
     Калі вы прафілюеце зборку, якую вы зкампілявалі самі, на гэтай
     машыне, калі ласка, дадайце objdir вашай зборкі ў спіс ніжэй, каб
@@ -92,7 +92,7 @@ pref-thread-stream-trans =
 perftools-thread-socket-thread =
     .title = Паток, у якім сеткавы код выконвае любыя выклікі, якія блакуюць сокеты
 perftools-thread-img-decoder =
-    .title = Патокі дэкадавання відарысаў
+    .title = Патокі дэкадавання выяваў
 perftools-thread-dns-resolver =
     .title = У гэтым патоку адбываецца вызначэнне DNS
 perftools-thread-task-controller =

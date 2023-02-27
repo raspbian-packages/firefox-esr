@@ -199,9 +199,6 @@ search-one-offs-add-engine-menu =
 
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
@@ -349,6 +346,15 @@ urlbar-result-action-visit = Gatu gan'anj ni'iajt
 
 ## Labels shown above groups of urlbar results
 
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Gatu' riña ahio'
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Nàrun' sa ahio'
 
 ## Full Screen and Pointer Lock UI
 
@@ -550,3 +556,11 @@ data-reporting-notification-button =
 
 ## Unified extensions (toolbar) button
 
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } nū nachrā ma'an pajinâ na.
+refresh-blocked-redirect-label = { -brand-short-name } nū ga'ue ga'anj ma'an pajiña riña a'ngo pajinâ.
+refresh-blocked-allow =
+    .label = Ga'nïn
+    .accesskey = A

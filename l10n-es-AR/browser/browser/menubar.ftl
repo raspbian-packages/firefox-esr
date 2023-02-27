@@ -22,7 +22,7 @@ menu-application-hide-other =
 menu-application-show-all =
     .label = Mostrar todo
 menu-application-touch-bar =
-    .label = Personalizar la barra táctil...
+    .label = Personalizar la barra táctil…
 
 ##
 
@@ -180,6 +180,17 @@ menu-view-exit-full-screen =
 menu-view-full-screen =
     .label = Pantalla completa
     .accesskey = l
+
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Entrar a vista de lectura
+    .accesskey = r
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Salir de vista de lectura
+    .accesskey = r
 
 ##
 

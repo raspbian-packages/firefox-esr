@@ -181,6 +181,17 @@ menu-view-full-screen =
     .label = Pantalla completa
     .accesskey = P
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Entra a la vista de lectura
+    .accesskey = l
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Tanca la vista de lectura
+    .accesskey = l
+
 ##
 
 menu-view-show-all-tabs =
@@ -223,6 +234,10 @@ menu-bookmark-current-tab =
     .label = Afegeix la pestanya actual a les adreces d'interès
 menu-bookmark-edit =
     .label = Edita aquesta adreça d'interès
+menu-bookmark-tab =
+    .label = Afegeix la pestanya actual a les adreces d'interès…
+menu-edit-bookmark =
+    .label = Edita aquesta adreça d'interès…
 menu-bookmarks-all-tabs =
     .label = Afegeix-hi totes les pestanyes…
 menu-bookmarks-toolbar =

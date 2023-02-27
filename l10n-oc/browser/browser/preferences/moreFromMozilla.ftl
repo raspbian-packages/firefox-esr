@@ -29,3 +29,9 @@ more-from-moz-qr-code-firefox-mobile-img =
     .alt = Còdi QR per telecargar { -brand-product-name } mobile
 more-from-moz-button-mozilla-vpn-2 = Obténer lo VPN
 more-from-moz-learn-more-link = Ne saber mai
+
+## These strings are for the Firefox Relay card in about:preferences moreFromMozilla page
+
+more-from-moz-firefox-relay-title = { -relay-brand-name }
+more-from-moz-firefox-relay-description = Protegissètz vòstra bóstia de recepcion e vòstra identitat gràcia a d’aliasses de messatjariá gratuits.
+more-from-moz-firefox-relay-button = Obténer { -relay-brand-short-name }

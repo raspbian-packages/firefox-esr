@@ -154,6 +154,16 @@ downloading-file-opens-in-minutes = S'obrirà d'aquí a { $minutes } min…
 downloading-file-opens-in-minutes-and-seconds = S'obrirà d'aquí a { $minutes } min i { $seconds } s…
 downloading-file-opens-in-seconds = S'obrirà d'aquí a { $seconds } s…
 downloading-file-opens-in-some-time = S'obrirà quan acabi…
+downloading-file-opens-in-hours-and-minutes-2 =
+    .value = S'obrirà d'aquí a { $hours } h i { $minutes } min…
+downloading-file-opens-in-minutes-2 =
+    .value = S'obrirà d'aquí a { $minutes } min…
+downloading-file-opens-in-minutes-and-seconds-2 =
+    .value = S'obrirà d'aquí a { $minutes } min i { $seconds } s…
+downloading-file-opens-in-seconds-2 =
+    .value = S'obrirà d'aquí a { $seconds } s…
+downloading-file-opens-in-some-time-2 =
+    .value = S'obrirà quan acabi…
 downloading-file-click-to-open =
     .value = Obre quan acabi
 
@@ -212,3 +222,17 @@ downloads-more-downloading =
         [one] S'està baixant { $count } altre fitxer
        *[other] S'estan baixant { $count } fitxers més
     }
+
+## Download errors
+
+downloads-error-alert-title = Error en la baixada
+# Variables:
+#   $extension (String): the name of the blocking extension.
+downloads-error-blocked-by = La baixada no es pot desar perquè { $extension } l'ha blocat.
+# Used when the name of the blocking extension is unavailable.
+downloads-error-extension = La baixada no es pot desar perquè una extensió l'ha blocat.
+# Line breaks in this message are meaningful, and should be maintained.
+downloads-error-generic =
+    No pot desar-se la baixada perquè s'ha produït un error desconegut.
+    
+    Torneu-ho a provar.

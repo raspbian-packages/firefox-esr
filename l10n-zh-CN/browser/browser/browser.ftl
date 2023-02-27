@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } 隐私浏览
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } 隐私浏览
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = 获取帮助
 urlbar-search-tips-confirm = 好的，明白了
+urlbar-search-tips-confirm-short = 知道了
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = 提示：
+urlbar-result-menu-button =
+    .title = 打开菜单
+urlbar-result-menu-remove-from-history =
+    .label = 从历史记录移除
+    .accesskey = R
+urlbar-result-menu-tip-get-help =
+    .label = 获取帮助
+    .accesskey = h
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = 输入寥寥，搜遍万千：在地址栏就能用 { $engineName } 搜索。
 urlbar-search-tips-redirect-2 = 在地址栏搜索，可以看到 { $engineName } 提供的建议，还有您的相关浏览历史。
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = 搜索向简洁进化，让您的搜索在地址栏更直观。若要改回显示网址，可到设置中的“搜索”切换。
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = 一键直达，高效搜索。
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = 操作（{ $restrict }）
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = 查看附加组件
-quickactions-cmd-addons = 附加组件, 扩展, 主题, add-ons, extensions, themes
 quickactions-cmd-addons2 = 附加组件
 # Opens the bookmarks library window
-quickactions-bookmarks = 查看书签
+quickactions-bookmarks2 = 管理书签
 quickactions-cmd-bookmarks = 书签, bookmarks
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = 清除历史
 quickactions-cmd-clearhistory = 清除历史, clear history
 # Opens about:downloads page
-quickactions-downloads = 打开下载
+quickactions-downloads2 = 查看下载
 quickactions-cmd-downloads = 下载, downloads
 # Opens about:addons page in the extensions section
 quickactions-extensions = 管理扩展
 quickactions-cmd-extensions = 扩展
 # Opens the devtools web inspector
-quickactions-inspector = 查看源代码
+quickactions-inspector2 = 打开开发者工具
 quickactions-cmd-inspector = 查看器, 开发工具, inspector, devtools
 # Opens about:logins
-quickactions-logins = 查看登录信息
+quickactions-logins2 = 管理密码
 quickactions-cmd-logins = 登录信息, 密码, logins, passwords
 # Opens about:addons page in the plugins section
 quickactions-plugins = 管理插件
 quickactions-cmd-plugins = 插件
 # Opens the print dialog
-quickactions-print = 打印
+quickactions-print2 = 打印页面
 quickactions-cmd-print = 打印, print
 # Opens a new private browsing window
-quickactions-private = 打开隐私浏览窗口
+quickactions-private2 = 打开隐私窗口
 quickactions-cmd-private = 隐私浏览, private browsing
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = 翻新 { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = 刷新, refresh
 quickactions-restart = 重启 { -brand-short-name }
 quickactions-cmd-restart = 重新启动, 重启, restart
 # Opens the screenshot tool
-quickactions-screenshot2 = 截图
+quickactions-screenshot3 = 截图
 quickactions-cmd-screenshot = 截图, screenshot
 # Opens about:preferences
-quickactions-settings = 打开设置
+quickactions-settings2 = 管理设置
 quickactions-cmd-settings = 设置, 偏好设置, 选项, settings, preferences, options
 # Opens about:addons page in the themes section
 quickactions-themes = 管理主题
@@ -323,8 +332,11 @@ quickactions-cmd-themes = 主题
 quickactions-update = 更新 { -brand-short-name }
 quickactions-cmd-update = 更新, update
 # Opens the view-source UI with current pages source
-quickactions-viewsource = 查看源代码
+quickactions-viewsource2 = 查看页面源代码
 quickactions-cmd-viewsource = 查看源代码, 源代码, view source, source
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = 详细了解“快捷操作”
 
 ## Bookmark Panel
 
@@ -478,6 +490,9 @@ popup-select-microphone-icon =
     .tooltiptext = 麦克风
 popup-select-speaker-icon =
     .tooltiptext = 音频输出设备
+popup-select-window-or-screen =
+    .label = 窗口或屏幕：
+    .accesskey = W
 popup-all-windows-shared = 您的屏幕上的所有可见窗口都将被共享。
 popup-screen-sharing-block =
     .label = 阻止
@@ -499,6 +514,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = 请通过“Web 开发者”菜单打开开发者工具，才能使用 F12 快捷键。
+enable-devtools-popup-description2 = 要使用 F12 快捷键，请先由“浏览器工具”菜单打开开发者工具。
 
 ## URL Bar
 
@@ -630,6 +646,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = 快捷操作
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = 进入阅读模式
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = 关闭阅读模式
 
 ## Full Screen and Pointer Lock UI
 
@@ -907,3 +932,27 @@ private-browsing-indicator-label = 隐私浏览
 unified-extensions-button =
     .label = 扩展
     .tooltiptext = 扩展
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = 扩展
+    .tooltiptext = 扩展所需权限
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } 阻止了此页面自动重新载入。
+refresh-blocked-redirect-label = { -brand-short-name } 阻止了此页面自动重定向至其他页面。
+refresh-blocked-allow =
+    .label = 允许
+    .accesskey = A
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } 可以掩藏真实邮箱地址，从而保护您免受数据外泄和垃圾邮件的侵扰。
+firefox-relay-offer-how-we-integrate = 若继续，您将能够直接从 { -brand-shorter-name } 密码管理器生成新的 { -relay-brand-short-name } 马甲。
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = 我们会将所有发送自“<strong>{ $sitename }</strong>”的邮件转发至 <strong>{ $useremail }</strong>。

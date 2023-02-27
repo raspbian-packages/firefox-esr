@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Edicion dels paramètres de fisança de l'autoritat de certificacion (CA)
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Edicion dels paramètres de fisança de l'autoritat de certificacion (CA)
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Modificar los paramètres de fisança :
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Suprimir un certificat
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Suprimir un certificat
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Òste
@@ -185,8 +193,6 @@ delete-email-cert-impact = Se suprimissètz lo certificat de corrièr d'una pers
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Certificat amb nombre de seria : { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Enviar pas de certificat client

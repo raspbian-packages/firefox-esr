@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Stizzar las datas
     .style = width: 45em
 
+clear-site-data-window2 =
+    .title = Stizzar las datas
+    .style = min-width: 45em
+
 clear-site-data-description = Cun stizzar tut ils cookies e tut las datas da websites memorisadas da { -brand-short-name } vegnas ti eventualmain deconnectà da tschertas websites e cuntegn da web offline vegn stizzà. Las infurmaziuns d'annunzia vegnan preservadas era sch'il cache vegn svidà.
 
 clear-site-data-close-key =

@@ -17,6 +17,27 @@ menu-addons-and-themes =
 
 ## Help Menu
 
+menu-help-help-title =
+    .label = Pomoć
+    .accesskey = P
+menu-help-get-help =
+    .label = Potraži pomoć
+    .accesskey = P
+menu-help-explore-features =
+    .label = Istraži mogućnosti
+    .accesskey = m
+menu-help-shortcuts =
+    .label = Tipkovnički prečaci
+    .accesskey = k
+menu-help-get-involved =
+    .label = Uključi se
+    .accesskey = U
+menu-help-donation =
+    .label = Donirajte
+    .accesskey = D
+menu-help-share-feedback =
+    .label = Podijelite ideje i povratne informacije
+    .accesskey = o
 menu-help-enter-troubleshoot-mode =
     .label = Način rada za rješavanje problema…
     .accesskey = T
@@ -26,6 +47,29 @@ menu-help-exit-troubleshoot-mode =
 menu-help-more-troubleshooting-info =
     .label = Više informacija za rješavanje problema
     .accesskey = m
+menu-help-troubleshooting-info =
+    .label = Rješavanje problema
+    .accesskey = R
+menu-help-about-product =
+    .label = O { -brand-short-name }
+    .accesskey = O
+# These menu-quit strings are only used on Windows and Linux.
+menu-quit =
+    .label =
+        { PLATFORM() ->
+            [windows] Izlaz
+           *[other] Izlaz
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] I
+           *[other] I
+        }
+# This menu-quit-mac string is only used on macOS.
+menu-quit-mac =
+    .label = Zatvori { -brand-shorter-name }
+quit-app-shortcut =
+    .key = Z
 
 ## Mail Toolbar
 
@@ -74,6 +118,12 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Za dodir
     .accesskey = Z
+mail-uidensity-default =
+    .label = Zadano
+    .accesskey = d
+mail-uidensity-relaxed =
+    .label = Opušteno
+    .accesskey = p
 menu-spaces-toolbar-button =
     .label = Alatna traka zbijenosti
     .accesskey = s

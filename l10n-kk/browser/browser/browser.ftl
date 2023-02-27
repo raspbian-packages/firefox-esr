@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } жекелік шолу режимі
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } жекелік шолу режимі
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Көмек алу
 urlbar-search-tips-confirm = Жақсы, түсіндім
+urlbar-search-tips-confirm-short = Түсіндім
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Кеңес:
+urlbar-result-menu-button =
+    .title = Мәзірді ашу
+urlbar-result-menu-remove-from-history =
+    .label = Тарихтан өшіру
+    .accesskey = р
+urlbar-result-menu-tip-get-help =
+    .label = Көмек алу
+    .accesskey = м
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Азырақ теріп, көбірек табыңыз: { $engineName } қызметінен тура адрестік жолақтан іздеңіз.
 urlbar-search-tips-redirect-2 = { $engineName } және шолу тарихы ұсыныстарын көру үшін, іздеуді адрестік жолағында бастаңыз.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Іздеу енді оңайырақ болды. Адрестік жолағында іздеуді нақтырақ етіп көріңіз. Оның орнына URL адресін көрсету үшін параметрлердегі Іздеу бөліміне өтіңіз.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Қажетті нәрсені тезірек табу үшін бұл жарлықты таңдаңыз.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Әрекеттер ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Қосымшаларды қарау
-quickactions-cmd-addons = қосымшалар, кеңейтулер, темалар
 quickactions-cmd-addons2 = қосымшалар
 # Opens the bookmarks library window
-quickactions-bookmarks = Бетбелгілерді қарау
+quickactions-bookmarks2 = Бетбелгілерді басқару
 quickactions-cmd-bookmarks = бетбелгілер
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Тарихты тазарту
 quickactions-cmd-clearhistory = тарихты тазарту
 # Opens about:downloads page
-quickactions-downloads = Жүктемелерді ашу
+quickactions-downloads2 = Жүктемелерді қарау
 quickactions-cmd-downloads = жүктемелер
 # Opens about:addons page in the extensions section
 quickactions-extensions = Кеңейтулерді басқару
 quickactions-cmd-extensions = кеңейтулер
 # Opens the devtools web inspector
-quickactions-inspector = Инспекторды ашу
+quickactions-inspector2 = Әзірлеуші құралдарын ашу
 quickactions-cmd-inspector = бақылаушы, әзірлеуші құралдары
 # Opens about:logins
-quickactions-logins = Логиндерді қарау
+quickactions-logins2 = Парольдерді басқару
 quickactions-cmd-logins = логиндер, парольдер
 # Opens about:addons page in the plugins section
 quickactions-plugins = Плагиндерді басқару
 quickactions-cmd-plugins = плагиндер
 # Opens the print dialog
-quickactions-print = Баспаға шығару
+quickactions-print2 = Бетті баспаға шығару
 quickactions-cmd-print = баспаға шығару
 # Opens a new private browsing window
-quickactions-private = Жекелік шолу терезесін ашу
+quickactions-private2 = Жекелік шолу терезесін ашу
 quickactions-cmd-private = жекелік шолу
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } жаңғырту
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = жаңарту
 quickactions-restart = { -brand-short-name } қайта қосу
 quickactions-cmd-restart = қайта қосу
 # Opens the screenshot tool
-quickactions-screenshot2 = Скриншотты түсіру
+quickactions-screenshot3 = Скриншотты түсіру
 quickactions-cmd-screenshot = скриншот
 # Opens about:preferences
-quickactions-settings = Баптауларды ашу
+quickactions-settings2 = Баптауларды басқару
 quickactions-cmd-settings = баптаулар, қалаулар, опциялар
 # Opens about:addons page in the themes section
 quickactions-themes = Темаларды басқару
@@ -323,8 +332,11 @@ quickactions-cmd-themes = темалар
 quickactions-update = { -brand-short-name } жаңарту
 quickactions-cmd-update = жаңарту
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Бастапқы кодын қарау
+quickactions-viewsource2 = Парақтың бастапқы кодын қарау
 quickactions-cmd-viewsource = бастапқы кодын қарау, бастапқы код
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Жылдам әрекеттер туралы көбірек біліңіз
 
 ## Bookmark Panel
 
@@ -482,6 +494,9 @@ popup-select-microphone-icon =
     .tooltiptext = Микрофон
 popup-select-speaker-icon =
     .tooltiptext = Динамиктер
+popup-select-window-or-screen =
+    .label = Терезе немесе экран:
+    .accesskey = т
 popup-all-windows-shared = Экраныңыздаға барлық көрінетін терезелермен бөлісетін боласыз.
 popup-screen-sharing-block =
     .label = Бұғаттау
@@ -503,6 +518,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = F12 жарлығын қолдану үшін, алдымен Веб-әзірлеуші мәзірі арқылы Әзірлеуші құралдарын ашыңыз.
+enable-devtools-popup-description2 = F12 жарлығын қолдану үшін, алдымен Браузер құралдары мәзірі арқылы Әзірлеуші құралдарын ашыңыз.
 
 ## URL Bar
 
@@ -634,6 +650,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Жылдам әрекеттер
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Оқу көрінісіне өту
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Оқу режимін жабу
 
 ## Full Screen and Pointer Lock UI
 
@@ -911,3 +936,29 @@ private-browsing-indicator-label = Жекелік шолу
 unified-extensions-button =
     .label = Кеңейтулер
     .tooltiptext = Кеңейтулер
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Кеңейтулер
+    .tooltiptext =
+        Кеңейтулер
+        Керек рұқсаттар
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } осы парақтың өзіндік жаңартуын тоқтатты.
+refresh-blocked-redirect-label = { -brand-short-name } басқа параққа автоматты бағдарлауын тоқтатты.
+refresh-blocked-allow =
+    .label = Рұқсат ету
+    .accesskey = а
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } деректерді бұзудан және спамнан қорғауға көмектесу үшін шынайы электрондық пошта адресіңізді жасырады.
+firefox-relay-offer-how-we-integrate = Жалғастыру арқылы жаңа { -relay-brand-short-name } электрондық пошта маскаларын тікелей { -brand-shorter-name } парольдер басқарушысынан жасай алатын боласыз.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Біз <strong>{ $sitename }</strong> адресінен барлық электрондық хаттарды <strong>{ $useremail }</strong> адресіне қайта бағдарлаймыз.

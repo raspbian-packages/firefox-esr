@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Titz'aqatisäx k'ak'a' k'wayöl
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = { $name } taq Runuk'ulem K'wayöl
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Titz'aqatisäx k'ak'a' k'wayöl
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = { $name } taq Runuk'ulem K'wayöl
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

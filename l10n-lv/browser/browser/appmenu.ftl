@@ -5,6 +5,16 @@
 
 ## App Menu
 
+appmenuitem-banner-update-downloading =
+    .label = Notiek { -brand-shorter-name } atjauninājuma lejupielāde
+appmenuitem-banner-update-available =
+    .label = Pieejams atjauninājums — lejupielādējiet tūlīt
+appmenuitem-banner-update-manual =
+    .label = Pieejams atjauninājums — lejupielādējiet tūlīt
+appmenuitem-banner-update-unsupported =
+    .label = Nevar atjaunināt — sistēma nav saderīga
+appmenuitem-banner-update-restart =
+    .label = Pieejams atjauninājums — restartējiet tūlīt
 appmenuitem-new-tab =
     .label = Jauna cilne
 appmenuitem-new-window =
@@ -15,34 +25,57 @@ appmenuitem-history =
     .label = Vēsture
 appmenuitem-downloads =
     .label = Lejupielādes
+appmenuitem-passwords =
+    .label = Paroles
+appmenuitem-addons-and-themes =
+    .label = Paplašinājumi un tēmas
 appmenuitem-print =
     .label = Drukāt…
+appmenuitem-find-in-page =
+    .label = Meklēt lapā…
 appmenuitem-zoom =
-    .value = Mērogs
+    .value = Palielinājums
+appmenuitem-more-tools =
+    .label = Citi rīki
 appmenuitem-help =
     .label = Palīdzība
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Iziet
+           *[other] Iziet
+        }
+# Settings is now used to access the browser settings across all platforms,
+# instead of Options or Preferences.
+appmenuitem-settings =
+    .label = Iestatījumi
 
 ## Zoom and Fullscreen Controls
 
+appmenuitem-zoom-enlarge =
+    .label = Pietuvināt
+appmenuitem-zoom-reduce =
+    .label = Attālināt
 appmenuitem-fullscreen =
     .label = Pa visu ekrānu
 
 ## Firefox Account toolbar button and Sync panel in App menu.
 
+appmenu-remote-tabs-sign-into-sync =
+    .label = Pierakstieties, lai sinhronizētu…
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = Nav atvērto cilņu
-
 # This is shown when Sync is configured but syncing tabs is disabled.
 appmenu-remote-tabs-tabsnotsyncing = Ieslēdziet cilņu sinhronizāciju, lai redzētu cilnes no citām ierīcēm.
-
+appmenu-remote-tabs-opensettings =
+    .label = Iestatījumi
 # This is shown when Sync is configured but this appears to be the only device attached to
 # the account. We also show links to download Firefox for android/ios.
 appmenu-remote-tabs-noclients = Gribat redzēt cilnes no citām savām ierīcēm?
-
 appmenu-remote-tabs-connectdevice =
     .label = Savienot citu ierīci
 appmenu-remote-tabs-unverified = Jūsu kontam nepieciešams apstiprinājums.
-
+appmenuitem-fxa-toolbar-sync-now2 = Sinhronizēt tagad
 appmenuitem-save-page =
     .label = Saglabāt lapu kā…
 
@@ -58,9 +91,11 @@ whatsnew-panel-header = Kas jauns?
 ## Profiler presets
 ## They are shown in the popup's select box.
 
+
 # Presets and their l10n IDs are defined in the file
 # devtools/client/performance-new/popup/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
+
 
 ## History panel
 

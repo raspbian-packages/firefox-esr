@@ -6,12 +6,22 @@ create-profile-window =
     .title = Израда профила
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Израда профила
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Увод
        *[other] { create-profile-window.title } – почетак
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Увод
+       *[other] { create-profile-window2.title } – почетак
     }
 
 profile-creation-explanation-1 = { -brand-short-name } чува податке о вашим поставкама, подешавањима итд. у вашем профилу.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Завршавање
        *[other] { create-profile-window.title } – завршавање
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Завршавање
+       *[other] { create-profile-window2.title } – завршавање
     }
 
 profile-creation-intro = Ако направите неколико профила, можете их разликовати по називу. Осмислите назив самостално или користите доленаведени.

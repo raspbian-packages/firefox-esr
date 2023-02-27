@@ -6,6 +6,10 @@ translation-window =
     .title = Pengecualian - Terjemahan
     .style = width: 36em
 
+translation-window2 =
+    .title = Pengecualian - Terjemahan
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

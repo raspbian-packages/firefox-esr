@@ -124,7 +124,7 @@
 <!-- View Menu -->
 <!ENTITY menubarCmd.label "Паліца меню">
 <!ENTITY menubarCmd.accesskey "м">
-<!ENTITY showMessengerToolbarCmd.label "Паліца прыладаў пошты">
+<!ENTITY showMessengerToolbarCmd.label "Паліца інструментаў пошты">
 <!ENTITY showMessengerToolbarCmd.accesskey "л">
 <!ENTITY customizeToolbar.label "Наладзіць…">
 <!ENTITY customizeToolbar.accesskey "Н">
@@ -308,7 +308,6 @@
 <!ENTITY goBackCmd.commandKey "[">
 <!ENTITY goChatCmd.label "Гутарка">
 <!ENTITY goChatCmd.accesskey "г">
-<!ENTITY goChatCmd2.key "H">
 <!ENTITY prevStarredMsgCmd.label "Ліст з зоркаю">
 <!ENTITY prevStarredMsgCmd.accesskey "з">
 <!ENTITY folderMenu.label "Папка">
@@ -484,7 +483,7 @@
 <!ENTITY accountManagerCmdUnix2.accesskey "A">
 
 <!-- Developer Tools Submenu -->
-<!ENTITY devtoolsMenu.label "Прылады распрацоўшчыка">
+<!ENTITY devtoolsMenu.label "Інструменты распрацоўшчыка">
 <!ENTITY devtoolsMenu.accesskey "а">
 <!ENTITY devToolboxCmd.label "Панэль распрацоўшчыка">
 <!ENTITY devToolboxCmd.accesskey "П">
@@ -582,7 +581,7 @@
 <!ENTITY appmenuNewMsgCmd.label "Новы ліст">
 <!ENTITY appmenuNewContactCmd.label "Сувязь з адраснай кнігі…">
 <!ENTITY appmenuEditMenu.label "Праўка">
-<!ENTITY appmenuToolbarLayout.label "Раскладка прыладапаліцы…">
+<!ENTITY appmenuToolbarLayout.label "Раскладка паліц…">
 <!ENTITY appmenuSelectThread.label "Вылучыць нізку">
 <!ENTITY appmenuSelectFlagged.label "Вылучыць пазначаныя зоркамі лісты">
 
@@ -683,7 +682,7 @@
 <!ENTITY fromColumn2.tooltip "Размеркаваць па адпраўнікам">
 <!ENTITY recipientColumn2.tooltip "Размеркаваць па атрымальнікам">
 <!ENTITY correspondentColumn2.tooltip "Сартаваць па карэспандэнтам">
-<!ENTITY subjectColumn2.tooltip "Размеркаваць па тэмам">
+<!ENTITY subjectColumn2.tooltip "Размеркаваць па тэмах">
 <!ENTITY dateColumn2.tooltip "Размеркаваць па датам">
 <!ENTITY priorityColumn2.tooltip "Размеркаваць па прыярытэтам">
 <!ENTITY tagsColumn2.tooltip "Размеркаваць па мецінам">
@@ -760,8 +759,6 @@
 <!ENTITY contextPrintPreview.label "Перадпрагляд друку">
 <!ENTITY contextPrintPreview.accesskey "п">
 
-<!-- Thread Pane Column Picker -->
-
 <!-- LOCALIZATION NOTE (columnPicker.applyTo.label):
      This option in the thread pane column picker pops up a sub-menu containing
      the "columnPicker.applyToFolder.label" and
@@ -801,7 +798,6 @@
      "File here" option for the move to/copy to widget.
   -->
 <!ENTITY columnPicker.thisFolder.label "Гэтая папка">
-
 
 <!-- Media (video/audio) controls -->
 <!ENTITY contextPlay.label "Граць">
@@ -919,3 +915,4 @@
 <!ENTITY writeNewMessageDock.label      "Напісаць новы ліст">
 <!ENTITY openAddressBookDock.label      "Адкрыць адрасную кнігу">
 
+<!-- Content tab Navigation buttons -->

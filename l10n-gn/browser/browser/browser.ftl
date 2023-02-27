@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Kundahára ñemigua { -brand-short-name } ndive
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } Ñeikundaha ñemi
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Eipota pytyvõ
 urlbar-search-tips-confirm = Oĩma, aikumbýma
+urlbar-search-tips-confirm-short = Aikumby
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Ñemoñe’ẽ:
+urlbar-result-menu-button =
+    .title = Poravorã ijurujáva
+urlbar-result-menu-remove-from-history =
+    .label = Emboguepa tembiasakuégui
+    .accesskey = R
+urlbar-result-menu-tip-get-help =
+    .label = Eipota pytyvõ
+    .accesskey = h
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Ehai sa’ive, ejuhuve: Eheka { $engineName } kundaharape rendaite guive.
 urlbar-search-tips-redirect-2 = Eñepyrũ eheka kundaharape rendápe ehecha hag̃ua { $engineName } ñe’ẽporã ha ikundaha rembiasakue.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Pe jeheka ko’ág̃a ndahasyieteve. Eheka eikotevẽva ko’ápe kundaharape rendápe. Ehechaukaséramo pe URL, eike Jeheka ñemoĩporãhápe.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Eiporavo ko jeike pya’eha ejuhu pya’eve hag̃ua ehekáva.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Ñemongu’e ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Ehecha Moĩmbaha
-quickactions-cmd-addons = moĩmbaha, jepysokue, téma
 quickactions-cmd-addons2 = moĩmbaha
 # Opens the bookmarks library window
-quickactions-bookmarks = Ehecha Techaukaha
+quickactions-bookmarks2 = Eñangareko techaukaháre
 quickactions-cmd-bookmarks = techaukaha
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Embogue Tembiasakue
 quickactions-cmd-clearhistory = embogue tembiasakue
 # Opens about:downloads page
-quickactions-downloads = Embojuruja ñemboguejy
+quickactions-downloads2 = Ehecha ñemboguejy
 quickactions-cmd-downloads = ñemboguejy
 # Opens about:addons page in the extensions section
 quickactions-extensions = Eñangareko jepysokuére
 quickactions-cmd-extensions = jepysokue
 # Opens the devtools web inspector
-quickactions-inspector = Embojuruja Mbohekoha
+quickactions-inspector2 = Embojuruja tembipuru mboguatahárape g̃uarã
 quickactions-cmd-inspector = moambuekuaaha, ñemboguata rembipuru
 # Opens about:logins
-quickactions-logins = Ehecha tembiapo ñepyrũ
+quickactions-logins2 = Eñangareko ñe’ẽñemíre
 quickactions-cmd-logins = tembiapo ñepyrũ, ñe’ẽñemi
 # Opens about:addons page in the plugins section
 quickactions-plugins = Eñangareko mba’ejoajurãre
 quickactions-cmd-plugins = Mba’ejoajurã
 # Opens the print dialog
-quickactions-print = Mbokuatia
+quickactions-print2 = Emonguatia kuatiarogue
 quickactions-cmd-print = Mbokuatia
 # Opens a new private browsing window
-quickactions-private = Embojuruja ovetã kundaha ñemíme
+quickactions-private2 = Embojuruja ovetã ñemi
 quickactions-cmd-private = kundaha ñemigua
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Eguerujey { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = Mbopiro’y
 quickactions-restart = Emoñepyrũjey { -brand-short-name }
 quickactions-cmd-restart = Moñepyrũjey
 # Opens the screenshot tool
-quickactions-screenshot2 = Ejapo mba’erechaha japyhypy
+quickactions-screenshot3 = Ejapyhy mba’erechaha
 quickactions-cmd-screenshot = Ta’ãnga japyhy
 # Opens about:preferences
-quickactions-settings = Embojuruja ñemboheko
+quickactions-settings2 = Eñangareko ehayhuvévare
 quickactions-cmd-settings = moĩporã, guerohoryvéva, poravorã
 # Opens about:addons page in the themes section
 quickactions-themes = Eñangareko témare
@@ -323,8 +332,11 @@ quickactions-cmd-themes = Téma
 quickactions-update = Embohekopyahu { -brand-short-name }
 quickactions-cmd-update = mbohekopyahu
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Ehecha ayvu reñoiha
+quickactions-viewsource2 = Ehecha ayvu reñoiha
 quickactions-cmd-viewsource = ehecha teñoiha, teñoiha
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Eikuaave mbopya’eha rehegua
 
 ## Bookmark Panel
 
@@ -485,6 +497,9 @@ popup-select-microphone-icon =
     .tooltiptext = Ñe’ẽatãha
 popup-select-speaker-icon =
     .tooltiptext = Ñe’ẽatãhakuéra
+popup-select-window-or-screen =
+    .label = Ovetã térã mba’erechaha:
+    .accesskey = W
 popup-all-windows-shared = Oñemosarambíta opaite ovetã ojehecháva mba’erechahápe.
 popup-screen-sharing-block =
     .label = Joko
@@ -506,6 +521,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Eipurútarõ mbopya’eha F12 embojurujaraẽ DevTools ñanduti Mboguatahára poravorãme.
+enable-devtools-popup-description2 = Eipurútarõ mbopya’eha F12, embojurujaraẽ DevTools kundahára rembipuru poravorã rupive.
 
 ## URL Bar
 
@@ -637,6 +653,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Jeku’e Pya’e
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Moñe’ẽha jehechápe jeike
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Moñe’ẽha jehecha mboty
 
 ## Full Screen and Pointer Lock UI
 
@@ -914,3 +939,27 @@ private-browsing-indicator-label = Kundaha ñemigua
 unified-extensions-button =
     .label = Jepysokue
     .tooltiptext = Jepysokuekuéra
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Jepysokue
+    .tooltiptext = Ñemoneĩ tekotevẽva
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } ndohejái ko kuatiarogue oñemyenyhẽ ha’eñorei.
+refresh-blocked-redirect-label = { -brand-short-name } ndohejái ko kuatiarogue oipykúi ha’eñorei ambue hendápe.
+refresh-blocked-allow =
+    .label = Ñemoneĩ
+    .accesskey = A
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } ohovamo’ã iñanduti veve kundaharape oipytyvõvo omo’ã hag̃ua mba’ekuaarã ñembogua ha spam.
+firefox-relay-offer-how-we-integrate = Eku’ejeývo, emoheñoikuaa { -relay-brand-short-name } ñanduti veve rovamo’ãha pe { -brand-shorter-name } ñe’ẽñemi ñangarekoha guive.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Romondojeýta opaite ñanduti veve <strong>{ $sitename }</strong> <strong>{ $useremail }</strong>-pe.

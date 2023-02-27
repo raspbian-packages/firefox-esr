@@ -6,12 +6,22 @@ create-profile-window =
     .title = રુપરેખા વિઝાર્ડ બનાવો
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = રુપરેખા વિઝાર્ડ બનાવો
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] પરિચય
        *[other] { create-profile-window.title } માં સ્વાગત છે
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] પરિચય
+       *[other] { create-profile-window2.title } માં સ્વાગત છે
     }
 
 profile-creation-explanation-1 = { -brand-short-name } તમારી ગોઠવણી અને પસંદગીઓને તમારી અંગત રુપરેખામાં સંગ્રહ કરે છે.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] તારણ
        *[other] { create-profile-window.title } સમાપ્ત કરી રહ્યા છીએ
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] તારણ
+       *[other] { create-profile-window2.title } સમાપ્ત કરી રહ્યા છીએ
     }
 
 profile-creation-intro = જો તમે ઘણી બધી રુપરેખા બનાવશો તો તેને તમે નામથી અલગ પાડી શકશો. તમે અહીં આપેલ નામ અથવા તમારા પોતાના નામ પસંદ કરી શકશો.

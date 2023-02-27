@@ -467,6 +467,10 @@ mark-read-no-delay =
     .label = Ned pśi zwobraznjenju
     .accesskey = N
 
+view-attachments-inline =
+    .label = Pśidanki inline pokazaś
+    .accesskey = P
+
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
 
@@ -901,8 +905,6 @@ no-preview-description = Toś ta drastwa njejo płaśiwa abo njejo tuchylu k dis
 chat-variant-label =
     .value = Warianta:
     .accesskey = W
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

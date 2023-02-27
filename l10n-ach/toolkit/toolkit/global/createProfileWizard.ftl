@@ -6,12 +6,22 @@ create-profile-window =
     .title = Yub Ladiro ma Gwoko ngec
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Yub Ladiro ma Gwoko ngec
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Nyute
        *[other] Wajoli i { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Nyute
+       *[other] Wajoli i { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } gwoko ngec makwako terni ki gin ma imaro i yi kagwoko gin makwaki.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Dolo tere
        *[other] Tyeko { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Dolo tere
+       *[other] Tyeko { create-profile-window2.title }
     }
 
 profile-creation-intro = Ka iyubo katic mapol itwero poko kingi mapat pat malube ki nyingi. Bene itwereo tic ki nying ma kimiyo kanyi onyo ma imiyo.

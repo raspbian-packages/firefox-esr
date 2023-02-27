@@ -16,11 +16,11 @@ appmenuitem-banner-update-unsupported =
 appmenuitem-banner-update-restart =
     .label = Përditësim gati — riniseni tani
 appmenuitem-new-tab =
-    .label = Skedë e Re
+    .label = Skedë e re
 appmenuitem-new-window =
     .label = Dritare e Re
 appmenuitem-new-private-window =
-    .label = Dritare e Re Private
+    .label = Dritare e re private
 appmenuitem-history =
     .label = Historik
 appmenuitem-downloads =
@@ -68,7 +68,7 @@ appmenuitem-fullscreen =
 ## Firefox Account toolbar button and Sync panel in App menu.
 
 appmenu-remote-tabs-sign-into-sync =
-    .label = Hyni në Sync…
+    .label = Për njëkohësim, bëni hyrjen…
 appmenu-remote-tabs-turn-on-sync =
     .label = Aktivizoni Sync-un…
 # This is shown after the tabs list if we can display more tabs by clicking on the button
@@ -88,9 +88,9 @@ appmenu-remote-tabs-connectdevice =
     .label = Lidhni Tjetër Pajisje
 appmenu-remote-tabs-welcome = Shihni një listë skedash nga pajisje tuajat të tjera.
 appmenu-remote-tabs-unverified = Llogaria juaj duhet verifikuar.
-appmenuitem-fxa-toolbar-sync-now2 = Njëkohësoji Tani
+appmenuitem-fxa-toolbar-sync-now2 = Njëkohësoji tani
 appmenuitem-fxa-sign-in = Hyni te { -brand-product-name }
-appmenuitem-fxa-manage-account = Administroni Llogari
+appmenuitem-fxa-manage-account = Administroni llogari
 appmenu-fxa-header2 = { -fxaccount-brand-name }
 # Variables
 # $time (string) - Localized relative time since last sync (e.g. 1 second ago,
@@ -128,6 +128,7 @@ profiler-popup-button-capturing =
     .tooltiptext = Profili po merr një profil
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Shfaq më tepër informacion
 profiler-popup-description-title =
@@ -181,6 +182,7 @@ profiler-popup-presets-media-label =
 profiler-popup-presets-networking-description = Model për hetim të metash punimi në rrjet në { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Punim në rrjet
+profiler-popup-presets-power-description = Paracaktim për hetim të metash përdorimi energjie në { -brand-shorter-name }, me ngarkesë të ulët.
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Energji
@@ -199,7 +201,7 @@ appmenu-clear-history =
     .label = Spastroni Historikun Së Fundi…
 appmenu-recent-history-subheader = Historik Së Fundi
 appmenu-recently-closed-tabs =
-    .label = Skeda të Mbyllura Së Fundi
+    .label = Skeda të mbyllura së fundi
 appmenu-recently-closed-windows =
     .label = Dritare të mbyllura Së Fundi
 
@@ -218,6 +220,9 @@ appmenu-help-more-troubleshooting-info =
     .accesskey = D
 appmenu-help-report-site-issue =
     .label = Njoftoni Problem Sajti…
+appmenu-help-share-ideas =
+    .label = Ndani me të tjerët ide dhe përshtypje…
+    .accesskey = d
 
 ## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
@@ -233,7 +238,7 @@ appmenu-help-exit-troubleshoot-mode =
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
 
 appmenu-help-report-deceptive-site =
-    .label = Raportoni Sajt të Rremë…
+    .label = Raportoni sajt të rremë…
     .accesskey = m
 appmenu-help-not-deceptive =
     .label = Ky s'është sajt i rremë…

@@ -6,12 +6,22 @@ create-profile-window =
     .title = Profila sortzeko morroia
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Profila sortzeko morroia
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Sarrera
        *[other] Ongi etorri { create-profile-window.title }-(e)ra
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Sarrera
+       *[other] Ongi etorri { create-profile-window2.title }-(e)ra
     }
 
 profile-creation-explanation-1 = { -brand-short-name }(e)k zure ezarpen eta hobespenak gordetzen ditu profil pertsonalean.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Bukaera
        *[other] { create-profile-window.title } bukatzen
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Bukaera
+       *[other] { create-profile-window2.title } bukatzen
     }
 
 profile-creation-intro = Profil ugari sortuz gero, profil-izen desberdinez dei ditzakezu. Hemen eskaintzen zaizun izena edo aukerako beste edozein erabil dezakezu.

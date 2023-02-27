@@ -50,6 +50,7 @@ policy-DisableSecurityBypass = Förhindra användaren från att gå vidare vid v
 policy-DisableSetAsDesktopBackground = Inaktivera menyalternativet Använd som skrivbordsbakgrund för bilder.
 policy-DisableSystemAddonUpdate = Förhindra webbläsaren att installera och uppdatera systemtillägg.
 policy-DisableTelemetry = Stäng av telemetri.
+policy-DisableThirdPartyModuleBlocking = Förhindra användaren från att blockera tredjepartsmoduler som injiceras i { -brand-short-name }-processen.
 policy-DisplayBookmarksToolbar = Visa bokmärkesfältet som standard.
 policy-DisplayMenuBar = Visa menyraden som standard.
 policy-DNSOverHTTPS = Konfigurera DNS över HTTPS.

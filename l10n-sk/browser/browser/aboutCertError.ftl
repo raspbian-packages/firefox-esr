@@ -8,7 +8,7 @@ cert-error-intro = Server { $hostname } používa neplatný bezpečnostný certi
 
 cert-error-mitm-intro = Webové stránky preukazujú svoju identitu pomocou certifikátov, ktoré vydávajú certifikačné autority.
 
-cert-error-mitm-mozilla = Za aplikáciou { -brand-short-name } stojí nezisková organizácia Mozilla, ktorá spravuje otvorené úložisko certifikačných autorít (CA). Toto úložisko zaisťuje, že certifikačné autority dodržiavajú osvedčené bezpečnostné postupy.
+cert-error-mitm-mozilla = Za prehliadačom { -brand-short-name } stojí nezisková organizácia Mozilla, ktorá spravuje otvorené úložisko certifikačných autorít (CA). Toto úložisko zaisťuje, že certifikačné autority dodržiavajú osvedčené bezpečnostné postupy.
 
 cert-error-mitm-connection = { -brand-short-name } používa úložisko certifikačných autorít od Mozilly, nie úložisko z operačného systému. Ak antivírusový program alebo niekto v sieti zachytáva spojenie s použitím certifikátov od autority, ktorá v úložisku Mozilly nie je, je toto spojenie považované za nezabezpečené.
 

@@ -61,6 +61,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } wužiwarjow
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Preč z plackowymi chorhojemi!
+cfr-cookie-banner-handling-body = Dowolće { -brand-short-name }, wšě naprašowanja plackowych chorhojiw awtomatisce wotpokazać, jeli móžno. Hewak so wšě placki akceptuja, zo bychu so samo dalše chorhoje zacisnyli.
+cfr-cookie-banner-accept-button = Naprašowanja zaćisnyć
+    .accesskey = z
+cfr-cookie-banner-reject-button = Nic nětko
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-1 = Mjenje plackowych wuskakowacych woknow widźeć
+cfr-cookie-banner-handling-body-variant-1 = Dajće { -brand-short-name } za was awtomatisce na plackowewuskakowace wokna wotmołwić. zo byšće so k přehladowanju bjez wotwjedźenja wróćił. { -brand-short-name } wšě naprašowanja wotpokaza, jeli móžno, abo budźe wšě akceptować, jeli móžno njeje.
+cfr-cookie-banner-accept-button-variant-1 = Wuskakowace wokna zaćisnyć
+    .accesskey = u
+cfr-cookie-banner-reject-button-variant-1 = Ně, dźakuju so
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Redukowanje plackowych chorhojow
+cfr-cookie-banner-handling-body-variant-2 = { -brand-short-name } dowolić, próstwu sydła wo přizwolenje plackoweho wobsaha wotpokazać, jeli móžno, abo přistup přez plack akceptować, jeli móžno njeje?
+cfr-cookie-banner-accept-button-variant-2 = Dowolić
+    .accesskey = D
+cfr-cookie-banner-reject-button-variant-2 = Nic nětko
+    .accesskey = N
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Synchronizujće swoje zapołožki wšudźe.
@@ -162,10 +185,6 @@ spotlight-total-cookie-protection-body = Dospołny plackowy škit přesćěhowak
 spotlight-total-cookie-protection-expanded = { -brand-short-name } płót wokoło plackow twari, kotryž je na sydło wobmjezuje, na kotrymž sće, zo njebychu je přesćěhowaki móhli wužiwać, zo bychu was přesćěhowali. Z lochkim přistupom pomhaće tutu funkciju optimować, zo bychmy móhli dale lěpši web za kóždeho natwarili.
 spotlight-total-cookie-protection-primary-button = Dospołny škit před plackami zmóžnić
 spotlight-total-cookie-protection-secondary-button = Nic nětko
-cfr-total-cookie-protection-header = Dźak wam je { -brand-short-name } priwatniši a wěsćiši hač hdy prjedy
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Dospołny škit přećiwo plackam je dotal naš najmócniši škit priwatnosće – a je nětko standardne nastajenje za wužiwarjow { -brand-short-name } wšudźe. Njebychmy jón bjez zahich wobdźělnikow kaž wy wutworili. Wulki dźak potajkim, zo sće nam pomhał, lěpši, priwatniši internet wutworić.
 
 ## Emotive Continuous Onboarding
 
@@ -179,3 +198,83 @@ spotlight-pin-primary-button =
        *[other] K nadawkowej lajsće připjeć
     }
 spotlight-pin-secondary-button = Nic nětko
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Nowy { -brand-short-name }. Priwatniši. Mjenje přesćěhowakow. Žane kompromisy.
+mr2022-background-update-toast-text = Spytajće nětko najnowši { -brand-short-name }, nětko z našim dotal najmócnišim škitom přećiwo slědowanju.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = { -brand-shorter-name } nětko wočinić
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Pozdźišo dopomnić
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Wupruwujće jón
+    .accesskey = u
+firefoxview-cfr-secondarybutton = Nic nětko
+    .accesskey = N
+firefoxview-cfr-header-v2 = Čińće tam spěšnje dale, hdźež sće přestał
+firefoxview-cfr-body-v2 = Wobstarajće sej začinjene rajtarki wróćo a přeńdźće mjez gratami z { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Witajće k { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Chceće tón wočinjeny rajtark na swojim šmóratku měć? Wobstarajće sej jón. Trjebaće sydło, kotrež sće runje wopytał? Simsalabim, je z { -firefoxview-brand-name } wróćo.
+firefoxview-spotlight-promo-primarybutton = Wobhladajće sej, kak to funguje
+firefoxview-spotlight-promo-secondarybutton = Přeskočić
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Barbowu kombinaciju wubrać
+    .accesskey = B
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Zabarbće swój wobhladowak z ekskluziwnymi barbowymi wotsćinami { -brand-short-name }, kotrež su wot hłosow inspirowane, kotrež su kulturu změnili.
+colorways-cfr-header-28days = Barbowe kombinacije „Njewotwisne hłosy“  16. januara spadnu
+colorways-cfr-header-14days = Barbowe kombinacije „Njewotwisne hłosy“ za dwě njedźeli spadnu
+colorways-cfr-header-7days = Barbowe kombinacije „Njewotwisne hłosy“ tutón tydźeń spadnu
+colorways-cfr-header-today = Barbowe kombinacije „Njewotwisne hłosy“ dźensa spadnu
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Preč z plackowymi chorhojemi!
+cfr-cookiebanner-accept-button = Chorhoje zaćisnyć
+    .accesskey = C
+cfr-cookiebanner-reject-button = Nic nětko
+    .accesskey = N
+cfr-cookiebanner-header-variant-1 = Mjenje plackowych wuskakowacych woknow widźeć
+cfr-cookiebanner-body-variant-1 = Dajće { -brand-short-name } za was awtomatisce na plackowewuskakowace wokna wotmołwić. zo byšće so k přehladowanju bjez wotwjedźenja wróćił. { -brand-short-name } wšě naprašowanja wotpokaza, jeli móžno.
+cfr-cookiebanner-accept-button-variant-1 = Wuskakowace wokna zaćisnyć
+    .accesskey = k
+cfr-cookiebanner-reject-button-variant-1 = Ně, dźakuju so
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = Redukowanje plackowych chorhojow
+cfr-cookiebanner-accept-button-variant-2 = Dowolić
+    .accesskey = D
+cfr-cookiebanner-reject-button-variant-2 = Nic nětko
+    .accesskey = N
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Smy was zapřijeli
+july-jam-body = Kóždy měsac { -brand-short-name } w přerězku wjace hač 3000 přesćěhowakow na wužiwarja blokuje a dawa wam wěst, spěšny přistup k dobremu internetej.
+july-jam-set-default-primary = Moje wotkazy z { -brand-short-name } wočinić

@@ -6,6 +6,10 @@ blocklist-window =
     .title = અવરોધિત સૂચિઓ
     .style = width: 55em
 
+blocklist-window2 =
+    .title = અવરોધિત સૂચિઓ
+    .style = min-width: 55em
+
 blocklist-description = ઑનલાઇન ટ્રેકરને અવરોધિત કરવા માટે સૂચિ { -brand-short-name } નો ઉપયોગ કરો. <a data-l10n-name="disconnect-link" title="Disconnect"> ડિસ્કનેક્ટ</a> દ્વારા પ્રદાન કરવામાં આવેલી સૂચિ.
 blocklist-close-key =
     .key = w

@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = ઇતિહાસ સાફ કરવા માટેના સેટીંગ
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = ઇતિહાસ સાફ કરવા માટેના સેટીંગ
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

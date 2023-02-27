@@ -142,3 +142,34 @@ spotlight-total-cookie-protection-secondary-button = ఇప్పుడు క�
 ## Emotive Continuous Onboarding
 
 spotlight-pin-secondary-button = ఇప్పుడు కాదు
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = నాకు తర్వాత గుర్తు చేయి
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = ప్రయత్నించు
+    .accesskey = T
+firefoxview-cfr-secondarybutton = ఇప్పుడు కాదు
+    .accesskey = N
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-primarybutton = ఎలా పనిచేస్తుందో చూడండి
+firefoxview-spotlight-promo-secondarybutton = దాటవేయి

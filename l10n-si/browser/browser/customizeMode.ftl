@@ -4,6 +4,8 @@
 
 customize-mode-restore-defaults =
     .label = පෙරනිමියට ප්‍රත්‍යර්පණය
+customize-mode-menu-and-toolbars-header = ඔබගේ ප්‍රියතම අථක මෙවලම් තීරුවට හෝ පිටාරයට ඇද දමන්න.
+customize-mode-overflow-list-title = පිටාර වට්ටෝරුව
 customize-mode-uidensity =
     .label = ඝනත්‍වය
 customize-mode-done =
@@ -21,6 +23,10 @@ customize-mode-uidensity-menu-normal =
     .label = සාමාන්‍ය
     .accesskey = N
     .tooltiptext = සාමාන්‍ය
+customize-mode-uidensity-menu-compact-unsupported =
+    .label = සුසංහිත (සහාය නොදක්වයි)
+    .accesskey = C
+    .tooltiptext = සුසංහිත (සහාය නොදක්වයි)
 customize-mode-undo-cmd =
     .label = පෙරසේ
 customize-mode-lwthemes-link = තේමා කළමනාකරණය

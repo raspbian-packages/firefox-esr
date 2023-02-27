@@ -25,6 +25,12 @@ return-to-amo-addon-title = Цяпер давайце пяройдзем да <i
 return-to-amo-add-extension-label = Дадаць пашырэнне
 return-to-amo-add-theme-label = Дадаць тэму
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Павітайцеся з { -brand-short-name }
+mr1-return-to-amo-addon-title = У вас ёсць пад рукой хуткі, прыватны браўзер. Цяпер вы можаце дадаць <b>{ $addon-name }</b> і зрабіць нават больш з { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = Дадаць { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Прагрэс: крок { $current } з { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Прагрэс: крок { $current } з { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -322,35 +330,35 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Імпартав�
 
 mr2022-onboarding-colorway-title = Выберыце колер, які вас натхняе
 mr2022-onboarding-colorway-subtitle = Незалежныя галасы могуць змяніць культуру.
-mr2022-onboarding-colorway-primary-button-label = Усталяваць расфарбоўку
+mr2022-onboarding-colorway-primary-button-label-continue = Усталяваць і працягваць
 mr2022-onboarding-existing-colorway-checkbox-label = Зрабіце { -firefox-home-brand-name } сваёй маляўнічай хатняй старонкай
 mr2022-onboarding-colorway-label-default = Прадвызначана
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Прадвызначана
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Цяперашнія колеры { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>Выкарыстоўваць мае цяперашнія колеры { -brand-short-name }.</b>
 mr2022-onboarding-colorway-label-playmaker = Стваральнік гульняў
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Стваральнік гульняў
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Стваральнік гульняў (чырвоны)
 mr2022-onboarding-colorway-description-playmaker = <b>Вы — стваральнік гульняў.</b> Вы ствараеце магчымасці для перамогі і дапамагаеце ўсім вакол вас гуляць на вышэйшым узроўні.
 mr2022-onboarding-colorway-label-expressionist = Экспрэсіяніст
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Экспрэсіяніст
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Экспрэсіяніст (жоўты)
 mr2022-onboarding-colorway-description-expressionist = <b>Вы — экспрэсіяніст.</b> Вы бачыце свет па-іншаму, а вашы творы выклікаюць эмоцыі ў іншых.
 mr2022-onboarding-colorway-label-visionary = Візіянер
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Візіянер
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Візіянер (зялёны)
 mr2022-onboarding-colorway-description-visionary = <b>Вы — візіянер.</b> Вы ставіце пад сумнеў статус-кво і прымушаеце іншых уявіць сабе лепшую будучыню.
 mr2022-onboarding-colorway-label-activist = Актывіст
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Актывіст
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Актывіст (сіні)
 mr2022-onboarding-colorway-description-activist = <b>Вы — актывіст.</b> Вы пакідаеце свет лепшым месцам, чым яго знайшлі, і ўзмацняеце перакананне іншых.
 mr2022-onboarding-colorway-label-dreamer = Летуценнік
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Летуценнік
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Летуценнік (фіялетавы)
 mr2022-onboarding-colorway-description-dreamer = <b>Вы — летуценнік.</b> Вы лічыце, што фартуна спрыяе смелым, і натхняеце іншых на адвагу.
 mr2022-onboarding-colorway-label-innovator = Наватар
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Наватар
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Наватар (аранжавы)
 mr2022-onboarding-colorway-description-innovator = <b>Вы — наватар.</b> Вы паўсюль бачыце магчымасці і ўплываеце на жыццё ўсіх вакол вас.
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -363,7 +371,7 @@ mr2022-onboarding-no-mobile-download-cta-text = Скануйце QR-код, ка
 ## MR2022 Upgrade Dialog screens
 ## Pin private window screen shown only for users who don't have Firefox private pinned
 
-mr2022-upgrade-onboarding-pin-private-window-header = Атрымайце свабода прыватнага аглядання ў адзін націск
+mr2022-upgrade-onboarding-pin-private-window-header = Атрымайце свабоду прыватнага аглядання ў адзін націск
 mr2022-upgrade-onboarding-pin-private-window-subtitle = Ніякіх захаваных кукаў або гісторыі наўпрост з працоўнага стала. Аглядайце так, нібы ніхто не назірае.
 mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
     { PLATFORM() ->
@@ -375,13 +383,39 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 
 mr2022-onboarding-privacy-segmentation-title = Мы заўсёды паважаем вашу прыватнасць
 mr2022-onboarding-privacy-segmentation-subtitle = Мы ўвесь час працуем над стварэннем лепшага, больш індывідуальнага{ -brand-product-name }, ад інтэлектуальных прапаноў да больш разумнага пошуку.
-mr2022-onboarding-privacy-segmentation-text-cta = Што вы хочаце бачыць, калі мы прапануем новыя функцыі, якія выкарыстоўваюць вашы дадзеныя для паляпшэння аглядання?
+mr2022-onboarding-privacy-segmentation-text-cta = Што вы хочаце бачыць, калі мы прапануем новыя функцыі, якія выкарыстоўваюць вашы звесткі для паляпшэння аглядання?
 mr2022-onboarding-privacy-segmentation-button-primary-label = Выкарыстоўваць рэкамендацыі { -brand-product-name }
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Паказваць падрабязную інфармацыю
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-title = Вы дапамагаеце нам ствараць лепшы Інтэрнэт.
+mr2022-onboarding-gratitude-title = Вы дапамагаеце нам ствараць лепшы Інтэрнэт
 mr2022-onboarding-gratitude-subtitle = Дзякуй за выкарыстанне { -brand-short-name }, які падтрымліваецца Mozilla Foundation. З вашай падтрымкай мы працуем над тым, каб зрабіць Інтэрнэт больш адкрытым, даступным і лепшым для ўсіх.
 mr2022-onboarding-gratitude-primary-button-label = Што новага
 mr2022-onboarding-gratitude-secondary-button-label = Пачаць агляданне
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Адчувайце сябе як дома
+onboarding-infrequent-import-subtitle = Няважна, ці збіраецеся вы застацца тут на пэўны час ці проста праездам, помніце, што вы можаце імпартаваць закладкі, паролі і многае іншае.
+onboarding-infrequent-import-primary-button = Імпарт у { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Чалавек, які працуе на ноўтбуку, сярод зорак і кветак
+mr2022-onboarding-default-image-alt =
+    .aria-label = Чалавек, які абдымае лагатып { -brand-product-name }
+mr2022-onboarding-import-image-alt =
+    .aria-label = Чалавек, які катаецца на скейтбордзе са скрынкай значкоў праграм
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Жабы скачуць па лілеях з QR-кодам для сцягвання { -brand-product-name } для мабільных прылад у цэнтры
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Чароўная палачка прымушае лагатып прыватнага аглядання { -brand-product-name } з'явіцца з капелюша
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Светласкурая і смуглявая далоні робяць "дай пяць"
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Від на заход сонца праз акно з лісой і пакаёвай раслінай на падаконніку
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Балончык з фарбай малюе каляровы калаж з зялёнага вока, аранжавага чаравіка, чырвонага баскетбольнага мяча, фіялетавых навушнікаў, сіняга сэрца і жоўтай кароны

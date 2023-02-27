@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = CA ਸਰਟੀਫਿਕੇਟ ਟਰੱਸਟ ਸੈਟਿੰਗ ਸੋਧ
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = CA ਸਰਟੀਫਿਕੇਟ ਟਰੱਸਟ ਸੈਟਿੰਗ ਸੋਧ
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = ਟਰੱਸਟ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੋਧੋ:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = ਸਰਟੀਫਕੇਟ ਨੂੰ ਹਟਾਓ
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = ਸਰਟੀਫਕੇਟ ਨੂੰ ਹਟਾਓ
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = ਹੋਸਟ

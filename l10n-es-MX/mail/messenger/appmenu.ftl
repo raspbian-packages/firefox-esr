@@ -3,6 +3,31 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
+## Sync
+
+appmenu-sync-panel-title =
+    .title = Sync
+appmenu-signin-panel =
+    .label = Iniciar sesión para sincronizar
+    .accesskey = I
+appmenu-sync-sync =
+    .value = Sincronización de cuenta
+    .accesskey = c
+appmenu-sync-manage =
+    .value = Administrar cuenta
+    .accesskey = A
+appmenu-sync-account =
+    .value = ejemplo@ejemplo.com
+appmenu-sync-now =
+    .label = Sincronizar ahora
+    .accesskey = S
+appmenu-sync-settings =
+    .label = Sincronizar configuraciones
+    .accesskey = S
+appmenu-sync-sign-out =
+    .label = Cerrar sesión…
+    .accesskey = O
+
 ## New Account
 
 appmenu-new-account-panel-title =
@@ -68,11 +93,11 @@ appmenu-create-contact =
 
 ## Open
 
-appmenu-open-panel =
-    .label = Abrir
-    .accesskey = O
-appmenu-open-panel-title =
-    .title = Abrir
+appmenu-open-file-panel =
+    .label = Abrir desde archivo
+    .accesskey = A
+appmenu-open-file-panel-title =
+    .title = Abrir desde archivo
 appmenu-open-message =
     .label = Mensaje…
     .accesskey = M
@@ -168,3 +193,16 @@ appmenu-help-troubleshooting-info =
 appmenu-help-about-product =
     .label = Acerca de { -brand-short-name }
     .accesskey = A
+
+## Application Update
+
+appmenuitem-banner-update-downloading =
+    .label = Descargando actualización de { -brand-shorter-name }
+appmenuitem-banner-update-available =
+    .label = Actualización disponible — descargar ahora
+appmenuitem-banner-update-manual =
+    .label = Actualización disponible — descargar ahora
+appmenuitem-banner-update-unsupported =
+    .label = No se puede actualizar — sistema incompatible
+appmenuitem-banner-update-restart =
+    .label = Actualización disponible — reiniciar ahora

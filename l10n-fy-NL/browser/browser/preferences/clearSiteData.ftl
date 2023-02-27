@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Gegevens wiskje
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Gegevens wiskje
+    .style = min-width: 35em
+
 clear-site-data-description = It wiskjen fan alle cookies en websitegegevens bewarre troch { -brand-short-name } kin jo fan websites ôfmelde en offline webynhâld fuortsmite. De buffer leegje sil jo oanmeldingen net beynfloedzje.
 
 clear-site-data-close-key =

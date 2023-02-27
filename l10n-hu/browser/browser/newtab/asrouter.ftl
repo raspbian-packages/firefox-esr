@@ -57,6 +57,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } felhasználó
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Elég a sütibannerekből!
+cfr-cookie-banner-handling-body = Engedélyezze a { -brand-short-name } számára, hogy automatikusan elutasítja az összes sütibanner-kérést, ha az lehetséges. Ellenkező esetben az összes süti elfogadásra kerül, hogy még több bannert tüntessen el.
+cfr-cookie-banner-accept-button = Kérések eltüntetése
+    .accesskey = t
+cfr-cookie-banner-reject-button = Most nem
+    .accesskey = n
+cfr-cookie-banner-handling-header-variant-1 = Lásson kevesebb sütikkel kapcsolatos felugró ablakot
+cfr-cookie-banner-handling-body-variant-1 = Hagyja, hogy a { -brand-short-name } automatikusan válaszoljon a sütik előugró ablakaira, így visszatérhet a zavartalan böngészéshez. A { -brand-short-name } elutasítja az összes kérést, ha az lehetséges, vagy elfogadja az összeset, ha nem.
+cfr-cookie-banner-accept-button-variant-1 = Felugró ablakok eltüntetése
+    .accesskey = t
+cfr-cookie-banner-reject-button-variant-1 = Köszönöm, nem
+    .accesskey = n
+cfr-cookie-banner-handling-header-variant-2 = Sütibannerek számának csökkentése
+cfr-cookie-banner-handling-body-variant-2 = Engedélyezi a { -brand-short-name } számára, hogy ha lehetséges, akkor elutasítsa a webhelyek sütikhez való hozzájárulási kéréseit, vagy elfogadja azokat, ha ez nem lehetséges?
+cfr-cookie-banner-accept-button-variant-2 = Engedélyezés
+    .accesskey = E
+cfr-cookie-banner-reject-button-variant-2 = Most nem
+    .accesskey = n
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Szinkronizálja a könyvjelzőit mindenhol.
@@ -156,10 +179,6 @@ spotlight-total-cookie-protection-body = A Teljes sütivédelem megakadályozza,
 spotlight-total-cookie-protection-expanded = A { -brand-short-name } kerítést épít a sütik köré, oly módon korlátozva őket, hogy a nyomkövetők ne használhassák az Ön követésére. A korai hozzáféréssel segít nekünk optimalizálni a funkciót, így egy mindenki számára jobb webet építhetünk.
 spotlight-total-cookie-protection-primary-button = A Teljes sütivédelem bekapcsolása
 spotlight-total-cookie-protection-secondary-button = Most nem
-cfr-total-cookie-protection-header = Önnek köszönhetően a { -brand-short-name } privátabb és biztonságosabb, mint valaha
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = A Teljes sütivédelem az eddigi legerősebb adatvédelmi megoldásunk – és mostantól mindenhol ez az alapértelmezett beállítás a { -brand-short-name }-felhasználók számára. Nem tudtuk volna megtenni az olyan korai hozzáférésű résztvevők nélkül, mint Ön. Ezért köszönjük, hogy segített egy jobb, privátabb internet létrehozásában.
 
 ## Emotive Continuous Onboarding
 
@@ -173,3 +192,85 @@ spotlight-pin-primary-button =
        *[other] Rögzítés a tálcára
     }
 spotlight-pin-secondary-button = Most nem
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Új { -brand-short-name }. Még privátabb. Kevesebb nyomkövető. Kompromisszumok nélkül.
+mr2022-background-update-toast-text = Próbálja ki most a legújabb { -brand-short-name } verziót, amely az eddigi legerősebb nyomkövetés elleni védelmünkkel rendelkezik.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = A { -brand-shorter-name } megnyitása most
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Figyelmeztetés később
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Próbálja ki
+    .accesskey = P
+firefoxview-cfr-secondarybutton = Most nem
+    .accesskey = n
+firefoxview-cfr-header-v2 = Folytassa gyorsan ott, ahol abbahagyta
+firefoxview-cfr-body-v2 = Szerezze vissza a nemrég bezárt lapokat, és zökkenőmentesen váltson az eszközök között a { -firefoxview-brand-name } segítségével.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Köszöntse a { -firefoxview-brand-name }t
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Szeretné ezt a nyitott lapot a telefonján? Vegye át. Szüksége van arra az oldalra, amelyet most látogatott meg? Puff, vissza is jött a { -firefoxview-brand-name }sel.
+firefoxview-spotlight-promo-primarybutton = Nézze meg a működését
+firefoxview-spotlight-promo-secondarybutton = Kihagyás
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Válasszon színvilágot
+    .accesskey = V
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Színezze böngészőjét a { -brand-short-name } exkluzív árnyalataival, amelyeket a kultúrát megváltoztató hangok ihlettek.
+colorways-cfr-header-28days = A „Független hangok” színvilágok január 16-án járnak le
+colorways-cfr-header-14days = A „Független hangok” színvilágok két hét múlva járnak le
+colorways-cfr-header-7days = A „Független hangok” színvilágok a héten járnak le
+colorways-cfr-header-today = A „Független hangok” színvilágok ma járnak le
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Elég a sütibannerekből!
+cfr-cookiebanner-body = Engedélyezés a { -brand-short-name } számára, hogy automatikusan utasítsa el az összes sütibannerkérést, ha lehetséges.
+cfr-cookiebanner-accept-button = Bannerek eltüntetése
+    .accesskey = t
+cfr-cookiebanner-reject-button = Most nem
+    .accesskey = n
+cfr-cookiebanner-header-variant-1 = Lásson kevesebb sütikkel kapcsolatos felugró ablakot
+cfr-cookiebanner-body-variant-1 = Hagyja, hogy a { -brand-short-name } automatikusan válaszoljon a sütik előugró ablakaira, így visszatérhet a zavartalan böngészéshez. A { -brand-short-name } elutasítja az összes kérést, ha az lehetséges.
+cfr-cookiebanner-accept-button-variant-1 = Felugró ablakok eltüntetése
+    .accesskey = t
+cfr-cookiebanner-reject-button-variant-1 = Köszönöm, nem
+    .accesskey = n
+cfr-cookiebanner-header-variant-2 = Sütibannerek számának csökkentése
+cfr-cookiebanner-body-variant-2 = Csökkentse a sütibannerek számát azáltal, hogy lehetővé teszi a { -brand-short-name } számára, hogy elutasítsa a webhelyek sütíkhez való hozzájárulását, ha lehetséges.
+cfr-cookiebanner-accept-button-variant-2 = Engedélyezés
+    .accesskey = E
+cfr-cookiebanner-reject-button-variant-2 = Most nem
+    .accesskey = n
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Fedezzük Önt
+july-jam-body = A { -brand-short-name } havonta átlagosan több mint 3000 nyomkövetőt blokkol felhasználónként, így biztonságos és gyors hozzáférést biztosít a jó internethez.
+july-jam-set-default-primary = Saját hivatkozások megnyitása a { -brand-short-name(case: "instrumental") }

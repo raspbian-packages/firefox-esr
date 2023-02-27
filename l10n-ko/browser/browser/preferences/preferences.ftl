@@ -81,7 +81,7 @@ extension-controlling-password-saving = <img data-l10n-name="icon"/> <strong>{ $
 extension-controlling-web-notifications = <img data-l10n-name="icon"/> <strong>{ $name }</strong> 확장 기능이 이 설정을 제어합니다.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> 확장 기능에는 컨테이너 탭이 필요합니다.
+extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong>에 컨테이너 탭 필요.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
 extension-controlling-websites-content-blocking-all-trackers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> 확장 기능이 이 설정을 제어합니다.
@@ -142,7 +142,7 @@ warn-on-open-many-tabs =
     .label = 여러개의 탭을 열어서 { -brand-short-name }가 느려질 수 있으면 알려주기
     .accesskey = d
 switch-to-new-tabs =
-    .label = 링크, 이미지 또는 미디어를 새 탭에 열면 해당 탭으로 즉시 전환
+    .label = 링크, 이미지 또는 미디어를 새 탭에서 열면 해당 탭으로 즉시 전환
     .accesskey = h
 show-tabs-in-taskbar =
     .label = Windows 작업 표시줄에 탭 미리 보기 표시
@@ -576,6 +576,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = 주소 표시줄 결과에 검색 제안 표시
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = 기본 검색 엔진 결과 페이지에 URL 대신 검색어 표시
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -703,6 +708,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = 연결 끊기…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = 동기화할 항목 선택
+    .style = min-width: 36em;
+    .buttonlabelaccept = 변경 내용 저장
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = 연결 끊기…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = 북마크
     .accesskey = m
@@ -771,6 +783,9 @@ forms-breach-alerts =
     .label = 유출된 웹 사이트의 비밀번호에 대한 경고 표시
     .accesskey = b
 forms-breach-alerts-learn-more-link = 더 알아보기
+relay-integration =
+    .label = { -brand-short-name } 비밀번호 관리자에서 { -relay-brand-name } 활성화
+relay-integration-learn-more-link = 더 알아보기
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = 로그인과 비밀번호 자동 채우기
@@ -887,6 +902,8 @@ sitedata-option-block-unvisited =
     .label = 방문하지 않은 웹 사이트의 쿠키
 sitedata-option-block-all-third-party =
     .label = 모든 제3자 쿠키 (웹 사이트가 제대로 작동 안 할 수 있음)
+sitedata-option-block-all-cross-site-cookies =
+    .label = 모든 교차 사이트 쿠키 (웹 사이트가 제대로 작동 안 할 수 있음)
 sitedata-option-block-all =
     .label = 모든 쿠키 (웹 사이트가 제대로 작동 안하게 됨)
 sitedata-clear =
@@ -966,6 +983,7 @@ content-blocking-all-cookies = 모든 쿠키
 content-blocking-unvisited-cookies = 방문하지 않은 사이트의 쿠키
 content-blocking-all-windows-tracking-content = 모든 창의 추적 콘텐츠
 content-blocking-all-third-party-cookies = 모든 제3자 쿠키
+content-blocking-all-cross-site-cookies = 모든 교차 사이트 쿠키
 content-blocking-cryptominers = 암호화폐 채굴기
 content-blocking-fingerprinters = 디지털 지문
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -973,6 +991,9 @@ content-blocking-fingerprinters = 디지털 지문
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = 가장 강력한 개인 정보 보호 기능을 테스트
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = 전체 쿠키 보호는 사용자가 있는 사이트에 대한 쿠키가 포함되어 있으므로, 추적기가 사이트 간에 사용자를 팔로우하는데 쿠키를 사용할 수 없습니다.
 content-blocking-etp-standard-tcp-rollout-learn-more = 더 알아보기

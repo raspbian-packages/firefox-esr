@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Nastavitve povezave
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Posrednik HTTP
     .accesskey = H
 connection-proxy-http-port = Vrata
     .accesskey = v
-
 connection-proxy-https-sharing =
     .label = Uporabi ta posrednik tudi za HTTPS
     .accesskey = s

@@ -9,6 +9,10 @@ devmgr =
     .title = آلہ مینیجر
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = آلہ مینیجر
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = سلامتی ماڈیول و آلات
 

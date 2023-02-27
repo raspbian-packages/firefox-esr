@@ -12,33 +12,25 @@ cfr-doorhanger-feature-heading = Doporučená funkce
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Co to je
-
 cfr-doorhanger-extension-cancel-button = Teď ne
     .accesskey = n
-
 cfr-doorhanger-extension-ok-button = Přidat
     .accesskey = a
-
 cfr-doorhanger-extension-manage-settings-button = Nastavení doporučování
     .accesskey = d
-
 cfr-doorhanger-extension-never-show-recommendation = Toto doporučení už nezobrazovat
     .accesskey = N
-
 cfr-doorhanger-extension-learn-more-link = Zjistit více
-
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = autor: { $name }
-
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Doporučení
 cfr-doorhanger-extension-notification2 = Doporučení
     .tooltiptext = Doporučené rozšíření
     .a11y-announcement = Je dostupné doporučené rozšíření
-
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Doporučení
@@ -67,6 +59,9 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } uživatelů
     }
 
+## Cookie Banner Handling Onboarding
+
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Mějte své záložky všude s sebou.
@@ -87,11 +82,9 @@ cfr-protections-panel-link-text = Zjistit více
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nové funkce
-
 cfr-whatsnew-button =
     .label = Co je nového
     .tooltiptext = Co je nového
-
 cfr-whatsnew-release-notes-link-text = Přečtěte si poznámky k vydání
 
 ## Enhanced Tracking Protection Milestones
@@ -221,3 +214,48 @@ spotlight-pin-primary-button =
        *[other] Připnout na lištu
     }
 spotlight-pin-secondary-button = Teď ne
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Upozornit mě později
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Vyzkoušejte ho
+    .accesskey = t
+firefoxview-cfr-secondarybutton = Teď ne
+    .accesskey = n
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Přivítejte { -firefoxview-brand-name(case: "acc") }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Chcete zrovna ten panel otevřený v telefonu? Vezměte si ho. Potřebujete znovu tu stránku, co jste před chvílí navštívili? Hups, díky { -firefoxview-brand-name(case: "dat") } ji máte zpátky.
+firefoxview-spotlight-promo-primarybutton = Jak to funguje
+firefoxview-spotlight-promo-secondarybutton = Přeskočit
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Zvolit baletu barev
+    .accesskey = Z
+
+## Cookie Banner Handling CFR
+
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+

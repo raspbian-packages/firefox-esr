@@ -6,6 +6,10 @@ app-manager-window =
     .title = Proqram detalları
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Proqram detalları
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Sil
     .accesskey = S

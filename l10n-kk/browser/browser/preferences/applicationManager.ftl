@@ -6,6 +6,10 @@ app-manager-window =
     .title = Қолданба туралы ақпарат
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Қолданба туралы ақпарат
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Өшіру
     .accesskey = ш

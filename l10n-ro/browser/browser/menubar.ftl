@@ -168,6 +168,17 @@ menu-view-full-screen =
     .label = Ecran complet
     .accesskey = F
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Intră în modul de lectură
+    .accesskey = R
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Închide modul de lectură
+    .accesskey = R
+
 ##
 
 menu-view-show-all-tabs =
@@ -210,6 +221,8 @@ menu-bookmark-current-tab =
     .label = Marchează fila actuală
 menu-bookmark-edit =
     .label = Editează acest marcaj
+menu-bookmark-tab =
+    .label = Marchează fila actuală…
 menu-bookmarks-all-tabs =
     .label = Marchează toate filele…
 menu-bookmarks-toolbar =

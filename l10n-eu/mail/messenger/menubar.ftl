@@ -35,6 +35,9 @@ menu-help-get-involved =
 menu-help-donation =
     .label = Egin dohaintza
     .accesskey = d
+menu-help-share-feedback =
+    .label = Partekatu ideiak eta iritzia
+    .accesskey = P
 menu-help-enter-troubleshoot-mode =
     .label = Arazoak konpontzeko modua…
     .accesskey = A
@@ -50,6 +53,23 @@ menu-help-troubleshooting-info =
 menu-help-about-product =
     .label = { -brand-short-name }(r)i buruz
     .accesskey = b
+# These menu-quit strings are only used on Windows and Linux.
+menu-quit =
+    .label =
+        { PLATFORM() ->
+            [windows] Irten
+           *[other] Irten
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] I
+           *[other] I
+        }
+# This menu-quit-mac string is only used on macOS.
+menu-quit-mac =
+    .label = Irten { -brand-shorter-name }(e)tik
+quit-app-shortcut =
+    .key = I
 
 ## Mail Toolbar
 
@@ -98,6 +118,9 @@ mail-uidensity-normal =
 mail-uidensity-touch =
     .label = Ukipena
     .accesskey = U
+mail-uidensity-default =
+    .label = Lehenetsia
+    .accesskey = L
 menu-spaces-toolbar-button =
     .label = Guneen tresna-barra
     .accesskey = G

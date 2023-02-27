@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Paramètres per voidar las donadas privadas
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Paramètres per voidar las donadas privadas
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

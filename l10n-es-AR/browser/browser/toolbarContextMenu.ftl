@@ -61,6 +61,11 @@ toolbar-context-menu-view-customize-toolbar =
 toolbar-context-menu-view-customize-toolbar-2 =
     .label = Personalizar barra de herramientas…
     .accesskey = z
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = Pegar a la barra de herramientas
+    .accesskey = P
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = Mostrar siempre
     .accesskey = A

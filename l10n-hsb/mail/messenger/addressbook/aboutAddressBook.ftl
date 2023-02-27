@@ -21,9 +21,20 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = Wšě adresniki
 all-address-books = Wšě adresniki
+# Variables:
+# $name (String) - The name of the selected book/list.
+# $count (Number) - The number of contacts in the selected book/list.
+about-addressbook-card-count = Cyłkowne kontakty w { $name }: { $count }
+# Variables:
+# $count (Number) - The number of contacts in all address books.
+about-addressbook-card-count-all = Cyłkowne kontakty we wšěch adresnikach: { $count }
 about-addressbook-books-context-properties =
     .label = Kajkosće
+about-addressbook-books-context-edit-list =
+    .label = Lisćinu wobdźěłać
 about-addressbook-books-context-synchronize =
     .label = Synchronizować
 about-addressbook-books-context-edit =
@@ -75,6 +86,8 @@ about-addressbook-horizontal-layout =
     .label = Do horicontalneho wuhotowanja přepinać
 about-addressbook-vertical-layout =
     .label = Do wertikalneho wuhotowanja přepinać
+about-addressbook-table-layout =
+    .label = Tabelowe wuhotowanje
 
 ## Card column headers
 ## Each string is listed here twice, and the values should match.
@@ -85,6 +98,9 @@ about-addressbook-column-label-generatedname =
 about-addressbook-column-header-emailaddresses = E-mejlowe adresy
 about-addressbook-column-label-emailaddresses =
     .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-nickname = Přimjeno
+about-addressbook-column-label-nickname =
+    .label = { about-addressbook-column-header-nickname }
 about-addressbook-column-header-phonenumbers = Telefonowe čisła
 about-addressbook-column-label-phonenumbers =
     .label = { about-addressbook-column-header-phonenumbers }
@@ -179,10 +195,23 @@ about-addressbook-placeholder-no-search-results = Žane kontakty namakane
 
 ## Details
 
+# Variables:
+# $count (Number) - The number of selected items (will never be fewer than two)
+about-addressbook-selection-mixed-header = Ličba wubranych kontaktow a lisćinow: { $count }
+# Variables:
+# $count (Number) - The number of selected contacts
+about-addressbook-selection-contacts-header = Ličba wubranych kontaktow: { $count }
+# Variables:
+# $count (Number) - The number of selected lists
+about-addressbook-selection-lists-header = Ličba wubranych lisćinow: { $count }
+about-addressbook-details-edit-photo =
+    .title = Kontaktowe foto wobdźěłać
+about-addressbook-new-contact-header = Nowy kontakt
 about-addressbook-prefer-display-name = Mjeno skerje nad hłowu powěsće pokazać
 about-addressbook-write-action-button = Pisać
 about-addressbook-event-action-button = Podawk
 about-addressbook-search-action-button = Pytać
+about-addressbook-new-list-action-button = Nowa lisćina
 about-addressbook-begin-edit-contact-button = Wobdźěłać
 about-addressbook-delete-edit-contact-button = Zhašeć
 about-addressbook-cancel-edit-contact-button = Přetorhnyć
@@ -193,6 +222,7 @@ about-addressbook-details-phone-numbers-header = Telefonowe čisła
 about-addressbook-details-addresses-header = Adresy
 about-addressbook-details-notes-header = Přispomnjenki
 about-addressbook-details-impp-header = Hnydomne posrědkowanje powěsćow
+about-addressbook-details-websites-header = Websydła
 about-addressbook-details-other-info-header = Druhe informacije
 about-addressbook-entry-type-work = Słužbny
 about-addressbook-entry-type-home = Startowa strona
@@ -207,6 +237,10 @@ about-addressbook-entry-name-role = Róla
 about-addressbook-entry-name-organization = Organizacija
 about-addressbook-entry-name-website = Websydło
 about-addressbook-entry-name-time-zone = Časowe pasmo
+about-addressbook-entry-name-custom1 = Swójske 1
+about-addressbook-entry-name-custom2 = Swójske 2
+about-addressbook-entry-name-custom3 = Swójske 3
+about-addressbook-entry-name-custom4 = Swójske 4
 about-addressbook-unsaved-changes-prompt-title = Njeskładowane změny
 about-addressbook-unsaved-changes-prompt = Chceće swoje změny składować, prjedy hač wobdźěłowanski napohlad wopušćeće?
 
@@ -219,3 +253,7 @@ about-addressbook-photo-filepicker-title = Wobrazowu dataju wubrać
 about-addressbook-photo-discard = Eksistowace foto zaćisnyć
 about-addressbook-photo-cancel = Přetorhnyć
 about-addressbook-photo-save = Składować
+
+# Keyboard shortcuts
+
+about-addressbook-new-contact-key = N

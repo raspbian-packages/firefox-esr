@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Žurnalo valymo nuostatos
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Žurnalo valymo nuostatos
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

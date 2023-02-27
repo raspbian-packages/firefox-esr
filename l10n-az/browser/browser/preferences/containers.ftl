@@ -6,6 +6,10 @@ containers-window-new =
     .title = Yeni konteyner əlavə et
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Yeni konteyner əlavə et
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

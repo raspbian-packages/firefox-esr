@@ -16,8 +16,6 @@ change-password-old = Aktualne gronidło:
 change-password-new = Nowe gronidło:
 change-password-reenter = Nowe gronidło (hyšći raz):
 
-## Reset Password dialog
-
 pippki-failed-pw-change = Njejo móžno, gronidło změniś.
 pippki-incorrect-pw = Njejsćo pšawe gronidło zapódał. Pšosym wopytajśo hyšći raz.
 pippki-pw-change-ok = Gronidło jo se wuspěšnje změniło.
@@ -33,9 +31,12 @@ pippki-pw-change2empty-in-fips-mode = Sćo tuchylu we FIPS-modusu. FIPS pomina s
 reset-primary-password-window =
     .title = Głowne gronidło slědk stajiś
     .style = width: 40em
+
+reset-primary-password-window2 =
+    .title = Głowne gronidło slědk stajiś
+    .style = min-width: 40em
 reset-password-button-label =
     .label = Slědk stajiś
-
 reset-primary-password-text = Jolic stajiśo swójo głowne gronidło slědk, zgubiju se wšykne waše składowane webowe a e-mailowe gronidła, wósobinske certifikaty a priwatne kluce. Cośo napšawdu swój głowne gronidło slědk stajiś?
 
 pippki-reset-password-confirmation-title = Głowne gronidło slědk stajiś
@@ -46,6 +47,10 @@ pippki-reset-password-confirmation-message = Wašo głowne gronidło jo se slěd
 download-cert-window =
     .title = Ześěgnjenje certifikata
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Ześěgnjenje certifikata
+    .style = min-width: 46em
 download-cert-message = Su was pśepšosyli nowej certifikatowej awtoriśe (CA) dowěriś.
 download-cert-trust-ssl =
     .label = Toś tej certifikatowej awtoriśe dowěriś, aby se websedła identificěrowali.

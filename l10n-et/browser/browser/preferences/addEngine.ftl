@@ -6,6 +6,10 @@ add-engine-window =
     .title = Otsingumootori lisamine
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Otsingumootori lisamine
+    .style = min-width: 32em;
+
 add-engine-button = Lisa kohandatud otsingumootor
 
 add-engine-name = Otsingumootori nimi

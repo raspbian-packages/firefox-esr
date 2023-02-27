@@ -6,6 +6,10 @@ add-engine-window =
     .title = Aldoni serĉilon
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Aldoni serĉilon
+    .style = min-width: 32em;
+
 add-engine-button = Aldoni personecigitan serĉilon
 
 add-engine-name = Nomo de serĉilo

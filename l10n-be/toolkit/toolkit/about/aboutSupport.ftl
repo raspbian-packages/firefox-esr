@@ -110,11 +110,21 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Журнал рашэнняў
 graphics-crash-guards-title = Адключаныя магчымасці абаронцы ад падзенняў
 graphics-workarounds-title = Абыходныя шляхі
+graphics-device-pixel-ratios = Піксельныя суадносіны вокнаў
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Аконны пратакол
 # Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
 graphics-desktop-environment = Працоўнае асяроддзе
 place-database-title = База звестак месцаў
+place-database-stats = Статыстыка
+place-database-stats-show = Паказаць статыстыку
+place-database-stats-hide = Схаваць статыстыку
+place-database-stats-entity = Аб'ект
+place-database-stats-count = Колькасць
+place-database-stats-size-kib = Памер (КіБ)
+place-database-stats-size-perc = Памер (%)
+place-database-stats-efficiency-perc = Эфектыўнасць (%)
+place-database-stats-sequentiality-perc = Паслядоўнасць (%)
 place-database-integrity = Цэльнасць
 place-database-verify-integrity = Праверыць цэльнасць
 a11y-title = Даступнасць
@@ -186,7 +196,7 @@ intl-regional-prefs = Рэгіянальныя налады
 ##
 ## See also https://firefox-source-docs.mozilla.org/remote/
 
-remote-debugging-title = Адлеглая адладка (пратакол Chromium)
+remote-debugging-title = Аддаленая адладка (пратакол Chromium)
 remote-debugging-accepting-connections = Прыём злучэнняў
 remote-debugging-url = URL
 
@@ -312,6 +322,7 @@ can-sandbox-media = Пясочніца медыя-плагінаў
 content-sandbox-level = Узровень пясочніцы змястоўных працэсаў
 effective-content-sandbox-level = Дзейны ўзровень ізаляцыі працэсу апрацоўкі змесціва
 content-win32k-lockdown-state = Стан блакавання Win32k для працэсу змесціва
+support-sandbox-gpu-level = Узровень пясочніцы працэсу GPU
 sandbox-proc-type-content = змесціва
 sandbox-proc-type-file = змесціва файла
 sandbox-proc-type-media-plugin = медыяплагін
@@ -338,7 +349,7 @@ fission-status-experiment-treatment = Уключана эксперымента�
 fission-status-disabled-by-e10s-env = Адключана асяроддзем
 fission-status-enabled-by-env = Уключана асяроддзем
 fission-status-disabled-by-env = Адключаны асяроддзем
-fission-status-enabled-by-default = Тыпова уключана
+fission-status-enabled-by-default = Тыпова ўключана
 fission-status-disabled-by-default = Тыпова адключана
 fission-status-enabled-by-user-pref = Уключаны карыстальнікам
 fission-status-disabled-by-user-pref = Адключана карыстальнікам
@@ -348,7 +359,7 @@ async-pan-zoom = Асінхроннае павелічэнне/маштаб
 apz-none = няма
 wheel-enabled = увод колца ўключаны
 touch-enabled = пальцавы увод ўключаны
-drag-enabled = захоп стужкі прагорткі ўключаны
+drag-enabled = захоп стужкі пракруткі ўключаны
 keyboard-enabled = клавіятура ўключана
 autoscroll-enabled = аўтапракрутка ўключана
 zooming-enabled = уключана плаўнае маштабаванне шчыпком

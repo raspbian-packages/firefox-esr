@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Postavke jezika web stranice
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Postavke jezika web stranice
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Postavke jezika za { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Postavke jezika za { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } će prikazati prvi jezik kao standardni, dok će alternativne jezike prikazati ukoliko je potrebno prema redoslijedu pojavljivanja.
 

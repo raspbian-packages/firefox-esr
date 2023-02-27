@@ -6,6 +6,10 @@ app-manager-window =
     .title = Mion-fhiosrachadh na h-aplacaid
     .style = width: 36em; min-height: 24em;
 
+app-manager-window2 =
+    .title = Mion-fhiosrachadh na h-aplacaid
+    .style = min-width: 36em; min-height: 24em;
+
 app-manager-remove =
     .label = Thoir air falbh
     .accesskey = r

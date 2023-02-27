@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Bağlantı Ayarları
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = HTTP vekil sunucusu
     .accesskey = p
 connection-proxy-http-port = Port
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = HTTPS için de bu vekil sunucusunu kullan
     .accesskey = S

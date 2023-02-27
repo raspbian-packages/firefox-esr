@@ -13,3 +13,4 @@ tag-pings-label = Etiquetar todos los pings enviados con esta etiqueta
 log-pings-label = ¿Registrar la carga del ping antes de enviarlo?
 send-pings-label = Enviar el ping nombrado
 controls-button-label = Enviar ajustes
+controls-button-label-verbose = Aplicar ajustes y enviar ping

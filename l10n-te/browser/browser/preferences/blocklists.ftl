@@ -6,6 +6,10 @@ blocklist-window =
     .title = నిరోధపు జాబితాలు
     .style = width: 55em
 
+blocklist-window2 =
+    .title = నిరోధపు జాబితాలు
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

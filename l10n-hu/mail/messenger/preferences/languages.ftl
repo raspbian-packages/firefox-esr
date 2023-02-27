@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = { -brand-short-name } nyelvi beállítások
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = { -brand-short-name } nyelvi beállításai
+
 messenger-languages-description = A { -brand-short-name } az első nyelvet alapértelmezettként fogja megjeleníteni, majd ha szükséges, akkor az alternatív nyelveket a megjelenésük sorrendjében jeleníti meg.
 
 messenger-languages-search = További nyelvek keresése…

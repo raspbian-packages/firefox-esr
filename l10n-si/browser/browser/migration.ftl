@@ -28,6 +28,15 @@ import-from-nothing =
 import-from-safari =
     .label = සෆාරි
     .accesskey = S
+import-from-opera =
+    .label = ඔපෙරා
+    .accesskey = O
+import-from-vivaldi =
+    .label = විවාල්ඩි
+    .accesskey = V
+import-from-brave =
+    .label = බ්‍රේව්
+    .accesskey = r
 import-from-canary =
     .label = ක්‍රෝම් කැනරි
     .accesskey = n
@@ -44,11 +53,14 @@ import-from-chromium =
     .label = ක්‍රෝමියම්
     .accesskey = u
 import-from-firefox =
-    .label = ෆයර්ෆෝක්ස්
+    .label = ෆයර්ෆොක්ස්
     .accesskey = x
 import-from-360se =
     .label = 360 ආරක්‍ෂිත අතිරික්සුව
     .accesskey = 3
+import-from-opera-gx =
+    .label = ඔපෙරා GX
+    .accesskey = G
 no-migration-sources = පොත්යොමු, ඉතිහාසය හෝ මුරපද දත්ත අඩංගු කිසිදු වැඩසටහනක් හමු නොවිණි.
 import-source-page-title = සැකසුම් හා දත්ත ආයාත කිරීම
 import-items-page-title = ආයාත කරන අංග
@@ -99,6 +111,10 @@ browser-data-history-label =
             [firefox] පිරික්සුම් ඉතිහාසය හා පොත්යොමු
            *[other] පිරික්සුම් ඉතිහාසය
         }
+browser-data-formdata-checkbox =
+    .label = සුරැකි ආකෘති ඉතිහාසය
+browser-data-formdata-label =
+    .value = සුරැකි ආකෘති ඉතිහාසය
 # This string should use the same phrase for "logins and passwords" as the
 # label in the main hamburger menu that opens about:logins.
 browser-data-passwords-checkbox =

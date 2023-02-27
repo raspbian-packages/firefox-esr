@@ -11,6 +11,18 @@ do-not-track-option-always =
 
 settings-page-title = అమరికలు
 
+# This is used to determine the width of the search field in about:preferences,
+# in order to make the entire placeholder string visible
+#
+# Please keep the placeholder string short to avoid truncation.
+#
+# Notice: The value of the `.style` attribute is a CSS string, and the `width`
+# is the name of the CSS property. It is intended only to adjust the element's width.
+# Do not translate.
+search-input-box2 =
+    .style = width: 15.4em
+    .placeholder = అమరికలలో వెతకండి
+
 managed-notice = మీ విహారిణి మీ సంస్థ ద్వారా నిర్వహించబడుతోంది.
 
 category-list =
@@ -73,6 +85,7 @@ restart-later = తరువాత పునఃప్రారంభించు
 ## Variables:
 ##   $name (String): name of the extension
 
+
 ## Preferences UI Search Results
 
 search-results-header = వెతుకుడు ఫలితాలు
@@ -113,6 +126,10 @@ open-new-link-as-tabs =
 warn-on-open-many-tabs =
     .label = ఎక్కువ ట్యాబులను తెరిచినప్పుడు { -brand-short-name }‌ నెమ్మదిస్తూంటే నన్ను హెచ్చరించు
     .accesskey = d
+
+switch-to-new-tabs =
+    .label = మీరు ఏదైనా లంకెను, బొమ్మను, మాధ్యమాలను కొత్త ట్యాబులో తెరిచినప్పుడు, తక్షణమే దానికి మారు
+    .accesskey = h
 
 show-tabs-in-taskbar =
     .label = ట్యాబు మునుజూపులను విండోస్ టాస్క్‌బారులో చూపించు
@@ -161,6 +178,7 @@ language-and-appearance-header = భాష, రూపురేఖలు
 
 preferences-web-appearance-choice-browser = { -brand-short-name } అలంకారం
 preferences-web-appearance-choice-system = వ్యవస్థ అలంకారం
+
 preferences-web-appearance-choice-light = వెలుతురు
 preferences-web-appearance-choice-dark = చీకటి
 
@@ -217,10 +235,6 @@ check-user-spelling =
 files-and-applications-title = దస్త్రాలు & అనువర్తనాలు
 
 download-header = దింపుకోళ్ళు
-
-download-save-to =
-    .label = ఫైళ్ళను ఇక్కడ భద్రపరచు
-    .accesskey = v
 
 download-save-where = ఫైళ్ళను ఇక్కడ భద్రపరచు
     .accesskey = v
@@ -439,7 +453,7 @@ browsing-cfr-recommendations-learn-more = ఇంకా తెలుసుకో�
 
 network-settings-title = నెట్‌వర్క్ అమరికలు
 
-network-proxy-connection-description = { -brand-short-name } అంతర్జాలానికి ఎలా అనుసంధామవ్వాలో స్వరూపించండి.
+network-proxy-connection-description = { -brand-short-name } అంతర్జాలానికి ఎలా అనుసంధానమవ్వాలో స్వరూపించండి.
 
 network-proxy-connection-learn-more = ఇంకా తెలుసుకోండి
 
@@ -467,6 +481,9 @@ home-restore-defaults =
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
     .label = Firefox ముంగిలి (అప్రమేయం)
+
+home-mode-choice-default-fx =
+    .label = { -firefox-home-brand-name } (అప్రమేయం)
 
 home-mode-choice-custom =
     .label = అభిమత URLలు…
@@ -600,6 +617,8 @@ search-keyword-warning-bookmark = మీరు ఎంచుకున్న క�
 
 ## Containers Section
 
+containers-back-button2 =
+    .aria-label = తిరిగి అమరికలకు
 containers-header = కంటైనర్ ట్యాబులు
 containers-add-button =
     .label = కొత్త కంటెయినరు చేర్చు
@@ -894,7 +913,13 @@ addressbar-locbar-topsites-option =
     .label = మేటి సైట్లు
     .accesskey = T
 
+addressbar-locbar-quickactions-option =
+    .label = త్వరిత చర్యలు
+    .accesskey = Q
+
 addressbar-suggestions-settings = సెర్చింజను సూచనల అభిరుచులను మార్చండి
+
+addressbar-quickactions-learn-more = ఇంకా తెలుసుకోండి
 
 ## Privacy Section - Content Blocking
 
@@ -926,6 +951,8 @@ content-blocking-unvisited-cookies = చూడని సైట్ల నుం�
 content-blocking-all-third-party-cookies = మూడవ-పక్ష కుకీలన్నీ
 content-blocking-cryptominers = క్రిప్టోమైనర్లు
 content-blocking-fingerprinters = ఫింగర్‌ప్రింటర్లు
+
+content-blocking-etp-standard-tcp-rollout-learn-more = ఇంకా తెలుసుకోండి
 
 content-blocking-warning-title = గమనిక!
 content-blocking-warning-learn-how = ఎలానో తెలుసుకోండి
@@ -1105,8 +1132,3 @@ httpsonly-radio-disabled =
 desktop-folder-name = డెస్కుటాప్
 downloads-folder-name = దింపుకోళ్ళు
 choose-download-folder-title = దింపుకోళ్ళ సంచయాన్ని తెరువు:
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = దస్త్రాలను { $service-name }‌లో భద్రపరుచు

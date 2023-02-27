@@ -149,10 +149,6 @@ check-user-spelling =
 
 download-header = Okukhutshelwayo
 
-download-save-to =
-    .label = Gcina iifayile kwi
-    .accesskey = c
-
 download-save-where = Gcina iifayile kwi
     .accesskey = c
 
@@ -598,4 +594,3 @@ certs-enable-ocsp =
 desktop-folder-name = Idesktophu
 downloads-folder-name = Okukhutshelweyo
 choose-download-folder-title = Khetha iFolda yokuKhutshelwayo:
-

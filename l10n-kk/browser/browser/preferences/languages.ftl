@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Веб-парағының тіл баптаулары
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Веб-парағының тіл баптаулары
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } тіл баптаулары
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } тіл баптаулары
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } бірінші тілді сіздің негізгі тілі ретінде көрсетеді, және қосымша тілдерді керек болған кезде олардың пайда болу ретімен көрсететін болады.
 

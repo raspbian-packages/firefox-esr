@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } duyệt web riêng tư
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } duyệt web riêng tư
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Trợ giúp
 urlbar-search-tips-confirm = OK, đã hiểu
+urlbar-search-tips-confirm-short = Đã hiểu
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Mẹo:
+urlbar-result-menu-button =
+    .title = Mở menu
+urlbar-result-menu-remove-from-history =
+    .label = Xóa khỏi lịch sử
+    .accesskey = R
+urlbar-result-menu-tip-get-help =
+    .label = Nhận trợ giúp
+    .accesskey = h
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Nhập ít hơn, tìm thêm: Tìm kiếm { $engineName } ngay từ thanh địa chỉ của bạn.
 urlbar-search-tips-redirect-2 = Bắt đầu tìm kiếm của bạn trong thanh địa chỉ để xem các đề xuất từ { $engineName } và lịch sử duyệt web của bạn.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Việc tìm kiếm trở nên đơn giản hơn. Hãy thử làm cho tìm kiếm của bạn cụ thể hơn ở đây trong thanh địa chỉ. Để hiển thị URL, hãy tìm đến mục Tìm kiếm trong cài đặt.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Chọn phím tắt này để tìm những gì bạn cần nhanh hơn.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Hành động ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Xem tiện tích
-quickactions-cmd-addons = tiện ích, tiện ích mở rộng, chủ đề, tien ich, tien ich mo rong, chu de
 quickactions-cmd-addons2 = tiện ích
 # Opens the bookmarks library window
-quickactions-bookmarks = Xem dấu trang
+quickactions-bookmarks2 = Quản lý dấu trang
 quickactions-cmd-bookmarks = dấu trang, dau trang
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Xóa lịch sử
 quickactions-cmd-clearhistory = xóa lịch sử, xoa lich su
 # Opens about:downloads page
-quickactions-downloads = Mở Tải xuống
+quickactions-downloads2 = Xem tải xuống
 quickactions-cmd-downloads = tải xuống, tai xuong
 # Opens about:addons page in the extensions section
 quickactions-extensions = Quản lý tiện ích
 quickactions-cmd-extensions = tiện ích mở rộng
 # Opens the devtools web inspector
-quickactions-inspector = Mở trình kiểm tra
+quickactions-inspector2 = Mở Công cụ dành cho nhà phát triển
 quickactions-cmd-inspector = trình kiểm tra, devtools, trinh kiem tra
 # Opens about:logins
-quickactions-logins = Xem thông tin đăng nhập
+quickactions-logins2 = Quản lý mật khẩu
 quickactions-cmd-logins = đăng nhập, thông tin đăng nhập, mật khẩu, dang nhap, thong tin dang nhap, mat khau
 # Opens about:addons page in the plugins section
 quickactions-plugins = Quản lý phần bổ trợ
 quickactions-cmd-plugins = phần bổ trợ
 # Opens the print dialog
-quickactions-print = In
+quickactions-print2 = Trang in
 quickactions-cmd-print = in
 # Opens a new private browsing window
-quickactions-private = Mở cửa sổ duyệt web riêng tư
+quickactions-private2 = Mở cửa sổ riêng tư
 quickactions-cmd-private = duyệt web riêng tư, duyet web rieng tu
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Làm mới { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = làm mới, lam moi
 quickactions-restart = Khởi động lại { -brand-short-name }
 quickactions-cmd-restart = khởi động lại, khoi dong lai
 # Opens the screenshot tool
-quickactions-screenshot2 = Chụp ảnh màn hình
+quickactions-screenshot3 = Chụp ảnh màn hình
 quickactions-cmd-screenshot = chụp ảnh màn hình, chup anh man hinh
 # Opens about:preferences
-quickactions-settings = Mở Cài đặt
+quickactions-settings2 = Quản lý cài đặt
 quickactions-cmd-settings = cài đặt, tùy chọn, thiết lập, cai dat, tuy chon, thiet lap
 # Opens about:addons page in the themes section
 quickactions-themes = Quản lý chủ đề
@@ -323,8 +332,11 @@ quickactions-cmd-themes = chủ đề
 quickactions-update = Cập nhật { -brand-short-name }
 quickactions-cmd-update = cập nhật, cap nhat
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Xem mã nguồn
+quickactions-viewsource2 = Xem mã nguồn trang
 quickactions-cmd-viewsource = xem mã nguồn, xem nguồn, nguồn, xem ma nguon, xem nguon, nguon
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Tìm hiểu thêm về Hành động nhanh
 
 ## Bookmark Panel
 
@@ -478,6 +490,9 @@ popup-select-microphone-icon =
     .tooltiptext = Micrô
 popup-select-speaker-icon =
     .tooltiptext = Loa
+popup-select-window-or-screen =
+    .label = Cửa sổ hoặc màn hình:
+    .accesskey = W
 popup-all-windows-shared = Tất cả các cửa sổ trên màn hình sẽ được chia sẻ.
 popup-screen-sharing-block =
     .label = Chặn
@@ -499,6 +514,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Để sử dụng phím tắt F12, trước tiên hãy mở DevTools thông qua menu Nhà phát triển Web.
+enable-devtools-popup-description2 = Để sử dụng phím tắt F12, trước tiên hãy mở Công cụ phát triển web qua menu Công cụ trình duyệt.
 
 ## URL Bar
 
@@ -630,6 +646,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Hành động nhanh
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Vào chế độ đọc sách
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Đóng chế độ đọc sách
 
 ## Full Screen and Pointer Lock UI
 
@@ -907,3 +932,29 @@ private-browsing-indicator-label = Duyệt web riêng tư
 unified-extensions-button =
     .label = Tiện ích mở rộng
     .tooltiptext = Tiện ích mở rộng
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Tiện ích mở rộng
+    .tooltiptext =
+        Tiện ích mở rộng
+        Cần yêu cầu quyền hạn
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } đã ngăn trang web này tự động tải lại.
+refresh-blocked-redirect-label = { -brand-short-name } đã ngăn trang web này tự động chuyển đến trang khác.
+refresh-blocked-allow =
+    .label = Cho phép
+    .accesskey = A
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } che dấu địa chỉ email thật của bạn để giúp bảo vệ bạn khỏi rò rỉ dữ liệu và thư rác.
+firefox-relay-offer-how-we-integrate = Bằng cách tiếp tục, bạn sẽ có thể tạo mặt nạ email { -relay-brand-short-name } mới trực tiếp từ trình quản lý mật khẩu { -brand-shorter-name } của mình.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = Chúng tôi sẽ chuyển tiếp tất cả email từ <strong>{ $sitename }</strong> đến <strong>{ $useremail }</strong>.

@@ -247,6 +247,7 @@ preferences-web-appearance-choice-browser =
        *[other] Vzhled aplikace { -brand-short-name }
     }
 preferences-web-appearance-choice-system = Podle systému
+preferences-web-appearance-choice-auto = Automatický
 preferences-web-appearance-choice-light = Světlý
 preferences-web-appearance-choice-dark = Tmavý
 preferences-web-appearance-choice-tooltip-browser =
@@ -259,6 +260,14 @@ preferences-web-appearance-choice-tooltip-browser =
         }
 preferences-web-appearance-choice-tooltip-system =
     .title = Použije pro pozadí a obsah webových stránek vzhled s barevným tématem podle nastavení vašeho systému.
+preferences-web-appearance-choice-tooltip-auto =
+    .title =
+        { -brand-short-name.gender ->
+            [masculine] Automaticky změní pozadí stránek a jejich obsahu podle nastavení vzhledu systému a { -brand-short-name(case: "gen") }.
+            [feminine] Automaticky změní pozadí stránek a jejich obsahu podle nastavení vzhledu systému a { -brand-short-name(case: "gen") }.
+            [neuter] Automaticky změní pozadí stránek a jejich obsahu podle nastavení vzhledu systému a { -brand-short-name(case: "gen") }.
+           *[other] Automaticky změní pozadí stránek a jejich obsahu podle nastavení vzhledu systému a aplikace { -brand-short-name }.
+        }
 preferences-web-appearance-choice-tooltip-light =
     .title = Použije pro pozadí a obsah webových stránek vzhled se světlým barevným tématem.
 preferences-web-appearance-choice-tooltip-dark =
@@ -267,6 +276,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -278,10 +289,10 @@ preferences-web-appearance-override-warning = Vaše nastavení upravuje vzhled s
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer =
     { -brand-short-name.gender ->
-        [masculine] Vzhled { -brand-short-name(case: "gen") } nastavíte v <a data-l10n-name="themes-link">Doplňky a vzhledy</a>
-        [feminine] Vzhled { -brand-short-name(case: "gen") } nastavíte v <a data-l10n-name="themes-link">Doplňky a vzhledy</a>
-        [neuter] Vzhled { -brand-short-name(case: "gen") } nastavíte v <a data-l10n-name="themes-link">Doplňky a vzhledy</a>
-       *[other] Vzhled aplikace { -brand-short-name } nastavíte v <a data-l10n-name="themes-link">Doplňky a vzhledy</a>
+        [masculine] Vzhled { -brand-short-name(case: "gen") } nastavíte ve <a data-l10n-name="themes-link">správci doplňků</a>
+        [feminine] Vzhled { -brand-short-name(case: "gen") } nastavíte ve <a data-l10n-name="themes-link">správci doplňků</a>
+        [neuter] Vzhled { -brand-short-name(case: "gen") } nastavíte ve <a data-l10n-name="themes-link">správci doplňků</a>
+       *[other] Vzhled aplikace { -brand-short-name } nastavíte ve <a data-l10n-name="themes-link">správci doplňků</a>
     }
 preferences-colors-header = Barvy
 preferences-colors-description = Nastavení výchozích barev pro text, odkazy a pozadí webových stránek.
@@ -735,6 +746,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Našeptávat dotazy pro vyhledávač také v adresním řádku
     .accesskey = e
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Pro výsledky výchozího vyhledávače zobrazovat vyhledané výrazy místo jeho URL adresy
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -873,6 +889,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = U
     .buttonlabelextra2 = Zrušit synchronizaci…
     .buttonaccesskeyextra2 = Z
+sync-choose-what-to-sync-dialog3 =
+    .title = Nastavení synchronizace
+    .style = min-width: 36em;
+    .buttonlabelaccept = Uložit
+    .buttonaccesskeyaccept = U
+    .buttonlabelextra2 = Zrušit synchronizaci…
+    .buttonaccesskeyextra2 = Z
 sync-engine-bookmarks =
     .label = Záložky
     .accesskey = Z
@@ -941,6 +964,7 @@ forms-breach-alerts =
     .label = Upozorňovat na hesla uložená pro servery, kde došlo k úniku dat
     .accesskey = ú
 forms-breach-alerts-learn-more-link = Zjistit více
+relay-integration-learn-more-link = Zjistit více
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Automaticky vyplňovat přihlašovací údaje
@@ -1069,6 +1093,8 @@ sitedata-option-block-unvisited =
     .label = Cookies z dosud nenavštívených stránek
 sitedata-option-block-all-third-party =
     .label = Všechny cookies třetích stran (může omezit fungování některých stránek)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Všechny cross-site cookies (může omezit fungování některých stránek)
 sitedata-option-block-all =
     .label = Všechny cookies (omezí fungování některých stránek)
 sitedata-clear =
@@ -1148,6 +1174,7 @@ content-blocking-all-cookies = Všechny cookies
 content-blocking-unvisited-cookies = Cookies z dosud nenavštívených stránek
 content-blocking-all-windows-tracking-content = Sledující obsah blokován ve všech oknech
 content-blocking-all-third-party-cookies = Všechny cookies třetích stran blokovány vždy
+content-blocking-all-cross-site-cookies = Všechny cross-site cookies
 content-blocking-cryptominers = Těžba kryptoměn
 content-blocking-fingerprinters = Vytváření otisku prohlížeče
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -1155,6 +1182,9 @@ content-blocking-fingerprinters = Vytváření otisku prohlížeče
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Vyzkoušejte naši zatím nejsilnější funkci na ochranu soukromí
     .accesskey = t
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Úplná ochrana před cookies omezuje cookies na web, na němž se nacházíte, aby vás sledující subjekty nemohly sledovat napříč stránkami.
 content-blocking-etp-standard-tcp-rollout-learn-more = Zjistit více
@@ -1314,6 +1344,10 @@ collection-backlogged-crash-reports-with-link =
        *[other] aplikace
     } za vás <a data-l10n-name="crash-reports-link">Zjistit více</a>
     .accesskey = c
+privacy-segmentation-section-header = Nové funkce, které zlepšují vaše prohlížení
+privacy-segmentation-section-description = Když nabízíme funkce, které využívají vaše data, abychom vám poskytli osobnější prožitek:
+privacy-segmentation-radio-on =
+    .label = Zobrazit podrobnosti
 
 ## Privacy Section - Security
 ##

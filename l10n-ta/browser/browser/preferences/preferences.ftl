@@ -184,10 +184,6 @@ files-and-applications-title = கோப்புகள் மற்றும்
 
 download-header = பதிவிறக்கங்கள்
 
-download-save-to =
-    .label = கோப்புகளை இங்கு சேமி
-    .accesskey = v
-
 download-save-where = கோப்புகளை இங்கு சேமி
     .accesskey = v
 
@@ -885,4 +881,3 @@ certs-devices =
 desktop-folder-name = பணிமேடை
 downloads-folder-name = பதிவிறக்கங்கள்
 choose-download-folder-title = பதிவிறக்க அடைவை தேர்ந்தெடு:
-

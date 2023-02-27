@@ -137,6 +137,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Permissiones del sito
 addon-category-sitepermission-title =
     .title = Permissiones del sito
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Permissos de sito pro { $host }
 
 ## These are global warnings
 
@@ -282,15 +286,11 @@ theme-monochromatic-heading = Combinationes de colores
 theme-monochromatic-subheading = Nove vibrante combinationes de colores de { -brand-product-name }. Disponibile pro tempore limitate.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Probar Colorways
-colorway-collection-independent-voices-subheading = Rende { -brand-short-name } un poco plus tue.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Il expira le { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Cargar combination de colores
 # Variables:
 #   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = Il expira le { DATETIME($expiryDate, month: "long", day: "numeric") }
+colorway-collection-expiry-label = Expira le { DATETIME($expiryDate, month: "long", day: "numeric") }
 plugin-enabled-heading = Activate
 plugin-disabled-heading = Disactivate
 dictionary-enabled-heading = Activate

@@ -142,6 +142,7 @@ newtab-menu-open-file = ගොනුව අරින්න
 newtab-label-visited = ගොඩවැදුණු
 newtab-label-bookmarked = පොත්යොමුවකි
 newtab-label-removed-bookmark = පොත්යොමුව ඉවත් කළා
+newtab-label-recommended = නැඟී එන
 newtab-label-saved = { -pocket-brand-name } හි සුරැකිණි
 newtab-label-download = බාගත විය
 # This string is used in the story cards to indicate sponsored content
@@ -188,6 +189,7 @@ newtab-section-header-pocket = { $provider } විසින් නිර්ද�
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
+newtab-empty-section-highlights = පිරික්සීම අරඹන්න, ඔබ මෑත දී ගොඩවැදුණු හෝ පොත්යොමු යෙදූ වැදගත් ලිපි, දෘශ්‍යක සහ වෙනත් පිටු කිහිපයක් මෙහි පෙන්වනු ඇත.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -203,6 +205,7 @@ newtab-pocket-read-more = ජනප්‍රිය මාතෘකා:
 newtab-pocket-more-recommendations = තවත් නිර්දේශ
 newtab-pocket-learn-more = තව දැනගන්න
 newtab-pocket-cta-button = { -pocket-brand-name } ගන්න
+newtab-pocket-pocket-firefox-family = { -pocket-brand-name } යනු { -brand-product-name } පවුලේ කොටසකි
 # A save to Pocket button that shows over the card thumbnail on hover.
 newtab-pocket-save-to-pocket = { -pocket-brand-name } වෙත සුරකින්න
 newtab-pocket-saved-to-pocket = { -pocket-brand-name } වෙත සුරකින්න

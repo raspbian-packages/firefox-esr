@@ -194,6 +194,11 @@ search-one-offs-add-engine-menu =
 ##    bookmarks).
 
 
+## QuickActions are shown in the urlbar as the user types a matching string
+## The -cmd- strings are comma separated list of keywords that will match
+## the action.
+
+
 ## Bookmark Panel
 
 bookmarks-add-bookmark = বুকমার্ক যোগ করুন
@@ -386,6 +391,15 @@ urlbar-result-action-search-bookmarks = বুকমার্ক অনুসন
 
 ## Labels shown above groups of urlbar results
 
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = রিডার ভিউতে প্রবেশ করুন
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = রিডার ভিউ বন্ধ করুন
 
 ## Full Screen and Pointer Lock UI
 
@@ -594,3 +608,14 @@ data-reporting-notification-message = { -brand-short-name } স্বয়ং�
 data-reporting-notification-button =
     .label = আমি কি শেয়ার করি তা নির্বাচন করুন
     .accesskey = C
+
+## Unified extensions (toolbar) button
+
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } এই পাতাকে স্বয়ংক্রিয়ভাবে পুনঃলোড করতে বাধা দিয়েছে।
+refresh-blocked-redirect-label = { -brand-short-name } এই পাতাটিকে স্বয়ংক্রিয়ভাবে অন্য একটি পাতায় রিডিরেক্ট করতে বাধা দিয়েছে।
+refresh-blocked-allow =
+    .label = অনুমোদন
+    .accesskey = A

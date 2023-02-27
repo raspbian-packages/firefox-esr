@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Juuri nyt
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Välilehden valinta
 firefoxview-tabpickup-description = Avaa sivuja muilta laitteilta.
-firefoxview-tabpickup-recenttabs-description = Viimeaikaiset välilehdet ilmestyvät tänne
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue } % valmiina
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Yritä uudelleen
 firefoxview-tabpickup-sync-disconnected-header = Ota synkronointi käyttöön jatkaaksesi
 firefoxview-tabpickup-sync-disconnected-description = Jotta pääset käyttämään välilehtiäsi, sinun tulee sallia { -brand-short-name }in synkronointi.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Ota synkronointi käyttöön asetuksista
+firefoxview-tabpickup-password-locked-header = Anna pääsalasanasi nähdäksesi välilehdet
+firefoxview-tabpickup-password-locked-description = Jotta pääset käyttämään välilehtiäsi, sinun tulee kirjoittaa { -brand-short-name }in pääsalasana.
+firefoxview-tabpickup-password-locked-link = Lue lisää
+firefoxview-tabpickup-password-locked-primarybutton = Kirjoita pääsalasana
+firefoxview-tabpickup-signed-out-header = Kirjaudu yhdistääksesi uudelleen
+firefoxview-tabpickup-signed-out-description = Muodosta yhteys uudelleen ja nouda välilehdet kirjautumalla sisään { -fxaccount-brand-name }llesi.
+firefoxview-tabpickup-signed-out-primarybutton = Kirjaudu sisään
 firefoxview-tabpickup-syncing = Odota, kun välilehdet synkronoidaan. Siinä kestää vain hetki.
 firefoxview-mobile-promo-header = Nappaa välilehtiä puhelimestasi tai tabletistasi
 firefoxview-mobile-promo-description = Voit tarkastella uusimpia mobiililaitteellasi olevia välilehtiä kirjautumalla sisään { -brand-product-name }iin iOS- tai Android-laitteella.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Hanki { -brand-product-name } mobiilila
 firefoxview-mobile-confirmation-header = 🎉 Kaikki valmista!
 firefoxview-mobile-confirmation-description = Nyt voit käyttää tablet-laitteesi tai puhelimesi { -brand-product-name }in välilehtiä.
 firefoxview-closed-tabs-title = Viimeksi suljetut
-firefoxview-closed-tabs-description = Avaa uudelleen sivut, jotka olet sulkenut tällä laitteella.
-firefoxview-closed-tabs-placeholder = <strong>Ei äskettäin suljettuja sivuja</strong><br/>Älä pelkää suljetun välilehden menettämistä. Voit palauttaa sen täältä.
+firefoxview-closed-tabs-description2 = Avaa uudelleen tässä ikkunassa sulkemasi sivut.
+firefoxview-closed-tabs-placeholder-header = Ei viimeksi suljettuja välilehtiä
+firefoxview-closed-tabs-placeholder-body = Kun suljet välilehden tässä ikkunassa, voit hakea sen täältä.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Hylkää { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Viimeksi aktiivinen
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Vaihda väriteemaa
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Ei vielä mitään nähtävää</strong><br/>Kun seuraavan kerran avaat sivun { -brand-product-name }issa toisella laitteella, löydä se täältä.
+firefoxview-synced-tabs-placeholder-header = Ei vielä mitään nähtävää
+firefoxview-synced-tabs-placeholder-body = Kun seuraavan kerran avaat sivun { -brand-product-name }issa toisella laitteella, pääset palaamaan siihen tästä.
 firefoxview-collapse-button-show =
     .title = Näytä lista
 firefoxview-collapse-button-hide =

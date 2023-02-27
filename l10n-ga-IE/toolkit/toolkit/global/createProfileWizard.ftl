@@ -6,12 +6,22 @@ create-profile-window =
     .title = Treoraí na bPróifílí
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Treoraí na bPróifílí
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Réamhrá
        *[other] Fáilte go dtí { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Réamhrá
+       *[other] Fáilte go dtí { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = Sábhálann { -brand-short-name } eolas faoi do shocruithe agus sainroghanna i do phróifíl phearsanta.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Críoch
        *[other] { create-profile-window.title } á chur i gcrích
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Críoch
+       *[other] { create-profile-window2.title } á chur i gcrích
     }
 
 profile-creation-intro = Má chruthaíonn tú próifílí éagsúla, is féidir iad a aithint óna chéile le hainmneacha na bpróifílí. Is féidir an t-ainm a thugtar anseo a úsáid, nó do cheann féin.

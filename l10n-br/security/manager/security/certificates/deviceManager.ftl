@@ -9,6 +9,10 @@ devmgr =
     .title = Ardoer trevnad
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Ardoer trevnad
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Molladoù ha trevnadoù diogelroez
 

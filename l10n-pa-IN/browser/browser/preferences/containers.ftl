@@ -5,12 +5,20 @@
 containers-window-new =
     .title = ਨਵਾਂ ਕਨਟੇਨਰ ਜੋੜੋ
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = { $name } ਕਨਟੇਨਰ ਸੈਟਿੰਗਾਂ
     .style = width: 45em
+
+containers-window-new2 =
+    .title = ਨਵਾਂ ਕਨਟੇਨਰ ਜੋੜੋ
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = { $name } ਕਨਟੇਨਰ ਸੈਟਿੰਗਾਂ
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

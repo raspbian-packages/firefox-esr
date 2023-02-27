@@ -112,7 +112,7 @@ whatsnew-panel-header = Шта је ново
 # Checkbox displayed at the bottom of the What's New panel, allowing users to
 # enable/disable What's New notifications.
 whatsnew-panel-footer-checkbox =
-    .label = Обавести ме о новим функцијама
+    .label = Обавести о новим функцијама
     .accesskey = О
 
 ## The Firefox Profiler – The popup is the UI to turn on the profiler, and record
@@ -122,8 +122,15 @@ whatsnew-panel-footer-checkbox =
 profiler-popup-button-idle =
     .label = Профајлер
     .tooltiptext = Сними профил учинка
+profiler-popup-button-recording =
+    .label = Профајлер
+    .tooltiptext = Профајлер снима профил
+profiler-popup-button-capturing =
+    .label = Профајлер
+    .tooltiptext = Профајлер снима профил
 profiler-popup-title =
     .value = { -profiler-brand-name }
+profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Откриј више информација
 profiler-popup-description-title =
@@ -162,6 +169,10 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/popup/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
+profiler-popup-presets-web-developer-description = Препоручена опција за отклањање грешака у већини веб апликација, са малим оптерећењем.
+profiler-popup-presets-web-developer-label =
+    .label = Програмер
+profiler-popup-presets-firefox-description = Препоручена опција за { -brand-shorter-name } профилисање.
 profiler-popup-presets-firefox-label =
     .label = { -brand-shorter-name }
 profiler-popup-presets-graphics-description = Препоручена подешавања за решавање { -brand-shorter-name } графичких грешака.

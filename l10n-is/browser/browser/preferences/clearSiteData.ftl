@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Hreinsa gögn
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Hreinsa gögn
+    .style = min-width: 35em
+
 clear-site-data-description = Ef þú hreinsar út allar vefkökur og gögn sem eru geymd af { -brand-short-name } gæti það orðið til þess að þú verðir skráð/ur út af vefsvæðum og ótengd gögn verði fjarlægð. Hreinsun á skyndiminni hefur ekki áhrif á innskráningar.
 
 clear-site-data-close-key =

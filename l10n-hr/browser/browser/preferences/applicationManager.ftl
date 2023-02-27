@@ -6,6 +6,10 @@ app-manager-window =
     .title = Detalji aplikacije
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Detalji aplikacije
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Ukloni
     .accesskey = U

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Մաքրել տվյալները
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Մաքրել տվյալները
+    .style = min-width: 35em
+
 clear-site-data-description = Բոլոր cookie-երի և { -brand-short-name }-ի կողմից պահված տվյալների մաքրումը կարող է ձեզ դուրս գրել կայքերից և հեռացնել անցանց վեբ բովանդակությունը: Դա չի վերաբերի ձեր մուտքագրումներին:
 
 clear-site-data-close-key =

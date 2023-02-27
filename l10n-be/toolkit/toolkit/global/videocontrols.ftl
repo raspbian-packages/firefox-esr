@@ -44,7 +44,7 @@ videocontrols-picture-in-picture-toggle-label2 = Адмацаваць відэа
 # This string is used as part of a variation of the Picture-in-Picture video toggle
 # button. When using this variation, this string appears below the toggle when the
 # mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer2 = Больш экранаў – весялей. Прайгравайце гэтае відэа ў рэжыме "Выява ў выяве" ў часе аглядання.
+videocontrols-picture-in-picture-explainer3 = Больш экранаў — весялей. Прайгравайце гэтае відэа, пакуль займаецеся іншымі справамі.
 videocontrols-error-aborted = Загрузка відэа прыпынена.
 videocontrols-error-network = Прайграванне відэа абарвана праз сеткавую памылку.
 videocontrols-error-decode = Відэа не можа быць прайграна, бо файл пашкоджаны.

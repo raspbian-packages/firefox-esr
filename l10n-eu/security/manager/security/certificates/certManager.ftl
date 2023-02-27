@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Editatu AZ ziurtagiriaren fidagarritasun-ezarpenak
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Editatu AZ ziurtagiriaren fidagarritasun-ezarpenak
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Editatu fidagarritasun-ezarpenak:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Ezabatu ziurtagiria
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Ezabatu ziurtagiria
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Ostalaria

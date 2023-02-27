@@ -21,9 +21,20 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = Tất cả sổ địa chỉ
 all-address-books = Tất cả các sổ địa chỉ
+# Variables:
+# $name (String) - The name of the selected book/list.
+# $count (Number) - The number of contacts in the selected book/list.
+about-addressbook-card-count = Tổng số liên hệ trong { $name }: { $count }
+# Variables:
+# $count (Number) - The number of contacts in all address books.
+about-addressbook-card-count-all = Tổng số liên hệ trong tất cả sổ địa chỉ: { $count }
 about-addressbook-books-context-properties =
     .label = Thuộc tính
+about-addressbook-books-context-edit-list =
+    .label = Chỉnh sửa danh sách
 about-addressbook-books-context-synchronize =
     .label = Đồng bộ hoá
 about-addressbook-books-context-edit =
@@ -75,6 +86,8 @@ about-addressbook-horizontal-layout =
     .label = Chuyển sang bố cục ngang
 about-addressbook-vertical-layout =
     .label = Chuyển sang bố cục dọc
+about-addressbook-table-layout =
+    .label = Bố cục bảng
 
 ## Card column headers
 ## Each string is listed here twice, and the values should match.
@@ -85,6 +98,9 @@ about-addressbook-column-label-generatedname =
 about-addressbook-column-header-emailaddresses = Địa chỉ email
 about-addressbook-column-label-emailaddresses =
     .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-nickname = Biệt danh
+about-addressbook-column-label-nickname =
+    .label = { about-addressbook-column-header-nickname }
 about-addressbook-column-header-phonenumbers = Số điện thoại
 about-addressbook-column-label-phonenumbers =
     .label = { about-addressbook-column-header-phonenumbers }
@@ -161,10 +177,23 @@ about-addressbook-placeholder-no-search-results = Không tìm thấy liên hệ
 
 ## Details
 
+# Variables:
+# $count (Number) - The number of selected items (will never be fewer than two)
+about-addressbook-selection-mixed-header = { $count } liên hệ và danh sách đã chọn
+# Variables:
+# $count (Number) - The number of selected contacts
+about-addressbook-selection-contacts-header = { $count } liên hệ đã chọn
+# Variables:
+# $count (Number) - The number of selected lists
+about-addressbook-selection-lists-header = { $count } danh sách đã chọn
+about-addressbook-details-edit-photo =
+    .title = Chỉnh sửa ảnh liên hệ
+about-addressbook-new-contact-header = Liên hệ mới
 about-addressbook-prefer-display-name = Ưu tiên tên hiển thị hơn tiêu đề thư
 about-addressbook-write-action-button = Viết thư
 about-addressbook-event-action-button = Sự kiện
 about-addressbook-search-action-button = Tìm kiếm
+about-addressbook-new-list-action-button = Danh sách mới
 about-addressbook-begin-edit-contact-button = Chỉnh sửa
 about-addressbook-delete-edit-contact-button = Xóa
 about-addressbook-cancel-edit-contact-button = Hủy bỏ
@@ -175,6 +204,7 @@ about-addressbook-details-phone-numbers-header = Số điện thoại
 about-addressbook-details-addresses-header = Địa chỉ
 about-addressbook-details-notes-header = Ghi chú
 about-addressbook-details-impp-header = Thư nhanh
+about-addressbook-details-websites-header = Trang web
 about-addressbook-details-other-info-header = Thông tin khác
 about-addressbook-entry-type-work = Công việc
 about-addressbook-entry-type-home = Nhà riêng
@@ -189,6 +219,10 @@ about-addressbook-entry-name-role = Vai trò
 about-addressbook-entry-name-organization = Tổ chức
 about-addressbook-entry-name-website = Trang web
 about-addressbook-entry-name-time-zone = Múi giờ
+about-addressbook-entry-name-custom1 = Tùy chỉnh 1
+about-addressbook-entry-name-custom2 = Tùy chỉnh 2
+about-addressbook-entry-name-custom3 = Tùy chỉnh 3
+about-addressbook-entry-name-custom4 = Tùy chỉnh 4
 about-addressbook-unsaved-changes-prompt-title = Các thay đổi chưa được lưu
 about-addressbook-unsaved-changes-prompt = Bạn có muốn lưu các thay đổi của mình trước khi rời khỏi chế độ chỉnh sửa không?
 
@@ -201,3 +235,7 @@ about-addressbook-photo-filepicker-title = Chọn một tập tin hình ảnh
 about-addressbook-photo-discard = Hủy ảnh hiện có
 about-addressbook-photo-cancel = Hủy bỏ
 about-addressbook-photo-save = Lưu
+
+# Keyboard shortcuts
+
+about-addressbook-new-contact-key = N

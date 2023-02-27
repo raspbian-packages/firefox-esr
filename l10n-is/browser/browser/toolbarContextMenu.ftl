@@ -38,7 +38,7 @@ toolbar-context-menu-remove-extension =
 # a user can use this command to submit to Mozilla an abuse report
 # related to that extension. "Report" is a verb.
 toolbar-context-menu-report-extension =
-    .label = Kvarta yfir viðbót
+    .label = Kvarta yfir forritsauka
     .accesskey = o
 # Can appear on the same context menu as toolbar-context-menu-menu-bar-cmd
 # ("Menu Bar") and personalbarCmd ("Bookmarks Toolbar"), so they should
@@ -53,14 +53,19 @@ toolbar-context-menu-always-open-downloads-panel =
     .label = Sýna spjaldið þegar niðurhal hefst
     .accesskey = S
 toolbar-context-menu-remove-from-toolbar =
-    .label = Fjarlægja af verkfæraslá
+    .label = Fjarlægja af verkfærastiku
     .accesskey = r
 toolbar-context-menu-view-customize-toolbar =
     .label = Sérsníða…
     .accesskey = S
 toolbar-context-menu-view-customize-toolbar-2 =
-    .label = Sérsníða verkfæraslá…
-    .accesskey = C
+    .label = Sérsníða verkfærastiku…
+    .accesskey = S
+# This is only ever shown when toolbar-context-menu-pin-to-overflow-menu
+# is hidden, so they can share access keys.
+toolbar-context-menu-pin-to-toolbar =
+    .label = Festa á verkfærastikuna
+    .accesskey = F
 toolbar-context-menu-bookmarks-toolbar-always-show-2 =
     .label = Sýna alltaf
     .accesskey = a

@@ -6,12 +6,22 @@ create-profile-window =
     .title = Draoidh cruthachadh pròifile
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Draoidh cruthachadh pròifile
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Ro-ràdh
        *[other] Fàilte gu { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Ro-ràdh
+       *[other] Fàilte gu { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = Cumaidh { -brand-short-name } fiosrachadh nan roghainnean agad 'nad phròifil phearsanta.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Co-dhùnadh
        *[other] A' toirt gu buil an { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Co-dhùnadh
+       *[other] A' toirt gu buil an { create-profile-window2.title }
     }
 
 profile-creation-intro = Ma chruthaicheas tu iomadh pròifil, aithnichidh tu iad air an cuid ainmean. 'S urrainn dhut an t-ainm a chaidh a chur air shùilean dhut an-seo a chleachdadh no ainm sam bith eile bu toigh leat.

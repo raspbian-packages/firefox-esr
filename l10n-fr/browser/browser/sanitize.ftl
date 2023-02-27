@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Paramètres d’effacement de l’historique
     .style = width: 36em
 
+sanitize-prefs2 =
+    .title = Paramètres d’effacement de l’historique
+    .style = min-width: 36em
+
 sanitize-prefs-style =
     .style = width: 17em
 

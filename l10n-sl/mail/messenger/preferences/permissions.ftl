@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Izjeme
     .style = width: 36em;
 
+permissions-reminder-window2 =
+    .title = Izjeme
+
 permission-preferences-close-window =
     .key = w
 
@@ -36,7 +39,7 @@ remove-site-button =
     .accesskey = O
 
 remove-all-site-button =
-    .label = Odstrani vse spletne strani
+    .label = Odstrani vsa spletna mesta
     .accesskey = d
 
 cancel-button =

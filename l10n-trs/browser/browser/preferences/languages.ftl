@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Nagi'io' nej nânj a'mi' guenda sitio web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Nagi'io' nej nânj a'mi' guenda sitio web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } nagi'io' nânj a'mi'
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } nagi'io' nânj a'mi'
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } digan asini ma nej nânj ni'ñu' doj ni ne' rukù ni'io' da' niko' ma.
 

@@ -45,6 +45,10 @@ videocontrols-picture-in-picture-toggle-label2 = Atera bideo hau
 # button. When using this variation, this string appears below the toggle when the
 # mouse hovers the toggle.
 videocontrols-picture-in-picture-explainer2 = Dibertigarriagoa da pantaila gehiagorekin. Erreproduzitu bideo hau beste leiho batean normal nabigatzen jarraitzen duzun bitartean.
+# This string is used as part of a variation of the Picture-in-Picture video toggle
+# button. When using this variation, this string appears below the toggle when the
+# mouse hovers the toggle.
+videocontrols-picture-in-picture-explainer3 = Dibertigarriagoa da pantaila gehiagorekin. Erreproduzitu bideo hau bestelako gauzak egin bitartean.
 videocontrols-error-aborted = Bideoa kargatzea geldituta.
 videocontrols-error-network = Bideoaren erreprodukzioa abortatuta sareko errore batengatik.
 videocontrols-error-decode = Ezin da bideoa erreproduzitu fitxategia hondatuta dagoelako.

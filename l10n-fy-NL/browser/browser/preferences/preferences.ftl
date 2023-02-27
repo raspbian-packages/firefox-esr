@@ -184,12 +184,15 @@ preferences-web-appearance-header = Uterlik fan de website
 preferences-web-appearance-description = Guon websites passe harren kleureskema oan op basis fan jo foarkarren. Kies hokker kleureskema jo foar dy websites brûke wolle.
 preferences-web-appearance-choice-browser = { -brand-short-name }-tema
 preferences-web-appearance-choice-system = Systeemtema
+preferences-web-appearance-choice-auto = Automatysk
 preferences-web-appearance-choice-light = Ljocht
 preferences-web-appearance-choice-dark = Donker
 preferences-web-appearance-choice-tooltip-browser =
     .title = Jo { -brand-short-name }-tema-ynstellingen tapasse op website-eftergrûnen en -ynhâld.
 preferences-web-appearance-choice-tooltip-system =
     .title = Jo systeemynstellingen tapasse op website-eftergrûnen en -ynhâld.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Automatysk website-eftergrûnen en -ynhâld wizigje op basis fan jo systeemynstellingen en { -brand-short-name }-tema.
 preferences-web-appearance-choice-tooltip-light =
     .title = In ljochte útstrieling foar website-eftergrûnen en -ynhâld brûke.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -455,7 +460,7 @@ browsing-picture-in-picture-toggle-enabled =
 browsing-picture-in-picture-learn-more = Mear ynfo
 browsing-media-control =
     .label = Behear media fia toetseboerd, headset of firtuele interface
-    .accesskey = v
+    .accesskey = f
 browsing-media-control-learn-more = Mear ynfo
 browsing-cfr-recommendations =
     .label = Utwreidingen oanrekommandearje wylst jo sneupe
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Sykfoarstellen yn adresbalkeresultaten toane
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Syktermen yn stee fan URL toane op de resultaatside fan de standertsykmasine
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -596,7 +606,7 @@ search-show-suggestions-above-history-option =
     .label = Syksuggestjes boppe browserskiednis toane yn adresbalkeresultaten
 search-show-suggestions-private-windows =
     .label = Syksuggestjes werjaan yn priveefinsters
-suggestions-addressbar-settings-generic2 = Ynstellingen foar oare adresbalksuggestjs wizigje
+suggestions-addressbar-settings-generic2 = Ynstellingen foar oare adresbalkesuggestjes wizigje
 search-suggestions-cant-show = Sykfoarstellen wurde net yn lokaasjebalkresultaten toand, omdat jo { -brand-short-name } konfigurearre hawwe om nea skiednis te ûnthâlden.
 search-one-click-header2 = Fluchkeppelingen sykje
 search-one-click-desc = Kies de alternative sykmasinen dy’t ûnder de adresbalke en sykbalke ferskine as jo in kaaiwurd begjinne yn te fieren.
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = W
     .buttonlabelextra2 = Ferbrekke…
     .buttonaccesskeyextra2 = F
+sync-choose-what-to-sync-dialog3 =
+    .title = Kies wat jo syngronisearje wolle
+    .style = min-width: 36em;
+    .buttonlabelaccept = Wizigingen bewarje
+    .buttonaccesskeyaccept = W
+    .buttonlabelextra2 = Ferbrekke…
+    .buttonaccesskeyextra2 = F
 sync-engine-bookmarks =
     .label = Blêdwizers
     .accesskey = w
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Warskôgingen oer wachtwurden foar troffen websites toane
     .accesskey = f
 forms-breach-alerts-learn-more-link = Mear ynfo
+relay-integration =
+    .label = { -relay-brand-name } ynskeakelje yn jo { -brand-short-name }-wachtwurdenbehearder
+relay-integration-learn-more-link = Mear ynfo
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Oanmeldingen en wachtwurden automatysk ynfolje
@@ -898,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies fan net-besochte websites
 sitedata-option-block-all-third-party =
     .label = Alle cookies fan tredden (kin derfoar soargje dat websites net goed wurkje)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Alle cross-sitecookies (kin derfoar soargje dat websites net goed wurkje)
 sitedata-option-block-all =
     .label = Alle cookies (sil derfoar soargje dat websites net goed wurkje)
 sitedata-clear =
@@ -977,6 +999,7 @@ content-blocking-all-cookies = Alle cookies
 content-blocking-unvisited-cookies = Cookies fan net-besochte websites
 content-blocking-all-windows-tracking-content = Folchynhâld yn alle finsters
 content-blocking-all-third-party-cookies = Alle cookies fan tredden
+content-blocking-all-cross-site-cookies = Alle cross-sitecookies
 content-blocking-cryptominers = Cryptominers
 content-blocking-fingerprinters = Fingerprinters
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -986,6 +1009,9 @@ content-blocking-etp-standard-tcp-rollout-checkbox =
         Meitsje in testrit yn ús krêftichste privacyfunksje ea
         privacy-ûnderfining ea
     .accesskey = t
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Totale cookiebeskerming slút cookies yn op de website dy’t jo besykje, sadat trackers se net brûke kinne om jo tusken websites te folgjen.
 content-blocking-etp-standard-tcp-rollout-learn-more = Mear ynfo

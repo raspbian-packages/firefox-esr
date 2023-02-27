@@ -6,12 +6,22 @@ create-profile-window =
     .title = Asistent za založenje profilow
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Asistent za založenje profilow
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Zachopjeńk
        *[other] Witajśo do { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Zachopjeńk
+       *[other] Witajśo do { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } składujo informacije wó wašych nastajenjach a preferencach we wašom wósobinskem profilu.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Dokóńcenje
        *[other] { create-profile-window.title } dokóńcyś
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Dokóńcenje
+       *[other] { create-profile-window2.title } dokóńcyś
     }
 
 profile-creation-intro = Jolic založujośo někotare profile, móžośo je z profilowymi mjenjami rozeznaś. Móžośo how pódane abo swójske mě wužywaś.

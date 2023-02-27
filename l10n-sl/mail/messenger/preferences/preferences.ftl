@@ -62,7 +62,7 @@ privacy-passwords-header = Gesla
 
 privacy-junk-header = Neželeno
 
-collection-header = Zbiranje in uporaba podatkov { -brand-short-name }a
+collection-header = Zbiranje in uporaba podatkov { -brand-short-name(sklon: "rodilnik") }
 
 collection-description = Trudimo se, da vam ponudimo izbiro in da zbiramo samo tisto, kar potrebujemo za razvoj in izboljšave { -brand-short-name }a za vse uporabnike. Pred sprejemanjem osebnih podatkov vas vedno vprašamo za dovoljenje.
 collection-privacy-notice = Obvestilo o zasebnosti
@@ -292,7 +292,7 @@ return-receipts-button =
     .label = Povratnice …
     .accesskey = P
 
-update-app-legend = Posodobitve { -brand-short-name }a
+update-app-legend = Posodobitve { -brand-short-name(sklon: "rodilnik") }
 
 # Variables:
 #   $version (String): version of Thunderbird, e.g. 68.0.1
@@ -466,6 +466,10 @@ auto-mark-as-read =
 mark-read-no-delay =
     .label = takoj na zaslonu
     .accesskey = a
+
+view-attachments-inline =
+    .label = Prikaži medvrstične priponke
+    .accesskey = z
 
 ## Note: This will concatenate to "After displaying for [___] seconds",
 ## using (mark-read-delay) and a number (seconds-label).
@@ -901,8 +905,6 @@ no-preview-description = Ta tema ni veljavna ali trenutno ni na voljo (onemogoč
 chat-variant-label =
     .value = Inačica:
     .accesskey = I
-
-## Preferences UI Search Results
 
 # This is used to determine the width of the search field in about:preferences,
 # in order to make the entire placeholder string visible

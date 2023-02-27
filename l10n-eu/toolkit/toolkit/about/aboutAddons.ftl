@@ -137,6 +137,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Gunearen baimenak
 addon-category-sitepermission-title =
     .title = Gunearen baimenak
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = { $host } ostalarirako baimenak
 
 ## These are global warnings
 

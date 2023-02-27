@@ -6,6 +6,10 @@ add-engine-window =
     .title = Qidiruv tizimini qoʻshish
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Qidiruv tizimini qoʻshish
+    .style = min-width: 32em;
+
 add-engine-button = Boshqa tizimni qoʻshish
 
 add-engine-name = Qidiruv tizimi nomi

@@ -174,6 +174,8 @@ spotlight-total-cookie-protection-expanded = { -brand-short-name } a sav ur voge
 spotlight-total-cookie-protection-primary-button = Gweredekaat ar gwarez toupinoù klok
 spotlight-total-cookie-protection-secondary-button = Ket bremañ
 
+cfr-total-cookie-protection-header = Trugarez deoc'h, suroc'h ha prevesoc'h eget biskoazh eo { -brand-short-name }
+
 ## Emotive Continuous Onboarding
 
 spotlight-better-internet-header = Un internet gwelloc’h a grog ganeoc’h
@@ -186,3 +188,21 @@ spotlight-pin-primary-button =
        *[other] Spilhennañ er varrenn an trevelloù
     }
 spotlight-pin-secondary-button = Ket bremañ
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+## Firefox View CFR
+
+## Firefox View Spotlight
+

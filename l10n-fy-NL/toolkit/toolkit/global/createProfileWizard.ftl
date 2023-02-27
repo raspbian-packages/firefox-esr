@@ -6,12 +6,22 @@ create-profile-window =
     .title = Wizard profyl oanmeitsje
     .style = width: 50em; height: 37em;
 
+create-profile-window2 =
+    .title = Wizard profyl oanmeitsje
+    .style = min-width: 50em; min-height: 37em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Yntroduksje
        *[other] Wolkom by de { create-profile-window.title }
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Yntroduksje
+       *[other] Wolkom by de { create-profile-window2.title }
     }
 
 profile-creation-explanation-1 = { -brand-short-name } bewarret ynformaasje oer jo ynstellingen en foarkarren yn jo persoanlike profyl.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Konklusje
        *[other] Foltôgje fan { create-profile-window.title }
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Konklusje
+       *[other] Foltôgje fan { create-profile-window2.title }
     }
 
 profile-creation-intro = As jo mear as ien profyl oanmeitsje, kin jo se út inoar hâlde troch de profylnammen. Jo kinne de namme hjirûnder brûke of in eigen namme kieze.

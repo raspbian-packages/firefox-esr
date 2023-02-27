@@ -6,6 +6,10 @@ permissions-window =
     .title = Исклучоци
     .style = width: 36em
 
+permissions-window2 =
+    .title = Исклучоци
+    .style = min-width: 36em
+
 permissions-close-key =
     .key = w
 

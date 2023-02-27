@@ -192,7 +192,7 @@ preferences-web-appearance-choice-tooltip-browser =
 preferences-web-appearance-choice-tooltip-system =
     .title = Matcha dina systeminställningar för webbplatsbakgrunder och innehåll.
 preferences-web-appearance-choice-tooltip-auto =
-    .title = Ändra automatiskt webbplatsbakgrunder och innehåll baserat på dina systeminställningar och { -brand-short-name } tema.
+    .title = Ändra automatiskt webbplatsbakgrunder och innehåll baserat på dina systeminställningar och { -brand-short-name }-tema.
 preferences-web-appearance-choice-tooltip-light =
     .title = Använd ett ljust utseende för webbplatsbakgrunder och innehåll.
 preferences-web-appearance-choice-tooltip-dark =
@@ -592,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Visa sökförslag i adressfältets resultat
     .accesskey = f
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Visa söktermer istället för adressen på sökmotorns standardresultatsida
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -719,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Koppla ner…
     .buttonaccesskeyextra2 = K
+sync-choose-what-to-sync-dialog3 =
+    .title = Välj vad som ska synkroniseras
+    .style = min-width: 36em;
+    .buttonlabelaccept = Spara ändringar
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Koppla ner…
+    .buttonaccesskeyextra2 = K
 sync-engine-bookmarks =
     .label = Bokmärken
     .accesskey = B
@@ -787,6 +799,9 @@ forms-breach-alerts =
     .label = Visa varningar om lösenord för webbplatser med intrång
     .accesskey = V
 forms-breach-alerts-learn-more-link = Läs mer
+relay-integration =
+    .label = Aktivera { -relay-brand-name } i lösenordshanteraren för { -brand-short-name }
+relay-integration-learn-more-link = Läs mer
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Autofyll inloggningar och lösenord
@@ -903,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Kakor från obesökta webbplatser
 sitedata-option-block-all-third-party =
     .label = Alla tredjepartskakor (kan orsaka fel på webbplatser)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Alla globala kakor (kan orsaka fel på webbplatser)
 sitedata-option-block-all =
     .label = Alla kakor (kommer att orsaka fel på webbplatser)
 sitedata-clear =
@@ -982,6 +999,7 @@ content-blocking-all-cookies = Alla kakor
 content-blocking-unvisited-cookies = Kakor från obesökta webbplatser
 content-blocking-all-windows-tracking-content = Spårningsinnehåll i alla fönster
 content-blocking-all-third-party-cookies = Alla kakor från tredje part
+content-blocking-all-cross-site-cookies = Alla globala kakor
 content-blocking-cryptominers = Kryptogrävare
 content-blocking-fingerprinters = Fingeravtrycksspårare
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -989,6 +1007,9 @@ content-blocking-fingerprinters = Fingeravtrycksspårare
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Förhandstesta vår mest kraftfulla sekretessfunktion någonsin
     .accesskey = F
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Totalt skydd mot kakor isolerar kakor från webbplatsen du är på, så spårare inte kan använda dem för att följa dig mellan webbplatser.
 content-blocking-etp-standard-tcp-rollout-learn-more = Lär dig mer

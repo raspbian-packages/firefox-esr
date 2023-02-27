@@ -52,8 +52,12 @@ autofill-address-county = מחוז
 autofill-address-prefecture = מחוז
 # Used in HK
 autofill-address-area = אזור
+# Used in NI, CO
+autofill-address-department = מחלקה
 # Used in AE
 autofill-address-emirate = אמירות
+# Used in RU and UA
+autofill-address-oblast = אובלסט
 
 ## Postal code name types
 

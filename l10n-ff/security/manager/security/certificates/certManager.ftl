@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = Taƴto teelte koolnol seedamfaagu CA
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Taƴto teelte koolnol seedamfaagu CA
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Taƴto teelte koolnol:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Momtu Seedamfaagu
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Momtu Seedamfaagu
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Innde Seedamfaagu
@@ -173,9 +181,8 @@ delete-email-cert-impact = So a momtii seedamfaagu iimel neɗɗo, a waawataa ha�
 cert-with-serial =
     .value = Seedamfaagu kame tonngoode looso: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

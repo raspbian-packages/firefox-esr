@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Ayrıcalıklar
     .style = width: 45em;
 
+permissions-reminder-window2 =
+    .title = İstisnalar
+
 permission-preferences-close-window =
     .key = w
 

@@ -6,6 +6,10 @@ blocklist-window =
     .title = Rhestrau Rhwystro
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Rhestrau Rhwystro
+    .style = min-width: 55em
+
 blocklist-description = Dewis y rhestr mae { -brand-short-name } yn ei defnyddio i atal tracio ar-lein. Rhestrau'n cael eu darparu gan <a data-l10n-name="disconnect-link" title="Disconnect"> Datgysylltu</a>.
 blocklist-close-key =
     .key = w

@@ -155,6 +155,9 @@ message-header-hide-label-column =
 message-header-large-subject =
     .label = Veliki naslov
     .accesskey = s
+message-header-all-headers =
+    .label = Prikaži sva zaglavlja
+    .accesskey = a
 
 ## Action Button Context Menu
 

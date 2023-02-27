@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name }-privénavigatie
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name }-privénavigatie
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = Hulp verkrijgen
 urlbar-search-tips-confirm = Oké, begrepen
+urlbar-search-tips-confirm-short = Begrepen
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Tip:
+urlbar-result-menu-button =
+    .title = Menu openen
+urlbar-result-menu-remove-from-history =
+    .label = Verwijderen uit geschiedenis
+    .accesskey = V
+urlbar-result-menu-tip-get-help =
+    .label = Hulp verkrijgen
+    .accesskey = H
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = Minder typen, meer vinden: direct zoeken bij { $engineName } vanaf uw adresbalk.
 urlbar-search-tips-redirect-2 = Begin in de adresbalk met zoeken om suggesties van { $engineName } en uit uw browsergeschiedenis te zien.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = Zoeken is nu nog eenvoudiger geworden. Probeer uw zoekopdracht hier in de adresbalk specifieker te maken. Als u in plaats daarvan de URL wilt weergeven, ga dan naar Zoeken in de instellingen.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Selecteer deze snelkoppeling om sneller te vinden wat u nodig hebt.
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = Acties ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Add-ons bekijken
-quickactions-cmd-addons = add-ons, extensies, thema’s
 quickactions-cmd-addons2 = add-ons
 # Opens the bookmarks library window
-quickactions-bookmarks = Bladwijzers bekijken
+quickactions-bookmarks2 = Bladwijzers beheren
 quickactions-cmd-bookmarks = bladwijzers
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Geschiedenis wissen
 quickactions-cmd-clearhistory = geschiedenis wissen
 # Opens about:downloads page
-quickactions-downloads = Downloads openen
+quickactions-downloads2 = Downloads bekijken
 quickactions-cmd-downloads = downloads
 # Opens about:addons page in the extensions section
 quickactions-extensions = Extensies beheren
 quickactions-cmd-extensions = extensies
 # Opens the devtools web inspector
-quickactions-inspector = Inspector openen
+quickactions-inspector2 = Ontwikkelaarshulpmiddelen openen
 quickactions-cmd-inspector = inspector, devtools
 # Opens about:logins
-quickactions-logins = Aanmeldingen weergeven
+quickactions-logins2 = Wachtwoorden beheren
 quickactions-cmd-logins = aanmeldingen, wachtwoorden
 # Opens about:addons page in the plugins section
 quickactions-plugins = Plug-ins beheren
 quickactions-cmd-plugins = plug-ins
 # Opens the print dialog
-quickactions-print = Afdrukken
+quickactions-print2 = Pagina afdrukken
 quickactions-cmd-print = afdrukken
 # Opens a new private browsing window
-quickactions-private = Privénavigatievenster openen
+quickactions-private2 = Privévenster openen
 quickactions-cmd-private = privénavigatie
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } opfrissen
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = vernieuwen
 quickactions-restart = { -brand-short-name } herstarten
 quickactions-cmd-restart = herstarten
 # Opens the screenshot tool
-quickactions-screenshot2 = Een schermafbeelding maken
+quickactions-screenshot3 = Een schermafbeelding maken
 quickactions-cmd-screenshot = schermafbeelding
 # Opens about:preferences
-quickactions-settings = Instellingen openen
+quickactions-settings2 = Instellingen beheren
 quickactions-cmd-settings = instellingen, voorkeuren, opties
 # Opens about:addons page in the themes section
 quickactions-themes = Thema’s beheren
@@ -323,8 +332,11 @@ quickactions-cmd-themes = thema’s
 quickactions-update = { -brand-short-name } bijwerken
 quickactions-cmd-update = bijwerken
 # Opens the view-source UI with current pages source
-quickactions-viewsource = Bron bekijken
+quickactions-viewsource2 = Paginabron bekijken
 quickactions-cmd-viewsource = bron bekijken, bron
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = Meer info over Snelle acties
 
 ## Bookmark Panel
 
@@ -485,6 +497,9 @@ popup-select-microphone-icon =
     .tooltiptext = Microfoon
 popup-select-speaker-icon =
     .tooltiptext = Luidsprekers
+popup-select-window-or-screen =
+    .label = Venster of scherm:
+    .accesskey = V
 popup-all-windows-shared = Alle zichtbare vensters op uw scherm worden gedeeld.
 popup-screen-sharing-block =
     .label = Blokkeren
@@ -506,6 +521,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = Open eerst DevTools in het menu Webontwikkelaar om de sneltoets F12 te gebruiken.
+enable-devtools-popup-description2 = Open eerst DevTools in het menu Extra van de browser om de sneltoets F12 te gebruiken.
 
 ## URL Bar
 
@@ -637,6 +653,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Snelle acties
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Lezerweergave openen
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Lezerweergave sluiten
 
 ## Full Screen and Pointer Lock UI
 
@@ -914,3 +939,29 @@ private-browsing-indicator-label = Privénavigatie
 unified-extensions-button =
     .label = Extensies
     .tooltiptext = Extensies
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = Extensies
+    .tooltiptext =
+        Extensies
+        Machtigingen benodigd
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } heeft voorkomen dat deze pagina automatisch werd herladen.
+refresh-blocked-redirect-label = { -brand-short-name } heeft voorkomen dat deze pagina automatisch werd doorgestuurd naar een andere pagina.
+refresh-blocked-allow =
+    .label = Toestaan
+    .accesskey = T
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } maskeert uw echte e-mailadres om u te helpen beschermen tegen datalekken en spam.
+firefox-relay-offer-how-we-integrate = Als u doorgaat, kunt u nieuwe { -relay-brand-short-name } e-mailmaskers rechtstreeks vanuit uw { -brand-shorter-name }-wachtwoordenbeheerder aanmaken.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = We sturen alle e-mailberichten van <strong>{ $sitename }</strong> door naar <strong>{ $useremail }</strong>.

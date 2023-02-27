@@ -9,6 +9,10 @@ devmgr =
     .title = Manager de dispozitive
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Manager de dispozitive
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Module și dispozitive de securitate
 

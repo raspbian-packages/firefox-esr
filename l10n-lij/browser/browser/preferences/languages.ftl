@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Inpoastaçioin da lengoa de Pagine web
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Inpoastaçioin da lengoa de Pagine web
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Inpostaçion lengoa de { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Inpostaçion lengoa de { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } o te mostriâ a primma lengoa comme predefinia e-e atre lengoe in ordine de aparensa se necesaio.
 

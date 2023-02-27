@@ -6,6 +6,10 @@ containers-window-new =
     .title = Sun taaga tonton
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Sun taaga tonton
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

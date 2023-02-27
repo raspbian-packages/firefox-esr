@@ -6,6 +6,10 @@ translation-window =
     .title = Tisuraf - Tasuqilt
     .style = width: 36em
 
+translation-window2 =
+    .title = Tisuraf - Tasuqilt
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

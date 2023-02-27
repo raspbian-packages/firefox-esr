@@ -6,6 +6,10 @@ app-manager-window =
     .title = პროგრამის მონაცემები
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = პროგრამის მონაცემები
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = მოცილება
     .accesskey = ც

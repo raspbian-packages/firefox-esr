@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Vi lanĉis malnovan version de { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Vi lanĉis malnovan version de { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Krei novan profilon
 

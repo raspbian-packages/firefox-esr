@@ -6,6 +6,10 @@ blocklist-window =
     .title = Listas de bloqueo
     .style = width: 60em
 
+blocklist-window2 =
+    .title = Listas de bloqueo
+    .style = min-width: 60em
+
 blocklist-description = Escolla a lista que usa { -brand-short-name } para bloquear os rastrexadores da Rede. As listas son subministradas por <a data-l10n-name="disconnect-link" title="Disconnect"> Desconectar </a>.
 blocklist-close-key =
     .key = w

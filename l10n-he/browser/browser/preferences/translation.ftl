@@ -6,6 +6,10 @@ translation-window =
     .title = חריגות - תרגום
     .style = width: 36em
 
+translation-window2 =
+    .title = חריגות - תרגום
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

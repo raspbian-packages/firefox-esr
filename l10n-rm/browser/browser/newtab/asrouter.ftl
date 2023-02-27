@@ -12,33 +12,25 @@ cfr-doorhanger-feature-heading = Funcziunalitad recumandada
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Pertge ves jau quai
-
 cfr-doorhanger-extension-cancel-button = Betg ussa
     .accesskey = B
-
 cfr-doorhanger-extension-ok-button = Agiuntar ussa
     .accesskey = A
-
 cfr-doorhanger-extension-manage-settings-button = Administrar ils parameters da recumandaziun
     .accesskey = A
-
 cfr-doorhanger-extension-never-show-recommendation = Betg ma mussar questa recumandaziun
     .accesskey = B
-
 cfr-doorhanger-extension-learn-more-link = Ulteriuras infurmaziuns
-
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = da { $name }
-
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recumandaziun
 cfr-doorhanger-extension-notification2 = Recumandaziun
     .tooltiptext = Recumandaziun dad extensiun
     .a11y-announcement = Ina recumandaziun per ina extensiun è disponibla
-
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Recumandaziun
@@ -65,6 +57,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } utilisaders
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Adia a las bandieras da cookies!
+cfr-cookie-banner-handling-body = Permetter a { -brand-short-name } da refusar automaticamain tut las dumondas da bandieras da cookies, sche pussaivel. Sch'i na va betg, lura vegnan tut ils cookies acceptads per reducir il dumber da bandieras mussadas.
+cfr-cookie-banner-accept-button = Refusar las dumondas
+    .accesskey = R
+cfr-cookie-banner-reject-button = Betg ussa
+    .accesskey = B
+cfr-cookie-banner-handling-header-variant-1 = Mussar damain pop-ups da cookies
+cfr-cookie-banner-handling-body-variant-1 = Lubescha a { -brand-short-name } da respunder automaticamain pop-ups da cookies per tai. Uschia pos ti puspè navigar senza distracziun. { -brand-short-name } vegn a refusar sche pussaivel tut las dumondas, u acceptar tuttas sch'i na va betg auter.
+cfr-cookie-banner-accept-button-variant-1 = Bandischar ils pop-ups
+    .accesskey = B
+cfr-cookie-banner-reject-button-variant-1 = Na, grazia
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = Reducziun da bandieras da cookies
+cfr-cookie-banner-handling-body-variant-2 = Permetter a { -brand-short-name } da refusar sche pussaivel la dumonda da consentiment areguard il diever da cookies dad ina website u acceptar ils cookies sch'i na va betg auter?
+cfr-cookie-banner-accept-button-variant-2 = Permetter
+    .accesskey = P
+cfr-cookie-banner-reject-button-variant-2 = Betg ussa
+    .accesskey = B
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sincronisescha tes segnapaginas dapertut.
@@ -85,11 +100,9 @@ cfr-protections-panel-link-text = Ulteriuras infurmaziuns
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nova funcziunalitad:
-
 cfr-whatsnew-button =
     .label = Novaziuns
     .tooltiptext = Novaziuns
-
 cfr-whatsnew-release-notes-link-text = Leger las notizias davart la versiun
 
 ## Enhanced Tracking Protection Milestones
@@ -179,3 +192,63 @@ spotlight-pin-primary-button =
        *[other] Fixar en la taskbar
     }
 spotlight-pin-secondary-button = Betg ussa
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Il nov { -brand-short-name }. Pli discret. Damain fastizaders. Nagins cumpromiss.
+mr2022-background-update-toast-text = Emprova ussa il pli nov { -brand-short-name }, actualisà cun nossa protecziun cunter fastizaders la pli ferma d'enfin qua.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Avrir ussa { -brand-shorter-name }
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Ma regurdar pli tard
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Empruvar
+    .accesskey = E
+firefoxview-cfr-secondarybutton = Betg ussa
+    .accesskey = B
+firefoxview-cfr-header-v2 = Cuntinuescha immediatamain là nua che ti has chalà
+firefoxview-cfr-body-v2 = Va per tabs serrads dacurt e siglia ultra da quai a moda simpla dad in apparat a l'auter cun agid da { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Nus ta mussain { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Vuls ti avair quel tab avert sin tes telefonin? Va per el. Dovras ti la website che ti has gist visità? Zac ed ella è puspè qua cun { -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = Mussar co che quai funcziuna
+firefoxview-spotlight-promo-secondarybutton = Sursiglir
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Tscherner ina cumbinaziun da colurs
+    .accesskey = T
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Colurescha tes navigatur cun las nianzas da colurs exclusivas da { -brand-short-name } inspiradas da las vuschs independentas che han midà la societad.
+colorways-cfr-header-28days = La cumbinaziun da colurs «vuschs independentas» scada ils 16 da schaner
+colorways-cfr-header-14days = La cumbinaziun da colurs «vuschs independentas» scada en duas emnas
+colorways-cfr-header-7days = La cumbinaziun da colurs «vuschs independentas» scada quest'emna
+colorways-cfr-header-today = La cumbinaziun da colurs «vuschs independentas» scada oz
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Nus defendain tai
+july-jam-body = Mintga mais blochescha { -brand-short-name } en media passa 3'000 fastizaders per utilisader. Uschia vegns ti svelt e segir en l'internet.
+july-jam-set-default-primary = Avrir mias colliaziuns cun { -brand-short-name }

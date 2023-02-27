@@ -76,7 +76,6 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = Brabhsadh prìobhaideach { -brand-short-name }
 
 ##
 
@@ -267,15 +266,11 @@ search-one-offs-actions =
     .tooltiptext = Gnìomhan ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page
 quickactions-addons = Seall na tuilleadain
-quickactions-cmd-addons = tuilleadain, leudachain, ùrlaran
 # Opens the bookmarks library window
 quickactions-bookmarks = Seall na comharran-lìn
 quickactions-cmd-bookmarks = comharran-lìn
@@ -483,6 +478,9 @@ popup-select-microphone-icon =
     .tooltiptext = Micreofon
 popup-select-speaker-icon =
     .tooltiptext = Glaodhairean
+popup-select-window-or-screen =
+    .label = Uinneag no sgrìn:
+    .accesskey = U
 popup-all-windows-shared = Thèid gach uinneag a tha ri fhaicinn air an sgrìn agad a cho-roinneadh.
 popup-screen-sharing-block =
     .label = Bac
@@ -635,6 +633,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Grad-ghnìomhan
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Fosgail am modh leughaidh
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Dùin sealladh an leughadair
 
 ## Full Screen and Pointer Lock UI
 
@@ -907,3 +914,11 @@ private-browsing-indicator-label = Brabhsadh prìobhaideach
 unified-extensions-button =
     .label = Leudachain
     .tooltiptext = Leudachain
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = Cha do leig { -brand-short-name } leis an duilleag seo ath-luchdadh gu fèin-obrachail.
+refresh-blocked-redirect-label = Cha do leig { -brand-short-name } leis an duilleag seo do stiùireadh gu duilleag eile gu fèin-obrachail.
+refresh-blocked-allow =
+    .label = Ceadaich
+    .accesskey = A

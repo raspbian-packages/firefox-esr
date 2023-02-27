@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Edytuj sztalōnki wierzynio certyfikatu CA
     .style = width: 40em;
 
+certmgr-edit-ca-cert2 =
+    .title = Edytuj sztalōnki wierzynio certyfikatu CA
+    .style = min-width: 40em;
+
 certmgr-edit-cert-edit-trust = Edytuj sztalōnki wierzynio:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Skasuj certyfikat
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Skasuj certyfikat
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Host

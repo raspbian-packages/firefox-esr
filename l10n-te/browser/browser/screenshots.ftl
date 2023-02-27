@@ -12,6 +12,8 @@ screenshots-save-visible-button = కనిపించే దానిని �
 screenshots-save-page-button = పూర్తి పేజీని భద్రపరచు
 screenshots-download-button = దింపుకోండి
 screenshots-copy-button = కాపీచెయ్యి
+screenshots-cancel-button-title =
+    .title = రద్దుచేయి
 
 screenshots-meta-key =
     { PLATFORM() ->

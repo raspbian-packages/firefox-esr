@@ -57,6 +57,28 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } ਵਰਤੋਂਕਾਰ
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = ਕੂਕੀ ਬੈਨਰ ਕਰੋ ਰਵਾਨਾ!
+cfr-cookie-banner-handling-body = ਜਦੋਂ ਵੀ ਸੰਭਵ ਹੋਵੇ ਤਾਂ { -brand-short-name } ਨੂੰ ਆਪਣੇ-ਆਪ ਹੀ ਸਾਰੀਆਂ ਕੂਕੀ ਬੈਨਰ ਬੇਨਤੀਆਂ ਰੱਦ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਨਹੀਂ ਤਾਂ ਹੋਰ ਬੈਨਰਾਂ ਨੂੰ ਖਾਰਜ ਕਰਨ ਵਾਸਤੇ ਸਾਰੇ ਕੂਕੀਜ਼ ਨੂੰ ਮਨਜ਼ੂਰ ਕੀਤਾ ਜਾਵੇਗਾ।
+cfr-cookie-banner-accept-button = ਬੇਨਤੀਆਂ ਖ਼ਾਰਜ ਕਰੋ
+    .accesskey = D
+cfr-cookie-banner-reject-button = ਹੁਣੇ ਨਹੀਂ
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-1 = ਹੋਰ ਘੱਟ ਕੂਕੀ ਪੌਪ-ਅੱਪ ਵੇਖੋ
+cfr-cookie-banner-accept-button-variant-1 = ਪੌਪ-ਅੱਪ ਖ਼ਾਰਜ ਕਰੋ
+    .accesskey = D
+cfr-cookie-banner-reject-button-variant-1 = ਨਹੀਂ, ਧੰਨਵਾਦ
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = ਕੂਕੀ ਬੈਨਰ ਘਟਾਉਣਾ
+cfr-cookie-banner-handling-body-variant-2 = { -brand-short-name } ਨੂੰ ਜਦ ਵੀ ਮੌਕੇ ਹੋਵੇ ਤਾਂ ਸਾਈਟ ਦੇ ਕੂਕੀ ਸਹਿਮਤੀ ਬੇਨਤੀ ਲਈ ਰੱਦ ਕਰਨ ਜਾਂ ਜੇ ਨਾ ਹੋ ਸਕੇ ਤਾਂ ਕੂਕੀ ਪਹੁੰਚ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣੀ ਹੈ?
+cfr-cookie-banner-accept-button-variant-2 = ਮਨਜ਼ੂਰ
+    .accesskey = A
+cfr-cookie-banner-reject-button-variant-2 = ਹੁਣੇ ਨਹੀਂ
+    .accesskey = N
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਹਰ ਥਾਂ ਉੱਤੇ ਸਿੰਕ ਕਰੋ।
@@ -107,10 +129,7 @@ cfr-doorhanger-doh-secondary-button = ਅਸਮਰੱਥ ਕਰੋ
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved =
-    ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਪਹਿਲਾਂ ਹੈ। { -brand-short-name } ਹੁਣ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ
-    ਇੱਕ ਦੂਜੇ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਅਲਹਿਦਾ ਕਰ ਦਿੰਦਾ ਹੈ, ਜਿਸ ਨਾਲ ਹੈਕਰਾਂ ਲਈ ਪਾਸਵਰਡ,
-    ਕਰੈਡਿਟ ਕਾਰਡ ਨੰਬਰ ਤੇ ਹੋਰ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰਨਾ ਔਖਾ ਹੋ ਜਾਂਦਾ ਹੈ।
+cfr-doorhanger-fission-body-approved = ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਪਹਿਲਾਂ ਹੈ। { -brand-short-name } ਹੁਣ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਇੱਕ ਦੂਜੇ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਅਲਹਿਦਾ ਕਰ ਦਿੰਦਾ ਹੈ, ਜਿਸ ਨਾਲ ਹੈਕਰਾਂ ਲਈ ਪਾਸਵਰਡ, ਕਰੈਡਿਟ ਕਾਰਡ ਨੰਬਰ ਤੇ ਹੋਰ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰਨਾ ਔਖਾ ਹੋ ਜਾਂਦਾ ਹੈ।
 cfr-doorhanger-fission-header = ਸਾਈਟ ਅਲਹਿਦਗੀ
 cfr-doorhanger-fission-primary-button = ਠੀਕ ਹੈ, ਸਮਝ ਗਏ
     .accesskey = O
@@ -156,10 +175,6 @@ spotlight-total-cookie-protection-body = ਪੂਰੀ ਕੂਕੀਜ਼ ਸੁਰ�
 spotlight-total-cookie-protection-expanded = { -brand-short-name } ਕੂਕੀਜ਼ ਦੇ ਦੁਆਲੇ ਵਾੜ ਲਾ ਦਿੰਦਾ ਹੈ, ਜਿਸ ਨਾਲ ਉਹ ਤੁਹਾਡੇ ਵਲੋਂ ਖੋਲ੍ਹੀ ਸਾਈਟ ਤੱਕ ਹੀ ਸੀਮਿਤ ਰਹਿ ਜਾਂਦੇ ਹਨ, ਇਸਕਰਕੇ ਟਰੈਕਰ ਉਹਨਾਂ ਨੂੰ ਤੁਹਾਡਾ ਪਿੱਛਾ ਕਰਨ ਲਈ ਨਹੀਂ ਵਰਤ ਸਕਦੇ ਹਨ। ਇਹ ਪਹਿਲਾਂ ਦੀ ਪਹੁੰਚ ਨਾਲ ਤੁਸੀਂ ਇਹ ਫ਼ੀਚਰ ਨੂੰ ਸੰਵਾਰਨ ਲਈ ਮਦਦ ਸਕਦੇ ਹੋ ਤਾ ਕਿ ਅਸੀਂ ਹਰ ਕਿਸੇ ਲਈ ਵੈੱਬ ਨੂੰ ਹੋਰ ਵੀ ਵਧੀਆ ਬਣਾ ਸਕੀੇਏ।
 spotlight-total-cookie-protection-primary-button = ਪੂਰੀ ਕੂਕੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਕਰੋ
 spotlight-total-cookie-protection-secondary-button = ਹੁਣੇ ਨਹੀਂ
-cfr-total-cookie-protection-header = ਤੁਹਾਡਾ ਧੰਨਵਾਦ ਹੈ, { -brand-short-name } ਪਹਿਲਾਂ ਤੋਂ ਵੱਧ ਪ੍ਰਾਈਵੇਟ ਤੇ ਸੁਰੱਖਿਅਤ ਹੈ
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = ਸੰਪੂਰਨ ਕੂਕੀ ਸੁਰੱਖਿਆ ਸਾਡੀ ਹਾਲੇ ਤੱਕ ਦੀ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਪਰਦੇਦਾਰੀ ਸੁਰੱਖਿਆ ਹੈ – ਅਤੇ ਹੁਣ { -brand-short-name } ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਹਰ ਵੇਲੇ ਮੂਲ ਸੈਟਿੰਗ ਹੈ। ਅਸੀਂ ਇਹ ਸਭ ਤੁਹਾਡੇ ਵਰਗੇ ਪਹਿਲਾਂ ਪਹੁੰਚ ਰੱਖਣ ਵਾਲੇ ਹਿੱਸੇਦਾਰਾਂ ਦੇ ਬਿਨਾਂ ਨਹੀਂ ਕਰ ਸਕਦੇ ਸੀ। ਸੋ ਇਸਕਰਕੇ ਹੋਰ ਵਧੀਆ, ਵੱਧ ਪ੍ਰਾਈਵੇਟ ਇੰਟਰਨੈੱਟ ਬਣਾਉਣ ਲਈ ਸਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ ਹੈ।
 
 ## Emotive Continuous Onboarding
 
@@ -173,3 +188,83 @@ spotlight-pin-primary-button =
        *[other] ਟਾਸਕ-ਬਾਰ ਵਿੱਚ ਟੰਗੋ
     }
 spotlight-pin-secondary-button = ਹੁਣੇ ਨਹੀਂ
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = ਨਵਾਂ{ -brand-short-name }। ਵੱਧ ਪ੍ਰਾਈਵੇਟ। ਘੱਟ ਟਰੈਕਰ। ਕੋਈ ਸਮਝੌਤਾ ਨਹੀਂ।
+mr2022-background-update-toast-text = ਹੁਣ ਨਵੇਂ { -brand-short-name } ਵਰਤ ਕੇ ਵੇਖੋ, ਸਾਡੇ ਹਾਲੇ ਤੱਕ ਦੇ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਟਰੈਕਿੰਗ-ਰੋਧੀ ਸੁਰੱਖਿਆ ਲਈ ਅੱਪਗਰੇਡ ਕਰੋ।
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = ਹੁਣੇ { -brand-shorter-name } ਖੋਲ੍ਹੋ
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚੇਤੇ ਕਰਵਾਓ
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = ਅਜ਼ਮਾਓ
+    .accesskey = T
+firefoxview-cfr-secondarybutton = ਹੁਣੇ ਨਹੀਂ
+    .accesskey = N
+firefoxview-cfr-header-v2 = ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ, ਉਥੋਂ ਫ਼ੌਰਨ ਖੋਲ੍ਹੋ
+firefoxview-cfr-body-v2 = ਹਾਲ ਵਿੱਚ ਖੋਲ੍ਹੀਆਂ ਟੈਬਾਂ ਲਵੋ, { -firefoxview-brand-name } ਨਾਲ ਡਿਵਾਈਸਾਂ ਤੋਂ ਵੀ ਲਵੋ।
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = { -firefoxview-brand-name } ਨੂੰ ਮਿਲੋ
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = ਆਪਣੇ ਫ਼ੋਨ ਉੱਤੇ ਉਹ ਟੈਬ ਖੋਲ੍ਹਣੀ ਚਾਹੁੰਦੇ ਹੋ? ਇਹ ਲਵੋ। ਬੱਸ ਉਹ ਹੁਣੇ ਖੋਲ੍ਹੀ ਸਾਈਟ ਚਾਹੀਦੀ ਹੈ, { -firefoxview-brand-name } ਨਾਲ ਵਾਪਸ ਲਵੋ।
+firefoxview-spotlight-promo-primarybutton = ਵੇਖੋ ਕਿ ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ
+firefoxview-spotlight-promo-secondarybutton = ਛੱਡੋ
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = ਰੰਗ-ਢੰਗ ਚੁਣੋ
+    .accesskey = C
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = ਸਭਿਆਚਾਰ ਬਦਲਣ ਵਾਲੀਆਂ ਆਵਾਜ਼ਾਂ ਤੋਂ ਪ੍ਰੇਰਿਤ ਕਰਨ ਵਾਲੇ ਰੰਗਾਂ ਨਾਲ { -brand-short-name } ਰਾਹੀਂ ਆਪਣੇ ਬਰਾਊਜ਼ਰ ਵਿੱਚ ਭਰੋ।
+colorways-cfr-header-28days = ਆਜ਼ਾਦ ਆਵਾਜ਼ ਰੰਗ=ਢੰਗ ਦੀ ਮਿਆਦ ਜਨਵਰੀ 16 ਨੂੰ ਪੁੱਗੇਗੀ
+colorways-cfr-header-14days = ਆਜ਼ਾਦ ਆਵਾਜ਼ ਰੰਗ=ਢੰਗ ਦੀ ਮਿਆਦ ਦੋ ਹਫ਼਼ਤਿਆਂ ਵਿੱਚ ਪੁੱਗੇਗੀ
+colorways-cfr-header-7days = ਆਜ਼ਾਦ ਆਵਾਜ਼ ਰੰਗ=ਢੰਗ ਦੀ ਮਿਆਦ ਇੱਕ ਹਫ਼਼ਤੇ ਵਿੱਚ ਪੁੱਗੇਗੀ
+colorways-cfr-header-today = ਆਜ਼ਾਦ ਆਵਾਜ਼ ਰੰਗ=ਢੰਗ ਦੀ ਮਿਆਦ ਅੱਜ ਪੁੱਗੇਗੀ
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = ਕੂਕੀ ਬੈਨਰ ਕਰੋ ਰਵਾਨਾ!
+cfr-cookiebanner-body = ਜਦੋਂ ਵੀ ਸੰਭਵ ਹੋਵੇ ਤਾਂ { -brand-short-name } ਨੂੰ ਸਾਰੀਆਂ ਕੂਕੀ ਬੈਨਰ ਬੇਨਤੀਆਂ ਨੂੰ ਆਪਣੇ-ਆਪ ਰੱਦ ਕਰਨ ਦਿਓ।
+cfr-cookiebanner-accept-button = ਬੈਨਰਾਂ ਨੂੰ ਖ਼ਾਰਜ ਕਰੋ
+    .accesskey = D
+cfr-cookiebanner-reject-button = ਹੁਣੇ ਨਹੀਂ
+    .accesskey = N
+cfr-cookiebanner-header-variant-1 = ਘੱਟ ਕੂਕੀ ਪੌਪ-ਅੱਪ ਵੇਖੋ
+cfr-cookiebanner-accept-button-variant-1 = ਪੌਪ-ਅੱਪ ਖ਼ਾਰਜ ਕਰੋ
+    .accesskey = D
+cfr-cookiebanner-reject-button-variant-1 = ਨਹੀਂ, ਧੰਨਵਾਦ
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = ਕੂਕੀ ਬੈਨਰ ਘਟਾਉਣਾ
+cfr-cookiebanner-accept-button-variant-2 = ਮਨਜ਼ੂਰ
+    .accesskey = A
+cfr-cookiebanner-reject-button-variant-2 = ਹੁਣੇ ਨਹੀਂ
+    .accesskey = N
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = ਅਸੀਂ ਤੁਹਾਡੇ ਲਈ ਢਾਲ ਬਣ ਕੇ ਖੜ੍ਹੇ ਹਾਂ
+july-jam-body = ਹਰ ਮਹੀਨੇ { -brand-short-name } ਹਰ ਵਰਤੋਂਕਾਰ ਲਈ ਔਸਤਨ 3,000+  ਟਰੈਕਾਂ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾ ਕੇ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਅਤ, ਤੇਜ਼ ਇੰਟਰਨੈੱਟ ਪਹੁੰਚਾਉਣ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ।
+july-jam-set-default-primary = ਮੇਰੇ ਲਿੰਕ { -brand-short-name } ਨਾਲ ਖੋਲ੍ਹੋ

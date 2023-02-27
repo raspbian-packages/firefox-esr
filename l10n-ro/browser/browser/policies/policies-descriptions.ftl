@@ -108,6 +108,8 @@ policy-ExtensionUpdate = Activează sau dezactivează actualizările automate de
 
 policy-FirefoxHome = Configurează pagina de start Firefox.
 
+policy-FirefoxHome2 = Configurează pagina de { -firefox-home-brand-name }.
+
 policy-FlashPlugin = Permite sau respinge utilizarea pluginului Flash.
 
 policy-Handlers = Configurează gestionarii aplicațiilor implicite.

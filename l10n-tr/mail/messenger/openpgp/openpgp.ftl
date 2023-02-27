@@ -4,6 +4,7 @@
 
 e2e-intro-description = Şifrelenmiş veya dijital olarak imzalanmış iletiler göndermek için OpenPGP veya S/MIME gibi bir şifreleme teknolojisini yapılandırmanız gerekir.
 e2e-intro-description-more = OpenPGP kullanımını etkinleştirmek için kişisel anahtarınızı veya S/MIME kullanımını etkinleştirmek için kişisel sertifikanızı seçin. Kişisel anahtar veya sertifikanın gizli anahtarına da sahip olmalısınız.
+e2e-signing-description = Dijital imza sayesinde alıcılar iletinin sizin tarafınızdan gönderildiğini ve içeriğinin değiştirilmediğini doğrulayabilir. Şifrelenmiş iletiler varsayılan olarak her zaman imzalanır.
 e2e-sign-message =
     .label = Şifrelenmemiş iletileri imzala
     .accesskey = f
@@ -226,6 +227,10 @@ openpgp-key-details-id-label =
 openpgp-key-details-key-type-label = Türü
 openpgp-key-details-key-part-label =
     .label = Anahtar bölümü
+openpgp-key-details-attr-ignored = Uyarı: Bazı özellikleri güvenli olmadığından ve göz ardı edilebileceğinden, bu anahtar beklendiği gibi çalışmıyor olabilir.
+openpgp-key-details-attr-upgrade-sec = Güvenli olmayan özellikleri yükseltmelisiniz.
+openpgp-key-details-attr-upgrade-pub = Bu anahtarın sahibinden güvenli olmayan özellikleri yükseltmesini istemelisiniz.
+openpgp-key-details-upgrade-ok = Anahtar başarıyla yükseltildi. Yükseltilmiş ortak anahtarı yazıştığınız kişilerle paylaşmalısınız.
 openpgp-key-details-algorithm-label =
     .label = Algoritma
 openpgp-key-details-size-label =
@@ -239,6 +244,7 @@ openpgp-key-details-expiry-header = Süre sonu
 openpgp-key-details-usage-label =
     .label = Kullanım
 openpgp-key-details-fingerprint-label = Parmak izi
+openpgp-key-details-legend-secret-missing = (!) ile işaretlenmiş anahtarlar için gizli anahtar kullanılamaz.
 openpgp-key-details-sel-action =
     .label = Eylem seçin…
     .accesskey = E
@@ -266,6 +272,15 @@ openpgp-copy-cmd-label =
 
 ## e2e encryption settings
 
+#   $identity (String) - the email address of the currently selected identity
+openpgp-description-no-key = { -brand-short-name }, <b>{ $identity }</b> için kişisel OpenPGP anahtarına sahip değil
+#   $count (Number) - the number of configured keys associated with the current identity
+#   $identity (String) - the email address of the currently selected identity
+openpgp-description-has-keys =
+    { $count ->
+        [one] { -brand-short-name }, <b>{ $identity }</b> ile ilişkili { $count } kişisel OpenPGP anahtarı buldu
+       *[other] { -brand-short-name }, <b>{ $identity }</b> ile ilişkili { $count } kişisel OpenPGP anahtarı buldu
+    }
 #   $key (String) - the currently selected OpenPGP key
 openpgp-selection-status-have-key = Geçerli yapılandırmalarınızda <b>{ $key }</b> anahtar kimliği kullanılıyor
 #   $key (String) - the currently selected OpenPGP key
@@ -361,6 +376,9 @@ import-from-clip = Panodan bazı anahtarları içe aktarmak istiyor musunuz?
 import-from-url = Ortak anahtarı bu adresten indir:
 copy-to-clipbrd-failed = Seçilen anahtar(lar) panoya kopyalanamadı.
 copy-to-clipbrd-ok = Anahtar(lar) panoya kopyalandı
+delete-pub-key =
+    ‘{ $userId }’
+    ortak anahtarını silmek istiyor musunuz?
 delete-selected-pub-key = Ortak anahtarları silmek istiyor musunuz?
 refresh-all-question = Herhangi bir anahtar seçmediniz. TÜM anahtarları yenilemek ister misiniz?
 key-man-button-export-sec-key = &Gizli anahtarları dışa aktar
@@ -376,6 +394,7 @@ save-keys-ok = Anahtarlar başarıyla kaydedildi
 save-keys-failed = Anahtarların kaydedilmesi başarısız oldu
 default-pub-key-filename = Disa-aktarilan-ortak-anahtarlar
 default-pub-sec-key-filename = Gizli-anahtar-yedegi
+refresh-key-warn = Uyarı: Anahtar sayısına ve bağlantı hızına bağlı olarak, tüm anahtarların yenilenmesi oldukça uzun sürebilir.
 preview-failed = Ortak anahtar dosyası okunamıyor.
 general-error = Hata: { $reason }
 dlg-button-delete = &Sil
@@ -389,9 +408,12 @@ openpgp-export-secret-fail = <b>Seçilen gizli anahtar dışa aktarılamadı.</b
 # Strings in keyObj.jsm
 key-ring-pub-key-revoked = { $userId } anahtarı (anahtar kimliği { $keyId }) iptal edildi.
 key-ring-pub-key-expired = { $userId } anahtarının (anahtar kimliği { $keyId }) süresi doldu.
+key-ring-pub-key-not-for-signing = { $userId } anahtarı (anahtar kimliği { $keyId }) imzalama için kullanılamaz.
+key-ring-pub-key-not-for-encryption = { $userId } anahtarı (anahtar kimliği { $keyId }) şifreleme için kullanılamaz.
 key-ring-sign-sub-keys-revoked = { $UserId } anahtarının tüm imzalama alt anahtarları (anahtar kimliği { $keyId }) iptal edildi.
 key-ring-sign-sub-keys-expired = { $userId } anahtarının (anahtar kimliği { $keyId }) tüm imzalama alt anahtarlarının süresi doldu.
 key-ring-enc-sub-keys-revoked = { $userId } anahtarının tüm şifreleme alt anahtarları (anahtar kimliği { $keyId }) iptal edildi.
+key-ring-enc-sub-keys-expired = { $userId } anahtarının tüm şifreleme alt anahtarlarının (anahtar kimliği { $keyId }) süresi doldu.
 # Strings in gnupg-keylist.jsm
 keyring-photo = Fotoğraf
 user-att-photo = Kullanıcı özniteliği (JPEG resmi)
@@ -407,9 +429,17 @@ delete-key-title = OpenPGP anahtarını sil
 delete-external-key-title = Harici GnuPG anahtarını çıkar
 delete-external-key-description = Bu harici GnuPG anahtar kimliğini kaldırmak istiyor musunuz?
 key-in-use-title = Şu anda kullanılan OpenPGP anahtarı
+delete-key-in-use-description = Devam edilemiyor! Silmek için seçtiğiniz anahtar şu anda bu kimlik tarafından kullanılıyor. Farklı bir anahtar seçip ya da hiçbirini seçip tekrar deneyin.
+revoke-key-in-use-description = Devam edilemiyor! İptal için seçtiğiniz anahtar şu anda bu kimlik tarafından kullanılıyor. Farklı bir anahtar seçip ya da hiçbirini seçip tekrar deneyin.
+# Strings used in errorHandling.jsm
+key-error-key-spec-not-found = ‘{ $keySpec }’ e-posta adresi, anahtarlığınızdaki bir anahtarla eşleştirilemez.
+key-error-key-id-not-found = Yapılandırılan anahtar kimliği ‘{ $keySpec }’ anahtarlığınızda bulunamadı.
 key-error-not-accepted-as-personal = '{ $keySpec }' kimliğine sahip anahtarın kişisel anahtarınız olduğunu doğrulamadınız.
 # Strings used in enigmailKeyManager.js & windows.jsm
 need-online = Seçtiğiniz işlev çevrimdışı modda kullanılamaz. Lütfen çevrimiçi olun ve tekrar deneyin.
+# Strings used in keyRing.jsm & keyLookupHelper.jsm
+no-key-found2 = Belirtilen arama ölçütleriyle eşleşen kullanılabilir bir anahtar bulamadık.
+no-update-found = Çevrimiçi keşfedilmiş anahtarlara zaten sahipsiniz.
 # Strings used in keyRing.jsm & GnuPGCryptoAPI.jsm
 fail-key-extract = Hata - Anahtar çıkarma komutu başarısız oldu
 # Strings used in keyRing.jsm

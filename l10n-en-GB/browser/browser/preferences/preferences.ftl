@@ -184,12 +184,15 @@ preferences-web-appearance-header = Web site appearance
 preferences-web-appearance-description = Some web sites adapt their colour scheme based on your preferences. Choose which colour scheme you’d like to use for those sites.
 preferences-web-appearance-choice-browser = { -brand-short-name } theme
 preferences-web-appearance-choice-system = System theme
+preferences-web-appearance-choice-auto = Automatic
 preferences-web-appearance-choice-light = Light
 preferences-web-appearance-choice-dark = Dark
 preferences-web-appearance-choice-tooltip-browser =
     .title = Match your { -brand-short-name } theme settings for web site backgrounds and content.
 preferences-web-appearance-choice-tooltip-system =
     .title = Match your system settings for web site backgrounds and content.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Automatically change web site backgrounds and content based on your system settings and { -brand-short-name } theme.
 preferences-web-appearance-choice-tooltip-light =
     .title = Use a light appearance for web site backgrounds and content.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Show search suggestions in address bar results
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Show search terms instead of URL on default search engine results page
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Disconnect…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Choose What To Synchronise
+    .style = min-width: 36em;
+    .buttonlabelaccept = Save Changes
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Disconnect…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Bookmarks
     .accesskey = m
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Show alerts about passwords for breached web sites
     .accesskey = b
 forms-breach-alerts-learn-more-link = Learn more
+relay-integration =
+    .label = Enable { -relay-brand-name } in your { -brand-short-name } password manager
+relay-integration-learn-more-link = Learn more
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Autofill logins and passwords
@@ -898,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies from unvisited web sites
 sitedata-option-block-all-third-party =
     .label = All third-party cookies (may cause web sites to break)
+sitedata-option-block-all-cross-site-cookies =
+    .label = All cross-site cookies (may cause web sites to break)
 sitedata-option-block-all =
     .label = All cookies (will cause web sites to break)
 sitedata-clear =
@@ -977,6 +999,7 @@ content-blocking-all-cookies = All cookies
 content-blocking-unvisited-cookies = Cookies from unvisited sites
 content-blocking-all-windows-tracking-content = Tracking content in all windows
 content-blocking-all-third-party-cookies = All third-party cookies
+content-blocking-all-cross-site-cookies = All cross-site cookies
 content-blocking-cryptominers = Cryptominers
 content-blocking-fingerprinters = Fingerprinters
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -984,6 +1007,9 @@ content-blocking-fingerprinters = Fingerprinters
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Test pilot our most powerful privacy feature ever
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Total Cookie Protection contains cookies to the site you’re on, so trackers can’t use them to follow you between sites.
 content-blocking-etp-standard-tcp-rollout-learn-more = Learn more

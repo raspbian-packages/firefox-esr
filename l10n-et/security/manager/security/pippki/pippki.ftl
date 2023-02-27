@@ -31,6 +31,10 @@ pippki-pw-change2empty-in-fips-mode = Sa oled FIPS-režiimis. See eeldab, et sin
 reset-primary-password-window =
     .title = Ülemparooli lähtestamine
     .style = width: 40em
+
+reset-primary-password-window2 =
+    .title = Ülemparooli lähtestamine
+    .style = min-width: 40em
 reset-password-button-label =
     .label = Lähtesta
 reset-primary-password-text = Ülemparooli lähtestamisel unustatakse kõik sinu salvestatud veebi ja e-posti paroolid, isiklikud sertifikaadid ja privaatvõtmed. Kas oled kindel, et soovid ülemparooli lähtestada?
@@ -43,6 +47,10 @@ pippki-reset-password-confirmation-message = Ülemparool on lähtestatud.
 download-cert-window =
     .title = Sertifikaadi allalaadimine
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Sertifikaadi allalaadimine
+    .style = min-width: 46em
 download-cert-message = Uus sertifitseerimiskeskus (SK) palub end tunnustada.
 download-cert-trust-ssl =
     .label = Usalda seda SK-d veebilehtede tuvastamisel.

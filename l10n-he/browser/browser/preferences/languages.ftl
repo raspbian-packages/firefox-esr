@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = הגדרות שפת עמוד אינטרנט
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = הגדרות שפת עמוד אינטרנט
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = הגדרות שפה של { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = הגדרות שפה של { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = ‏{ -brand-short-name } יציג את השפה הראשונה כברירת המחדל שלך ויציג שפות חלופיות במידת הצורך לפי סדר הופעתם.
 

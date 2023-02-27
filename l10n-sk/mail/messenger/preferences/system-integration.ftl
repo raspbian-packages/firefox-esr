@@ -23,7 +23,6 @@ checkbox-newsgroups-label =
 checkbox-feeds-label =
     .label = Informačné kanály (RSS)
     .tooltiptext = { unset-default-tooltip }
-
 checkbox-calendar-label =
     .label = Kalendár
     .tooltiptext = { unset-default-tooltip }
@@ -42,5 +41,5 @@ system-search-integration-label =
     .accesskey = U
 
 check-on-startup-label =
-    .label = Pri štarte { -brand-short-name }u vždy vykonať túto kontrolu
+    .label = Pri štarte { -brand-short-name(case: "gen") } vždy vykonať túto kontrolu
     .accesskey = a

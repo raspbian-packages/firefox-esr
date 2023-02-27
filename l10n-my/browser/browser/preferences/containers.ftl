@@ -6,6 +6,10 @@ containers-window-new =
     .title = ကွန်တိန်နာအသစ်ထပ်ထည့်ပါ
     .style = width: 45em
 
+containers-window-new2 =
+    .title = ကွန်တိန်နာအသစ်ထပ်ထည့်ပါ
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

@@ -19,10 +19,12 @@ update-failed = Не вдалося оновити. <label data-l10n-name="faile
 update-failed-main = Не вдалося оновити. <a data-l10n-name="failed-link-main">Завантажити останню версію</a>
 update-adminDisabled = Оновлення вимкнені системним адміністратором
 update-noUpdatesFound = { -brand-short-name } не потребує оновлення
+aboutdialog-update-checking-failed = Не вдалося перевірити наявність оновлень.
 update-otherInstanceHandlingUpdates = Оновлення { -brand-short-name } проводиться іншим процесом
 update-manual = Оновлення доступне на <label data-l10n-name="manual-link"/>
 update-unsupported = Ви не можете виконувати подальші оновлення на цій системі. <label data-l10n-name="unsupported-link">Докладніше</label>
 update-restarting = Перезапуск…
+update-internal-error = Не вдалося перевірити наявність оновлень через внутрішню помилку. Оновлення доступні за посиланням <label data-l10n-name="manual-link"/>
 channel-description = Ви зараз на каналі оновлень <label data-l10n-name="current-channel"></label>.
 warningDesc-version = { -brand-short-name } експериментальний і може бути нестабільним.
 aboutdialog-help-user = Довідка { -brand-product-name }

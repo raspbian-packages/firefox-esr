@@ -184,12 +184,15 @@ preferences-web-appearance-header = Mba’éicha ojehecha ñanduti renda
 preferences-web-appearance-description = Heta ñanduti renda omohenda isa’y jepurukuaa umi ojeguerohoryvévaicha. Eiporavo sa’y jepurukuaa reipotáva umi tendápe g̃uarã.
 preferences-web-appearance-choice-browser = { -brand-short-name } téma
 preferences-web-appearance-choice-system = Apopyvusu téma
+preferences-web-appearance-choice-auto = ijeheguietéva
 preferences-web-appearance-choice-light = Tesakã
 preferences-web-appearance-choice-dark = Ypytũ
 preferences-web-appearance-choice-tooltip-browser =
     .title = Emboheko ne téma { -brand-short-name } mba’e tugua ha tetepy ñanduti rendápe g̃uarã.
 preferences-web-appearance-choice-tooltip-system =
     .title = Embohekomeme ne apopyvusu rugua ha retepy ñanduti renda pegua.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Iñambue ijehegui pe ñanduti renda rugua ha hetepy oĩháicha apopyvusu ñemboheko ha { -brand-short-name } téma.
 preferences-web-appearance-choice-tooltip-light =
     .title = Eipuru jehecharã sakã tugua ha tetepy ñanduti renda pegua.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Ehechauka ñe’ẽreka joguaha kundaharape ha avei jejuhu hague rendápe
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Ehechauka jeheka rapykuere URL rendaguépe kuatiarogue jehechahague jehekaha ijypykuévape
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = Emboty tembiapo…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Eiporavo embojueheséva
+    .style = min-width: 36em;
+    .buttonlabelaccept = Eñongatu moambuepy
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Emboty tembiapo…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Techaukaha
     .accesskey = m
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Ehechauka kyhyjerã ñe’ẽñemi rehegua tenda imarãvape
     .accesskey = b
 forms-breach-alerts-learn-more-link = Kuaave
+relay-integration =
+    .label = Embojuruja { -relay-brand-name } ñe’ẽñemi ñangarekohápe { -brand-short-name }
+relay-integration-learn-more-link = Kuaave
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Tembiapo ñepyrũ ha ñe’ẽñemi myanyhẽjehegui
@@ -898,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Ñanduto renda kookie ojeike’ỹha
 sitedata-option-block-all-third-party =
     .label = Opaite kookie mbohapyháva (ikatu ombojavy ñanduti renda)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Opaite kookie tenda pa’ũgua (ojavykakuaa ñanduti rendápe)
 sitedata-option-block-all =
     .label = Opaite umi kookie (ombojavýta ñanduti renda)
 sitedata-clear =
@@ -977,6 +999,7 @@ content-blocking-all-cookies = Opavavete kookie
 content-blocking-unvisited-cookies = Kookie eike’ỹ hague
 content-blocking-all-windows-tracking-content = Tetepy rapykuehoha opaite ovetãme
 content-blocking-all-third-party-cookies = Opaite kookie mbohapyguáva
+content-blocking-all-cross-site-cookies = Opaite kookie tenda pa’ũgua
 content-blocking-cryptominers = Cryptominers
 content-blocking-fingerprinters = Fingerprinters
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -984,6 +1007,9 @@ content-blocking-fingerprinters = Fingerprinters
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Eipuru ore ñemigua rembiapoite imbaretevéva ko’ág̃a peve
     .accesskey = T
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Ñemo’ãmbaite kookie rovake oreko kookie tenda reimehápe g̃uarã, avei tapykuehoha ndojepurukuaái ohapykueho hag̃ua tendakuéra pa’ũme.
 content-blocking-etp-standard-tcp-rollout-learn-more = Kuaave
@@ -1096,6 +1122,7 @@ collection-health-report-disabled = Pe mba’ekuaarã momarandu oñemboguéma ko
 collection-backlogged-crash-reports-with-link = Emoneĩ { -brand-short-name } omomarandúvo jejavymeme nde rérape <a data-l10n-name="crash-reports-link">Eikuaave</a>
     .accesskey = c
 privacy-segmentation-section-header = Tembiapoite pyahu ombopya’evéva ne ñeikundaha
+privacy-segmentation-section-description = Roikuave’ẽ vove tembiapoite oipurúva mba’ekuaarã ome’ẽségui jehasakue nemba’erãva:
 privacy-segmentation-radio-off =
     .label = Eipuru he’iháicha { -brand-product-name }
 privacy-segmentation-radio-on =

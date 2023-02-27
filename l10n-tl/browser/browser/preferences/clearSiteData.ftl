@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Burahin ang mga Datus
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Burahin ang mga Datus
+    .style = min-width: 35em
+
 clear-site-data-description = Ang pagbura ng mga cookie at site data na nilagay ng { -brand-short-name } ay maaaring makapag-sign out sa iyo sa mga website at matanggal ang offline web content. Ang pagbubura ng cache data ay hindi makakaapekto sa iyong mga login.
 
 clear-site-data-close-key =

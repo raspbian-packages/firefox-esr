@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Undantag
     .style = width: 45em;
 
+permissions-reminder-window2 =
+    .title = Undantag
+
 permission-preferences-close-window =
     .key = w
 

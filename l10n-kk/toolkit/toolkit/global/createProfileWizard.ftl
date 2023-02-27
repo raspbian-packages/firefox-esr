@@ -6,12 +6,22 @@ create-profile-window =
     .title = Профильді жасау шебері
     .style = width: 45em; height: 32em;
 
+create-profile-window2 =
+    .title = Профильді жасау шебері
+    .style = min-width: 45em; min-height: 32em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Басы
        *[other] { create-profile-window.title } өніміне қош келдіңіз
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Басы
+       *[other] { create-profile-window2.title } өніміне қош келдіңіз
     }
 
 profile-creation-explanation-1 = { -brand-short-name } сіздің баптаулар, бетбелгілер туралы және т.б. ақпаратты жеке профиліңізде сақтайды.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Аяқталуы
        *[other] { create-profile-window.title } жұмысының аяқталуы
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Аяқталуы
+       *[other] { create-profile-window2.title } жұмысының аяқталуы
     }
 
 profile-creation-intro = Егер сізде бірнеше профиль бар болса, оларды атау арқылы ажырата аласыз. Өзіңіз атап көріңіз, немесе төменде көрсетілгенді қолдана аласыз.

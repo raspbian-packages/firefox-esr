@@ -142,6 +142,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Oldalengedélyek
 addon-category-sitepermission-title =
     .title = Oldalengedélyek
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string): DNS host name for which the webextension enables permissions
+addon-sitepermission-host = A(z) { $host } webhelyengedélyei
 
 ## These are global warnings
 
@@ -296,10 +300,6 @@ theme-monochromatic-heading = Színvilágok
 theme-monochromatic-subheading = Élénk új színvilágok a { -brand-product-name }tól. Korlátozott ideig elérhető.
 # Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
 theme-colorways-button = Próbálja ki a színvilágokat
-colorway-collection-independent-voices-subheading = Formálja a saját ízlésének megfelelőre a { -brand-short-name }ot.
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires.
-colorway-collection-expiry-date-span = Lejárat: { DATETIME($expiryDate, month: "long", day: "numeric") }
 # Refers to the button label for the colorways card when a user has a colorway theme enabled.
 theme-colorways-button-colorway-enabled = Színvilág módosítása
 # Variables:

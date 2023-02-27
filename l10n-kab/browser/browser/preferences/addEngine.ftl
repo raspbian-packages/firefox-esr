@@ -6,6 +6,10 @@ add-engine-window =
     .title = Rnu amsedday n unadi
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Rnu amsedday n unadi
+    .style = min-width: 32em;
+
 add-engine-button = Rnu amsedday n unadi udmawan
 
 add-engine-name = Isem n umsedday n unadi

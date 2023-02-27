@@ -6,6 +6,10 @@ add-engine-window =
     .title = បញ្ចូល​​ម៉ាស៊ីន​ស្វែងរក
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = បញ្ចូល​​ម៉ាស៊ីន​ស្វែងរក
+    .style = min-width: 32em;
+
 add-engine-button = បញ្ចូល​ម៉ាស៊ីនផ្ទាល់ខ្លួន
 
 add-engine-alias = ឈ្មោះក្លែងក្លាយ

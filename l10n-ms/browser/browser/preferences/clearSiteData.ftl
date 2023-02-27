@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Buang Data
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Buang Data
+    .style = min-width: 35em
+
 clear-site-data-description = Membersihkan semua kuki dan lokasi data yang disimpan oleh { -brand-short-name } boleh menyebabkan anda didaftar keluar dari laman web dan kandungan web luar talian dibuang. Membersihkan data cache tidak akan menjejaskan log masuk anda.
 
 clear-site-data-close-key =

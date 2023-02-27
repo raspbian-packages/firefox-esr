@@ -6,6 +6,10 @@ blocklist-window =
     .title = بلاک فہرستیں
     .style = width: 55em
 
+blocklist-window2 =
+    .title = بلاک فہرستیں
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

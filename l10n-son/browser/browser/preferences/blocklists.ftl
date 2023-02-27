@@ -6,6 +6,10 @@ blocklist-window =
     .title = Gagayyan maašeedey
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Gagayyan maašeedey
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

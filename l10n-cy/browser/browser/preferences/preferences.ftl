@@ -196,12 +196,15 @@ preferences-web-appearance-header = Gwedd gwefan
 preferences-web-appearance-description = Mae rhai gwefannau yn addasu eu cynllun lliw yn seiliedig ar eich dewisiadau. Dewiswch pa gynllun lliw yr hoffech ei ddefnyddio ar gyfer y gwefannau hynny.
 preferences-web-appearance-choice-browser = Thema { -brand-short-name }
 preferences-web-appearance-choice-system = Thema'r system
+preferences-web-appearance-choice-auto = Awtomatig
 preferences-web-appearance-choice-light = Golau
 preferences-web-appearance-choice-dark = Tywyll
 preferences-web-appearance-choice-tooltip-browser =
     .title = Cydweddwch eich gosodiadau thema { -brand-short-name } ar gyfer cefndiroedd gwefannau a chynnwys.
 preferences-web-appearance-choice-tooltip-system =
     .title = Cydweddwch eich gosodiadau system ar gyfer cefndiroedd gwefannau a chynnwys.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Newidiwch gefndir a chynnwys gwefan yn awtomatig yn seiliedig ar osodiadau eich system a thema { -brand-short-name }.
 preferences-web-appearance-choice-tooltip-light =
     .title = Defnyddio gwedd olau ar gyfer cefndiroedd gwefannau a chynnwys.
 preferences-web-appearance-choice-tooltip-dark =
@@ -210,6 +213,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -603,6 +608,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Dangos awgrymiadau chwilio yng nghanlyniadau'r bar lleoliad
     .accesskey = D
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Dangos termau chwilio yn lle URL ar dudalen canlyniadau peiriannau chwilio rhagosodedig
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -730,6 +740,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = N
     .buttonlabelextra2 = Datgysylltu…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = Dewis Beth i'w Gydweddu
+    .style = min-width: 36em;
+    .buttonlabelaccept = Cadw Newidiadau
+    .buttonaccesskeyaccept = N
+    .buttonlabelextra2 = Datgysylltu…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = Nodau Tudalen
     .accesskey = T
@@ -798,6 +815,9 @@ forms-breach-alerts =
     .label = Dangos rhybuddion am gyfrineiriau ar gyfer gwefannau sydd wedi' cael tor-data
     .accesskey = r
 forms-breach-alerts-learn-more-link = Dysgu rhagor
+relay-integration =
+    .label = Galluogi { -relay-brand-name } yn eich rheolwr cyfrineiriau { -brand-short-name }
+relay-integration-learn-more-link = Dysgu rhagor
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Awtolanw mewngofnodion a chyfrineiriau
@@ -914,6 +934,8 @@ sitedata-option-block-unvisited =
     .label = Cwcis o wefannau heb ymweld â nhw
 sitedata-option-block-all-third-party =
     .label = Pob cwci trydydd parti (gall achosi i wefannau i dorri)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Pob cwci traws-safle (gall achosi i wefannau dorri)
 sitedata-option-block-all =
     .label = Pob cwci (bydd yn achosi i wefannau dorri)
 sitedata-clear =
@@ -993,6 +1015,7 @@ content-blocking-all-cookies = Pob cwci
 content-blocking-unvisited-cookies = Cwcis o safleoedd heb ymweld â nhw
 content-blocking-all-windows-tracking-content = Tracio cynnwys ym mhob ffenestr
 content-blocking-all-third-party-cookies = Pob cwci trydydd parti
+content-blocking-all-cross-site-cookies = Pob cwci traws-gwefan
 content-blocking-cryptominers = Cryptogloddwyr
 content-blocking-fingerprinters = Bysbrintwyr
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -1000,6 +1023,9 @@ content-blocking-fingerprinters = Bysbrintwyr
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Rhowch brawf ar ein profiad preifatrwydd mwyaf pwerus erioed
     .accesskey = R
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Mae Diogelwch Cwcis Llwyr yn cyfyngu cwcis i'r wefan rydych chi arni, felly nid yw tracwyr yn gallu eu defnyddio i'ch dilyn rhwng gwefannau.
 content-blocking-etp-standard-tcp-rollout-learn-more = Dysgu rhagor

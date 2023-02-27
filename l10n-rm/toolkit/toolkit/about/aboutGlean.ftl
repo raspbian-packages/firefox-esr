@@ -13,3 +13,4 @@ tag-pings-label = Marcar tut ils pings tramess cun questa etichetta
 log-pings-label = Protocollar las datas d'utilisaziun da ping avant che trametter?
 send-pings-label = Trametter il ping cun num
 controls-button-label = Trametter ils parameters
+controls-button-label-verbose = Applitgar ils parameters e trametter in ping

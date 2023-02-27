@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Lisää uusi eristystila
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = { $name }-eristystilan asetukset
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Lisää uusi eristystila
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = { $name }-eristystilan asetukset
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

@@ -6,6 +6,10 @@ app-manager-window =
     .title = Детаљи о апликацији
     .style = width: 40em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Детаљи о апликацији
+    .style = min-width: 40em; min-height: 20em;
+
 app-manager-remove =
     .label = Уклони
     .accesskey = У

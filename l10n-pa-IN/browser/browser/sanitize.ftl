@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = ਅਤੀਤ ਨੂੰ ਸਾਫ਼ ਕਰਨ ਲਈ ਸੈਟਿੰਗ
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = ਅਤੀਤ ਨੂੰ ਸਾਫ਼ ਕਰਨ ਲਈ ਸੈਟਿੰਗ
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

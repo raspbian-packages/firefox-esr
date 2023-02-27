@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Käivitatud on { -brand-product-name }i vanem versioon
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Käivitatud on { -brand-product-name }i vanem versioon
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Loo uus profiil
 

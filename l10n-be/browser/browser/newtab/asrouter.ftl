@@ -59,6 +59,29 @@ cfr-doorhanger-extension-total-users =
        *[many] { $total } карыстальнікаў
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Банеры з кукамі зніклі!
+cfr-cookie-banner-handling-body = Дазвольце { -brand-short-name } аўтаматычна адхіляць усе запыты банераў кукі, калі гэта магчыма. У адваротным выпадку ўсе кукі будуць прыняты, каб закрыць яшчэ больш банераў.
+cfr-cookie-banner-accept-button = Адхіляць запыты
+    .accesskey = А
+cfr-cookie-banner-reject-button = Не зараз
+    .accesskey = з
+cfr-cookie-banner-handling-header-variant-1 = Бачыць менш выплыўных акон пра кукі
+cfr-cookie-banner-handling-body-variant-1 = Дазвольце { -brand-short-name } аўтаматычна адказваць на выплыўныя вокны файлаў кукі, каб вы маглі вярнуцца да прагляду сайтаў без адцягнення ўвагі. { -brand-short-name } будзе адхіляць усе запыты, калі гэта магчыма, або прыме ўсе, калі не.
+cfr-cookie-banner-accept-button-variant-1 = Адхіляць выплыўныя вокны
+    .accesskey = в
+cfr-cookie-banner-reject-button-variant-1 = Не, дзякуй
+    .accesskey = з
+cfr-cookie-banner-handling-header-variant-2 = Памяншэнне колькасці банераў кукі
+cfr-cookie-banner-handling-body-variant-2 = Дазволіць { -brand-short-name } адхіляць запыты сайтаў на згоду на кукі, калі гэта магчыма, або прымаць доступ кукі, калі гэта немагчыма?
+cfr-cookie-banner-accept-button-variant-2 = Дазволіць
+    .accesskey = Д
+cfr-cookie-banner-reject-button-variant-2 = Не зараз
+    .accesskey = з
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Сінхранізуйце свае закладкі ўсюды.
@@ -159,10 +182,6 @@ spotlight-total-cookie-protection-body = Поўная ахова кукаў пе
 spotlight-total-cookie-protection-expanded = { -brand-short-name } будуе плот вакол файлаў кукі, абмяжоўваючы іх толькі сайтам, на якім вы знаходзіцеся, таму трэкеры не могуць выкарыстоўваць іх, каб сачыць за вамі. З раннім доступам вы дапаможаце аптымізаваць гэту функцыю, каб мы маглі працягваць ствараць лепшае сеціва для ўсіх.
 spotlight-total-cookie-protection-primary-button = Уключыць поўную ахову кукаў
 spotlight-total-cookie-protection-secondary-button = Не зараз
-cfr-total-cookie-protection-header = Дзякуючы вам, { -brand-short-name } больш прыватны і бяспечны, чым калі-небудзь
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = Поўная ахова кукаў – наша самая надзейная абарона прыватнасці, і цяпер гэта прадвызначаная налада для ўсіх карыстальнікаў { -brand-short-name }. Мы не змаглі б зрабіць гэта без такіх удзельнікаў ранняга доступу, як вы. Дзякуй за дапамогу ў стварэнні лепшага, больш прыватнага інтэрнэту.
 
 ## Emotive Continuous Onboarding
 
@@ -176,3 +195,85 @@ spotlight-pin-primary-button =
        *[other] Замацаваць на панэлі заданняў
     }
 spotlight-pin-secondary-button = Не зараз
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Новы { -brand-short-name }. Больш прыватны. Менш трэкераў. Ніякіх кампрамісаў.
+mr2022-background-update-toast-text = Паспрабуйце найноўшы { -brand-short-name } зараз, абноўлены нашай самай моцнай аховай ад сачэння.
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Адкрыць { -brand-shorter-name } зараз
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Нагадаць пазней
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Паспрабаваць
+    .accesskey = П
+firefoxview-cfr-secondarybutton = Не зараз
+    .accesskey = Н
+firefoxview-cfr-header-v2 = Хутка працягвайце з таго месца, дзе спыніліся
+firefoxview-cfr-body-v2 = Вяртайце нядаўна закрытыя карткі, а таксама лёгка пераключайцеся паміж прыладамі з дапамогай { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Павітайцеся з { -firefoxview-brand-name }
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Хочаце гэтую адкрытую картку на тэлефоне? Трымайце. Патрэбен той сайт, які вы толькі што наведалі? Пуф, ён вярнуўся з { -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = Паглядзець, як гэта працуе
+firefoxview-spotlight-promo-secondarybutton = Прапусціць
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Выберыце расфарбоўку
+    .accesskey = В
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Расфарбуйце свой браўзер эксклюзіўнымі адценнямі { -brand-short-name }, натхнёнымі галасамі, якія змянілі культуру.
+colorways-cfr-header-28days = Расфарбоўкі незалежных галасоў даступныя да 16 студзеня
+colorways-cfr-header-14days = Расфарбоўкі незалежных галасоў даступныя яшчэ два тыдні
+colorways-cfr-header-7days = Расфарбоўкі незалежных галасоў даступныя да канца тыдня
+colorways-cfr-header-today = Расфарбоўкі незалежных галасоў даступныя да канца дня
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Банеры з кукамі зніклі!
+cfr-cookiebanner-body = Дазволіць { -brand-short-name } аўтаматычна адхіляць усе запыты банераў кукі, калі гэта магчыма.
+cfr-cookiebanner-accept-button = Адхіляць банеры
+    .accesskey = А
+cfr-cookiebanner-reject-button = Не зараз
+    .accesskey = Н
+cfr-cookiebanner-header-variant-1 = Бачыць менш выплыўных акон пра кукі
+cfr-cookiebanner-body-variant-1 = Дазвольце { -brand-short-name } аўтаматычна адказваць на выплыўныя вокны файлаў кукі, каб вы маглі вярнуцца да прагляду сайтаў без адцягнення ўвагі. { -brand-short-name } будзе адхіляць усе запыты, калі гэта магчыма.
+cfr-cookiebanner-accept-button-variant-1 = Адхіляць выплыўныя вокны
+    .accesskey = А
+cfr-cookiebanner-reject-button-variant-1 = Не, дзякуй
+    .accesskey = Н
+cfr-cookiebanner-header-variant-2 = Памяншэнне колькасці банераў кукі
+cfr-cookiebanner-body-variant-2 = Паменшыце колькасць банераў кукі, якія вы бачыце, дазволіўшы { -brand-short-name } адхіляць запыты сайта на згоду на файлы кукі, калі гэта магчыма.
+cfr-cookiebanner-accept-button-variant-2 = Дазволіць
+    .accesskey = Д
+cfr-cookiebanner-reject-button-variant-2 = Не зараз
+    .accesskey = Н
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Можаце разлічваць на нас
+july-jam-body = Кожны месяц { -brand-short-name } блакуе ў сярэднім больш за 3000 трэкераў на карыстальніка, даючы вам бяспечны і хуткі доступ да добрага інтэрнэту.
+july-jam-set-default-primary = Адкрываць мае спасылкі ў { -brand-short-name }

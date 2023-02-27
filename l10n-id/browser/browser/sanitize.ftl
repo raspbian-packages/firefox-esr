@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Pengaturan untuk Menghapus Riwayat
     .style = width: 36em
 
+sanitize-prefs2 =
+    .title = Pengaturan untuk Menghapus Riwayat
+    .style = min-width: 36em
+
 sanitize-prefs-style =
     .style = width: 18em
 

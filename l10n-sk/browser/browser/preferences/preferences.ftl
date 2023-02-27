@@ -109,7 +109,7 @@ always-check-default =
     .label = Vždy kontrolovať, či je { -brand-short-name } predvoleným prehliadačom
     .accesskey = r
 is-default = { -brand-short-name } je nastavený ako predvolený prehliadač
-is-not-default = { -brand-short-name } nie je váš predvolený prehliadač
+is-not-default = { -brand-short-name } nie je vašim predvoleným prehliadačom
 set-as-my-default-browser =
     .label = Nastaviť ako predvolený…
     .accesskey = d
@@ -596,6 +596,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Zobrazovať návrhy vyhľadávania vo výsledkoch panela s adresou
     .accesskey = a
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Zobraziť hľadané výrazy namiesto adresy URL na stránke s výsledkami predvoleného vyhľadávacieho nástroja
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -697,7 +702,7 @@ prefs-sync-offer-setup-label2 = Synchronizujte si svoje záložky, históriu, ka
 prefs-sync-now =
     .labelnotsyncing = Synchronizovať
     .accesskeynotsyncing = n
-    .labelsyncing = Synchronizácia…
+    .labelsyncing = Synchronizuje sa…
 
 ## The list of things currently syncing.
 
@@ -719,6 +724,13 @@ sync-change-options =
 sync-choose-what-to-sync-dialog =
     .title = Vyberte, čo chcete synchronizovať
     .style = width: 36em; min-height: 35em;
+    .buttonlabelaccept = Uložiť zmeny
+    .buttonaccesskeyaccept = U
+    .buttonlabelextra2 = Odpojiť…
+    .buttonaccesskeyextra2 = O
+sync-choose-what-to-sync-dialog3 =
+    .title = Vyberte, čo chcete synchronizovať
+    .style = min-width: 36em;
     .buttonlabelaccept = Uložiť zmeny
     .buttonaccesskeyaccept = U
     .buttonlabelextra2 = Odpojiť…
@@ -791,6 +803,9 @@ forms-breach-alerts =
     .label = Zobrazovať upozornenia na stránky, na ktorých prišlo k úniku dát
     .accesskey = b
 forms-breach-alerts-learn-more-link = Ďalšie informácie
+relay-integration =
+    .label = Povoliť { -relay-brand-name } v Správcovi hesiel { -brand-short-name(case: "gen") }
+relay-integration-learn-more-link = Ďalšie informácie
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Automaticky dopĺňať prihlasovacie údaje a heslá
@@ -907,6 +922,8 @@ sitedata-option-block-unvisited =
     .label = Cookies z doposiaľ nenavštívených stránok
 sitedata-option-block-all-third-party =
     .label = Všetky cookies tretích strán (môže obmedziť fungovanie niektorých stránok)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Všetky súbory cookie tretích strán (môže spôsobiť nefunkčnosť niektorých stránok)
 sitedata-option-block-all =
     .label = Všetky cookies (obmedzí fungovanie niektorých stránok)
 sitedata-clear =
@@ -986,6 +1003,7 @@ content-blocking-all-cookies = Všetky cookies
 content-blocking-unvisited-cookies = Cookies z nenavštívených stránok
 content-blocking-all-windows-tracking-content = Sledovací obsah je blokovaný vo všetkých oknách
 content-blocking-all-third-party-cookies = Blokované sú všetky cookies tretích strán
+content-blocking-all-cross-site-cookies = Všetky súbory cookie tretích strán
 content-blocking-cryptominers = Blokovaná je ťažba kryptomien
 content-blocking-fingerprinters = Blokovaná je tvorba odtlačku prehliadača
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -993,6 +1011,9 @@ content-blocking-fingerprinters = Blokovaná je tvorba odtlačku prehliadača
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Otestujte našu najvýkonnejšiu funkciu ochrany súkromia
     .accesskey = t
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Úplná ochrana súborov cookie izoluje súbory cookie pre konkrétnu webovú stránku, takže sledovači ich nemôžu použiť na to, aby vás sledovali medzi webmi.
 content-blocking-etp-standard-tcp-rollout-learn-more = Ďalšie informácie

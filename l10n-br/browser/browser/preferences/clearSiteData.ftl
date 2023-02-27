@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Skarzhañ ar roadennoù
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Skarzhañ ar roadennoù
+    .style = min-width: 35em
+
 clear-site-data-description = Skarzhañ an holl doupinoù ha roadennoù lec'hienn kadavet gant { -brand-short-name } a c'hall digennaskañ ac'hanoc'h eus lec'hiennoù ha dilemel endalc'hadoù web ezlinenn. Skarzhañ roadennoù ar c'hrubuilh na raio netra d'ho kennaskadennoù.
 
 clear-site-data-close-key =

@@ -111,7 +111,7 @@ newtab-menu-show-privacy-info = ਸਾਡੇ ਸਪਾਂਸਰ ਅਤੇ ਤੁ
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
-newtab-privacy-modal-button-done = ਸਮਾਪਤ
+newtab-privacy-modal-button-done = ਮੁਕੰਮਲ
 newtab-privacy-modal-button-manage = ਸਪਾਂਸਰ ਕੀਤੀ ਸਮੱਗਰੀ ਦੇ ਇੰਤਜ਼ਾਮ ਲਈ ਸੈਟਿੰਗਾਂ
 newtab-privacy-modal-header = ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਮਹੱਤਵ ਰੱਖਦੀ ਹੈ।
 newtab-privacy-modal-paragraph-2 =
@@ -154,7 +154,7 @@ newtab-label-bookmarked = ਬੁੱਕਮਾਰਕ ਕੀਤੀਆਂ
 newtab-label-removed-bookmark = ਬੁੱਕਮਾਰਕ ਹਟਾਇਆ
 newtab-label-recommended = ਰੁਝਾਨ
 newtab-label-saved = { -pocket-brand-name } ਵਿੱਚ ਸੰਭਾਲਿਆ
-newtab-label-download = ਡਾਊਨਲੋਡ ਕਰੋ
+newtab-label-download = ਡਾਊਨਲੋਡ ਕੀਤੇ ਹੋਏ
 # This string is used in the story cards to indicate sponsored content
 # Variables:
 #  $sponsorOrSource (String): This is the name of a company or their domain
@@ -238,6 +238,9 @@ newtab-pocket-last-card-title = ਤੁਸੀਂ ਪੂਰੇ ਕਰ ਲਏ ਹ�
 newtab-pocket-last-card-desc = ਹੋਰਾਂ ਲਈ ਫੇਰ ਵੇਖਿਓ।
 newtab-pocket-last-card-image =
     .alt = ਤੁਸੀਂ ਪੂਰੇ ਕਰ ਲਏ ਹਨ!
+# A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-save = ਸੰਭਾਲੋ
+newtab-pocket-saved = ਸੰਭਾਲਿਆ
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.

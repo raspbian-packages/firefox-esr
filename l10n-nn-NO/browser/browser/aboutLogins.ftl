@@ -7,6 +7,8 @@ about-logins-page-title = Innloggingar og passord
 login-filter =
     .placeholder = Søk innloggingar
 create-login-button = Lag ny innlogging
+create-new-login-button =
+    .title = Opprett ny innlogging
 fxaccounts-sign-in-text = Få passorda dine på dei andre einingane dine
 fxaccounts-sign-in-sync-button = Logg inn for å synkronisere
 fxaccounts-avatar-button =
@@ -99,6 +101,14 @@ login-item-cancel-button = Avbryt
 login-item-time-changed = Sist endra: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
 login-item-time-created = Oppretta: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
 login-item-time-used = Sist brukt: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+login-item-timeline-action-created = Oppretta
+login-item-timeline-action-updated = Oppdatert
+login-item-timeline-action-used = Brukt
 
 ## OS Authentication dialog
 

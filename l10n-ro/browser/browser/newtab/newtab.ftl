@@ -145,7 +145,7 @@ newtab-menu-open-file = Deschide fișierul
 ## the page is bookmarked, or is currently open on another device.
 
 newtab-label-visited = Vizitat
-newtab-label-bookmarked = Însemnat
+newtab-label-bookmarked = Marcat
 newtab-label-removed-bookmark = Marcaj eliminat
 newtab-label-recommended = În tendințe
 newtab-label-saved = Salvat în { -pocket-brand-name }
@@ -219,6 +219,7 @@ newtab-pocket-cta-text = Salvează în { -pocket-brand-name } articolele care ț
 
 ## Pocket Final Card Section.
 ## This is for the final card in the Pocket grid.
+
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.

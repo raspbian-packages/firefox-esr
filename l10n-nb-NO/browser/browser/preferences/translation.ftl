@@ -6,6 +6,10 @@ translation-window =
     .title = Unntak - oversetting
     .style = width: 36em
 
+translation-window2 =
+    .title = Unntak - oversetting
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

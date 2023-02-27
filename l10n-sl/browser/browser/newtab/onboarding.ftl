@@ -25,6 +25,12 @@ return-to-amo-addon-title = Zdaj pa dodajte <img data-l10n-name="icon"/> <b>{ $a
 return-to-amo-add-extension-label = Dodaj razširitev
 return-to-amo-add-theme-label = Dodaj temo
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Spoznajte { -brand-short-name }
+mr1-return-to-amo-addon-title = Imate hiter in zaseben brskalnik na dosegu roke. Zdaj lahko dodate <b>{ $addon-name }</b> in s { -brand-short-name(sklon: "orodnik") } naredite še več.
+mr1-return-to-amo-add-extension-label = Dodaj { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Napredek: korak { $current } od { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Napredek: korak { $current } od { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -324,35 +332,35 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Uvozi iz prejšnj
 
 mr2022-onboarding-colorway-title = Izberite barvo, ki vas navdihuje
 mr2022-onboarding-colorway-subtitle = Neodvisni glasovi lahko spreminjajo kulturo.
-mr2022-onboarding-colorway-primary-button-label = Nastavi barvno kombinacijo
+mr2022-onboarding-colorway-primary-button-label-continue = Nastavi in nadaljuj
 mr2022-onboarding-existing-colorway-checkbox-label = Naj bo { -firefox-home-brand-name } vaša barvita domača stran
 mr2022-onboarding-colorway-label-default = Privzeta
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Privzeta
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Trenutne barve { -brand-short-name(sklon: "rodilnik") }
 mr2022-onboarding-colorway-description-default = <b>Uporabi moje trenutne barve { -brand-short-name(sklon: "rodilnik") }.</b>
 mr2022-onboarding-colorway-label-playmaker = Organizator igre
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Organizator igre
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Organizator igre (rdeča)
 mr2022-onboarding-colorway-description-playmaker = <b>Ste organizator igre.</b> Ustvarjate priložnosti za zmago in vsem okoli sebe pomagate igrati bolje.
 mr2022-onboarding-colorway-label-expressionist = Ekspresionist
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Ekspresionist
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Ekspresionist (rumena)
 mr2022-onboarding-colorway-description-expressionist = <b>Ste ekspresionist.</b> Svet vidite drugače in vaše stvaritve pri drugih vzbujajo čustva.
 mr2022-onboarding-colorway-label-visionary = Vizionar
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Vizionar
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Vizionar (zelena)
 mr2022-onboarding-colorway-description-visionary = <b>Ste vizionar.</b> Ne sprijaznite se s statusom quo in drugim predstavljate boljšo prihodnost.
 mr2022-onboarding-colorway-label-activist = Aktivist
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aktivist
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktivist (modra)
 mr2022-onboarding-colorway-description-activist = <b>Ste aktivist.</b> Svet pustite boljši, kot ste ga našli, in prepričate druge, da verjamejo.
 mr2022-onboarding-colorway-label-dreamer = Sanjač
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Sanjač
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Sanjač (vijolična)
 mr2022-onboarding-colorway-description-dreamer = <b>Ste sanjač.</b> Verjamete, da je sreča naklonjena hrabrim, in drugim vlivate pogum.
 mr2022-onboarding-colorway-label-innovator = Inovator
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Inovator
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Inovator (oranžna)
 mr2022-onboarding-colorway-description-innovator = <b>Ste inovator.</b> V vsem vidite priložnosti in vplivate na življenja vseh okoli sebe.
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -383,7 +391,33 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Prikaži podrobn
 
 ## MR2022 Multistage Gratitude screen strings
 
-mr2022-onboarding-gratitude-title = Pomagate nam graditi boljši splet.
+mr2022-onboarding-gratitude-title = Pomagate nam graditi boljši splet
 mr2022-onboarding-gratitude-subtitle = Hvala, ker uporabljate { -brand-short-name }, ki ga podpira Mozilla Foundation. Z vašo podporo si prizadevamo narediti internet bolj odprt, dostopen in boljši za vse.
 mr2022-onboarding-gratitude-primary-button-label = Oglejte si, kaj je novega
 mr2022-onboarding-gratitude-secondary-button-label = Začnite z brskanjem
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Počutite se kot doma
+onboarding-infrequent-import-subtitle = Ne glede na to, ali se nameščate ali zgolj opazujete, ne pozabite, da lahko uvozite svoje zaznamke, gesla in drugo.
+onboarding-infrequent-import-primary-button = Uvozi v { -brand-short-name(sklon: "tozilnik") }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Oseba s prenosnim računalnikom, ki jo obdajajo zvezde in cvetje
+mr2022-onboarding-default-image-alt =
+    .aria-label = Oseba, ki objema logotip { -brand-product-name(sklon: "rodilnik") }
+mr2022-onboarding-import-image-alt =
+    .aria-label = Oseba, ki se vozi na rolki s polno škatlo programskih ikon
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Žabe, ki skačejo z lokvanja na lokvanj, s kodo QR za prenos mobilnega { -brand-product-name(sklon: "rodilnik") } v sredini
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Čarobna paličica pričara logotip { -brand-product-name }ovega zasebnega brskanja iz klobuka
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Svetlopolta in temnopolta roka si čestitata
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Pogled na sončni zahod skozi okno, na katerem počivata lisica in lončnica
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Roka z razpršilcem slika barvit kolaž z zelenim očesom, oranžnim čevljem, rdečo košarkarsko žogo, vijoličnimi slušalkami, modrim srcem in rumeno krono

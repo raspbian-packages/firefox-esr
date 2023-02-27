@@ -25,6 +25,9 @@ messenger-languages-window =
     .title = Cài đặt ngôn ngữ { -brand-short-name }
     .style = width: 40em
 
+messenger-languages-window2 =
+    .title = Cài đặt ngôn ngữ { -brand-short-name }
+
 messenger-languages-description = { -brand-short-name } sẽ hiển thị ngôn ngữ mà bạn đã chọn làm mặc định và sẽ hiển thị ngôn ngữ khác nếu cần thiết được sắp xếp theo thứ tự mà chúng xuất hiện.
 
 messenger-languages-search = Tìm kiếm thêm ngôn ngữ...

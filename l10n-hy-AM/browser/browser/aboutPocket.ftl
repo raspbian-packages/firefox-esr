@@ -45,6 +45,8 @@ pocket-panel-signup-tagline-story-two = Դիտեք { -pocket-brand-name }-ում
 pocket-panel-home-my-list = Իմ ցուցակը
 pocket-panel-home-welcome-back = Բարի վերադարձ
 pocket-panel-home-discover-more = Բացահայտի՛ր ավելին
+pocket-panel-home-explore-more = Դիտարկել
+pocket-panel-home-most-recent-saves = Ահա ձեր ամենավերջին պահումները.
 pocket-panel-home-most-recent-saves-loading = Վերջին պահումները բեռնվում են…
 pocket-panel-home-new-user-message = Տեսեք ձեր վերջին պահումները այստեղ:
 

@@ -9,6 +9,10 @@ devmgr =
     .title = Менеджар прылад
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Менеджар прылад
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Модулі і прылады бяспекі
 

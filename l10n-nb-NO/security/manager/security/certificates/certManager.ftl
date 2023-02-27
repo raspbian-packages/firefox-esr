@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Rediger tiltro for CA-sertifikat
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Rediger tiltro for CA-sertifikat
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Rediger tiltro:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Slett sertifikat
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Slett sertifikat
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Host
@@ -185,8 +193,6 @@ delete-email-cert-impact = Dersom du sletter en person sitt e-postsertifikat vil
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Sertifikat med serienummer: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Ikke send noen klientsertifikat

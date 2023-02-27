@@ -36,6 +36,10 @@ vcard-n-suffix = Sufijo
 vcard-n-add-suffix =
     .title = Agregar sufijo
 
+# Nickname
+
+vcard-nickname = Nombre de usuario
+
 # Email vCard field
 
 vcard-email-header = Direcciones de correo
@@ -54,6 +58,10 @@ vcard-url-label = Sitio web
 vcard-tel-header = Números de teléfono
 vcard-tel-add = Agregar número de teléfono
 vcard-tel-label = Número de teléfono
+# Or "Mobile"
+vcard-entry-type-cell = Celda
+vcard-entry-type-fax = Fax
+vcard-entry-type-pager = Localizador
 
 # TZ vCard field
 
@@ -62,7 +70,6 @@ vcard-tz-add = Agregar zona horaria
 
 # IMPP vCard field
 
-vcard-impp-header = Cuentas de chat
 vcard-impp2-header = Mensajería instantánea
 vcard-impp-add = Agregar cuenta de chat
 vcard-impp-label = Cuenta de chat
@@ -106,10 +113,26 @@ vcard-note-add = Agregar nota
 vcard-org-header = Propiedades de organización
 vcard-org-add = Agregar propiedad de organización
 vcard-org-title = Título
+vcard-org-title-input =
+    .title = Puesto o trabajo
+    .placeholder = Titulo de trabajo
 vcard-org-role = Rol
+vcard-org-role-input =
+    .title = Función o papel que desempeñas en una situación particular
+    .placeholder = Rol en un proyecto
 vcard-org-org = Organización
+vcard-org-org-input =
+    .title = Nombre de la organización
+    .placeholder = Nombre de la empresa
+vcard-org-org-unit = Departamento
+vcard-org-org-unit-input =
+    .title = Nombre Unidad Organizacional
+    .placeholder = Departamento
 
 # Custom properties
 
 vcard-custom-header = Propiedades personalizadas
 vcard-custom-add = Agregar propiedades personalizadas
+vcard-remove-button-title =
+    .title = Eliminar
+vcard-remove-button = Eliminar

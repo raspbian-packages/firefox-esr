@@ -6,6 +6,10 @@ add-engine-window =
     .title = Sykmasine tafoegje
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Sykmasine tafoegje
+    .style = min-width: 32em;
+
 add-engine-button = Oanpaste sykmasine tafoegje…
 
 add-engine-name = Namme sykmasine

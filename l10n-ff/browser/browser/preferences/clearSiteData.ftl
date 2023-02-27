@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Momtu keɓe
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Momtu keɓe
+    .style = min-width: 35em
+
 clear-site-data-description = Momtude kuukiije ɗee fof kañum e keɓe ɗe { -brand-short-name } moofti e lowre ina waawi seŋtudema e lowre geese tee momta loowdi geese ɗe ceŋaaki. Momtude keɓe mogginiiɗe battinoytaa ceŋi maa.
 
 clear-site-data-close-key =

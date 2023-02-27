@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = Programmasymboalopsjes
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = Programmasymboalopsjes
+
 dock-options-show-badge =
     .label = Badge-piktogram toane
     .accesskey = p

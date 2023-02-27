@@ -6,6 +6,9 @@ dock-options-window-dialog =
     .title = 應用程式圖示選項
     .style = width: 35em;
 
+dock-options-window-dialog2 =
+    .title = 應用程式圖示選項
+
 dock-options-show-badge =
     .label = 顯示徽章圖示
     .accesskey = b

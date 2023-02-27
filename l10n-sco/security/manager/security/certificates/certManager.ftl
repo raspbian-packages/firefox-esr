@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Chynge CA certificate trust settins
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Chynge CA certificate trust settins
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Chynge trust settins:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Dicht Certificate
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Dicht Certificate
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Host
@@ -185,8 +193,6 @@ delete-email-cert-impact = If ye dicht a body’s e-mail certificate, ye'll no b
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Certificate wi serial nummer: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Send nae client certificate

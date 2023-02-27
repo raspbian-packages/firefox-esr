@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Dicht Data
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Dicht Data
+    .style = min-width: 35em
+
 clear-site-data-description = Dichtin aw cookies and site data stored by { -brand-short-name } micht sign ye oot o wabsites and remuive affline wab content. Dichtin cache data willnae affect yer logins.
 
 clear-site-data-close-key =

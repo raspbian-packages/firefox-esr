@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Выдаліць дадзеныя
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Выдаліць дадзеныя
+    .style = min-width: 35em
+
 clear-site-data-description = Выдаленне ўсіх кукаў і дадзеных сайтаў, якія захоўваюцца ў { -brand-short-name }, можа прывесці да выхаду з вэб-сайтаў і выдалення аўтаномнага вэб-кантэнту. Ачыстка кэша дадзеных не паўплывае на вашы лагіны.
 
 clear-site-data-close-key =

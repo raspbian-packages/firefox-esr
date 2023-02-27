@@ -57,6 +57,12 @@ bookmark-selected-tabs =
 bookmark-tab =
     .label = පටිත්තට පොත්යොමුවක්
     .accesskey = B
+tab-context-bookmark-tab =
+    .label = පටිත්තට පොත්යොමුවක්…
+    .accesskey = B
+tab-context-open-in-new-container-tab =
+    .label = නව පටිති අඩංගුවකින් අරින්න
+    .accesskey = e
 move-to-start =
     .label = මුලට ගෙන යන්න
     .accesskey = S
@@ -97,3 +103,11 @@ tab-context-move-tabs =
            *[other] පටිති ගෙනයන්න
         }
     .accesskey = v
+
+tab-context-send-tabs-to-device =
+    .label =
+        { $tabCount ->
+            [1] උපාංගයට පටිත්ත යවන්න
+           *[other] උපාංගයට පටිති { $tabCount } ක් යවන්න
+        }
+    .accesskey = n

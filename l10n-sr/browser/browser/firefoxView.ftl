@@ -17,7 +17,6 @@ firefoxview-just-now-timestamp = Управо сад
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
 firefoxview-tabpickup-header = Синхронизовани језичци
 firefoxview-tabpickup-description = Отвори странице са других уређаја.
-firefoxview-tabpickup-recenttabs-description = Недавни језичци биће наведени овде
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% завршено
@@ -43,6 +42,13 @@ firefoxview-tabpickup-sync-error-primarybutton = Покушај поново
 firefoxview-tabpickup-sync-disconnected-header = Укључите синхорнизацију да наставите
 firefoxview-tabpickup-sync-disconnected-description = Да преузмете своје језичке, морате да дозволите синхронизацију у { -brand-short-name }-у.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Укључите синхронизацију у подешавањима
+firefoxview-tabpickup-password-locked-header = Унесите вашу главну лозинку да бисте видели језичке
+firefoxview-tabpickup-password-locked-description = Да преузмете своје језичке, морате да унесете главну лозинку за { -brand-short-name }.
+firefoxview-tabpickup-password-locked-link = Сазнајте више
+firefoxview-tabpickup-password-locked-primarybutton = Унеси главну лозиннку
+firefoxview-tabpickup-signed-out-header = Пријавите се за поновно повезивање
+firefoxview-tabpickup-signed-out-description = Да се поново повежете и преузмете ваше картице, пријавите се у ваш { -fxaccount-brand-name }.
+firefoxview-tabpickup-signed-out-primarybutton = Пријави се
 firefoxview-tabpickup-syncing = Сачекајте да се ваши језичци синхронизују. Брзо ће то.
 firefoxview-mobile-promo-header = Преузмите језичке са телефона или таблета
 firefoxview-mobile-promo-description = Да видите ваше најновије језичке са мобилног уређаја, пријавите се на { -brand-product-name } за iOS или Android.
@@ -50,8 +56,13 @@ firefoxview-mobile-promo-primarybutton = Преузмите { -brand-product-nam
 firefoxview-mobile-confirmation-header = 🎉 Све је спремно!
 firefoxview-mobile-confirmation-description = Сада можете да преузмете ваше { -brand-product-name } језичке са таблета или телефона.
 firefoxview-closed-tabs-title = Недавно затворено
-firefoxview-closed-tabs-description = Поново отворите странице које сте затворили на овом уређају.
-firefoxview-closed-tabs-placeholder = <strong>Нема недавно затворених страница</strong><br/>Не брините да ћете грешком затворити и изгубити језичак. Увек их можете пронаћи овде.
+firefoxview-closed-tabs-description2 = Поново отворите странице које сте затворили у овом прозору.
+firefoxview-closed-tabs-placeholder-header = Нема недавно затворених језичака
+firefoxview-closed-tabs-placeholder-body = Ако затворите језичак у овом прозору, можете га преузети овде.
+# Variables:
+#   $tabTitle (string) - Title of tab being dismissed
+firefoxview-closed-tabs-dismiss-tab =
+    .title = Одбаци { $tabTitle }
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Последња активност
 # Variables:
@@ -65,7 +76,8 @@ firefoxview-change-colorway-button = Промените комбинације �
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
-firefoxview-synced-tabs-placeholder = <strong>Још нема шта да се види</strong><br/>Следећи пут када отворите страницу у { -brand-product-name }-у на другом уређају, можете да је преузмете овде.
+firefoxview-synced-tabs-placeholder-header = Овде још нема ничега
+firefoxview-synced-tabs-placeholder-body = Следећи пут када отворите страницу у { -brand-product-name }-у на другом уређају, она ће се појавити овде.
 firefoxview-collapse-button-show =
     .title = Прикажи листу
 firefoxview-collapse-button-hide =

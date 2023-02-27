@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Iɣewwaṛen i usfaḍ n umazray
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Iɣewwaṛen i usfaḍ n umazray
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

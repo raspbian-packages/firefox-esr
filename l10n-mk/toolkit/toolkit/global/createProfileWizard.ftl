@@ -6,12 +6,22 @@ create-profile-window =
     .title = Волшебник за креирање профили
     .style = width: 51em; height: 38em;
 
+create-profile-window2 =
+    .title = Волшебник за креирање профили
+    .style = min-width: 51em; min-height: 38em;
+
 ## First wizard page
 
 create-profile-first-page-header =
     { PLATFORM() ->
         [macos] Вовед
        *[other] Добродојдовте во „{ create-profile-window.title }“
+    }
+
+create-profile-first-page-header2 =
+    { PLATFORM() ->
+        [macos] Вовед
+       *[other] Добродојдовте во „{ create-profile-window2.title }“
     }
 
 profile-creation-explanation-1 = { -brand-short-name } ги чува информациите за вашите поставки и параметри во вашиот личен профил.
@@ -32,6 +42,12 @@ create-profile-last-page-header =
     { PLATFORM() ->
         [macos] Заклучок
        *[other] Комплетирање на „{ create-profile-window.title }“
+    }
+
+create-profile-last-page-header2 =
+    { PLATFORM() ->
+        [macos] Заклучок
+       *[other] Комплетирање на „{ create-profile-window2.title }“
     }
 
 profile-creation-intro = Ако креирате повеќе профили можете да ги разликувате по нивните имиња. Можете да ги користите имињата наведени овде или да користите ваши имиња.

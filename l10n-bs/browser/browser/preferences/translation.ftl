@@ -6,6 +6,10 @@ translation-window =
     .title = Izuzeci - Prijevod
     .style = width: 36em
 
+translation-window2 =
+    .title = Izuzeci - Prijevod
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

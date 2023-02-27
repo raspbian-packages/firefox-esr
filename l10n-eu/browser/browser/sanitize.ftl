@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Historia garbitzeko ezarpenak
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Historia garbitzeko ezarpenak
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

@@ -25,6 +25,10 @@ certmgr-edit-ca-cert =
     .title = Edit tetapan sijil CA dipercaya
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Edit tetapan sijil CA dipercaya
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Edit tetapan dipercaya:
 
 certmgr-edit-cert-trust-ssl =
@@ -36,6 +40,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Buang Sijil
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Buang Sijil
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Nama Sijil
@@ -173,9 +181,8 @@ delete-email-cert-impact = Jika anda menghapuskan sijil e-mel seseorang pengguna
 cert-with-serial =
     .value = Sijil dengan nombor siri: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 55em !important
         }
 
+colors-dialog-window2 =
+    .title = Színek
+
 colors-dialog-legend = Szöveg és háttér
 
 text-color-label =

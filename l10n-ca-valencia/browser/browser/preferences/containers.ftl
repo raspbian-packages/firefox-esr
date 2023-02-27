@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Afig un contenidor nou
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Paràmetres del contenidor { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Afig un contenidor nou
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Paràmetres del contenidor { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

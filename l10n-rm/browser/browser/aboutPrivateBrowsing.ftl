@@ -54,3 +54,13 @@ about-private-browsing-search-banner-close-button =
 
 about-private-browsing-promo-close-button =
     .title = Serrar
+
+## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+about-private-browsing-pin-promo-header = La libertad da la navigaziun privata en in clic
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Fixar en il dock
+       *[other] Fixar en la taskbar
+    }
+about-private-browsing-pin-promo-title = Nagins cookies memorisads e nagina cronologia, ma gist sin tes desktop. Navighescha sco sche nagin guardass.

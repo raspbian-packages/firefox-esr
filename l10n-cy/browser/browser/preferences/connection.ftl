@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 49em
         }
 
+connection-window2 =
+    .title = Gosodiadau Cysylltu
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 44em
+           *[other] min-width: 49em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Dirprwy yr HTTP
     .accesskey = H
 connection-proxy-http-port = Porth
     .accesskey = P
-
 connection-proxy-https-sharing =
     .label = Defnyddio'r dirprwy yma hefyd ar gyfer HTTPS
     .accesskey = D

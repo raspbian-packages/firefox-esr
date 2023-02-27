@@ -6,6 +6,10 @@ blocklist-window =
     .title = Արգելացուցակներ
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Արգելացուցակներ
+    .style = min-width: 55em
+
 blocklist-description = Ընտրեք { -brand-short-name } ցուցակը, որը օգտագործվում է առցանց վտանգներից խուսափելու համար: Ցուցակները տրված են <a data-l10n-name="disconnect-link" title="Disconnect"> Անջատել </a>:
 blocklist-close-key =
     .key = w

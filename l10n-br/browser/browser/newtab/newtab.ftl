@@ -248,6 +248,10 @@ newtab-pocket-last-card-desc = Distroit amañ diwezhatoc’h evit lenn pennadoù
 newtab-pocket-last-card-image =
     .alt = Echuet eo ganeoc’h
 
+# A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-save = Enrollañ
+newtab-pocket-saved = Enrollet
+
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
 
@@ -270,6 +274,7 @@ newtab-custom-sponsored-sites = Berradennoù paeroniet
 newtab-custom-pocket-title = Erbedet gant { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Danvezioù dibar dibabet gant { -pocket-brand-name }, ezel familh { -brand-product-name }
 newtab-custom-pocket-sponsored = Istorioù paeroniet
+newtab-custom-pocket-show-recent-saves = Diskouez an enrolladennoù diwezhañ
 newtab-custom-recent-title = Oberiantiz nevesañ
 newtab-custom-recent-subtitle = Un dibab lec'hiennoù ha danvezioù nevez
 newtab-custom-close-button = Serriñ

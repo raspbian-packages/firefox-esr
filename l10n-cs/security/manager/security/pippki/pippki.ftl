@@ -16,8 +16,6 @@ change-password-old = Současné heslo:
 change-password-new = Nové heslo:
 change-password-reenter = Nové heslo (znovu):
 
-## Reset Password dialog
-
 pippki-failed-pw-change = Heslo nelze změnit.
 pippki-incorrect-pw = Nezadali jste správně stávající heslo. Zkuste to prosím znovu.
 pippki-pw-change-ok = Heslo bylo úspěšně změněno.
@@ -33,9 +31,12 @@ pippki-pw-change2empty-in-fips-mode = Momentálně jste v režimu FIPS, který v
 reset-primary-password-window =
     .title = Obnovení hlavního hesla
     .style = width: 40em
+
+reset-primary-password-window2 =
+    .title = Obnovení hlavního hesla
+    .style = min-width: 40em
 reset-password-button-label =
     .label = Obnovit
-
 reset-primary-password-text = Pokud obnovíte hlavní heslo, všechna vaše uložená hesla z webových stránek a e-mailů, vyplněná data z formulářů, osobní certifikáty a klíče budou ztraceny. Chcete přesto hlavní heslo obnovit?
 
 pippki-reset-password-confirmation-title = Obnovení hlavního hesla
@@ -46,6 +47,10 @@ pippki-reset-password-confirmation-message = Vaše hlavní heslo bylo obnoveno.
 download-cert-window =
     .title = Stažení certifikátu
     .style = width: 46em
+
+download-cert-window2 =
+    .title = Stažení certifikátu
+    .style = min-width: 46em
 download-cert-message = Byli jste požádáni o uznání nové Certifikační Autority (CA).
 download-cert-trust-ssl =
     .label = Uznat tuto CA pro identifikaci serverů.

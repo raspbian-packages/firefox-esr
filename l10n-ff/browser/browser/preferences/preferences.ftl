@@ -193,10 +193,6 @@ files-and-applications-title = Pille e Jaaɓnirɗe
 
 download-header = Gaawte
 
-download-save-to =
-    .label = Danndu piille to
-    .accesskey = n
-
 download-save-where = Danndu piille to
     .accesskey = n
 
@@ -957,8 +953,3 @@ certs-devices =
 desktop-folder-name = Biro
 downloads-folder-name = Gaawte
 choose-download-folder-title = Suɓo Runngere Gaawte:
-
-# Variables:
-#   $service-name (String) - Name of a cloud storage provider like Dropbox, Google Drive, etc...
-save-files-to-cloud-storage =
-    .label = Daɗndu piille to { $service-name }

@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Стерти дані
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Стерти дані
+    .style = min-width: 35em
+
 clear-site-data-description = Стирання всіх кук і даних сайтів, що зберігаються в { -brand-short-name }, може призвести до виходу на вебсайтах та вилучення автономного вебвмісту.
 
 clear-site-data-close-key =

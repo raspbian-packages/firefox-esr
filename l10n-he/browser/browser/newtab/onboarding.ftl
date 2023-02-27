@@ -25,6 +25,12 @@ return-to-amo-addon-title = כעת הבה נשיג לך את <img data-l10n-name
 return-to-amo-add-extension-label = הוספת ההרחבה
 return-to-amo-add-theme-label = הוספת ערכת הנושא
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = תגידו שלום ל־{ -brand-short-name }
+mr1-return-to-amo-addon-title = יש לך דפדפן מהיר ופרטי בקצות האצבעות שלך. עכשיו באפשרותך להוסיף את <b>{ $addon-name }</b> כדי לעשות אפילו יותר עם { -brand-short-name }.
+mr1-return-to-amo-add-extension-label = הוספת { $addon-name }
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = התקדמות: שלב { $current } מתוך { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = התקדמות: שלב { $current } מתוך { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -290,6 +298,8 @@ mr2022-onboarding-set-default-primary-button-label = הגדרת { -brand-short-n
 
 ## MR2022 Import Settings screen strings
 
+mr2022-onboarding-import-header = התקנה במהירות הבזק
+mr2022-onboarding-import-subtitle = ניתן להגדיר את { -brand-short-name } איך שמתחשק לך. אפשר להוסיף את הסימניות, הססמאות ועוד מהדפדפן הישן שלך.ת
 mr2022-onboarding-import-primary-button-label-no-attribution = ייבוא מהדפדפן הקודם
 
 ## If your language uses grammatical genders, in the description for the
@@ -297,11 +307,10 @@ mr2022-onboarding-import-primary-button-label-no-attribution = ייבוא מהד
 ## Playmaker. You create…") to "X: you…" ("Playmaker: You create…"). This might
 ## help creating a more inclusive translation.
 
-mr2022-onboarding-colorway-primary-button-label = הגדרת ערכים צבעים
 mr2022-onboarding-existing-colorway-checkbox-label = להפוך את { -firefox-home-brand-name } לדף הבית הצבעוני שלך
 mr2022-onboarding-colorway-label-default = ברירת מחדל
-mr2022-onboarding-colorway-tooltip-default =
-    .title = ברירת מחדל
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = הצבעים הנוכחיים של { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>שימוש בצבעי { -brand-short-name } הנוכחיים שלי.</b>
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -329,3 +338,28 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = הצגת מיד�
 
 mr2022-onboarding-gratitude-primary-button-label = מה חדש
 mr2022-onboarding-gratitude-secondary-button-label = התחלת גלישה
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = תרגישו בבית
+onboarding-infrequent-import-primary-button = ייבוא אל { -brand-short-name }
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = בן אדם שעובד על מחשב נייד מוקף בכוכבים ופרחים
+mr2022-onboarding-default-image-alt =
+    .aria-label = בן אדם שמחבק את הלוגו של { -brand-product-name }
+mr2022-onboarding-import-image-alt =
+    .aria-label = בן אדם שרוכב על סקייטבורד עם קופסא שבתוכה סמלים של תוכנות
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = צפרדעים מדלגות על שושנות מים עם קוד QR להורדת { -brand-product-name } לנייד במרכז
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = שרביט קסמים הגורם לסמל הגלישה הפרטית של { -brand-product-name } להופיע מתוך כובע
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = ידיים בהירות וכהות עור נותנות כיף
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = מבט על שקיעה דרך חלון עם שועל וצמח בית על אדן החלון
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = תרסיס יד שצובע קולאז' צבעוני של עין ירוקה, נעל כתומה, כדורסל אדום, אוזניות סגולות, לב כחול וכתר צהוב

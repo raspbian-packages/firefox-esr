@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Wypucuj dane
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Wypucuj dane
+    .style = min-width: 35em
+
 clear-site-data-description = Wypucowanie wszyskich cookies i danych strōn spamiyntanych w aplikacyji { -brand-short-name } może cie wylogować ze strōn i skasować necowōm zawartość offline. Skasowanie danych z podryncznyj pamiyńci niy tyko danych logowanio.
 
 clear-site-data-close-key =

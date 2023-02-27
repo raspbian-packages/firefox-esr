@@ -180,6 +180,17 @@ menu-view-full-screen =
     .label = სრული ეკრანი
     .accesskey = ს
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = კითხვის რეჟიმზე გადასვლა
+    .accesskey = კ
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = კითხვის რეჟიმის დახურვა
+    .accesskey = კ
+
 ##
 
 menu-view-show-all-tabs =

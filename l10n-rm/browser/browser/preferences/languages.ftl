@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Parameters da lingua per las paginas d'internet
     .style = width: 70em
 
+webpage-languages-window2 =
+    .title = Parameters da lingua per las paginas d'internet
+    .style = min-width: 70em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Parameters da lingua da { -brand-short-name }
     .style = width: 50em
+
+browser-languages-window2 =
+    .title = Parameters da lingua da { -brand-short-name }
+    .style = min-width: 50em
 
 browser-languages-description = { -brand-short-name } vegn a duvrar l'emprima lingua sco standard e sche necessari las linguas suandantas tenor lur successiun en la glista.
 

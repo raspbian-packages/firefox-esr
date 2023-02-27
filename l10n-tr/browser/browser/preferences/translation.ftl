@@ -6,6 +6,10 @@ translation-window =
     .title = İstisnalar - Çeviri
     .style = width: 36em
 
+translation-window2 =
+    .title = İstisnalar - Çeviri
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

@@ -9,6 +9,10 @@ devmgr =
     .title = ઉપકરણ વ્યવસ્થાપક
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = ઉપકરણ વ્યવસ્થાપક
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = સુરક્ષા મોડ્યુલો અને ઉપકરણો
 

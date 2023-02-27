@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 38em !important
         }
 
+colors-dialog-window2 =
+    .title = Màu
+
 colors-dialog-legend = Văn bản và nền
 
 text-color-label =

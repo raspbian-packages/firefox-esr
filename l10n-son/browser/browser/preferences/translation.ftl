@@ -6,6 +6,10 @@ translation-window =
     .title = Laybey - berandiyan
     .style = width: 36em
 
+translation-window2 =
+    .title = Laybey - berandiyan
+    .style = min-width: 36em
+
 translation-close-key =
     .key = w
 

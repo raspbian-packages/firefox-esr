@@ -22,6 +22,7 @@ pocket-panel-saved-page-saved = Uloženo do { -pocket-brand-name(case: "gen") }
 pocket-panel-saved-page-saved-b = Uloženo do { -pocket-brand-name(case: "gen") }
 pocket-panel-saved-processing-remove = Odstraňování stránky…
 pocket-panel-saved-removed = Stránka odstraněna z vašeho seznamu
+pocket-panel-saved-removed-updated = Stránka odstraněna z uložených položek
 pocket-panel-saved-processing-tags = Přidávání štítků…
 pocket-panel-saved-remove-page = Odstranit stránku
 pocket-panel-saved-save-tags = Uložit
@@ -63,8 +64,10 @@ pocket-panel-signup-tagline-story-one =
 pocket-panel-signup-tagline-story-two = Zobrazení v { -pocket-brand-name(case: "loc") } kdykoliv a na jakémkoliv zařízení.
 pocket-panel-signup-cta-a-fix = Vaše tlačítko „uložit“ pro internet
 pocket-panel-signup-cta-b = Klepnutím na tlačítko { -pocket-brand-name } můžete ukládat články, videa nebo odkazy. Seznam si můžete kdykoliv zobrazit na kterémkoliv svém zařízení.
+pocket-panel-signup-cta-b-updated = Klepnutím na tlačítko { -pocket-brand-name } můžete ukládat články, videa nebo odkazy. Uložené položky si můžete kdykoliv zobrazit na kterémkoliv svém zařízení.
 pocket-panel-signup-cta-b-short = Klepnutím na tlačítko { -pocket-brand-name } můžete ukládat články, videa nebo odkazy.
-pocket-panel-signup-cta-c = Zobrazte svůj seznam na jakémkoliv zařítení, kdykoliv.
+pocket-panel-signup-cta-c = Zobrazte svůj seznam na jakémkoliv zařízení, kdykoliv.
+pocket-panel-signup-cta-c-updated = Zobrazte své uložené položky na jakémkoliv zařízení, kdykoliv.
 
 ## about:pocket-home panel
 
@@ -82,6 +85,7 @@ pocket-panel-home-new-user-message = Váš nedávno uložený obsah se zobrazí 
 ## Pocket panel header component
 
 pocket-panel-header-my-list = Zobrazit Můj seznam
+pocket-panel-header-my-saves = Zobrazit moje uložené položky
 pocket-panel-header-sign-in = Přihlásit se
 
 ## Pocket panel buttons

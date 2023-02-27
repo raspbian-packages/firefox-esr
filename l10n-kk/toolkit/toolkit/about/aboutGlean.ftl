@@ -13,3 +13,4 @@ tag-pings-label = Барлық жіберілген пингтерді осы т
 log-pings-label = Жіберу алдында журналға пингті қосу керек пе?
 send-pings-label = Аталған пингті жіберу
 controls-button-label = Баптауларды іске асыру
+controls-button-label-verbose = Баптауларды іске асырып, пинг жіберу

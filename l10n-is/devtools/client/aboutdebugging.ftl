@@ -80,7 +80,7 @@ about-debugging-setup-title = Uppsetning
 # Introduction text in the Setup page to explain how to configure remote debugging.
 about-debugging-setup-intro = Stilla tengileiðina sem þú vilt nota til að villuleita tækið þitt fjartengt.
 # Explanatory text in the Setup page about what the 'This Firefox' page is for
-about-debugging-setup-this-firefox2 = Notaðu <a>{ about-debugging-this-firefox-runtime-name }</a> til að villuleita viðbætur og þjónustuferli í þessari útgáfu af { -brand-shorter-name }.
+about-debugging-setup-this-firefox2 = Notaðu <a>{ about-debugging-this-firefox-runtime-name }</a> til að villuleita forritsauka og þjónustuferli í þessari útgáfu af { -brand-shorter-name }.
 # Title of the heading Connect section of the Setup page.
 about-debugging-setup-connect-heading = Tengja tæki
 # USB section of the Setup page
@@ -143,10 +143,10 @@ about-debugging-network-location-form-duplicate = Hýsilvélin „{ $host-value 
 # on "runtime" pages of about:debugging.
 # Title of the temporary extensions category (only available for "This Firefox" runtime).
 about-debugging-runtime-temporary-extensions =
-    .name = Tímabundnar viðbætur
+    .name = Tímabundnir forritsaukar
 # Title of the extensions category.
 about-debugging-runtime-extensions =
-    .name = Viðbætur
+    .name = Forritsaukar
 # Title of the tabs category.
 about-debugging-runtime-tabs =
     .name = Flipar

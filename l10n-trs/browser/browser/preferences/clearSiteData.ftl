@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Nadurê' nuguan'an
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Nadurê' nuguan'an
+    .style = min-width: 35em
+
 clear-site-data-description = Si na'nint nej cookies nī datos 'ngà ma riña sitio { -brand-short-name } ni ga'ue ganarán si sesiont gi'iaj ma. Si na'nint nej datos caché nī nitaj si giran' si sesiont gi'iaj ma.
 
 clear-site-data-close-key =

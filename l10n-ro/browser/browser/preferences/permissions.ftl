@@ -6,6 +6,10 @@ permissions-window =
     .title = Excepții
     .style = width: 50em
 
+permissions-window2 =
+    .title = Excepții
+    .style = min-width: 50em
+
 permissions-close-key =
     .key = w
 
@@ -91,6 +95,10 @@ permissions-invalid-uri-label = Te rugăm să introduci un nume de gazdă valid
 permissions-exceptions-etp-window =
     .title = Excepții pentru protecția îmbunătățită împotriva urmăririi
     .style = { permissions-window.style }
+
+permissions-exceptions-etp-window2 =
+    .title = Excepții pentru protecția îmbunătățită împotriva urmăririi
+    .style = { permissions-window2.style }
 permissions-exceptions-etp-desc = Ai dezactivat protecțiile pe aceste site-uri web.
 
 ## Exceptions - Cookies
@@ -98,6 +106,10 @@ permissions-exceptions-etp-desc = Ai dezactivat protecțiile pe aceste site-uri 
 permissions-exceptions-cookie-window =
     .title = Excepții - Cookie-uri și date ale site-urilor
     .style = { permissions-window.style }
+
+permissions-exceptions-cookie-window2 =
+    .title = Excepții - Cookie-uri și date ale site-urilor
+    .style = { permissions-window2.style }
 permissions-exceptions-cookie-desc = Poți specifica ce site-uri web au întotdeauna sau niciodată permisiunea de a folosi cookie-uri și date ale site-urilor.  Tastează adresa exactă a site-ului pe care vrei să-l gestionezi și apoi dă clic pe Blochează, Permite pentru sesiune sau Permite.
 
 ## Exceptions - HTTPS-Only Mode
@@ -105,6 +117,10 @@ permissions-exceptions-cookie-desc = Poți specifica ce site-uri web au întotde
 permissions-exceptions-https-only-window =
     .title = Excepții - Mod doar HTTPS
     .style = { permissions-window.style }
+
+permissions-exceptions-https-only-window2 =
+    .title = Excepții - Mod doar HTTPS
+    .style = { permissions-window2.style }
 permissions-exceptions-https-only-desc = Poți opri modul doar HTTPS pentru anumite site-uri web. { -brand-short-name } nu va încerca să actualizeze conexiunea la HTTPS securizat pentru aceste site-uri. Excepțiile nu se aplică ferestrelor private.
 
 ## Exceptions - Pop-ups
@@ -112,6 +128,10 @@ permissions-exceptions-https-only-desc = Poți opri modul doar HTTPS pentru anum
 permissions-exceptions-popup-window =
     .title = Site-uri web permise - Ferestre pop-up
     .style = { permissions-window.style }
+
+permissions-exceptions-popup-window2 =
+    .title = Site-uri web permise - Ferestre pop-up
+    .style = { permissions-window2.style }
 permissions-exceptions-popup-desc = Poți specifica ce site-uri web au permisiunea de a deschide ferestre pop-up. Tastează adresa exactă a site-ului căruia vrei să-i oferi permisiunea și apoi clic pe Permite.
 
 ## Exceptions - Saved Logins
@@ -119,6 +139,10 @@ permissions-exceptions-popup-desc = Poți specifica ce site-uri web au permisiun
 permissions-exceptions-saved-logins-window =
     .title = Excepții - Date de autentificare salvate
     .style = { permissions-window.style }
+
+permissions-exceptions-saved-logins-window2 =
+    .title = Excepții - Date de autentificare salvate
+    .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = Nu vor fi salvate date de autentificare pentru următoarele site-uri web
 
 ## Exceptions - Add-ons
@@ -126,6 +150,10 @@ permissions-exceptions-saved-logins-desc = Nu vor fi salvate date de autentifica
 permissions-exceptions-addons-window =
     .title = Site-uri web permise - Instalare de extensii
     .style = { permissions-window.style }
+
+permissions-exceptions-addons-window2 =
+    .title = Site-uri web permise - Instalare de extensii
+    .style = { permissions-window2.style }
 permissions-exceptions-addons-desc = Poți specifica ce site-uri web au permisiunea de a instala suplimente. Tastează adresa exactă a site-ului căruia vrei să-i oferi permisiunea și apoi clic pe Permite.
 
 ## Site Permissions - Autoplay
@@ -133,6 +161,10 @@ permissions-exceptions-addons-desc = Poți specifica ce site-uri web au permisiu
 permissions-site-autoplay-window =
     .title = Setări - Redare automată
     .style = { permissions-window.style }
+
+permissions-site-autoplay-window2 =
+    .title = Setări - Redare automată
+    .style = { permissions-window2.style }
 permissions-site-autoplay-desc = Poți gestiona aici site-urile care nu respectă setările implicite de redare automată.
 
 ## Site Permissions - Notifications
@@ -140,6 +172,10 @@ permissions-site-autoplay-desc = Poți gestiona aici site-urile care nu respect�
 permissions-site-notification-window =
     .title = Setări - Permisiuni pentru notificări
     .style = { permissions-window.style }
+
+permissions-site-notification-window2 =
+    .title = Setări - Permisiuni pentru notificări
+    .style = { permissions-window2.style }
 permissions-site-notification-desc = Următoarele site-uri web au solicitat să îți trimită notificări. Poți alege ce site-uri web au permisiunea de a-ți trimite notificări. De asemenea, poți bloca noile solicitări de permitere a notificărilor.
 permissions-site-notification-disable-label =
     .label = Blochează noile solicitări de permitere a notificărilor
@@ -150,6 +186,10 @@ permissions-site-notification-disable-desc = Acest lucru va împiedica orice sit
 permissions-site-location-window =
     .title = Setări - Permisiuni pentru locație
     .style = { permissions-window.style }
+
+permissions-site-location-window2 =
+    .title = Setări - Permisiuni pentru locație
+    .style = { permissions-window2.style }
 permissions-site-location-desc = Următoarele site-uri web au solicitat să îți acceseze locația. Poți specifica ce site-uri web au permisiunea de a-ți accesa locația. De asemenea, poți bloca noile solicitări de accesare a locației tale.
 permissions-site-location-disable-label =
     .label = Blochează noile solicitări de accesare a locației
@@ -160,6 +200,10 @@ permissions-site-location-disable-desc = Acest lucru va împiedica orice site we
 permissions-site-xr-window =
     .title = Setări - Permisiuni pentru realitate virtuală
     .style = { permissions-window.style }
+
+permissions-site-xr-window2 =
+    .title = Setări - Permisiuni pentru realitate virtuală
+    .style = { permissions-window2.style }
 permissions-site-xr-desc = Următoarele site-uri web au solicitat să îți acceseze dispozitivele de realitate virtuală. Poți specifica ce site-uri web au permisiunea de a-ți accesa dispozitivele de realitate virtuală. De asemenea, poți bloca noile solicitări de accesare a dispozitivelor tale de realitate virtuală.
 permissions-site-xr-disable-label =
     .label = Blochează noile solicitări de accesare a dispozitivelor de realitate virtuală
@@ -170,6 +214,10 @@ permissions-site-xr-disable-desc = Acest lucru va împiedica orice site web care
 permissions-site-camera-window =
     .title = Setări - Permisiuni pentru cameră
     .style = { permissions-window.style }
+
+permissions-site-camera-window2 =
+    .title = Setări - Permisiuni pentru cameră
+    .style = { permissions-window2.style }
 permissions-site-camera-desc = Următoarele site-uri web au solicitat să îți acceseze camera. Poți specifica ce site-uri web au permisiunea de a-ți accesa camera. De asemenea, poți bloca noile solicitări de accesare a camerei tale.
 permissions-site-camera-disable-label =
     .label = Blochează noile solicitări de accesare a camerei
@@ -180,6 +228,10 @@ permissions-site-camera-disable-desc = Acest lucru va împiedica orice site web 
 permissions-site-microphone-window =
     .title = Setări - Permisiuni pentru microfon
     .style = { permissions-window.style }
+
+permissions-site-microphone-window2 =
+    .title = Setări - Permisiuni pentru microfon
+    .style = { permissions-window2.style }
 permissions-site-microphone-desc = Următoarele site-uri web au solicitat să îți acceseze microfonul. Poți specifica ce site-uri web au permisiunea de a-ți accesa microfonul. De asemenea, poți bloca noile solicitări de accesare a microfonului tău.
 permissions-site-microphone-disable-label =
     .label = Blochează noile solicitări de accesare a microfonului

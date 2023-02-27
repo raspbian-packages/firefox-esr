@@ -6,6 +6,10 @@ add-engine-window =
     .title = Anyadir buscador
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Anyadir buscador
+    .style = min-width: 32em;
+
 add-engine-button = Anyadir buscador personalizau
 
 add-engine-name = Nombre d'o motor de busqueda

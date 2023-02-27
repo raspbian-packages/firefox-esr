@@ -6,6 +6,10 @@ add-engine-window =
     .title = ਖੋਜ ਇੰਜਣ ਜੋੜੋ
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = ਖੋਜ ਇੰਜਣ ਜੋੜੋ
+    .style = min-width: 32em;
+
 add-engine-button = ਕਸਟਮ ਇੰਜਣ ਜੋੜੋ
 
 add-engine-name = ਖੋਜ ਇੰਜਣ ਦਾ ਨਾਂ

@@ -189,6 +189,11 @@ search-one-offs-add-engine-menu =
 ##    bookmarks).
 
 
+## QuickActions are shown in the urlbar as the user types a matching string
+## The -cmd- strings are comma separated list of keywords that will match
+## the action.
+
+
 ## Bookmark Panel
 
 bookmark-panel-cancel =
@@ -327,6 +332,15 @@ urlbar-result-action-visit = Yillo
 
 ## Labels shown above groups of urlbar results
 
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = Naat Jiytol Taro
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = Yaltu Jiytol Taro
 
 ## Full Screen and Pointer Lock UI
 
@@ -513,3 +527,14 @@ data-reporting-notification-message = { -brand-short-name } neldat keɓe seeɗa 
 data-reporting-notification-button =
     .label = Suɓo Ko Lollintu-mi
     .accesskey = S
+
+## Unified extensions (toolbar) button
+
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } haɗii ngoo hello hesɗitinde hoore mum.
+refresh-blocked-redirect-label = { -brand-short-name } haɗii ngoo hello ɓennitaade e jaajol to hello woɗngo.
+refresh-blocked-allow =
+    .label = Yamir
+    .accesskey = A

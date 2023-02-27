@@ -191,6 +191,8 @@ preferences-web-appearance-choice-tooltip-browser =
     .title = Веб-сайттар фоны мен құрамасы үшін { -brand-short-name } тема параметрлерін сәйкестендіру.
 preferences-web-appearance-choice-tooltip-system =
     .title = Веб-сайттар фоны мен мазмұны үшін жүйе параметрлерін сәйкестендіру.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Жүйе баптаулары мен { -brand-short-name } темасы негізінде веб-сайттың фоны мен мазмұнын автоматты түрде өзгертіңіз.
 preferences-web-appearance-choice-tooltip-light =
     .title = Веб-сайттар фоны мен мазмұны үшін ашық түсті көріністі пайдалану.
 preferences-web-appearance-choice-tooltip-dark =
@@ -199,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -519,6 +523,7 @@ choose-bookmark =
 home-prefs-content-header = Firefox үй парағы құрамасы
 home-prefs-content-description = Firefox үй парағында қандай құраманы көргіңіз келетінді таңдаңыз.
 home-prefs-content-header2 = { -firefox-home-brand-name } мазмұны
+home-prefs-content-description2 = { -firefox-home-brand-name } үй парағында қандай құраманы көргіңіз келетінді таңдаңыз.
 home-prefs-search-header =
     .label = Интернеттен іздеу
 home-prefs-shortcuts-header =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Адрестер жолағы нәтижелерінде іздеу ұсыныстарын көрсету
     .accesskey = р
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Негізгі іздеу жүйесі нәтижелері бетінде URL орнына ізделген сөздерді көрсету
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = с
     .buttonlabelextra2 = Байланысты үзу…
     .buttonaccesskeyextra2 = з
+sync-choose-what-to-sync-dialog3 =
+    .title = Нені синхрондауды таңдаңыз
+    .style = min-width: 36em;
+    .buttonlabelaccept = Өзгерістерді сақтау
+    .buttonaccesskeyaccept = с
+    .buttonlabelextra2 = Байланысты үзу…
+    .buttonaccesskeyextra2 = з
 sync-engine-bookmarks =
     .label = Бетбелгілер
     .accesskey = т
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Бұзылған веб-сайттардың парольдері туралы ескертулерді көрсету
     .accesskey = б
 forms-breach-alerts-learn-more-link = Көбірек білу
+relay-integration =
+    .label = { -brand-short-name } парольдер басқарушысыңыз ішінде { -relay-brand-name } іске қосыңыз
+relay-integration-learn-more-link = Көбірек білу
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Логиндер мен парольдерді автотолтыру
@@ -898,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Қаралмаған веб-сайттардан cookies файлдары
 sitedata-option-block-all-third-party =
     .label = Барлық үшінші жақты cookies файлдары (веб-сайттар жұмысының бұзылуына себеп болуы мүмкін)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Барлық сайтаралық cookies файлдары (веб-сайттар сынуына әкеп соғуы мүмкін)
 sitedata-option-block-all =
     .label = Барлық cookies файлдары (веб-сайттар жұмысының бұзылуына себеп болады)
 sitedata-clear =
@@ -977,6 +999,7 @@ content-blocking-all-cookies = Барлық cookie файлдары
 content-blocking-unvisited-cookies = Қаралмаған сайттардың cookies файлдары
 content-blocking-all-windows-tracking-content = Барлық терезелердегі бақылайтын құрама
 content-blocking-all-third-party-cookies = Барлық үшінші жақты cookies
+content-blocking-all-cross-site-cookies = Барлық сайтаралық cookie файлдары
 content-blocking-cryptominers = Криптомайнерлер
 content-blocking-fingerprinters = Баспаны жинаушылар
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -984,6 +1007,9 @@ content-blocking-fingerprinters = Баспаны жинаушылар
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Біздің барлық уақыттағы ен күшті жекеілкті қорғауды сынап көріңіз
     .accesskey = т
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Cookie файлдарынан толық қорғау сіз шолып отырған сайттың cookie файлдарын шектейді, сондықтан трекерлер оларды сайттар арасында сізді бақылап отыру үшін пайдалана алмайды.
 content-blocking-etp-standard-tcp-rollout-learn-more = Көбірек білу
@@ -1095,6 +1121,12 @@ addon-recommendations-link = Көбірек білу
 collection-health-report-disabled = Деректер есептемесін беру бұл жинақта сөндірілген
 collection-backlogged-crash-reports-with-link = { -brand-short-name } үшін сіздің атыңыздан жиналған құлаулар хабарламаларын жіберуді рұқсат ету <a data-l10n-name="crash-reports-link">Көбірек білу</a>
     .accesskey = с
+privacy-segmentation-section-header = Шолуыңызды жақсартатын жаңа мүмкіндіктер
+privacy-segmentation-section-description = Сізге жеке тәжірибе беру үшін деректеріңізді пайдаланатын мүмкіндіктерді ұсынғанда:
+privacy-segmentation-radio-off =
+    .label = { -brand-product-name } ұсыныстарын қолдану
+privacy-segmentation-radio-on =
+    .label = Толық ақпаратты көрсету
 
 ## Privacy Section - Security
 ##

@@ -181,6 +181,17 @@ menu-view-full-screen =
     .label = Tam ekran
     .accesskey = T
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Okuyucu Görünümü'ne geç
+    .accesskey = O
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Okuyucu Görünümü'nü kapat
+    .accesskey = O
+
 ##
 
 menu-view-show-all-tabs =

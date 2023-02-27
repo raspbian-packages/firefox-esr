@@ -10,6 +10,14 @@ connection-window =
            *[other] width: 39em
         }
 
+connection-window2 =
+    .title = Arventennoù kennaskañ
+    .style =
+        { PLATFORM() ->
+            [macos] min-width: 39em
+           *[other] min-width: 39em
+        }
+
 connection-close-key =
     .key = w
 
@@ -35,7 +43,6 @@ connection-proxy-http = Proksi HTTP
     .accesskey = H
 connection-proxy-http-port = Porzh
     .accesskey = p
-
 connection-proxy-https-sharing =
     .label = Implijout ivez ar proksi-mañ evit HTTPS
     .accesskey = s

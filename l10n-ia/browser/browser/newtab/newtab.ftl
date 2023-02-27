@@ -120,9 +120,9 @@ newtab-privacy-modal-link = Saper plus sur le respecto del vita private in le pa
 ##
 
 # Bookmark is a noun in this case, "Remove bookmark".
-newtab-menu-remove-bookmark = Remover le marcapaginas
+newtab-menu-remove-bookmark = Remover marcapagina
 # Bookmark is a verb here.
-newtab-menu-bookmark = Adder marcapaginas
+newtab-menu-bookmark = Adder marcapagina
 
 ## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
 ## it is a noun. As in, "Copy the link that belongs to this downloaded item".
@@ -147,8 +147,8 @@ newtab-menu-open-file = Aperir le file
 ## the page is bookmarked, or is currently open on another device.
 
 newtab-label-visited = Visitate
-newtab-label-bookmarked = Marcapaginas addite
-newtab-label-removed-bookmark = Marcapaginas removite
+newtab-label-bookmarked = Marcapagina addite
+newtab-label-removed-bookmark = Marcapagina removite
 newtab-label-recommended = Tendentias
 newtab-label-saved = Salvate in { -pocket-brand-name }
 newtab-label-download = Discargate

@@ -76,7 +76,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
-private-browsing-shortcut-text = { -brand-short-name } – პირადი ფანჯარა
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } – პირადი რეჟიმი
 
 ##
 
@@ -134,11 +136,20 @@ urlbar-addons-notification-anchor =
 urlbar-tip-help-icon =
     .title = დახმარების მიღება
 urlbar-search-tips-confirm = კარგი, გასაგებია
+urlbar-search-tips-confirm-short = გასაგებია
 # Read out before Urlbar Tip text content so screenreader users know the
 # subsequent text is a tip offered by the browser. It should end in a colon or
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = რჩევა:
+urlbar-result-menu-button =
+    .title = მენიუს გახსნა
+urlbar-result-menu-remove-from-history =
+    .label = ისტორიიდან ამოშლა
+    .accesskey = მ
+urlbar-result-menu-tip-get-help =
+    .label = დახმარების მიღება
+    .accesskey = ხ
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -147,6 +158,8 @@ urlbar-tip-icon-description =
 
 urlbar-search-tips-onboard = აკრიფეთ ნაკლები, მონახეთ მეტი: გამოიყენეთ { $engineName } საძიებოდ პირდაპირ მისამართების ველიდან.
 urlbar-search-tips-redirect-2 = დაიწყეთ ძიება და შემოთავაზებებს მოგაწვდით { $engineName } ან იხილავთ დათვალიერების ისტორიიდან.
+# Make sure to match the name of the Search panel in settings.
+urlbar-search-tips-persist = ძიება მეტად გაადვილებულია. მეტი სიზუსტით მოიძიეთ მისამართების ველიდანვე. თუ გსურთ სანაცვლოდ URL გამოჩნდეს, პარამეტრებში მონახეთ „ძიება“.
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = აირჩიეთ ეს მალსახმობი, რომ უფრო სწრაფად იპოვოთ ის, რაც გჭირდებათ.
@@ -219,7 +232,7 @@ full-screen-exit =
 
 # This string prompts the user to use the list of search shortcuts in
 # the Urlbar and searchbar.
-search-one-offs-with-title = მოსაძიებლად, შეგიძლიათ გამოიყენოთ:
+search-one-offs-with-title = საძიებოდ გამოიყენეთ:
 search-one-offs-change-settings-compact-button =
     .tooltiptext = ძიების პარამეტრების შეცვლა
 search-one-offs-context-open-new-tab =
@@ -267,42 +280,38 @@ search-one-offs-actions =
     .tooltiptext = მოქმედებები ({ $restrict })
 
 ## QuickActions are shown in the urlbar as the user types a matching string
-
-
-## QuickActions are shown in the urlbar as the user types a matching string
 ## The -cmd- strings are comma separated list of keywords that will match
 ## the action.
 
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = დამატებების ნახვა
-quickactions-cmd-addons = დამატებები, გაფართოებები, თემები
 quickactions-cmd-addons2 = დამატებები
 # Opens the bookmarks library window
-quickactions-bookmarks = სანიშნების ნახვა
+quickactions-bookmarks2 = სანიშნების მართვა
 quickactions-cmd-bookmarks = სანიშნები
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = ისტორიის გასუფთავება
 quickactions-cmd-clearhistory = ისტორიის გასუფთავება
 # Opens about:downloads page
-quickactions-downloads = ჩამოტვირთვების გახსნა
+quickactions-downloads2 = ჩამოტვირთვების ჩვენება
 quickactions-cmd-downloads = ჩამოტვირთვები
 # Opens about:addons page in the extensions section
 quickactions-extensions = გაფართოებების მართვა
 quickactions-cmd-extensions = გაფართოებები
 # Opens the devtools web inspector
-quickactions-inspector = გვერდის გამოკვლევა
+quickactions-inspector2 = შემმუშავებლის ხელსაწყოების გახსნა
 quickactions-cmd-inspector = გამოკვლევა, შემუშავება
 # Opens about:logins
-quickactions-logins = ანგარიშების ნახვა
+quickactions-logins2 = პაროლების მართვა
 quickactions-cmd-logins = ანგარიშები და პაროლები
 # Opens about:addons page in the plugins section
 quickactions-plugins = მოდულების მართვა
 quickactions-cmd-plugins = მოდულები
 # Opens the print dialog
-quickactions-print = ამობეჭდვა
+quickactions-print2 = გვერდის ამობეჭდვა
 quickactions-cmd-print = ამობეჭდვა
 # Opens a new private browsing window
-quickactions-private = პირადი ფანჯრის გახსნა
+quickactions-private2 = პირადი ფანჯრის გახსნა
 quickactions-cmd-private = პირადი თვალიერება
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = შეკეთდეს { -brand-short-name }
@@ -311,10 +320,10 @@ quickactions-cmd-refresh = გაახლება
 quickactions-restart = ხელახლა გაეშვას { -brand-short-name }
 quickactions-cmd-restart = ხელახლა გაშვება
 # Opens the screenshot tool
-quickactions-screenshot2 = ეკრანის სურათის გადაღება
+quickactions-screenshot3 = ეკრანის სურათის გადაღება
 quickactions-cmd-screenshot = ეკრანის ანაბეჭდი
 # Opens about:preferences
-quickactions-settings = პარამეტრების გახსნა
+quickactions-settings2 = პარამეტრების მართვა
 quickactions-cmd-settings = პარამეტრები, მახასიათებლები, გამართვა
 # Opens about:addons page in the themes section
 quickactions-themes = თემების მართვა
@@ -323,8 +332,11 @@ quickactions-cmd-themes = თემები
 quickactions-update = განახლდეს { -brand-short-name }
 quickactions-cmd-update = განახლება
 # Opens the view-source UI with current pages source
-quickactions-viewsource = წყაროს ჩვენება
+quickactions-viewsource2 = გვერდის წყაროს ჩვენება
 quickactions-cmd-viewsource = წყაროს ნახვა, პირველწყარო
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = ვრცლად სწრაფი მოქმედებების შესახებ
 
 ## Bookmark Panel
 
@@ -482,6 +494,9 @@ popup-select-microphone-icon =
     .tooltiptext = მიკროფონი
 popup-select-speaker-icon =
     .tooltiptext = დინამიკები
+popup-select-window-or-screen =
+    .label = ფანჯარა ან ეკრანი:
+    .accesskey = ფ
 popup-all-windows-shared = ეკრანზე ნაჩვენები ყველა ფანჯარა გაზიარდება.
 popup-screen-sharing-block =
     .label = აკრძალვა
@@ -503,6 +518,7 @@ sharing-warning-disable-for-session =
 ## DevTools F12 popup
 
 enable-devtools-popup-description = F12 მალსახმობის გამოსაყენებლად, ჯერ გახსენით DevTools, ვებშემუშავების მენიუდან.
+enable-devtools-popup-description2 = F12 მალსახმობის გამოსაყენებლად ჯერ გახსენით DevTools ბრაუზერის ხელსაწყობის მენიუდან.
 
 ## URL Bar
 
@@ -634,6 +650,15 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = სწრაფი მოქმედებები
+
+## Reader View toolbar buttons
+
+# This should match menu-view-enter-readerview in menubar.ftl
+reader-view-enter-button =
+    .aria-label = კითხვის რეჟიმზე გადასვლა
+# This should match menu-view-close-readerview in menubar.ftl
+reader-view-close-button =
+    .aria-label = კითხვის რეჟიმის დახურვა
 
 ## Full Screen and Pointer Lock UI
 
@@ -911,3 +936,29 @@ private-browsing-indicator-label = პირადი ფანჯარა
 unified-extensions-button =
     .label = გაფართოებები
     .tooltiptext = გაფართოებები
+
+## Unified extensions button when permission(s) are needed.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-permissions-needed =
+    .label = გაფართოებები
+    .tooltiptext =
+        გაფართოებები
+        საჭიროა ნებართვები
+
+## Autorefresh blocker
+
+refresh-blocked-refresh-label = { -brand-short-name } ამ გვერდის თვითგანახლებას კრძალავს.
+refresh-blocked-redirect-label = { -brand-short-name } ამ გვერდის სხვა გვერდზე თვითგადამისამართებას კრძალავს.
+refresh-blocked-allow =
+    .label = ნებართვა
+    .accesskey = ნ
+
+## Firefox Relay integration
+
+firefox-relay-offer-why-relay = { -relay-brand-name } ნიღბავს თქვენს ნამდვილ ელფოსტას, რომ დაგიცვათ მონაცემთა მიტაცების შემთხვევებისა და უსარგებლო წერილებისგან.
+firefox-relay-offer-how-we-integrate = თუ განაგრძობთ, ახალი { -relay-brand-short-name }-ნიღბების დამზადება ელფოსტისთვის პირდაპირ შეგეძლებათ თქვენი { -brand-shorter-name }-ის პაროლების მმართველიდან.
+# Variables:
+#  $sitename (String): name of the site where user enters their Relay mask
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-does = ყველა წერილი, რომელსაც მიიღებს <strong>{ $sitename }</strong> გადამისამართდება ელფოსტაზე <strong>{ $useremail }</strong>.

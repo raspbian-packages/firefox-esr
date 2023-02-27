@@ -55,6 +55,29 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } 使用者
     }
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = 讓 Cookie 橫幅消失！
+cfr-cookie-banner-handling-body = 允許 { -brand-short-name } 盡可能自動拒絕所有 Cookie 橫幅的請求，否則就自動接受所有 Cookie 來隱藏更多橫幅。
+cfr-cookie-banner-accept-button = 關閉請求
+    .accesskey = D
+cfr-cookie-banner-reject-button = 現在不要
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-1 = 減少顯示 Cookie 彈出提示
+cfr-cookie-banner-handling-body-variant-1 = 讓 { -brand-short-name } 自動為您回答彈出的 Cookie 對話框，這樣上網就可以減少分心。{ -brand-short-name } 會盡可能自動拒絕所有請求，或者無法拒絕就接受全部 Cookie。
+cfr-cookie-banner-accept-button-variant-1 = 關閉彈出提示
+    .accesskey = D
+cfr-cookie-banner-reject-button-variant-1 = 不要，謝謝
+    .accesskey = N
+cfr-cookie-banner-handling-header-variant-2 = 減少 Cookie 橫幅
+cfr-cookie-banner-handling-body-variant-2 = 要允許 { -brand-short-name } 幫您拒絕網站的 Cookie 提示，或者當網站無法拒絕時就接受嗎？
+cfr-cookie-banner-accept-button-variant-2 = 允許
+    .accesskey = A
+cfr-cookie-banner-reject-button-variant-2 = 現在不要
+    .accesskey = N
+
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = 將您的書籤同步帶著走。
@@ -151,10 +174,6 @@ spotlight-total-cookie-protection-body = 「全方位 Cookie 保護」功能可�
 spotlight-total-cookie-protection-expanded = { -brand-short-name } 會將 Cookie 包圍起來，讓它們僅能在您所在的網站使用，這樣追蹤器就無法用它們來追蹤您。透過搶先試用，您可以協助我們最佳化這個功能，持續為每個人打造更好的網路環境。
 spotlight-total-cookie-protection-primary-button = 開啟「全方位 Cookie 保護」功能
 spotlight-total-cookie-protection-secondary-button = 現在不要
-cfr-total-cookie-protection-header = 感謝您的協助，讓 { -brand-short-name } 比以往更安全、更能保護隱私
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch". Only those who received it and accepted are shown this message.
-cfr-total-cookie-protection-body = 「全方位 Cookie 保護」功能是我們迄今最強大的隱私權保護功能，也是對所有 { -brand-short-name } 使用者都預設開啟的選項。若沒有像您這樣的早期使用者協助使用測試，我們就無法推出此功能。所以非常感謝您協助我們一起打造一套更好、更能保護隱私的網路環境。
 
 ## Emotive Continuous Onboarding
 
@@ -168,3 +187,85 @@ spotlight-pin-primary-button =
        *[other] 釘選到工作列
     }
 spotlight-pin-secondary-button = 現在不要
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = 全新 { -brand-short-name }。更有隱私、更少追蹤器，一切毫不妥協。
+mr2022-background-update-toast-text = 立即試用最新版 { -brand-short-name }，升級使用我們最強大的反追蹤保護功能。
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = 立即開啟 { -brand-shorter-name }
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = 待會提醒我
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = 試試看
+    .accesskey = T
+firefoxview-cfr-secondarybutton = 現在不要
+    .accesskey = N
+firefoxview-cfr-header-v2 = 快速從結束的地方繼續
+firefoxview-cfr-body-v2 = 透過 { -firefoxview-brand-name } 快速取回最近關閉的分頁，另外還可以在裝置間無縫切換。
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = 跟 { -firefoxview-brand-name } 說嗨
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = 想要在手機上看到開啟的那個分頁嗎？可以直接開啟。需要再打開剛關閉的分頁嗎？點一下 { -firefoxview-brand-name } 馬上就回來。
+firefoxview-spotlight-promo-primarybutton = 看看原理是什麼
+firefoxview-spotlight-promo-secondarybutton = 略過
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = 選擇配色
+    .accesskey = C
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = 使用受改變了文化的聲音所啟發的 { -brand-short-name } 獨家配色來妝點您的瀏覽器。
+colorways-cfr-header-28days = 獨立之聲配色將於 1 月 16 日失效
+colorways-cfr-header-14days = 獨立之聲配色將於兩週後失效
+colorways-cfr-header-7days = 獨立之聲配色將於本週失效
+colorways-cfr-header-today = 獨立之聲配色將於今日失效
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = 讓 Cookie 橫幅消失！
+cfr-cookiebanner-body = 讓 { -brand-short-name } 盡可能自動拒絕 Cookie 橫幅。
+cfr-cookiebanner-accept-button = 關閉橫幅
+    .accesskey = D
+cfr-cookiebanner-reject-button = 現在不要
+    .accesskey = N
+cfr-cookiebanner-header-variant-1 = 減少顯示 Cookie 彈出提示
+cfr-cookiebanner-body-variant-1 = 讓 { -brand-short-name } 自動為您回答彈出的 Cookie 對話框，這樣上網就可以減少分心。{ -brand-short-name } 會盡可能自動拒絕所有請求。
+cfr-cookiebanner-accept-button-variant-1 = 關閉彈出提示
+    .accesskey = D
+cfr-cookiebanner-reject-button-variant-1 = 不要，謝謝
+    .accesskey = N
+cfr-cookiebanner-header-variant-2 = 減少 Cookie 橫幅
+cfr-cookiebanner-body-variant-2 = 讓 { -brand-short-name } 盡可能自動拒絕網站要設定 Cookie 的請求，讓您減少會看到的 Cookie 橫幅數量。
+cfr-cookiebanner-accept-button-variant-2 = 允許
+    .accesskey = A
+cfr-cookiebanner-reject-button-variant-2 = 現在不要
+    .accesskey = N
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = 讓我們保護您
+july-jam-body = 每個月，{ -brand-short-name } 平均都會為每位使用者封鎖超過 3,000 組追蹤器，讓您上網更快、更安全。
+july-jam-set-default-primary = 用 { -brand-short-name } 開啟我的鏈結

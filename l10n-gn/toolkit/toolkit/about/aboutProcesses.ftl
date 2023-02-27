@@ -123,6 +123,8 @@ about-processes-utility-actor-unknown = Puruha ojekuaa’ỹva
 about-processes-utility-actor-audio-decoder = Mba’epu papapy’oha
 about-processes-utility-actor-audio-decoder-generic = Mba’epu papapy’oha ha’ete’ỹva
 about-processes-utility-actor-audio-decoder-applemedia = Apple mba’epu papapy’oha
+about-processes-utility-actor-audio-decoder-wmf = Windows Media Framework mba’epu mbopapapy’oha
+about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
 
 ## Displaying CPU (percentage and total)
 ## Variables:

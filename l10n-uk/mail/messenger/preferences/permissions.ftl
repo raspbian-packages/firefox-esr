@@ -6,6 +6,9 @@ permissions-reminder-window =
     .title = Винятки
     .style = width: 36em;
 
+permissions-reminder-window2 =
+    .title = Винятки
+
 permission-preferences-close-window =
     .key = w
 

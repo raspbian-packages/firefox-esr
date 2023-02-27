@@ -27,8 +27,8 @@ about-private-browsing-get-privacy = Fáðu persónuvernd hvar sem þú vafrar
 about-private-browsing-hide-activity-1 = Feldu vafravirkni og staðsetningu með { -mozilla-vpn-brand-name }. Einn smellur útbýr örugga tengingu, jafnvel á þráðlausum Wi-Fi almenningsnetum.
 about-private-browsing-prominent-cta = Haltu þig til hlés með { -mozilla-vpn-brand-name }
 about-private-browsing-focus-promo-cta = Sækja { -focus-brand-name }
-about-private-browsing-focus-promo-header = { -focus-brand-name }: Einkavafur á ferðinni
-about-private-browsing-focus-promo-text = Einkavafurforritið okkar fyrir farsíma hreinsar feril þinn og vefkökur eftir hvert skipti.
+about-private-browsing-focus-promo-header = { -focus-brand-name }: Huliðsvafur á ferðinni
+about-private-browsing-focus-promo-text = Huliðsvafurforritið okkar fyrir farsíma hreinsar feril þinn og vefkökur eftir hvert skipti.
 
 ## The following strings will be used for experiments in Fx99 and Fx100
 

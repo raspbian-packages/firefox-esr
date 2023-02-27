@@ -48,7 +48,7 @@ pane-experimental-reset =
     .label = เรียกคืนค่าเริ่มต้น
     .accesskey = R
 help-button-label = การสนับสนุนของ { -brand-short-name }
-addons-button-label = ส่วนขยายและชุดตกแต่ง
+addons-button-label = ส่วนขยายและชุดรูปแบบ
 focus-search =
     .key = f
 close-button =
@@ -170,14 +170,17 @@ containers-remove-cancel-button = ไม่เอาการแยกข้อ�
 language-and-appearance-header = ภาษาและลักษณะที่ปรากฏ
 preferences-web-appearance-header = ลักษณะที่ปรากฏของเว็บไซต์
 preferences-web-appearance-description = บางเว็บไซต์ปรับโทนสีตามการกำหนดลักษณะของคุณ เลือกชุดสีที่คุณต้องการใช้สำหรับไซต์เหล่านั้น
-preferences-web-appearance-choice-browser = ชุดตกแต่ง { -brand-short-name }
-preferences-web-appearance-choice-system = ชุดตกแต่งระบบ
+preferences-web-appearance-choice-browser = ธีมของ { -brand-short-name }
+preferences-web-appearance-choice-system = ธีมของระบบ
+preferences-web-appearance-choice-auto = อัตโนมัติ
 preferences-web-appearance-choice-light = สว่าง
 preferences-web-appearance-choice-dark = มืด
 preferences-web-appearance-choice-tooltip-browser =
-    .title = จับคู่การตั้งค่าชุดตกแต่ง { -brand-short-name } ของคุณสำหรับพื้นหลังและเนื้อหาของเว็บไซต์
+    .title = จับคู่การตั้งค่าธีม { -brand-short-name } ของคุณสำหรับพื้นหลังและเนื้อหาของเว็บไซต์
 preferences-web-appearance-choice-tooltip-system =
     .title = จับคู่การตั้งค่าระบบของคุณสำหรับพื้นหลังและเนื้อหาของเว็บไซต์
+preferences-web-appearance-choice-tooltip-auto =
+    .title = เปลี่ยนพื้นหลังและเนื้อหาของเว็บไซต์โดยอัตโนมัติตามการตั้งค่าระบบและธีมของ { -brand-short-name }
 preferences-web-appearance-choice-tooltip-light =
     .title = ใช้ลักษณะที่ปรากฏแบบสว่างสำหรับพื้นหลังและเนื้อหาของเว็บไซต์
 preferences-web-appearance-choice-tooltip-dark =
@@ -186,6 +189,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -195,7 +200,7 @@ preferences-web-appearance-choice-input-dark =
 preferences-web-appearance-override-warning = การเลือกสีของคุณมีผลเหนือลักษณะที่ปรากฏของเว็บไซต์ <a data-l10n-name="colors-link">จัดการสี</a>
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
-preferences-web-appearance-footer = จัดการ { -brand-short-name } ชุดตกแต่ง ใน <a data-l10n-name="themes-link"> ส่วนขยายและชุดตกแต่ง </a>
+preferences-web-appearance-footer = จัดการธีมของ { -brand-short-name } ใน <a data-l10n-name="themes-link">ส่วนขยายและธีม</a>
 preferences-colors-header = สี
 preferences-colors-description = แทนที่สีเริ่มต้นของ { -brand-short-name } สำหรับข้อความ พื้นหลังของเว็บไซต์ และลิงก์
 preferences-colors-manage-button =
@@ -410,7 +415,7 @@ performance-allow-hw-accel =
 performance-limit-content-process-option = ขีดจำกัดโปรเซสเนื้อหา
     .accesskey = ข
 performance-limit-content-process-enabled-desc = โปรเซสเนื้อหาที่เพิ่มขึ้นสามารถปรับปรุงประสิทธิภาพเมื่อใช้หลายแท็บ แต่จะใช้หน่วยความจำมากขึ้นเช่นกัน
-performance-limit-content-process-blocked-desc = การเปลี่ยนแปลงจำนวนโปรเซสเนื้อหาทำได้เฉพาะกับ { -brand-short-name } แบบหลายโปรเซส <a data-l10n-name="learn-more">เรียนรู้วิธีตรวจสอบว่าการทำงานหลายโปรเซสถูกเปิดใช้งานอยู่หรือไม่</a>
+performance-limit-content-process-blocked-desc = การเปลี่ยนแปลงจำนวนโปรเซสเนื้อหาทำได้เฉพาะกับ { -brand-short-name } แบบมัลติโปรเซส <a data-l10n-name="learn-more">เรียนรู้วิธีตรวจสอบว่าการทำงานมัลติโปรเซสถูกเปิดใช้งานอยู่หรือไม่</a>
 # Variables:
 #   $num - default value of the `dom.ipc.processCount` pref.
 performance-default-content-process-count =
@@ -478,6 +483,8 @@ home-restore-defaults =
 # while "Home" and "(Default)" can be localized.
 home-mode-choice-default =
     .label = หน้าแรก Firefox (ค่าเริ่มต้น)
+home-mode-choice-default-fx =
+    .label = { -firefox-home-brand-name } (ค่าเริ่มต้น)
 home-mode-choice-custom =
     .label = URL ที่กำหนดเอง…
 home-mode-choice-blank =
@@ -503,6 +510,8 @@ choose-bookmark =
 
 home-prefs-content-header = เนื้อหาหน้าแรก Firefox
 home-prefs-content-description = เลือกเนื้อหาที่คุณต้องการในหน้าจอหน้าแรก Firefox ของคุณ
+home-prefs-content-header2 = เนื้อหา { -firefox-home-brand-name }
+home-prefs-content-description2 = เลือกเนื้อหาที่คุณต้องการบนหน้าจอ { -firefox-home-brand-name } ของคุณ
 home-prefs-search-header =
     .label = การค้นหาเว็บ
 home-prefs-shortcuts-header =
@@ -567,6 +576,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = แสดงข้อเสนอแนะการค้นหาในผลลัพธ์ของแถบที่อยู่
     .accesskey = ส
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = แสดงคำค้นหาแทน URL บนหน้าผลลัพธ์ของเครื่องมือค้นหาเริ่มต้น
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -694,6 +708,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = S
     .buttonlabelextra2 = ตัดการเชื่อมต่อ…
     .buttonaccesskeyextra2 = D
+sync-choose-what-to-sync-dialog3 =
+    .title = เลือกสิ่งที่จะซิงค์
+    .style = min-width: 36em;
+    .buttonlabelaccept = บันทึกการเปลี่ยนแปลง
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = ตัดการเชื่อมต่อ…
+    .buttonaccesskeyextra2 = D
 sync-engine-bookmarks =
     .label = ที่คั่นหน้า
     .accesskey = ท
@@ -718,7 +739,7 @@ sync-engine-creditcards =
     .accesskey = ต
 sync-engine-addons =
     .label = ส่วนเสริม
-    .tooltiptext = ส่วนขยายและชุดตกแต่งสำหรับ Firefox เดสก์ท็อป
+    .tooltiptext = ส่วนขยายและชุดรูปแบบสำหรับ Firefox เดสก์ท็อป
     .accesskey = ส
 sync-engine-settings =
     .label = การตั้งค่า
@@ -762,6 +783,9 @@ forms-breach-alerts =
     .label = แสดงการแจ้งเตือนเกี่ยวกับรหัสผ่านสำหรับเว็บไซต์ที่มีการรั่วไหล
     .accesskey = b
 forms-breach-alerts-learn-more-link = เรียนรู้เพิ่มเติม
+relay-integration =
+    .label = เปิดใช้งาน { -relay-brand-name } ในตัวจัดการรหัสผ่านของ { -brand-short-name } ของคุณ
+relay-integration-learn-more-link = เรียนรู้เพิ่มเติม
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = กรอกการเข้าสู่ระบบและรหัสผ่านอัตโนมัติ
@@ -913,7 +937,11 @@ addressbar-locbar-topsites-option =
 addressbar-locbar-engines-option =
     .label = เครื่องมือค้นหา
     .accesskey = a
+addressbar-locbar-quickactions-option =
+    .label = คำสั่งด่วน
+    .accesskey = ด
 addressbar-suggestions-settings = เปลี่ยนการกำหนดลักษณะสำหรับข้อเสนอแนะของเครื่องมือค้นหา
+addressbar-quickactions-learn-more = เรียนรู้เพิ่มเติม
 
 ## Privacy Section - Content Blocking
 
@@ -960,9 +988,13 @@ content-blocking-fingerprinters = ลายนิ้วมือดิจิท�
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = ลองใช้คุณลักษณะเกี่ยวกับความเป็นส่วนตัวที่ทรงพลังที่สุดของเราก่อนใคร
     .accesskey = ล
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = การป้องกันคุกกี้ทั้งหมดประกอบด้วยคุกกี้สำหรับไซต์ที่คุณเยี่ยมชม ดังนั้นตัวติดตามจึงไม่สามารถใช้คุกกี้เหล่านี้เพื่อติดตามคุณบนไซต์ต่าง ๆ ได้
 content-blocking-etp-standard-tcp-rollout-learn-more = เรียนรู้เพิ่มเติม
+content-blocking-etp-standard-tcp-title = มาพร้อมกับการป้องกันคุกกี้แบบทั้งหมด คุณลักษณะความเป็นส่วนตัวที่ทรงพลังที่สุดของเรา
 content-blocking-warning-title = ระวัง!
 content-blocking-and-isolating-etp-warning-description-2 = การตั้งค่านี้อาจส่งผลให้บางเว็บไซต์ไม่แสดงผลเนื้อหาหรือไม่ทำงานอย่างถูกต้อง หากไซต์ดูเหมือนจะพัง คุณอาจต้องปิดการป้องกันการติดตามสำหรับไซต์นั้นเพื่อโหลดเนื้อหาทั้งหมด
 content-blocking-warning-learn-how = เรียนรู้วิธี
@@ -1070,6 +1102,12 @@ addon-recommendations-link = เรียนรู้เพิ่มเติม
 collection-health-report-disabled = การรายงานข้อมูลถูกปิดใช้งานสำหรับการกำหนดค่าการสร้างนี้
 collection-backlogged-crash-reports-with-link = อนุญาตให้ { -brand-short-name } ส่งรายงานข้อขัดข้องในชื่อของคุณ <a data-l10n-name="crash-reports-link">เรียนรู้เพิ่มเติม</a>
     .accesskey = ข
+privacy-segmentation-section-header = คุณลักษณะใหม่ที่จะทำให้การท่องเว็บของคุณดีขึ้น
+privacy-segmentation-section-description = เมื่อเรานำเสนอคุณลักษณะที่ใช้ข้อมูลของคุณเพื่อมอบประสบการณ์ที่เป็นส่วนตัวมากขึ้น:
+privacy-segmentation-radio-off =
+    .label = ใช้คำแนะนำจาก { -brand-product-name }
+privacy-segmentation-radio-on =
+    .label = แสดงข้อมูลโดยละเอียด
 
 ## Privacy Section - Security
 ##

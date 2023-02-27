@@ -9,6 +9,10 @@ devmgr =
     .title = Seadmehaldur
     .style = width: 67em; height: 32em;
 
+devmgr-window =
+    .title = Seadmehaldur
+    .style = min-width: 67em; min-height: 32em;
+
 devmgr-devlist =
     .label = Turvamoodulid ja -seadmed
 

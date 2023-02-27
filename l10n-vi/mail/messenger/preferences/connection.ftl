@@ -30,6 +30,9 @@ connection-dialog-window =
            *[other] width: 49em !important
         }
 
+connection-dialog-window2 =
+    .title = Cài đặt kết nối
+
 disable-extension-button = Vô hiệu hóa tiện ích mở rộng
 
 # Variables:

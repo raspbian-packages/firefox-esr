@@ -6,6 +6,10 @@ sanitize-prefs =
     .title = Preferense da scancelaçion da Stöia
     .style = width: 34em
 
+sanitize-prefs2 =
+    .title = Preferense da scancelaçion da Stöia
+    .style = min-width: 34em
+
 sanitize-prefs-style =
     .style = width: 17em
 

@@ -6,6 +6,10 @@ blocklist-window =
     .title = Tysýi jejoko
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Tysýi jejoko
+    .style = min-width: 55em
+
 blocklist-description = Eiporavo tysýi { -brand-short-name } oipurúva ojoko hag̃ua umi tapykuehoha ñandutípe. Tysyikuéra ome’ẽva <a data-l10n-name="disconnect-link" title="Disconnect">Pe’a</a>.
 blocklist-close-key =
     .key = w

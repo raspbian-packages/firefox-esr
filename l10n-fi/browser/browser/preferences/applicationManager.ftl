@@ -6,6 +6,10 @@ app-manager-window =
     .title = Ohjelman tiedot
     .style = width: 30em; min-height: 20em;
 
+app-manager-window2 =
+    .title = Ohjelman tiedot
+    .style = min-width: 30em; min-height: 20em;
+
 app-manager-remove =
     .label = Poista
     .accesskey = P

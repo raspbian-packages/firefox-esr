@@ -25,6 +25,12 @@ return-to-amo-addon-title = Wobstarajće sej nětko <img data-l10n-name="icon"/>
 return-to-amo-add-extension-label = Rozšěrjenje přidać
 return-to-amo-add-theme-label = Drastu přidać
 
+##  Variables: $addon-name (String) - Name of the add-on to be installed
+
+mr1-return-to-amo-subtitle = Witajće k { -brand-short-name }
+mr1-return-to-amo-addon-title = Maće spěšny, priwatny wobhladowak k ruce. Nětko móžeće <b>{ $addon-name }</b> přidać a hišće wjace z { -brand-short-name } činić.
+mr1-return-to-amo-add-extension-label = { $addon-name } přidać
+
 ## Multistage onboarding strings (about:welcome pages)
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
@@ -41,6 +47,8 @@ onboarding-welcome-steps-indicator =
 
 onboarding-welcome-steps-indicator2 =
     .aria-valuetext = Postup: krok { $current } z { $total }
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Postup: krok { $current } z { $total }
 # "Hero Text" displayed on left side of welcome screen.
 # The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
 # It also signals the passion users bring to Firefox, how they use
@@ -305,11 +313,15 @@ mr2022-onboarding-set-default-subtitle = Wužiwajće wobhladowak, kotryž so wot
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-get-started-primary-subtitle = Naša najnowša wersija je wokoło was natwarjena, kotraž wam lóšo hdy do toho čini, web přehladować. Je połny funkcijow, wo kotrychž sej myslimy, zo so wam spodobaja.
 mr2022-onboarding-get-started-primary-button-label = Instalacija za sekundy
 
 ## MR2022 Import Settings screen strings
 
 mr2022-onboarding-import-header = Błyskospěšna instalacija
+mr2022-onboarding-import-subtitle = Zarjadujće { -brand-short-name }, kak so wam spodoba. Přidajće swoje zapołožki, hesła a wjace ze swojeho stareho wobhladowaka.
 mr2022-onboarding-import-primary-button-label-no-attribution = Z předchadneho wobhladowaka importować
 
 ## If your language uses grammatical genders, in the description for the
@@ -319,40 +331,42 @@ mr2022-onboarding-import-primary-button-label-no-attribution = Z předchadneho w
 
 mr2022-onboarding-colorway-title = Wubjerće barbu, kotraž was inspiruje
 mr2022-onboarding-colorway-subtitle = Njewotwisne hłosy móža kulturu změnić.
-mr2022-onboarding-colorway-primary-button-label = Barbowu kombinaciju nastajić
+mr2022-onboarding-colorway-primary-button-label-continue = Nastajić a pokročować
 mr2022-onboarding-existing-colorway-checkbox-label = { -firefox-home-brand-name } k wašej barbnej startowej stronje činić
 mr2022-onboarding-colorway-label-default = Standard
-mr2022-onboarding-colorway-tooltip-default =
-    .title = Standard
+mr2022-onboarding-colorway-tooltip-default2 =
+    .title = Aktualne barby { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>Moje aktualne barby { -brand-short-name } wužiwać.</b>
 mr2022-onboarding-colorway-label-playmaker = Wodźacy hrajer
-mr2022-onboarding-colorway-tooltip-playmaker =
-    .title = Wodźacy hrajer
+mr2022-onboarding-colorway-tooltip-playmaker2 =
+    .title = Wodźacy hrajer (čerwjeny)
 mr2022-onboarding-colorway-description-playmaker = <b>Sće wodźacy hrajer.</b> Wutworiće składnosće, zo byšće dobył a kóždemu wokoło was pomhał, jich hru polěpšić.
 mr2022-onboarding-colorway-label-expressionist = Ekspresionist
-mr2022-onboarding-colorway-tooltip-expressionist =
-    .title = Ekspresionist
+mr2022-onboarding-colorway-tooltip-expressionist2 =
+    .title = Ekspresionist (žołty)
 mr2022-onboarding-colorway-description-expressionist = <b>Sće ekspresionist.</b> Widźiće swět hinak a waše dźěła začuća druhich wodźa.
 mr2022-onboarding-colorway-label-visionary = Wizionar
-mr2022-onboarding-colorway-tooltip-visionary =
-    .title = Wizionar
+mr2022-onboarding-colorway-tooltip-visionary2 =
+    .title = Wizionar (zeleny)
 mr2022-onboarding-colorway-description-visionary = <b>Sće wizionar.</b> Stajeće status quo do prašenja a pohnuwaće druhich, sej lěpši přichod předstajić.
 mr2022-onboarding-colorway-label-activist = Aktiwist
-mr2022-onboarding-colorway-tooltip-activist =
-    .title = Aktiwist
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Aktiwist (módry)
 mr2022-onboarding-colorway-description-activist = <b>Sće aktiwist.</b> Zawostajeće swět jako lěpše městno, hač sće jón namakał a wjedźeće druhich k wěrje.
 mr2022-onboarding-colorway-label-dreamer = Sonjer
-mr2022-onboarding-colorway-tooltip-dreamer =
-    .title = Sonjer
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Sonjer (violetny)
 mr2022-onboarding-colorway-description-dreamer = <b>Sće sonjer.</b> Wěriće, zo zbožo zmužiteho preferuje a inspirujeće druhich, zo bychu zmužići byli.
 mr2022-onboarding-colorway-label-innovator = Inowator
-mr2022-onboarding-colorway-tooltip-innovator =
-    .title = Inowator
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Inowator (oranžowy)
 mr2022-onboarding-colorway-description-innovator = <b>Sće inowator.</b> Widźiće wšudźe šansy a wuskutkujeće so na žiwjenja wšěch wokoło was.
 
 ## MR2022 Multistage Mobile Download screen strings
 
 mr2022-onboarding-mobile-download-title = Skočće wot laptopa do šmóratka a zaso wróćo
+mr2022-onboarding-mobile-download-subtitle = Wobstarajće sej rajtarki z jednoho grata a čińće tam dale, hdyž sće na drzhim graće přestał. Nimo toho móžeće swoje zapołožki a hesła synchronizować, hdźežkuli { -brand-product-name } wužiwaće.
+mr2022-onboarding-mobile-download-cta-text = Skennujće QR-kod, zo byšće { -brand-product-name } za swój mobilny grat dóstał abo <a data-l10n-name="download-label">sćelće sej sćehnjenski wotkaz.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Skenujće QR-kod, zo byšće sej { -brand-product-name } za mobilny grat wobstarał.
 
 ## MR2022 Upgrade Dialog screens
@@ -369,11 +383,38 @@ mr2022-upgrade-onboarding-pin-private-window-primary-button-label =
 ## MR2022 Privacy Segmentation screen strings
 
 mr2022-onboarding-privacy-segmentation-title = Wašu priwatnosć přeco respektujemy.
+mr2022-onboarding-privacy-segmentation-subtitle = Wot inteligentnych namjetow do mudrišeho pytanja, dźěłamy stajnje , zo bychmy lěpši, bóle wosobinski { -brand-product-name } wutworili.
+mr2022-onboarding-privacy-segmentation-text-cta = Što chceće widźeć, hdyž nowe funkcije poskićamy, kotrež waše daty wužiwaja, zo by so waše přehladowanje polěpšiło?
 mr2022-onboarding-privacy-segmentation-button-primary-label = Doporučenja { -brand-product-name } wužiwać
 mr2022-onboarding-privacy-segmentation-button-secondary-label = Nadrobne informacije pokazać
 
 ## MR2022 Multistage Gratitude screen strings
 
 mr2022-onboarding-gratitude-title = Pomhaće nam lěpši web natwarić.
+mr2022-onboarding-gratitude-subtitle = Wulki dźak, zo sće { -brand-short-name } wužiwaće, kotryž so wot załožby Mozilla Foundation spěchuje. Z wašej pomocu dźěłamy na tym, internet bóle wotewrjeny, přistupny a lěpši za kóždeho činić.
 mr2022-onboarding-gratitude-primary-button-label = Čitajće, štož je nowe
 mr2022-onboarding-gratitude-secondary-button-label = Přehladowanje započeć
+
+## Onboarding spotlight for infrequent users
+
+onboarding-infrequent-import-title = Čujće so kaž doma
+onboarding-infrequent-import-subtitle = Hač tam wostawaće abo jenož krótko pobywaće, njezabywajće, zo móžeće swoje zapołožki, hesła a wjace importować.
+onboarding-infrequent-import-primary-button = Do { -brand-short-name } importować
+
+## MR2022 Illustration alt tags
+## Descriptive tags for illustrations used by screen readers and other assistive tech
+
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Wosoba, kotraž na laptopje dźěła, wobdata wot hwězdow a kwětkow
+mr2022-onboarding-default-image-alt =
+    .aria-label = Wosoba, kotraž logo { -brand-product-name } wobjima
+mr2022-onboarding-import-image-alt =
+    .aria-label = Wosoba, kotraž skateboard z tyzu softwarowych symbolow jězdźi
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Žaby přez Łopjena bónčawow z QR-kodom skakotaja, zo byšće { -brand-product-name } za mobilne graty wosrjedźa
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Kuzłoprut da so logu priwatneho modusa { -brand-product-name } z kłobuka jewić
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Swětłokóžne a ćěmnokóžne ruki hromadu kleskaja
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Pohlad na chowanje słónca přez wokno z lišku a stwinej rostlinu na woknowym prohu

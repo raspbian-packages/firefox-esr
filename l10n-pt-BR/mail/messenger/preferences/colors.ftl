@@ -10,6 +10,9 @@ colors-dialog-window =
            *[other] width: 38em !important
         }
 
+colors-dialog-window2 =
+    .title = Cores
+
 colors-dialog-legend = Cores padrão
 
 text-color-label =

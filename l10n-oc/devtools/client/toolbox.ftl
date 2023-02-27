@@ -29,3 +29,24 @@ toolbox-meatball-menu-pseudo-locale-bidi = Activar lenga « bidireccionala �
 
 ##
 
+
+## These labels are shown in the top-toolbar in the Browser Toolbox and Browser Console
+
+toolbox-mode-browser-toolbox-label = Mòde bóstia d'aisinas del navegador
+toolbox-mode-browser-console-label = Mòde consòla del navegador
+toolbox-mode-everything-label = Multiprocèssus
+toolbox-mode-everything-sub-label = (Mai lent)
+toolbox-mode-everything-container =
+    .title = Tot desbugar dins totes los procèssus
+toolbox-mode-parent-process-label = Processus parent solament
+toolbox-mode-parent-process-sub-label = (Rapid)
+toolbox-mode-parent-process-container =
+    .title = Sonque centrat sus las solas ressorsas del processús parent.
+toolbox-always-on-top-enabled =
+    .title = Desactivar l’opcion lo primièr plan auto (aquesta accion reaviarà la bóstia d’aisinas de desvolopament)
+toolbox-always-on-top-disabled =
+    .title = Activar l’opcion lo primièr plan auto (aquesta accion reaviarà la bóstia d’aisinas de desvolopament)
+toolbox-always-on-top-enabled2 = Desactivar l’opcion d’afichatge totjorn al primièr plan
+    .title = Reaviarà las aisinas de desvelopament
+toolbox-always-on-top-disabled2 = Activar l’opcion d’afichatge totjorn al primièr plan
+    .title = Reaviarà las aisinas de desvelopament

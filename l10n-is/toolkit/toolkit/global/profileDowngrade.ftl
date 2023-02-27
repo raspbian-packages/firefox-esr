@@ -6,6 +6,10 @@ profiledowngrade-window =
     .title = Þú hefur ræst eldri útgáfu af { -brand-product-name }
     .style = width: 490px;
 
+profiledowngrade-window2 =
+    .title = Þú hefur ræst eldri útgáfu af { -brand-product-name }
+    .style = min-width: 490px;
+
 profiledowngrade-window-create =
     .label = Útbúa nýjan notanda
 

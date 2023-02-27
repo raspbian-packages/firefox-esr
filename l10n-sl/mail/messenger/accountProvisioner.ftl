@@ -35,6 +35,10 @@ account-provisioner-button-back = Nazaj
 
 ## Notifications
 
+account-provisioner-fetching-provisioners = Pridobivanje ponudnikov …
+
+account-provisioner-connection-issues = Ni bilo mogoče vzpostaviti stika s strežniki za registracijo računa. Preverite svojo povezavo.
+
 account-provisioner-searching-email = Iskanje razpoložljivih e-poštnih računov …
 
 account-provisioner-searching-domain = Iskanje razpoložljivih domen …

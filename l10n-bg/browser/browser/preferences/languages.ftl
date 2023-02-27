@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Настройки на езика на страницата
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Настройки на езика на страницата
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Настройки на езика на { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Настройки на езика на { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } ще използва първия език от списъка като език по подразбиране, а останалите при необходимост в зададения ред.
 

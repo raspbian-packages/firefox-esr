@@ -6,6 +6,10 @@ clear-site-data-window =
     .title = Vymazanie údajov
     .style = width: 35em
 
+clear-site-data-window2 =
+    .title = Vymazanie údajov
+    .style = min-width: 35em
+
 clear-site-data-description = Vymazanie všetkých cookies a údajov stránok, ktoré má aplikácia { -brand-short-name } uložené, vás môže odhlásiť z webových stránok a odstrániť offline webový obsah. Vymazanie údajov vo vyrovnávacej pamäti vaše prihlásenia neovplyvní.
 
 clear-site-data-close-key =

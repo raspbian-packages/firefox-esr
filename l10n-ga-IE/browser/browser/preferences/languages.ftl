@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Socruithe Teanga an Leathanaigh Ghréasáin
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Socruithe Teanga an Leathanaigh Ghréasáin
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -47,6 +51,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = Socruithe Teanga { -brand-short-name }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = Socruithe Teanga { -brand-short-name }
+    .style = min-width: 40em
 
 browser-languages-search = Lorg teangacha breise…
 

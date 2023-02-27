@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-privatebrowsingpage-open-private-window-label = Адчыніць прыватнае акно
+privatebrowsingpage-open-private-window-label = Адкрыць прыватнае акно
     .accesskey = а
 about-private-browsing-search-placeholder = Пошук у Інтэрнэце
 about-private-browsing-info-title = Вы ў прыватным акне
@@ -18,7 +18,7 @@ about-private-browsing-handoff-no-engine =
 #  $engine (String): the name of the user's default search engine
 about-private-browsing-handoff-text = Шукайце з дапамогай { $engine } альбо увядзіце адрас
 about-private-browsing-handoff-text-no-engine = Увядзіце пошукавы запыт альбо адрас
-about-private-browsing-not-private = Вы зараз не ў прыватным акне.
+about-private-browsing-not-private = Вы зараз не ў прыватным акне.
 about-private-browsing-info-description-private-window = Прыватнае акно: { -brand-short-name } ачышчае гісторыю пошуку і аглядання, калі вы закрываеце ўсе прыватныя вокны. Гэта не робіць вас ананімнымi.
 about-private-browsing-info-description-simplified = { -brand-short-name } ачышчае гісторыю пошуку і аглядання, калі вы закрываеце ўсе прыватныя вокны, але гэта не робіць вас ананімным.
 about-private-browsing-learn-more-link = Даведацца больш

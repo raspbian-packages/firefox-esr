@@ -6,6 +6,10 @@ blocklist-window =
     .title = Qara Siyahılar
     .style = width: 55em
 
+blocklist-window2 =
+    .title = Qara Siyahılar
+    .style = min-width: 55em
+
 blocklist-close-key =
     .key = w
 

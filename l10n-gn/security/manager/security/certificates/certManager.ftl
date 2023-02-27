@@ -30,6 +30,10 @@ certmgr-edit-ca-cert =
     .title = Embosako’i ñemboheko jeroviaha CA mba’éva
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Embosako’i ñemboheko jeroviaha CA mba’éva
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Embosako’i ñemboheko jeroviaha:
 
 certmgr-edit-cert-trust-ssl =
@@ -41,6 +45,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Mboajepyréva mboguete
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Mboajepyréva mboguete
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Mohendahavusu
@@ -185,8 +193,6 @@ delete-email-cert-impact = Emboguéramo ñanduti veve mboajepyréva peteĩ ava m
 #   $serialNumber : the serial number of the cert in AA:BB:CC hex format.
 cert-with-serial =
     .value = Mboajepyre papapy syryrýva: { $serialNumber }
-
-## Cert Viewer
 
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Ani emondo ñemuhára mboajepyréva

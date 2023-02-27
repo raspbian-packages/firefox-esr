@@ -67,6 +67,31 @@ cfr-doorhanger-extension-total-users =
 
 ## These messages are steps on how to use the feature and are shown together.
 
+## Cookie Banner Handling Onboarding
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+cfr-cookie-banner-handling-header = Stop ai banner per i cookie
+cfr-cookie-banner-handling-body = Consenti a { -brand-short-name }, se possibile, di rifiutare automaticamente tutte le richieste per i cookie. In caso contrario accetta tutti i cookie per ridurre ulteriormente il numero di banner visualizzati.
+cfr-cookie-banner-accept-button = Rifiuta richieste
+  .accesskey = R
+cfr-cookie-banner-reject-button = Non adesso
+  .accesskey = N
+
+cfr-cookie-banner-handling-header-variant-1 = Liberati dei pop-up per i cookie
+cfr-cookie-banner-handling-body-variant-1 = Consenti a { -brand-short-name } di rispondere automaticamente alle richieste nei pop-up per i cookie, così potrai ritornare a navigare senza distrazioni. { -brand-short-name } rifiuterà tutte le richieste, se possibile, o le accetterà tutte in caso contrario.
+cfr-cookie-banner-accept-button-variant-1 = Chiudi pop-up
+  .accesskey = C
+cfr-cookie-banner-reject-button-variant-1 = No grazie
+  .accesskey = N
+
+cfr-cookie-banner-handling-header-variant-2 = Riduzione banner per i cookie
+cfr-cookie-banner-handling-body-variant-2 = Consentire a { -brand-short-name } di rifiutare la richiesta di consenso per i cookie da parte di un sito o accettare i cookie se questo non fosse possibile?
+cfr-cookie-banner-accept-button-variant-2 = Consenti
+  .accesskey = C
+cfr-cookie-banner-reject-button-variant-2 = Non adesso
+  .accesskey = N
+
 
 ## Firefox Accounts Message
 
@@ -147,7 +172,7 @@ cfr-doorhanger-doh-secondary-button = Disattiva
 
 cfr-doorhanger-fission-body-approved = La tua privacy è importante. Ora { -brand-short-name } isola i siti web l’uno dall’altro, rendendo più difficile il furto di password, numeri di carte di credito e altre informazioni sensibili da parte di hacker.
 cfr-doorhanger-fission-header = Isolamento dei siti
-cfr-doorhanger-fission-primary-button = OK, ricevuto
+cfr-doorhanger-fission-primary-button = OK
   .accesskey = O
 cfr-doorhanger-fission-secondary-button = Ulteriori informazioni
   .accesskey = U
@@ -193,9 +218,6 @@ spotlight-total-cookie-protection-expanded = { -brand-short-name } crea un recin
 spotlight-total-cookie-protection-primary-button = Attiva Protezione totale per i cookie
 spotlight-total-cookie-protection-secondary-button = Non adesso
 
-cfr-total-cookie-protection-header = Grazie al tuo aiuto, { -brand-short-name } è più riservato e sicuro che mai
-cfr-total-cookie-protection-body = La Protezione totale per i cookie è lo strumento più potente per la protezione della privacy che abbiamo mai realizzato. E adesso è disponibile come impostazione predefinita per tutti gli utenti di { -brand-short-name } nel mondo. Questo risultato sarebbe stato impossibile senza il contributo di persone che, come te, hanno deciso di provare questa funzione in anteprima. Grazie per il tuo contributo e per aiutarci a creare un Internet migliore e più sicuro.
-
 ## Emotive Continuous Onboarding
 
 spotlight-better-internet-header = La strada verso un Internet migliore parte da te
@@ -207,3 +229,91 @@ spotlight-pin-primary-button = { PLATFORM() ->
    *[other] Aggiungi alla barra delle applicazioni
 }
 spotlight-pin-secondary-button = Non adesso
+
+## MR2022 Background Update Windows native toast notification strings.
+##
+## These strings will be displayed by the Windows operating system in
+## a native toast, like:
+##
+## <b>multi-line title</b>
+## multi-line text
+## <img>
+## [ primary button ] [ secondary button ]
+##
+## The button labels are fitted into narrow fixed-width buttons by
+## Windows and therefore must be as narrow as possible.
+
+mr2022-background-update-toast-title = Nuovo { -brand-short-name }. Più riservato. Meno elementi traccianti. Nessun compromesso.
+mr2022-background-update-toast-text = Prova ora il nuovo { -brand-short-name }, aggiornato con la protezione antitracciamento più potente che abbiamo mai realizzato.
+
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it
+# using a variable font like Arial): the button can only fit 1-2
+# additional characters, exceeding characters will be truncated.
+mr2022-background-update-toast-primary-button-label = Apri { -brand-shorter-name } ora
+
+# This button label will be fitted into a narrow fixed-width button by
+# Windows. Try to not exceed the width of the English text (compare it using a
+# variable font like Arial): the button can only fit 1-2 additional characters,
+# exceeding characters will be truncated.
+mr2022-background-update-toast-secondary-button-label = Ricorda più tardi
+
+## Firefox View CFR
+
+firefoxview-cfr-primarybutton = Provalo
+  .accesskey = P
+firefoxview-cfr-secondarybutton = Non adesso
+  .accesskey = N
+firefoxview-cfr-header-v2 = Riprendi da dove eri rimasto
+firefoxview-cfr-body-v2 = Recupera le schede chiuse di recente e passa velocemente da un dispositivo all’altro con { -firefoxview-brand-name }.
+
+## Firefox View Spotlight
+
+firefoxview-spotlight-promo-title = Ti presentiamo { -firefoxview-brand-name }
+
+# “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
+firefoxview-spotlight-promo-subtitle = Ti serve proprio quella scheda aperta sul tuo telefono? Recuperala al volo. Hai bisogno di un sito che hai appena visitato? Lo trovi in { -firefoxview-brand-name }.
+firefoxview-spotlight-promo-primarybutton = Scopri come funziona
+firefoxview-spotlight-promo-secondarybutton = Salta
+
+## Colorways expiry reminder CFR
+
+colorways-cfr-primarybutton = Scegli una tonalità
+  .accesskey = S
+
+# "shades" refers to the different color options available to users in colorways.
+colorways-cfr-body = Personalizza il tuo browser con le iconiche combinazioni di colori di { -brand-short-name } ispirate alle voci che cambiano la società.
+colorways-cfr-header-28days = Le tonalità Voci indipendenti scadranno il 16 gennaio
+colorways-cfr-header-14days = Le tonalità Voci indipendenti scadranno in due settimane
+colorways-cfr-header-7days =  Le tonalità Voci indipendenti scadranno questa settimana
+colorways-cfr-header-today = Le tonalità Voci indipendenti scadono oggi
+
+## Cookie Banner Handling CFR
+
+# Alternate headline for localization: "See fewer cookie requests"
+cfr-cookiebanner-header = Stop ai banner per i cookie
+cfr-cookiebanner-body = Consenti a { -brand-short-name }, se possibile, di rifiutare automaticamente tutte le richieste per i cookie.
+cfr-cookiebanner-accept-button = Elimina banner
+  .accesskey = E
+cfr-cookiebanner-reject-button = Non adesso
+  .accesskey = N
+
+cfr-cookiebanner-header-variant-1 = Liberati dei pop-up per i cookie
+cfr-cookiebanner-body-variant-1 = Consenti a { -brand-short-name } di rispondere automaticamente alle richieste nei pop-up per i cookie, così potrai ritornare a navigare senza distrazioni. Dove possibile, { -brand-short-name } rifiuterà tutte le richieste.
+cfr-cookiebanner-accept-button-variant-1 = Elimina pop-up
+  .accesskey = E
+cfr-cookiebanner-reject-button-variant-1 = No grazie
+  .accesskey = N
+
+cfr-cookiebanner-header-variant-2 = Riduzione banner per i cookie
+cfr-cookiebanner-body-variant-2 = Riduci il numero di banner visualizzati consentendo a { -brand-short-name }, se possibile, di rifiutare la richiesta di consenso per i cookie da parte di un sito.
+cfr-cookiebanner-accept-button-variant-2 = Consenti
+  .accesskey = C
+cfr-cookiebanner-reject-button-variant-2 = Non adesso
+  .accesskey = N
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+july-jam-headline = Sempre dalla tua parte
+july-jam-body = Ogni mese { -brand-short-name } blocca in media oltre 3.000 elementi traccianti per ciascun utente, offrendoti un accesso sicuro e veloce alla parte migliore di Internet.
+july-jam-set-default-primary = Apri i miei link con { -brand-short-name }

@@ -34,7 +34,7 @@ about-networking-messages-received = Jasotako mezuak
 about-networking-bytes-sent = Bidalitako byteak
 about-networking-bytes-received = Jasotako byteak
 about-networking-logging = Erregistroa
-about-networking-log-tutorial = Ikusi <a data-l10n-name="logging">HTTP erregistora</a> orria tresna hau erabiltzeko argibideetarako.
+about-networking-log-tutorial = Ikusi <a data-l10n-name="logging">HTTP erregistroa</a> orria tresna hau erabiltzeko argibideetarako.
 about-networking-current-log-file = Uneko erregistro-fitxategia:
 about-networking-current-log-modules = Uneko erregistro-moduluak:
 about-networking-set-log-file = Ezarri erregistro-fitxategia
@@ -63,6 +63,8 @@ about-networking-rcwn-cache-slow = Cache motel kopurua
 about-networking-rcwn-cache-not-slow = Cache ez motel kopurua
 about-networking-networkid = Sarearen IDa
 about-networking-networkid-id = Sarearen IDa
+# Note: do not translate about:logging, as it is a URL.
+about-networking-moved-about-logging = Orri hau lekuz aldatu da <a data-l10n-name="about-logging-url">about:logging</a> helbidera.
 
 ## Link is intended as "network link"
 

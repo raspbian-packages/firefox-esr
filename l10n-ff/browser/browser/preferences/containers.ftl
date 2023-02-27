@@ -6,6 +6,10 @@ containers-window-new =
     .title = Ɓeydu Mooftiree Hesere
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Ɓeydu Mooftiree Hesere
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 

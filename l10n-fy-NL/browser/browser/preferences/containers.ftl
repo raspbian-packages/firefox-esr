@@ -5,12 +5,20 @@
 containers-window-new =
     .title = Nije kontener tafoegje
     .style = width: 45em
-
 # Variables
 #   $name (String) - Name of the container
 containers-window-update-settings =
     .title = Ynstellingen fan kontener { $name }
     .style = width: 45em
+
+containers-window-new2 =
+    .title = Nije kontener tafoegje
+    .style = min-width: 45em
+# Variables
+#   $name (String) - Name of the container
+containers-window-update-settings2 =
+    .title = Ynstellingen fan kontener { $name }
+    .style = min-width: 45em
 
 containers-window-close =
     .key = w

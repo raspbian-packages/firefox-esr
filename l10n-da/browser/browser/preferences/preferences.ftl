@@ -184,12 +184,15 @@ preferences-web-appearance-header = Websteds-udseende
 preferences-web-appearance-description = Nogle websteder tilpasser deres farvetema efter dine præferencer. Vælg, hvilket farvetema, du ønsker at bruge til disse websteder.
 preferences-web-appearance-choice-browser = { -brand-short-name }-tema
 preferences-web-appearance-choice-system = Systemets tema
+preferences-web-appearance-choice-auto = Automatisk
 preferences-web-appearance-choice-light = Lyst
 preferences-web-appearance-choice-dark = Mørkt
 preferences-web-appearance-choice-tooltip-browser =
     .title = Match tema-indstillingerne i { -brand-short-name } for websteders baggrund og indhold
 preferences-web-appearance-choice-tooltip-system =
     .title = Match dine systemindstillinger for websteders baggrund og indhold.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Skift automatisk websteders baggrund og indhold baseret på dine systemindstillinger og  { -brand-short-name }-tema.
 preferences-web-appearance-choice-tooltip-light =
     .title = Brug lyst udseende for websteders baggrund og indhold.
 preferences-web-appearance-choice-tooltip-dark =
@@ -198,6 +201,8 @@ preferences-web-appearance-choice-input-browser =
     .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
 preferences-web-appearance-choice-input-system =
     .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
+preferences-web-appearance-choice-input-auto =
+    .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
 preferences-web-appearance-choice-input-dark =
@@ -587,6 +592,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Vis søgeforslag i adressefeltet
     .accesskey = a
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Vis søgestrenge fremfor adressen på standard-søgetjenestens resultatside
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -714,6 +724,13 @@ sync-choose-what-to-sync-dialog =
     .buttonaccesskeyaccept = G
     .buttonlabelextra2 = Afbryd…
     .buttonaccesskeyextra2 = A
+sync-choose-what-to-sync-dialog3 =
+    .title = Vælg hvad der skal synkroniseres
+    .style = min-width: 36em;
+    .buttonlabelaccept = Gem ændringer
+    .buttonaccesskeyaccept = G
+    .buttonlabelextra2 = Afbryd…
+    .buttonaccesskeyextra2 = A
 sync-engine-bookmarks =
     .label = Bogmærker
     .accesskey = B
@@ -782,6 +799,9 @@ forms-breach-alerts =
     .label = Vis advarsler om adgangskoder for hackede websteder
     .accesskey = a
 forms-breach-alerts-learn-more-link = Læs mere
+relay-integration =
+    .label = Aktiver { -relay-brand-name } i { -brand-short-name }' adgangskode-håndtering
+relay-integration-learn-more-link = Læs mere
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
     .label = Autofyld logins og adgangskoder
@@ -898,6 +918,8 @@ sitedata-option-block-unvisited =
     .label = Cookies fra ikke-besøgte websteder
 sitedata-option-block-all-third-party =
     .label = Alle tredjeparts-cookies (kan forhindre websteder i at fungere)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Alle cookies på tværs af websteder (kan forhindre websteder i at fungere)
 sitedata-option-block-all =
     .label = Alle cookies (vil forhindre websteder i at fungere)
 sitedata-clear =
@@ -977,6 +999,7 @@ content-blocking-all-cookies = Alle cookies
 content-blocking-unvisited-cookies = Cookies fra ikke-besøgte websteder
 content-blocking-all-windows-tracking-content = Sporings-indhold i alle vinduer
 content-blocking-all-third-party-cookies = Alle tredjeparts-cookies
+content-blocking-all-cross-site-cookies = Alle cookies på tværs af websteder
 content-blocking-cryptominers = Cryptominers
 content-blocking-fingerprinters = Fingerprinters
 # "Test pilot" is used as a verb. Possible alternatives:
@@ -984,6 +1007,9 @@ content-blocking-fingerprinters = Fingerprinters
 content-blocking-etp-standard-tcp-rollout-checkbox =
     .label = Vær blandt de første til at teste vores hidtil stærkeste privatlivs-beskyttelse
     .accesskey = V
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Komplet Cookiebeskyttelse begrænser cookies til det websted, du befinder dig på. Så kan sporingsmekanismer ikke følge dig på tværs af websteder.
 content-blocking-etp-standard-tcp-rollout-learn-more = Læs mere

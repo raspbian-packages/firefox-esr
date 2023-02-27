@@ -21,9 +21,20 @@ about-addressbook-toolbar-import =
 
 ## Books
 
+all-address-books-row =
+    .title = Tote le libros del adresses
 all-address-books = Tote le libros del adresses
+# Variables:
+# $name (String) - The name of the selected book/list.
+# $count (Number) - The number of contacts in the selected book/list.
+about-addressbook-card-count = Total de contactos in { $name }: { $count }
+# Variables:
+# $count (Number) - The number of contacts in all address books.
+about-addressbook-card-count-all = Contactos total in tote le libros del adresses: { $count }
 about-addressbook-books-context-properties =
     .label = Proprietates
+about-addressbook-books-context-edit-list =
+    .label = Rediger le lista
 about-addressbook-books-context-synchronize =
     .label = Synchronisar
 about-addressbook-books-context-edit =
@@ -75,6 +86,8 @@ about-addressbook-horizontal-layout =
     .label = Passar al disposition horizontal
 about-addressbook-vertical-layout =
     .label = Passar al disposition vertical
+about-addressbook-table-layout =
+    .label = Mappa del tabella
 
 ## Card column headers
 ## Each string is listed here twice, and the values should match.
@@ -85,6 +98,9 @@ about-addressbook-column-label-generatedname =
 about-addressbook-column-header-emailaddresses = Adresses email
 about-addressbook-column-label-emailaddresses =
     .label = { about-addressbook-column-header-emailaddresses }
+about-addressbook-column-header-nickname = Pseudonymo
+about-addressbook-column-label-nickname =
+    .label = { about-addressbook-column-header-nickname }
 about-addressbook-column-header-phonenumbers = Numeros de telephono
 about-addressbook-column-label-phonenumbers =
     .label = { about-addressbook-column-header-phonenumbers }
@@ -167,10 +183,23 @@ about-addressbook-placeholder-no-search-results = Nulle contactos trovate
 
 ## Details
 
+# Variables:
+# $count (Number) - The number of selected items (will never be fewer than two)
+about-addressbook-selection-mixed-header = { $count } contactos e listas eligite
+# Variables:
+# $count (Number) - The number of selected contacts
+about-addressbook-selection-contacts-header = { $count } contactos eligite
+# Variables:
+# $count (Number) - The number of selected lists
+about-addressbook-selection-lists-header = { $count } listas eligite
+about-addressbook-details-edit-photo =
+    .title = Rediger photo de contacto
+about-addressbook-new-contact-header = Nove contacto
 about-addressbook-prefer-display-name = Preferer le nomine monstrate al testa del message
 about-addressbook-write-action-button = Scriber
 about-addressbook-event-action-button = Evento
 about-addressbook-search-action-button = Cercar
+about-addressbook-new-list-action-button = Nove lista
 about-addressbook-begin-edit-contact-button = Rediger
 about-addressbook-delete-edit-contact-button = Deler
 about-addressbook-cancel-edit-contact-button = Cancellar
@@ -181,6 +210,7 @@ about-addressbook-details-phone-numbers-header = Numeros de telephono
 about-addressbook-details-addresses-header = Adresses
 about-addressbook-details-notes-header = Notas
 about-addressbook-details-impp-header = Messages instantanee
+about-addressbook-details-websites-header = Sitos web
 about-addressbook-details-other-info-header = Altere informationes
 about-addressbook-entry-type-work = Labor
 about-addressbook-entry-type-home = Initio
@@ -195,6 +225,10 @@ about-addressbook-entry-name-role = Rolo
 about-addressbook-entry-name-organization = Organisation
 about-addressbook-entry-name-website = Sito web
 about-addressbook-entry-name-time-zone = Fuso horari
+about-addressbook-entry-name-custom1 = Personalisate 1
+about-addressbook-entry-name-custom2 = Personalisate 2
+about-addressbook-entry-name-custom3 = Personalisate 3
+about-addressbook-entry-name-custom4 = Personalisate 4
 about-addressbook-unsaved-changes-prompt-title = Modificationes non salveguardate
 about-addressbook-unsaved-changes-prompt = Vole tu salvar tu cambiamentos ante lassar le vista del redaction?
 
@@ -207,3 +241,7 @@ about-addressbook-photo-filepicker-title = Eliger un file imagine
 about-addressbook-photo-discard = Eliminar photo existente
 about-addressbook-photo-cancel = Cancellar
 about-addressbook-photo-save = Salvar
+
+# Keyboard shortcuts
+
+about-addressbook-new-contact-key = N

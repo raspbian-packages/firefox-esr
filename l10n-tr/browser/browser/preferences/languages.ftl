@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Web sayfası dil ayarları
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Web sayfası dil ayarları
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -52,6 +56,10 @@ languages-active-code-format =
 browser-languages-window =
     .title = { -brand-short-name } Dil Ayarları
     .style = width: 40em
+
+browser-languages-window2 =
+    .title = { -brand-short-name } Dil Ayarları
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } ilk dili varsayılan olarak kullanacak, gerekirse alternatif dilleri göründükleri sırayla kullanacaktır.
 

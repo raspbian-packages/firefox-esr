@@ -29,6 +29,10 @@ certmgr-edit-ca-cert =
     .title = Editează setările certificatului de încredere AC
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Editează setările certificatului de încredere AC
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Editează setările de acreditare:
 
 certmgr-edit-cert-trust-ssl =
@@ -40,6 +44,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Șterge certificatul
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Șterge certificatul
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Gazdă
@@ -180,12 +188,11 @@ delete-email-cert-impact = Dacă ștergi un certificat de e-mail al unei persoan
 cert-with-serial =
     .value = Certificatul cu numărul de serie: { $serialNumber }
 
-## Cert Viewer
-
 # Used to indicate that the user chose not to send a client authentication certificate to a server that requested one in a TLS handshake.
 send-no-client-certificate = Nu trimite niciun certificat de client
 
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

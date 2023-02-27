@@ -6,6 +6,10 @@ webpage-languages-window =
     .title = Jazyk webových stránek
     .style = width: 40em
 
+webpage-languages-window2 =
+    .title = Jazyk webových stránek
+    .style = min-width: 40em
+
 languages-close-key =
     .key = w
 
@@ -58,6 +62,16 @@ browser-languages-window =
            *[other] aplikace { -brand-short-name }
         }
     .style = width: 40em
+
+browser-languages-window2 =
+    .title =
+        Jazyk { -brand-short-name.gender ->
+            [masculine] { -brand-short-name(case: "gen") }
+            [feminine] { -brand-short-name(case: "gen") }
+            [neuter] { -brand-short-name(case: "gen") }
+           *[other] aplikace { -brand-short-name }
+        }
+    .style = min-width: 40em
 
 browser-languages-description = { -brand-short-name } zobrazí své uživatelské rozhraní v prvním vybraném jazyce. Ostatní použije jen pokud bude potřeba, a to ve vybraném pořadí.
 

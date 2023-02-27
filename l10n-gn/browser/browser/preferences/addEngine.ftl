@@ -6,6 +6,10 @@ add-engine-window =
     .title = Embojuaju hekaha
     .style = width: 32em;
 
+add-engine-window2 =
+    .title = Embojuaju hekaha
+    .style = min-width: 32em;
+
 add-engine-button = Embojuaju hekaha momba’epyre
 
 add-engine-name = Hekaha réra

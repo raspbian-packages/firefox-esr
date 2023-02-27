@@ -26,6 +26,9 @@ connection-dialog-window =
            *[other] width: 49em !important
         }
 
+connection-dialog-window2 =
+    .title = Stillingar tengingar
+
 disable-extension-button = Slökkva á viðbót
 
 # Variables:

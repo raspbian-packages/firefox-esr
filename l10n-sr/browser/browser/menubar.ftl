@@ -192,6 +192,17 @@ menu-view-full-screen =
     .label = Преко целог екрана
     .accesskey = П
 
+## These menu items may use the same accesskey.
+
+# This should match reader-view-enter-button in browser.ftl
+menu-view-enter-readerview =
+    .label = Уђи у приказ читача
+    .accesskey = ч
+# This should match reader-view-close-button in browser.ftl
+menu-view-close-readerview =
+    .label = Затвори приказ читача
+    .accesskey = ч
+
 ##
 
 menu-view-show-all-tabs =

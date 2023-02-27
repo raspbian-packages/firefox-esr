@@ -29,6 +29,10 @@ certmgr-edit-ca-cert =
     .title = Редактиране на настройките за доверие в сертификат на CA
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Редактиране на настройките за доверие в сертификат на CA
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Редактиране на настройките за доверие:
 
 certmgr-edit-cert-trust-ssl =
@@ -40,6 +44,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Изтриване на сертификат
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Изтриване на сертификат
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-host =
     .label = Хост
@@ -180,9 +188,8 @@ delete-email-cert-impact = Ако изтриете сертификат на е-
 cert-with-serial =
     .value = Сертификат със сериен номер: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

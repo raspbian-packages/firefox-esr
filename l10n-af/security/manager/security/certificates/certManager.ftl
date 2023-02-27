@@ -21,6 +21,10 @@ certmgr-edit-ca-cert =
     .title = Redigeer SO-sertifikaatvertroueopstelling
     .style = width: 48em;
 
+certmgr-edit-ca-cert2 =
+    .title = Redigeer SO-sertifikaatvertroueopstelling
+    .style = min-width: 48em;
+
 certmgr-edit-cert-edit-trust = Redigeer vertroueopstelling:
 
 certmgr-edit-cert-trust-ssl =
@@ -32,6 +36,10 @@ certmgr-edit-cert-trust-email =
 certmgr-delete-cert =
     .title = Skrap sertifikaat
     .style = width: 48em; height: 24em;
+
+certmgr-delete-cert2 =
+    .title = Skrap sertifikaat
+    .style = min-width: 48em; min-height: 24em;
 
 certmgr-cert-name =
     .label = Naam van sertifikaat
@@ -169,9 +177,8 @@ delete-email-cert-impact = Indien u 'n persoon e-possertifikaat skrap, sal u nie
 cert-with-serial =
     .value = Sertifikaat met reeksnommer: { $serialNumber }
 
-## Cert Viewer
-
 ## Used to show whether an override is temporary or permanent
+
 
 ## Add Security Exception dialog
 

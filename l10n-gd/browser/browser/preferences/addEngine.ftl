@@ -6,6 +6,10 @@ add-engine-window =
     .title = Cuir einnsean-luirg ris
     .style = width: 38em;
 
+add-engine-window2 =
+    .title = Cuir einnsean-luirg ris
+    .style = min-width: 38em;
+
 add-engine-button = Cuir einnsean gnàthaichte ris
 
 add-engine-name = Ainm an einnsein-luirg

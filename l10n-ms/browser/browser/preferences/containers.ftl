@@ -6,6 +6,10 @@ containers-window-new =
     .title = Tambah Penyimpan Baru
     .style = width: 45em
 
+containers-window-new2 =
+    .title = Tambah Penyimpan Baru
+    .style = min-width: 45em
+
 containers-window-close =
     .key = w
 
