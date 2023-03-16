@@ -1,4 +1,4 @@
-firefox-esr (102.8.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (102.9.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -28,7 +28,19 @@ firefox-esr (102.8.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 16 Feb 2023 02:08:12 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 16 Mar 2023 04:52:25 +0000
+
+firefox-esr (102.9.0esr-1~deb11u1) bullseye-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2023-10, also known as:
+    CVE-2023-25751, CVE-2023-28164, CVE-2023-28162, CVE-2023-25752,
+    CVE-2023-28176.
+
+  * debian/browser.mozconfig.in: Disable wasm sandboxing on s390x for now.
+    It doesn't work at the moment.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 15 Mar 2023 07:26:00 +0900
 
 firefox-esr (102.8.0esr-1~deb11u1) bullseye-security; urgency=medium
 
