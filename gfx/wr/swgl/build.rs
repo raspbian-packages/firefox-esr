@@ -6,6 +6,7 @@ extern crate cc;
 extern crate glsl_to_cxx;
 extern crate webrender_build;
 
+use std::env;
 use std::collections::HashSet;
 use std::fmt::Write;
 use webrender_build::shader::{ShaderFeatureFlags, get_shader_features};
@@ -168,6 +169,10 @@ fn main() {
                  .flag("-fno-rtti")
                  .flag("-fno-math-errno")
                  .flag("-UMOZILLA_CONFIG_H");
+            let target = env::var("TARGET").unwrap();
+            if !target.starts_with("x86_64") {
+                build.flag("-fno-inline");
+            }
         }
         // SWGL relies heavily on inlining for performance so override -Oz with -O2
         if tool.args().contains(&"-Oz".into()) {
