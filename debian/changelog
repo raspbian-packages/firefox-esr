@@ -1,4 +1,4 @@
-firefox-esr (102.9.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (102.9.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -28,9 +28,15 @@ firefox-esr (102.9.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 16 Mar 2023 04:52:25 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 31 Mar 2023 03:48:54 +0000
 
-firefox-esr (102.9.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.9.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * Backport to buster.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 15 Mar 2023 12:53:54 +0100
+
+firefox-esr (102.9.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2023-10, also known as:
@@ -42,7 +48,13 @@ firefox-esr (102.9.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 15 Mar 2023 07:26:00 +0900
 
-firefox-esr (102.8.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.8.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * Backport to buster.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 15 Feb 2023 13:51:26 +0100
+
+firefox-esr (102.8.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2023-06, also known as:
@@ -57,7 +69,13 @@ firefox-esr (102.8.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 15 Feb 2023 08:45:08 +0900
 
-firefox-esr (102.7.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.7.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * Backport to buster.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 18 Jan 2023 10:54:32 +0100
+
+firefox-esr (102.7.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2023-02, also known as:
@@ -82,7 +100,13 @@ firefox-esr (102.7.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 18 Jan 2023 05:33:36 +0900
 
-firefox-esr (102.6.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.6.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * Backport to buster.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 14 Dec 2022 10:53:37 +0100
+
+firefox-esr (102.6.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2022-52, also known as:
@@ -91,7 +115,13 @@ firefox-esr (102.6.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 14 Dec 2022 07:48:39 +0900
 
-firefox-esr (102.5.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.5.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * Backport to buster.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 16 Nov 2022 09:39:25 +0100
+
+firefox-esr (102.5.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2022-48, also known as:
@@ -110,7 +140,16 @@ firefox-esr (102.5.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 16 Nov 2022 06:20:30 +0900
 
-firefox-esr (102.4.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.4.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * Backport to buster. Remaining changes:
+    - Use internal libevent, the system one is too old.
+    - Build swgl with -fno-inline on arm* and i386, due to ICEs with GCC 8.
+    - Fix build failure on at least i386 on TestCombinedStacks.cpp.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 19 Oct 2022 16:25:38 +0200
+
+firefox-esr (102.4.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2022-45, also known as:
@@ -118,7 +157,21 @@ firefox-esr (102.4.0esr-1~deb11u1) bullseye-security; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 19 Oct 2022 05:04:39 +0900
 
-firefox-esr (102.3.0esr-1~deb11u1) bullseye-security; urgency=medium
+firefox-esr (102.3.0esr-1~deb10u2) buster-security; urgency=medium
+
+  * Build swgl with -fno-inline on arm* and i386, due to ICEs with GCC 8.
+  * Fix build failure on at least i386 on TestCombinedStacks.cpp.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 26 Sep 2022 13:14:57 +0200
+
+firefox-esr (102.3.0esr-1~deb10u1) buster-security; urgency=medium
+
+  * Backport to buster.
+  * Use internal libevent, the system one is too old.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Fri, 23 Sep 2022 11:38:58 +0200
+
+firefox-esr (102.3.0esr-1) unstable; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2022-41, also known as:
