@@ -1,0 +1,19 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Date: Sat, 1 Apr 2023 14:51:20 +0000
+X-Dgit-Generated: 102.9.0esr-1~deb10u1+rpi1 142857cf04bb98225cf7d09cbad460bd7ec0683a
+Subject: Fix key error in media/libvpx/moz.build
+
+
+---
+
+--- firefox-esr-102.9.0esr.orig/media/libvpx/moz.build
++++ firefox-esr-102.9.0esr/media/libvpx/moz.build
+@@ -37,7 +37,7 @@ elif CONFIG['CPU_ARCH'] == 'x86':
+     else: # Android, Linux, BSDs, etc.
+         ASFLAGS += [ '-I%s/media/libvpx/config/linux/ia32/' % TOPSRCDIR ]
+         LOCAL_INCLUDES += [ '/media/libvpx/config/linux/ia32/' ]
+-elif CONFIG['CPU_ARCH'] == 'arm':
++elif (CONFIG['CPU_ARCH'] == 'arm') and ('ARM_EXPORTS' in files):
+     EXPORTS.vpx += files['ARM_EXPORTS']
+     ASFLAGS += [
+         '-I%s/media/libvpx/config/linux/arm/' % TOPSRCDIR,
