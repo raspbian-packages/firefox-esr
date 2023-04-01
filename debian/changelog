@@ -28,7 +28,10 @@ firefox-esr (102.9.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 31 Mar 2023 03:48:54 +0000
+  [changes introduced in 102.9.0esr-1~deb10u1+rpi1 by Peter Michael Green]
+  * Fix key error in media/libvpx/moz.build
+
+ -- Peter Michael Green <plugwash@raspbian.org>  Sat, 01 Apr 2023 14:52:24 +0000
 
 firefox-esr (102.9.0esr-1~deb10u1) buster-security; urgency=medium
 
