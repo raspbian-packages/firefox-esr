@@ -1,0 +1,95 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+pictureinpicture-player-title = Incrustation vidéo
+pictureinpicture-pause =
+    .aria-label = Pause
+pictureinpicture-play =
+    .aria-label = Lecture
+pictureinpicture-mute =
+    .aria-label = Muet
+pictureinpicture-unmute =
+    .aria-label = Audible
+pictureinpicture-unpip =
+    .aria-label = Renvoyer dans l’onglet
+pictureinpicture-close =
+    .aria-label = Fermer
+
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+pictureinpicture-pause-cmd =
+    .aria-label = Pause
+    .title = Pause (barre d’espace)
+pictureinpicture-play-cmd =
+    .aria-label = Lecture
+    .title = Lecture (barre d’espace)
+pictureinpicture-mute-cmd =
+    .aria-label = Couper le son
+    .title = Couper le son ({ $shortcut })
+pictureinpicture-unmute-cmd =
+    .aria-label = Réactiver le son
+    .title = Réactiver le son ({ $shortcut })
+pictureinpicture-unpip-cmd =
+    .aria-label = Renvoyer dans l’onglet
+    .title = Retour dans l’onglet
+pictureinpicture-close-cmd =
+    .aria-label = Fermer
+    .title = Fermer ({ $shortcut })
+pictureinpicture-subtitles-cmd =
+    .aria-label = Sous-titres
+    .title = Sous-titres
+pictureinpicture-pause-btn =
+    .aria-label = Pause
+    .tooltip = Pause (barre d’espace)
+pictureinpicture-play-btn =
+    .aria-label = Lecture
+    .tooltip = Lecture (barre d’espace)
+pictureinpicture-mute-btn =
+    .aria-label = Couper le son
+    .tooltip = Couper le son ({ $shortcut })
+pictureinpicture-unmute-btn =
+    .aria-label = Réactiver le son
+    .tooltip = Réactiver le son ({ $shortcut })
+pictureinpicture-unpip-btn =
+    .aria-label = Renvoyer dans l’onglet
+    .tooltip = Retour dans l’onglet
+pictureinpicture-close-btn =
+    .aria-label = Fermer
+    .tooltip = Fermer ({ $shortcut })
+pictureinpicture-subtitles-btn =
+    .aria-label = Sous-titres
+    .tooltip = Sous-titres
+
+##
+
+pictureinpicture-fullscreen-cmd =
+    .aria-label = Plein écran
+    .title = Plein écran (double-clic)
+pictureinpicture-exit-fullscreen-cmd =
+    .aria-label = Quitter le mode plein écran
+    .title = Quitter le mode plein écran (double-clic)
+pictureinpicture-seekbackward-cmd =
+    .aria-label = Retour en arrière
+    .title = Retour en arrière (←)
+pictureinpicture-seekforward-cmd =
+    .aria-label = Avancer
+    .title = Avancer (→)
+pictureinpicture-fullscreen-btn =
+    .aria-label = Plein écran
+    .tooltip = Plein écran (double-clic)
+pictureinpicture-exit-fullscreen-btn =
+    .aria-label = Quitter le mode plein écran
+    .tooltip = Quitter le mode plein écran (double-clic)
+pictureinpicture-seekbackward-btn =
+    .aria-label = Retour en arrière
+    .tooltip = Retour en arrière (←)
+pictureinpicture-seekforward-btn =
+    .aria-label = Avancer
+    .tooltip = Avancer (→)
+pictureinpicture-subtitles-label = Sous-titres
+pictureinpicture-font-size-label = Taille de police
+pictureinpicture-font-size-small = Petite
+pictureinpicture-font-size-medium = Moyenne
+pictureinpicture-font-size-large = Grande
