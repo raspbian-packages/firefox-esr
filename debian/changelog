@@ -1,4 +1,4 @@
-firefox-esr (102.9.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+firefox-esr (102.11.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -28,7 +28,28 @@ firefox-esr (102.9.0esr-1~deb11u1+rpi1) bullseye-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 16 Mar 2023 04:52:25 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sat, 13 May 2023 11:40:25 +0000
+
+firefox-esr (102.11.0esr-1~deb11u1) bullseye-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2023-17, also known as:
+    CVE-2023-32205, CVE-2023-32206, CVE-2023-32207, CVE-2023-32211,
+    CVE-2023-32212, CVE-2023-32213, CVE-2023-32215.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 10 May 2023 06:32:15 +0900
+
+firefox-esr (102.10.0esr-1~deb11u1) bullseye-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2023-14, also known as:
+    CVE-2023-29533, CVE-2023-29535, CVE-2023-29536, CVE-2023-29539,
+    CVE-2023-29541, CVE-2023-1945, CVE-2023-29548, CVE-2023-29550.
+
+  * gfx/skia/generate_mozbuild.py, gfx/skia/moz.build: Remove explicit NEON
+    flags from skia build. Closes: #982794. Thanks Emanuele Rocca.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 12 Apr 2023 06:37:17 +0900
 
 firefox-esr (102.9.0esr-1~deb11u1) bullseye-security; urgency=medium
 
