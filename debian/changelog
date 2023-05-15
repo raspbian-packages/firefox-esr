@@ -1,4 +1,4 @@
-firefox-esr (102.9.0esr-2+rpi1) bookworm-staging; urgency=medium
+firefox-esr (102.10.0esr-1+rpi1) bookworm-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -28,7 +28,16 @@ firefox-esr (102.9.0esr-2+rpi1) bookworm-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
- -- Raspbian forward porter <root@raspbian.org>  Wed, 29 Mar 2023 00:29:58 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 15 May 2023 01:18:55 +0000
+
+firefox-esr (102.10.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2023-14, also known as:
+    CVE-2023-29533, CVE-2023-29535, CVE-2023-29536, CVE-2023-29539,
+    CVE-2023-29541, CVE-2023-1945, CVE-2023-29548, CVE-2023-29550.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 12 Apr 2023 06:37:17 +0900
 
 firefox-esr (102.9.0esr-2) unstable; urgency=medium
 
