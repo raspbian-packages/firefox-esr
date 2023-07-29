@@ -152,7 +152,13 @@ endif
 CONFIGURE_FLAGS += --disable-jit
 #endif
 
-CXXFLAGS = $(CFLAGS)
+CXXFLAGS := $(CFLAGS)
+# Work around https://sourceware.org/bugzilla/show_bug.cgi?id=30578
+ifneq (,$(filter trixie,$(DIST)))
+ifneq (,$(filter amd64,$(DEB_HOST_ARCH)))
+CFLAGS += -DFFMPEG_DISABLE_INLINE_ASM
+endif
+endif
 RUSTFLAGS = --remap-path-prefix=$(CURDIR)=.
 
 EXPORTS := CC CXX CFLAGS CXXFLAGS CPPFLAGS LDFLAGS MOZILLA_OFFICIAL RUSTFLAGS

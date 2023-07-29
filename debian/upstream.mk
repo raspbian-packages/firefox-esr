@@ -42,8 +42,8 @@ DIST = unknown
 ifneq (,$(filter experimental,$(DEB_DISTRIBUTION)))
 DIST = experimental
 endif
-ifneq (,$(filter testing% bookworm% unstable sid,$(DEB_DISTRIBUTION)))
-DIST = bookworm
+ifneq (,$(filter testing% unstable sid,$(DEB_DISTRIBUTION)))
+DIST = trixie
 endif
 ifneq (,$(filter bpo% deb%,$(DEBIAN_RELEASE_EXTRA)))
 DEBIAN_TARGET := $(subst bpo,,$(subst deb,,$(DEBIAN_RELEASE_EXTRA)))

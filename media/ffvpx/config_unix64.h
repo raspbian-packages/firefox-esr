@@ -193,7 +193,11 @@
 #define HAVE_SYNC_VAL_COMPARE_AND_SWAP 1
 #define HAVE_CABS 1
 #define HAVE_CEXP 1
+#ifdef FFMPEG_DISABLE_INLINE_ASM
+#define HAVE_INLINE_ASM 0
+#else
 #define HAVE_INLINE_ASM 1
+#endif
 #define HAVE_SYMVER 1
 #define HAVE_X86ASM 1
 #define HAVE_BIGENDIAN 0
