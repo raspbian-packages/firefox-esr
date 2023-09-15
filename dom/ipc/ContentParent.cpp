@@ -3781,11 +3781,6 @@ ContentParent::Observe(nsISupports* aSubject, const char* aTopic,
       return NS_OK;
     }
     auto* cs = static_cast<CookieServiceParent*>(csParent);
-    // Do not push these cookie updates to the same process they originated
-    // from.
-    if (cs->ProcessingCookie()) {
-      return NS_OK;
-    }
     if (!nsCRT::strcmp(aData, u"batch-deleted")) {
       nsCOMPtr<nsIArray> cookieList = do_QueryInterface(aSubject);
       NS_ASSERTION(cookieList, "couldn't get cookie list");
@@ -3795,6 +3790,12 @@ ContentParent::Observe(nsISupports* aSubject, const char* aTopic,
 
     if (!nsCRT::strcmp(aData, u"cleared")) {
       cs->RemoveAll();
+      return NS_OK;
+    }
+
+    // Do not push these cookie updates to the same process they originated
+    // from.
+    if (cs->ProcessingCookie()) {
       return NS_OK;
     }
 
@@ -7315,7 +7316,8 @@ mozilla::ipc::IPCResult ContentParent::RecvHistoryGo(
     uint64_t aHistoryEpoch, bool aRequireUserInteraction, bool aUserActivation,
     HistoryGoResolver&& aResolveRequestedIndex) {
   if (!aContext.IsDiscarded()) {
-    aContext.get_canonical()->HistoryGo(
+    RefPtr<CanonicalBrowsingContext> canonical = aContext.get_canonical();
+    canonical->HistoryGo(
         aOffset, aHistoryEpoch, aRequireUserInteraction, aUserActivation,
         Some(ChildID()), std::move(aResolveRequestedIndex));
   }
@@ -7540,7 +7542,8 @@ mozilla::ipc::IPCResult ContentParent::RecvHistoryReload(
     const MaybeDiscarded<BrowsingContext>& aContext,
     const uint32_t aReloadFlags) {
   if (!aContext.IsDiscarded()) {
-    nsISHistory* shistory = aContext.get_canonical()->GetSessionHistory();
+    nsCOMPtr<nsISHistory> shistory =
+        aContext.get_canonical()->GetSessionHistory();
     if (shistory) {
       shistory->Reload(aReloadFlags);
     }
