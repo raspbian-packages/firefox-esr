@@ -17,6 +17,8 @@ class ColorPickerParent : public PColorPickerParent {
   ColorPickerParent(const nsString& aTitle, const nsString& aInitialColor)
       : mTitle(aTitle), mInitialColor(aInitialColor) {}
 
+  NS_INLINE_DECL_REFCOUNTING(ColorPickerParent, final)
+
   virtual mozilla::ipc::IPCResult RecvOpen() override;
   virtual void ActorDestroy(ActorDestroyReason aWhy) override;
 
@@ -32,7 +34,7 @@ class ColorPickerParent : public PColorPickerParent {
 
    private:
     ~ColorPickerShownCallback() = default;
-    ColorPickerParent* mColorPickerParent;
+    RefPtr<ColorPickerParent> mColorPickerParent;
   };
 
  private:
