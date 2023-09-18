@@ -1,4 +1,4 @@
-firefox-esr (102.15.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
+firefox-esr (102.15.1esr-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -31,7 +31,14 @@ firefox-esr (102.15.0esr-1~deb10u1+rpi1) buster-staging; urgency=medium
   [changes introduced in 102.9.0esr-1~deb10u1+rpi1 by Peter Michael Green]
   * Fix key error in media/libvpx/moz.build
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 15 Sep 2023 12:50:14 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 18 Sep 2023 02:01:28 +0000
+
+firefox-esr (102.15.1esr-1~deb10u1) buster-security; urgency=medium
+
+  * New upstream release.
+  * Fix for mfsa2023-40, also known as CVE-2023-4863.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Fri, 15 Sep 2023 19:34:45 +0200
 
 firefox-esr (102.15.0esr-1~deb10u1) buster-security; urgency=medium
 
