@@ -1,0 +1,2 @@
+20230927234915
+https://hg.mozilla.org/releases/mozilla-esr115/rev/749617c4473c65f8aebb2e3254777ae99dc17cce
